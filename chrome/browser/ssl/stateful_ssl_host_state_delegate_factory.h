@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SSL_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_SSL_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
 
@@ -29,8 +29,7 @@ class StatefulSSLHostStateDelegateFactory : public ProfileKeyedServiceFactory {
   static TestingFactory GetDefaultFactoryForTesting();
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      StatefulSSLHostStateDelegateFactory>;
+  friend base::NoDestructor<StatefulSSLHostStateDelegateFactory>;
 
   StatefulSSLHostStateDelegateFactory();
   ~StatefulSSLHostStateDelegateFactory() override;

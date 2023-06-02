@@ -60,7 +60,8 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   // Refer to comment in Element::computedStyle.
   DCHECK(element->InActiveDocument());
 
-  element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
+  element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      element, DocumentUpdateReason::kSMILAnimation);
 
   // Don't include any properties resulting from CSS Transitions/Animations or
   // SMIL animations, as we want to retrieve the "base value".
@@ -86,7 +87,7 @@ QualifiedName ConstructQualifiedName(const SVGElement& svg_element,
   if (attribute_name.empty())
     return AnyQName();
   if (!attribute_name.Contains(':'))
-    return QualifiedName(g_null_atom, attribute_name, g_null_atom);
+    return QualifiedName(attribute_name);
 
   AtomicString prefix;
   AtomicString local_name;

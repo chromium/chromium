@@ -99,6 +99,8 @@ static_library("test_support") {
     "rectify_callback.h",
     "rectify_callback_internal.h",
     "repeating_test_future.h",
+    "run_until.cc",
+    "run_until.h",
     "scoped_amount_of_physical_memory_override.cc",
     "scoped_amount_of_physical_memory_override.h",
     "scoped_command_line.cc",

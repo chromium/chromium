@@ -38,24 +38,47 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-20">
   <owner>junzou@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records whether a text highlight operation was successful on the companion
     page. Recorded after text highlighting is completed.
   </summary>
 </histogram>
 
+<histogram name="Companion.IsUserOptedInToExps" enum="BooleanOptedIn"
+    expires_after="2023-10-20">
+  <owner>tbansal@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records whether user is opted-in to various experiments. Recorded when the
+    information is received from the companion backend.
+  </summary>
+</histogram>
+
 <histogram name="Companion.PromoEvent" enum="Companion.PromoEvent"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records various events (e.g. displayed, accepted or rejected) on various
     promo surfaces on the companion page. Recorded as soon as the event happens.
   </summary>
 </histogram>
 
+<histogram name="Companion.SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
+    expires_after="2023-10-20">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the UI location from which the companion side panel was triggered to
+    be opened. Recorded after the companion is opened and loaded.
+  </summary>
+</histogram>
+
 <histogram name="Companion.{UiSurface}.Clicked" enum="BooleanClicked"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records whether {UiSurface} was clicked by the user on the companion page.
     Recorded as soon as the surface is clicked.
@@ -66,6 +89,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Companion.{UiSurface}.ClickPosition" units="Index"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records the position of the UI element that was clicked with respect to its
     parent list. Recorded as soon as the surface is clicked.
@@ -76,6 +100,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Companion.{UiSurface}.Shown" enum="BooleanShown"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records whether {UiSurface} was shown on the companion page. Recorded as
     soon as the surface is shown.

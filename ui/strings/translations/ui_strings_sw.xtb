@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">Kiendelezi kimebanduliwa</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Umesalia mwezi 1}other{Imesalia miezi #}}</translation>
 <translation id="4888938634149558681">Piga simu</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Sekunde 1}other{Sekunde #}}</translation>
 <translation id="4971687151119236543">Wimbo wa Awali wa Media</translation>
 <translation id="5046499563572181734">Gusa hapa</translation>

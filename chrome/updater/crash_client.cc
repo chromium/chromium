@@ -84,7 +84,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
     return false;
 
   base::debug::SetDumpWithoutCrashingFunction(
-      []() { CRASHPAD_SIMULATE_CRASH(); });
+      [] { CRASHPAD_SIMULATE_CRASH(); });
 
 #if BUILDFLAG(IS_WIN)
   // Catch exceptions thrown from a window procedure.

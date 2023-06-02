@@ -141,7 +141,7 @@ class TextfieldFocuser : public View {
 
  private:
   bool consume_ = true;
-  raw_ptr<Textfield> textfield_;
+  raw_ptr<Textfield, DanglingUntriaged> textfield_;
 };
 
 class MockInputMethod : public ui::InputMethodBase {
@@ -3819,6 +3819,8 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   EXPECT_LT(test_api_->GetDisplayOffsetX(), 0);
 }
 
+// TODO(b/271058426): Rewrite these long press drag selection tests using
+// ui::test::EventGenerator.
 TEST_F(TextfieldTest, LongPressDragLTR_Forward) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -3957,74 +3959,46 @@ TEST_F(TextfieldTest, LongPressDragRTL_Backward) {
   EXPECT_EQ(range, gfx::Range(13, 0));
 }
 
-TEST_F(TextfieldTest, DoubleTapDown) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
-      /*disabled_features=*/{});
-
+TEST_F(TextfieldTest, DoubleTapSelection) {
   InitTextfield();
   textfield_->SetText(u"Hello string world");
+
+  // Perform a double tap.
+  const gfx::Point kTapPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kTapPoint);
+  event_generator_->GestureTapAt(kTapPoint);
+
+  // Check that nearest word is selected and that touch selection has been
+  // activated.
   gfx::Range range;
-
-  // Second tap down in a repeated tap sequence should select word but not show
-  // touch selection handles.
-  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
-  tap_down_details.set_tap_down_count(2);
-  ui::GestureEvent tap_down = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(), tap_down_details);
-  textfield_->OnGestureEvent(&tap_down);
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(0, 5));
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-
-  // After tap, word should still be selected and touch selection handles should
-  // appear.
-  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
-  tap_details.set_tap_count(2);
-  ui::GestureEvent tap = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(), tap_details);
-  textfield_->OnGestureEvent(&tap);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(0, 5));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"Hello");
   EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 
-TEST_F(TextfieldTest, TripleTapDown) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
-      /*disabled_features=*/{});
-
+TEST_F(TextfieldTest, TripleTapSelection) {
   InitTextfield();
   textfield_->SetText(u"Hello string world");
+
+  // Perform a triple tap.
+  const gfx::Point kTapPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kTapPoint);
+  event_generator_->GestureTapAt(kTapPoint);
+  event_generator_->GestureTapAt(kTapPoint);
+
+  // Check that all text is selected and that touch selection has been
+  // activated.
   gfx::Range range;
-
-  // Third tap down in a repeated tap sequence should select all text.
-  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
-  tap_down_details.set_tap_down_count(3);
-  ui::GestureEvent tap_down = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(), tap_down_details);
-  textfield_->OnGestureEvent(&tap_down);
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(0, 18));
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-
-  // After tap, text should still be selected and touch selection handles should
-  // appear.
-  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
-  tap_details.set_tap_count(3);
-  ui::GestureEvent tap = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(), tap_details);
-  textfield_->OnGestureEvent(&tap);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(0, 18));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"Hello string world");
   EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 
-// TODO(b/271058426): Rewrite these gesture tests using
-// ui::test::EventGenerator.
-TEST_F(TextfieldTest, DoubleTapDrag) {
+TEST_F(TextfieldTest, DoublePressDragSelection) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kTouchTextEditingRedesign},
@@ -4032,30 +4006,23 @@ TEST_F(TextfieldTest, DoubleTapDrag) {
 
   InitTextfield();
   textfield_->SetText(u"Hello string world");
+
+  // Perform a double press and drag movement.
+  const gfx::Point kDragStart = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  const gfx::Point kDragEnd = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(10), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kDragStart);
+  event_generator_->GestureScrollSequence(kDragStart, kDragEnd,
+                                          /*duration=*/base::Milliseconds(50),
+                                          /*steps=*/5);
+
+  // Check that text is selected between the word boundaries around the start
+  // and end of the drag movement.
   gfx::Range range;
-
-  // Second tap down in a repeated tap sequence should select word.
-  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
-  tap_down_details.set_tap_down_count(2);
-  ui::GestureEvent tap_down = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(), tap_down_details);
-  textfield_->OnGestureEvent(&tap_down);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(0, 5));
-
-  // Dragging should expand the selection.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(2), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(range, gfx::Range(0, 5));
-
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(10), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(0, 12));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"Hello string");
 }
 #endif
 
@@ -4181,38 +4148,9 @@ TEST_F(TextfieldTest, VirtualKeyboardFocusEnsureCaretNotInRect) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class TextfieldTouchSelectionTest : public TextfieldTest {
- protected:
-  // Simulates a complete tap.
-  void Tap(const gfx::Point& point) {
-    ui::GestureEvent begin = CreateTestGestureEvent(
-        point.x(), point.y(), ui::GestureEventDetails(ui::ET_GESTURE_BEGIN));
-    textfield_->OnGestureEvent(&begin);
-
-    ui::GestureEvent tap_down = CreateTestGestureEvent(
-        point.x(), point.y(), ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
-    textfield_->OnGestureEvent(&tap_down);
-
-    ui::GestureEvent show_press = CreateTestGestureEvent(
-        point.x(), point.y(),
-        ui::GestureEventDetails(ui::ET_GESTURE_SHOW_PRESS));
-    textfield_->OnGestureEvent(&show_press);
-
-    ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
-    tap_details.set_tap_count(1);
-    ui::GestureEvent tap =
-        CreateTestGestureEvent(point.x(), point.y(), tap_details);
-    textfield_->OnGestureEvent(&tap);
-
-    ui::GestureEvent end = CreateTestGestureEvent(
-        point.x(), point.y(), ui::GestureEventDetails(ui::ET_GESTURE_END));
-    textfield_->OnGestureEvent(&end);
-  }
-};
-
 // Touch selection and dragging currently only works for chromeos.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(TextfieldTouchSelectionTest, TouchSelectionAndDraggingTest) {
+TEST_F(TextfieldTest, TouchSelectionAndDraggingTest) {
   InitTextfield();
   textfield_->SetText(u"hello world");
   EXPECT_FALSE(test_api_->touch_selection_controller());
@@ -4263,65 +4201,66 @@ TEST_F(TextfieldTouchSelectionTest, TouchSelectionAndDraggingTest) {
 }
 #endif
 
-TEST_F(TextfieldTouchSelectionTest, TouchSelectionInUnfocusableTextfield) {
+// No touch on desktop Mac. Tracked in http://crbug.com/445520.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(TextfieldTest, TapOnSelection) {
   InitTextfield();
   textfield_->SetText(u"hello world");
-  gfx::Point touch_point(GetCursorPositionX(2), 0);
+
+  // Select a range and check that touch selection handles are not present and
+  // that the correct range is selected.
+  constexpr gfx::Range kSelectionRange(2, 7);
+  textfield_->SetEditableSelectionRange(kSelectionRange);
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+  EXPECT_EQ(range, kSelectionRange);
+
+  // Tap on the selection and check that touch selection handles are shown, but
+  // the selection range is not modified.
+  constexpr gfx::Range kTapRange(5, 5);
+  const gfx::Rect kTapRect =
+      GetCursorBounds(gfx::SelectionModel(kTapRange, gfx::CURSOR_FORWARD));
+  const gfx::Point kTapPoint =
+      views::View::ConvertPointToScreen(textfield_, kTapRect.CenterPoint());
+  event_generator_->GestureTapAt(kTapPoint);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+  EXPECT_EQ(range, kSelectionRange);
+
+  // Tap again on the selection and check that touch selection handles are still
+  // present and that the selection is changed to a cursor at the tap location.
+  // We advance the clock before tapping again to avoid the tap being treated as
+  // a double tap.
+  event_generator_->AdvanceClock(base::Milliseconds(1000));
+  event_generator_->GestureTapAt(kTapPoint);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+  EXPECT_EQ(range, kTapRange);
+}
+
+TEST_F(TextfieldTest, TouchSelectionInUnfocusableTextfield) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
 
   // Disable textfield and tap on it. Touch text selection should not get
   // activated.
   textfield_->SetEnabled(false);
-  Tap(touch_point);
+  const gfx::Point kTapPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kTapPoint);
   EXPECT_FALSE(test_api_->touch_selection_controller());
   textfield_->SetEnabled(true);
 
   // Make textfield unfocusable and tap on it. Touch text selection should not
   // get activated.
   textfield_->SetFocusBehavior(View::FocusBehavior::NEVER);
-  Tap(touch_point);
+  event_generator_->GestureTapAt(kTapPoint);
   EXPECT_FALSE(textfield_->HasFocus());
   EXPECT_FALSE(test_api_->touch_selection_controller());
   textfield_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 }
-
-// No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TapOnSelection DISABLED_TapOnSelection
-#else
-#define MAYBE_TapOnSelection TapOnSelection
 #endif
-
-TEST_F(TextfieldTouchSelectionTest, MAYBE_TapOnSelection) {
-  InitTextfield();
-  textfield_->SetText(u"hello world");
-  gfx::Range sel_range(2, 7);
-  gfx::Range tap_range(5, 5);
-  gfx::Rect tap_rect =
-      GetCursorBounds(gfx::SelectionModel(tap_range, gfx::CURSOR_FORWARD));
-  gfx::Point tap_point = tap_rect.CenterPoint();
-
-  // Select range |sel_range| and check if touch selection handles are not
-  // present and correct range is selected.
-  textfield_->SetEditableSelectionRange(sel_range);
-  gfx::Range range;
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-  EXPECT_EQ(sel_range, range);
-
-  // Tap on selection and check if touch selectoin handles are shown, but
-  // selection range is not modified.
-  Tap(tap_point);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_TRUE(test_api_->touch_selection_controller());
-  EXPECT_EQ(sel_range, range);
-
-  // Tap again on selection and check if touch selection handles are still
-  // present and selection is changed to a cursor at tap location.
-  Tap(tap_point);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_TRUE(test_api_->touch_selection_controller());
-  EXPECT_EQ(tap_range, range);
-}
 
 TEST_F(TextfieldTest, MoveCaret) {
   InitTextfield();

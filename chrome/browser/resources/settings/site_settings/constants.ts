@@ -42,6 +42,7 @@ export enum ContentSettingsTypes {
   SENSORS = 'sensors',
   SERIAL_PORTS = 'serial-ports',
   SOUND = 'sound',
+  STORAGE_ACCESS = 'storage-access',
   USB_DEVICES = 'usb-devices',
   VR = 'vr',
   WINDOW_MANAGEMENT = 'window-placement',

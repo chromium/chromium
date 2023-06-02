@@ -38,6 +38,7 @@ class WebAppInstallManager {
 
   virtual void NotifyWebAppInstalled(const AppId& app_id);
   virtual void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
+  virtual void NotifyWebAppSourceRemovedForTesting(const AppId& app_id);
   virtual void NotifyWebAppUninstalled(
       const AppId& app_id,
       webapps::WebappUninstallSource uninstall_source);
@@ -63,13 +64,14 @@ class WebAppInstallManager {
 
   void LogErrorObject(base::Value::Dict object);
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   std::unique_ptr<ErrorLog> error_log_;
   bool error_log_updated_ = false;
   bool error_log_writing_in_progress_ = false;
 
-  base::ObserverList<WebAppInstallManagerObserver> observers_;
+  base::ObserverList<WebAppInstallManagerObserver, /*check_empty=*/true>
+      observers_;
 
   base::WeakPtrFactory<WebAppInstallManager> weak_ptr_factory_{this};
 };

@@ -52,6 +52,7 @@ import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/in_session_auth.mojom";
+import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
@@ -138,8 +139,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 108
-// Next method id: 111
+// Next version: 109
+// Next method id: 112
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -405,6 +406,11 @@ interface Crosapi {
   [MinVersion=41]
   BindNetworkSettingsService@46(
       pending_receiver<NetworkSettingsService> receiver);
+
+  // Binds the KerberosInBrowser interface for showing Kerberos UI.
+  // Added in M114.
+  [MinVersion=108]
+  BindKerberosInBrowser@111(pending_receiver<KerberosInBrowser> receiver);
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
@@ -708,8 +714,6 @@ interface Crosapi {
   // |browser_info| during startup.
   // Added in M87.
   [MinVersion=3] OnBrowserStartup@6(BrowserInfo browser_info);
-
-
 };
 
 [Stable, Extensible]
@@ -956,8 +960,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 62
-// Next id: 62
+// Next version: 64
+// Next id: 64
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1342,6 +1346,15 @@ struct BrowserInitParams {
   // When this flag is on, the clipboard history refresh feature is enabled.
   [MinVersion=61]
   bool enable_clipboard_history_refresh@61;
+
+  // When this flag is set to true, frames can be scheduled with variable
+  // refresh rate timing.
+  [MinVersion=62]
+  bool is_variable_refresh_rate_enabled@62;
+
+  // Tells lacros whether the currently logged in user is ephemeral.
+  [MinVersion=63]
+  bool is_current_user_ephemeral@63;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
@@ -1351,8 +1364,8 @@ struct BrowserInitParams {
 // BrowserInitParams which is already available is by ash-chrome at
 // that time. The rest is passed after login via this structure.
 //
-// Next version: 1
-// Next id: 19
+// Next version: 2
+// Next id: 20
 [Stable]
 struct BrowserPostLoginParams {
   // Type of the ash-chrome session at the browser startup time.
@@ -1445,6 +1458,10 @@ struct BrowserPostLoginParams {
 
   // When this flag is set to true, Lacros tts support feature will be enabled.
   bool enable_lacros_tts_support@18;
+
+  // Tells lacros whether the currently logged in user is ephemeral.
+  [MinVersion=1]
+  bool is_current_user_ephemeral@19;
 };
 
 // Parameters to specify OpenUrl behavior.

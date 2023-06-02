@@ -61,16 +61,17 @@ suite('ThemeSnapshotTest', () => {
         CustomizeThemeType.CUSTOM_THEME);
     assertEquals(
         $$<HTMLImageElement>(
-            themeSnapshotElement, '.theme-snapshot #customThemeImage')!
+            themeSnapshotElement, '.snapshot-container #customThemeImage')!
             .getAttribute('aria-labelledby'),
         'customThemeTitle');
     assertEquals(
         'foo',
         $$(themeSnapshotElement,
-           '.theme-snapshot #customThemeTitle')!.textContent!.trim());
+           '.snapshot-container #customThemeTitle')!.textContent!.trim());
     assertEquals(
         'chrome://theme/foo',
-        $$<HTMLImageElement>(themeSnapshotElement, '.theme-snapshot img')!.src);
+        $$<HTMLImageElement>(
+            themeSnapshotElement, '.snapshot-container img')!.src);
   });
 
   test('not setting a theme updates preview background color', async () => {
@@ -94,16 +95,49 @@ suite('ThemeSnapshotTest', () => {
         CustomizeThemeType.CLASSIC_CHROME);
     assertEquals(
         $$<HTMLImageElement>(
+            themeSnapshotElement, '#classicChromeBackground img')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'mini_new_tab_page.svg');
+    assertEquals(
+        $$<HTMLImageElement>(
             themeSnapshotElement,
-            '.theme-snapshot #miniNewTabPage')!.getAttribute('aria-labelledby'),
+            '#classicChromeBackground img')!.getAttribute('aria-labelledby'),
         'classicChromeThemeTitle');
     assertEquals(
         'Classic Chrome',
         $$(themeSnapshotElement,
-           '.theme-snapshot #classicChromeThemeTitle')!.textContent!.trim());
+           '.snapshot-container #classicChromeThemeTitle')!.textContent!
+            .trim());
     assertStyle(
-        $$(themeSnapshotElement, '.theme-snapshot #classicChrome')!,
+        $$(themeSnapshotElement,
+           '.snapshot-container #classicChromeBackground')!,
         'background-color', 'rgb(20, 83, 154)');
+  });
+
+  test('gm3 classic chrome preview shows correct image', async () => {
+    // Arrange.
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    createThemeSnapshotElement();
+    const theme = createTheme();
+
+    // Act.
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('updateTheme'));
+    const shownPages =
+        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+    assertTrue(!!shownPages);
+    assertEquals(shownPages.length, 1);
+    assertEquals(
+        shownPages[0]!.getAttribute('theme-type'),
+        CustomizeThemeType.CLASSIC_CHROME);
+    assertEquals(
+        $$<HTMLImageElement>(
+            themeSnapshotElement, '#classicChromeBackground img')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'gm3_mini_new_tab_page.svg');
   });
 
   test('uploading a background updates theme snapshot', async () => {
@@ -127,12 +161,12 @@ suite('ThemeSnapshotTest', () => {
         shownPages[0]!.getAttribute('theme-type'),
         CustomizeThemeType.UPLOADED_IMAGE);
     assertEquals(
-        $$(themeSnapshotElement, '.theme-snapshot #uploadedThemeImage')!
+        $$(themeSnapshotElement, '.snapshot-container #uploadedThemeImage')!
             .getAttribute('aria-labelledby'),
         'uploadedThemeTitle');
     assertEquals(
         'Uploaded image',
         $$(themeSnapshotElement,
-           '.theme-snapshot #uploadedThemeTitle')!.textContent!.trim());
+           '.snapshot-container #uploadedThemeTitle')!.textContent!.trim());
   });
 });

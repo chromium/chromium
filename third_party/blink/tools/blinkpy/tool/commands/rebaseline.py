@@ -53,7 +53,7 @@ from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import Artifact, WebTestResult
 from blinkpy.tool.commands.command import Command, check_dir_option
 from blinkpy.web_tests.models import test_failures
-from blinkpy.web_tests.models.test_expectations import SystemConfigurationRemover, TestExpectations
+from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
 from blinkpy.web_tests.port import base, factory
 
@@ -464,7 +464,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             expectations_dict={
                 path: self._tool.filesystem.read_text_file(path)
             })
-        system_remover = SystemConfigurationRemover(test_expectations)
+        system_remover = SystemConfigurationEditor(test_expectations)
         for test, versions in to_remove.items():
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()

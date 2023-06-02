@@ -36,6 +36,9 @@
   <message name="IDS_HISTORY_CLUSTERS_HIDE_PAGE" desc="Label of the item in drop-down menu that allows the user to hide a history item.">
     Hide item
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_HIDE_VISITS" desc="Label of the item in drop-down menu that allows the user to hide all cluster visits.">
+    Hide all items
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
     Load more
   </message>

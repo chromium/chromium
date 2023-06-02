@@ -157,6 +157,7 @@ class DIPSBounceDetectorDelegate {
   virtual void RecordEvent(DIPSRecordedEvent event,
                            const GURL& url,
                            const base::Time& time) = 0;
+  virtual void IncrementPageSpecificBounceCount(const GURL& final_url) = 0;
 };
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
@@ -194,6 +195,11 @@ class DIPSNavigationHandle {
   // content::NavigationHandle::HasUserGesture(): it returns true if the
   // navigation was not renderer-initiated.
   virtual bool HasUserGesture() const = 0;
+  //  This method doesn't have a direct equivalent in content::NavigationHandle,
+  //  as it relies on GetInitiatorOrigin(), but returns what is effectively a
+  //  base URL. Also, this returns `about:blank` if the initiator origin is
+  //  unspecified or opaque.
+  virtual const GURL GetInitiator() const = 0;
 
   // Get a SourceId of type REDIRECT_ID for the index'th URL in the redirect
   // chain.
@@ -308,6 +314,7 @@ class DIPSWebContentsObserver
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time) override;
+  void IncrementPageSpecificBounceCount(const GURL& final_url) override;
 
   // WebContentsObserver overrides:
   void DidStartNavigation(
@@ -325,6 +332,7 @@ class DIPSWebContentsObserver
   // Start SiteDataObserver overrides:
   void OnSiteDataAccessed(
       const content_settings::AccessDetails& access_details) override;
+  void OnStatefulBounceDetected() override;
   // End SiteDataObserver overrides.
 
   // raw_ptr<> is safe here because DIPSService is a KeyedService, associated

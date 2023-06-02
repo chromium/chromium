@@ -205,6 +205,32 @@ buildflag_header("message_pump_buildflags") {
   flags = [ "ENABLE_MESSAGE_PUMP_EPOLL=$enable_message_pump_epoll" ]
 }
 
+if (is_apple) {
+  # TODO(https://crbug.com/1280317): Merge back into the `base` target once all
+  # .mm files are ARCed.
+  source_set("base_arc") {
+    sources = [
+      "apple/owned_objc.h",
+      "apple/owned_objc.mm",
+    ]
+    if (is_mac) {
+      sources += [
+        "mac/launch_application.h",
+        "mac/launch_application.mm",
+      ]
+      frameworks = [
+        "AppKit.framework",
+        "Foundation.framework",
+      ]
+    }
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      "//base:base_static",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
+}
+
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
 # small parts of it are used in many different contexts. This combined with a
@@ -1290,8 +1316,8 @@ component("base") {
     ]
 
     deps += [
-      "//third_party/android_ndk:cpu_features",
       "//third_party/ashmem",
+      "//third_party/cpu_features:ndk_compat",
     ]
 
     # Needs to be a public config so that dependent targets link against it as
@@ -1373,7 +1399,10 @@ component("base") {
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
     ]
-    deps += [ ":base_jni_headers" ]
+    deps += [
+      ":base_jni",
+      ":process_launcher_jni",
+    ]
   }  # is_android || is_robolectric
 
   # Chromeos.
@@ -1977,8 +2006,6 @@ component("base") {
       "mac/authorization_util.h",
       "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
-      "mac/launch_application.h",
-      "mac/launch_application.mm",
       "mac/launchd.cc",
       "mac/launchd.h",
       "mac/mac_util.h",
@@ -2092,6 +2119,8 @@ component("base") {
       "time/time_mac.mm",
     ]
     frameworks += [ "Security.framework" ]
+    public_deps += [ ":base_arc" ]
+    allow_circular_includes_from = [ ":base_arc" ]
   }
 
   # Linux.
@@ -2136,16 +2165,6 @@ component("base") {
       "base_paths_mac.h",
       "base_paths_mac.mm",
       "critical_closure_internal_ios.mm",
-      "ios/block_types.h",
-      "ios/device_util.h",
-      "ios/device_util.mm",
-      "ios/ios_util.h",
-      "ios/ios_util.mm",
-      "ios/ns_error_util.h",
-      "ios/ns_error_util.mm",
-      "ios/ns_range.h",
-      "ios/scoped_critical_action.h",
-      "ios/scoped_critical_action.mm",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
@@ -2159,7 +2178,6 @@ component("base") {
         "files/file_path_watcher_kqueue.cc",
         "files/file_path_watcher_kqueue.h",
         "files/file_path_watcher_mac.cc",
-        "ios/sim_header_shims.h",
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
         "process/kill_mac.cc",
@@ -2182,6 +2200,9 @@ component("base") {
         "process/process_stubs.cc",
       ]
     }
+
+    public_deps += [ "//base/ios" ]
+    allow_circular_includes_from += [ "//base/ios" ]
 
     if (is_cronet_build) {
       sources += [
@@ -2711,6 +2732,10 @@ component("i18n") {
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]
   }
+
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
 }
 
 test("base_perftests") {
@@ -2903,7 +2928,7 @@ source_set("base_stack_sampling_profiler_test_util") {
       "profiler/stack_sampling_profiler_java_test_util.h",
     ]
     deps += [
-      ":base_profiler_test_support_jni_headers",
+      ":base_profiler_test_support_jni",
       ":native_unwinder_android",
     ]
   }
@@ -2943,17 +2968,14 @@ if (is_apple) {
 }
 
 if (is_apple) {
-  source_set("base_unittests_arc") {
+  source_set("base_unittests_noarc") {
     testonly = true
     sources = [
-      "ios/crb_protocol_observers_unittest.mm",
-      "mac/bind_objc_block_unittest_arc.mm",
-      "mac/scoped_nsobject_unittest_arc.mm",
+      "mac/bind_objc_block_unittest.mm",
+      "mac/scoped_nsobject_unittest.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
       ":base",
-      "//base/ios",
       "//base/test:test_support",
       "//testing/gtest",
     ]
@@ -3349,6 +3371,7 @@ test("base_unittests") {
     "test/mock_callback_unittest.cc",
     "test/rectify_callback_unittest.cc",
     "test/repeating_test_future_unittest.cc",
+    "test/run_until_unittest.cc",
     "test/scoped_feature_list_unittest.cc",
     "test/scoped_logging_settings.h",
     "test/scoped_mock_clock_override_unittest.cc",
@@ -3469,7 +3492,7 @@ test("base_unittests") {
   if (is_apple) {
     public_deps = [ ":base_unittests_bundle_data" ]
 
-    deps += [ ":base_unittests_arc" ]
+    deps += [ ":base_unittests_noarc" ]
   }
 
   if (!is_ios) {
@@ -3563,34 +3586,6 @@ test("base_unittests") {
     }
   }
 
-  if (is_mac) {
-    sources += [
-      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
-      "apple/backup_util_unittest.mm",
-      "enterprise_util_mac_unittest.mm",
-      "mac/bind_objc_block_unittest.mm",
-      "mac/call_with_eh_frame_unittest.mm",
-      "mac/dispatch_source_mach_unittest.cc",
-      "mac/foundation_util_unittest.mm",
-      "mac/mac_util_unittest.mm",
-      "mac/mach_port_rendezvous_unittest.cc",
-      "mac/scoped_mach_vm_unittest.cc",
-      "mac/scoped_nsobject_unittest.mm",
-      "mac/scoped_objc_class_swizzler_unittest.mm",
-      "mac/scoped_sending_event_unittest.mm",
-      "message_loop/message_pump_mac_unittest.mm",
-      "power_monitor/thermal_state_observer_mac_unittest.mm",
-      "process/memory_unittest_mac.h",
-      "process/memory_unittest_mac.mm",
-      "strings/sys_string_conversions_mac_unittest.mm",
-    ]
-  }
-
-  if (is_apple && enable_mach_absolute_time_ticks) {
-    sources += [ "time/time_mac_unittest.mm" ]
-  }
-
   if (is_posix) {
     sources += [
       "files/dir_reader_posix_unittest.cc",
@@ -3651,7 +3646,7 @@ test("base_unittests") {
       deps += [
         ":base_profiler_reparsing_test_support_library",
         ":base_profiler_test_support_java",
-        ":base_profiler_test_support_jni_headers",
+        ":base_profiler_test_support_jni",
         ":base_profiler_test_support_library",
         ":native_unwinder_android",
       ]
@@ -3700,11 +3695,48 @@ test("base_unittests") {
     sources += [ "debug/allocation_trace_unittest.cc" ]
   }
 
+  if (is_apple) {
+    sources += [
+      "apple/backup_util_unittest.mm",
+      "mac/bind_objc_block_unittest_arc.mm",
+      "mac/foundation_util_unittest.mm",
+      "mac/scoped_nsobject_unittest_arc.mm",
+      "strings/sys_string_conversions_mac_unittest.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
+  if (is_apple && enable_mach_absolute_time_ticks) {
+    sources += [ "time/time_mac_unittest.mm" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
+      "enterprise_util_mac_unittest.mm",
+      "mac/call_with_eh_frame_unittest.mm",
+      "mac/dispatch_source_mach_unittest.cc",
+      "mac/mac_util_unittest.mm",
+      "mac/mach_port_rendezvous_unittest.cc",
+      "mac/scoped_mach_vm_unittest.cc",
+      "mac/scoped_objc_class_swizzler_unittest.mm",
+      "mac/scoped_sending_event_unittest.mm",
+      "message_loop/message_pump_mac_unittest.mm",
+      "power_monitor/thermal_state_observer_mac_unittest.mm",
+      "process/memory_unittest_mac.h",
+      "process/memory_unittest_mac.mm",
+    ]
+  }
+
   if (is_ios) {
     sources += [
+      "ios/crb_protocol_observers_unittest.mm",
       "ios/device_util_unittest.mm",
       "ios/scoped_critical_action_unittest.mm",
     ]
+
+    deps += [ "//base/ios" ]
 
     if (is_cronet_build) {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
@@ -3726,15 +3758,6 @@ test("base_unittests") {
       "test/gtest_xml_unittest_result_printer_unittest.cc",
       "test/launcher/test_launcher_unittest.cc",
       "test/launcher/test_results_tracker_unittest.cc",
-    ]
-
-    sources += [
-      # Pull in specific Mac files for iOS.
-      "apple/backup_util_unittest.mm",
-      "mac/bind_objc_block_unittest.mm",
-      "mac/foundation_util_unittest.mm",
-      "mac/scoped_nsobject_unittest.mm",
-      "strings/sys_string_conversions_mac_unittest.mm",
     ]
 
     sources -= [
@@ -4081,7 +4104,7 @@ if (enable_nocompile_tests) {
 }
 
 if (is_android || is_robolectric) {
-  generate_jni("base_jni_headers") {
+  generate_jni("base_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/ApplicationStatus.java",
@@ -4122,7 +4145,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/memory/MemoryInfoBridge.java",
       "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
       "android/java/src/org/chromium/base/metrics/StatisticsRecorderAndroid.java",
-      "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
       "android/java/src/org/chromium/base/task/PostTask.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
     ]
@@ -4140,6 +4162,10 @@ if (is_android || is_robolectric) {
   generate_jar_jni("android_runtime_unchecked_jni_headers") {
     classes = [ "java/lang/Runnable.class" ]
     unchecked_exceptions = true
+  }
+
+  generate_jni("process_launcher_jni") {
+    sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
   }
 }  # is_android || is_robolectric
 
@@ -4183,7 +4209,10 @@ if (is_android) {
   }
 
   android_library("process_launcher_java") {
-    srcjar_deps = [ ":process_launcher_aidl" ]
+    srcjar_deps = [
+      ":process_launcher_aidl",
+      ":process_launcher_jni",
+    ]
     deps = [
       ":base_java",
       ":jni_java",
@@ -4208,13 +4237,12 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
       "android/java/src/org/chromium/base/process_launcher/FileDescriptorInfo.java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("base_java") {
     srcjar_deps = [
       ":base_android_java_enums_srcjar",
+      ":base_jni",
       ":java_features_srcjar",
       ":java_switches_srcjar",
     ]
@@ -4354,8 +4382,6 @@ if (is_android) {
       sources += [ "android/java/src/org/chromium/base/IntentUtils.java" ]
     }
 
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
     resources_package = "org.chromium.base"
 
     proguard_configs = [
@@ -4419,20 +4445,19 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherWithoutNativeTest.java",
       "android/javatests/src/org/chromium/base/util/GarbageCollectionTestUtilsTest.java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    srcjar_deps = [ ":base_javatests_jni" ]
   }
 
   source_set("base_javatests_lib") {
     testonly = true
     deps = [
       ":base",
-      ":base_javatests_jni_headers",
+      ":base_javatests_jni",
     ]
     sources = [ "test/library_loader/early_native_test_helper.cc" ]
   }
 
-  generate_jni("base_javatests_jni_headers") {
+  generate_jni("base_javatests_jni") {
     testonly = true
     sources = [ "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java" ]
   }
@@ -4450,7 +4475,6 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit:junit",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("base_java_test_support") {
@@ -4552,7 +4576,14 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  generate_jni("base_java_test_support_uncommon_jni") {
+    testonly = true
+    sources = [
+      "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java",
+      "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
+    ]
   }
 
   android_library("base_java_test_support_uncommon") {
@@ -4567,6 +4598,7 @@ if (is_android) {
       "//third_party/junit:junit",
     ]
 
+    srcjar_deps = [ ":base_java_test_support_uncommon_jni" ]
     sources = [
       "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
@@ -4579,8 +4611,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/InstrumentationUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/Matchers.java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("base_java_process_launcher_test_support") {
@@ -4700,7 +4730,7 @@ if (is_android) {
     }
   }
 
-  generate_jni("base_profiler_test_support_jni_headers") {
+  generate_jni("base_profiler_test_support_jni") {
     testonly = true
     sources =
         [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
@@ -4710,8 +4740,7 @@ if (is_android) {
     testonly = true
     sources =
         [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    srcjar_deps = [ ":base_profiler_test_support_jni" ]
 
     deps = [
       "//base:jni_java",
@@ -4885,8 +4914,9 @@ source_set("partition_alloc_test_support") {
   if (is_win) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
   }
-  if (is_mac || is_ios) {
+  if (is_apple) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_linux || is_chromeos) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]

@@ -221,10 +221,11 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                               AccessTokenInfo access_token_info);
 
   const CoreAccountId account_id_;
-  raw_ptr<ProfileOAuth2TokenService> token_service_;
+  raw_ptr<ProfileOAuth2TokenService, DanglingUntriaged> token_service_;
   // Suppress unused typedef warnings in some compiler builds when DCHECK is
   // disabled.
-  [[maybe_unused]] raw_ptr<PrimaryAccountManager> primary_account_manager_;
+  [[maybe_unused]] raw_ptr<PrimaryAccountManager, DanglingUntriaged>
+      primary_account_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const ScopeSet scopes_;
   const Mode mode_;

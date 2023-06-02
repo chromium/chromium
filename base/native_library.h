@@ -12,6 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -40,7 +41,9 @@ struct NativeLibraryStruct {
   NativeLibraryObjCStatus objc_status;
   union {
     CFBundleRef bundle;
-    void* dylib;
+    //// This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION void* dylib;
   };
 };
 using NativeLibrary = NativeLibraryStruct*;

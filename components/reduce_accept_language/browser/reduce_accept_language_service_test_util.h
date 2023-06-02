@@ -52,9 +52,9 @@ class ReduceAcceptLanguageServiceTester {
       const std::vector<std::string>& languages) const;
 
  private:
-  raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
-  raw_ptr<ReduceAcceptLanguageService> service_ = nullptr;
-  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<HostContentSettingsMap, DanglingUntriaged> settings_map_ = nullptr;
+  raw_ptr<ReduceAcceptLanguageService, DanglingUntriaged> service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
 };
 
 }  // namespace reduce_accept_language::test

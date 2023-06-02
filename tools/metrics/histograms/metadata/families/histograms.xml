@@ -337,13 +337,14 @@ chromium-metrics-reviews@google.com.
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    To be implemented. Categorizes the current user based on Family Link user
-    type. Other is for all unsupervised users. Users under the age of consent
-    automatically have supervision applied to their accounts. Users over the age
-    of consent can opt into supervision. Recorded for ChromeOS and Chrome
-    browser platforms at the start of a user session, if the state changes
-    during the session this will only be recorded at the start of the next
-    session.
+    Categorizes the current user based on Family Link user type. Other is for
+    all unsupervised users. Users under the age of consent automatically have
+    supervision applied to their accounts. Users over the age of consent can opt
+    into supervision. Mixed Profile is for profiles with both supervised and
+    unsupervised users. Recorded for Chrome browser platforms on Android,
+    Desktop and ChromeOS Lacros at the start of a user session, if the state
+    changes during the session this will only be recorded at the start of the
+    next session.
   </summary>
 </histogram>
 

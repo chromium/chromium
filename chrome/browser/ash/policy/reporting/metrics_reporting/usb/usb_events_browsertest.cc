@@ -26,22 +26,13 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/mock_clock.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
-
-class UsbBrowserTestHelper {
- public:
-  UsbBrowserTestHelper() {
-    // Set collection delay to zero seconds. We don't use
-    // |ScopedMockTimeMessageLoopTaskRunner| here because we are not able to
-    // make it work with mojom.
-    metrics::PeripheralCollectionDelayParam::SetForTesting(base::Seconds(0));
-  }
-};
 namespace {
 
 namespace cros_healthd = ::ash::cros_healthd;
@@ -57,6 +48,7 @@ constexpr char kDMToken[] = "token";
 class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   UsbEventsBrowserTest() {
+    test::MockClock::Get();
     // Add unaffiliated user for testing purposes.
     login_manager_mixin_.AppendRegularUsers(1);
     ::policy::SetDMTokenForTesting(
@@ -155,7 +147,6 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  UsbBrowserTestHelper usb_browser_test_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
@@ -181,6 +172,7 @@ IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
   EXPECT_THAT(record_data.event_data().type(),
               ::testing::Eq(MetricEventType::USB_ADDED));
 
+  test::MockClock::Get().Advance(metrics::kPeripheralCollectionDelay);
   // Second record should be the USB telemetry
   record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
   ASSERT_TRUE(record_data.ParseFromString(record.data()));

@@ -23,7 +23,9 @@ DesktopProfileSessionDurationsServiceFactory::GetForBrowserContext(
 // static
 DesktopProfileSessionDurationsServiceFactory*
 DesktopProfileSessionDurationsServiceFactory::GetInstance() {
-  return base::Singleton<DesktopProfileSessionDurationsServiceFactory>::get();
+  static base::NoDestructor<DesktopProfileSessionDurationsServiceFactory>
+      instance;
+  return instance.get();
 }
 
 DesktopProfileSessionDurationsServiceFactory::

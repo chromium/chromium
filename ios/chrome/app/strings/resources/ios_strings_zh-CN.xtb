@@ -140,7 +140,6 @@
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1883255238294161206">收起列表</translation>
-<translation id="1891796056033961979">此屏幕中会显示您已保存的书签、密码、设置等信息。</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
@@ -314,6 +313,9 @@
 <translation id="2975121486251958312">仅无痕模式可用</translation>
 <translation id="2982481275546140226">清除数据</translation>
 <translation id="298306318844797842">添加付款方式…</translation>
+<translation id="2988274366244053197">Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
+
+只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您帐号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3020183492814296499">快捷方式</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -377,8 +379,10 @@
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469166899695866866">是否停止下载？</translation>
 <translation id="3470502288861289375">正在复制…</translation>
+<translation id="3471148582064653480">同步您的密码、历史记录等信息。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
 <translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
+<translation id="3476450923187944815">访问其他应用的密码。</translation>
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步您的标签页…</translation>
 <translation id="3484946776651937681">在“下载内容”中打开</translation>
@@ -397,6 +401,7 @@
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3565207542107370586">清除浏览数据…</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
+<translation id="3577555362230509265">在其他应用中使用 Chrome。</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
@@ -440,7 +445,6 @@
 <translation id="3891414008432200754">价格</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
-<translation id="3899568514738536144">查看浏览记录</translation>
 <translation id="3904829425754749514">贵组织已关闭同步功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3915450441834151894">网站信息</translation>
@@ -497,7 +501,6 @@
 <translation id="430793432425771671">同步所有内容</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
 <translation id="430967081421617822">时间不限</translation>
-<translation id="4324952538601951430">现在，您已保存的书签、密码、设置等信息都会显示在此处</translation>
 <translation id="4334428914252001502">有 1 篇未读文章。</translation>
 <translation id="4338650699862464074">将您所访问的网页的网址发送给 Google。</translation>
 <translation id="4342054591427973606">{count,plural, =1{这个地址将被从此设备以及您已登录的其他设备中删除。}other{这些地址将被从此设备以及您已登录的其他设备中删除。}}</translation>
@@ -651,6 +654,7 @@
 <translation id="5300589172476337783">显示</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">您已在跟踪此产品。</translation>
+<translation id="5325595483440111327">查看浏览记录。</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
@@ -747,6 +751,7 @@
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
 <translation id="5965679971710331625">您已登录</translation>
+<translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5979837087407522202">搜索密码</translation>
 <translation id="5981230843984570095">关闭所有闲置标签页</translation>
 <translation id="5982717868370722439">将现有数据添加到 <ph name="USER_EMAIL" />。</translation>
@@ -914,6 +919,7 @@
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6822587385560699678">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
 <translation id="6831043979455480757">翻译</translation>
+<translation id="6839843088069935119">{count,plural, =1{书签已保存至“{title}”，而且只保存在此设备上。}other{书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
 <translation id="6851516051005285358">请求切换到桌面版网站</translation>
 <translation id="6852222216891664518">关闭固定标签页</translation>
@@ -992,6 +998,7 @@
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
 <translation id="7438481509621345350">现在，当打开新标签页时，您会看到来自 <ph name="CHANNEL_NAME" /> 的故事。</translation>
 <translation id="7446583256109515732">已取消固定此标签页</translation>
+<translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7454057999980797137">省/区/县</translation>
 <translation id="7459628154744868585">已开启增强型保护</translation>
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
@@ -1049,7 +1056,6 @@
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7845466610722898">显示阅读清单</translation>
 <translation id="784551991304901159">如需查看内容，请从菜单中选择“开启”</translation>
-<translation id="7846158885638438868">{count,plural, =1{已将书签添加到“{title}”}other{已将书签添加到“{title}”}}</translation>
 <translation id="7853202427316060426">活动</translation>
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="785938070103630874">打开“密码”“付款方式”或“地址”等</translation>
@@ -1129,7 +1135,6 @@
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8316944564970119719">输入网站和密码，然后保存</translation>
-<translation id="8317835149433843300">Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会保存到您的 Google 帐号中。只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您帐号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8323906514956095947">轻触并按住可查看更多的标签页选项</translation>
 <translation id="8328777765163860529">全部关闭</translation>

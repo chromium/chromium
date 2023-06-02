@@ -71,12 +71,8 @@ class GLManager : private GpuControl {
     bool force_shader_name_hashing = false;
     // Whether the buffer is multisampled.
     bool multisampled = false;
-    // Whether the backbuffer has an alpha channel.
-    bool backbuffer_alpha = true;
     // If we should use native gmb for backbuffer.
     bool should_use_native_gmb_for_backbuffer = false;
-    // Whether to preserve the backbuffer after a call to SwapBuffers().
-    bool preserve_backbuffer = false;
     // Shared memory limits
     SharedMemoryLimits shared_memory_limits = {};
   };
@@ -104,6 +100,8 @@ class GLManager : private GpuControl {
   void SetSurface(gl::GLSurface* surface);
 
   void PerformIdleWork();
+
+  void BindOffscreenFramebuffer(GLenum target);
 
   void set_use_iosurface_memory_buffers(bool use_iosurface_memory_buffers) {
     use_iosurface_memory_buffers_ = use_iosurface_memory_buffers;
@@ -197,6 +195,8 @@ class GLManager : private GpuControl {
   bool use_native_pixmap_memory_buffers_ = false;
 
   Capabilities capabilities_;
+
+  GLuint fbo_ = 0;
 
   // Used on Android to virtualize GL for all contexts.
   static int use_count_;

@@ -33,6 +33,7 @@ source_set("application_context") {
     "//ios/chrome/browser/component_updater",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/crash_report/breadcrumbs:application_breadcrumbs_logger",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/metrics",

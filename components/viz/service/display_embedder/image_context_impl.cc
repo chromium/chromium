@@ -8,12 +8,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -163,7 +163,6 @@ void ImageContextImpl::CreateFallbackImage(
       }
       sk_surface->getCanvas()->clear(
           GetFallbackColorForPlane(format(), plane_index));
-      sk_surface->flush();
     }
     graphite_textures_ = graphite_fallback_textures_;
     return;

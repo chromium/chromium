@@ -213,12 +213,8 @@ class MEDIA_EXPORT DecoderStream {
   // Reads a buffer from |stream_| and returns the result via OnBufferReady().
   void ReadFromDemuxerStream();
 
-  void OnBuffersRead(DemuxerStream::Status status,
-                     DemuxerStream::DecoderBufferVector buffers);
-
-  // Callback for DemuxerStream::Read().
-  void OnBufferReady(DemuxerStream::Status status,
-                     scoped_refptr<DecoderBuffer> buffer);
+  void OnBuffersReady(DemuxerStream::Status status,
+                      DemuxerStream::DecoderBufferVector buffers);
 
   void ReinitializeDecoder();
 
@@ -249,7 +245,7 @@ class MEDIA_EXPORT DecoderStream {
   ReadCB read_cb_;
   base::OnceClosure reset_cb_;
 
-  raw_ptr<DemuxerStream> stream_;
+  raw_ptr<DemuxerStream, DanglingUntriaged> stream_;
 
   raw_ptr<CdmContext> cdm_context_;
 

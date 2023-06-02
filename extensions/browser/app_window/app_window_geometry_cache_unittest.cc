@@ -58,7 +58,7 @@ class AppWindowGeometryCacheTest : public ExtensionsTest {
   std::string AddExtensionWithPrefs(const std::string& name);
 
  protected:
-  raw_ptr<ExtensionPrefs> extension_prefs_;  // Weak.
+  raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_;  // Weak.
   std::unique_ptr<AppWindowGeometryCache> cache_;
 };
 

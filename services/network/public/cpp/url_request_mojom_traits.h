@@ -163,23 +163,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource> {
-  static uint32_t source_id(const net::NetLogSource& params) {
-    return params.id;
-  }
-  static uint32_t source_type(const net::NetLogSource& params) {
-    return static_cast<uint32_t>(params.type);
-  }
-  static base::TimeTicks start_time(const net::NetLogSource& params) {
-    return params.start_time;
-  }
-
-  static bool Read(network::mojom::NetLogSourceDataView data,
-                   net::NetLogSource* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::URLRequestDataView, network::ResourceRequest> {
   static const std::string& method(const network::ResourceRequest& request) {
     return request.method;
@@ -281,6 +264,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static bool ad_auction_headers(const network::ResourceRequest& request) {
     return request.ad_auction_headers;
+  }
+  static bool shared_storage_writable(const network::ResourceRequest& request) {
+    return request.shared_storage_writable;
   }
   static bool has_user_gesture(const network::ResourceRequest& request) {
     return request.has_user_gesture;
@@ -390,6 +376,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   attribution_reporting_runtime_features(
       const network::ResourceRequest& request) {
     return request.attribution_reporting_runtime_features;
+  }
+  static bool shared_dictionary_writer_enabled(
+      const network::ResourceRequest& request) {
+    return request.shared_dictionary_writer_enabled;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

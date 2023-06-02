@@ -84,7 +84,14 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     @Override
     protected boolean requestPostMessageChannel(
             CustomTabsSessionToken sessionToken, Uri postMessageOrigin) {
-        return mImpl.requestPostMessageChannel(sessionToken, postMessageOrigin);
+        return mImpl.requestPostMessageChannel(sessionToken, postMessageOrigin, null);
+    }
+
+    @Override
+    protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
+            Uri postMessageSourceOrigin, Uri postMessageTargetOrigin, Bundle extras) {
+        return mImpl.requestPostMessageChannel(
+                sessionToken, postMessageSourceOrigin, postMessageTargetOrigin);
     }
 
     @Override
@@ -153,8 +160,8 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         protected abstract Bundle extraCommand(String commandName, Bundle args);
         protected abstract boolean updateVisuals(
                 CustomTabsSessionToken sessionToken, Bundle bundle);
-        protected abstract boolean requestPostMessageChannel(
-                CustomTabsSessionToken sessionToken, Uri postMessageOrigin);
+        protected abstract boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
+                Uri postMessageOrigin, Uri postMessageTargetOrigin);
         protected abstract int postMessage(
                 CustomTabsSessionToken sessionToken, String message, Bundle extras);
         protected abstract boolean validateRelationship(

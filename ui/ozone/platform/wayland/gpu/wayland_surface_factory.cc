@@ -80,8 +80,8 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override;
 
  private:
-  const raw_ptr<WaylandConnection> connection_;
-  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
+  const raw_ptr<WaylandConnection, DanglingUntriaged> connection_;
+  const raw_ptr<WaylandBufferManagerGpu, DanglingUntriaged> buffer_manager_;
 };
 
 bool GLOzoneEGLWayland::CanImportNativePixmap() {

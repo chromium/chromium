@@ -11,9 +11,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -59,17 +56,6 @@ class DlpWarnNotifier : public views::WidgetObserver {
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents,
       const std::u16string& application_title);
-
-  // Shows a warning dialog that informs the user that `action` to
-  // `destination` on selected `confidential_files` is not recommended.
-  // Calls `callback` and passes user's choice of whether to proceed or not.
-  // Returns a pointer to the widget that owns the created dialog.
-  // Virtual to allow overrides in tests.
-  virtual base::WeakPtr<views::Widget> ShowDlpFilesWarningDialog(
-      OnDlpRestrictionCheckedCallback callback,
-      const std::vector<DlpConfidentialFile>& confidential_files,
-      const DlpFileDestination& destination,
-      DlpFilesController::FileAction action);
 
   // Returns the number of active widgets, which equals the number of warning
   // dialogs shown conucrrently. Useful for testing to verify that the dialogs

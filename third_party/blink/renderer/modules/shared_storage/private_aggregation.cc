@@ -59,7 +59,7 @@ void PrivateAggregation::Trace(Visitor* visitor) const {
 }
 
 // TODO(alexmt): Consider merging parsing logic with FLEDGE worklet.
-void PrivateAggregation::sendHistogramReport(
+void PrivateAggregation::contributeToHistogram(
     ScriptState* script_state,
     const PrivateAggregationHistogramContribution* contribution,
     ExceptionState& exception_state) {
@@ -150,7 +150,7 @@ void PrivateAggregation::enableDebugMode(
     if (!maybe_debug_key || absl::Uint128High64(maybe_debug_key.value()) != 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
-          "options['debug_key'] is negative or does not fit in 64 bits");
+          "options['debugKey'] is negative or does not fit in 64 bits");
       return;
     }
 

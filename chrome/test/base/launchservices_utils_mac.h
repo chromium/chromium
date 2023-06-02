@@ -5,6 +5,8 @@
 #ifndef CHROME_TEST_BASE_LAUNCHSERVICES_UTILS_MAC_H_
 #define CHROME_TEST_BASE_LAUNCHSERVICES_UTILS_MAC_H_
 
+#include "base/files/file_path.h"
+
 namespace test {
 
 // Attempts to guess the path to the Chromium app bundle and register it with
@@ -21,6 +23,10 @@ namespace test {
 // that success does not necessarily mean the app was successfully registered
 // since part of the registration process is asynchronous.
 bool RegisterAppWithLaunchServices();
+
+// Attempts to guess the path to the Chromium app bundle, as in tests
+// `base::apple::MainBundlePath` returns the build directory instead.
+base::FilePath GuessAppBundlePath();
 
 }  // namespace test
 

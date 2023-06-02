@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Speedometer 2.1 Interactive Runner</title>
+<script src="resources/benchmark-runner.js" defer></script>
+<script src="resources/tests.js" defer></script>
+<style>
+iframe { border: 1px solid black; }
+ol { list-style: none; margin: 0; padding: 0; }
+ol ol { margin-left: 2em; list-position: outside; }
+.running { text-decoration: underline; }
+.ran { color: grey; }
+nav { position: absolute; right: 10px; height: 600px; }
+nav > ol { height: 100%; overflow-y: scroll; }
+</style>
+</head>
+<body>
+<script>
+
+function formatTestName(suiteName, testName) {
+    return suiteName + (testName ? '/' + testName : '');
+}
+
+function createUIForSuites(suites, onstep, onrun) {
+    var control = document.createElement('nav');
+    var ol = document.createElement('ol');
+    var checkboxes = [];
+    for (var suiteIndex = 0; suiteIndex < suites.length; suiteIndex++) {
+        var suite = suites[suiteIndex];
+        var li = document.createElement('li');
+        var checkbox = document.createElement('input');
+        checkbox.id = suite.name;
+        checkbox.type = 'checkbox';
+        checkbox.checked = !suite.disabled;
+        checkbox.onchange = (function (suite, checkbox) { return function () { suite.disabled = !checkbox.checked; } })(suite, checkbox);
+        checkbox.onchange();
+        checkboxes.push(checkbox);
+
+        li.appendChild(checkbox);
+        var label = document.createElement('label');
+        label.appendChild(document.createTextNode(formatTestName(suite.name)));
+        li.appendChild(label);
+        label.htmlFor = checkbox.id;
+
+        var testList = document.createElement('ol');
+        for (var testIndex = 0; testIndex < suite.tests.length; testIndex++) {
+            var testItem = document.createElement('li');
+            var test = suite.tests[testIndex];
+            var anchor = document.createElement('a');
+            anchor.id = suite.name + '-' + test.name;
+            test.anchor = anchor;
+            anchor.appendChild(document.createTextNode(formatTestName(suite.name, test.name)));
+            testItem.appendChild(anchor);
+            testList.appendChild(testItem);
+        }
+        li.appendChild(testList);
+
+        ol.appendChild(li);
+    }
+
+    control.appendChild(ol);
+
+    var button = document.createElement('button');
+    button.textContent = 'Step';
+    button.onclick = onstep;
+    control.appendChild(button);
+
+    var button = document.createElement('button');
+    button.textContent = 'Run';
+    button.id = 'runSuites';
+    button.onclick = onrun;
+    control.appendChild(button);
+
+    var button = document.createElement('button');
+    button.textContent = 'Select all';
+    button.onclick = function () {
+        for (var suiteIndex = 0; suiteIndex < suites.length; suiteIndex++) {
+            suites[suiteIndex].disabled = false;
+            checkboxes[suiteIndex].checked = true;
+        }
+    };
+    control.appendChild(button);
+
+    var button = document.createElement('button');
+    button.textContent = 'Unselect all';
+    button.onclick = function () {
+        for (var suiteIndex = 0; suiteIndex < suites.length; suiteIndex++) {
+            suites[suiteIndex].disabled = true;
+            checkboxes[suiteIndex].checked = false;
+        }
+
+    };
+    control.appendChild(button);
+
+    return control;
+}
+
+var parseQueryString = (function (pairList) {
+    var pairs = {};
+    for (var i = 0; i < pairList.length; ++i) {
+        var keyValue = pairList[i].split('=', 2);
+        if (keyValue.length == 1)
+            pairs[keyValue[0]] = '';
+        else
+            pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+    }
+    return pairs;
+})(window.location.search.substr(1).split('&'));
+
+function disableAllSuitesExcept(suiteName) {
+    Suites.forEach(function(element) {
+        if (element.name !== suiteName)
+            element.disabled = true;
+    });
+}
+
+function startTest() {
+    var queryParam = parseQueryString['suite'];
+    if (queryParam !== undefined)
+        disableAllSuitesExcept(queryParam);
+
+    var runner = new BenchmarkRunner(Suites, {
+        willRunTest: function (suite, test) {
+            test.anchor.classList.add('running');
+        },
+        didRunTest: function (suite, test) {
+            var classList = test.anchor.classList;
+            classList.remove('running');
+            classList.add('ran');
+        },
+        didRunSuites: function (measuredValues) {
+            var results = '';
+            for (var suiteName in measuredValues.tests) {
+                var suiteResults = measuredValues.tests[suiteName];
+                for (var testName in suiteResults.tests) {
+                    var testResults = suiteResults.tests[testName];
+                    for (var subtestName in testResults.tests) {
+                        results += suiteName + ' : ' + testName + ' : ' + subtestName
+                            + ': ' + testResults.tests[subtestName] + ' ms\n';
+                    }
+                }
+                results += suiteName + ' : ' + suiteResults.total + ' ms\n';
+            }
+            results += 'Arithmetic Mean : ' + measuredValues.mean  + ' ms\n';
+            results += 'Geometric Mean : ' + measuredValues.geomean  + ' ms\n';
+            results += 'Total : ' + measuredValues.total + ' ms\n';
+            results += 'Score : ' + measuredValues.score + ' rpm\n';
+
+            if (!results)
+                return;
+
+            var pre = document.createElement('pre');
+            document.body.appendChild(pre);
+            pre.textContent = results;
+        }
+    });
+
+    var currentState = null;
+
+    // Don't call step while step is already executing.
+    document.body.appendChild(createUIForSuites(Suites,
+        function () { runner.step(currentState).then(function (state) { currentState = state; }); },
+        function () { runner.runAllSteps(currentState); currentState = null; }));
+
+    if (parseQueryString['startAutomatically'] !== undefined)
+        document.getElementById('runSuites').click();
+}
+
+window.addEventListener('load', startTest);
+
+</script>
+</body>
+</html>

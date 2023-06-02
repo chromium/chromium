@@ -18,6 +18,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/tiles/software_image_decode_cache.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -80,7 +81,8 @@ namespace {
 bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
   const gfx::Size size(info.width(), info.height());
   const gfx::BufferFormat buffer_format =
-      viz::BufferFormat(viz::SkColorTypeToResourceFormat(info.colorType()));
+      viz::SinglePlaneSharedImageFormatToBufferFormat(
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()));
   return gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format) &&
          gpu::IsImageFromGpuMemoryBufferFormatSupported(buffer_format, caps);
 }
@@ -542,8 +544,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       // deferred queue in that context so that we don't need to copy.
       GetFlushForImageListener()->NotifyFlushForImage(content_id);
 
-      if (!use_oop_rasterization_)
-        surface_->flushAndSubmit();
+      if (!use_oop_rasterization_) {
+        skgpu::ganesh::FlushAndSubmit(surface_);
+      }
     }
 
     return !resource_->HasOneRef();
@@ -837,7 +840,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     texture_info.fID = resource_->GetBackBufferTextureId();
     texture_info.fTarget = resource_->TextureTarget();
     texture_info.fFormat = viz::TextureStorageFormat(
-        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            GetSkImageInfo().colorType())
+            .resource_format(),
         capabilities.angle_rgbx_internal_format);
 
     auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
@@ -1445,7 +1450,7 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
 void CanvasResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   EnsureSkiaCanvas();
   skia_canvas_->drawPicture(std::move(last_recording));
-  GetSkSurface()->flushAndSubmit();
+  skgpu::ganesh::FlushAndSubmit(GetSkSurface());
 }
 
 void CanvasResourceProvider::RasterRecordOOP(cc::PaintRecord last_recording,

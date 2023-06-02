@@ -17,12 +17,13 @@
 #include "ui/gfx/image/image.h"
 
 class GURL;
-
+class SidePanelUI;
 namespace bookmarks {
 class BookmarkModel;
 }
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -30,12 +31,18 @@ namespace image_fetcher {
 class ImageFetcher;
 }
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace commerce {
 
 struct CommerceSubscription;
 
 // This tab helper is used to update and maintain the state of the shopping list
 // and price tracking UI on desktop.
+// TODO(b:283833590): Rename this class since it serves for all shopping
+// features now.
 class ShoppingListUiTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ShoppingListUiTabHelper>,
@@ -62,8 +69,8 @@ class ShoppingListUiTabHelper
   virtual bool IsPriceTracking();
 
   // content::WebContentsObserver implementation
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
 
   // SubscriptionsObserver
@@ -112,11 +119,22 @@ class ShoppingListUiTabHelper
 
   void TriggerUpdateForIconView();
 
-  bool IsInitialNavigationCommitted(
-      const content::LoadCommittedDetails& load_details);
+  bool ShouldIgnoreSameUrlNavigation();
 
   bool IsSameDocumentWithSameCommittedUrl(
-      const content::LoadCommittedDetails& load_details);
+      content::NavigationHandle* navigation_handle);
+
+  // Make the ShoppingInsights entry available in the side panel.
+  void MakeShoppingInsightsSidePanelAvailable();
+
+  // Make the ShoppingInsights entry unavailable in the side panel. If the
+  // ShoppingInsights side panel is currently showing, close the side panel
+  // first.
+  void MakeShoppingInsightsSidePanelUnavailable();
+
+  std::unique_ptr<views::View> CreateShoppingInsightsWebView();
+
+  SidePanelUI* GetSidePanelUI() const;
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
@@ -150,6 +168,10 @@ class ShoppingListUiTabHelper
   // A flag to indicating whether the first load after a navigation has
   // completed.
   bool is_first_load_for_nav_finished_{false};
+
+  // The url from the previous successful main frame navigation. This will be
+  // empty if this is the first navigation for this tab or post-restart.
+  GURL previous_main_frame_url_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

@@ -36,16 +36,18 @@ GPUShaderModule* GPUShaderModule::Create(
   WGPUShaderModuleDescriptor dawn_desc = {};
 
   const auto* wgsl_or_spirv = webgpu_desc->code();
+  bool has_null_character = false;
   switch (wgsl_or_spirv->GetContentType()) {
     case V8UnionUSVStringOrUint32Array::ContentType::kUSVString: {
-      // `\0` is not allowed in WGSL but it is allowed in USVString
-      // By replacing `\0` with `\0xFFFD` we can safely pass this string
-      // to Dawn and it should generate an error.
-      wgsl_code = UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(
-          wgsl_or_spirv->GetAsUSVString());
+      WTF::String wtf_wgsl_code(wgsl_or_spirv->GetAsUSVString());
+      wgsl_code = wtf_wgsl_code.Utf8();
       wgsl_desc.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
       wgsl_desc.code = wgsl_code.c_str();
       dawn_desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&wgsl_desc);
+      if (wtf_wgsl_code.find('\0') != WTF::kNotFound) {
+        has_null_character = true;
+      }
+
       break;
     }
     case V8UnionUSVStringOrUint32Array::ContentType::kUint32Array: {
@@ -71,9 +73,17 @@ GPUShaderModule* GPUShaderModule::Create(
     dawn_desc.label = label.c_str();
   }
 
-  GPUShaderModule* shader = MakeGarbageCollected<GPUShaderModule>(
-      device, device->GetProcs().deviceCreateShaderModule(device->GetHandle(),
-                                                          &dawn_desc));
+  WGPUShaderModule shader_module;
+  if (has_null_character) {
+    shader_module = device->GetProcs().deviceCreateErrorShaderModule(
+        device->GetHandle(), &dawn_desc,
+        "The WGSL shader contains an illegal character '\\0'");
+  } else {
+    shader_module = device->GetProcs().deviceCreateShaderModule(
+        device->GetHandle(), &dawn_desc);
+  }
+  GPUShaderModule* shader =
+      MakeGarbageCollected<GPUShaderModule>(device, shader_module);
   if (webgpu_desc->hasLabel())
     shader->setLabel(webgpu_desc->label());
   return shader;

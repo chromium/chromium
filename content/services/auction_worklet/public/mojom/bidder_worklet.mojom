@@ -25,8 +25,14 @@ struct PreviousWin {
   // "in the future" due to clock changes.
   mojo_base.mojom.Time time;
 
-  // The ad object returned by that group's bidding function with the winning
-  // bid.
+  // A JSON serialized object corresponding to the ad that won the auction.
+  // This field is kept serialized to avoid deserializing unless we actually
+  // need the data inside. The internal message has the following structure:
+  // struct AdJSON {
+  //   string renderURL;
+  //   string adRenderId;
+  //   string metadata;  // JSON encoded metadata object
+  // };
   string ad_json;
 };
 
@@ -466,6 +472,10 @@ interface BidderWorklet {
   // `seller_signals_json` is a JSON representation of the object returned by
   //  the seller worklet's ReportResult method.
   //
+  // `kanon_mode` indicates whether k-anonymity was used to potentially re-run
+  //  the bidding function with only ads that are k-anonymous and produce an
+  //  alternative bid.
+  //
   // `browser_signal_render_url` is the `render_url` returned by the
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
@@ -525,6 +535,9 @@ interface BidderWorklet {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `reporting_latency` How long it took to run the JavaScript for
+  // `reportWin()` (including the top-level).
+  //
   // `errors` is an array of any errors that occurred while attempting
   //  to run the worklet's reportWin() method. These are too sensitive for
   //  the renderer to see. There may be errors even when a `report_url` is
@@ -538,6 +551,7 @@ interface BidderWorklet {
       url.mojom.Url? direct_from_seller_per_buyer_signals,
       url.mojom.Url? direct_from_seller_auction_signals,
       string seller_signals_json,
+      KAnonymityBidMode kanon_mode,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       blink.mojom.AdCurrency? browser_signal_bid_currency,
@@ -556,6 +570,7 @@ interface BidderWorklet {
           url.mojom.Url? report_url,
           map<string, url.mojom.Url> ad_beacon_map,
           array<PrivateAggregationRequest> pa_requests,
+          mojo_base.mojom.TimeDelta reporting_latency,
           array<string> errors);
 
   // Establishes a debugger connection to the worklet.

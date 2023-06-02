@@ -15,9 +15,9 @@ var expected = [
   // Deprecated proprietary Chrome APIs unrelated to Extensions.
   'csi',
   'loadTimes',
-  // chrome.readAnything is available in
+  // chrome.readingMode is available in
   // chrome-untrusted://read-anything-side-panel.top-chrome.
-  'readAnything',
+  'readingMode',
   // chrome.runtime is always available for chrome-untrusted://.
   'runtime',
 ];

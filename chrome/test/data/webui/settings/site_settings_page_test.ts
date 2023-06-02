@@ -195,6 +195,12 @@ suite('SiteSettingsPage', function() {
         loadTimeData.getString('siteSettingsSiteDataAllowedSubLabel'),
         siteDataLinkRow.subLabel);
   });
+
+  test('StorageAccessLinkRow', function() {
+    assertTrue(isChildVisible(
+        page.shadowRoot!.querySelector('#basicPermissionsList')!,
+        '#storage-access'));
+  });
 });
 
 // TODO(crbug/1378703): Remove after crbug/1378703 launched.
@@ -338,5 +344,32 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
     await flushTasks();
 
     assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+  });
+});
+
+suite('PermissionStorageAccessApiDisabled', function() {
+  let page: SettingsSiteSettingsPageElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enablePermissionStorageAccessApi: false,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('StorageAccessLinkRow', function() {
+    assertFalse(isChildVisible(
+        page.shadowRoot!.querySelector('#basicPermissionsList')!,
+        '#storage-access'));
   });
 });

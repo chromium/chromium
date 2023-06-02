@@ -227,8 +227,8 @@ notarize() {
 
   echo "Notarizing and stapling .dmg..."
   "${input_dir}/notarize_thing.py" \
-      --user "${user}" \
-      --password @env:NOTARIZATION_PASSWORD \
+      --notary-user "${user}" \
+      --notary-password @env:NOTARIZATION_PASSWORD \
       --bundle-id "${HOST_BUNDLE_NAME}" \
       "${dmg}"
 }

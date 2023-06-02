@@ -1253,9 +1253,6 @@ class HttpCacheTest_SplitCacheFeature
 };
 
 TEST_P(HttpCacheTest_SplitCacheFeature, SimpleGETVerifyGoogleFontMetrics) {
-  base::HistogramTester histograms;
-  const std::string histogram_name = "WebFont.HttpCacheStatus_roboto";
-
   SchemefulSite site_a(GURL("http://www.a.com"));
 
   MockHttpCache cache;
@@ -1272,15 +1269,8 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SimpleGETVerifyGoogleFontMetrics) {
   RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
                                 nullptr);
 
-  histograms.ExpectUniqueSample(
-      histogram_name, static_cast<int>(CacheEntryStatus::ENTRY_NOT_IN_CACHE),
-      1);
-
   RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
                                 nullptr);
-
-  histograms.ExpectBucketCount(
-      histogram_name, static_cast<int>(CacheEntryStatus::ENTRY_USED), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -108,7 +108,6 @@ class LocationIconView : public IconLabelBubbleView {
   // IconLabelBubbleView:
   bool IsTriggerableEvent(const ui::Event& event) override;
   void UpdateBorder() override;
-  int GetInternalSpacing() const override;
 
  private:
   // Returns what the minimum size would be if the preferred size were |size|.

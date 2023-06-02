@@ -17,7 +17,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -26,7 +25,6 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace aura {
 class Window;
@@ -41,12 +39,9 @@ namespace ash {
 class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
-class ClipboardManagerBubbleView;
 class ClipboardNudgeController;
 enum class LoginStatus;
 class ScopedClipboardHistoryPause;
-
-constexpr char kClipboardCopyToastId[] = "CopiedToClipboard";
 
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
@@ -54,7 +49,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     : public ClipboardHistoryController,
       public ClipboardHistory::Observer,
       public ClipboardHistoryResourceManager::Observer,
-      public views::WidgetObserver,
       public SessionObserver {
  public:
   // Source and plain vs. rich text info for each paste. These values are used
@@ -187,9 +181,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void OnCachedImageModelUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnLoginStatusChanged(LoginStatus login_status) override;
@@ -261,9 +252,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Called when the contextual menu is closed.
   void OnMenuClosed();
 
-  // Called when toast button is pressed.
-  void ShowMenuFromToast();
-
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;
 
@@ -275,20 +263,13 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<AcceleratorTarget> accelerator_target_;
   // Controller that shows contextual nudges for multipaste.
   std::unique_ptr<ClipboardNudgeController> nudge_controller_;
-
-  // Context menu displayed by `ShowMenu()` when the clipboard history refresh
-  // feature is disabled. Null when `MenuIsShowing()` is false.
+  // Context menu displayed by `ShowMenu()`. Null when `MenuIsShowing()` is
+  // false.
   std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;
   // Handles events on the `context_menu_`.
   std::unique_ptr<MenuDelegate> menu_delegate_;
-  // Bubble view displayed by `ShowMenu()` when the clipboard history refresh
-  // feature is enabled. Null when `MenuIsShowing()` is false.
-  raw_ptr<ClipboardManagerBubbleView> clipboard_manager_ = nullptr;
 
-  // The timestamp when the clipboard history menu was last shown.
-  base::TimeTicks last_menu_show_time_;
-
-  // How the user last caused the clipboard history menu to show.
+  // How the user last caused the `context_menu_` to show.
   crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
 
   // Whether a paste is currently being performed.

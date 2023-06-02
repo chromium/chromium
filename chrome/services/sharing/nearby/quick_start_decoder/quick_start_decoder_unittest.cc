@@ -116,9 +116,10 @@ class QuickStartDecoderTest : public testing::Test {
     return decoder_->DoDecodeGetAssertionResponse(data);
   }
 
-  mojom::BootstrapConfigurationsPtr DoDecodeBootstrapConfigurations(
-      const std::vector<uint8_t>& data) {
-    return decoder_->DoDecodeBootstrapConfigurations(data);
+  void DoDecodeBootstrapConfigurations(
+      const std::vector<uint8_t>& data,
+      QuickStartDecoder::DecodeBootstrapConfigurationsCallback callback) {
+    return decoder_->DoDecodeBootstrapConfigurations(data, std::move(callback));
   }
 
   void DoDecodeWifiCredentialsResponse(
@@ -298,18 +299,34 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyMessagePayload) {
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
-  mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
-  EXPECT_FALSE(response);
+
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
+
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyBootstrapConfigurations) {
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
 
-  mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
-  EXPECT_FALSE(response);
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<1>(),
+            mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -319,10 +336,17 @@ TEST_F(QuickStartDecoderTest,
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
   message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
-  mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
-  EXPECT_TRUE(response);
-  EXPECT_EQ(response->cryptauth_device_id, "");
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
+
+  EXPECT_FALSE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, "");
+  EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -333,10 +357,17 @@ TEST_F(QuickStartDecoderTest,
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
   message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
-  mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
-  EXPECT_TRUE(response);
-  EXPECT_EQ(response->cryptauth_device_id, "");
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
+
+  EXPECT_FALSE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, "");
+  EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -347,10 +378,16 @@ TEST_F(QuickStartDecoderTest,
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
   message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
-  mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
-  EXPECT_TRUE(response);
-  EXPECT_EQ(response->cryptauth_device_id, kExampleCryptauthDeviceId);
+  base::test::TestFuture<
+      ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
+      absl::optional<::ash::quick_start::mojom::QuickStartDecoderError>>
+      future;
+
+  DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message),
+                                  future.GetCallback());
+  EXPECT_FALSE(future.Get<0>().is_null());
+  EXPECT_EQ(future.Get<0>()->cryptauth_device_id, kExampleCryptauthDeviceId);
+  EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
 TEST_F(QuickStartDecoderTest, ExtractFidoDataFromValidJsonResponse) {

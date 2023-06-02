@@ -5,12 +5,24 @@
 group("signin") {
   testonly = true
   deps = [
+    ":choice",
     ":signin_error",
     ":signin_identity",
     ":signin_resources",
     ":signin_sso",
     ":trusted_vault",
   ]
+}
+
+source_set("choice") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_choice.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("signin_error") {

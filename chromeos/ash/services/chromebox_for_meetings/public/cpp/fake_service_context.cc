@@ -26,11 +26,10 @@ void FakeCfmServiceContext::ProvideAdaptor(
 void FakeCfmServiceContext::RequestBindService(
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle receiver_pipe,
-    const absl::optional<std::string>& receiver_identifier,
     RequestBindServiceCallback callback) {
   std::move(request_bind_service_callback_)
       .Run(std::move(interface_name), std::move(receiver_pipe),
-           std::move(receiver_identifier), std::move(callback));
+           std::move(callback));
 }
 
 void FakeCfmServiceContext::SetFakeProvideAdaptorCallback(

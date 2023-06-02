@@ -16,7 +16,8 @@ ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForProfile(
 
 // static
 ZeroSuggestCacheServiceFactory* ZeroSuggestCacheServiceFactory::GetInstance() {
-  return base::Singleton<ZeroSuggestCacheServiceFactory>::get();
+  static base::NoDestructor<ZeroSuggestCacheServiceFactory> instance;
+  return instance.get();
 }
 
 KeyedService* ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(

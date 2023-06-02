@@ -13,7 +13,7 @@ import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelera
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
-import {AcceleratorSource, AcceleratorState, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorSource, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -246,54 +246,5 @@ suite('acceleratorRowTest', function() {
         acceleratorElements[1]!.shadowRoot!.querySelectorAll('input-key');
     // CONTROL + c
     assertEquals(2, keys2.length);
-  });
-
-  test('NoShortcutAssignedVisibility', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
-
-    // Case 1: acceleratorInfos is not empty and not all are kDisabledByUser
-    const acceleratorInfo1 = createUserAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-    acceleratorInfo1.state = AcceleratorState.kDisabledByUser;
-
-    const acceleratorInfo2 = createUserAcceleratorInfo(
-        Modifier.CONTROL,
-        /*key=*/ 67,
-        /*keyDisplay=*/ 'c');
-    acceleratorInfo2.state = AcceleratorState.kEnabled;
-
-    const accelerators = [acceleratorInfo1, acceleratorInfo2];
-    const description = 'test shortcut';
-
-    rowElement.acceleratorInfos = accelerators;
-    rowElement.description = description;
-    rowElement.layoutStyle = LayoutStyle.kDefault;
-    await flush();
-
-    // Assert that "no shortcuts assigned" message is not shown
-    let noShortcutsMessage = strictQuery(
-        '#noShortcutAssigned', rowElement.shadowRoot, HTMLDivElement);
-    assertFalse(isVisible(noShortcutsMessage));
-
-    // Case 2: acceleratorInfos has only kDisabledByUser items
-    rowElement.acceleratorInfos = [acceleratorInfo1];
-    await flush();
-
-    // Assert that "no shortcuts assigned" message is shown
-    noShortcutsMessage = strictQuery(
-        '#noShortcutAssigned', rowElement.shadowRoot, HTMLDivElement);
-    assertTrue(isVisible(noShortcutsMessage));
-
-    // Case 3: acceleratorInfos is empty
-    rowElement.acceleratorInfos = [];
-    await flush();
-
-    // Assert that "no shortcuts assigned" message is shown
-    noShortcutsMessage = strictQuery(
-        '#noShortcutAssigned', rowElement.shadowRoot, HTMLDivElement);
-    assertTrue(isVisible(noShortcutsMessage));
   });
 });

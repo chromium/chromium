@@ -40,6 +40,7 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
@@ -235,6 +236,13 @@ bool CanHandleToggleAppList(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
     const std::set<ui::KeyboardCode>& currently_pressed_keys) {
+  // Check if the accelerator pressed is a RWIN/LWIN, if so perform a
+  // secondary check.
+  if (accelerator.key_code() != ui::VKEY_LWIN &&
+      accelerator.key_code() != ui::VKEY_RWIN) {
+    return true;
+  }
+
   for (auto key : currently_pressed_keys) {
     // The AppList accelerator is triggered on search(VKEY_LWIN) key release.
     // Sometimes users will press and release the search key while holding other
@@ -735,6 +743,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanShowStylusTools();
     case AcceleratorAction::kStartAssistant:
       return true;
+    case AcceleratorAction::kStopScreenRecording:
+      return accelerators::CanStopScreenRecording();
     case AcceleratorAction::kSwapPrimaryDisplay:
       return accelerators::CanSwapPrimaryDisplay();
     case AcceleratorAction::kSwitchIme:
@@ -867,6 +877,10 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kVolumeUp:
     case AcceleratorAction::kWindowMinimize:
       return true;
+    case AcceleratorAction::kTouchFingerprintSensor1:
+    case AcceleratorAction::kTouchFingerprintSensor2:
+    case AcceleratorAction::kTouchFingerprintSensor3:
+      return FakeBiodClient::Get() != nullptr;
   }
 }
 
@@ -1250,6 +1264,9 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));
       accelerators::ShiftPrimaryDisplay();
       break;
+    case AcceleratorAction::kStopScreenRecording:
+      accelerators::StopScreenRecording();
+      break;
     case AcceleratorAction::kSwitchIme:
       HandleSwitchIme(accelerator);
       break;
@@ -1416,6 +1433,15 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(
           base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
       accelerators::TopWindowMinimizeOnBack();
+      break;
+    case kTouchFingerprintSensor1:
+      accelerators::TouchFingerprintSensor(1);
+      break;
+    case kTouchFingerprintSensor2:
+      accelerators::TouchFingerprintSensor(2);
+      break;
+    case kTouchFingerprintSensor3:
+      accelerators::TouchFingerprintSensor(3);
       break;
   }
 

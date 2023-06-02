@@ -15,7 +15,8 @@ FindBarState* FindBarStateFactory::GetForBrowserContext(
 
 // static
 FindBarStateFactory* FindBarStateFactory::GetInstance() {
-  return base::Singleton<FindBarStateFactory>::get();
+  static base::NoDestructor<FindBarStateFactory> instance;
+  return instance.get();
 }
 
 FindBarStateFactory::FindBarStateFactory()

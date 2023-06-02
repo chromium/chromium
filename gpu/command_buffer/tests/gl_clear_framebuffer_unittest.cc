@@ -63,7 +63,7 @@ class GLClearFramebufferTest : public testing::TestWithParam<bool> {
     gl_.Destroy();
   }
 
- private:
+ protected:
   GLManager gl_;
   GLuint color_handle_;
   GLuint depth_handle_;
@@ -259,7 +259,7 @@ TEST_P(GLClearFramebufferTest, SeparateFramebufferClear) {
   glClearColor(1.f, 0.f, 0.f, 1.f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+  gl_.BindOffscreenFramebuffer(GL_READ_FRAMEBUFFER);
   const uint8_t kRed[] = {255, 0, 0, 255};
   EXPECT_TRUE(GLTestHelper::CheckPixels(0, 0, 1, 1, 0, kRed, nullptr));
 
@@ -279,7 +279,7 @@ TEST_P(GLClearFramebufferTest, SeparateFramebufferClear) {
   glClearColor(0.f, 1.f, 0.f, 1.f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+  gl_.BindOffscreenFramebuffer(GL_READ_FRAMEBUFFER);
   const uint8_t kGreen[] = {0, 255, 0, 255};
   EXPECT_TRUE(GLTestHelper::CheckPixels(3, 3, 1, 1, 0, kGreen, nullptr));
 }

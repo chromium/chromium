@@ -5,6 +5,7 @@
 #include "ash/user_education/user_education_controller.h"
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -29,10 +30,11 @@ namespace ash {
 namespace {
 
 // Aliases.
-using testing::_;
-using testing::Eq;
-using user_education::TutorialDescription;
-using user_education::TutorialIdentifier;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Return;
+using ::user_education::TutorialDescription;
+using ::user_education::TutorialIdentifier;
 
 }  // namespace
 
@@ -48,15 +50,10 @@ class UserEducationControllerTest
                      /*welcome_tour_enabled=*/bool>> {
  public:
   UserEducationControllerTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (IsCaptureModeTourEnabled() ? enabled_features : disabled_features)
-        .emplace_back(features::kCaptureModeTour);
-    (IsHoldingSpaceTourEnabled() ? enabled_features : disabled_features)
-        .emplace_back(features::kHoldingSpaceTour);
-    (IsWelcomeTourEnabled() ? enabled_features : disabled_features)
-        .emplace_back(features::kWelcomeTour);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kCaptureModeTour, IsCaptureModeTourEnabled()},
+         {features::kHoldingSpaceTour, IsHoldingSpaceTourEnabled()},
+         {features::kWelcomeTour, IsWelcomeTourEnabled()}});
   }
 
   // Returns whether the Capture Mode Tour is enabled given test
@@ -119,6 +116,31 @@ TEST_P(UserEducationControllerTest, UserEducationPingControllerExists) {
 // Verifies that the Welcome Tour controller exists iff the feature is enabled.
 TEST_P(UserEducationControllerTest, WelcomeTourControllerExists) {
   EXPECT_EQ(!!WelcomeTourController::Get(), IsWelcomeTourEnabled());
+}
+
+// Verifies that `GetElementIdentifierForAppId()` delegates as expected. Note
+// that this test is skipped if the controller does not exist.
+TEST_P(UserEducationControllerTest, GetElementIdentifierForAppId) {
+  auto* controller = UserEducationController::Get();
+  if (!controller) {
+    GTEST_SKIP();
+  }
+
+  // Ensure `delegate` exists.
+  auto* delegate = user_education_delegate();
+  ASSERT_TRUE(delegate);
+
+  // Create an app ID and associated element identifier.
+  constexpr char kAppId[] = "app_id";
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
+
+  // Expect that calls to `GetElementIdentifierForAppId()` are delegated.
+  EXPECT_CALL(*delegate, GetElementIdentifierForAppId(Eq(kAppId)))
+      .WillOnce(Return(kElementId));
+
+  // Invoke `GetElementIdentifierForAppId()` and verify expectations.
+  EXPECT_EQ(controller->GetElementIdentifierForAppId(kAppId), kElementId);
+  testing::Mock::VerifyAndClearExpectations(delegate);
 }
 
 // Verifies that tutorials are registered when the primary user session is

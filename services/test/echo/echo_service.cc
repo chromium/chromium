@@ -86,6 +86,15 @@ void EchoService::LoadNativeLibrary(const ::base::FilePath& library,
   std::move(callback).Run(LoadStatus::kSuccess, ERROR_SUCCESS);
 }
 
+void EchoService::CallUser32(const std::string& lower,
+                             CallUser32Callback callback) {
+  // Validate behavior of FileUtilService by calling user32's CharUpperA().
+  std::vector<std::string::value_type> buffer(lower.size() + 1);
+  std::copy(lower.begin(), lower.end(), buffer.begin());
+  ::CharUpperA(buffer.data());
+  std::move(callback).Run(std::string(buffer.data()));
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace echo

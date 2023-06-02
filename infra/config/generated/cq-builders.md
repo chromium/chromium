@@ -130,8 +130,11 @@ builder.
   * [`//chrome/android/javatests/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/vr/)
   * [`//chrome/browser/android/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/android/vr/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
+  * [`//components/webxr/.+`](https://cs.chromium.org/chromium/src/components/webxr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
-  * [`//device/vr/android/.+`](https://cs.chromium.org/chromium/src/device/vr/android/)
+  * [`//device/vr/.+`](https://cs.chromium.org/chromium/src/device/vr/)
+  * [`//third_party/cardboard/.+`](https://cs.chromium.org/chromium/src/third_party/cardboard/)
+  * [`//third_party/openxr/.+`](https://cs.chromium.org/chromium/src/third_party/openxr/)
   * [`//third_party/gvr-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/gvr-android-sdk/)
   * [`//third_party/arcore-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk/)
   * [`//third_party/arcore-android-sdk-client/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk-client/)
@@ -570,6 +573,9 @@ as required builders.
 
 * [mac12-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac12-arm64-rel""))
   * Experiment percentage: 100.0
+
+* [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
+  * Experiment percentage: 1.0
 
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
   * Experiment percentage: 10.0

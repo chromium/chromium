@@ -69,6 +69,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/prioritized_dispatcher.h"
 #include "net/base/request_priority.h"
@@ -91,6 +92,7 @@
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/host_resolver_system_task.h"
 #include "net/dns/httpssvc_metrics.h"
+#include "net/dns/loopback_only.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
@@ -130,7 +132,6 @@
 #include "net/base/sys_addrinfo.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#include "net/android/network_library.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -217,55 +218,6 @@ bool MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
 }
 
 //-----------------------------------------------------------------------------
-
-// Returns true if it can determine that only loopback addresses are configured.
-// i.e. if only 127.0.0.1 and ::1 are routable.
-// Also returns false if it cannot determine this.
-bool HaveOnlyLoopbackAddresses() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-#if BUILDFLAG(IS_WIN)
-  // TODO(wtc): implement with the GetAdaptersAddresses function.
-  NOTIMPLEMENTED();
-  return false;
-#elif BUILDFLAG(IS_ANDROID)
-  return android::HaveOnlyLoopbackAddresses();
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  struct ifaddrs* interface_addr = nullptr;
-  int rv = getifaddrs(&interface_addr);
-  if (rv != 0) {
-    DVPLOG(1) << "getifaddrs() failed";
-    return false;
-  }
-
-  bool result = true;
-  for (struct ifaddrs* interface = interface_addr; interface != nullptr;
-       interface = interface->ifa_next) {
-    if (!(IFF_UP & interface->ifa_flags))
-      continue;
-    if (IFF_LOOPBACK & interface->ifa_flags)
-      continue;
-    const struct sockaddr* addr = interface->ifa_addr;
-    if (!addr)
-      continue;
-    if (addr->sa_family == AF_INET6) {
-      // Safe cast since this is AF_INET6.
-      const struct sockaddr_in6* addr_in6 =
-          reinterpret_cast<const struct sockaddr_in6*>(addr);
-      const struct in6_addr* sin6_addr = &addr_in6->sin6_addr;
-      if (IN6_IS_ADDR_LOOPBACK(sin6_addr) || IN6_IS_ADDR_LINKLOCAL(sin6_addr))
-        continue;
-    }
-    if (addr->sa_family != AF_INET6 && addr->sa_family != AF_INET)
-      continue;
-
-    result = false;
-    break;
-  }
-  freeifaddrs(interface_addr);
-  return result;
-#endif  // defined(various platforms)
-}
 
 // Creates NetLog parameters when the DnsTask failed.
 base::Value::Dict NetLogDnsTaskFailedParams(
@@ -727,7 +679,8 @@ class HostResolverManager::RequestImpl
     // cannot make assumptions about reachability.
     if (parameters_.source == HostResolverSource::LOCAL_ONLY) {
       int rv = resolver_->StartIPv6ReachabilityCheck(
-          source_net_log_, base::DoNothingAs<void(int)>());
+          source_net_log_, GetClientSocketFactory(),
+          base::DoNothingAs<void(int)>());
       if (rv == ERR_IO_PENDING) {
         next_state_ = STATE_FINISH_REQUEST;
         return ERR_NAME_NOT_RESOLVED;
@@ -735,8 +688,9 @@ class HostResolverManager::RequestImpl
       return OK;
     }
     return resolver_->StartIPv6ReachabilityCheck(
-        source_net_log_, base::BindOnce(&RequestImpl::OnIOComplete,
-                                        weak_ptr_factory_.GetWeakPtr()));
+        source_net_log_, GetClientSocketFactory(),
+        base::BindOnce(&RequestImpl::OnIOComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   int DoGetParameters() {
@@ -761,7 +715,7 @@ class HostResolverManager::RequestImpl
         resolver_->last_ipv6_probe_result_) {
       next_state_ = STATE_GET_PARAMETERS_COMPLETE;
       return resolver_->StartGloballyReachableCheck(
-          ip_address_, source_net_log_,
+          ip_address_, source_net_log_, GetClientSocketFactory(),
           base::BindOnce(&RequestImpl::OnIOComplete,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -1017,6 +971,16 @@ class HostResolverManager::RequestImpl
   void LogCancelRequest() {
     source_net_log_.AddEvent(NetLogEventType::CANCELLED);
     source_net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST);
+  }
+
+  ClientSocketFactory* GetClientSocketFactory() {
+    if (resolve_context_->url_request_context()) {
+      return resolve_context_->url_request_context()
+          ->GetNetworkSessionContext()
+          ->client_socket_factory;
+    } else {
+      return ClientSocketFactory::GetDefaultFactory();
+    }
   }
 
   const NetLogWithSource source_net_log_;
@@ -3934,6 +3898,7 @@ void HostResolverManager::FinishIPv6ReachabilityCheck(
 
 int HostResolverManager::StartIPv6ReachabilityCheck(
     const NetLogWithSource& net_log,
+    ClientSocketFactory* client_socket_factory,
     CompletionOnceCallback callback) {
   // Don't bother checking if the request will use WiFi and IPv6 is assumed to
   // not work on WiFi.
@@ -3957,7 +3922,7 @@ int HostResolverManager::StartIPv6ReachabilityCheck(
           kIPv6ProbePeriodMs) {
     probing_ipv6_ = true;
     rv = StartGloballyReachableCheck(
-        IPAddress(kIPv6ProbeAddress), net_log,
+        IPAddress(kIPv6ProbeAddress), net_log, client_socket_factory,
         base::BindOnce(&HostResolverManager::FinishIPv6ReachabilityCheck,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     if (rv != ERR_IO_PENDING) {
@@ -3982,9 +3947,10 @@ void HostResolverManager::SetLastIPv6ProbeResult(bool last_ipv6_probe_result) {
 int HostResolverManager::StartGloballyReachableCheck(
     const IPAddress& dest,
     const NetLogWithSource& net_log,
+    ClientSocketFactory* client_socket_factory,
     CompletionOnceCallback callback) {
   std::unique_ptr<DatagramClientSocket> probing_socket =
-      ClientSocketFactory::GetDefaultFactory()->CreateDatagramClientSocket(
+      client_socket_factory->CreateDatagramClientSocket(
           DatagramSocket::DEFAULT_BIND, net_log.net_log(), net_log.source());
   DatagramClientSocket* probing_socket_ptr = probing_socket.get();
   auto refcounted_socket = base::MakeRefCounted<
@@ -4039,12 +4005,7 @@ void HostResolverManager::RunFinishGloballyReachableCheck(
 }
 
 void HostResolverManager::RunLoopbackProbeJob() {
-  // Run this asynchronously as it can take 40-100ms and should not block
-  // initialization.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&HaveOnlyLoopbackAddresses),
+  RunHaveOnlyLoopbackAddressesJob(
       base::BindOnce(&HostResolverManager::SetHaveOnlyLoopbackAddresses,
                      weak_ptr_factory_.GetWeakPtr()));
 }

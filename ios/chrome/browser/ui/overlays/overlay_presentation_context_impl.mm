@@ -59,8 +59,8 @@ OverlayPresentationContextImpl::Container::PresentationContextForModality(
   auto& ui_delegate = ui_delegates_[modality];
   if (!ui_delegate) {
     OverlayRequestCoordinatorFactory* factory =
-        [OverlayRequestCoordinatorFactory factoryForBrowser:browser_
-                                                   modality:modality];
+        [[OverlayRequestCoordinatorFactory alloc] initWithBrowser:browser_
+                                                         modality:modality];
     ui_delegate = base::WrapUnique(
         new OverlayPresentationContextImpl(browser_, modality, factory));
   }

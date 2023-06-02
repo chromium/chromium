@@ -36,9 +36,6 @@ per-file chrome_content_browser_client_unittest.cc=*
 
 per-file chrome_browser_field_trials*=file://components/variations/OWNERS
 
-per-file chrome_device_client*=reillyg@chromium.org
-per-file chrome_device_client*=rockot@google.com
-
 per-file chrome_navigation_browsertest.cc=file://content/OWNERS
 
 per-file chrome_origin_trials_browsertest.cc=file://third_party/blink/common/origin_trials/OWNERS

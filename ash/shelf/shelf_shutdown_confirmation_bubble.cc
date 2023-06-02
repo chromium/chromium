@@ -40,8 +40,8 @@ namespace {
 constexpr int kShutdownConfirmationBubbleInsetsBottom = 12;
 constexpr int kShutdownConfirmationBubbleInsetsTop = 8;
 
-gfx::Insets GetShutdownConfirmationBubbleInsets() {
-  gfx::Insets insets = GetTrayBubbleInsets();
+gfx::Insets GetShutdownConfirmationBubbleInsets(aura::Window* window) {
+  gfx::Insets insets = GetTrayBubbleInsets(window);
   insets.set_top(kShutdownConfirmationBubbleInsetsTop);
   insets.set_bottom(kShutdownConfirmationBubbleInsetsBottom);
   return insets;
@@ -91,7 +91,8 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
 
   auto* layout_provider = views::LayoutProvider::Get();
   const gfx::Insets kShutdownConfirmationBubbleInsets =
-      GetShutdownConfirmationBubbleInsets();
+      GetShutdownConfirmationBubbleInsets(
+          anchor_widget()->GetNativeWindow()->GetRootWindow());
   const gfx::Insets dialog_insets =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
   set_margins(kShutdownConfirmationBubbleInsets + dialog_insets);

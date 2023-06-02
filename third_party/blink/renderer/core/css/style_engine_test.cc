@@ -3992,7 +3992,7 @@ TEST_F(StyleEngineContainerQueryTest,
   //
   // See implementation of `NodeLayoutUpgrade::ShouldUpgrade` for more
   // information.
-  GetDocument().UpdateStyleAndLayoutTreeForNode(a);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(a, DocumentUpdateReason::kTest);
   EXPECT_FALSE(GetStyleEngine().StyleAffectedByLayout());
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
@@ -6095,12 +6095,138 @@ TEST_F(StyleEngineTest, AnimationDurationInitialValueWithoutScrollTimeline) {
   EXPECT_EQ("0s", ComputedValue(target3, "animation-duration")->CssText());
 }
 
+TEST_F(StyleEngineTest, ScrollTimelineAttachmentFlags) {
+  String css = "scroll-timeline-attachment: initial";
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(0u, set->PropertyCount());
+  }
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(1u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineAttachment));
+  }
+}
+
+TEST_F(StyleEngineTest, ViewTimelineAttachmentFlags) {
+  String css = "view-timeline-attachment: initial";
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(0u, set->PropertyCount());
+  }
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(1u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineAttachment));
+  }
+}
+
+TEST_F(StyleEngineTest, ScrollTimelineShorthandFlagsInitial) {
+  String css = "scroll-timeline: initial";
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(2u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineName));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineAxis));
+  }
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(3u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineName));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineAxis));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineAttachment));
+  }
+}
+
+TEST_F(StyleEngineTest, ScrollTimelineShorthandFlags) {
+  String css = "scroll-timeline: --foo block defer";
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(0u, set->PropertyCount());
+  }
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(3u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineName));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineAxis));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kScrollTimelineAttachment));
+  }
+}
+
+TEST_F(StyleEngineTest, ViewTimelineShorthandFlagsInitial) {
+  String css = "view-timeline: initial";
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(2u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineName));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineAxis));
+  }
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(3u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineName));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineAxis));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineAttachment));
+  }
+}
+
+TEST_F(StyleEngineTest, ViewTimelineShorthandFlags) {
+  String css = "view-timeline: --foo block defer";
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(false);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(0u, set->PropertyCount());
+  }
+  {
+    ScopedScrollTimelineAttachmentForTest enabled(true);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(css);
+    ASSERT_TRUE(set);
+    EXPECT_EQ(3u, set->PropertyCount());
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineName));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineAxis));
+    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kViewTimelineAttachment));
+  }
+}
+
 TEST_F(StyleEngineTest, InitialStyle_Recalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #target {
         background-color: green;
-        @initial { background-color: red; }
+        @starting-style { background-color: red; }
       }
     </style>
     <div id="target"></div>
@@ -6118,12 +6244,12 @@ TEST_F(StyleEngineTest, InitialStyle_Recalc) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(GetStyleEngine().StyleForElementCount() - before_count, 1u)
-      << "The style recalc should not do a separate @initial pass since the "
-         "element already has a style";
+      << "The style recalc should not do a separate @starting-style pass since "
+         "the element already has a style";
   EXPECT_EQ(target->ComputedStyleRef().VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()),
             green)
-      << "Make sure @initial rules do not apply for the second pass";
+      << "Make sure @starting-style rules do not apply for the second pass";
   EXPECT_EQ(
       target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
       lime)
@@ -6135,7 +6261,7 @@ TEST_F(StyleEngineTest, InitialStyle_FromDisplayNone) {
     <style>
       #target {
         background-color: green;
-        @initial { background-color: red; }
+        @starting-style { background-color: red; }
       }
     </style>
     <div id="target" style="display:none"></div>
@@ -6153,11 +6279,11 @@ TEST_F(StyleEngineTest, InitialStyle_FromDisplayNone) {
 
   EXPECT_EQ(GetStyleEngine().StyleForElementCount() - before_count, 2u)
       << "The style recalc needs to do two passes because the element was "
-         "display:none and @initial styles are matching";
+         "display:none and @starting-style styles are matching";
   EXPECT_EQ(target->ComputedStyleRef().VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()),
             green)
-      << "Make sure @initial do not apply for the second pass";
+      << "Make sure @starting-style do not apply for the second pass";
 }
 
 TEST_F(StyleEngineTest, InitialStyleCount_EnsureComputedStyle) {
@@ -6166,7 +6292,7 @@ TEST_F(StyleEngineTest, InitialStyleCount_EnsureComputedStyle) {
       #target {
         background-color: green;
         transition: background-color 100s step-end;
-        @initial { background-color: red; }
+        @starting-style { background-color: red; }
       }
     </style>
     <div id="target" style="display:none"></div>
@@ -6186,12 +6312,12 @@ TEST_F(StyleEngineTest, InitialStyleCount_EnsureComputedStyle) {
   ASSERT_TRUE(none_style);
 
   EXPECT_EQ(GetStyleEngine().StyleForElementCount() - before_count, 1u)
-      << "No @initial pass for EnsureComputedStyle";
+      << "No @starting-style pass for EnsureComputedStyle";
 
   EXPECT_EQ(target->ComputedStyleRef().VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()),
             green)
-      << "Transitions are not started and @initial does not apply in "
+      << "Transitions are not started and @starting-style does not apply in "
          "display:none";
 }
 

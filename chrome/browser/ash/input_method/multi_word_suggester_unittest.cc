@@ -104,19 +104,36 @@ TEST_F(MultiWordSuggesterTest, IgnoresEmpyExternalSuggestions) {
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"");
 }
 
-TEST_F(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
+TEST_F(MultiWordSuggesterTest, DisplaysPredictionSuggestion) {
   std::vector<AssistiveSuggestion> suggestions = {
       AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
                           .type = AssistiveSuggestionType::kMultiWord,
-                          .text = "hello there!"}};
+                          .text = "are you going?"}};
 
   suggester_->OnFocus(kFocusedContextId);
-  suggester_->OnSurroundingTextChanged(u"", gfx::Range(0));
-  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext(""));
+  suggester_->OnSurroundingTextChanged(u"hey how ", gfx::Range(8));
+  suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                           TextContext("hey how "));
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetContextId(), kFocusedContextId);
-  EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"hello there!");
+  EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"are you going?");
+}
+
+TEST_F(MultiWordSuggesterTest, DisplaysCompletionSuggestion) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are you going?"}};
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey how ar", gfx::Range(10));
+  suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                           TextContext("hey how ar"));
+
+  EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_.GetContextId(), kFocusedContextId);
+  EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"are you going?");
 }
 
 TEST_F(MultiWordSuggesterTest,
@@ -410,6 +427,74 @@ TEST_F(MultiWordSuggesterTest, SetsAcceptTimeOnFirstSuggestionAcceptedOnly) {
   EXPECT_EQ(*pref_after_first_accept, *pref_after_second_accept);
 }
 
+TEST_F(MultiWordSuggesterTest,
+       DropsStaleSuggestionsAfterUserTypesAndTextMismatches) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"wha", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"what", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DropsStaleSuggestionsAfterUserTypesAndTextMatches) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"whe", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"wher", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DropsStaleSuggestionsAfterUserUpdatesCurrentText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"w", gfx::Range(1));
+  suggester_->OnSurroundingTextChanged(u"wr", gfx::Range(2));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DropsStaleSuggestionsAfterUserDeletesCharacters) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"whe", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"w", gfx::Range(1));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("whe"));
+
+  EXPECT_FALSE(suggestion_handler_.GetShowingSuggestion());
+}
+
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
   std::vector<AssistiveSuggestion> suggestions = {
       AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
@@ -507,6 +592,24 @@ TEST_F(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
   suggester_->OnSurroundingTextChanged(u"hh", gfx::Range(2));
 
   EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"hh", gfx::Range(2)));
+}
+
+TEST_F(MultiWordSuggesterTest, HandlesTrackingPredictionSuggestion) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey there ", gfx::Range(10));
+  suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                           TextContext("hey there "));
+  suggester_->OnSurroundingTextChanged(u"hey there h", gfx::Range(11));
+
+  EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 1u);  // h
 }
 
 TEST_F(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
@@ -772,6 +875,41 @@ TEST_F(MultiWordSuggesterTest, DismissesSuggestionOnUserTypingFullSuggestion) {
 
   EXPECT_FALSE(
       suggester_->TrySuggestWithSurroundingText(u"how are", gfx::Range(7)));
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DismissesPredictionSuggestionOnFirstDifferentChar) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey there ", gfx::Range(10));
+  suggester_->OnExternalSuggestionsUpdated(suggestions,
+                                           TextContext("hey there "));
+  suggester_->OnSurroundingTextChanged(u"hey there t", gfx::Range(11));
+
+  EXPECT_FALSE(suggester_->TrySuggestWithSurroundingText(u"hey there t",
+                                                         gfx::Range(11)));
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DismissesCompletionSuggestionOnFirstDifferentChar) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("2"));
+  suggester_->OnSurroundingTextChanged(u"wha", gfx::Range(3));
+
+  EXPECT_FALSE(
+      suggester_->TrySuggestWithSurroundingText(u"wha", gfx::Range(3)));
 }
 
 TEST_F(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
@@ -1447,6 +1585,259 @@ TEST_F(MultiWordSuggesterTest, RecordsImplicitRejectionOnlyOnce) {
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.ImplicitRejection", 1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsValidCompletionSuggestionWhenTextMatches) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion",
+      /*sample=*/MultiWordSuggestionState::kValid,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsValidPredictionSuggestionWhenTextMatches) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("hey "));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction",
+      /*sample=*/MultiWordSuggestionState::kValid,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStaleCompletionSuggestionWhenUserEditsText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"w", gfx::Range(1));
+  suggester_->OnSurroundingTextChanged(u"wr", gfx::Range(2));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserEditedText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStalePredictionSuggestionWhenUserEditsText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"hey", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"he", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"hel", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"hell", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("hey "));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserEditedText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStaleCompletionSuggestionWhenUserDeletesText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"w", gfx::Range(1));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserDeletedText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStalePredictionSuggestionWhenUserDeletesText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"hey", gfx::Range(3));
+  suggester_->OnSurroundingTextChanged(u"he", gfx::Range(2));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("hey "));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserDeletedText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStaleCompletionSuggestionWhenUserAddsMatchingText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"whe", gfx::Range(3));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserAddedMatchingText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStalePredictionSuggestionWhenUserAddsMatchingText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"hey w", gfx::Range(5));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("hey "));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserAddedMatchingText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStaleCompletionSuggestionWhenUserAddsDifferentText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"wh", gfx::Range(2));
+  suggester_->OnSurroundingTextChanged(u"why", gfx::Range(3));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("wh"));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Completion",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserAddedDifferentText,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsStalePredictionSuggestionWhenUserAddsDifferentText) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "where are you going"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"hey ", gfx::Range(4));
+  suggester_->OnSurroundingTextChanged(u"hey c", gfx::Range(5));
+  suggester_->OnExternalSuggestionsUpdated(suggestions, TextContext("hey "));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.SuggestionState.Prediction",
+      /*sample=*/MultiWordSuggestionState::kStaleAndUserAddedDifferentText,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(MultiWordSuggesterTest,

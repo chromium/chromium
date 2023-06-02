@@ -140,7 +140,7 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
   TestMediaSinkService dial_media_sink_service_;
   std::unique_ptr<cast_channel::MockCastSocketService>
       mock_cast_socket_service_;
-  raw_ptr<base::MockOneShotTimer> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
   CastMediaSinkServiceImpl media_sink_service_impl_;
   testing::NiceMock<MockObserver> observer_;
 };

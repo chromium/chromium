@@ -1,8 +1,8 @@
 Name: TensorFlow Models
 Short Name: tensorflow_models
 URL: https://github.com/tensorflow/models
-Version: a2e1e19eea5e7b926dafcc7e10c4e4e475d42f51
-Date: 2022/11/09
+Version: 02bbd23f37fc85bbc4ad0540a08c383dddc9b501
+Date: 2023/05/23
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: Yes
@@ -13,7 +13,11 @@ The TensorFlow Model Garden is a repository with a number of different
 implementations of state-of-the-art (SOTA) models and modeling solutions for
 TensorFlow users.
 
-Note: There are two shim directories, "libutf" and "icu4c", used to redirect
+Important: Only a small selection of the upstream files are actually committed
+here. See update.sh in this directory.
+
+Note:
+There are two shim directories, "libutf" and "icu4c", used to redirect
 includes for those directories to their Chromium versions which have slightly
 different names than those used here.
 

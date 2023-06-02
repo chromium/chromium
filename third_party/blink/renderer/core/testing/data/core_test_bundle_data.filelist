@@ -79,6 +79,7 @@ testing/data/display_mode_listener.html
 testing/data/display_none_frame.html
 testing/data/div_with_image.html
 testing/data/domfocusout_domfocusin_events.html
+testing/data/double_press_selection.html
 testing/data/dv-size.html
 testing/data/editable_elements.html
 testing/data/email-form.html

@@ -13,6 +13,7 @@
 namespace android_webview {
 using OriginVerifierCallback = base::OnceCallback<void(bool /*verified*/)>;
 
+// Lifetime: Singleton
 class AwOriginVerificationSchedulerBridge
     : public BrowserURLLoaderThrottle::OriginVerificationSchedulerBridge {
  public:

@@ -31,8 +31,8 @@ namespace {
 // 2 -> "CrOS_AttributionNode2"
 // ...
 std::string BuildAttributionNodeName(int idx) {
-  return base::StringPrintf("%s_Attribution_Text%d",
-                            kLottieCustomizableIdPrefix.data(), idx);
+  return base::StrCat({kLottieCustomizableIdPrefix, "_Attribution_Text",
+                       base::NumberToString(idx)});
 }
 
 // Not all text nodes in the animation are necessarily ones that should hold

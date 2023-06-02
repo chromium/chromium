@@ -190,6 +190,8 @@ CoreStreamingConfigManager::CoreStreamingConfigManager(
     : CoreStreamingConfigManager(std::move(error_cb)) {
   std::unique_ptr<cast_api_bindings::MessagePort> server;
   cast_api_bindings::CreatePlatformMessagePortPair(&message_port_, &server);
+  message_port_->SetReceiver(this);
+
   message_port_service.ConnectToPortAsync(kMediaCapabilitiesBindingName,
                                           std::move(server));
 }

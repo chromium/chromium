@@ -168,6 +168,7 @@ constexpr char kArcPlaystoreCSSPath[] = "arc_support/playstore.css";
 constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kDebuggerMJSPath[] = "debug/debug.js";
+constexpr char kQuickStartDebuggerPath[] = "debug/quick_start_debugger.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.js";
@@ -182,7 +183,6 @@ constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
 // Project Simon TODO(b/269117729) - Rename with final names.
-constexpr char kFirstAnimation[] = "internal_assets/first_animation.json";
 constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
 #endif
 
@@ -199,7 +199,6 @@ void AddProductLogoResources(content::WebUIDataSource* source) {
 
 void AddProjectSimonResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath(kFirstAnimation, IDR_CROS_OOBE_FIRST_ANIMATION);
   source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
 #endif
 }
@@ -240,16 +239,26 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
 
 void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const bool enabled = command_line->HasSwitch(switches::kShowOobeDevOverlay);
+  const bool dev_overlay_enabled =
+      command_line->HasSwitch(switches::kShowOobeDevOverlay);
+  const bool quick_start_debugger_enabled =
+      command_line->HasSwitch(switches::kShowOobeQuickStartDebugger);
   // Enable for ChromeOS-on-linux for developers and test images.
-  if (enabled && base::SysInfo::IsRunningOnChromeOS()) {
+  if (dev_overlay_enabled && base::SysInfo::IsRunningOnChromeOS()) {
     LOG(WARNING) << "OOBE Debug overlay can only be used on test images";
     base::SysInfo::CrashIfChromeOSNonTestImage();
   }
 
   source->AddResourcePath(kDebuggerMJSPath,
-                          enabled ? IDR_OOBE_CONDITIONAL_DEBUG_DEBUG_JS
-                                  : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
+                          dev_overlay_enabled
+                              ? IDR_OOBE_CONDITIONAL_DEBUG_DEBUG_JS
+                              : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
+
+  source->AddResourcePath(
+      kQuickStartDebuggerPath,
+      quick_start_debugger_enabled
+          ? IDR_OOBE_CONDITIONAL_DEBUG_QUICK_START_DEBUGGER_JS
+          : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
 }
 
 void AddTestAPIResources(content::WebUIDataSource* source) {
@@ -281,6 +290,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
+  source->AddBoolean("isOobeLazyLoadingEnabled",
+                     features::IsOobeLazyLoadingEnabled());
   // TODO (b/268463435) Cleanup OobeJelly
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   // TODO (b/269117729) Cleanup OobeSimon
@@ -305,6 +316,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   source->AddBoolean("isDisplaySizeEnabled",
                      features::IsOobeDisplaySizeEnabled());
+
+  source->AddBoolean("isOobeSoftwareUpdateEnabled",
+                     features::IsOobeSoftwareUpdateEnabled());
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -766,8 +780,11 @@ void OobeUI::OnBackdropLoaded() {
 }
 
 bool OobeUI::IsJSReady(base::OnceClosure display_is_ready_callback) {
-  if (!ready_)
+  if (!ready_) {
     ready_callbacks_.AddUnsafe(std::move(display_is_ready_callback));
+    return ready_;
+  }
+  std::move(display_is_ready_callback).Run();
   return ready_;
 }
 

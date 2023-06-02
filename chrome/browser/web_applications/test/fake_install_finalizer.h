@@ -42,7 +42,6 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
       WebAppManagement::Type source,
       webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback) override;
-  bool CanUserUninstallWebApp(const AppId& app_id) const override;
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource uninstall_source,
                        UninstallWebAppCallback callback) override;
@@ -51,8 +50,6 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   void ReparentTab(const AppId& app_id,
                    bool shortcut_created,
                    content::WebContents* web_contents) override;
-  void SetRemoveManagementTypeCallbackForTesting(
-      base::RepeatingCallback<void(const AppId&)>) override;
 
   void SetNextFinalizeInstallResult(const AppId& app_id,
                                     webapps::InstallResultCode code);

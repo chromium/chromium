@@ -61,6 +61,9 @@ class TouchToFillController {
   // interaction.
   void Close();
 
+  // Resets TTF to the state as if it was never shown.
+  void Reset();
+
 #if defined(UNIT_TEST)
   void set_view(std::unique_ptr<TouchToFillView> view) {
     view_ = std::move(view);
@@ -68,9 +71,16 @@ class TouchToFillController {
 #endif
 
  private:
+  enum class TouchToFillState {
+    kNone,
+    kIsShowing,
+    kWasShown,
+  };
   // Callback method for the delegate to signal that it has completed its
   // action and is no longer needed. This destroys the delegate.
   void ActionCompleted();
+
+  TouchToFillState touch_to_fill_state_ = TouchToFillState::kNone;
 
   // Delegate for interacting with the client that owns this controller.
   // It is provided when Show() is called, and reset when the view is

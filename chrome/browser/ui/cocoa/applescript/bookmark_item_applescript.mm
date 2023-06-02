@@ -67,9 +67,8 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
-  if (!chrome::mac::IsJavaScriptEnabledForProfile(appDelegate.lastProfile) &&
+  if (!chrome::mac::IsJavaScriptEnabledForProfile(
+          AppController.sharedController.lastProfile) &&
       gurl.SchemeIs(url::kJavaScriptScheme)) {
     AppleScript::SetError(AppleScript::Error::kJavaScriptUnsupported);
     return;

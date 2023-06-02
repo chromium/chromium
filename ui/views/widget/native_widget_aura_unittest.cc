@@ -966,7 +966,7 @@ class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<TestNativeWidgetAura> native_widget_;
+  raw_ptr<TestNativeWidgetAura, DanglingUntriaged> native_widget_;
 };
 
 TEST_F(NativeWidgetAuraWithNoDelegateTest, GetHitTestMaskTest) {

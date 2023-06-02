@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/policy_proto_decoders.h"
 
+#include "base/rust_buildflags.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -194,9 +195,15 @@ TEST_F(PolicyProtoDecodersTest, InvalidJsonPolicy) {
   expected_policy_map_.Set(key::kManagedBookmarks, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                            base::Value(invalidDummyJson), nullptr);
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  std::u16string kExpectedMessage =
+      u"EOF while parsing an object at line 3 column 2";
+#else
+  std::u16string kExpectedMessage = u"Line: 3, column: 3, Syntax error.";
+#endif
   expected_policy_map_.AddMessage(
       key::kManagedBookmarks, PolicyMap::MessageType::kError,
-      IDS_POLICY_PROTO_PARSING_ERROR, {u"Line: 3, column: 3, Syntax error."});
+      IDS_POLICY_PROTO_PARSING_ERROR, {kExpectedMessage});
 
   auto* disabled_managed_bookmarks_settings =
       user_policy_.payload().mutable_managedbookmarks()->mutable_value();

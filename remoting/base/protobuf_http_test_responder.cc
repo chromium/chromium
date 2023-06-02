@@ -39,7 +39,7 @@ bool ProtobufHttpTestResponder::ParseRequestMessage(
     if (data_element.type() == network::DataElement::Tag::kBytes) {
       const auto piece =
           data_element.As<network::DataElementBytes>().AsStringPiece();
-      unified_data.append(piece.data(), piece.size());
+      unified_data.append(piece);
     }
   }
   return out_message->ParseFromString(unified_data);

@@ -44,7 +44,6 @@ class EventPath;
 class EventTarget;
 class Node;
 class ScriptState;
-class ScriptValue;
 
 class CORE_EXPORT Event : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -264,7 +263,6 @@ class CORE_EXPORT Event : public ScriptWrappable {
   }
   void InitEventPath(Node&);
 
-  ScriptValue path(ScriptState*) const;
   HeapVector<Member<EventTarget>> composedPath(ScriptState*) const;
 
   bool IsBeingDispatched() const { return eventPhase() != PhaseType::kNone; }
@@ -322,11 +320,6 @@ class CORE_EXPORT Event : public ScriptWrappable {
   PassiveMode HandlingPassive() const { return handling_passive_; }
 
  private:
-  enum EventPathMode { kEmptyAfterDispatch, kNonEmptyAfterDispatch };
-
-  HeapVector<Member<EventTarget>> PathInternal(ScriptState*,
-                                               EventPathMode) const;
-
   AtomicString type_;
   unsigned bubbles_ : 1;
   unsigned cancelable_ : 1;

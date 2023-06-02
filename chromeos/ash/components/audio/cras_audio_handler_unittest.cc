@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -18,7 +17,6 @@
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
@@ -363,9 +361,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
  public:
   CrasAudioHandlerTest()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
-    scoped_feature_list_.InitAndEnableFeature(features::kSpeakOnMuteEnabled);
-  }
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   CrasAudioHandlerTest(const CrasAudioHandlerTest&) = delete;
   CrasAudioHandlerTest& operator=(const CrasAudioHandlerTest&) = delete;
@@ -577,7 +573,6 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
   std::unique_ptr<FakeVideoCaptureManager> video_capture_manager_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class HDMIRediscoverWaiter {
@@ -5154,38 +5149,26 @@ TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
   EXPECT_EQ(1, test_observer_->noise_cancellation_state_change_count());
 }
 
-TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionPrefSwitchTest) {
+TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionSwitchTest) {
   AudioNodeList audio_nodes = GenerateAudioNodeList({});
   // Set up initial audio devices, only with internal mic.
   AudioNode internalMic = GenerateAudioNode(kInternalMic);
   audio_nodes.push_back(internalMic);
-  // Simulate enable pref for noise cancellation.
   SetUpCrasAudioHandlerWithPrimaryActiveNode(audio_nodes, internalMic);
 
-  // Speak-on-mute detection should still be disabled since the pref is
-  // disabled by default.
+  // Speak-on-mute detection should still be disabled since it is not set during
+  // the initialization.
   EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
-  EXPECT_FALSE(audio_pref_handler_->GetSpeakOnMuteDetectionEnabledValue());
-  // `kShouldShowSpeakOnMuteOptInNudge` pref should be enabled by default.
-  EXPECT_TRUE(audio_pref_handler_->GetShouldShowSpeakOnMuteOptInNudgeValue());
 
-  // Simulate enable pref for speak-on-mute detection, which should enable
-  // speak-on-mute detection.
-  audio_pref_handler_->SetSpeakOnMuteDetectionEnabledValue(
-      /*is_speak_on_mute_detection_enabled=*/true);
+  // Simulate enable speak-on-mute detection from handler, which should enable
+  // speak-on-mute detection in the client.
+  cras_audio_handler_->SetSpeakOnMuteDetection(/*som_on=*/true);
   EXPECT_TRUE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
-  // `kShouldShowSpeakOnMuteOptInNudge` pref should be disabled as the
-  // `kUserSpeakOnMuteDetectionEnabled` pref has been changed.
-  EXPECT_FALSE(audio_pref_handler_->GetShouldShowSpeakOnMuteOptInNudgeValue());
 
-  // Simulate disable pref for speak-on-mute detection, which should disable
-  // speak-on-mute detection.
-  audio_pref_handler_->SetSpeakOnMuteDetectionEnabledValue(
-      /*is_speak_on_mute_detection_enabled=*/false);
+  // Simulate disable speak-on-mute detection from handler, which should disable
+  // speak-on-mute detection in the client.
+  cras_audio_handler_->SetSpeakOnMuteDetection(/*som_on=*/false);
   EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
-  // `kShouldShowSpeakOnMuteOptInNudge` pref should be disabled as the
-  // `kUserSpeakOnMuteDetectionEnabled` pref has been changed.
-  EXPECT_FALSE(audio_pref_handler_->GetShouldShowSpeakOnMuteOptInNudgeValue());
 }
 
 }  // namespace ash

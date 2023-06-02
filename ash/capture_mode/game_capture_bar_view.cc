@@ -5,6 +5,7 @@
 #include "ash/capture_mode/game_capture_bar_view.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,6 +21,9 @@ GameCaptureBarView::GameCaptureBarView()
               IDS_ASH_GAME_CAPTURE_START_RECORDING_BUTTON),
           PillButton::kPrimaryWithoutIcon))) {
   AppendCommonElements();
+
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(
+      start_recording_button_);
 }
 
 GameCaptureBarView::~GameCaptureBarView() = default;

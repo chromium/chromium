@@ -76,7 +76,9 @@ GLSurfaceContextPair GetRealContextForVulkan() {
   return std::make_pair(std::move(surface), std::move(context));
 }
 
-void OnContextLost(std::unique_ptr<bool> expect_loss, bool synthetic_loss) {
+void OnContextLost(std::unique_ptr<bool> expect_loss,
+                   bool synthetic_loss,
+                   gpu::error::ContextLostReason context_lost_reason) {
   if (expect_loss && *expect_loss)
     return;
   // TODO(https://crbug.com/1112841): Debugging contexts losts. WebView will

@@ -4354,6 +4354,13 @@ void RenderFrameImpl::DidObserveLoadingBehavior(
     observer.DidObserveLoadingBehavior(behavior);
 }
 
+void RenderFrameImpl::DidObserveJavaScriptFrameworks(
+    const blink::JavaScriptFrameworkDetectionResult& result) {
+  for (auto& observer : observers_) {
+    observer.DidObserveJavaScriptFrameworks(result);
+  }
+}
+
 void RenderFrameImpl::DidObserveSubresourceLoad(
     const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   for (auto& observer : observers_)
@@ -5186,10 +5193,10 @@ void RenderFrameImpl::BeginNavigation(
     }
   }
 
-  if (frame_->IsOutermostMainFrame() && url.SchemeIsHTTPOrHTTPS() &&
-      !url.is_empty() &&
+  if (frame_->IsOutermostMainFrame() && url.is_valid() &&
+      url.SchemeIsHTTPOrHTTPS() &&
       base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
-    frame_->WillPotentiallyStartOutermostMainFrameNavigation(url);
+    frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 
   // Depending on navigation policy, send one of three IPCs to the browser
@@ -5332,6 +5339,22 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
     DCHECK(initiator->IsWebLocalFrame());
     navigation_params->referrer =
         initiator->ToWebLocalFrame()->GetDocument().Url().GetString();
+  }
+
+  // To prevent pages from being able to abuse window.open() to determine the
+  // system entropy, always set a fixed value of 'normal', for consistency with
+  // other top-level navigations.
+  if (IsMainFrame()) {
+    navigation_params->navigation_timings.system_entropy_at_navigation_start =
+        blink::mojom::SystemEntropy::kNormal;
+  } else {
+    // Sub frames always have an empty entropy state since they are generally
+    // renderer-initiated. See
+    // https://docs.google.com/document/d/1D6DqptsCEd3wPRsZ0q1iwVBAXXmhxZuLV-KKFI0ptCg/edit?usp=sharing
+    // for background.
+    DCHECK_EQ(blink::mojom::SystemEntropy::kEmpty,
+              navigation_params->navigation_timings
+                  .system_entropy_at_navigation_start);
   }
 
   frame_->CommitNavigation(std::move(navigation_params), BuildDocumentState());
@@ -5761,16 +5784,6 @@ void RenderFrameImpl::BeginNavigationInternal(
     }
   }
 
-  absl::optional<network::ResourceRequest::WebBundleTokenParams>
-      web_bundle_token_params;
-  if (info->url_request.WebBundleToken()) {
-    web_bundle_token_params =
-        absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
-            *info->url_request.WebBundleUrl(),
-            *info->url_request.WebBundleToken(),
-            -1 /* render_process_id, to be filled in the browser process */));
-  }
-
   blink::mojom::NavigationInitiatorActivationAndAdStatus
       initiator_activation_and_ad_status =
           blink::GetNavigationInitiatorActivationAndAdStatus(
@@ -5791,9 +5804,9 @@ void RenderFrameImpl::BeginNavigationInternal(
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,
           info->impression, renderer_before_unload_start,
-          renderer_before_unload_end, web_bundle_token_params,
-          initiator_activation_and_ad_status, info->is_container_initiated,
-          info->is_fullscreen_requested, info->has_storage_access);
+          renderer_before_unload_end, initiator_activation_and_ad_status,
+          info->is_container_initiated, info->is_fullscreen_requested,
+          info->has_storage_access);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

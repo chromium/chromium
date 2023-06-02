@@ -409,7 +409,8 @@ class MediaEngagementContentsObserverTest
 
  private:
   // contents_observer_ auto-destroys when WebContents is destroyed.
-  raw_ptr<MediaEngagementContentsObserver> contents_observer_;
+  raw_ptr<MediaEngagementContentsObserver, DanglingUntriaged>
+      contents_observer_;
 
   std::unique_ptr<MediaEngagementService> service_;
 

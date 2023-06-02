@@ -173,7 +173,7 @@ class HintsFetcher {
   optimization_guide::proto::RequestContext request_context_;
 
   // A reference to the PrefService for this profile. Not owned.
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
 
   // Holds the hosts being requested by the hints fetcher.
   std::vector<std::string> hosts_fetched_;

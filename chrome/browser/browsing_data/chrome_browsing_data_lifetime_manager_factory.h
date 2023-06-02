@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 class ChromeBrowsingDataLifetimeManager;
@@ -30,8 +30,7 @@ class ChromeBrowsingDataLifetimeManagerFactory
   static ChromeBrowsingDataLifetimeManager* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      ChromeBrowsingDataLifetimeManagerFactory>;
+  friend base::NoDestructor<ChromeBrowsingDataLifetimeManagerFactory>;
 
   ChromeBrowsingDataLifetimeManagerFactory();
   ~ChromeBrowsingDataLifetimeManagerFactory() override;

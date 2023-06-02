@@ -175,6 +175,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
     case FederatedAuthRequestResult::kErrorSilentMediationFailure:
+    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -205,6 +206,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
     case FederatedAuthRequestResult::kErrorDisabledInSettings:
+    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
     }
@@ -302,11 +304,19 @@ void FilterAccountsWithLoginHint(
   // account afterwards, in which case the multiple account chooser would be
   // shown.
   auto Filter = [&login_hint](const IdentityRequestAccount& account) {
-    return std::find(account.hints.begin(), account.hints.end(), login_hint) ==
-           account.hints.end();
+    return std::find(account.login_hints.begin(), account.login_hints.end(),
+                     login_hint) == account.login_hints.end();
   };
   accounts.erase(std::remove_if(accounts.begin(), accounts.end(), Filter),
                  accounts.end());
+  FedCmMetrics::NumAccounts num_matching = FedCmMetrics::NumAccounts::kZero;
+  if (accounts.size() == 1u) {
+    num_matching = FedCmMetrics::NumAccounts::kOne;
+  } else if (accounts.size() > 1u) {
+    num_matching = FedCmMetrics::NumAccounts::kMultiple;
+  }
+  base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
+                                num_matching);
 }
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
@@ -325,11 +335,8 @@ absl::optional<std::string> GetIframeOriginForDisplay(
     const url::Origin& top_frame_origin,
     const url::Origin& iframe_origin,
     CompleteRequestWithErrorCallback callback) {
-  // TODO(crbug.com/1418719): Replace exclude_iframe based on client metadata
-  // response.
-  bool exclude_iframe = net::registry_controlled_domains::SameDomainOrHost(
-      top_frame_origin, iframe_origin,
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  // TOOD(crbug.com/1448566): clean up the logic to allow 3 domains.
+  bool exclude_iframe = true;
   absl::optional<std::string> iframe_for_display = absl::nullopt;
 
   if (!exclude_iframe) {
@@ -418,13 +425,12 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
                              TokenStatus::kUnhandledRequest,
                              /*should_delay_callback=*/false);
   }
-  if (user_info_request_) {
-    // Calls |FederatedAuthUserInfoRequest|'s destructor to complete the user
-    // info request. This is needed because otherwise some resources like
-    // `fedcm_metrics_` may no longer be usable when the destructor get invoked
-    // naturally.
-    user_info_request_.reset();
-  }
+  // Calls |FederatedAuthUserInfoRequest|'s destructor to complete the user
+  // info request. This is needed because otherwise some resources like
+  // `fedcm_metrics_` may no longer be usable when the destructor get invoked
+  // naturally.
+  user_info_requests_.clear();
+
   if (logout_callback_) {
     // We do not complete the logout request, so unset the
     // PendingWebIdentityRequest on the Page so that other frames in the
@@ -618,6 +624,8 @@ void FederatedAuthRequestImpl::RequestToken(
       break;
     case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
       error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
+      request_result =
+          FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked;
       break;
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       error_token_status = TokenStatus::kDisabledInSettings;
@@ -676,7 +684,7 @@ void FederatedAuthRequestImpl::RequestToken(
                                  /*should_delay_callback=*/true);
         return;
       }
-      // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
+      // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
       if (ShouldFailBeforeFetchingAccounts(
               idp_ptr->get_federated()->config_url)) {
         CompleteRequestWithError(
@@ -719,12 +727,6 @@ void FederatedAuthRequestImpl::RequestUserInfo(
     return;
   }
 
-  if (user_info_request_) {
-    std::move(callback).Run(RequestUserInfoStatus::kErrorTooManyRequests,
-                            absl::nullopt);
-    return;
-  }
-
   if (!fedcm_metrics_) {
     fedcm_metrics_ = CreateFedCmMetrics(
         provider->config_url, render_frame_host().GetPageUkmSourceId(),
@@ -733,12 +735,15 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
-  user_info_request_ = FederatedAuthUserInfoRequest::CreateAndStart(
-      std::move(network_manager), api_permission_delegate_.get(),
-      permission_delegate_.get(), &render_frame_host(), fedcm_metrics_.get(),
-      std::move(provider),
+  auto user_info_request = FederatedAuthUserInfoRequest::Create(
+      std::move(network_manager), permission_delegate_.get(),
+      &render_frame_host(), fedcm_metrics_.get(), std::move(provider));
+  user_info_request->SetCallbackAndStart(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteUserInfoRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), user_info_request.get(),
+                     std::move(callback)),
+      api_permission_delegate_.get());
+  user_info_requests_.insert(std::move(user_info_request));
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
@@ -1125,19 +1130,22 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
+  // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
       mediation_requirement_ != MediationRequirement::kRequired &&
       IsFedCmAutoReauthnEnabled();
 
-  bool auto_reauthn = auto_reauthn_enabled;
+  auto_reauthn_ = auto_reauthn_enabled;
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   absl::optional<base::TimeDelta> time_from_embargo;
+  bool requires_user_mediation = false;
+  const IdentityProviderData* auto_reauthn_idp = nullptr;
+  const IdentityRequestAccount* auto_reauthn_account = nullptr;
+  bool has_single_returning_account = false;
   if (auto_reauthn_enabled) {
     is_auto_reauthn_setting_enabled =
         auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
-    auto_reauthn &= is_auto_reauthn_setting_enabled;
     is_auto_reauthn_embargoed =
         auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
             GetEmbeddingOrigin());
@@ -1153,25 +1161,20 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           "Auto re-authn was previously triggered less than 10 minutes ago. "
           "Only one auto re-authn request can be made every 10 minutes.");
     }
-    auto_reauthn &= !is_auto_reauthn_embargoed;
-    auto_reauthn &= !RequiresUserMediation();
-  }
-
-  const IdentityProviderData* auto_reauthn_idp = nullptr;
-  const IdentityRequestAccount* auto_reauthn_account = nullptr;
-  bool has_single_returning_account = false;
-  if (auto_reauthn_enabled) {
+    requires_user_mediation = RequiresUserMediation();
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
     has_single_returning_account =
         GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
-    auto_reauthn &= has_single_returning_account;
+    auto_reauthn_ &= !requires_user_mediation &&
+                     is_auto_reauthn_setting_enabled &&
+                     !is_auto_reauthn_embargoed && has_single_returning_account;
     if (!has_single_returning_account &&
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
-          has_single_returning_account, auto_reauthn_account, auto_reauthn,
+          has_single_returning_account, auto_reauthn_account, auto_reauthn_,
           !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-          time_from_embargo);
+          time_from_embargo, requires_user_mediation);
 
       // By this moment we know that the user has granted permission in the past
       // for the RP/IdP. Because otherwise we have returned already in
@@ -1191,13 +1194,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           /*should_delay_callback=*/false);
       return;
     }
-  }
 
-  if (auto_reauthn) {
-    IdentityRequestAccount account{*auto_reauthn_account};
-    IdentityProviderData idp{*auto_reauthn_idp};
-    idp.accounts = {account};
-    idp_data_for_display_ = {idp};
+    if (auto_reauthn_) {
+      IdentityRequestAccount account{*auto_reauthn_account};
+      IdentityProviderData idp{*auto_reauthn_idp};
+      idp.accounts = {account};
+      idp_data_for_display_ = {idp};
+    }
   }
 
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
@@ -1231,20 +1234,19 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       WebContents::FromRenderFrameHost(&render_frame_host()),
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
-      auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
+      auto_reauthn_ ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                     weak_ptr_factory_.GetWeakPtr(), auto_reauthn),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
-  devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host(),
-                                                       auto_reauthn);
+  devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
 
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account, auto_reauthn,
+        has_single_returning_account, auto_reauthn_account, auto_reauthn_,
         !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-        time_from_embargo);
+        time_from_embargo, requires_user_mediation);
   }
 }
 
@@ -1483,8 +1485,7 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   });
 }
 
-void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
-                                                 const GURL& idp_config_url,
+void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
                                                  const std::string& account_id,
                                                  bool is_sign_in) {
   DCHECK(!account_id.empty());
@@ -1504,7 +1505,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
     return;
   }
 
-  if (auto_reauthn) {
+  if (auto_reauthn_) {
     // Embargo auto re-authn to mitigate a deadloop where an auto
     // re-authenticated user gets auto re-authenticated again soon after logging
     // out of the active session.
@@ -1597,7 +1598,16 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     IdentityProviderConfigPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
     const GURL& continue_on) {
-  if (!IsFedCmAuthzEnabled()) {
+  // We only allow loading continue_on urls that are same-origin
+  // with the IdP.
+  // This isn't necessarily final, but seemed like a safer
+  // and sufficient default for now.
+  // This behavior may change in https://crbug.com/1429083
+  bool is_same_origin =
+      url::Origin::Create(continue_on)
+          .IsSameOriginWith(url::Origin::Create(idp->config_url));
+
+  if (!IsFedCmAuthzEnabled() || !is_same_origin) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,
@@ -1931,15 +1941,22 @@ void FederatedAuthRequestImpl::CompleteLogoutRequest(
 }
 
 void FederatedAuthRequestImpl::CompleteUserInfoRequest(
+    FederatedAuthUserInfoRequest* request,
     RequestUserInfoCallback callback,
     blink::mojom::RequestUserInfoStatus status,
     absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info) {
-  if (!user_info_request_) {
+  auto it = std::find_if(
+      user_info_requests_.begin(), user_info_requests_.end(),
+      [request](const std::unique_ptr<FederatedAuthUserInfoRequest>& ptr) {
+        return ptr.get() == request;
+      });
+  if (it == user_info_requests_.end()) {
+    NOTREACHED() << "The completed user info request is nowhere to be found";
     return;
   }
 
   std::move(callback).Run(status, std::move(user_info));
-  user_info_request_.reset();
+  user_info_requests_.erase(it);
 }
 
 std::unique_ptr<IdpNetworkRequestManager>
@@ -2025,7 +2042,7 @@ void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
     const IdentityRequestAccount& account) {
   bool is_sign_in =
       account.login_state == IdentityRequestAccount::LoginState::kSignIn;
-  OnAccountSelected(/*auto_reauthn=*/false, config_url, account.id, is_sign_in);
+  OnAccountSelected(config_url, account.id, is_sign_in);
 }
 
 void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
@@ -2129,7 +2146,7 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
         /*has_single_returning_account=*/absl::nullopt,
         /*auto_signin_account=*/nullptr,
         /*auto_reauthn_success=*/false, !is_auto_reauthn_setting_enabled,
-        is_auto_reauthn_embargoed, time_from_embargo);
+        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
     return true;
   }
   return false;

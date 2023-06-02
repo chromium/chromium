@@ -40,7 +40,7 @@ class ProgressBarTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<ProgressBar> bar_;
+  raw_ptr<ProgressBar, DanglingUntriaged> bar_;
   std::unique_ptr<Widget> widget_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;

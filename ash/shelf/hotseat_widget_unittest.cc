@@ -106,16 +106,10 @@ class HotseatWidgetTest
   }
 
   virtual void SetupFeatureLists() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (navigation_buttons_shown_in_tablet_mode()) {
-      disabled_features.push_back(features::kHideShelfControlsInTabletMode);
-    } else {
-      enabled_features.push_back(features::kHideShelfControlsInTabletMode);
-    }
-    enabled_features.push_back(features::kShelfPalmRejectionSwipeOffset);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHideShelfControlsInTabletMode,
+          !navigation_buttons_shown_in_tablet_mode()},
+         {features::kShelfPalmRejectionSwipeOffset, true}});
   }
 
   void TearDown() override {
@@ -233,17 +227,11 @@ class HotseatWidgetTest
 class StackedHotseatWidgetTest : public HotseatWidgetTest {
  public:
   void SetupFeatureLists() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (navigation_buttons_shown_in_tablet_mode()) {
-      disabled_features.push_back(features::kHideShelfControlsInTabletMode);
-    } else {
-      enabled_features.push_back(features::kHideShelfControlsInTabletMode);
-    }
-    enabled_features.push_back(features::kShelfPalmRejectionSwipeOffset);
-    enabled_features.push_back(features::kShelfStackedHotseat);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHideShelfControlsInTabletMode,
+          !navigation_buttons_shown_in_tablet_mode()},
+         {features::kShelfPalmRejectionSwipeOffset, true},
+         {features::kShelfStackedHotseat, true}});
   }
 };
 

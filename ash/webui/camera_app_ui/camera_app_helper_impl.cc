@@ -267,13 +267,6 @@ void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-void CameraAppHelperImpl::SetCameraUsageMonitor(
-    mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
-    SetCameraUsageMonitorCallback callback) {
-  camera_app_ui_->app_window_manager()->SetCameraUsageMonitor(
-      window_, std::move(usage_monitor), std::move(callback));
-}
-
 void CameraAppHelperImpl::GetWindowStateController(
     GetWindowStateControllerCallback callback) {
   if (!window_state_controller_) {

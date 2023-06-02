@@ -7,15 +7,17 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
+
 #include "base/component_export.h"
-#include "base/mac/scoped_nsobject.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
 @class AXPlatformNodeCocoa;
 
 namespace ui {
 
-class AXPlatformNodeMac : public AXPlatformNodeBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeMac
+    : public AXPlatformNodeBase {
  public:
   ~AXPlatformNodeMac() override;
   AXPlatformNodeMac(const AXPlatformNodeMac&) = delete;
@@ -30,15 +32,9 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   void Destroy() override;
   bool IsPlatformCheckable() const override;
 
-  AXPlatformNodeCocoa* GetNativeWrapper() const { return native_node_.get(); }
-
-  base::scoped_nsobject<AXPlatformNodeCocoa> ReleaseNativeWrapper() {
-    return std::move(native_node_);
-  }
-
-  void SetNativeWrapper(AXPlatformNodeCocoa* native_node) {
-    return native_node_.reset(native_node);
-  }
+  AXPlatformNodeCocoa* GetNativeWrapper() const;
+  AXPlatformNodeCocoa* ReleaseNativeWrapper();
+  void SetNativeWrapper(AXPlatformNodeCocoa* native_node);
 
  protected:
   AXPlatformNodeMac();
@@ -48,10 +44,11 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
                           PlatformAttributeList* attributes) override;
 
  private:
-  base::scoped_nsobject<AXPlatformNodeCocoa> native_node_;
-
   friend AXPlatformNode* AXPlatformNode::Create(
       AXPlatformNodeDelegate* delegate);
+
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 };
 
 // Convenience function to determine whether an internal object role should

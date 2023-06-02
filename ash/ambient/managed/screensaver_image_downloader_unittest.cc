@@ -115,6 +115,11 @@ class ScreensaverImageDownloaderTest : public testing::Test {
     }
   }
 
+  void VerifyScreensaverImagesCacheSize(size_t expected_size) const {
+    EXPECT_EQ(expected_size,
+              screensaver_image_downloader_->GetScreensaverImages().size());
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 
@@ -282,6 +287,7 @@ TEST_F(ScreensaverImageDownloaderTest,
   screensaver_image_downloader()->UpdateImageUrlList(base::Value::List());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(test_download_folder()));
+  VerifyScreensaverImagesCacheSize(0u);
 }
 
 TEST_F(ScreensaverImageDownloaderTest,
@@ -308,6 +314,7 @@ TEST_F(ScreensaverImageDownloaderTest,
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
+  VerifyScreensaverImagesCacheSize(0u);
 }
 
 TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
@@ -356,6 +363,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
+    VerifyScreensaverImagesCacheSize(1u);
   }
 
   {
@@ -379,6 +387,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
     // Confirm that after the update the orphan file was successfully cleaned
     // up.
     EXPECT_FALSE(base::PathExists(orphan_cache_file));
+    VerifyScreensaverImagesCacheSize(1u);
   }
 }
 

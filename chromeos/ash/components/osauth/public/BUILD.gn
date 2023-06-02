@@ -22,5 +22,7 @@ source_set("public") {
     "auth_parts.h",
     "auth_session_storage.h",
     "common_types.h",
+    "string_utils.cc",
+    "string_utils.h",
   ]
 }

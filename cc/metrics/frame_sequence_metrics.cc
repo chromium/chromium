@@ -80,6 +80,12 @@ std::string GetCheckerboardingHistogramName(FrameSequenceTrackerType type) {
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
+std::string GetCheckerboardingV3HistogramName(FrameSequenceTrackerType type) {
+  return base::StrCat(
+      {"Graphics.Smoothness.Checkerboarding3.",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
 std::string GetThroughputV3HistogramName(FrameSequenceTrackerType type,
                                          const char* thread_name) {
   return base::StrCat(
@@ -168,6 +174,12 @@ void FrameSequenceMetrics::Merge(
 
   v3_.frames_expected += metrics->v3_.frames_expected;
   v3_.frames_dropped += metrics->v3_.frames_dropped;
+  v3_.frames_missing_content += metrics->v3_.frames_missing_content;
+  if (v3_.last_begin_frame_args.frame_time <
+      metrics->v3_.last_begin_frame_args.frame_time) {
+    v3_.last_begin_frame_args = metrics->v3_.last_begin_frame_args;
+    v3_.last_presented_frame = metrics->v3_.last_presented_frame;
+  }
 
   if (jank_reporter_)
     jank_reporter_->Merge(std::move(metrics->jank_reporter_));
@@ -246,6 +258,8 @@ void FrameSequenceMetrics::ReportMetrics() {
       ShouldReportForInteraction(type(), thread_type, thread_type);
 
   if (v3_.frames_expected >= kMinFramesForThroughputMetric) {
+    const int percent_missing_content = static_cast<int>(
+        100 * v3_.frames_missing_content / v3_.frames_expected);
     int percent = v3_.frames_expected == 0
                       ? 0
                       : std::ceil(100. * v3_.frames_dropped /
@@ -253,13 +267,22 @@ void FrameSequenceMetrics::ReportMetrics() {
 
     if (is_animation) {
       UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.Checkerboarding3.AllAnimations",
+          percent_missing_content);
+      UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames3.AllAnimations", percent);
     }
     if (is_interaction) {
       UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.Checkerboarding3.AllInteractions",
+          percent_missing_content);
+      UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames3.AllInteractions", percent);
     }
     if (is_animation || is_interaction) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.Checkerboarding3.AllSequences",
+          percent_missing_content);
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.PercentDroppedFrames3.AllSequences", percent);
     }
@@ -277,7 +300,16 @@ void FrameSequenceMetrics::ReportMetrics() {
             GetThroughputV3HistogramName(type(), thread_name), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
-    v3_ = {};
+    STATIC_HISTOGRAM_POINTER_GROUP(
+        GetCheckerboardingV3HistogramName(type_), static_cast<int>(type_),
+        static_cast<int>(FrameSequenceTrackerType::kMaxType),
+        Add(percent_missing_content),
+        base::LinearHistogram::FactoryGet(
+            GetCheckerboardingV3HistogramName(type_), 1, 100, 101,
+            base::HistogramBase::kUmaTargetedHistogramFlag));
+    v3_.frames_expected = 0u;
+    v3_.frames_dropped = 0u;
+    v3_.frames_missing_content = 0u;
   }
 
   // Report the checkerboarding metrics.
@@ -449,6 +481,7 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
       if (frame_info.WasSmoothCompositorUpdateDropped()) {
         ++v3_.frames_dropped;
       }
+      CalculateCheckerboardingV3(frame_info);
       ++v3_.frames_expected;
       break;
     case SmoothEffectDrivingThread::kMain:
@@ -456,11 +489,33 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
         if (frame_info.WasSmoothMainUpdateDropped()) {
           ++v3_.frames_dropped;
         }
+        CalculateCheckerboardingV3(frame_info);
         ++v3_.frames_expected;
       }
       break;
     case SmoothEffectDrivingThread::kUnknown:
       NOTREACHED();
+      break;
+  }
+  v3_.last_begin_frame_args = args;
+}
+
+void FrameSequenceMetrics::CalculateCheckerboardingV3(
+    const FrameInfo& frame_info) {
+  switch (frame_info.final_state) {
+    case FrameInfo::FrameFinalState::kNoUpdateDesired:
+    case FrameInfo::FrameFinalState::kDropped:
+      if (v3_.last_presented_frame.has_missing_content) {
+        ++v3_.frames_missing_content;
+      }
+      break;
+    case FrameInfo::FrameFinalState::kPresentedAll:
+    case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
+    case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
+      if (frame_info.has_missing_content) {
+        ++v3_.frames_missing_content;
+      }
+      v3_.last_presented_frame = frame_info;
       break;
   }
 }

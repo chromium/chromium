@@ -38,20 +38,23 @@ std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
     }
     credentials.emplace_back(
         password_manager::PasskeyCredential::Source::kAndroidPhone,
-        passkey.rp_id(), ProtobufBytesToVector(passkey.credential_id()),
-        ProtobufBytesToVector(passkey.user_id()),
-        passkey.has_user_name() ? passkey.user_name() : "",
-        passkey.has_user_display_name() ? passkey.user_display_name() : "");
+        RpId(passkey.rp_id()),
+        CredentialId(ProtobufBytesToVector(passkey.credential_id())),
+        UserId(ProtobufBytesToVector(passkey.user_id())),
+        Username(passkey.has_user_name() ? passkey.user_name() : ""),
+        DisplayName(passkey.has_user_display_name()
+                        ? passkey.user_display_name()
+                        : ""));
   }
   return credentials;
 }
 
 PasskeyCredential::PasskeyCredential(Source source,
-                                     std::string rp_id,
-                                     std::vector<uint8_t> credential_id,
-                                     std::vector<uint8_t> user_id,
-                                     std::string username,
-                                     std::string display_name)
+                                     RpId rp_id,
+                                     CredentialId credential_id,
+                                     UserId user_id,
+                                     Username username,
+                                     DisplayName display_name)
     : source_(source),
       rp_id_(std::move(rp_id)),
       credential_id_(std::move(credential_id)),

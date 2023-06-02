@@ -947,6 +947,9 @@ interface CSSSkewY : CSSTransformComponent
     getter ay
     method constructor
     setter ay
+interface CSSStartingStyleRule : CSSConditionRule
+    attribute @@toStringTag
+    method constructor
 interface CSSStyleDeclaration
     attribute @@toStringTag
     getter cssFloat
@@ -5547,7 +5550,9 @@ interface MLGraphBuilder
     method resample2d
     method reshape
     method sigmoid
+    method slice
     method softmax
+    method split
     method sub
     method transpose
 interface MLModelLoader

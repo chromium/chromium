@@ -71,6 +71,8 @@ export enum UpdateStatus {
   FAILED_HTTP = 'failed_http',
   FAILED_DOWNLOAD = 'failed_download',
   DISABLED = 'disabled',
+  UPDATE_TO_ROLLBACK_VERSION_DISALLOWED =
+      'update_to_rollback_version_disallowed',
   DISABLED_BY_ADMIN = 'disabled_by_admin',
   NEED_PERMISSION_TO_UPDATE = 'need_permission_to_update',
   DEFERRED = 'deferred',

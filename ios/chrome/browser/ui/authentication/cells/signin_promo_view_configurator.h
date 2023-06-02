@@ -13,8 +13,6 @@
 // Class that configures a SigninPromoView instance.
 @interface SigninPromoViewConfigurator : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-
 // Initializes the instance.
 // If `viewMode` is SigninPromoViewModeNoAccounts, then `userEmail`,
 // `userGivenName` and `userImage` have to be nil.
@@ -31,6 +29,11 @@
                              hasCloseButton:(BOOL)hasCloseButton
                            hasSignInSpinner:(BOOL)hasSignInSpinner
     NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Overrides the primary button title in signin promo when there are no
+// accounts. If unset/`nil` the default text is used.
+@property(nonatomic, copy) NSString* primaryButtonTitleNoAccountsModeOverride;
 
 // Configure `signinPromoView` with the given `promoViewStyle` style.
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView

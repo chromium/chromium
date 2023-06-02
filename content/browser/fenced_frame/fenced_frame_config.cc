@@ -177,7 +177,8 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
   // was called to generate the config, rather than any cross-site data.
   redacted_config.mode_ = mode_;
 
-  redacted_config.required_permissions_to_load_ = required_permissions_to_load;
+  redacted_config.effective_enabled_permissions_ =
+      effective_enabled_permissions;
 
   return redacted_config;
 }
@@ -210,7 +211,7 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
       is_ad_component_(config.is_ad_component_),
-      required_permissions_to_load(config.required_permissions_to_load) {
+      effective_enabled_permissions(config.effective_enabled_permissions) {
   if (config.shared_storage_budget_metadata_) {
     shared_storage_budget_metadata_.emplace(
         &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
@@ -280,10 +281,12 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
     }
   }
 
-  if (fenced_frame_reporter_ || is_ad_component_) {
+  if ((fenced_frame_reporter_ || is_ad_component_) &&
+      entity != FencedFrameEntity::kCrossOriginContent) {
     // An ad component should use its parent's fenced frame reporter. Even
     // though it does not have a reporter in its `FencedFrameProperties`, this
-    // flag is still marked as true.
+    // flag is still marked as true. Content that is cross-origin to the
+    // config's mapped url will not get access to its parent's reporter.
     redacted_properties.has_fenced_frame_reporting_ = true;
   }
 
@@ -291,8 +294,8 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   // was called to generate the config, rather than any cross-site data.
   redacted_properties.mode_ = mode_;
 
-  redacted_properties.required_permissions_to_load_ =
-      required_permissions_to_load;
+  redacted_properties.effective_enabled_permissions_ =
+      effective_enabled_permissions;
 
   return redacted_properties;
 }

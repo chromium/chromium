@@ -34,7 +34,6 @@
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -178,7 +177,6 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    SkColor profile_color,
     signin::SigninChoiceCallback callback) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
@@ -195,7 +193,7 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
       browser,
       EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation,
       account_info, profile_creation_required_by_policy, show_link_data_option,
-      profile_color, std::move(callback));
+      std::move(callback));
 
   return web_view;
 }
@@ -456,12 +454,11 @@ SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    SkColor profile_color,
     signin::SigninChoiceCallback callback) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
           browser, account_info, profile_creation_required_by_policy,
-          show_link_data_option, profile_color, std::move(callback)),
+          show_link_data_option, std::move(callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

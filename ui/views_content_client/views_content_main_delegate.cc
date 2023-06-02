@@ -14,6 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell_paths.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/views_content_client/views_content_browser_client.h"
 #include "ui/views_content_client/views_content_client.h"
@@ -75,7 +76,7 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
       content_resources_pak_path.AppendASCII("content_resources.pak"),
       ui::k100Percent);
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
+  if (ui::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath ui_test_resources_200 = ui_test_pak_path.DirName().Append(
         FILE_PATH_LITERAL("ui_test_200_percent.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

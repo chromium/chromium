@@ -57,6 +57,7 @@ Object: {
 				pushEnd: number
 				pushStart: number
 				receiveHeadersEnd: number
+				receiveHeadersStart: number
 				requestTime: number
 				sendEnd: number
 				sendStart: number

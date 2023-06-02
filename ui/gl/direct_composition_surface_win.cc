@@ -58,6 +58,7 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
           settings.disable_nv12_dynamic_textures,
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
+          settings.force_dcomp_triple_buffer_video_swap_chain,
           settings.no_downscaled_overlay_promotion)) {}
 
 DirectCompositionSurfaceWin::~DirectCompositionSurfaceWin() {

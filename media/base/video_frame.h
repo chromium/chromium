@@ -826,6 +826,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // the same DMABUF memory by testing for
   // (&vf1->DmabufFds() == &vf2->DmabufFds()).
   scoped_refptr<DmabufHolder> dmabuf_fds_;
+
+  friend scoped_refptr<VideoFrame>
+  WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      base::TimeDelta timestamp);
 #endif
 
 #if BUILDFLAG(IS_APPLE)

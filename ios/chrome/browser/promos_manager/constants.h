@@ -33,7 +33,8 @@ enum class Promo {
       4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
   PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
   WhatsNew = 6,                // What's New Promo
-  kMaxValue = WhatsNew,
+  Choice = 7,                  // Offer a choice
+  kMaxValue = Choice,
 };
 
 // Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.

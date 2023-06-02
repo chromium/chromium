@@ -56,14 +56,28 @@ void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
     return;
   }
 
-  CHECK(accept_mandatory_reauth_callback_ &&
-        cancel_mandatory_reauth_callback_ && close_mandatory_reauth_callback_);
+  // We don't run any callbacks in the confirmation view, so there's no need to
+  // ensure they exist.
+  if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
+    CHECK(accept_mandatory_reauth_callback_ &&
+          cancel_mandatory_reauth_callback_ &&
+          close_mandatory_reauth_callback_);
+  }
 
   Show();
 }
 
 std::u16string MandatoryReauthBubbleControllerImpl::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE);
+  switch (current_bubble_type_) {
+    case MandatoryReauthBubbleType::kOptIn:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE);
+    case MandatoryReauthBubbleType::kConfirmation:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_TITLE);
+    case MandatoryReauthBubbleType::kInactive:
+      return std::u16string();
+  }
 }
 
 std::u16string MandatoryReauthBubbleControllerImpl::GetAcceptButtonText()
@@ -78,29 +92,34 @@ std::u16string MandatoryReauthBubbleControllerImpl::GetCancelButtonText()
 }
 
 std::u16string MandatoryReauthBubbleControllerImpl::GetExplanationText() const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION);
-}
-
-void MandatoryReauthBubbleControllerImpl::OnAcceptButton() {
-  std::move(accept_mandatory_reauth_callback_).Run();
-}
-
-void MandatoryReauthBubbleControllerImpl::OnCancelButton() {
-  std::move(cancel_mandatory_reauth_callback_).Run();
+  switch (current_bubble_type_) {
+    case MandatoryReauthBubbleType::kOptIn:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION);
+    case MandatoryReauthBubbleType::kConfirmation:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_EXPLANATION);
+    case MandatoryReauthBubbleType::kInactive:
+      return std::u16string();
+  }
 }
 
 void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
-  if (closed_reason == PaymentsBubbleClosedReason::kCancelled ||
-      closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-    // If the user explicitly cancelled or accepted the dialog, we don't want to
-    // display it anymore so we set it to inactive.
-    current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
+  if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
+    if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
+      std::move(accept_mandatory_reauth_callback_).Run();
+      current_bubble_type_ = MandatoryReauthBubbleType::kConfirmation;
+    } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
+      std::move(cancel_mandatory_reauth_callback_).Run();
+      current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
+    } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
+      close_mandatory_reauth_callback_.Run();
+    }
   } else {
-    close_mandatory_reauth_callback_.Run();
+    current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
   }
 
   UpdatePageActionIcon();
@@ -130,7 +149,7 @@ void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
   set_bubble_view(autofill_bubble_handler->ShowMandatoryReauthBubble(
-      web_contents(), this, /*is_user_gesture=*/false));
+      web_contents(), this, /*is_user_gesture=*/false, current_bubble_type_));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

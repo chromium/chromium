@@ -144,6 +144,28 @@ TEST_P(AddressFieldTest, ParseLandmark) {
   ClassifyAndVerify();
 }
 
+// Tests that between streets field is correctly classified.
+TEST_P(AddressFieldTest, ParseBetweenStreets) {
+  // TODO(crbug.com/1441904): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableSupportForBetweenStreets);
+
+  AddTextFormFieldData("entre-calle", "Entre calle",
+                       ADDRESS_HOME_BETWEEN_STREETS);
+  ClassifyAndVerify();
+}
+
+// Tests that address level 2 field is correctly classified.
+TEST_P(AddressFieldTest, ParseAdminLevel2) {
+  // TODO(crbug.com/1441904): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(features::kAutofillEnableSupportForAdminLevel2);
+
+  AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
+  ClassifyAndVerify();
+}
+
 TEST_P(AddressFieldTest, ParseCity) {
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);
   ClassifyAndVerify();
@@ -189,9 +211,14 @@ TEST_P(AddressFieldTest,
        ParseDependentLocalityCityStateCountryZipcodeTogether) {
   // TODO(crbug.com/1157405): Remove once launched.
   base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures({features::kAutofillEnableDependentLocalityParsing,
-                            features::kAutofillEnableSupportForLandmark},
-                           {});
+  enabled.InitWithFeatures(
+      {
+          features::kAutofillEnableDependentLocalityParsing,
+          features::kAutofillEnableSupportForLandmark,
+          features::kAutofillEnableSupportForBetweenStreets,
+          features::kAutofillEnableSupportForAdminLevel2,
+      },
+      {});
 
   AddTextFormFieldData("neighborhood", "Neighborhood",
                        ADDRESS_HOME_DEPENDENT_LOCALITY);
@@ -200,6 +227,9 @@ TEST_P(AddressFieldTest,
   AddTextFormFieldData("country", "Country", ADDRESS_HOME_COUNTRY);
   AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
+  AddTextFormFieldData("entre-calle", "Entre calle",
+                       ADDRESS_HOME_BETWEEN_STREETS);
+  AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
   ClassifyAndVerify();
 }
 

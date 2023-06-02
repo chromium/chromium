@@ -36,11 +36,8 @@ namespace {
 class AppRecover : public App {
  public:
   AppRecover(const base::Version& browser_version,
-             const std::string& session_id,
              const std::string& browser_app_id)
-      : browser_version_(browser_version),
-        session_id_(session_id),
-        browser_app_id_(browser_app_id) {}
+      : browser_version_(browser_version), browser_app_id_(browser_app_id) {}
 
  private:
   ~AppRecover() override = default;
@@ -55,7 +52,6 @@ class AppRecover : public App {
                     int reinstall_result);
 
   const base::Version browser_version_;
-  const std::string session_id_;  // TODO(crbug.com/1281971): Unused.
   const std::string browser_app_id_;
   scoped_refptr<GlobalPrefs> global_prefs_;
 };
@@ -116,7 +112,6 @@ std::vector<RegistrationRequest> AppRecover::RecordRegisteredApps() const {
     RegistrationRequest registration;
     registration.app_id = browser_app_id_;
     registration.version = browser_version_;
-    // TODO(crbug.com/1281971): registration.existence_checker_path must be set.
     apps.emplace_back(registration);
   }
   return apps;
@@ -147,13 +142,13 @@ int AppRecover::ReinstallUpdater() const {
   }
   base::CommandLine install_command(setup_path);
   install_command.AppendSwitch(kInstallSwitch);
+  install_command.AppendSwitch(kSilentSwitch);
   install_command.AppendSwitch(kEnableLoggingSwitch);
   install_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                     kLoggingModuleSwitchValue);
   if (IsSystemInstall(updater_scope())) {
     install_command.AppendSwitch(kSystemSwitch);
   }
-  // TODO(crbug.com/1281971): suppress the installer's UI.
   if (!base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
     VLOG(0) << "Failed to wait for the installer to exit.";
     return kErrorWaitFailedInstall;
@@ -198,7 +193,6 @@ scoped_refptr<App> MakeAppRecover() {
       base::CommandLine::ForCurrentProcess();
   return base::MakeRefCounted<AppRecover>(
       base::Version(command_line->GetSwitchValueASCII(kBrowserVersionSwitch)),
-      command_line->GetSwitchValueASCII(kSessionIdSwitch),
       command_line->GetSwitchValueASCII(kAppGuidSwitch));
 }
 

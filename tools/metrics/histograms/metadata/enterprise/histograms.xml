@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AutoEnrollmentStates">
+  <variant name="ConnectionError" summary="connection error"/>
+  <variant name="Disabled" summary="disabled"/>
+  <variant name="Enrollment" summary="enrollment"/>
+  <variant name="NoEnrollment" summary="no enrollment"/>
+  <variant name="ServerError" summary="server error"/>
+</variants>
+
 <variants name="CleanupHandler">
   <variant name="Browser"
       summary="Handler for open browser windows and browsing data"/>
@@ -97,6 +105,21 @@ chromium-metrics-reviews@google.com.
 <variants name="PolicyLevel">
   <variant name="Mandatory" summary="Mandatory Policy"/>
   <variant name="Recommended" summary="Recommended Policy"/>
+</variants>
+
+<variants name="StateDeterminationDmRequestTypes">
+  <variant name="PsmRlweOprf" summary="PSM RLWE OPRF"/>
+  <variant name="PsmRlweQuery" summary="PSM RLWE Query"/>
+  <variant name="State" summary="state"/>
+</variants>
+
+<variants name="StateDeterminationSteps">
+  <variant name="OPRFRequest" summary="PSM OPRF request"/>
+  <variant name="OwnershipCheck" summary="ownership check"/>
+  <variant name="QueryRequest" summary="PSM Query request"/>
+  <variant name="StateKeyRetrieval" summary="state key retrieval"/>
+  <variant name="StateRequest" summary="state request"/>
+  <variant name="SystemClockSync" summary="system clock sync"/>
 </variants>
 
 <variants name="WmiSystemSignal">
@@ -446,7 +469,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.CloudManagementEnrollmentTokenLocation.Mac"
     enum="EnterpriseCloudManagementEnrollmentTokenLocationMac"
-    expires_after="2023-06-04">
+    expires_after="2024-06-04">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
   <summary>
@@ -1192,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.DataTransferControllerStarted" enum="Boolean"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2053,14 +2076,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.IOSPolicies" units="units" expires_after="M85">
-  <owner>mnissler@chromium.org</owner>
-  <summary>
-    Number of policies loaded at startup on iOS, and when a change is detected
-    at runtime.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
     enum="BooleanSuccess" expires_after="2023-12-31">
   <owner>mpetrisor@chromium.org</owner>
@@ -2103,7 +2118,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestSuccessTime"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-06-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>
@@ -2114,7 +2129,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
     enum="MachineLevelUserCloudPolicyEnrollmentResult"
-    expires_after="2023-07-31">
+    expires_after="2024-06-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>The result of machine level user cloud policy enrollment.</summary>
@@ -2123,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialog"
     enum="MachineLevelUserCloudPolicyEnrollmentStartupDialog"
-    expires_after="2023-10-08">
+    expires_after="2024-06-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>
@@ -2134,7 +2149,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialogTime"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-06-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>
@@ -2145,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess"
-    enum="BooleanSuccess" expires_after="2023-06-01">
+    enum="BooleanSuccess" expires_after="2024-06-01">
   <owner>zmin@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
@@ -2499,6 +2514,157 @@ chromium-metrics-reviews@google.com.
     This is recorded when a user account is added as a secondary account
     (in-session).
   </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.DeviceIdentifierStatus"
+    enum="DeviceIdentifierStatus" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Captures state of device identifiers during state determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.EmbargoDatePassed"
+    enum="Boolean" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks whether embargo date has passed during state determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.Enabled" enum="Boolean"
+    expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>Captures situations when state determination is enabled.</summary>
+</histogram>
+
+<histogram
+    name="Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode"
+    enum="NetErrorCodes" expires_after="2024-05-10">
+  <owner>sergiyb@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Network error code for unified state determination kill switch config
+    requests.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.KillSwitchFetch.NumTries"
+    enum="NetErrorCodes" expires_after="2024-05-10">
+  <owner>sergiyb@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Number of tries for fetching unified state determination kill switch config.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.OnFlex" enum="Boolean"
+    expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Captures situations when state determination takes place on Flex devices.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.OwnershipStatus"
+    enum="OwnershipStatus" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Captures ownership state of device during state determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.PsmReportedAvailableState"
+    enum="Boolean" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks whether PSM has reported that state is available during state
+    determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.StateKeysRetrieved"
+    enum="Boolean" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks whether state keys were retrieved during state determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.StateReturned" enum="Boolean"
+    expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks whether state request returned state during state determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.StepDuration.{Step}" units="ms"
+    expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks the duration of the {Step} as part of state determination.
+  </summary>
+  <token key="Step" variants="StateDeterminationSteps"/>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.SystemClockSynchronized"
+    enum="Boolean" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks whether system clock was synchronized during state determination.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.TotalDuration" units="ms"
+    expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>Tracks the total duration of state determination.</summary>
+</histogram>
+
+<histogram name="Enterprise.StateDetermination.TotalDurationByState.{State}"
+    units="ms" expires_after="2024-05-10">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks the total duration of state determination when it results in {State}
+    state.
+  </summary>
+  <token key="State" variants="AutoEnrollmentStates"/>
+</histogram>
+
+<histogram
+    name="Enterprise.StateDetermination.{RequestType}Request.DmStatusCode"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2024-05-10">
+  <owner>sergiyb@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Device management server request status for {RequestType} requests to Device
+    Management server.
+  </summary>
+  <token key="RequestType" variants="StateDeterminationDmRequestTypes"/>
+</histogram>
+
+<histogram
+    name="Enterprise.StateDetermination.{RequestType}Request.NetworkErrorCode"
+    enum="NetErrorCodes" expires_after="2024-05-10">
+  <owner>sergiyb@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Network error code for {RequestType} requests to Device Management server.
+  </summary>
+  <token key="RequestType" variants="StateDeterminationDmRequestTypes"/>
 </histogram>
 
 <histogram name="Enterprise.SystemFeaturesDisableList" enum="SystemFeature"

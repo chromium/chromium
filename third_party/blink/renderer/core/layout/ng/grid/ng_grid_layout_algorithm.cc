@@ -1154,7 +1154,9 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       // set our inline size to our max-content contribution size.
       const auto fallback_space = CreateConstraintSpaceForMeasure(
           subgridded_item, track_direction,
-          /* opt_fixed_block_size */ MaxContentSize());
+          grid_item->is_parallel_with_root_grid
+              ? LogicalSize(MaxContentSize(), kIndefiniteSize)
+              : LogicalSize(kIndefiniteSize, MaxContentSize()));
 
       result = LayoutGridItemForMeasure(*grid_item, fallback_space,
                                         sizing_constraint);
@@ -2915,7 +2917,8 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     //   finding the size of an fr using all the grid tracks that the item
     //   crosses and a space to fill of the item’s max-content contribution.
     for (auto& grid_item : sizing_data.grid_items) {
-      if (grid_item.IsSpanningFlexibleTrack(track_direction)) {
+      if (grid_item.IsConsideredForSizing(track_direction) &&
+          grid_item.IsSpanningFlexibleTrack(track_direction)) {
         double grid_item_fr_size =
             FindFrSize(GetSetIteratorForItem(grid_item, track_collection),
                        ContributionSizeForGridItem(
@@ -3207,7 +3210,7 @@ NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
 NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const NGSubgriddedItemData& subgridded_item,
     GridTrackSizingDirection track_direction,
-    absl::optional<LayoutUnit> opt_fixed_block_size) const {
+    const LogicalSize& fixed_available_size) const {
   DCHECK(!subgridded_item.IsSubgrid());
 
   LogicalSize containing_grid_area_size(kIndefiniteSize, kIndefiniteSize);
@@ -3220,9 +3223,6 @@ NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     containing_grid_area_size.inline_size = ComputeGridItemAvailableSize(
         *subgridded_item, subgridded_item.Columns(writing_mode));
   }
-
-  const LogicalSize fixed_available_size(
-      kIndefiniteSize, opt_fixed_block_size.value_or(kIndefiniteSize));
 
   return CreateConstraintSpace(NGCacheSlot::kMeasure, *subgridded_item,
                                containing_grid_area_size, fixed_available_size);

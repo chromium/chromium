@@ -71,15 +71,7 @@ SVGComponentTransferFunctionElement::SVGComponentTransferFunctionElement(
       type_(MakeGarbageCollected<SVGAnimatedEnumeration<ComponentTransferType>>(
           this,
           svg_names::kTypeAttr,
-          FECOMPONENTTRANSFER_TYPE_IDENTITY)) {
-  AddToPropertyMap(table_values_);
-  AddToPropertyMap(slope_);
-  AddToPropertyMap(intercept_);
-  AddToPropertyMap(amplitude_);
-  AddToPropertyMap(exponent_);
-  AddToPropertyMap(offset_);
-  AddToPropertyMap(type_);
-}
+          FECOMPONENTTRANSFER_TYPE_IDENTITY)) {}
 
 void SVGComponentTransferFunctionElement::Trace(Visitor* visitor) const {
   visitor->Trace(table_values_);
@@ -121,6 +113,39 @@ SVGComponentTransferFunctionElement::TransferFunction() const {
   func.offset = offset_->CurrentValue()->Value();
   func.table_values = table_values_->CurrentValue()->ToFloatVector();
   return func;
+}
+
+SVGAnimatedPropertyBase*
+SVGComponentTransferFunctionElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kTableValuesAttr) {
+    return table_values_.Get();
+  } else if (attribute_name == svg_names::kSlopeAttr) {
+    return slope_.Get();
+  } else if (attribute_name == svg_names::kInterceptAttr) {
+    return intercept_.Get();
+  } else if (attribute_name == svg_names::kAmplitudeAttr) {
+    return amplitude_.Get();
+  } else if (attribute_name == svg_names::kExponentAttr) {
+    return exponent_.Get();
+  } else if (attribute_name == svg_names::kOffsetAttr) {
+    return offset_.Get();
+  } else if (attribute_name == svg_names::kTypeAttr) {
+    return type_.Get();
+  } else {
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGComponentTransferFunctionElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{
+        table_values_.Get(), slope_.Get(),  intercept_.Get(), amplitude_.Get(),
+        exponent_.Get(),     offset_.Get(), type_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

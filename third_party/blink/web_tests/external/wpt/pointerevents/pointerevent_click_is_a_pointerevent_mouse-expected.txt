@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS click using mouse is a PointerEvent
+PASS click in a subframe using mouse is a PointerEvent
+FAIL Click event triggered by a non-pointing device should have -1 as the pointerId promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+Harness: the test ran to completion.
+

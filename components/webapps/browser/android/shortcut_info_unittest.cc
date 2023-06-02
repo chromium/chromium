@@ -103,12 +103,17 @@ TEST_F(ShortcutInfoTest, GetAllWebApkIcons) {
   info_.best_primary_icon_url = best_primary_icon_url;
   info_.splash_image_url = splash_image_url;
 
-  std::set<GURL> result = info_.GetWebApkIcons();
-  std::set<GURL> expected{best_shortcut_icon_url_1, best_shortcut_icon_url_2,
-                          best_primary_icon_url, splash_image_url};
+  std::vector<WebappIcon> result_icons = info_.GetWebApkIcons();
+  ASSERT_EQ(4u, result_icons.size());
 
-  ASSERT_EQ(4u, result.size());
-  ASSERT_EQ(expected, result);
+  std::vector<GURL> result_urls;
+  for (auto icon : result_icons) {
+    result_urls.push_back(icon.url());
+  }
+  std::vector<GURL> expected_urls{best_primary_icon_url, splash_image_url,
+                                  best_shortcut_icon_url_1,
+                                  best_shortcut_icon_url_2};
+  ASSERT_EQ(expected_urls, result_urls);
 }
 
 TEST_F(ShortcutInfoTest, NotContainEmptyOrDuplicateWebApkIcons) {
@@ -119,11 +124,16 @@ TEST_F(ShortcutInfoTest, NotContainEmptyOrDuplicateWebApkIcons) {
   info_.best_shortcut_icon_urls.push_back(best_primary_icon_url);
   info_.best_primary_icon_url = best_primary_icon_url;
 
-  std::set<GURL> result = info_.GetWebApkIcons();
-  std::set<GURL> expected{best_shortcut_icon_url, best_primary_icon_url};
+  std::vector<WebappIcon> result_icons = info_.GetWebApkIcons();
+  std::vector<GURL> result_urls;
+  for (auto icon : result_icons) {
+    result_urls.push_back(icon.url());
+  }
 
-  ASSERT_EQ(2u, result.size());
-  ASSERT_EQ(expected, result);
+  std::vector<GURL> expected{best_primary_icon_url, best_shortcut_icon_url};
+
+  ASSERT_EQ(2u, result_icons.size());
+  ASSERT_EQ(expected, result_urls);
 }
 
 TEST_F(ShortcutInfoTest, NameFallsBackToShortName) {

@@ -44,7 +44,7 @@ class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
  private:
   void CompleteUnregistration(const AppId& app_id);
   const base::FilePath profile_path_;
-  const raw_ref<WebAppRegistrar> registrar_;
+  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
   base::WeakPtrFactory<UninstallationViaOsSettingsSubManager> weak_factory_{
       this};
 };

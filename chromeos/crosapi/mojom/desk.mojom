@@ -152,6 +152,17 @@ union GetDeskByIDResult {
   DeskModel desk;
 };
 
+// Implemented by lacros-chrome for consuming events.
+[Stable]
+interface DeskEventObserver {
+  // Fired when desk switch event dispatched.
+  OnDeskSwitched@0(GUID new_desk_id, GUID previous_desk_id);
+  // Fired when desk add event dispatched.
+  OnDeskAdded@1(GUID new_desk_id);
+  // Fired when desk removal event dispatched.
+  OnDeskRemoved@2(GUID removed_desk_id);
+};
+
 // Interface for desk operations. Implemented by ash-chrome. Used by
 // lacros-chrome to forward the desk operation to support wmDesksPrivate private
 // API.
@@ -201,4 +212,9 @@ interface Desk {
 
   // Retrieves desk by its desk ID.
   [MinVersion=3]GetDeskByID@11(GUID desk_uuid) => (GetDeskByIDResult result);
+
+  // Adds an observer to desk events. Observers will be removed once the pipe
+  // closed between ash and lacros.
+  [MinVersion=4]AddDeskEventObserver@12(
+      pending_remote<DeskEventObserver> observer);
 };

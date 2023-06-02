@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/test/bind.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -138,6 +139,21 @@ std::vector<SavedDeskIconView*> SavedDeskItemViewTestApi::GetIconViews() const {
     casted_icon_views.push_back(static_cast<SavedDeskIconView*>(icon_view));
   }
   return casted_icon_views;
+}
+
+SavedDeskItemHoverState SavedDeskItemViewTestApi::GetHoverState() const {
+  float hover_layer_opacity =
+      item_view_->hover_container_->layer()->GetTargetOpacity();
+  float icon_layer_opacity =
+      item_view_->icon_container_view_->layer()->GetTargetOpacity();
+
+  if (hover_layer_opacity == 1.0f && icon_layer_opacity == 0.0f) {
+    return SavedDeskItemHoverState::kHover;
+  }
+  if (hover_layer_opacity == 0.0f && icon_layer_opacity == 1.0f) {
+    return SavedDeskItemHoverState::kIcons;
+  }
+  return SavedDeskItemHoverState::kIndeterminate;
 }
 
 SavedDeskIconViewTestApi::SavedDeskIconViewTestApi(

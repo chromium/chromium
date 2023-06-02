@@ -16,15 +16,20 @@ found in the LICENSE file.
   }
 
   #modalDialogTitle {
-    font-family: var(--oobe-default-font-family);
+    font-family: var(--oobe-modal-dialog-header-font-family);
     font-size: var(--oobe-modal-dialog-header-font-size);
     font-weight: var(--oobe-modal-dialog-header-font-weight);
+    line-height: var(--oobe-modal-dialog-header-line-height);
     margin: 0;
     user-select: none;
   }
 
   #contentContainer {
+    font-family: var(--oobe-modal-dialog-content-font-family);
+    font-size: var(--oobe-modal-dialog-content-font-size);
+    font-weight: var(--oobe-modal-dialog-content-font-weight);
     height: var(--oobe-modal-dialog-content-height);
+    line-height: var(--oobe-modal-dialog-content-line-height);
     padding-bottom:
         var(--oobe-modal-dialog-content-slot-padding-bottom, 12px);
     padding-inline-end:
@@ -44,7 +49,7 @@ found in the LICENSE file.
     </slot>
   </div>
   <!-- Content to be shown -->
-  <div id="contentContainer" class="oobe-default-font" slot="body"
+  <div id="contentContainer" slot="body"
       class="flex-grow layout vertical not-resizable">
     <slot name="content">
       <template is="dom-if" if="[[contentKey]]">

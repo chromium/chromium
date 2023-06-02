@@ -207,13 +207,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                           views::Builder<views::ImageView>().CopyAddressTo(
                               &extension_icon_),
                           views::Builder<views::Label>().CopyAddressTo(
-                              &extension_name_)),
-                  // Close button.
-                  views::Builder<views::Button>(
-                      views::BubbleFrameView::CreateCloseButton(
-                          base::BindRepeating(
-                              &ExtensionsMenuHandler::CloseBubble,
-                              base::Unretained(menu_handler))))),
+                              &extension_name_))),
           // Content.
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)

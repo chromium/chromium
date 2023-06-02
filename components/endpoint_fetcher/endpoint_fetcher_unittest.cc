@@ -119,92 +119,125 @@ class EndpointFetcherTest : public testing::Test {
 TEST_F(EndpointFetcherTest, FetchResponse) {
   SignIn();
   SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_OK, net::OK);
+
+  base::RunLoop run_loop;
   EXPECT_CALL(endpoint_fetcher_callback(),
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))));
+                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(EndpointFetcherTest, FetchMalformedResponse) {
   SignIn();
   SetMockResponse(GURL(kEndpoint), kMalformedResponse, net::HTTP_OK, net::OK);
+
+  base::RunLoop run_loop;
   EXPECT_CALL(endpoint_fetcher_callback(),
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response,
                         testing::StartsWith(kExpectedSanitizationError)),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
                   Field(&EndpointResponse::error_type,
-                        FetchErrorType::kResultParseError)))));
+                        FetchErrorType::kResultParseError)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(EndpointFetcherTest, FetchEndpointResponseError) {
   SignIn();
   SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_BAD_REQUEST,
                   net::ERR_FAILED);
+
+  base::RunLoop run_loop;
   EXPECT_CALL(
       endpoint_fetcher_callback(),
       Run(Pointee(AllOf(
           Field(&EndpointResponse::response, kExpectedResponseError),
           Field(&EndpointResponse::http_status_code, -1),
-          Field(&EndpointResponse::error_type, FetchErrorType::kNetError)))));
+          Field(&EndpointResponse::error_type, FetchErrorType::kNetError)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(EndpointFetcherTest, FetchRedirectionResponse) {
   SignIn();
   SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_FOUND, net::OK);
+
+  base::RunLoop run_loop;
   EXPECT_CALL(endpoint_fetcher_callback(),
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_FOUND),
-                  Field(&EndpointResponse::error_type, absl::nullopt)))));
+                  Field(&EndpointResponse::error_type, absl::nullopt)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(EndpointFetcherTest, FetchOAuthError) {
   SignIn();
   identity_test_env().SetAutomaticIssueOfAccessTokens(false);
+
+  base::RunLoop run_loop;
   EXPECT_CALL(
       endpoint_fetcher_callback(),
       Run(Pointee(AllOf(
           Field(&EndpointResponse::response, kExpectedAuthError),
           Field(&EndpointResponse::http_status_code, -1),
-          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(EndpointFetcherTest, FetchOAuthNoPrimaryAccount) {
+  base::RunLoop run_loop;
   EXPECT_CALL(
       endpoint_fetcher_callback(),
       Run(Pointee(AllOf(
           Field(&EndpointResponse::response, kExpectedPrimaryAccountError),
           Field(&EndpointResponse::http_status_code, -1),
-          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(EndpointFetcherTest, PerformRequestAuthError) {
   SetMockResponse(GURL(kEndpoint), kEmptyResponse, net::HTTP_UNAUTHORIZED,
                   net::OK);
+  base::RunLoop run_loop;
   EXPECT_CALL(
       endpoint_fetcher_callback(),
       Run(Pointee(AllOf(
           Field(&EndpointResponse::response, kEmptyResponse),
           Field(&EndpointResponse::http_status_code, net::HTTP_UNAUTHORIZED),
-          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))));
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))))
+      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
+        run_loop.Quit();
+      });
 
   endpoint_fetcher()->PerformRequest(endpoint_fetcher_callback().Get(),
                                      kApiKey);
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }

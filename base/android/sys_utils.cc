@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/android/build_info.h"
-#include "base/base_jni_headers/SysUtils_jni.h"
+#include "base/base_jni/SysUtils_jni.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/base_tracing.h"

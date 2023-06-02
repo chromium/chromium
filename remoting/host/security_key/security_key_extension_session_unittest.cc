@@ -70,6 +70,7 @@ class TestClientStub : public protocol::ClientStub {
   void DeliverHostMessage(const protocol::ExtensionMessage& message) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
   void SetTransportInfo(const protocol::TransportInfo& transport_info) override;
+  void SetActiveDisplay(const protocol::ActiveDisplay& active_display) override;
 
   // protocol::ClipboardStub implementation.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
@@ -109,6 +110,9 @@ void TestClientStub::SetVideoLayout(const protocol::VideoLayout& layout) {}
 
 void TestClientStub::SetTransportInfo(
     const protocol::TransportInfo& transport_info) {}
+
+void TestClientStub::SetActiveDisplay(
+    const protocol::ActiveDisplay& active_display) {}
 
 void TestClientStub::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {}

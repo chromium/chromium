@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -17,6 +18,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
@@ -45,7 +47,7 @@ Status ChromeImpl::GetAsDesktop(ChromeDesktopImpl** desktop) {
 }
 
 const BrowserInfo* ChromeImpl::GetBrowserInfo() const {
-  return devtools_http_client_->browser_info();
+  return &browser_info_;
 }
 
 bool ChromeImpl::HasCrashedWebView() {
@@ -91,6 +93,11 @@ Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
   return Status(kOk);
 }
 
+bool ChromeImpl::IsBrowserWindow(const WebViewInfo& view) const {
+  return base::Contains(window_types_, view.type) ||
+         (view.type == WebViewInfo::kOther && view.url == "chrome://print/");
+}
+
 Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
                                   bool w3c_compliant) {
   // Check if some web views are closed (or in the case of background pages,
@@ -108,7 +115,7 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
   // Check for newly-opened web views.
   for (size_t i = 0; i < views_info.GetSize(); ++i) {
     const WebViewInfo& view = views_info.Get(i);
-    if (devtools_http_client_->IsBrowserWindow(view)) {
+    if (IsBrowserWindow(view)) {
       bool found = false;
       for (const auto& web_view : web_views_) {
         if (web_view->GetId() == view.id) {
@@ -128,14 +135,13 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         // OnConnected will fire when DevToolsClient connects later.
         CHECK(!page_load_strategy_.empty());
         if (view.type == WebViewInfo::kServiceWorker) {
-          web_views_.push_back(std::make_unique<WebViewImpl>(
-              view.id, w3c_compliant, nullptr,
-              devtools_http_client_->browser_info(), std::move(client)));
+          web_views_.push_back(
+              std::make_unique<WebViewImpl>(view.id, w3c_compliant, nullptr,
+                                            &browser_info_, std::move(client)));
         } else {
           web_views_.push_back(std::make_unique<WebViewImpl>(
-              view.id, w3c_compliant, nullptr,
-              devtools_http_client_->browser_info(), std::move(client),
-              mobile_device_, page_load_strategy_));
+              view.id, w3c_compliant, nullptr, &browser_info_,
+              std::move(client), mobile_device_, page_load_strategy_));
         }
         DevToolsClientImpl* parent =
             static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
@@ -212,78 +218,9 @@ Status ChromeImpl::CreateClient(const std::string& id,
   }
 
   *client = std::make_unique<DevToolsClientImpl>(id, session_id);
-  (*client)->SetFrontendCloserFunc(base::BindRepeating(
-      &ChromeImpl::CloseFrontends, base::Unretained(this), id));
   (*client)->SetMainPage(true);
 
   return status;
-}
-
-Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
-  WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(&views_info);
-  if (status.IsError())
-    return status;
-
-  // Close frontends. Usually frontends are docked in the same page, although
-  // some may be in tabs (undocked, chrome://inspect, the DevTools
-  // discovery page, etc.). Tabs can be closed via the DevTools HTTP close
-  // URL, but docked frontends can only be closed, by design, by connecting
-  // to them and clicking the close button. Close the tab frontends first
-  // in case one of them is debugging a docked frontend, which would prevent
-  // the code from being able to connect to the docked one.
-  std::list<std::string> tab_frontend_ids;
-  std::list<std::string> docked_frontend_ids;
-  for (size_t i = 0; i < views_info.GetSize(); ++i) {
-    const WebViewInfo& view_info = views_info.Get(i);
-    if (view_info.IsFrontend()) {
-      if (view_info.type == WebViewInfo::kPage)
-        tab_frontend_ids.push_back(view_info.id);
-      else if (view_info.type == WebViewInfo::kOther)
-        docked_frontend_ids.push_back(view_info.id);
-      else
-        return Status(kUnknownError, "unknown type of DevTools frontend");
-    }
-  }
-
-  for (std::list<std::string>::const_iterator it = tab_frontend_ids.begin();
-       it != tab_frontend_ids.end(); ++it) {
-    status = CloseWebView(*it);
-    if (status.IsError())
-      return status;
-  }
-
-  for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
-       it != docked_frontend_ids.end(); ++it) {
-    std::unique_ptr<DevToolsClientImpl> client;
-    status = CreateClient(*it, &client);
-    if (status.IsError())
-      return status;
-    std::unique_ptr<WebViewImpl> web_view(new WebViewImpl(
-        *it, false, nullptr, devtools_http_client_->browser_info(),
-        std::move(client), absl::nullopt, page_load_strategy_));
-
-    DevToolsClientImpl* parent =
-        static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
-    status = web_view->AttachTo(parent);
-    if (status.IsError()) {
-      return status;
-    }
-
-    status = CloseWebView(*it);
-    // Ignore disconnected error, because it may be closed already.
-    if (status.IsError() && status.code() != kDisconnected)
-      return status;
-  }
-
-  status = GetWebViewsInfo(&views_info);
-  if (status.IsError())
-    return status;
-
-  const WebViewInfo* view_info = views_info.GetForId(for_client_id);
-  if (!view_info)
-    return Status(kNoSuchWindow, "window was already closed");
-  return Status(kOk);
 }
 
 Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
@@ -736,19 +673,21 @@ DevToolsClient* ChromeImpl::Client() const {
   return devtools_websocket_client_.get();
 }
 
-ChromeImpl::ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
+ChromeImpl::ChromeImpl(BrowserInfo browser_info,
+                       std::set<WebViewInfo::Type> window_types,
                        std::unique_ptr<DevToolsClient> websocket_client,
                        std::vector<std::unique_ptr<DevToolsEventListener>>
                            devtools_event_listeners,
                        absl::optional<MobileDevice> mobile_device,
-                       SyncWebSocketFactory socket_factory,
                        std::string page_load_strategy)
     : mobile_device_(std::move(mobile_device)),
-      socket_factory_(std::move(socket_factory)),
-      devtools_http_client_(std::move(http_client)),
+      browser_info_(std::move(browser_info)),
+      window_types_(std::move(window_types)),
       devtools_websocket_client_(std::move(websocket_client)),
       devtools_event_listeners_(std::move(devtools_event_listeners)),
       page_load_strategy_(page_load_strategy) {
+  window_types_.insert(WebViewInfo::kPage);
+  window_types_.insert(WebViewInfo::kApp);
   page_tracker_ = std::make_unique<PageTracker>(
       devtools_websocket_client_.get(), &web_views_);
 }

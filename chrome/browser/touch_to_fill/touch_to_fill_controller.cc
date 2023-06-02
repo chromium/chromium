@@ -13,6 +13,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
@@ -46,6 +47,12 @@ void TouchToFillController::Show(
     base::span<const UiCredential> credentials,
     base::span<PasskeyCredential> passkey_credentials,
     std::unique_ptr<TouchToFillControllerDelegate> delegate) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSuggestionBottomSheetV2) &&
+      touch_to_fill_state_ != TouchToFillState::kNone) {
+    return;
+  }
+
   DCHECK(!delegate_);
   delegate_ = std::move(delegate);
 
@@ -69,6 +76,7 @@ void TouchToFillController::Show(
       SortCredentials(credentials), passkey_credentials,
       delegate_->ShouldTriggerSubmission(),
       password_manager_launcher::CanManagePasswordsWhenPasskeysPresent());
+  touch_to_fill_state_ = TouchToFillState::kIsShowing;
 }
 
 void TouchToFillController::OnCredentialSelected(
@@ -115,6 +123,14 @@ void TouchToFillController::Close() {
                                       base::Unretained(this)));
 }
 
+void TouchToFillController::Reset() {
+  if (touch_to_fill_state_ == TouchToFillState::kIsShowing) {
+    Close();
+  }
+  touch_to_fill_state_ = TouchToFillState::kNone;
+}
+
 void TouchToFillController::ActionCompleted() {
+  touch_to_fill_state_ = TouchToFillState::kWasShown;
   delegate_.reset();
 }

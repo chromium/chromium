@@ -20,6 +20,7 @@ found in the LICENSE file.
         android:background="@drawable/top_round_shadow" />
 
     <View
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet_background" />

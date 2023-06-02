@@ -26,6 +26,7 @@ extern const char kTabInactivityThresholdOneWeekParam[];
 extern const char kTabInactivityThresholdTwoWeeksParam[];
 extern const char kTabInactivityThresholdThreeWeeksParam[];
 extern const char kTabInactivityThresholdOneMinuteDemoParam[];
+extern const char kTabInactivityThresholdImmediateDemoParam[];
 
 // Convenience method for determining if Inactive Tabs is available (it is not
 // available on iPad or if not explicitly enabled by Finch).

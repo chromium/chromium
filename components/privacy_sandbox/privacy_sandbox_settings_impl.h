@@ -75,6 +75,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   void SetTopicsBlockedForTesting() override;
   void SetPrivacySandboxEnabled(bool enabled) override;
   bool IsPrivacySandboxRestricted() const override;
+  bool IsPrivacySandboxCurrentlyUnrestricted() const override;
   bool IsSubjectToM1NoticeRestricted() const override;
   bool IsRestrictedNoticeEnabled() const override;
   void OnCookiesCleared() override;
@@ -118,6 +119,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
 
   static bool IsAllowed(Status status);
 
+  static void JoinHistogram(const char* name, Status status);
+
   // Get the Topics that are disabled by Finch.
   const std::vector<browsing_topics::Topic>& GetFinchDisabledTopics();
 
@@ -129,7 +132,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // Whether the privacy sandbox APIs can be allowed given the current
   // environment. For example, the privacy sandbox is always disabled in
   // Incognito and for restricted accounts.
-  Status GetPrivacySandboxAllowedStatus() const;
+  Status GetPrivacySandboxAllowedStatus(
+      bool should_ignore_restriction = false) const;
 
   // Whether the privacy sandbox associated with  the |pref_name| is enabled.
   // For individual sites, check as well with GetSiteAccessAllowedStatus.

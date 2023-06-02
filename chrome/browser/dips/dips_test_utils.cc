@@ -27,6 +27,8 @@ void URLCookieAccessObserver::Wait() {
 void URLCookieAccessObserver::OnCookiesAccessed(
     RenderFrameHost* render_frame_host,
     const CookieAccessDetails& details) {
+  cookie_accessed_in_primary_page_ = IsInPrimaryPage(render_frame_host);
+
   if (details.type == access_type_ && details.url == url_) {
     run_loop_.Quit();
   }
@@ -35,9 +37,15 @@ void URLCookieAccessObserver::OnCookiesAccessed(
 void URLCookieAccessObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const CookieAccessDetails& details) {
+  cookie_accessed_in_primary_page_ = IsInPrimaryPage(navigation_handle);
+
   if (details.type == access_type_ && details.url == url_) {
     run_loop_.Quit();
   }
+}
+
+bool URLCookieAccessObserver::CookieAccessedInPrimaryPage() const {
+  return cookie_accessed_in_primary_page_;
 }
 
 FrameCookieAccessObserver::FrameCookieAccessObserver(
@@ -174,3 +182,23 @@ ScopedInitDIPSFeature::ScopedInitDIPSFeature(
       override_profile_selections_for_dips_cleanup_service_(
           DIPSCleanupServiceFactory::GetInstance(),
           DIPSCleanupServiceFactory::CreateProfileSelections()) {}
+
+OpenedWindowObserver::OpenedWindowObserver(
+    content::WebContents* web_contents,
+    WindowOpenDisposition open_disposition)
+    : WebContentsObserver(web_contents), open_disposition_(open_disposition) {}
+
+void OpenedWindowObserver::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  if (!window_ && disposition == open_disposition_) {
+    window_ = new_contents;
+    run_loop_.Quit();
+  }
+}

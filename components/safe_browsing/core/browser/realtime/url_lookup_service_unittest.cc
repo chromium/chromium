@@ -121,11 +121,12 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
-    cache_manager_.reset();
     if (content_setting_map_) {
       content_setting_map_->ShutdownOnUIThread();
     }
+    raw_token_fetcher_ = nullptr;
     rt_service_->Shutdown();
+    cache_manager_.reset();
   }
 
   bool CanCheckUrl(const GURL& url) {
@@ -198,6 +199,10 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   RealTimeUrlLookupService* rt_service() { return rt_service_.get(); }
+
+  void DisableTokenFetchesInClient() {
+    token_fetches_configured_in_client_ = false;
+  }
 
   void EnableMbb() {
     unified_consent::UnifiedConsentService::RegisterPrefs(
@@ -285,7 +290,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   bool token_fetches_configured_in_client_ = false;
-  raw_ptr<TestSafeBrowsingTokenFetcher> raw_token_fetcher_ = nullptr;
+  raw_ptr<TestSafeBrowsingTokenFetcher, DanglingUntriaged> raw_token_fetcher_ =
+      nullptr;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
@@ -474,6 +480,155 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   histograms.ExpectUniqueSample("SafeBrowsing.RT.ThreatInfoSize",
                                 /* sample */ 0,
                                 /* expected_count */ 0);
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestStartLookup_PingWithTokenUpdatesEsbProtegoPingWithTokenLastLogTime) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  EnableTokenFetchesInClient();
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            base::DoNothing(), base::DoNothing(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  FulfillAccessTokenRequest("access_token_string");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_pref_service_.GetTime(
+                prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime),
+            base::Time::Now());
+}
+
+TEST_F(
+    RealTimeUrlLookupServiceTest,
+    TestStartLookup_PingWithoutTokenSetsEsbProtegoPingWithoutTokenLastLogTime) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  DisableTokenFetchesInClient();
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            base::DoNothing(), base::DoNothing(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_pref_service_.GetTime(
+                prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime),
+            base::Time::Now());
+}
+
+TEST_F(
+    RealTimeUrlLookupServiceTest,
+    TestStartLookup_DoesNotSetEsbProtegoPingWithTokenLastLogTimeWhenCacheIsHit) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  EnableTokenFetchesInClient();
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  GURL url(kTestUrl);
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
+                               RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                               60, "example.test/",
+                               RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  task_environment_.RunUntilIdle();
+
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            base::DoNothing(), base::DoNothing(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_pref_service_.GetTime(
+                prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime),
+            base::Time());
+}
+
+TEST_F(
+    RealTimeUrlLookupServiceTest,
+    TestStartLookup_DoesNotSetEsbProtegoPingWithoutTokenLastLogTimeWhenCacheIsHit) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  DisableTokenFetchesInClient();
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  GURL url(kTestUrl);
+  MayBeCacheRealTimeUrlVerdict(RTLookupResponse::ThreatInfo::DANGEROUS,
+                               RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                               60, "example.test/",
+                               RTLookupResponse::ThreatInfo::COVERING_MATCH);
+  task_environment_.RunUntilIdle();
+
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            base::DoNothing(), base::DoNothing(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_pref_service_.GetTime(
+                prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime),
+            base::Time());
+}
+
+TEST_F(
+    RealTimeUrlLookupServiceTest,
+    TestStartLookup_DoesNotSetEsbProtegoPingWithTokenLastLogTimeWhenEsbIsDisabled) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  EnableTokenFetchesInClient();
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            base::DoNothing(), base::DoNothing(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  FulfillAccessTokenRequest("access_token_string");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_pref_service_.GetTime(
+                prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime),
+            base::Time());
+}
+
+TEST_F(
+    RealTimeUrlLookupServiceTest,
+    TestStartLookup_DoesNotSetEsbProtegoPingWithoutTokenLastLogTimeWhenEsbIsDisabled) {
+  EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  DisableTokenFetchesInClient();
+  GURL url(kTestUrl);
+  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
+                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                        "example.test/",
+                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
+
+  rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                            base::DoNothing(), base::DoNothing(),
+                            base::SequencedTaskRunner::GetCurrentDefault());
+
+  FulfillAccessTokenRequest("access_token_string");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_pref_service_.GetTime(
+                prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime),
+            base::Time());
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,

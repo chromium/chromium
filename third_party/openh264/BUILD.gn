@@ -150,7 +150,7 @@ source_set("common") {
       # files replaces these using macros for "wels_..." versions of the same
       # functions. We do not have access to these and use the <cpu-features.h>
       # ones instead.
-      "//third_party/android_ndk:cpu_features",
+      "//third_party/cpu_features:ndk_compat",
     ]
   }
 }

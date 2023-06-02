@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RpcDispatcherImpl final
   void ProcessResponse(RpcDispatcher::ResponseCallback callback,
                        const ReceiverResponse& response);
 
-  raw_ref<MessageDispatcher> message_dispatcher_;
+  raw_ref<MessageDispatcher, DanglingUntriaged> message_dispatcher_;
   bool is_subscribed_ = false;
 };
 

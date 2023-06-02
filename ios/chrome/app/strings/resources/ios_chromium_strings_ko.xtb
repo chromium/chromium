@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium 동기화 데이터</translation>
 <translation id="1722370509450468186">비밀번호가 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
-<translation id="177102542580335555">이 Chromium 프로필에는 표준 보안 보호 조치를 사용하고 있습니다.</translation>
 <translation id="1838412507805038478">Chromium이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromium을 최대한 활용하려면 Google 계정으로 Chromium에 로그인하세요</translation>
 <translation id="3639997914391704523">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 계정이 Chromium을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
+<translation id="3661862315467204831">iOS에서 Chromium 설정을 열고 'Browser Default APP(브라우저 기본 앱)'을 탭한 다음 Chromium을 선택합니다</translation>
 <translation id="372658070733623520">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
+<translation id="3827545470516145620">이 기기에 표준 보안 보호 조치가 적용되고 있습니다.</translation>
 <translation id="3955621079070267756">어느 앱에서나 Chromium 열기</translation>
 <translation id="4043291146360695975">비밀번호가 이 기기의 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="4099085513035183040">Chromium 베타에서는 지원되지 않습니다.</translation>

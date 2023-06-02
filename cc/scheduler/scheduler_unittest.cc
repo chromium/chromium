@@ -279,8 +279,6 @@ class FakeSchedulerClient : public SchedulerClient,
     PushAction("RemoveObserver(this)");
   }
 
-  bool HasInvalidationAnimation() const override { return false; }
-
  protected:
   bool InsideBeginImplFrameCallback(bool state) {
     return inside_begin_impl_frame_ == state;
@@ -300,7 +298,7 @@ class FakeSchedulerClient : public SchedulerClient,
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
   std::vector<const char*> actions_;
-  raw_ptr<TestScheduler> scheduler_ = nullptr;
+  raw_ptr<TestScheduler, DanglingUntriaged> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
   absl::optional<FrameSkippedReason> last_frame_skipped_reason_;
 };

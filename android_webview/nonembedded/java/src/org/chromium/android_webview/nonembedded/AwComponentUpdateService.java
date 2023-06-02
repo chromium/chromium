@@ -130,7 +130,7 @@ public class AwComponentUpdateService extends JobService {
      *         already updating, {@code false} if it fails to trigger the updates.
      */
     @VisibleForTesting
-    boolean maybeStartUpdates(boolean onDemandUpdate) {
+    public boolean maybeStartUpdates(boolean onDemandUpdate) {
         if (mIsUpdating) {
             return true;
         }

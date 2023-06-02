@@ -365,8 +365,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetFontDescription().FontOpticalSizing() ==
              b.GetFontDescription().FontOpticalSizing();
     case CSSPropertyID::kFontPalette:
-      return a.GetFontDescription().GetFontPalette() ==
-             b.GetFontDescription().GetFontPalette();
+      return base::ValuesEquivalent(a.FontPalette(), b.FontPalette());
     case CSSPropertyID::kFontFeatureSettings:
       return a.GetFontDescription().FeatureSettings() ==
              b.GetFontDescription().FeatureSettings();
@@ -591,6 +590,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.Right() == b.Right();
     case CSSPropertyID::kRubyPosition:
       return a.GetRubyPosition() == b.GetRubyPosition();
+    case CSSPropertyID::kScrollbarColor:
+      return a.ScrollbarColor() == b.ScrollbarColor();
     case CSSPropertyID::kScrollbarGutter:
       return a.ScrollbarGutter() == b.ScrollbarGutter();
     case CSSPropertyID::kScrollbarWidth:
@@ -1117,7 +1118,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
 
     // No transitions on internal properties:
     case CSSPropertyID::kInternalAlignContentBlock:
-    case CSSPropertyID::kInternalAlignSelfBlock:
     case CSSPropertyID::kInternalEmptyLineHeight:
     case CSSPropertyID::kInternalFontSizeDelta:
     case CSSPropertyID::kInternalForcedBackgroundColor:

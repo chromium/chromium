@@ -221,8 +221,10 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns true if there is a form manager for a submitted form and this form
   // manager contains the submitted credentials suitable for automatic save
-  // prompt, not for manual fallback only.
-  bool IsAutomaticSavePromptAvailable();
+  // prompt, not for manual fallback only. If a specific |form_manager| is
+  // queried, returns true iff the submitted manager matches |form_manager|.
+  bool IsAutomaticSavePromptAvailable(
+      PasswordFormManager* form_manager = nullptr);
 
   // Returns true if there already exists a provisionally saved password form
   // from the origin |origin|, but with a different and secure scheme.

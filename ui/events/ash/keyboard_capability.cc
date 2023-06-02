@@ -103,6 +103,7 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_ALL_APPLICATIONS, TopRowActionKey::kAllApplications},
         {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
         {VKEY_DICTATE, TopRowActionKey::kDictation},
+        {VKEY_PRIVACY_SCREEN_TOGGLE, TopRowActionKey::kPrivacyScreenToggle},
     });
 
 // Some ChromeOS compatible keyboards have a capslock key.
@@ -828,6 +829,10 @@ void KeyboardCapability::SetKeyboardInfoForTesting(
   keyboard_info_map_.insert_or_assign(keyboard.id, std::move(keyboard_info));
 }
 
+void KeyboardCapability::DisableKeyboardInfoTrimmingForTesting() {
+  should_disable_trimming_ = true;
+}
+
 const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
     const KeyboardDevice& keyboard) const {
   auto iter = keyboard_info_map_.find(keyboard.id);
@@ -961,8 +966,7 @@ bool KeyboardCapability::HasMediaKeysOnAnyKeyboard() const {
 
 bool KeyboardCapability::HasPrivacyScreenKey(
     const KeyboardDevice& keyboard) const {
-  return GetTopRowLayout(keyboard) ==
-             KeyboardTopRowLayout::kKbdTopRowLayoutDrallion &&
+  return GetDeviceType(keyboard) == DeviceType::kDeviceInternalKeyboard &&
          delegate_->IsPrivacyScreenSupported();
 }
 
@@ -974,6 +978,16 @@ bool KeyboardCapability::HasPrivacyScreenKeyOnAnyKeyboard() const {
     }
   }
   return false;
+}
+
+const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
+    const KeyboardDevice& keyboard) {
+  const auto* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return nullptr;
+  }
+
+  return &keyboard_info->top_row_action_keys;
 }
 
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
@@ -1010,6 +1024,12 @@ void KeyboardCapability::OnInputDeviceConfigurationChanged(
 }
 
 void KeyboardCapability::TrimKeyboardInfoMap() {
+  // When `should_disable_trimming_` is true, skip removal of removed devices
+  // from our cache of `KeyboardInfo`.
+  if (should_disable_trimming_) {
+    return;
+  }
+
   auto sorted_keyboards =
       DeviceDataManager::GetInstance()->GetKeyboardDevices();
   base::ranges::sort(sorted_keyboards, [](const ui::KeyboardDevice& device1,

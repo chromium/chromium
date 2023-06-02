@@ -78,6 +78,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     MaybeNotifyFeatureStatus();
   }
 
+  std::string GetSessionIdDisplayCode() override;
+
   void set_use_pin_authentication(bool use_pin_authentication) {
     use_pin_authentication_ = use_pin_authentication;
   }
@@ -114,6 +116,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
   std::unique_ptr<FakeConnection> connection_;
+
+  RandomSessionId random_session_id_;
 
   base::WeakPtrFactory<FakeTargetDeviceConnectionBroker> weak_ptr_factory_{
       this};

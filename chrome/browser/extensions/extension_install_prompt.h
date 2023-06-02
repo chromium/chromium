@@ -355,7 +355,7 @@ class ExtensionInstallPrompt {
   // install and returns true. Otherwise returns false.
   bool AutoConfirmPromptIfEnabled();
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::ThreadChecker ui_thread_checker_;
 

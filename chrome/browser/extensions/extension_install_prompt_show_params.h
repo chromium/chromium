@@ -57,7 +57,7 @@ class ExtensionInstallPromptShowParams {
   bool WasParentDestroyed();
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::WeakPtr<content::WebContents> parent_web_contents_;
 

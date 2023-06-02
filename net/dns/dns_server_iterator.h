@@ -59,11 +59,11 @@ class NET_EXPORT_PRIVATE DnsServerIterator {
   // Servers past their failure limit will only be used once all remaining
   // servers are also past their failure limit.
   int max_failures_;
-  raw_ptr<const ResolveContext> resolve_context_;
+  raw_ptr<const ResolveContext, DanglingUntriaged> resolve_context_;
   // The first server index to try when GetNextAttemptIndex() is called.
   size_t next_index_;
 
-  raw_ptr<const DnsSession> session_;
+  raw_ptr<const DnsSession, DanglingUntriaged> session_;
 };
 
 // Iterator used to get the next server to try for a DoH transaction.

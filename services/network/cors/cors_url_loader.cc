@@ -525,14 +525,13 @@ void CorsURLLoader::OnReceiveResponse(
     }
   }
 
-  if (shared_dictionary_storage_ && (IsCorsEnabledRequestMode(request_.mode))) {
+  if (request_.shared_dictionary_writer_enabled && shared_dictionary_storage_ &&
+      (IsCorsEnabledRequestMode(request_.mode))) {
     // The compressed dictionary transport feature currently supports storing
     // dictionaries only if the request was fetched using Cors enabled mode.
     // Note: We may extend this support in future (For example, same-origin mode
     // requests, responses containing a valid Access-Control-Allow-Origin header
     // even if the request mode was not Cors.)
-    // TODO(crbug.com/1413922): Check the Origin Trial state flag of
-    // CompressionDictionaryTransport which will be set in ResourceRequest.
     auto writer = shared_dictionary_storage_->MaybeCreateWriter(
         request_.url, response_head->response_time, *response_head->headers);
     if (writer) {

@@ -18,6 +18,10 @@ void LogAmbientModeTheme(ash::AmbientTheme animation_theme) {
                                 animation_theme);
 }
 
+void LogAmbientModeVideo(ash::AmbientVideo video) {
+  base::UmaHistogramEnumeration(kAmbientModeVideoHistogramName, video);
+}
+
 void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point) {
   base::UmaHistogramEnumeration(ash::kPersonalizationEntryPointHistogramName,
                                 entry_point);

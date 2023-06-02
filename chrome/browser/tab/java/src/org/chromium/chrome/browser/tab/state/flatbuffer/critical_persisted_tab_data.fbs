@@ -52,6 +52,7 @@ enum UserAgentType:int {
     USER_AGENT_UNKNOWN = 5,
 }
 
+// Before making any modification here, make a copy of this file and save it to |critical_persisted_tab_tab_test_vi| where vi is the newer version and write a test to verify backwards compatability of that table with the new change.
 table CriticalPersistedTabDataFlatBuffer {
     // Parent Tab identifier.
     parent_id:int;
@@ -79,4 +80,7 @@ table CriticalPersistedTabDataFlatBuffer {
 
     // User Agent.
     user_agent:UserAgentType=DEFAULT;
+
+    // Timestamp of the last committed navigation done in the Tab.
+    last_navigation_committed_timestamp_millis:long;
 }

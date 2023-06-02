@@ -85,11 +85,8 @@ TEST(CheckedContiguousIterator, ConvertingComparisonOperators) {
 
 }  // namespace base
 
-// ChromeOS does not use the in-tree libc++, but rather a shared library that
-// lags a bit behind.
-// TODO(crbug.com/1166360): Enable this test on ChromeOS once the shared libc++
-// is sufficiently modern.
-#if defined(_LIBCPP_VERSION) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_CHROMEOS)
+#if defined(_LIBCPP_VERSION)
+
 namespace {
 
 // Helper template that wraps an iterator and disables its dereference and
@@ -101,6 +98,8 @@ namespace {
 template <typename Iterator>
 struct DisableDerefAndIncr : Iterator {
   using Iterator::Iterator;
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr DisableDerefAndIncr(const Iterator& iter) : Iterator(iter) {}
 
   constexpr typename Iterator::reference operator*() {
@@ -121,16 +120,28 @@ struct DisableDerefAndIncr : Iterator {
 
 }  // namespace
 
-// Inherit `__is_cpp17_contiguous_iterator` and `pointer_traits` specializations
-// from the base class.
-namespace std {
+// Inherit `__libcpp_is_contiguous_iterator` and `pointer_traits`
+// specializations from the base class.
+
+// TODO(crbug.com/1284275): Remove when C++20 is on by default, as the use
+// of `iterator_concept` should suffice.
+_LIBCPP_BEGIN_NAMESPACE_STD
+
+// TODO(crbug.com/1449299): https://reviews.llvm.org/D150801 renamed this from
+// `__is_cpp17_contiguous_iterator` to `__libcpp_is_contiguous_iterator`. Clean
+// up the old spelling after libc++ rolls.
 template <typename Iter>
 struct __is_cpp17_contiguous_iterator<DisableDerefAndIncr<Iter>>
     : __is_cpp17_contiguous_iterator<Iter> {};
 
 template <typename Iter>
+struct __libcpp_is_contiguous_iterator<DisableDerefAndIncr<Iter>>
+    : __libcpp_is_contiguous_iterator<Iter> {};
+
+template <typename Iter>
 struct pointer_traits<DisableDerefAndIncr<Iter>> : pointer_traits<Iter> {};
-}  // namespace std
+
+_LIBCPP_END_NAMESPACE_STD
 
 namespace base {
 

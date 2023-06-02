@@ -10,6 +10,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/current_thread.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -44,11 +45,14 @@ AsyncLayerTreeFrameSink::UnboundMessagePipes::UnboundMessagePipes(
 AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
     scoped_refptr<viz::ContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
+    std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface,
     InitParams* params)
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider_wrapper),
                          std::move(params->compositor_task_runner),
-                         params->gpu_memory_buffer_manager),
+                         params->gpu_memory_buffer_manager,
+                         std::move(shared_image_interface)),
+      use_direct_client_receiver_(params->use_direct_client_receiver),
       synthetic_begin_frame_source_(
           std::move(params->synthetic_begin_frame_source)),
 #if BUILDFLAG(IS_ANDROID)
@@ -83,8 +87,15 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
                        weak_factory_.GetWeakPtr()));
     compositor_frame_sink_ptr_ = compositor_frame_sink_associated_.get();
   }
-  client_receiver_.Bind(std::move(pipes_.client_receiver),
-                        compositor_task_runner_);
+
+  if (use_direct_client_receiver_ && base::CurrentIOThread::IsSet()) {
+    auto& receiver = client_receiver_.emplace<DirectClientReceiver>(
+        mojo::DirectReceiverKey{}, this);
+    receiver.Bind(std::move(pipes_.client_receiver));
+  } else {
+    auto& receiver = client_receiver_.emplace<ClientReceiver>(this);
+    receiver.Bind(std::move(pipes_.client_receiver), compositor_task_runner_);
+  }
 
   if (synthetic_begin_frame_source_) {
     client->SetBeginFrameSource(synthetic_begin_frame_source_.get());
@@ -117,7 +128,7 @@ void AsyncLayerTreeFrameSink::DetachFromClient() {
   client_->SetBeginFrameSource(nullptr);
   begin_frame_source_.reset();
   synthetic_begin_frame_source_.reset();
-  client_receiver_.reset();
+  client_receiver_ = absl::monostate{};
   // `compositor_frame_sink_ptr_` points to either `compositor_frame_sink_` or
   // `compositor_frame_sink_associated_`, so it must be set to nullptr first.
   compositor_frame_sink_ptr_ = nullptr;

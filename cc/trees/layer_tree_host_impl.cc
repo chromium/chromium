@@ -112,6 +112,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/transition_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -232,27 +233,26 @@ const char* ClientNameForVerboseLog() {
 class LayerTreeHostImpl::ImageDecodeCacheHolder {
  public:
   ImageDecodeCacheHolder(bool enable_shared_image_cache_for_gpu,
-                         bool use_gpu_rasterization,
+                         const RasterCapabilities& raster_caps,
                          bool gpu_compositing,
                          scoped_refptr<RasterContextProviderWrapper>
                              worker_context_provider_wrapper,
                          viz::SharedImageFormat tile_format,
                          size_t decoded_image_working_set_budget_bytes,
-                         int max_texture_size,
                          RasterDarkModeFilter* dark_mode_filter) {
-    if (use_gpu_rasterization) {
+    if (raster_caps.use_gpu_rasterization) {
       auto color_type = viz::ToClosestSkColorType(
           /*gpu_compositing=*/true, tile_format);
       if (enable_shared_image_cache_for_gpu) {
         image_decode_cache_ptr_ =
             &worker_context_provider_wrapper->GetGpuImageDecodeCache(
-                color_type);
+                color_type, raster_caps);
       } else {
         image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
             worker_context_provider_wrapper->GetContext().get(),
             /*use_transfer_cache=*/true, color_type,
-            decoded_image_working_set_budget_bytes, max_texture_size,
-            dark_mode_filter);
+            decoded_image_working_set_budget_bytes,
+            raster_caps.max_texture_size, dark_mode_filter);
       }
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
@@ -478,9 +478,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                       compositor_frame_reporting_controller_.get()),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       frame_rate_estimator_(GetTaskRunner()),
-      contains_srgb_cache_(kContainsSrgbCacheSize),
-      use_dmsaa_for_tiles_(
-          base::FeatureList::IsEnabled(features::kUseDMSAAForTiles)) {
+      contains_srgb_cache_(kContainsSrgbCacheSize) {
   DCHECK(mutator_host_);
   mutator_host_->SetMutatorHostClient(this);
   mutator_events_ = mutator_host_->CreateEvents();
@@ -531,6 +529,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   frame_trackers_.set_custom_tracker_results_added_callback(
       base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
                           weak_factory_.GetWeakPtr()));
+
+  raster_caps_.use_dmsaa_for_tiles =
+      base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -728,22 +729,12 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
 }
 
 void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
-  bool gpu_rasterization_enabled = false;
-  if (layer_tree_frame_sink()) {
-    viz::ContextProvider* compositor_context_provider =
-        layer_tree_frame_sink()->context_provider();
-    if (compositor_context_provider) {
-      gpu_rasterization_enabled =
-          compositor_context_provider->ContextCapabilities().gpu_rasterization;
-    }
-  }
-
   // Record how widely gpu rasterization is enabled.
   // This number takes device/gpu allowlist/denylist into account.
   // Note that we do not consider the forced gpu rasterization mode, which is
   // mostly used for debugging purposes.
   UMA_HISTOGRAM_BOOLEAN("Renderer4.GpuRasterizationEnabled",
-                        gpu_rasterization_enabled);
+                        raster_caps().use_gpu_rasterization);
 }
 
 void LayerTreeHostImpl::CommitComplete() {
@@ -1334,13 +1325,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   frame->has_view_transition_save_directive =
       active_tree_->HasViewTransitionSaveRequest();
 
-  // Damage rects for non-root passes aren't meaningful, so set them to be
-  // equal to the output rect.
-  for (size_t i = 0; i + 1 < frame->render_passes.size(); ++i) {
-    viz::CompositorRenderPass* pass = frame->render_passes[i].get();
-    pass->damage_rect = pass->output_rect;
-  }
-
   // When we are displaying the HUD, change the root damage rect to cover the
   // entire root surface. This will disable partial-swap/scissor optimizations
   // that would prevent the HUD from updating, since the HUD does not cause
@@ -1580,8 +1564,10 @@ void LayerTreeHostImpl::InvalidateContentOnImplSide() {
   DCHECK(impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME ||
          settings_.using_synchronous_renderer_compositor);
 
-  if (!CommitToActiveTree())
+  if (!CommitToActiveTree()) {
     CreatePendingTree();
+    AnimatePendingTreeAfterCommit();
+  }
 
   UpdateSyncTreeAfterCommitOrImplSideInvalidation();
 }
@@ -2008,13 +1994,17 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
       kMinNumberOfSlowPathsForMSAA) {
     return 0;
   }
-  if (!can_use_msaa_)
+  if (!raster_caps().can_use_msaa) {
     return 0;
+  }
 
   if (display_list->HasNonAAPaint()) {
-    UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDisableMsaa", supports_disable_msaa_);
-    if (!supports_disable_msaa_ || use_dmsaa_for_tiles_)
+    UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDisableMsaa",
+                          raster_caps().supports_disable_msaa);
+    if (!raster_caps().supports_disable_msaa ||
+        raster_caps().use_dmsaa_for_tiles) {
       return 0;
+    }
   }
 
   return RequestedMSAASampleCount();
@@ -2665,7 +2655,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         draw_mode, layer_tree_frame_sink_, &resource_provider_,
         // The hud uses Gpu rasterization if the device is capable, not related
         // to the content of the web page.
-        gpu_rasterization_status_ != GpuRasterizationStatus::OFF_DEVICE,
+        raster_caps().gpu_rasterization_status !=
+            GpuRasterizationStatus::OFF_DEVICE,
         frame->render_passes);
   }
 
@@ -2840,15 +2831,7 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
 }
 
 void LayerTreeHostImpl::GetGpuRasterizationCapabilities(
-    bool* gpu_rasterization_enabled,
-    bool* gpu_rasterization_supported,
-    bool* can_use_msaa,
-    bool* supports_disable_msaa) {
-  *gpu_rasterization_enabled = false;
-  *gpu_rasterization_supported = false;
-  *can_use_msaa = false;
-  *supports_disable_msaa = false;
-
+    RasterCapabilities& gpu_raster_caps) {
   if (settings_.gpu_rasterization_disabled)
     return;
 
@@ -2863,20 +2846,22 @@ void LayerTreeHostImpl::GetGpuRasterizationCapabilities(
       context_provider);
 
   const auto& caps = context_provider->ContextCapabilities();
-  *gpu_rasterization_enabled = caps.gpu_rasterization;
-  if (!*gpu_rasterization_enabled)
+  gpu_raster_caps.use_gpu_rasterization = caps.gpu_rasterization;
+  if (!gpu_raster_caps.use_gpu_rasterization) {
     return;
+  }
 
   DCHECK(caps.supports_oop_raster);
-  *gpu_rasterization_supported = true;
-  *can_use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  *supports_disable_msaa = caps.multisample_compatibility;
+  gpu_raster_caps.can_use_msaa =
+      !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+  gpu_raster_caps.supports_disable_msaa = caps.multisample_compatibility;
 }
 
 bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
-  if (!need_update_gpu_rasterization_status_)
+  if (!raster_caps().need_update_gpu_rasterization_status) {
     return false;
-  need_update_gpu_rasterization_status_ = false;
+  }
+  raster_caps_.need_update_gpu_rasterization_status = false;
 
   // TODO(danakj): Can we avoid having this run when there's no
   // LayerTreeFrameSink?
@@ -2885,50 +2870,32 @@ bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
   if (!layer_tree_frame_sink_)
     return false;
 
-  bool gpu_rasterization_enabled = false;
-  bool gpu_rasterization_supported = false;
-  bool can_use_msaa = false;
-  bool supports_disable_msaa = false;
-  GetGpuRasterizationCapabilities(&gpu_rasterization_enabled,
-                                  &gpu_rasterization_supported, &can_use_msaa,
-                                  &supports_disable_msaa);
+  RasterCapabilities gpu_raster_caps;
+  GetGpuRasterizationCapabilities(gpu_raster_caps);
 
   bool use_gpu = false;
 
-  if (!gpu_rasterization_enabled) {
-    if (gpu_rasterization_supported)
-      gpu_rasterization_status_ = GpuRasterizationStatus::OFF_FORCED;
-    else
-      gpu_rasterization_status_ = GpuRasterizationStatus::OFF_DEVICE;
+  if (!gpu_raster_caps.use_gpu_rasterization) {
+    raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::OFF_DEVICE;
   } else {
     use_gpu = true;
-    gpu_rasterization_status_ = GpuRasterizationStatus::ON;
-  }
-
-  if (use_gpu && !use_gpu_rasterization_) {
-    if (!gpu_rasterization_supported) {
-      // If GPU rasterization is unusable, e.g. if GlContext could not
-      // be created due to losing the GL context, force use of software
-      // raster.
-      use_gpu = false;
-      can_use_msaa_ = false;
-      supports_disable_msaa_ = false;
-      gpu_rasterization_status_ = GpuRasterizationStatus::OFF_DEVICE;
-    }
+    raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::ON;
   }
 
   // Changes in MSAA settings require that we re-raster resources for the
   // settings to take effect. But we don't need to trigger any raster
   // invalidation in this case since these settings change only if the context
   // changed. In this case we already re-allocate and re-raster all resources.
-  if (use_gpu == use_gpu_rasterization_ && can_use_msaa == can_use_msaa_ &&
-      supports_disable_msaa == supports_disable_msaa_) {
+  if (use_gpu == raster_caps().use_gpu_rasterization &&
+      gpu_raster_caps.can_use_msaa == raster_caps().can_use_msaa &&
+      gpu_raster_caps.supports_disable_msaa ==
+          raster_caps().supports_disable_msaa) {
     return false;
   }
 
-  use_gpu_rasterization_ = use_gpu;
-  can_use_msaa_ = can_use_msaa;
-  supports_disable_msaa_ = supports_disable_msaa;
+  raster_caps_.use_gpu_rasterization = use_gpu;
+  raster_caps_.can_use_msaa = gpu_raster_caps.can_use_msaa;
+  raster_caps_.supports_disable_msaa = gpu_raster_caps.supports_disable_msaa;
   return true;
 }
 
@@ -3624,17 +3591,16 @@ void LayerTreeHostImpl::RecreateTileResources() {
 void LayerTreeHostImpl::CreateTileManagerResources() {
   viz::SharedImageFormat tile_format = TileRasterBufferFormat(
       settings_, layer_tree_frame_sink_->context_provider(),
-      use_gpu_rasterization_);
+      raster_caps().use_gpu_rasterization);
 
   const bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
-      settings_.enable_shared_image_cache_for_gpu, use_gpu_rasterization_,
+      settings_.enable_shared_image_cache_for_gpu, raster_caps(),
       gpu_compositing,
       layer_tree_frame_sink_->worker_context_provider_wrapper(), tile_format,
-      settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
-      dark_mode_filter_);
+      settings_.decoded_image_working_set_budget_bytes, dark_mode_filter_);
 
-  if (use_gpu_rasterization_) {
+  if (raster_caps().use_gpu_rasterization) {
     pending_raster_queries_ = std::make_unique<RasterQueryQueue>(
         layer_tree_frame_sink_->worker_context_provider());
   }
@@ -3653,10 +3619,11 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
 
   tile_manager_.SetResources(resource_pool_.get(), GetImageDecodeCache(),
                              task_graph_runner, raster_buffer_provider_.get(),
-                             use_gpu_rasterization_,
+                             raster_caps().use_gpu_rasterization,
                              pending_raster_queries_.get());
   tile_manager_.SetCheckerImagingForceDisabled(
-      settings_.only_checker_images_with_gpu_raster && !use_gpu_rasterization_);
+      settings_.only_checker_images_with_gpu_raster &&
+      !raster_caps().use_gpu_rasterization);
   UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
 }
 
@@ -3674,10 +3641,11 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink_->worker_context_provider();
 
-  viz::SharedImageFormat tile_format = TileRasterBufferFormat(
-      settings_, compositor_context_provider, use_gpu_rasterization_);
+  viz::SharedImageFormat tile_format =
+      TileRasterBufferFormat(settings_, compositor_context_provider,
+                             raster_caps().use_gpu_rasterization);
 
-  if (use_gpu_rasterization_) {
+  if (raster_caps().use_gpu_rasterization) {
     DCHECK(worker_context_provider);
 
     return std::make_unique<GpuRasterBufferProvider>(
@@ -3897,7 +3865,7 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // We don't know if the next LayerTreeFrameSink will support GPU
   // rasterization. Make sure to clear the flag so that we force a
   // re-computation.
-  use_gpu_rasterization_ = false;
+  raster_caps_.use_gpu_rasterization = false;
 }
 
 bool LayerTreeHostImpl::InitializeFrameSink(
@@ -3922,13 +3890,19 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   if (worker_context_provider) {
     viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
         worker_context_provider);
-    max_texture_size_ =
+    raster_caps_.max_texture_size =
         worker_context_provider->ContextCapabilities().max_texture_size;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, DMSAA is only enabled for vulkan until GL regressions are
+    // fixed.
+    raster_caps_.use_dmsaa_for_tiles &=
+        worker_context_provider->ContextCapabilities().using_vulkan_context;
+#endif
   } else if (context_provider) {
-    max_texture_size_ =
+    raster_caps_.max_texture_size =
         context_provider->ContextCapabilities().max_texture_size;
   } else {
-    max_texture_size_ = settings_.max_render_buffer_bounds_for_sw;
+    raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
   }
 
   resource_pool_ = std::make_unique<ResourcePool>(
@@ -4623,12 +4597,12 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // UIResources are assumed to be rastered in SRGB.
   const gfx::ColorSpace& color_space = gfx::ColorSpace::CreateSRGB();
 
-  if (source_size.width() > max_texture_size_ ||
-      source_size.height() > max_texture_size_) {
+  if (source_size.width() > raster_caps().max_texture_size ||
+      source_size.height() > raster_caps().max_texture_size) {
     // Must resize the bitmap to fit within the max texture size.
     scaled = true;
     int edge = std::max(source_size.width(), source_size.height());
-    float scale = static_cast<float>(max_texture_size_ - 1) / edge;
+    float scale = static_cast<float>(raster_caps().max_texture_size - 1) / edge;
     DCHECK_LT(scale, 1.f);
     upload_size = gfx::ScaleToCeiledSize(source_size, scale, scale);
   }
@@ -4657,8 +4631,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()),
-          caps);
+          gfx::BufferUsage::SCANOUT,
+          viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
   } else {
     shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
@@ -4982,7 +4956,7 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
 }
 
 void LayerTreeHostImpl::SetNeedUpdateGpuRasterizationStatus() {
-  need_update_gpu_rasterization_status_ = true;
+  raster_caps_.need_update_gpu_rasterization_status = true;
 }
 
 void LayerTreeHostImpl::SetElementFilterMutated(
@@ -5275,8 +5249,8 @@ std::string LayerTreeHostImpl::GetHungCommitDebugInfo() const {
                               paint_worklet_painter_->HasOngoingDispatch()),
              static_cast<int>(tile_manager_.IsReadyToActivate()),
              static_cast<int>(GetActivelyScrollingType()),
-             static_cast<int>(use_gpu_rasterization_),
-             static_cast<int>(gpu_rasterization_status_),
+             static_cast<int>(raster_caps().use_gpu_rasterization),
+             static_cast<int>(raster_caps().gpu_rasterization_status),
              static_cast<int>(has_valid_layer_tree_frame_sink_),
              static_cast<int>(layer_tree_frame_sink_ &&
                               layer_tree_frame_sink_->context_provider()),

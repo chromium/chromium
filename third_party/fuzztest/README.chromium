@@ -1,0 +1,13 @@
+Name: Fuzztest
+URL: https://github.com/google/fuzztest
+Version: 0
+License: Apache License 2.0
+Security Critical: no
+Description:
+Library for out-of-process coverage-guided fuzz testing (fuzzing) of other
+libraries.
+CPEPrefix: cpe:/a:google:centipede:1.0.0
+License File: NOT_SHIPPED
+
+At present, we use only the Centipede sub-directory. Further third-party approval should be
+sought before using any other parts.

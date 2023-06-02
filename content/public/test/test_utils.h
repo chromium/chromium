@@ -133,6 +133,10 @@ bool WillSameSiteNavigationsChangeRenderFrameHosts();
 // above, this will not be true when RenderDocument for main-frame is enabled.
 bool CanSameSiteMainFrameNavigationsChangeSiteInstances();
 
+// Returns true if navigation queueing is fully enabled, where we will queue new
+// navigations that happen when there is an existing pending commit navigation.
+bool IsNavigationQueueingEnabled();
+
 // Makes sure that navigations that start in |rfh| won't result in a proactive
 // BrowsingInstance swap (note they might still result in a normal
 // BrowsingInstance swap, e.g. in the case of cross-site navigations).

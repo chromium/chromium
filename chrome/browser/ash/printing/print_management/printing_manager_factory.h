@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -43,7 +43,7 @@ class PrintingManagerFactory : public ProfileKeyedServiceFactory {
   CreatePrintManagementUIController(content::WebUI* web_ui, const GURL& url);
 
  private:
-  friend struct base::DefaultSingletonTraits<PrintingManagerFactory>;
+  friend base::NoDestructor<PrintingManagerFactory>;
 
   PrintingManagerFactory();
   ~PrintingManagerFactory() override;

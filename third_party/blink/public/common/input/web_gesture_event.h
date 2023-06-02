@@ -58,6 +58,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     } tap;
 
     struct {
+      int tap_down_count;
       float width;
       float height;
     } tap_down;
@@ -246,6 +247,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
 
   gfx::SizeF TapAreaInRootFrame() const;
   int TapCount() const;
+  int TapDownCount() const;
 
   void ApplyTouchAdjustment(const gfx::PointF& root_frame_coords);
 

@@ -63,9 +63,7 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   menu_.reset();
   menu_model_ = std::move(menu_model);
   menu_model_->Init();
-  menu_ = std::make_unique<AppMenu>(browser, run_flags);
-  menu_->Init(menu_model_.get());
-
+  menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);
   menu_->RunMenu(menu_button_controller_);
 
   for (AppMenuButtonObserver& observer : observer_list_)

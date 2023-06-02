@@ -20,7 +20,8 @@ namespace policy {
 // static
 UserCloudPolicyInvalidatorFactory*
     UserCloudPolicyInvalidatorFactory::GetInstance() {
-  return base::Singleton<UserCloudPolicyInvalidatorFactory>::get();
+  static base::NoDestructor<UserCloudPolicyInvalidatorFactory> instance;
+  return instance.get();
 }
 
 UserCloudPolicyInvalidatorFactory::UserCloudPolicyInvalidatorFactory()
@@ -35,7 +36,8 @@ UserCloudPolicyInvalidatorFactory::UserCloudPolicyInvalidatorFactory()
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 
-UserCloudPolicyInvalidatorFactory::~UserCloudPolicyInvalidatorFactory() {}
+UserCloudPolicyInvalidatorFactory::~UserCloudPolicyInvalidatorFactory() =
+    default;
 
 KeyedService* UserCloudPolicyInvalidatorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -34,7 +34,7 @@ void MockWebBundleParserFactory::WaitUntilParseIntegrityBlockCalled(
 }
 
 void MockWebBundleParserFactory::WaitUntilParseMetadataCalled(
-    base::OnceCallback<void(int64_t offset)> callback) {
+    base::OnceCallback<void(absl::optional<uint64_t> offset)> callback) {
   if (parser_)
     parser_->WaitUntilParseMetadataCalled(std::move(callback));
   else
@@ -54,10 +54,10 @@ void MockWebBundleParserFactory::RunIntegrityBlockCallback(
 }
 
 void MockWebBundleParserFactory::RunMetadataCallback(
-    int64_t expected_metadata_offset,
+    absl::optional<uint64_t> expected_metadata_offset,
     mojom::BundleMetadataPtr metadata,
     web_package::mojom::BundleMetadataParseErrorPtr error) {
-  base::test::TestFuture<int64_t> future;
+  base::test::TestFuture<absl::optional<uint64_t>> future;
   WaitUntilParseMetadataCalled(future.GetCallback());
   EXPECT_EQ(expected_metadata_offset, future.Get());
 

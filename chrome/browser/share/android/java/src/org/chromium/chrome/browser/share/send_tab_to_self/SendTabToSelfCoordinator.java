@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -143,15 +144,18 @@ public class SendTabToSelfCoordinator {
     private final String mTitle;
     private final BottomSheetController mController;
     private final Profile mProfile;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     public SendTabToSelfCoordinator(Context context, WindowAndroid windowAndroid, String url,
-            String title, BottomSheetController controller, Profile profile) {
+            String title, BottomSheetController controller, Profile profile,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mUrl = url;
         mTitle = title;
         mController = controller;
         mProfile = profile;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
     }
 
     public void show() {
@@ -187,7 +191,7 @@ public class SendTabToSelfCoordinator {
                 MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_SIGNIN_PROMO);
                 new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
                         new SendTabToSelfAccountPickerDelegate(this::onSignInComplete, mProfile),
-                        new BottomSheetStrings());
+                        new BottomSheetStrings(), mDeviceLockActivityLauncher);
                 return;
             }
         }

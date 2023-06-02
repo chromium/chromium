@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<p>Test for <a href="https://bugs.webkit.org/show_bug.cgi?id=13287">bug 13287</a>:
+Cannot change SELECT to a dynamically created option.</p>
+<p>Test that DOM is updated before DOMNodeInserted is dispatched.</p>
+<form>
+<select ><option selected>1</option><option >2</option></select>
+<select multiple><option selected>1</option><option >2</option></select>
+<select size=5><option selected>1</option><option selected>2</option></select>
+</form>
+<div id=res></div>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    function log(msg)
+    {
+        var r = document.getElementById('res');
+        r.innerHTML = r.innerHTML + "<br>" + msg;
+    }
+
+    var theSelect;
+
+    function testResults(expectedArr)
+    {
+        var resultsArr = new Array(theSelect.options.length);
+
+        var i;
+        for (i=0; i < theSelect.options.length; i++) {
+            resultsArr[i] = theSelect.options[i].selected;
+        }
+        var successString = "Failed";
+        var success = false;
+        if (expectedArr.join() == resultsArr.join()) {
+            success = true;
+            successString = "Passed";
+        }
+
+        log(successString);
+        if (!success) {
+            log("<pre>     Expected: " + expectedArr.join() + "<br>" + "     Actual: " + resultsArr.join() + "</pre>");
+        }
+    }
+
+    function nodeInserted()
+    {
+        if (theSelect.options.length != 3)
+            log("Incorrect options length: " + theSelect.options.length);
+        theSelect.removeChild(theSelect.firstChild);
+        if (theSelect.options.length != 2)
+            log("Incorrect options length: " + theSelect.options.length);
+    }
+
+    try {
+        theSelect = document.forms[0].elements[0];
+        theSelect.addEventListener("DOMNodeInserted", nodeInserted, true);
+        theSelect.options.add(new Option("3", "3", false, true), 0);
+        testResults([true, false], theSelect);
+
+        theSelect = document.forms[0].elements[1];
+        theSelect.addEventListener("DOMNodeInserted", nodeInserted, true);
+        theSelect.options.add(new Option("3", "3", false, true), 0);
+        testResults([true, false], theSelect);
+
+        theSelect = document.forms[0].elements[2];
+        theSelect.addEventListener("DOMNodeInserted", nodeInserted, true);
+        theSelect.insertBefore(new Option("3", "3", false, true), theSelect.firstChild);
+        testResults([false, false], theSelect);
+
+    } catch (ex) {
+        alert(ex);
+    }
+</script>

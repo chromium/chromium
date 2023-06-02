@@ -6,6 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js'
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
+import {isEntryInsideDrive} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
@@ -360,16 +361,7 @@ export class DirectoryItem extends FilesTreeItem {
    * @type {!boolean}
    */
   get insideDrive() {
-    const rootType = this.rootType;
-    return rootType &&
-        (rootType === VolumeManagerCommon.RootType.DRIVE ||
-         rootType === VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT ||
-         rootType === VolumeManagerCommon.RootType.SHARED_DRIVE ||
-         rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-         rootType === VolumeManagerCommon.RootType.COMPUTER ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+    return isEntryInsideDrive({rootType: this.rootType});
   }
 
   /**

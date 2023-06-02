@@ -41,7 +41,7 @@ BASE_FEATURE(kChromeWhatsNewUI,
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
              "ExtensionsMenuInAppMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
@@ -200,12 +200,6 @@ BASE_FEATURE(kTabGroupsCollapseFreezing,
 // https://crbug.com/1223929
 BASE_FEATURE(kTabGroupsSave,
              "TabGroupsSave",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables users to explicitly save and recall tab groups.
-// https://crbug.com/1223929
-BASE_FEATURE(kTabGroupsSaveSyncIntegration,
-             "TabGroupsSaveSyncIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preview images in tab-hover cards.

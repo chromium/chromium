@@ -64,6 +64,7 @@ class TargetDeviceBootstrapController
     Payload payload;
     std::string ssid;
     std::string password;
+    std::string fido_email;
   };
 
   class Observer : public base::CheckedObserver {
@@ -91,6 +92,7 @@ class TargetDeviceBootstrapController
   // TODO: Finalize api for frontend.
   void StartAdvertising();
   void StopAdvertising();
+  void MaybeCloseOpenConnections();
 
   // A user may initiate Quick Start then have to download an update and reboot.
   // This function persists necessary data and notifies the source device so
@@ -108,6 +110,7 @@ class TargetDeviceBootstrapController
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
+  std::string GetDiscoverableName();
   void AttemptWifiCredentialTransfer();
   void AttemptGoogleAccountTransfer();
 

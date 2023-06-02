@@ -440,6 +440,25 @@ absl::optional<SkColor> BrowserFrame::GetUserColor() const {
              : views::Widget::GetUserColor();
 }
 
+ui::ColorProviderManager::ColorMode BrowserFrame::GetColorMode() const {
+  // Currently the incognito browser is implemented as unthemed dark mode.
+  if (IsIncognitoBrowser()) {
+    return ui::ColorProviderManager::ColorMode::kDark;
+  }
+
+  const auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
+  const auto browser_color_scheme = theme_service->GetBrowserColorScheme();
+
+  if (browser_color_scheme == ThemeService::BrowserColorScheme::kSystem) {
+    return Widget::GetColorMode();
+  }
+
+  return browser_color_scheme == ThemeService::BrowserColorScheme::kLight
+             ? ui::ColorProviderManager::ColorMode::kLight
+             : ui::ColorProviderManager::ColorMode::kDark;
+}
+
 void BrowserFrame::OnMenuClosed() {
   menu_runner_.reset();
 }
@@ -461,12 +480,13 @@ void BrowserFrame::OnTouchUiChanged() {
 }
 
 void BrowserFrame::SelectNativeTheme() {
-  // Select between regular, dark and Linux toolkit themes.
+  // Select between regular and Linux toolkit themes.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
+  // Use the regular NativeTheme instance if running incognito mode, regardless
+  // of system theme (gtk, qt etc).
   if (IsIncognitoBrowser()) {
-    // Incognito browsers should always use the dark NativeTheme instance.
-    SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
+    SetNativeTheme(native_theme);
     return;
   }
 

@@ -9,7 +9,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -17,8 +19,6 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_view_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
@@ -382,8 +382,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  protected:
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
-  raw_ptr<ChromeLabsBubbleView> bubble_view_;
-  raw_ptr<views::Widget> bubble_widget_;
+  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> bubble_view_;
+  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)

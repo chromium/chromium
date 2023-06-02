@@ -204,7 +204,10 @@ class CppTypeGenerator(object):
         cpp_type = 'base::Value::Dict'
     elif type_.property_type == PropertyType.ARRAY:
       item_cpp_type = self.GetCppType(type_.item_type)
-      cpp_type = 'std::vector<%s>' % item_cpp_type
+      if item_cpp_type == 'base::Value':
+        cpp_type = 'base::Value::List'
+      else:
+        cpp_type = 'std::vector<%s>' % item_cpp_type
     elif type_.property_type == PropertyType.BINARY:
       cpp_type = 'std::vector<uint8_t>'
     else:

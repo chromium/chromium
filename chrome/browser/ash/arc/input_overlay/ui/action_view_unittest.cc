@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
-#include "ash/public/cpp/window_properties.h"
-#include "base/json/json_reader.h"
-#include "base/test/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
+#include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -17,79 +15,12 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
-#include "ui/views/test/views_test_base.h"
 
 namespace arc::input_overlay {
 namespace {
 
 // Consider two points are at the same position within kTolerance.
 constexpr const float kTolerance = 0.999f;
-
-constexpr const char kValidJsonActionMoveKey[] =
-    R"json({
-      "move": [
-        {
-          "id": 0,
-          "input_sources": [
-            "keyboard"
-          ],
-          "name": "Virtual Joystick",
-          "keys": [
-            "KeyW",
-            "KeyA",
-            "KeyS",
-            "KeyD"
-          ],
-          "location": [
-            {
-              "type": "position",
-              "anchor": [
-                0,
-                0
-              ],
-              "anchor_to_target": [
-                0.5,
-                0.5
-              ]
-            }
-          ]
-        }
-      ],
-      "tap": [
-        {
-          "id": 1,
-          "input_sources": [
-            "keyboard"
-          ],
-          "name": "Fight",
-          "key": "Space",
-          "location": [
-            {
-              "type": "position",
-              "anchor": [
-                0,
-                0
-              ],
-              "anchor_to_target": [
-                0.5,
-                0.5
-              ]
-            },
-            {
-              "type": "position",
-              "anchor": [
-                0,
-                0
-              ],
-              "anchor_to_target": [
-                0.3,
-                0.3
-              ]
-            }
-          ]
-        }
-      ]
-    })json";
 
 // Check label offset in edit mode.
 void CheckActionTapLabelPosition(TapLabelPosition label_position,
@@ -130,7 +61,7 @@ void CheckActionTapLabelPosition(TapLabelPosition label_position,
 
 }  // namespace
 
-class ActionViewTest : public views::ViewsTestBase {
+class ActionViewTest : public ViewTestBase {
  public:
   ActionViewTest() = default;
 
@@ -211,59 +142,12 @@ class ActionViewTest : public views::ViewsTestBase {
     return input_mapping_view_->GetIndexOf(view);
   }
 
- protected:
-  raw_ptr<ActionView> move_action_view_;
-  raw_ptr<ActionView> tap_action_view_;
-  raw_ptr<Action> move_action_;
-  raw_ptr<Action> tap_action_;
-  gfx::Point root_location_;
-  gfx::Point local_location_;
-
  private:
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
-    root_window()->SetBounds(gfx::Rect(1000, 800));
-    widget_ = CreateArcWindow(root_window(), gfx::Rect(200, 100, 600, 400));
-    touch_injector_ = std::make_unique<TouchInjector>(
-        widget_->GetNativeWindow(),
-        *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
-        base::BindLambdaForTesting(
-            [&](std::unique_ptr<AppDataProto>, std::string) {}));
-    touch_injector_->ParseActions(
-        base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey)
-            .value()
-            .TakeDict());
-    touch_injector_->RegisterEventRewriter();
-    display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
-        touch_injector_.get(), false);
-    input_mapping_view_ =
-        std::make_unique<InputMappingView>(display_overlay_controller_.get());
-
-    const auto& actions = touch_injector_->actions();
-    DCHECK_EQ(2u, actions.size());
-    // ActionTap is added first.
-    tap_action_ = actions[0].get();
-    tap_action_view_ = tap_action_->action_view();
-    move_action_ = actions[1].get();
-    move_action_view_ = move_action_->action_view();
+    ViewTestBase::SetUp();
+    InitWithFeature(absl::nullopt);
     SetRepositionController();
-    SetDisplayMode(DisplayMode::kView);
   }
-
-  void TearDown() override {
-    move_action_view_ = nullptr;
-    move_action_ = nullptr;
-    display_overlay_controller_.reset();
-    touch_injector_.reset();
-    input_mapping_view_.reset();
-    widget_.reset();
-    views::ViewsTestBase::TearDown();
-  }
-
-  std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<InputMappingView> input_mapping_view_;
-  std::unique_ptr<TouchInjector> touch_injector_;
-  std::unique_ptr<DisplayOverlayController> display_overlay_controller_;
 };
 
 TEST_F(ActionViewTest, TestDragMoveActionMove) {

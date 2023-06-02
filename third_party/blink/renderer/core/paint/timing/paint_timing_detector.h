@@ -208,54 +208,13 @@ class CORE_EXPORT PaintTimingDetector
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
-  base::TimeTicks LargestImagePaintForMetrics() const {
-    return lcp_details_for_ukm_.largest_image_paint_time_;
-  }
-  uint64_t LargestImagePaintSizeForMetrics() const {
-    return lcp_details_for_ukm_.largest_image_paint_size_;
-  }
-  blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
-      const {
-    return lcp_details_for_ukm_.largest_contentful_paint_type_;
-  }
-  double LargestContentfulPaintImageBPPForMetrics() const {
-    return lcp_details_for_ukm_.largest_contentful_paint_image_bpp_;
-  }
-  base::TimeTicks LargestTextPaintForMetrics() const {
-    return lcp_details_for_ukm_.largest_text_paint_time_;
-  }
-  uint64_t LargestTextPaintSizeForMetrics() const {
-    return lcp_details_for_ukm_.largest_text_paint_size_;
-  }
-
-  absl::optional<WebURLRequest::Priority>
-  LargestContentfulPaintImageRequestPriorityForMetrics() const {
-    return lcp_details_for_ukm_
-        .largest_contentful_paint_image_request_priority_;
-  }
-
-  base::TimeTicks LargestImageLoadStartForMetrics() const {
-    return lcp_details_for_ukm_.largest_image_load_start_;
-  }
-
-  base::TimeTicks LargestImageLoadEndForMetrics() const {
-    return lcp_details_for_ukm_.largest_image_load_end_;
-  }
-
-  base::TimeTicks LargestContentfulPaintForMetrics() const {
-    return lcp_details_for_ukm_.largest_contentful_paint_time_;
+  const PaintTimingDetector::LargestContentfulPaintDetails&
+  LargestContentfulPaintDetailsForMetrics() const {
+    return lcp_details_for_ukm_;
   }
 
   base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
     return first_input_or_scroll_notified_timestamp_;
-  }
-
-  bool LargestContentfulPaintImageIsLoadedFromMemoryCache() const {
-    return lcp_details_for_ukm_.is_loaded_from_memory_cache_;
-  }
-
-  bool LargestContentfulPaintImageIsPreloadedWithEarlyHints() const {
-    return lcp_details_for_ukm_.is_preloaded_with_early_hints_;
   }
 
   void UpdateLargestContentfulPaintCandidate();

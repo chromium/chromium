@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Actions.PK.EnabledByDefault"
-    enum="IMEAutocorrectActions" expires_after="2023-09-17">
+    enum="IMEAutocorrectActions" expires_after="2023-11-19">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -657,6 +657,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.EmptyCandidate"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram records when an empty completion candidate is added to a
+    suggestion generation request to the machine learning service. An empty
+    completion candidate in this context means a candidate with an empty string.
+    This is an invalid state and should never happen. The metric is recorded
+    once per empty candidate found.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitAcceptance"
     enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-01">
   <owner>curtismcmullan@google.com</owner>
@@ -736,6 +749,23 @@ chromium-metrics-reviews@google.com.
     attempt to generate and display suggestions. It is recorded exactly once per
     surrounding text update.
   </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.MultiWord.SuggestionState.{Type}"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-08">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram records when a new suggestion is found and the system
+    attempts to reconcile it with the text found in the currently focused text
+    input. The histogram records the state of the reconciliation process. This
+    metric is recorded exactly once for every suggestion that goes through this
+    process.
+  </summary>
+  <token key="Type">
+    <variant name="Completion" summary="CompletionSuggestion"/>
+    <variant name="Prediction" summary="PredictionSuggestion"/>
+  </token>
 </histogram>
 
 <histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
@@ -990,7 +1020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.LanguageModelLoadTime" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-11-19">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1001,7 +1031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.LanguagePackState"
-    enum="LanguagePackState" expires_after="2023-08-20">
+    enum="LanguagePackState" expires_after="2023-11-19">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1172,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.Korean.Action"
-    enum="KoreanAction" expires_after="2023-08-27">
+    enum="KoreanAction" expires_after="2023-11-19">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

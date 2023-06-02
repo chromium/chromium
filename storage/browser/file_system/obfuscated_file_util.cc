@@ -232,7 +232,7 @@ class ObfuscatedFileEnumerator final
   }
 
   raw_ptr<SandboxDirectoryDatabase> db_;
-  raw_ptr<FileSystemOperationContext> context_;
+  raw_ptr<FileSystemOperationContext, DanglingUntriaged> context_;
   raw_ptr<ObfuscatedFileUtil> obfuscated_file_util_;
   FileSystemURL root_url_;
   bool recursive_;

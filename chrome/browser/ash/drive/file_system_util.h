@@ -26,16 +26,16 @@ bool IsUnderDriveMountPoint(const base::FilePath& path);
 
 // Gets the cache root path (i.e. <user_profile_dir>/GCache/v1) from the
 // profile.
-base::FilePath GetCacheRootPath(Profile* profile);
+base::FilePath GetCacheRootPath(const Profile* profile);
 
 // Returns true if Drive is available for the given Profile.
-bool IsDriveAvailableForProfile(Profile* profile);
+bool IsDriveAvailableForProfile(const Profile* profile);
 
 // Returns true if Drive is currently enabled for the given Profile.
-bool IsDriveEnabledForProfile(Profile* profile);
+bool IsDriveEnabledForProfile(const Profile* profile);
 
 // Returns true if bulk pinning is currently enabled for the given Profile.
-bool IsDriveFsBulkPinningEnabled();
+bool IsDriveFsBulkPinningEnabled(const Profile* profile);
 
 // Enum type for describing the current connection status to Drive.
 enum ConnectionStatusType {

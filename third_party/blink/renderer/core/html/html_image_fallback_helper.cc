@@ -54,8 +54,10 @@ class ImageFallbackContentBuilder {
 
  public:
   ImageFallbackContentBuilder(const ShadowRoot& shadow_root)
-      : place_holder_(shadow_root.getElementById("alttext-container")),
-        broken_image_(shadow_root.getElementById("alttext-image")) {}
+      : place_holder_(
+            shadow_root.getElementById(AtomicString("alttext-container"))),
+        broken_image_(
+            shadow_root.getElementById(AtomicString("alttext-image"))) {}
 
   bool HasContentElements() const { return place_holder_ && broken_image_; }
 

@@ -22,7 +22,7 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
     DOMWindow* source)
     : PerformanceEntry(
           info->Duration().InMilliseconds(),
-          "long-animation-frame",
+          AtomicString("long-animation-frame"),
           DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
               ->MonotonicTimeToDOMHighResTimeStamp(info->FrameStartTime()),
           source) {

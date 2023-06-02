@@ -495,9 +495,7 @@ struct SSLSocketDataProvider {
   SSLInfo ssl_info;
 
   // Result for GetSSLCertRequestInfo().
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION SSLCertRequestInfo* cert_request_info = nullptr;
+  scoped_refptr<SSLCertRequestInfo> cert_request_info;
 
   // Result for GetECHRetryConfigs().
   std::vector<uint8_t> ech_retry_configs;
@@ -949,7 +947,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   bool in_confirm_handshake_ = false;
   NetLogWithSource net_log_;
   std::unique_ptr<StreamSocket> stream_socket_;
-  raw_ptr<SSLSocketDataProvider> data_;
+  raw_ptr<SSLSocketDataProvider, DanglingUntriaged> data_;
   // Address of the "remote" peer we're connected to.
   IPEndPoint peer_addr_;
 
@@ -1355,8 +1353,8 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
   MockUDPClientSocket* GetLastProducedUDPSocket() const { return udp_socket_; }
 
  private:
-  raw_ptr<MockTaggingStreamSocket> tcp_socket_ = nullptr;
-  raw_ptr<MockUDPClientSocket> udp_socket_ = nullptr;
+  raw_ptr<MockTaggingStreamSocket, DanglingUntriaged> tcp_socket_ = nullptr;
+  raw_ptr<MockUDPClientSocket, DanglingUntriaged> udp_socket_ = nullptr;
 };
 
 // Host / port used for SOCKS4 test strings.

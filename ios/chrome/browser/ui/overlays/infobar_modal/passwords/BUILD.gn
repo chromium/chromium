@@ -14,13 +14,18 @@ source_set("passwords") {
 
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/passwords:infobar_delegates",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+    "//ui/base",
   ]
 }
 
@@ -38,9 +43,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/infobars/modals/test",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/overlays/test",

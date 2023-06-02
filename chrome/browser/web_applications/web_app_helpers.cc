@@ -112,4 +112,11 @@ absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                   : absl::nullopt;
 }
 
+bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {
+  auto* provider = WebAppProvider::GetForWebApps(profile);
+  return provider ? provider->registrar_unsafe()
+                        .IsNonLocallyInstalledAppWithUrlInScope(url)
+                  : false;
+}
+
 }  // namespace web_app

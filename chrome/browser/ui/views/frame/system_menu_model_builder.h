@@ -15,7 +15,6 @@ class MoveToDesksMenuModel;
 }
 #endif
 class Browser;
-class ZoomMenuModel;
 
 namespace ui {
 class AcceleratorProvider;
@@ -61,7 +60,7 @@ class SystemMenuModelBuilder {
 
   SystemMenuModelDelegate menu_delegate_;
   std::unique_ptr<ui::MenuModel> menu_model_;
-  std::unique_ptr<ZoomMenuModel> zoom_menu_contents_;
+  std::unique_ptr<ui::SimpleMenuModel> zoom_menu_contents_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_model_;
 #endif

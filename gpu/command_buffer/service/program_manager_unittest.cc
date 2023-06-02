@@ -2357,9 +2357,9 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
 
   std::unique_ptr<MockProgramCache> cache_;
 
-  raw_ptr<Shader> vertex_shader_;
-  raw_ptr<Shader> fragment_shader_;
-  raw_ptr<Program> program_;
+  raw_ptr<Shader, DanglingUntriaged> vertex_shader_;
+  raw_ptr<Shader, DanglingUntriaged> fragment_shader_;
+  raw_ptr<Program, DanglingUntriaged> program_;
   ShaderManager shader_manager_;
 };
 

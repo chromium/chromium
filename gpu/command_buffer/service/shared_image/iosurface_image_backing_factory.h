@@ -30,8 +30,6 @@ class ProgressReporter;
 namespace gpu {
 
 class SharedImageBacking;
-class GpuDriverBugWorkarounds;
-struct GpuPreferences;
 struct Mailbox;
 
 // IOSurfaceImageBackingFactory is used to create SharedImage backings
@@ -39,8 +37,8 @@ struct Mailbox;
 class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  IOSurfaceImageBackingFactory(const GpuPreferences& gpu_preferences,
-                               const GpuDriverBugWorkarounds& workarounds,
+  IOSurfaceImageBackingFactory(GrContextType gr_context_type,
+                               int32_t max_texture_size,
                                const gles2::FeatureInfo* feature_info,
                                gl::ProgressReporter* progress_reporter);
   ~IOSurfaceImageBackingFactory() override;
@@ -120,15 +118,16 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gfx::BufferPlane buffer_plane,
       bool is_plane_format);
 
-  // Used to notify the watchdog before a buffer allocation in case it takes
-  // long.
-  const raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
+  const GrContextType gr_context_type_;
+  const int32_t max_texture_size_;
+  const bool angle_texture_usage_;
 
-  GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
+  const GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
   base::flat_set<viz::SharedImageFormat> supported_formats_;
 
-  int32_t max_texture_size_ = 0;
-  bool angle_texture_usage_ = false;
+  // Used to notify the watchdog before a buffer allocation in case it takes
+  // long.
+  const raw_ptr<gl::ProgressReporter> progress_reporter_;
 };
 
 }  // namespace gpu

@@ -38,6 +38,11 @@ struct BLINK_COMMON_EXPORT BrowsingContextGroupInfo {
   base::UnguessableToken coop_related_group_token;
 };
 
+bool BLINK_COMMON_EXPORT operator==(const BrowsingContextGroupInfo& lhs,
+                                    const BrowsingContextGroupInfo& rhs);
+bool BLINK_COMMON_EXPORT operator!=(const BrowsingContextGroupInfo& lhs,
+                                    const BrowsingContextGroupInfo& rhs);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_BROWSING_CONTEXT_GROUP_INFO_H_

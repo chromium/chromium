@@ -153,7 +153,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // subprocess to start tracing after it connects).
   base::TimeDelta startup_tracing_timeout_ = base::Seconds(60);
 
-  const raw_ptr<base::tracing::PerfettoTaskRunner> task_runner_;
+  const raw_ptr<base::tracing::PerfettoTaskRunner, DanglingUntriaged>
+      task_runner_;
 
   std::atomic<bool> startup_tracing_active_{false};
 

@@ -55,9 +55,6 @@ class ASH_PUBLIC_EXPORT ShelfModelObserver {
   // onto the shelf (it is still being dragged).
   virtual void ShelfItemReturnedFromRipOff(int index) {}
 
-  // Invoked when shelf party mode is toggled.
-  virtual void ShelfPartyToggled(bool in_shelf_party) {}
-
  protected:
   virtual ~ShelfModelObserver() {}
 };

@@ -60,13 +60,14 @@ extern const char kLastPolicyCheckTime[];
 #if BUILDFLAG(IS_IOS)
 extern const char kUserPolicyNotificationWasShown[];
 #endif
-extern const char kEventPathEnabled[];
 extern const char kOffsetParentNewSpecBehaviorEnabled[];
 extern const char kSendMouseEventsDisabledFormControlsEnabled[];
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];
 extern const char kIncognitoModeAvailability[];
+extern const char kBeforeunloadEventCancelByPreventDefaultEnabled[];
+extern const char kPolicyTestPageEnabled[];
 
 }  // namespace policy_prefs
 }  // namespace policy

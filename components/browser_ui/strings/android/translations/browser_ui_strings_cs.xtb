@@ -30,7 +30,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Související weby</translation>
 <translation id="1644574205037202324">Historie</translation>
-<translation id="1647582022260550163">Opravdu chcete resetovat oprávnění a vymazat soubory cookie a údaje o webu?</translation>
+<translation id="1647582022260550163">Opravdu chcete resetovat oprávnění a vymazat soubory cookie a data webu?</translation>
 <translation id="1660204651932907780">Povolit webům přehrávat zvuky (doporučeno)</translation>
 <translation id="1677097821151855053">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Vymazat data webu?</translation>
@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Povolit cookies třetích stran</translation>
 <translation id="4428065317363009941">Personalizace reklam</translation>
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
-<translation id="4440642537584213025">Rozbalit <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Vypne zvuk na konkrétním webu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# soubor cookie}few{# soubory cookie}many{# soubory cookie}other{# souborů cookie}}</translation>
 <translation id="4478158430052450698">Usnadnit přizpůsobení velikosti zobrazení pro různé weby</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Zrušit výběr</translation>
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
 <translation id="789180354981963912">V anonymním režimu blokovat soubory cookie třetích stran:</translation>
+<translation id="7895868624847501462">Touto akcí vymažete všechna místní data, včetně souborů cookie, a resetujete všechna oprávnění pro doménu <ph name="DOMAIN" /> a všechny weby pod ní</translation>
 <translation id="7940722705963108451">Připomenout</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="FPS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="FPS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="FPS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8300705686683892304">Spravováno aplikací</translation>
 <translation id="8324158725704657629">Příště se neptat</translation>
+<translation id="8338445138528827481">Touto akcí vymažete všechna místní data, včetně souborů cookie, a resetujete všechna oprávnění pro <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Navštívené weby můžete přiblížit nebo oddálit</translation>
 <translation id="8372893542064058268">Povolit synchronizaci na pozadí konkrétnímu webu.</translation>
 <translation id="8376384591331888629">Včetně souborů cookie třetích stran na tomto webu</translation>

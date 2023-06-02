@@ -193,7 +193,8 @@ class CaptivePortalTabHelperTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<CaptivePortalTabHelper> tab_helper_;
 
   // Owned by |tab_helper_|.
-  raw_ptr<testing::StrictMock<MockCaptivePortalTabReloader>> mock_reloader_;
+  raw_ptr<testing::StrictMock<MockCaptivePortalTabReloader>, DanglingUntriaged>
+      mock_reloader_;
 };
 
 TEST_F(CaptivePortalTabHelperTest, HttpSuccess) {
@@ -279,7 +280,6 @@ TEST_F(CaptivePortalTabHelperTest, UnexpectedProvisionalLoad) {
   std::unique_ptr<NavigationSimulator> same_site_navigation =
       NavigationSimulator::CreateRendererInitiated(same_site_url, main_rfh());
   same_site_navigation->Start();
-  same_site_navigation->ReadyToCommit();
 
   // It's unexpectedly interrupted by a cross-process navigation, which starts
   // navigating before the old navigation cancels.

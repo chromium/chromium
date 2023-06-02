@@ -12,7 +12,21 @@ namespace apps {
 
 PromiseAppRegistryCache::PromiseAppRegistryCache() = default;
 
-PromiseAppRegistryCache::~PromiseAppRegistryCache() = default;
+PromiseAppRegistryCache::~PromiseAppRegistryCache() {
+  for (auto& obs : observers_) {
+    obs.OnPromiseAppRegistryCacheWillBeDestroyed(this);
+  }
+  CHECK(observers_.empty());
+}
+
+void PromiseAppRegistryCache::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void PromiseAppRegistryCache::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -26,17 +40,17 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   // Retrieve the current promise app state.
   apps::PromiseApp* state = FindPromiseApp(delta->package_id);
 
-  // Update the existing promise app if it exists.
-  if (state) {
-    PromiseAppUpdate::Merge(state, delta.get());
-    update_in_progress_ = false;
-    return;
+  for (auto& observer : observers_) {
+    observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
   }
 
-  // Add the promise app instance to the cache if it isn't registered yet.
-  promise_app_map_[delta->package_id] = delta->Clone();
-
-  // TODO(b/261907495): Notify observers.
+  if (state) {
+    // Update the existing promise app if it exists.
+    PromiseAppUpdate::Merge(state, delta.get());
+  } else {
+    // Add the promise app instance to the cache if it isn't registered yet.
+    promise_app_map_[delta->package_id] = delta->Clone();
+  }
 
   update_in_progress_ = false;
 }

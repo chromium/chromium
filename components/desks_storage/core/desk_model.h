@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class DeskTemplate;
@@ -188,6 +189,8 @@ class DeskModel {
       const std::u16string& name,
       ash::DeskTemplateType type,
       const base::Uuid& uuid) const = 0;
+
+  virtual std::string GetCacheGuid() = 0;
 
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.

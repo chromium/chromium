@@ -236,10 +236,21 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   class ActiveDispatchTracker;
   class RunLoopNestingObserver;
 
-  // Callback of mojo::SimpleWatcher.
-  void OnWatcherHandleReady(MojoResult result);
-  // Callback of SyncHandleWatcher.
-  void OnSyncHandleWatcherHandleReady(MojoResult result);
+  // Callback given to SimpleWatcher to dispatch events for pipe activity.
+  //
+  // We pass the Connector's static interface name here as a parameter, ensuring
+  // that if Chrome crashes within this method, the crash dump will include the
+  // address of the interface name string in some accessible place such as a
+  // register or nearby stack location. We do this to help pinpoint application
+  // bugs which destroy bindings endpoints from the wrong thread, as this can
+  // result in Connector destruction racing with execution of a WeakPtr-bound
+  // OnWatcherHandleReady task.
+  void OnWatcherHandleReady(const char* interface_name, MojoResult result);
+
+  // Callback of SyncHandleWatcher. See notes on OnWatcherHandleReady()
+  // regarding the `interface_name` argument.
+  void OnSyncHandleWatcherHandleReady(const char* interface_name,
+                                      MojoResult result);
 
   void OnHandleReadyInternal(MojoResult result);
 

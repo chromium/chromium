@@ -82,6 +82,14 @@ class Server {
   // previously registered (subdir, fs_url_prefix) that matched.
   base::FilePath InverseResolveFSURL(const storage::FileSystemURL& fs_url);
 
+  // Chains GetInstance and InverseResolveFSURL, returning an empty
+  // base::FilePath when there is no instance.
+  static base::FilePath SubstituteFuseboxFilePath(
+      const storage::FileSystemURL& fs_url) {
+    Server* server = GetInstance();
+    return server ? server->InverseResolveFSURL(fs_url) : base::FilePath();
+  }
+
   // Returns human-readable debugging information as a JSON value.
   base::Value GetDebugJSON();
 

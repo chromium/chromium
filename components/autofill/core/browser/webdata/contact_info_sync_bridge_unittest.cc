@@ -115,8 +115,8 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // how the PersonalDataManager will access the profiles.
   std::vector<AutofillProfile> GetAllDataFromTable() {
     std::vector<std::unique_ptr<AutofillProfile>> profile_ptrs;
-    EXPECT_TRUE(table_.GetAutofillProfiles(&profile_ptrs,
-                                           AutofillProfile::Source::kAccount));
+    EXPECT_TRUE(table_.GetAutofillProfiles(AutofillProfile::Source::kAccount,
+                                           &profile_ptrs));
     // In tests, it's more convenient to work without `std::unique_ptr`.
     std::vector<AutofillProfile> profiles;
     for (const std::unique_ptr<AutofillProfile>& profile_ptr : profile_ptrs) {

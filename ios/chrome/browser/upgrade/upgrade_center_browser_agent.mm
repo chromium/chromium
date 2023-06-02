@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
 
+#import "base/check.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -19,25 +21,62 @@ UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(
     Browser* browser,
     UpgradeCenter* upgrade_center)
     : upgrade_center_(upgrade_center) {
-  DCHECK(browser);
-  DCHECK(upgrade_center);
-  browser->AddObserver(this);
-  browser->GetWebStateList()->AddObserver(this);
+  CHECK(browser);
+  CHECK(upgrade_center);
+  CHECK(browser->GetWebStateList()->empty());
+  web_state_list_observation_.Observe(browser->GetWebStateList());
 }
 
 UpgradeCenterBrowserAgent::~UpgradeCenterBrowserAgent() {}
-
-void UpgradeCenterBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK(browser);
-  browser->GetWebStateList()->RemoveObserver(this);
-  browser->RemoveObserver(this);
-}
 
 void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                                    web::WebState* web_state,
                                                    int index,
                                                    bool activating) {
-  DCHECK(web_state);
+  WebStateAttached(web_state);
+}
+
+void UpgradeCenterBrowserAgent::WebStateReplacedAt(WebStateList* web_state_list,
+                                                   web::WebState* old_web_state,
+                                                   web::WebState* new_web_state,
+                                                   int index) {
+  WebStateDetached(old_web_state);
+  WebStateAttached(new_web_state);
+}
+
+void UpgradeCenterBrowserAgent::WillDetachWebStateAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {
+  WebStateDetached(web_state);
+}
+
+void UpgradeCenterBrowserAgent::WebStateListDestroyed(
+    WebStateList* web_state_list) {
+  web_state_observations_.RemoveAllObservations();
+  web_state_list_observation_.Reset();
+}
+
+void UpgradeCenterBrowserAgent::WebStateRealized(web::WebState* web_state) {
+  CHECK(web_state);
+  web_state_observations_.RemoveObservation(web_state);
+  WebStateAttached(web_state);
+}
+
+void UpgradeCenterBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
+  // UpgradeCenterBrowserAgent should stop observing all WebState before
+  // they are destroyed, by observing when they are removed from the
+  // WebStateList. It is an error in UpgradeCenterBrowserAgent if this
+  // method is called.
+  NOTREACHED_NORETURN();
+}
+
+void UpgradeCenterBrowserAgent::WebStateAttached(web::WebState* web_state) {
+  CHECK(web_state);
+  if (!web_state->IsRealized()) {
+    web_state_observations_.AddObservation(web_state);
+    return;
+  }
 
   // When adding new tabs, check what kind of reminder infobar should
   // be added to the new tab. Try to add only one of them.
@@ -47,18 +86,17 @@ void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
   // happen after a new WebState has added and finished initial navigation. If
   // this happens earlier, the initial navigation may end up clearing the
   // infobar(s) that are just added.
-  infobars::InfoBarManager* info_bar_manager =
-      InfoBarManagerImpl::FromWebState(web_state);
-  NSString* tab_id = web_state->GetStableIdentifier();
-
-  [upgrade_center_ addInfoBarToManager:info_bar_manager forTabId:tab_id];
+  [upgrade_center_
+      addInfoBarToManager:InfoBarManagerImpl::FromWebState(web_state)
+                 forTabId:web_state->GetStableIdentifier()];
 }
 
-void UpgradeCenterBrowserAgent::WillDetachWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  DCHECK(web_state);
+void UpgradeCenterBrowserAgent::WebStateDetached(web::WebState* web_state) {
+  CHECK(web_state);
+  if (!web_state->IsRealized()) {
+    web_state_observations_.RemoveObservation(web_state);
+    return;
+  }
 
   [upgrade_center_ tabWillClose:web_state->GetStableIdentifier()];
 }

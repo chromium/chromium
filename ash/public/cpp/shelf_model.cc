@@ -290,12 +290,6 @@ void ShelfModel::OnItemReturnedFromRipOff(int index) {
     observer.ShelfItemReturnedFromRipOff(index);
 }
 
-void ShelfModel::ToggleShelfParty() {
-  in_shelf_party_ = !in_shelf_party_;
-  for (auto& observer : observers_)
-    observer.ShelfPartyToggled(in_shelf_party_);
-}
-
 int ShelfModel::ItemIndexByID(const ShelfID& shelf_id) const {
   for (size_t i = 0; i < items_.size(); ++i) {
     if (items_[i].id == shelf_id)

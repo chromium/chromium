@@ -1428,7 +1428,6 @@ dialog::backdrop {
     inset: 0;
     /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     background: rgba(0,0,0,0.1);
-    overlay: auto !important;
 }
 
 slot {

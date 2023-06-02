@@ -30,7 +30,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   ~ChromeUserManager() override;
 
   // user_manager::UserManagerBase:
-  bool IsCurrentUserNew() const override;
   void UpdateLoginState(const user_manager::User* active_user,
                         const user_manager::User* primary_user,
                         bool is_current_user_owner) const override;

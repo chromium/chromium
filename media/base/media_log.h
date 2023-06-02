@@ -29,9 +29,9 @@
 #include "media/base/pipeline_status.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_logging.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace media {
 
@@ -227,13 +227,13 @@ class MEDIA_EXPORT LogHelper {
   media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log)) \
       .stream()
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 // Prepends a description of an OSStatus to the log entry produced with
 // `MEDIA_LOG`.
 #define OSSTATUS_MEDIA_LOG(level, status, media_log) \
   MEDIA_LOG(level, media_log)                        \
       << logging::DescriptionFromOSStatus(status) << " (" << (status) << "): "
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 // Logs only while |count| < |max|, increments |count| for each log, and warns
 // in the log if |count| has just reached |max|.

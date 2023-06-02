@@ -395,13 +395,6 @@ template("test") {
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
 
-        if (_add_unwind_tables_in_apk) {
-          # Remove -gz if present, as dump_syms does not support it.
-          # Add and then remove because "-=" removes all, but errors if none are found.
-          configs += [ "//build/config:compress_debug_sections" ]
-          configs -= [ "//build/config:compress_debug_sections" ]
-        }
-
         forward_variables_from(
             invoker,
             "*",
@@ -432,10 +425,6 @@ template("test") {
         shared_library = ":$_library_target_name"
         if (_generate_final_jni) {
           srcjar_deps = [ "${shared_library}__jni_registration" ]
-        } else {
-          # TODO(smaier) delete this once we clean up our apk targets to never
-          # have the fallback path of __final_jni.
-          generate_final_jni = _generate_final_jni
         }
         apk_name = invoker.target_name
         if (defined(invoker.output_name)) {
@@ -938,6 +927,9 @@ template("test") {
       if (use_cfi_diag) {
         executable_args += [ "--cfi-diag=1" ]
       }
+      if (fail_on_san_warnings) {
+        executable_args += [ "--fail-san=1" ]
+      }
 
       data += [ "//build/lacros/test_runner.py" ]
 
@@ -1015,6 +1007,9 @@ template("test") {
       }
       if (use_cfi_diag) {
         executable_args += [ "--cfi-diag=1" ]
+      }
+      if (fail_on_san_warnings) {
+        executable_args += [ "--fail-san=1" ]
       }
 
       if (use_rts) {

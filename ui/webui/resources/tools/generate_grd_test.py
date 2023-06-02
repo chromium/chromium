@@ -98,7 +98,8 @@ class GenerateGrdTest(unittest.TestCase):
 
     actual_grd = self._read_out_file(out_grd)
     if (grd_expected.endswith('.grd') or grd_expected.endswith('.grdp')):
-      expected_grd_path = os.path.join(_HERE_DIR, 'tests', grd_expected)
+      expected_grd_path = os.path.join(_HERE_DIR, 'tests', 'generate_grd',
+                                       grd_expected)
       with open(expected_grd_path, 'r', newline='') as f:
         expected_grd_content = f.read()
       self.assertMultiLineEqual(expected_grd_content, actual_grd)
@@ -107,21 +108,25 @@ class GenerateGrdTest(unittest.TestCase):
 
   def testSuccess(self):
     self._run_test_(
-      'expected_grd.grd',
-      manifest_files = [
-        os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
-        os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
-      ])
+        'expected_grd.grd',
+        manifest_files=[
+            os.path.join(pathToHere, 'tests', 'generate_grd',
+                         'test_manifest_1.json'),
+            os.path.join(pathToHere, 'tests', 'generate_grd',
+                         'test_manifest_2.json'),
+        ])
 
   def testSuccessWithInputFiles(self):
     self._run_test_(
-      'expected_grd_with_input_files.grd',
-      manifest_files = [
-        os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
-        os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
-      ],
-      input_files = [ 'images/test_svg.svg', 'test_html_in_src.html' ],
-      input_files_base_dir = 'test_src_dir')
+        'expected_grd_with_input_files.grd',
+        manifest_files=[
+            os.path.join(pathToHere, 'tests', 'generate_grd',
+                         'test_manifest_1.json'),
+            os.path.join(pathToHere, 'tests', 'generate_grd',
+                         'test_manifest_2.json'),
+        ],
+        input_files=['images/test_svg.svg', 'test_html_in_src.html'],
+        input_files_base_dir='test_src_dir')
 
   def testSuccessWithGeneratedInputFiles(self):
     # For generated |input_files|, |input_files_base_dir| must be a
@@ -157,15 +162,17 @@ class GenerateGrdTest(unittest.TestCase):
 
   def testSuccessWithRewrites(self):
     self._run_test_(
-      'expected_grd_with_rewrites.grd',
-      manifest_files = [
-        os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
-        os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
-      ],
-      resource_path_rewrites=[
-        'test.rollup.js|test.js',
-        'dir/another_element_in_dir.js|dir2/another_element_in_dir_renamed.js',
-      ])
+        'expected_grd_with_rewrites.grd',
+        manifest_files=[
+            os.path.join(pathToHere, 'tests', 'generate_grd',
+                         'test_manifest_1.json'),
+            os.path.join(pathToHere, 'tests', 'generate_grd',
+                         'test_manifest_2.json'),
+        ],
+        resource_path_rewrites=[
+            'test.rollup.js|test.js',
+            'dir/another_element_in_dir.js|dir2/another_element_in_dir_renamed.js',
+        ])
 
   def testSuccessWithOutputFilesBaseDir(self):
     self._run_test_(

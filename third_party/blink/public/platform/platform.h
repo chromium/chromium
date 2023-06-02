@@ -52,7 +52,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
@@ -660,7 +659,6 @@ class BLINK_PLATFORM_EXPORT Platform {
       CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>
           service_worker_container_host,
       const WebString& client_id,
-      mojom::ServiceWorkerFetchHandlerBypassOption fetch_handler_bypass_option,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner);

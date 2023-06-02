@@ -93,7 +93,8 @@ ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
 // static
 ProfileInvalidationProviderFactory*
 ProfileInvalidationProviderFactory::GetInstance() {
-  return base::Singleton<ProfileInvalidationProviderFactory>::get();
+  static base::NoDestructor<ProfileInvalidationProviderFactory> instance;
+  return instance.get();
 }
 
 ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()

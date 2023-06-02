@@ -45,7 +45,7 @@ class MessageBoxViewTest : public ViewsTestBase {
   }
 
   std::unique_ptr<MessageBoxView> message_box_;
-  raw_ptr<const LayoutProvider> provider_;
+  raw_ptr<const LayoutProvider, DanglingUntriaged> provider_;
 };
 
 TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {

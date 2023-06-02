@@ -55,6 +55,10 @@ class ArcVmmManager : public KeyedService,
   // staging memory.
   void SetSwapState(SwapState state);
 
+  // Is the ARCVM on "swapped" state. If it's true, the ARC app launch maybe
+  // slower than usual.
+  bool IsSwapped() const;
+
   void set_user_id_hash(const std::string& user_id_hash) {
     user_id_hash_ = user_id_hash;
   }
@@ -89,6 +93,8 @@ class ArcVmmManager : public KeyedService,
   // Called by callback from `ShrinkArcVmMemoryAndEnableSwap` and should not be
   // called by other caller. Update shrink result.
   void SetShrinkResult(bool success);
+
+  SwapState last_swap_state_ = SwapState::DISABLE;
 
   // Log the time stamp and result of last shrink memory request.
   absl::optional<base::Time> last_shrink_timestamp_;

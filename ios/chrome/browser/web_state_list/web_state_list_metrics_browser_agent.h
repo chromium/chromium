@@ -33,9 +33,6 @@ class WebStateListMetricsBrowserAgent
                           web::WebState* web_state,
                           int index,
                           bool activating) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,

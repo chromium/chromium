@@ -90,6 +90,8 @@ class ChromeMetricsServiceClient
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
+      override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
@@ -238,6 +240,12 @@ class ChromeMetricsServiceClient
   // and it must be destroyed after they are. Manages SystemProfile information
   // needed by other metrics providers.
   std::unique_ptr<metrics::MetricsProvider> cros_system_profile_provider_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The StructuredMetricsService that |this| is a client of.
+  std::unique_ptr<metrics::structured::StructuredMetricsService>
+      structured_metrics_service_;
+#endif
 
   // The MetricsService that |this| is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;

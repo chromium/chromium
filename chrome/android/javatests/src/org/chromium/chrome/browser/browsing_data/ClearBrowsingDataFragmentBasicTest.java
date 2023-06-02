@@ -29,6 +29,7 @@ import org.mockito.Mockito;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -163,6 +164,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1446404")
     public void testRenderSearchHistoryLinkSignedInGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSignin();
         setSyncable(false);
@@ -195,6 +197,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1407312")
     public void testRenderSearchHistoryLinkSignedInUnknownNonGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
@@ -207,8 +210,6 @@ public class ClearBrowsingDataFragmentBasicTest {
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
                             .getRootView();
-        // Looking for "Frees up less than 1 MB" but could conceivably free up more space.
-        // See crbug.com/1407312
         waitForView(withText("Frees up"));
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
@@ -216,6 +217,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1407312")
     public void testRenderSearchHistoryLinkSignedOutKnownNonGoogleDSE() throws IOException {
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();

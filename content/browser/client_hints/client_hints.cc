@@ -282,7 +282,7 @@ RenderWidgetHostView* GetRenderWidgetHostViewFromFrameTreeNode(
   if (!frame_tree_node || !frame_tree_node->current_frame_host())
     return nullptr;
 
-  return frame_tree_node->current_frame_host()->GetView();
+  return frame_tree_node->current_frame_host()->GetMainFrame()->GetView();
 }
 
 gfx::Size GetViewportSize(FrameTreeNode* frame_tree_node,
@@ -588,7 +588,7 @@ struct ClientHintsExtendedData {
           frame_tree_node->GetFencedFrameProperties();
       base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
       if (fenced_frame_properties) {
-        permissions = fenced_frame_properties->required_permissions_to_load;
+        permissions = fenced_frame_properties->effective_enabled_permissions;
       }
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
           resource_origin, permissions);

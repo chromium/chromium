@@ -20,15 +20,6 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
       min_command_id_(min_command_id),
       parent_new_command_id_(parent_new_command_id) {}
 
-const gfx::FontList* ExistingBaseSubMenuModel::GetLabelFontListAt(
-    size_t index) const {
-  if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
-    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
-        ui::ResourceBundle::BoldFont);
-  }
-  return nullptr;
-}
-
 bool ExistingBaseSubMenuModel::IsCommandIdAlerted(int command_id) const {
   return IsNewCommand(command_id) &&
          parent_delegate()->IsCommandIdAlerted(parent_new_command_id_);

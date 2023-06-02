@@ -98,6 +98,7 @@ class ProjectorXhrSender {
   // Triggered when an XHR request completed.
   void OnSimpleURLLoaderComplete(int request_id,
                                  SendRequestCallback callback,
+                                 const std::string& token,
                                  std::unique_ptr<std::string> response_body);
 
   // Validate the email address provided with xhr request

@@ -26,9 +26,7 @@ class ExceptionState;
 class ResponseInit;
 class ScriptState;
 
-class CORE_EXPORT Response final : public ScriptWrappable,
-                                   public ActiveScriptWrappable<Response>,
-                                   public Body {
+class CORE_EXPORT Response final : public ScriptWrappable, public Body {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -90,9 +88,6 @@ class CORE_EXPORT Response final : public ScriptWrappable,
   // From Response.idl:
   // This function must be called with entering an appropriate V8 context.
   Response* clone(ScriptState*, ExceptionState&);
-
-  // ScriptWrappable
-  bool HasPendingActivity() const final;
 
   // Does not contain the blob response body or any side data blob.
   // |request_url| is the current request URL that resulted in the response. It

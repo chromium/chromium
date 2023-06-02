@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">أسطح المكتب</translation>
 <translation id="1018219910092211213">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
-<translation id="1022433422498218992">عناصر التحكّم العامة</translation>
+<translation id="1020274983236703756">مواد العرض الحصرية لأجهزة <ph name="PRODUCT_NAME" /> متاحة الآن</translation>
 <translation id="1022628058306505708">انسياب أرضي</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">نوع المصادقة</translation>
 <translation id="1776228893584526149">الدرجة اللونية للخلفية</translation>
 <translation id="1782199038061388045">الترجمة</translation>
-<translation id="1790209694022261219">النوافذ وأسطح المكتب</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1801418420130173017">إيقاف المظهر الداكن</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1827738518074806965">معرض الفنون</translation>
+<translation id="1836553715834333258">لون النظام</translation>
 <translation id="1838374766361614909">محو البحث</translation>
+<translation id="1840474674287087346">لون سطح المكتب</translation>
 <translation id="1851218745569890714">اختبار اجتماعات الفيديو</translation>
 <translation id="1852934301711881861">‏تثبيت نظام التشغيل ChromeOS Flex</translation>
 <translation id="1856388568474281774">السهم المتّجه للأسفل</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">التنقّل في المتصفِّح</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
-<translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
-<translation id="2981143481017883351">‏مواد العرض الحصرية لأجهزة Chromebook متاحة الآن</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
-<translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3027578600144895987">إغلاق الكاميرا</translation>
 <translation id="3031560714565892478">الجهاز هو كاميرا فيديو.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3226657629376379887">قائمة إجراءات التصميم</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
+<translation id="3248223063252096240">حصري لأجهزة <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
 <translation id="3275729367986477355">الصورة الرمزية</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
 <translation id="3294437725009624529">ضيف</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
+<translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
-<translation id="3386675685417744672">‏حصري لأجهزة Chromebook</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
 <translation id="3639846061339007994">الجانب العلوي</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
+<translation id="3663574643422533538">اختيار عمل فني حصري لجهاز <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">تحذير</translation>
 <translation id="4054683689023980771">جارٍ تنزيل الصورة</translation>
 <translation id="4060260348856573701">اسم نقطة وصول جديد</translation>
-<translation id="4079743696465895866">‏يمكنك اختيار عمل فني لعرضه حصريًا على جهاز Chromebook.</translation>
 <translation id="4093865285251893588">صورة الملف الشخصي</translation>
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">‏لوحة لمس USB</translation>
+<translation id="4113067922640381334">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> جديدة.</translation>
 <translation id="4117637339509843559">الوضع الداكن</translation>
 <translation id="4130035430755296270">استمِر في تمرير مؤشر الماوس هنا للاطّلاع على المزيد من خيارات التنسيق.</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
+<translation id="4500966230243561393">لون الواجهة</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
 <translation id="4507392511610824664">رفع مستوى السطوع</translation>
 <translation id="4511264077854731334">المدخل</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">عندما تكون الشاشة غير نشطة لفترة، يمكن أن تعرض الصور والوقت وحالة الطقس ومعلومات الوسائط.</translation>
+<translation id="5035083460461104704">لون المظهر</translation>
 <translation id="5038292761217083259">لوحة مفاتيح متعددة الألوان</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
 <translation id="6017514345406065928">أخضر</translation>
+<translation id="6019566113895157499">اختصارات لوحة المفاتيح</translation>
 <translation id="6034694447310538551">تفعيل ميزة إعادة الضبط التلقائية شهريًا</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">معتدل</translation>
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
 <translation id="763165478673169849">وقت آخر عملية إعادة ضبط</translation>
+<translation id="7633068090678117093">صورة الخلفية</translation>
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>
 <translation id="765159867434478292">تقسيم</translation>
 <translation id="7656388927906093505">الجهاز هو ماوس.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">غير مهيأة</translation>
 <translation id="8593058461203131755">إيقاف الوسائط مؤقتًا</translation>
 <translation id="8620617069779373398">حالة التجوال</translation>
+<translation id="8626489604350149811">مزيد من الإجراءات لـ "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">أرجواني فاتح</translation>
 <translation id="8651481478098336970">كتم الصوت</translation>
 <translation id="8655295600908251630">القناة</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">الند</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>
 <translation id="8936793075252196307">‏عنوان IP للعميل</translation>
+<translation id="8944651180182756621">لون مشغّل التطبيقات</translation>
 <translation id="894617464444543719">الجهاز هو هاتف.</translation>
 <translation id="8957423540740801332">لليمين</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">تشغيل اختبار الذاكرة</translation>
 <translation id="9161276708550942948">مفتاح المسافة</translation>
 <translation id="9173638680043580060">يتبقى أقل من دقيقة.</translation>
+<translation id="9174334653006917325">لون واجهة المستخدم</translation>
 <translation id="917720651393141712">اختبار</translation>
 <translation id="9188992814426075118">يمكن أن تكون لوحة المفاتيح متطابقة تلقائيًا مع خلفيتك.</translation>
 <translation id="9189000703457422362">‏يتعذّر الاتصال بهذه الشبكة باستخدام أسماء نقاط الوصول (APN) التي يتم رصدها تلقائيًا. يُرجى التواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من المعلومات.</translation>

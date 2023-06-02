@@ -20,6 +20,9 @@
 // A shortcut tile has been tapped.
 - (void)shortcutTileOpened;
 
+// A Set Up List item has been tapped.
+- (void)setUpListItemOpened;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_METRICS_DELEGATE_H_

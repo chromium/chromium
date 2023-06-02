@@ -5,6 +5,15 @@
 /* This is the stylesheet for the interstitial when the
    "WebFilterInterstitialRefresh" flag is enabled. */
 
+.banner {
+  align-items: center;
+  box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  padding: 16px;
+ }
+
 body {
   --avatar-stroke-color: var(--google-gray-50);
   --custodian-name-color: #333333;
@@ -14,7 +23,7 @@ body {
   --paragraph-color: var(--google-gray-700);
   --callout-text-color: var(--google-gray-900);
   --callout-bg-color: var(--google-gray-100);
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   padding: 24px 24px 20px 24px;
 }
 
@@ -72,6 +81,23 @@ button:active {
 .details-button:focus {
   background: var(--google-gray-50);
   border-color: var(--focused-details-button-border);
+}
+
+#family-link-kite {
+  height: 24px;
+  width: 24px;
+  padding: 16px;
+}
+
+.banner-header {
+  color: var(--header-color);
+  line-height: 24px;
+  margin-top: 0;
+}
+
+.banner-content {
+  line-height: 20px;
+  margin-top: 0;
 }
 
 h1,

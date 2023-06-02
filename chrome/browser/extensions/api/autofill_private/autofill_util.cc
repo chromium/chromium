@@ -349,14 +349,14 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   return std::move(api_account);
 }
 
-void AuthenticateUserOnMandatoryReauthToggled(
+void AuthenticateUser(
     scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator,
+    const std::u16string& prompt_message,
     CallbackAfterSuccessfulUserAuth callback) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(device_authenticator);
-  const std::u16string& message =
-      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
-  device_authenticator->AuthenticateWithMessage(message, std::move(callback));
+  device_authenticator->AuthenticateWithMessage(prompt_message,
+                                                std::move(callback));
 #endif
 }
 

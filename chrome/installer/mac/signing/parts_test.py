@@ -5,7 +5,7 @@
 import unittest
 from unittest import mock
 
-from . import model, parts, signing, test_config
+from signing import model, parts, signing, test_config
 
 
 def _get_identity_hash(i):

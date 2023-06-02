@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglais (É.-U.) avec clavier Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Hôte</translation>
 <translation id="1521655867290435174">Google Feuilles de calcul</translation>
-<translation id="1538729222189715449">Ouverture des fichiers Linux en cours…</translation>
 <translation id="1547964879613821194">Anglais canadien</translation>
 <translation id="1556189134700913550">Appliquer à tout</translation>
 <translation id="1561842594491319104">Chrome</translation>
@@ -147,7 +146,6 @@
 <translation id="2208919847696382164">Installer avec Linux</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier « <ph name="FOLDER_NAME" /> ». <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Votre cache Google Disque a été vidé.</translation>
 <translation id="2239068707900391003">Personne avec un café</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
 <translation id="2278133026967558505">Accès aux fichiers par tous les sites Web et URL</translation>
@@ -320,6 +318,7 @@
 <translation id="3619593063686672873">Aucune vidéo récente</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> fichiers sélectionnés.</translation>
 <translation id="3685122418104378273">La synchronisation Google Disque est désactivée par défaut, lors de l'utilisation de données mobiles.</translation>
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, renseignements</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">La modification de ce paramètre aura des conséquences sur tous les réseaux partagés</translation>
 <translation id="3737576078404241332">Retirer de la barre latérale</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
-<translation id="3780536599611287598">Vous n'êtes pas autorisé à déplacer des fichiers dans « <ph name="FOLDER_NAME" /> ».</translation>
 <translation id="3786301125658655746">Vous êtes hors ligne.</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3793469551756281394">Temps restant : environ <ph name="REMAINING_TIME_HOUR" /> et <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -418,6 +416,7 @@
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465725236958772856">Réseaux <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, géré par votre administrateur, connexion</translation>
 <translation id="4470564870223067757">Hangûl, dubeol-sik</translation>
+<translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4477002475007461989">Roumain</translation>
 <translation id="4477219268485577442">Phonétique bulgare</translation>
@@ -467,7 +466,6 @@
 <translation id="4804827417948292437">Avocat</translation>
 <translation id="4805966553127040832">Restauration de <ph name="COUNT" /> éléments en cours…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Pour passer au mode navigation privée, vous devez utiliser une extension requise par votre organisation}one{Pour passer au mode navigation privée, vous devez utiliser une extension requise par votre organisation}other{Pour passer au mode navigation privée, vous devez utiliser certaines extensions requises par votre organisation}}</translation>
-<translation id="4823651846660089135">L'appareil est en lecture seule</translation>
 <translation id="4826849268470072925">Tamoul (ITRANS)</translation>
 <translation id="482932175346970750">Saisissez <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dans votre navigateur</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -578,6 +576,7 @@
 <translation id="5533102081734025921">Image <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calcul de la taille en cours…</translation>
 <translation id="554153475311314364">Grec (translittération)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> dossiers sélectionnés</translation>
 <translation id="5580591966435005537">machine virtuelle</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
 <translation id="5583664733673201137">Largeur de ponctuation : pleine</translation>
@@ -600,6 +599,7 @@
 <translation id="5724172041621205163">Thaï avec clavier Pattachote</translation>
 <translation id="57383366388012121">Le mois dernier</translation>
 <translation id="5756666464756035725">QWERTY hongrois</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> éléments sélectionnés</translation>
 <translation id="5763377084591234761">Allemand (Suisse)</translation>
 <translation id="5769519078756170258">Hôte ou domaine à exclure</translation>
 <translation id="5775750595919327203">Ourdou</translation>
@@ -617,6 +617,7 @@
 <translation id="5838451609423551646">Toutes les entrées ont été supprimées de la sélection.</translation>
 <translation id="5838825566232597749">Workman international américain</translation>
 <translation id="5845721951356578987">Infirmière</translation>
+<translation id="5860491529813859533">Activer</translation>
 <translation id="5861477046012235702">Joueur</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, force du signal : <ph name="SIGNAL_STRENGTH" />%, renseignements</translation>
@@ -674,7 +675,6 @@
 <translation id="6327785803543103246">Découverte automatique de mandataire Web</translation>
 <translation id="6337014272874260727">Annuler l'épinglage de l'accès rapide aux fichiers</translation>
 <translation id="6339145975392024142">Américain international (PC)</translation>
-<translation id="6346310558342052870">Accès limité</translation>
 <translation id="6356685157277930264">Fenêtre de commentaires pour Fichiers</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="636254897931573416">Valeur de correspondance de suffixe de domaine incorrect</translation>
@@ -1004,6 +1004,7 @@
 <translation id="8919081441417203123">Danois</translation>
 <translation id="8949925099261528566">Connecté, aucun accès Internet</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
+<translation id="8971742885766657349">Synchronisation en cours… – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="8998871447376656508">Il n'y a pas assez d'espace libre dans votre Google Disque pour terminer le téléversement.</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>

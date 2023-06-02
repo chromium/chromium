@@ -124,4 +124,16 @@ namespace wmDesksPrivate {
     [supportsPromises] static void getDeskByID(
         DOMString deskUuid, GetDeskByIDCallback callback);
   };
+
+  interface Events {
+    // Fires when new desks is added.
+    static void OnDeskAdded(DOMString deskId);
+
+    // Fires when desk removal is finalized.
+    static void OnDeskRemoved(DOMString deskId);
+
+    // Fires when desk activation changed.
+    static void OnDeskSwitched(DOMString activated, DOMString deactivated);
+    };
+
 };

@@ -101,7 +101,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   // Current app session.
   std::unique_ptr<AppSessionAsh> app_session_;
 
-  base::ObserverList<KioskAppManagerObserver, true>::Unchecked observers_;
+  base::ObserverList<KioskAppManagerObserver, /*check_empty=*/true> observers_;
 
   base::WeakPtrFactory<KioskAppManagerBase> weak_ptr_factory_{this};
 };

@@ -90,7 +90,9 @@ class DownloadDBTest : public testing::Test {
 
  protected:
   std::map<std::string, download_pb::DownloadDBEntry> db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>> db_;
+  raw_ptr<leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>,
+          DanglingUntriaged>
+      db_;
   std::unique_ptr<DownloadDBImpl> download_db_;
   bool init_success_;
 };

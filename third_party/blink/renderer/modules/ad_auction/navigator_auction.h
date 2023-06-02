@@ -26,6 +26,7 @@
 
 namespace blink {
 
+class AdAuctionDataConfig;
 class AdRequestConfig;
 class Ads;
 class AuctionAdInterestGroup;
@@ -123,6 +124,15 @@ class MODULES_EXPORT NavigatorAuction final
       const Vector<std::pair<String, String>>& replacement,
       ExceptionState& exception_state);
 
+  ScriptPromise getInterestGroupAdAuctionData(ScriptState* script_state,
+                                              const AdAuctionDataConfig* config,
+                                              ExceptionState& exception_state);
+  static ScriptPromise getInterestGroupAdAuctionData(
+      ScriptState* script_state,
+      Navigator& navigator,
+      const AdAuctionDataConfig* config,
+      ExceptionState& exception_state);
+
   ScriptPromise createAdRequest(ScriptState*,
                                 const AdRequestConfig*,
                                 ExceptionState&);
@@ -201,6 +211,9 @@ class MODULES_EXPORT NavigatorAuction final
                              const absl::optional<KURL>&);
   // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
   void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
+
+  void GetInterestGroupAdAuctionDataComplete(ScriptPromiseResolver* resolver,
+                                             mojo_base::BigBuffer data);
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

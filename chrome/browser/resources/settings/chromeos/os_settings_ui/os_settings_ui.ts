@@ -34,6 +34,7 @@ import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://res
 
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {createPageAvailability, OsPageAvailability} from '../os_page_availability.js';
@@ -293,6 +294,11 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     // Clicks need to be captured because unlike focus/blur to the settings
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
+
+    if (isRevampWayfindingEnabled()) {
+      // Add class which activates styles for the wayfinding update
+      document.body.classList.add('revamp-wayfinding-enabled');
+    }
   }
 
   override disconnectedCallback() {
@@ -399,7 +405,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     const url = e.detail.selected;
     const path = new URL(url).pathname;
     const route = Router.getInstance().getRouteForPath(path);
-    assert(route, 'os-settings-menu has an entry with an invalid route.');
+    assert(route, `os-settings-menu has an item with invalid route: ${path}`);
     this.activeRoute_ = route;
 
     if (this.isNarrow) {

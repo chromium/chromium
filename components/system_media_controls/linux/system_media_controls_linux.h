@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   std::unique_ptr<DbusProperties> properties_;
 
   scoped_refptr<dbus::Bus> bus_;
-  raw_ptr<dbus::ExportedObject> exported_object_;
+  raw_ptr<dbus::ExportedObject, DanglingUntriaged> exported_object_;
 
   // The generated service name given to |bus_| when requesting ownership.
   const std::string service_name_;

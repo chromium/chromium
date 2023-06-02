@@ -211,9 +211,6 @@ const char kDisablePepper3d[]               = "disable-pepper-3d";
 // Disables the Permissions API.
 const char kDisablePermissionsAPI[]         = "disable-permissions-api";
 
-// Disable Image Chromium for Pepper 3d.
-const char kDisablePepper3DImageChromium[] = "disable-pepper-3d-image-chromium";
-
 // Disables compositor-accelerated touch-screen pinch gestures.
 const char kDisablePinch[]                  = "disable-pinch";
 
@@ -839,6 +836,9 @@ const char kUtilitySubType[] = "utility-sub-type";
 // In debug builds, asserts that the stream of input events is valid.
 const char kValidateInputEventStream[] = "validate-input-event-stream";
 
+// Causes tests to attempt to verify pixel output.
+const char kVerifyPixels[] = "browser-ui-tests-verify-pixels";
+
 // Will add kWaitForDebugger to every child processes. If a value is passed, it
 // will be used as a filter to determine if the child process should have the
 // kWaitForDebugger flag passed on or not.
@@ -933,8 +933,9 @@ const char kWebXrRuntimeNone[] = "no-vr-runtime";
 const char kWebXrRuntimeOrientationSensors[] = "orientation-sensors";
 
 // The following are the runtimes that WebXr supports.
+const char kWebXrRuntimeCardboard[] = "cardboard";
+const char kWebXrRuntimeGVR[] = "gvr";
 const char kWebXrRuntimeOpenXr[] = "openxr";
-const char kWebXrRuntimeWMR[] = "windows-mixed-reality";
 
 #if BUILDFLAG(IS_ANDROID)
 // Disable Media Session API

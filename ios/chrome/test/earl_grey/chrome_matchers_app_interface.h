@@ -237,6 +237,9 @@
 // Returns matcher for the omnibox popup list row views.
 + (id<GREYMatcher>)omniboxPopupRow;
 
+// Returns a matcher for a popup row containing `string` as accessibility label.
++ (id<GREYMatcher>)omniboxPopupRowWithString:(NSString*)string;
+
 // Returns matcher for the omnibox popup list view.
 + (id<GREYMatcher>)omniboxPopupList;
 
@@ -543,6 +546,9 @@
 
 // Returns a matcher to default browser settings table view.
 + (id<GREYMatcher>)defaultBrowserSettingsTableViewMatcher;
+
+// Returns a matcher to safety check table view.
++ (id<GREYMatcher>)safetyCheckTableViewMatcher;
 
 #pragma mark - Overflow Menu Destinations
 

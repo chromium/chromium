@@ -10,7 +10,7 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/android/library_loader/library_prefetcher.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/base_jni_headers/LibraryPrefetcher_jni.h"
+#include "base/base_jni/LibraryPrefetcher_jni.h"
 #include "base/logging.h"
 
 namespace base {

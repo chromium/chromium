@@ -56,7 +56,7 @@ def parse_args(extra_args=None, tests_included=False):
         args.extend(['--platform', 'test'])
 
     if not {'--jobs', '-j', '--child-processes'}.intersection(set(args)):
-        args.extend(['--jobs', 1])
+        args.extend(['--jobs', '1'])
     args.extend(extra_args)
     if not tests_included:
         # We use the glob to test that globbing works.

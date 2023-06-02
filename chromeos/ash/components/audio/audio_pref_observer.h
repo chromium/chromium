@@ -15,9 +15,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioPrefObserver {
   // Called when audio policy prefs changed.
   virtual void OnAudioPolicyPrefChanged() = 0;
 
-  // Called when speak-on-mute detection prefs changed.
-  virtual void OnSpeakOnMuteDetectionPrefChanged() = 0;
-
  protected:
   virtual ~AudioPrefObserver() {}
 };

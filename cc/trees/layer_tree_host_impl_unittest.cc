@@ -18678,6 +18678,32 @@ TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
             collected_bounds.bounds().find(kFourthId)->second);
 }
 
+TEST_F(LayerTreeHostImplTest, RecomputeRasterCapsOnLayerTreeFrameSinkUpdate) {
+  host_impl_->ReleaseLayerTreeFrameSink();
+  host_impl_ = nullptr;
+
+  host_impl_ = LayerTreeHostImpl::Create(
+      DefaultSettings(), this, &task_runner_provider_, &stats_instrumentation_,
+      &task_graph_runner_,
+      AnimationHost::CreateForTesting(ThreadInstance::IMPL), nullptr, 0,
+      nullptr, nullptr);
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl_));
+  host_impl_->SetVisible(true);
+
+  // InitializeFrameSink with a gpu-raster enabled output surface.
+  auto gpu_raster_layer_tree_frame_sink =
+      FakeLayerTreeFrameSink::Create3dForGpuRasterization();
+  host_impl_->InitializeFrameSink(gpu_raster_layer_tree_frame_sink.get());
+  EXPECT_TRUE(host_impl_->use_gpu_rasterization());
+  EXPECT_TRUE(host_impl_->can_use_msaa());
+
+  // Re-initialize with a software output surface.
+  layer_tree_frame_sink_ = FakeLayerTreeFrameSink::CreateSoftware();
+  host_impl_->InitializeFrameSink(layer_tree_frame_sink_.get());
+  EXPECT_FALSE(host_impl_->use_gpu_rasterization());
+  EXPECT_FALSE(host_impl_->can_use_msaa());
+}
+
 // Check if picturelayer's ScrollInteractionInProgress() return true even when
 // BrowserControl is consuming ScrollUpdate.
 TEST_P(LayerTreeHostImplBrowserControlsTest,

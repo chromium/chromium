@@ -426,6 +426,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Activates or deactivates keyboard mic if there's one.
   void SetKeyboardMicActive(bool active);
 
+  // Enables or disables the speak-on-mute detection.
+  void SetSpeakOnMuteDetection(bool som_on);
+
   // Changes the active nodes to the nodes specified by |new_active_ids|.
   // The caller can pass in the "complete" active node list of either input
   // nodes, or output nodes, or both. If only input nodes are passed in,
@@ -557,7 +560,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;
-  void OnSpeakOnMuteDetectionPrefChanged() override;
 
   // Sets the |active_device| to be active.
   // If |notify|, notifies Active*NodeChange.
@@ -607,10 +609,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Applies the audio muting policies whenever the user logs in or policy
   // change notification is received.
   void ApplyAudioPolicy();
-
-  // Applies the speak-on-mute detection whenever the user logs in or detection
-  // change notification is received.
-  void ApplySpeakOnMuteDetectionState();
 
   // Helper method to apply the conditional audio mute change.
   void UpdateAudioMute();
@@ -907,9 +905,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Whether the audio device was selected by user, to track user overrides
   bool input_device_selected_by_user_ = false;
   bool output_device_selected_by_user_ = false;
-
-  // Whether the speak-on-mute detection was enabled by user.
-  bool speak_on_mute_detection_on_ = false;
 
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.

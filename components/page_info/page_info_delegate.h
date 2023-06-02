@@ -122,6 +122,7 @@ class PageInfoDelegate {
   // Gets the name of the embedder.
   virtual const std::u16string GetClientApplicationName() = 0;
 #endif
+  virtual bool IsHttpsFirstModeEnabled() = 0;
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_

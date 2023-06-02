@@ -120,6 +120,13 @@ PrerenderHost* PrerenderHost::GetPrerenderHostFromFrameTreeNode(
   }
 }
 
+// static
+PrerenderHost& PrerenderHost::GetFromFrameTreeNode(
+    FrameTreeNode& frame_tree_node) {
+  CHECK(frame_tree_node.frame_tree().is_prerendering());
+  return *static_cast<PrerenderHost*>(frame_tree_node.frame_tree().delegate());
+}
+
 PrerenderHost::PrerenderHost(
     const PrerenderAttributes& attributes,
     WebContentsImpl& web_contents,
@@ -723,13 +730,6 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kTrustTokenParams;
   }
 
-  // Web bundle token cannot be set due because it is only set for child
-  // frame navigations.
-  CHECK(!begin_params_->web_bundle_token);
-  if (potential_activation.web_bundle_token) {
-    return ActivationNavigationParamsMatch::kWebBundleToken;
-  }
-
   // Don't require equality for request_context_type because link clicks
   // (HYPERLINK) should be allowed for activation, whereas prerender always has
   // type LOCATION.
@@ -1040,6 +1040,7 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
     case PrerenderFinalStatus::kMemoryPressureOnTrigger:
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
+    case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
       if (attempt_) {
         attempt_->SetFailureReason(ToPreloadingFailureReason(status));
         // We reset the attempt to ensure we don't update once we have reported

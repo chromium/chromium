@@ -348,7 +348,7 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
     PasswordForm generated,
     const std::vector<const PasswordForm*>& matches,
     FormSaver* form_saver) {
-  DCHECK(!generated.password_value.empty());
+  CHECK(!generated.password_value.empty());
   // Clear the username value if there are already saved credentials with
   // the same username in order to prevent overwriting.
   if (FindUsernameConflict(generated, matches))
@@ -405,9 +405,7 @@ void PasswordGenerationManager::OnPresaveBubbleResult(
 
   if (accepted) {
     driver->GeneratedPasswordAccepted(pending.password_value);
-  } else if (base::FeatureList::IsEnabled(
-                 password_manager::features::
-                     kPasswordGenerationPreviewOnHover)) {
+  } else {
     driver->ClearPreviewedForm();
   }
 }

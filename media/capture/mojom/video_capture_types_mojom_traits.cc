@@ -1526,10 +1526,6 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       return media::mojom::VideoCaptureFrameDropReason::
           kResolutionAdapterWrappingFrameForCroppingFailed;
     case media::VideoCaptureFrameDropReason::
-        kResolutionAdapterTimestampTooCloseToPrevious:
-      return media::mojom::VideoCaptureFrameDropReason::
-          kResolutionAdapterTimestampTooCloseToPrevious;
-    case media::VideoCaptureFrameDropReason::
         kResolutionAdapterFrameRateIsHigherThanRequested:
       return media::mojom::VideoCaptureFrameDropReason::
           kResolutionAdapterFrameRateIsHigherThanRequested;
@@ -1659,10 +1655,9 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
           kResolutionAdapterWrappingFrameForCroppingFailed;
       return true;
     case media::mojom::VideoCaptureFrameDropReason::
-        kResolutionAdapterTimestampTooCloseToPrevious:
-      *output = media::VideoCaptureFrameDropReason::
-          kResolutionAdapterTimestampTooCloseToPrevious;
-      return true;
+        kResolutionAdapterTimestampTooCloseToPrevious_DEPRECATED:
+      NOTREACHED();
+      return false;
     case media::mojom::VideoCaptureFrameDropReason::
         kResolutionAdapterFrameRateIsHigherThanRequested:
       *output = media::VideoCaptureFrameDropReason::

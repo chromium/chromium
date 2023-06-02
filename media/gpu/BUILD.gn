@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/logging.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
@@ -70,6 +71,10 @@ component("gpu") {
   }
 
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  if (!use_runtime_vlog) {
+    # Enable VLOG(1) when using build time VLOG.
+    defines += [ "ENABLED_VLOG_LEVEL=1" ]
+  }
 
   sources = [
     "gpu_video_accelerator_util.cc",
@@ -111,7 +116,7 @@ component("gpu") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     public_deps += [ "//media/gpu/mac" ]
   }
 
@@ -220,13 +225,13 @@ component("gpu") {
       "windows/d3d11_texture_selector.h",
       "windows/d3d11_texture_wrapper.cc",
       "windows/d3d11_texture_wrapper.h",
-      "windows/d3d11_video_context_wrapper.cc",
-      "windows/d3d11_video_context_wrapper.h",
       "windows/d3d11_video_decoder.cc",
       "windows/d3d11_video_decoder.h",
       "windows/d3d11_video_decoder_client.h",
       "windows/d3d11_video_decoder_impl.cc",
       "windows/d3d11_video_decoder_impl.h",
+      "windows/d3d11_video_decoder_wrapper.cc",
+      "windows/d3d11_video_decoder_wrapper.h",
       "windows/d3d11_video_device_format_support.cc",
       "windows/d3d11_video_device_format_support.h",
       "windows/d3d11_video_processor_proxy.cc",
@@ -237,6 +242,8 @@ component("gpu") {
       "windows/d3d11_vp9_picture.h",
       "windows/d3d_accelerator.cc",
       "windows/d3d_accelerator.h",
+      "windows/d3d_video_decoder_wrapper.cc",
+      "windows/d3d_video_decoder_wrapper.h",
       "windows/dxva_picture_buffer_win.cc",
       "windows/dxva_picture_buffer_win.h",
       "windows/dxva_video_decode_accelerator_win.cc",
@@ -250,6 +257,8 @@ component("gpu") {
       "windows/media_foundation_video_encode_accelerator_win.h",
       "windows/mf_audio_encoder.cc",
       "windows/mf_audio_encoder.h",
+      "windows/scoped_d3d_buffers.cc",
+      "windows/scoped_d3d_buffers.h",
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
       "windows/video_rate_control_wrapper.h",
@@ -619,6 +628,7 @@ source_set("unit_tests") {
       "windows/d3d11_video_decoder_unittest.cc",
       "windows/d3d11_video_device_format_support_unittest.cc",
       "windows/d3d11_video_processor_proxy_unittest.cc",
+      "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
     libs = [ "dxguid.lib" ]

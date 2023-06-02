@@ -182,6 +182,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkBarBackground] = {kColorToolbar};
   mixer[kColorBookmarkBarForeground] = {kColorToolbarText};
   mixer[kColorBookmarkButtonIcon] = {kColorToolbarButtonIcon};
+  mixer[kColorBookmarkDialogProductImageBorder] =
+      ui::SetAlpha(gfx::kGoogleGrey900, 0x24);
+  mixer[kColorBookmarkDialogTrackPriceIcon] = {gfx::kGoogleGrey700};
   mixer[kColorBookmarkFavicon] = ui::PickGoogleColor(
       gfx::kGoogleGrey500, kColorBookmarkBarBackground, 6.0f);
   mixer[kColorBookmarkFolderIcon] = {ui::kColorIcon};
@@ -285,7 +288,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::DeriveDefaultIconColor(ui::kColorTextfieldForegroundDisabled);
   mixer[kColorFindBarForeground] = {ui::kColorTextfieldForeground};
   mixer[kColorFindBarMatchCount] = {ui::kColorSecondaryForeground};
-  mixer[kColorFindBarSeparator] = {ui::kColorSeparator};
   mixer[kColorFlyingIndicatorBackground] = {kColorToolbar};
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFocusHighlightDefault] = {SkColorSetRGB(0x10, 0x10, 0x10)};
@@ -335,6 +337,12 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxChipForegroundLowVisibility] = {kColorToolbarButtonIcon};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {
       ui::kColorButtonForeground};
+  // This color ID is only for Material Refresh 2023, but is a fallback when
+  // themes are used.
+  mixer[kColorOmniboxChipInkDropHover] = {
+      ui::SetAlpha(kColorToolbarButtonIcon, std::ceil(0.10f * 255.0f))};
+  mixer[kColorOmniboxChipInkDropRipple] = {
+      ui::SetAlpha(kColorToolbarButtonIcon, std::ceil(0.16f * 255.0f))};
   mixer[kColorPageInfoChosenObjectDeleteButtonIcon] = {ui::kColorIcon};
   mixer[kColorPageInfoChosenObjectDeleteButtonIconDisabled] = {
       ui::kColorIconDisabled};
@@ -722,10 +730,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorReadAnythingBackground] = {
       dark_mode ? kColorReadAnythingBackgroundDark
                 : kColorReadAnythingBackgroundLight};
-  mixer[kColorReadAnythingBackgroundBlue] = {gfx::kGoogleBlue200};
+  mixer[kColorReadAnythingBackgroundBlue] = {gfx::kGoogleBlue100};
   mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
   mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey100};
-  mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow200};
+  mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow100};
   mixer[kColorReadAnythingForeground] = {
       dark_mode ? kColorReadAnythingForegroundDark
                 : kColorReadAnythingForegroundLight};

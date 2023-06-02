@@ -48,6 +48,13 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       extensions::PermissionsManager::UserSiteSetting site_setting,
       content::WebContents* current_web_contents);
 
+  // Updates `request_access_button_` visibility given the user `site_setting`
+  // and `actions` in `web_contents`.
+  void UpdateRequestAccessButton(
+      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      content::WebContents* web_contents);
+
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
 
@@ -59,13 +66,6 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       extensions::PermissionsManager::UserSiteSetting site_setting,
       content::WebContents* web_contents,
       bool is_restricted_url);
-
-  // Updates `request_access_button_` visibility given the user `site_setting`
-  // and `actions` in `web_contents`.
-  void UpdateRequestAccessButton(
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
-      extensions::PermissionsManager::UserSiteSetting site_setting,
-      content::WebContents* web_contents);
 
   const raw_ptr<ExtensionsRequestAccessButton> request_access_button_;
   const raw_ptr<ExtensionsToolbarButton> extensions_button_;

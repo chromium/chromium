@@ -98,7 +98,7 @@ class ImpressionStoreTest : public testing::Test {
   bool load_result_;
   Entries loaded_entries_;
 
-  raw_ptr<FakeDB<proto::ClientState, ClientState>> db_;
+  raw_ptr<FakeDB<proto::ClientState, ClientState>, DanglingUntriaged> db_;
   std::unique_ptr<CollectionStore<ClientState>> store_;
 };
 

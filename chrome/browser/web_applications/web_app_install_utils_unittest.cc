@@ -158,9 +158,9 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   {
     blink::ParsedPermissionsPolicyDeclaration declaration;
     declaration.feature = blink::mojom::PermissionsPolicyFeature::kFullscreen;
-    declaration.allowed_origins = {blink::OriginWithPossibleWildcards(
-        url::Origin::Create(GURL("https://www.example.com")),
-        /*has_subdomain_wildcard=*/false)};
+    declaration.allowed_origins = {
+        blink::OriginWithPossibleWildcards::FromOrigin(
+            url::Origin::Create(GURL("https://www.example.com")))};
     declaration.matches_all_origins = false;
     declaration.matches_opaque_src = false;
 

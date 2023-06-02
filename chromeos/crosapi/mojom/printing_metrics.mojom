@@ -49,7 +49,11 @@ interface PrintingMetricsForProfile {
   //   interchangeable with mojo_base.mojom.Value. While we could add
   //   a translation layer to a strongly typed mojom struct, this adds an
   //   overhead and the potential for errors with no benefit.
-  GetPrintJobs@0() => (array<mojo_base.mojom.Value> print_jobs);
+  DeprecatedGetPrintJobs@0() => (array<mojo_base.mojom.Value> print_jobs);
+
+  // Same as above, but returns a base::Value::List.
+  [MinVersion=1]
+  GetPrintJobs@1() => (mojo_base.mojom.ListValue print_jobs);
 };
 
 // PrintingMetrics is the entry point for chrome.printingMetrics API

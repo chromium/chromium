@@ -7,8 +7,11 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
@@ -57,16 +60,6 @@ void LoginState::AddObserver(Observer* observer) {
 
 void LoginState::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
-}
-
-void LoginState::SetLoggedInStateAndPrimaryUser(
-    LoggedInState state,
-    LoggedInUserType type,
-    const std::string& primary_user_hash) {
-  DCHECK(type != LOGGED_IN_USER_NONE);
-  primary_user_hash_ = primary_user_hash;
-  LOGIN_LOG(EVENT) << "LoggedInStateUser: " << primary_user_hash;
-  SetLoggedInState(state, type);
 }
 
 void LoginState::SetLoggedInState(LoggedInState state, LoggedInUserType type) {
@@ -119,6 +112,20 @@ bool LoginState::IsUserAuthenticated() const {
   return logged_in_user_type_ == LOGGED_IN_USER_REGULAR ||
          logged_in_user_type_ == LOGGED_IN_USER_OWNER ||
          logged_in_user_type_ == LOGGED_IN_USER_CHILD;
+}
+
+const std::string& LoginState::primary_user_hash() const {
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return base::EmptyString();
+  }
+
+  auto* primary_user = user_manager->GetPrimaryUser();
+  if (!primary_user) {
+    return base::EmptyString();
+  }
+
+  return primary_user->username_hash();
 }
 
 // Private methods

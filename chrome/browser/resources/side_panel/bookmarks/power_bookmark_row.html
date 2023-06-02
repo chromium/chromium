@@ -29,8 +29,15 @@
   }
 
   iron-icon {
+    --iron-icon-fill-color: var(--google-grey-700);
     height: 16px;
     width: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    iron-icon {
+      --iron-icon-fill-color: var(--google-grey-100);
+    }
   }
 
   :host-context([chrome-refresh-2023]) .sp-labelless-input:hover {
@@ -64,7 +71,7 @@
     <cr-input slot="content" id="input" value="[[bookmark.title]]"
         class="sp-labelless-input"
         on-change="onInputChange_" on-blur="onInputChange_"
-        on-keypress="onInputKeyPress_"
+        on-keydown="onInputKeyDown_"
         aria-label="[[rowAriaLabel]]"
         aria-description="[[rowAriaDescription]]">
     </cr-input>

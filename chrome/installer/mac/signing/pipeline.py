@@ -11,7 +11,7 @@ The pipeline module orchestrates the entire signing process, which includes:
 
 import os.path
 
-from . import commands, model, modification, notarize, parts, signing
+from signing import commands, model, modification, notarize, parts, signing
 
 
 def _include_branding_code_in_app(dist):

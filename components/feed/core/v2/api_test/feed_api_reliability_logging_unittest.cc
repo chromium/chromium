@@ -525,7 +525,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadMoreSucceeds) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(base::StrCat({"LogLoadMoreStarted\n"
-                          "LogLoadMoreIndicatorShown\n"
                           "LogLoadMoreRequestSent\n"
                           "LogLoadMoreResponseReceived "
                           "receive_timestamp=",
@@ -552,7 +551,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadMoreFails) {
 
   EXPECT_EQ(
       "LogLoadMoreStarted\n"
-      "LogLoadMoreIndicatorShown\n"
       "LogLoadMoreRequestSent\n"
       "LogLoadMoreResponseReceived receive_timestamp=0 send_timestamp=0\n"
       "LogLoadMoreRequestFinished result=200\n"

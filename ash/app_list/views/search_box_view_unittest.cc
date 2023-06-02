@@ -73,7 +73,11 @@ bool IsValidSearchBoxAccessibilityHint(const std::u16string& hint) {
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)),
       l10n_util::GetStringFUTF16(
           IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
-          l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS))};
+          l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)),
+      l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES))};
   // Check if the current accessibility text is one of the possible
   // options.
   return base::Contains(possible_a11y_text, hint);

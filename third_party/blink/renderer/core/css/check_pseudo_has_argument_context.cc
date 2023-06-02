@@ -12,12 +12,18 @@ namespace blink {
 const CSSSelector*
 CheckPseudoHasArgumentContext::GetCurrentRelationAndNextCompound(
     const CSSSelector* compound_selector,
-    CSSSelector::RelationType& relation) {
+    CSSSelector::RelationType& relation,
+    bool& compound_contains_sibling_relationship) {
   DCHECK(compound_selector);
+  compound_contains_sibling_relationship = false;
   for (const CSSSelector* simple_selector = compound_selector; simple_selector;
        simple_selector = simple_selector->NextSimpleSelector()) {
     CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
         pseudo_has_argument_hashes_, simple_selector);
+
+    if (simple_selector->IsChildIndexedSelector()) {
+      compound_contains_sibling_relationship = true;
+    }
 
     relation = simple_selector->Relation();
     if (relation != CSSSelector::kSubSelector) {
@@ -35,10 +41,24 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
   adjacent_distance_limit_ = 0;
   bool contains_child_or_descendant_combinator = false;
   bool sibling_combinator_at_leftmost = false;
+  bool compound_contains_sibling_relationship = false;
 
-  for (selector = GetCurrentRelationAndNextCompound(selector, relation);
+  for (selector = GetCurrentRelationAndNextCompound(
+           selector, relation, compound_contains_sibling_relationship);
        selector;
-       selector = GetCurrentRelationAndNextCompound(selector, relation)) {
+       selector = GetCurrentRelationAndNextCompound(
+           selector, relation, compound_contains_sibling_relationship)) {
+    if (compound_contains_sibling_relationship) {
+      // If the compound contains an :nth-child() or another child-indexed
+      // selector, we need to do the same invalidation as for an indirect
+      // adjacent combinator since inserting or removing a sibling at any place
+      // may change matching of a :has() selector on any of its siblings.
+      if (contains_child_or_descendant_combinator) {
+        sibling_combinator_at_leftmost = true;
+      } else {
+        sibling_combinator_at_rightmost_ = true;
+      }
+    }
     switch (relation) {
       case CSSSelector::kRelativeDescendant:
         leftmost_relation_ = relation;

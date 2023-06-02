@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
-#include "ui/gfx/test/font_fallback_test_data.h"
 
 namespace content {
 
@@ -180,32 +179,6 @@ TEST_F(DWriteFontProxyImplUnitTest, TestCustomFontFiles) {
   for (auto& file : handles) {
     EXPECT_TRUE(file.IsValid());
     EXPECT_LT(0, file.GetLength());  // Check the file exists
-  }
-}
-
-TEST_F(DWriteFontProxyImplUnitTest, FallbackFamily) {
-  for (auto& fallback_request : gfx::kGetFontFallbackTests) {
-    blink::mojom::FallbackFamilyAndStylePtr fallback_family_and_style;
-    UChar32 codepoint;
-    U16_GET(fallback_request.text.c_str(), 0, 0, fallback_request.text.size(),
-            codepoint);
-    dwrite_font_proxy().FallbackFamilyAndStyleForCodepoint(
-        "Times New Roman", fallback_request.language_tag, codepoint,
-        &fallback_family_and_style);
-
-    EXPECT_TRUE(base::Contains(fallback_request.fallback_fonts,
-                               fallback_family_and_style->fallback_family_name))
-        << "Did not find expected fallback font for language: "
-        << fallback_request.language_tag << ", codepoint U+" << std::hex
-        << codepoint << " DWrite returned font name: \""
-        << fallback_family_and_style->fallback_family_name << "\""
-        << ", expected: "
-        << base::JoinString(fallback_request.fallback_fonts, ", ");
-    EXPECT_EQ(fallback_family_and_style->weight, 400u);
-    EXPECT_EQ(fallback_family_and_style->width,
-              5u);  // SkFontStyle::Width::kNormal_Width
-    EXPECT_EQ(fallback_family_and_style->slant,
-              0u);  // SkFontStyle::Slant::kUpright_Slant
   }
 }
 

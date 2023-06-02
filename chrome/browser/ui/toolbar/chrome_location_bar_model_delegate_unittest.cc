@@ -53,7 +53,7 @@ class TestChromeLocationBarModelDelegate
   }
 
  private:
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<Browser, DanglingUntriaged> browser_;
   net::CertStatus cert_status_ = 0;
 };
 

@@ -205,7 +205,7 @@ static bool g_verify_host_files_result = false;
 // Makes sure files and corresponding signature files are readable but not
 // writable.
 bool VerifyCdmHost_0(const cdm::HostFile* host_files, uint32_t num_files) {
-  DVLOG(1) << __func__ << ": " << num_files;
+  LOG(WARNING) << __func__ << ": " << num_files;
 
   // We should always have the CDM and at least one common file.
   // The common CDM host file (e.g. chrome) might not exist since we are running

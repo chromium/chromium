@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"
@@ -68,9 +69,9 @@ class ExtensionServiceTestBase : public testing::Test {
     // If not, sync_preferences::TestingPrefServiceSyncable is used.
     absl::optional<std::string> prefs_content;
 
-    // If not empty, copies the directory to the profile's extension
-    // directory.
+    // If not empty, copies both directories to the profile directory.
     base::FilePath extensions_dir;
+    base::FilePath unpacked_extensions_dir;
 
     bool autoupdate_enabled = false;
     bool extensions_enabled = true;
@@ -159,6 +160,9 @@ class ExtensionServiceTestBase : public testing::Test {
   const base::FilePath& extensions_install_dir() const {
     return extensions_install_dir_;
   }
+  const base::FilePath& unpacked_install_dir() const {
+    return unpacked_install_dir_;
+  }
   const base::FilePath& data_dir() const { return data_dir_; }
   const base::ScopedTempDir& temp_dir() const { return temp_dir_; }
   content::BrowserTaskEnvironment* task_environment() {
@@ -212,7 +216,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // The ExtensionService, whose lifetime is managed by |profile|'s
   // ExtensionSystem.
-  raw_ptr<ExtensionService> service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> service_;
   ScopedTestingLocalState testing_local_state_;
 
  private:
@@ -220,6 +224,8 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // The directory into which extensions are installed.
   base::FilePath extensions_install_dir_;
+  // The directory into which unpacked extensions are installed.
+  base::FilePath unpacked_install_dir_;
 
   // chrome/test/data/extensions/
   base::FilePath data_dir_;
@@ -227,7 +233,7 @@ class ExtensionServiceTestBase : public testing::Test {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
   // The associated ExtensionRegistry, for convenience.
-  raw_ptr<extensions::ExtensionRegistry> registry_;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

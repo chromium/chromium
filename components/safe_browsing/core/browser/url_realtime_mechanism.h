@@ -145,6 +145,11 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // false when enterprise real time URL lookup is enabled.
   bool can_check_high_confidence_allowlist_;
 
+  // Stores the response of
+  // SafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist iff it was
+  // called.
+  bool did_match_allowlist_ = false;
+
   // URL Lookup service suffix for logging metrics.
   std::string url_lookup_service_metric_suffix_;
 

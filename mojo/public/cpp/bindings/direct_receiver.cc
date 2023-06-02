@@ -18,16 +18,15 @@ namespace mojo::internal {
 
 namespace {
 
-// Helpers for the trap set by MovePipeToLocalNode.
-struct TrapContext {
-  base::WeakPtr<DirectReceiverBase> weak_receiver;
-  ScopedHandle portal_to_merge;
-};
+thread_local ThreadLocalNode* g_thread_local_node;
 
 }  // namespace
 
-DirectReceiverBase::DirectReceiverBase() {
-  CHECK(core::IsMojoIpczEnabled());
+ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+  CHECK(IsDirectReceiverSupported());
+  CHECK(!g_thread_local_node);
+  g_thread_local_node = this;
 
   // Create a new (non-broker) node which we will connect below to the global
   // Mojo ipcz node in this process.
@@ -37,11 +36,10 @@ DirectReceiverBase::DirectReceiverBase() {
       .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
   IpczHandle node;
-  const IpczResult create_result =
-      ipcz.CreateNode(&core::ipcz_driver::kDriver, IPCZ_INVALID_DRIVER_HANDLE,
-                      IPCZ_NO_FLAGS, &create_options, &node);
+  const IpczResult create_result = ipcz.CreateNode(
+      &core::ipcz_driver::kDriver, IPCZ_NO_FLAGS, &create_options, &node);
   CHECK_EQ(create_result, IPCZ_RESULT_OK);
-  local_node_.reset(Handle(node));
+  node_.reset(Handle(node));
 
   // Create a new transport pair to connect the two nodes.
   using Transport = core::ipcz_driver::Transport;
@@ -69,16 +67,15 @@ DirectReceiverBase::DirectReceiverBase() {
   local_transport->set_remote_process(base::Process::Current());
 
   // We want the new local node to receive all I/O directly on the current
-  // thread. Since this is the first transport connected on that node, all other
-  // connections made by ipcz on behalf of this node will also bind I/O to this
-  // thread.
-  local_transport->OverrideIOTaskRunner(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+  // thread. Since this is the first transport connected on that node, all
+  // other connections made by ipcz on behalf of this node will also bind I/O
+  // to this thread.
+  local_transport->OverrideIOTaskRunner(task_runner_);
 
-  // Finally, establish mutual connection between the global and local nodes and
-  // retain a portal going in either direction. These portals will be used to
-  // move the DirectReceiver's own portal from the global node to the local
-  // node.
+  // Finally, establish mutual connection between the global and local nodes
+  // and retain a portal going in either direction. These portals will be
+  // used to move each DirectReceiver's own portal from the global node to the
+  // local node.
   IpczHandle global_portal;
   const IpczResult global_connect_result = ipcz.ConnectNode(
       core::GetIpczNode(),
@@ -89,88 +86,136 @@ DirectReceiverBase::DirectReceiverBase() {
 
   IpczHandle local_portal;
   const IpczResult local_connect_result = ipcz.ConnectNode(
-      local_node_->value(),
-      Transport::ReleaseAsHandle(std::move(local_transport)),
+      node_->value(), Transport::ReleaseAsHandle(std::move(local_transport)),
       /*num_initial_portals=*/1, local_connect_flags, nullptr, &local_portal);
   CHECK_EQ(local_connect_result, IPCZ_RESULT_OK);
   local_portal_.reset(Handle(local_portal));
+
+  WatchForIncomingTransfers();
 }
 
-DirectReceiverBase::~DirectReceiverBase() = default;
+ThreadLocalNode::~ThreadLocalNode() {
+  CHECK(task_runner_->BelongsToCurrentThread());
+  g_thread_local_node = nullptr;
+}
 
-ScopedMessagePipeHandle DirectReceiverBase::MovePipeToLocalNode(
+// static
+scoped_refptr<ThreadLocalNode> ThreadLocalNode::Get() {
+  if (g_thread_local_node) {
+    return base::WrapRefCounted(g_thread_local_node);
+  }
+  return base::MakeRefCounted<ThreadLocalNode>(
+      base::PassKey<ThreadLocalNode>{});
+}
+
+// static
+bool ThreadLocalNode::CurrentThreadHasInstance() {
+  return g_thread_local_node != nullptr;
+}
+
+ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
     ScopedMessagePipeHandle pipe) {
   const IpczAPI& ipcz = core::GetIpczAPI();
 
   // Create a new portal pair within our local node. One of these portals is
-  // returned, and the other will be merged with `pipe` once it's transferred
-  // to the local node. This allows us to synchronously return a pipe while the
-  // portal transfer remains asynchronous.
+  // returned and the other will be merged with `pipe` once it's transferred
+  // to the local node. This allows us to synchronously return a pipe while
+  // the portal transfer remains asynchronous.
   IpczHandle portal_to_bind, portal_to_merge;
   const IpczResult open_result =
-      ipcz.OpenPortals(local_node_->value(), IPCZ_NO_FLAGS, nullptr,
-                       &portal_to_bind, &portal_to_merge);
+      ipcz.OpenPortals(node_->value(), IPCZ_NO_FLAGS, nullptr, &portal_to_bind,
+                       &portal_to_merge);
   CHECK_EQ(open_result, IPCZ_RESULT_OK);
 
-  // Set up a trap so that when `pipe` arrives on the local node, we can
-  // retrieve it and merge it with one of the above portals.
-  const IpczTrapConditions conditions = {
-      .size = sizeof(conditions),
-      .flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS,
-      .min_local_parcels = 0,
-  };
-  std::unique_ptr<TrapContext> context{new TrapContext{
-      .weak_receiver = weak_ptr_factory_.GetWeakPtr(),
-      .portal_to_merge = ScopedHandle{Handle{portal_to_merge}}}};
-  const IpczResult trap_result =
-      ipcz.Trap(local_portal_->value(), &conditions, &OnTrapEvent,
-                reinterpret_cast<uintptr_t>(context.release()), IPCZ_NO_FLAGS,
-                nullptr, nullptr, nullptr);
-  CHECK_EQ(trap_result, IPCZ_RESULT_OK);
+  // Stash the portal for later merge.
+  const uint64_t merge_id = next_merge_id_++;
+  pending_merges_[merge_id] = ScopedHandle{Handle{portal_to_merge}};
 
-  // Finally, send the pipe to the local node.
+  // Send `pipe` to the local node along with our unique merge ID.
   IpczHandle portal = pipe.release().value();
   const IpczResult put_result =
-      ipcz.Put(global_portal_->value(), /*data=*/nullptr, /*num_bytes=*/0,
+      ipcz.Put(global_portal_->value(), &merge_id, sizeof(merge_id),
                /*handles=*/&portal, /*num_handles=*/1, IPCZ_NO_FLAGS, nullptr);
   CHECK_EQ(put_result, IPCZ_RESULT_OK);
 
   return ScopedMessagePipeHandle{MessagePipeHandle{portal_to_bind}};
 }
 
-void DirectReceiverBase::OnPipeMovedToLocalNode(ScopedHandle portal_to_merge) {
-  // Retrieve the moved pipe from the message sitting on our local portal and
-  // merge it with a dangling peer of our receiver's bound portal.
-  IpczHandle portal;
-  size_t num_portals = 1;
+void ThreadLocalNode::WatchForIncomingTransfers() {
+  // Set up a trap so that when a portal arrives on the local node we can
+  // retrieve it and merge it with the appropriate stashed portal.
   const IpczAPI& ipcz = core::GetIpczAPI();
-  const IpczResult get_result = ipcz.Get(
-      local_portal_->value(), IPCZ_NO_FLAGS, nullptr, /*data=*/nullptr,
-      /*num_bytes=*/nullptr, /*handles=*/&portal, /*num_handles=*/&num_portals,
-      /*parcel=*/nullptr);
-  CHECK_EQ(get_result, IPCZ_RESULT_OK);
-  CHECK_EQ(num_portals, 1u);
-  CHECK_NE(portal, IPCZ_INVALID_HANDLE);
+  const IpczTrapConditions conditions = {
+      .size = sizeof(conditions),
+      .flags = IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS,
+      .min_local_parcels = 0,
+  };
+  auto context = std::make_unique<base::WeakPtr<ThreadLocalNode>>(
+      weak_ptr_factory_.GetWeakPtr());
+  for (;;) {
+    const IpczResult trap_result =
+        ipcz.Trap(local_portal_->value(), &conditions, &OnTrapEvent,
+                  reinterpret_cast<uintptr_t>(context.release()), IPCZ_NO_FLAGS,
+                  nullptr, nullptr, nullptr);
+    if (trap_result == IPCZ_RESULT_OK) {
+      return;
+    }
 
-  const IpczResult merge_result = ipcz.MergePortals(
-      portal, portal_to_merge.release().value(), IPCZ_NO_FLAGS, nullptr);
-  CHECK_EQ(merge_result, IPCZ_RESULT_OK);
+    // Can't set a trap because there's already at least one transfer available.
+    // Process it and try again.
+    CHECK_EQ(trap_result, IPCZ_RESULT_FAILED_PRECONDITION);
+    OnTransferredPortalAvailable();
+  }
 }
 
 // static
-void DirectReceiverBase::OnTrapEvent(const IpczTrapEvent* event) {
-  // There is now a parcel available on the local node for this receiver, which
-  // must be the parcel containing the transferred pipe's portal. Since we know
-  // I/O (and therefore this event) is happening on the same thread that owns
-  // the DirectReceiverBase, it's safe to test the WeakPtr here.
-  auto context =
-      base::WrapUnique(reinterpret_cast<TrapContext*>(event->context));
-  if (!context->weak_receiver) {
+void ThreadLocalNode::OnTrapEvent(const IpczTrapEvent* event) {
+  // There is now a parcel available on the local portal for this node, which
+  // which must be a parcel containing some transferred pipe's portal. Since we
+  // we know I/O (and therefore this event) is happening on the same thread
+  // that owns the the ThreadLocalNode, it's safe to test the WeakPtr here.
+  auto weak_node_ptr = base::WrapUnique(
+      reinterpret_cast<base::WeakPtr<ThreadLocalNode>*>(event->context));
+  const base::WeakPtr<ThreadLocalNode>& weak_node = *weak_node_ptr;
+  if (!weak_node) {
     return;
   }
 
-  context->weak_receiver->OnPipeMovedToLocalNode(
-      std::move(context->portal_to_merge));
+  weak_node->OnTransferredPortalAvailable();
+}
+
+void ThreadLocalNode::OnTransferredPortalAvailable() {
+  // Retrieve the moved pipe from the message sitting on our local portal and
+  // merge it with the appropriate stashed portal.
+  IpczHandle portal;
+  uint64_t merge_id = 0;
+  size_t num_bytes = sizeof(merge_id);
+  size_t num_portals = 1;
+  const IpczAPI& ipcz = core::GetIpczAPI();
+  const IpczResult get_result = ipcz.Get(
+      local_portal_->value(), IPCZ_NO_FLAGS, nullptr, &merge_id, &num_bytes,
+      /*handles=*/&portal, /*num_handles=*/&num_portals, /*parcel=*/nullptr);
+  CHECK_EQ(get_result, IPCZ_RESULT_OK);
+  CHECK_EQ(num_bytes, sizeof(merge_id));
+  CHECK_EQ(num_portals, 1u);
+  CHECK_NE(portal, IPCZ_INVALID_HANDLE);
+
+  auto it = pending_merges_.find(merge_id);
+  CHECK(it != pending_merges_.end());
+  const IpczResult merge_result = ipcz.MergePortals(
+      portal, it->second.release().value(), IPCZ_NO_FLAGS, nullptr);
+  CHECK_EQ(merge_result, IPCZ_RESULT_OK);
+  pending_merges_.erase(it);
+
+  WatchForIncomingTransfers();
 }
 
 }  // namespace mojo::internal
+
+namespace mojo {
+
+bool IsDirectReceiverSupported() {
+  return core::IsMojoIpczEnabled();
+}
+
+}  // namespace mojo

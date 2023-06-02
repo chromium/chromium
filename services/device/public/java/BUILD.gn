@@ -5,7 +5,10 @@
 import("//build/config/android/rules.gni")
 
 android_library("device_feature_list_java") {
-  sources = [ "src/org/chromium/device/DeviceFeatureList.java" ]
+  sources = [
+    "src/org/chromium/device/DeviceFeatureList.java",
+    "src/org/chromium/device/DeviceFeatureMap.java",
+  ]
   deps = [
     "//base:base_java",
     "//base:jni_java",

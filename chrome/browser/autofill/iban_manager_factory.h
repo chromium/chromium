@@ -10,7 +10,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 class Profile;
@@ -29,7 +29,7 @@ class IBANManagerFactory : public ProfileKeyedServiceFactory {
   static IBANManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<IBANManagerFactory>;
+  friend base::NoDestructor<IBANManagerFactory>;
 
   IBANManagerFactory();
   ~IBANManagerFactory() override;

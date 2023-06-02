@@ -73,13 +73,16 @@ const char ScopedTestNativeMessagingHost::
         "com.google.chrome.test.inbound_native_echo";
 const char ScopedTestNativeMessagingHost::kExtensionId[] =
     "knldjmfmopnpolahpmmgbagdohdnhkik";
+#if BUILDFLAG(IS_WIN)
+const char ScopedTestNativeMessagingHost::kHostExeName[] =
+    "com.google.chrome.test.exe.echo";
+#endif
 
 ScopedTestNativeMessagingHost::ScopedTestNativeMessagingHost() {}
 
 void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  ScopedTestNativeMessagingHost test_host;
 
   base::FilePath test_user_data_dir;
   ASSERT_TRUE(
@@ -123,6 +126,32 @@ void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
       temp_dir_.GetPath(), kSupportsNativeInitiatedConnectionsHostName,
       host_path, user_level, true));
 }
+
+#if BUILDFLAG(IS_WIN)
+// On Windows, a new codepath is used to directly launch .EXE-based Native
+// Hosts.
+void ScopedTestNativeMessagingHost::RegisterTestExeHost(bool user_level) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+  base::FilePath binary_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &binary_dir));
+  HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(root_key));
+
+  // Unlike in the |RegisterTestHost| case above, we must leave the Host
+  // .exe where it was built, because the Host will fail to run from the
+  // temp_dir_ if is_component_build is set for the build.
+  //
+  // The Host's filename deliberately contains the character '&' which causes
+  // the Host to fail to launch if cmd.exe is used as an intermediary between
+  // the extension and the host executable. crbug.com/335558
+  base::FilePath host_path =
+      binary_dir.AppendASCII("native_messaging_test_echo_&_host.exe");
+  ASSERT_NO_FATAL_FAILURE(WriteTestNativeHostManifest(
+      temp_dir_.GetPath(), kHostExeName, host_path, user_level, false));
+}
+#endif
 
 ScopedTestNativeMessagingHost::~ScopedTestNativeMessagingHost() {
   base::ScopedAllowBlockingForTesting allow_blocking;

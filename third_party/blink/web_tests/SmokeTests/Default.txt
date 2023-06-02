@@ -111,7 +111,6 @@ editing/selection/modify_move/move_left_right_character_in_mixed_bidi.html
 editing/selection/mouse/drag_user_select_none.html
 editing/selection/previous-line-position.html
 editing/selection/select_all/select_all_overflow_hidden_table.html
-editing/selection/selection-forces-unrooted-repaint.html
 editing/selection/set_base_and_extent/set_base_and_extent_uneditable_table.html
 editing/shadow/505092-fieldset-is-not-ua-shadow-crash.html
 editing/shadow/getRangeAt-end-of-text-node.html
@@ -562,7 +561,6 @@ fast/forms/time-multiple-fields/time-multiple-fields-change-layout-by-value.html
 fast/forms/time/time-validity-rangeunderflow.html
 fast/forms/time/time-validity-typemismatch.html
 fast/forms/url/url-sanitize-user-input.html
-fast/forms/week-multiple-fields/week-multiple-fields-no-shadow-event.html
 fast/forms/week/ValidityState-rangeOverflow-week.html
 fast/forms/week/week-setrangetext.html
 fast/gradients/crash-on-tr.html

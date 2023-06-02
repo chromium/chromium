@@ -8,8 +8,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
-template <typename Type>
-struct DefaultSingletonTraits;
+template <typename T>
+class NoDestructor;
 }
 
 class Profile;
@@ -27,7 +27,7 @@ class AppShortcutManagerFactory : public ProfileKeyedServiceFactory {
   static AppShortcutManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<AppShortcutManagerFactory>;
+  friend base::NoDestructor<AppShortcutManagerFactory>;
 
   AppShortcutManagerFactory();
   ~AppShortcutManagerFactory() override;

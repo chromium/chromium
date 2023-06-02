@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description("Ensuring that mutation event with text modification on a textarea doesn't crash");
+
+span = document.createElementNS("http://www.w3.org/1999/xhtml", "span");
+document.implementation.createDocument("", "", null).adoptNode(span);
+
+textarea = document.createElementNS("http://www.w3.org/1999/xhtml", "textarea");
+textarea.textContent = "Value";
+textarea.addEventListener("DOMCharacterDataModified", function (evt) { console.log(evt.target); textarea.textContent = ""; }, false);
+document.body.appendChild(textarea);
+
+text = document.createTextNode("Hello?");
+textarea.appendChild(text);
+span.appendChild(text);
+
+testPassed("unless crash.")
+</script>
+</body>

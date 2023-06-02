@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <cstddef>
+#include <iterator>
 #include <map>
 #include <string>
 #include <utility>
@@ -486,6 +487,7 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       modal_parent);
 }
 
+/*
 void RecordDriveOfflineUMAsGotDocsOfflineStats(
     bool open_available,
     drive::FileError error,
@@ -557,7 +559,7 @@ void RecordDriveOfflineUMAs(Profile* profile,
     }
   }
 }
-
+*/
 }  // namespace
 
 ResultingTasks::ResultingTasks() = default;
@@ -725,28 +727,47 @@ void UpdateDefaultTask(Profile* profile,
     }
   }
 
-  if (!mime_types.empty()) {
+  std::set<std::string> mime_types_to_set = mime_types;
+  std::set<std::string> suffixes_to_set;
+  // Suffixes are case insensitive.
+  std::transform(
+      suffixes.begin(), suffixes.end(),
+      std::inserter(suffixes_to_set, suffixes_to_set.begin()),
+      [](const std::string& suffix) { return base::ToLowerASCII(suffix); });
+
+  // In the special case where we are setting the default for one type of Office
+  // file only, set defaults for the entire group as well.
+  if (mime_types.size() == 1 && suffixes.size() == 1) {
+    if (base::Contains(WordGroupExtensions(), *suffixes.begin())) {
+      suffixes_to_set = WordGroupExtensions();
+      mime_types_to_set = WordGroupMimeTypes();
+    } else if (base::Contains(ExcelGroupExtensions(), *suffixes.begin())) {
+      suffixes_to_set = ExcelGroupExtensions();
+      mime_types_to_set = ExcelGroupMimeTypes();
+    } else if (base::Contains(PowerPointGroupExtensions(), *suffixes.begin())) {
+      suffixes_to_set = PowerPointGroupExtensions();
+      mime_types_to_set = PowerPointGroupMimeTypes();
+    }
+  }
+
+  if (!mime_types_to_set.empty()) {
     ScopedDictPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);
-    for (const std::string& mime_type : mime_types) {
+    for (const std::string& mime_type : mime_types_to_set) {
       mime_type_pref->Set(mime_type, task_id);
     }
   }
 
-  std::set<std::string> lowercase_suffixes;
   if (!suffixes.empty()) {
-    ScopedDictPrefUpdate mime_type_pref(pref_service,
-                                        prefs::kDefaultTasksBySuffix);
-    for (const std::string& suffix : suffixes) {
-      // Suffixes are case insensitive.
-      std::string lower_suffix = base::ToLowerASCII(suffix);
-      lowercase_suffixes.insert(lower_suffix);
-      mime_type_pref->Set(lower_suffix, task_id);
+    ScopedDictPrefUpdate suffix_pref(pref_service,
+                                     prefs::kDefaultTasksBySuffix);
+    for (const std::string& suffix : suffixes_to_set) {
+      suffix_pref->Set(suffix, task_id);
     }
   }
 
-  RecordChangesInDefaultPdfApp(task_descriptor.app_id, mime_types,
-                               lowercase_suffixes);
+  RecordChangesInDefaultPdfApp(task_descriptor.app_id, mime_types_to_set,
+                               suffixes_to_set);
 }
 
 bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
@@ -843,7 +864,8 @@ bool ExecuteFileTask(Profile* profile,
   // TODO(crbug.com/1005640): Move recording this metric to the App Service when
   // file handling is supported there.
   apps::RecordAppLaunch(task.app_id, apps::LaunchSource::kFromFileManager);
-  RecordDriveOfflineUMAs(profile, file_urls);
+  // TODO(b/281199375): Hold off Drive offline UMAs until DriveFS 76.
+  // RecordDriveOfflineUMAs(profile, file_urls);
 
   if (auto* notifier = FileTasksNotifier::GetForProfile(profile)) {
     notifier->NotifyFileTasks(file_urls);

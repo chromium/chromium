@@ -59,10 +59,6 @@ VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
   VideoElement().addEventListener(event_type_names::kVolumechange, this, true);
   StartIntersectionObserver();
 
-  if (!base::FeatureList::IsEnabled(kStrictVideoWakeLock)) {
-    is_big_enough_ = true;
-  }
-
   RemotePlaybackController* remote_playback_controller =
       RemotePlaybackController::From(VideoElement());
   if (remote_playback_controller)
@@ -165,9 +161,17 @@ bool VideoWakeLock::ShouldBeActive() const {
       !VideoElement().GetExecutionContext()->IsContextPaused();
 
   bool has_volume = VideoElement().EffectiveMediaVolume() > 0;
-  bool has_audio = base::FeatureList::IsEnabled(kStrictVideoWakeLock)
-                       ? VideoElement().HasAudio() && has_volume
-                       : has_volume;
+  bool has_audio = has_volume;
+  bool is_big_enough = true;
+  if (base::FeatureList::IsEnabled(kStrictVideoWakeLock)) {
+    has_audio = VideoElement().HasAudio() && has_volume;
+
+    // Self-view MediaStreams may often be very small.
+    bool is_size_exempt =
+        VideoElement().GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream;
+
+    is_big_enough = is_big_enough_ || is_size_exempt;
+  }
 
   // The visibility requirements are met if one of the following is true:
   //  - it's in Picture-in-Picture;
@@ -176,7 +180,7 @@ bool VideoWakeLock::ShouldBeActive() const {
   bool visibility_requirements_met =
       VideoElement().HasVideo() &&
       (in_picture_in_picture ||
-       (page_visible && ((is_visible_ && is_big_enough_) || has_audio)));
+       (page_visible && ((is_visible_ && is_big_enough) || has_audio)));
 
   // The video wake lock should be active iff:
   //  - it's playing;

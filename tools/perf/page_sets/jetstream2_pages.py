@@ -6,12 +6,11 @@ from page_sets import press_story
 from telemetry import story
 
 
-class Jetstream2Story(press_story.PressStory):
+class _JetStream2Story(press_story.PressStory):
   URL = 'http://browserbench.org/JetStream/'
-  NAME = 'JetStream2'
 
   def __init__(self, page_set, test_list):
-    super(Jetstream2Story, self).__init__(page_set)
+    super(_JetStream2Story, self).__init__(page_set)
     if test_list is not None:
       assert not self.script_to_evaluate_on_commit
       self.script_to_evaluate_on_commit = """
@@ -77,10 +76,34 @@ class Jetstream2Story(press_story.PressStory):
         self.AddMeasurement('%s.%s' % (benchmark, sub_k), 'score', sub_v)
 
 
-class Jetstream2StorySet(story.StorySet):
-  def __init__(self, test_list=None):
-    super(Jetstream2StorySet, self).__init__(
-        archive_data_file='data/jetstream2.json',
-        cloud_storage_bucket=story.INTERNAL_BUCKET)
+class JetStream20Story(_JetStream2Story):
+  NAME = 'JetStream20'
 
-    self.AddStory(Jetstream2Story(self, test_list))
+
+class JetStream21Story(_JetStream2Story):
+  NAME = 'JetStream21'
+
+
+class JetStream2Story(JetStream20Story):
+  NAME = 'JetStream2'
+
+
+class _JetStream2StorySet(story.StorySet):
+  def __init__(self, test_list=None):
+    super(_JetStream2StorySet,
+          self).__init__(archive_data_file='data/jetstream2.json',
+                         cloud_storage_bucket=story.INTERNAL_BUCKET)
+    self.AddStory(self._STORY_CLS(self, test_list))
+
+
+# TODO(cbruni): update recording
+class JetStream20StorySet(_JetStream2StorySet):
+  _STORY_CLS = JetStream20Story
+
+
+class JetStream21StorySet(_JetStream2StorySet):
+  _STORY_CLS = JetStream21Story
+
+
+class JetStream2StorySet(JetStream20StorySet):
+  _STORY_CLS = JetStream2Story

@@ -27,6 +27,7 @@ class CoreOobeView : public base::SupportsWeakPtr<CoreOobeView> {
   enum class UiState {
     kUninitialized,           // Start of things
     kCoreHandlerInitialized,  // First oobe.js instruction
+    kPriorityScreensLoaded,   // Priority screens are loaded and could be shown.
     kFullyInitialized,        // Fully initialized a.k.a 'screenStateInitialize'
   };
 
@@ -54,6 +55,10 @@ class CoreOobeView : public base::SupportsWeakPtr<CoreOobeView> {
   virtual void SetVirtualKeyboardShown(bool shown) = 0;
   virtual void SetOsVersionLabelText(const std::string& label_text) = 0;
   virtual void SetBluetoothDeviceInfo(const std::string& bluetooth_name) = 0;
+
+  // Whether the screen being checked belongs to the group of screens that are
+  // prioritized during OOBE's initialization.
+  virtual bool IsPriorityScreen(const std::string& screen_name) = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -94,10 +99,12 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void SetVirtualKeyboardShown(bool shown) override;
   void SetOsVersionLabelText(const std::string& label_text) override;
   void SetBluetoothDeviceInfo(const std::string& bluetooth_name) override;
+  bool IsPriorityScreen(const std::string& screen_name) override;
   // ---- END --- CoreOobeView
 
   // ---- Handlers for JS WebUI messages.
   void HandleInitializeCoreHandler();
+  void HandlePrriorityScreensLoaded();
   void HandleScreenStateInitialize();
   void HandleEnableShelfButtons(bool enable);
   void HandleUpdateCurrentScreen(const std::string& screen);

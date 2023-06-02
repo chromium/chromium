@@ -72,21 +72,21 @@ setup({'output': false});
     });
   };
 
-  // Adds the first image "green-16x16.png" to "content_div_1". We expect this
+  // Adds the first image "lcp-16x16.png" to "content_div_1". We expect this
   // operation to trigger a new LCP entry.
   const add_first_image = () => {
     let img = document.createElement("img");
     content_div_1.appendChild(img);
-    img.src = "images/green-16x16.png";
+    img.src = "images/lcp-16x16.png";
   };
 
-  // Adds another image that is larger than "green-16x16.png". We expect this
+  // Adds another image that is larger than "lcp-16x16.png". We expect this
   // operation to trigger a new LCP entry.
   const add_larger_image = () => {
     let new_img = document.createElement("img");
     content_div_2.appendChild(new_img);
-    new_img.src = "images/blue96x96.png";
-    new_img.id = "blue_image";
+    new_img.src = "images/lcp-96x96.png";
+    new_img.id = "larger_image";
   };
 
   // Adds the largest image. We expect this
@@ -94,15 +94,15 @@ setup({'output': false});
   const add_largest_image = () => {
     let new_img = document.createElement("img");
     content_div_2.appendChild(new_img);
-    new_img.src = "images/green-256x256.png";
+    new_img.src = "images/lcp-256x256.png";
   };
 
   // Removes the image added by 'add_larger_image'. We expect this operation to
   // not trigger a new LCP entry.
   const remove_larger_image = () => {
-    const blue_image = document.getElementById("blue_image");
-    assert_not_equals(blue_image, null);
-    content_div_2.removeChild(blue_image);
+    const larger_image = document.getElementById("larger_image");
+    assert_not_equals(larger_image, null);
+    content_div_2.removeChild(larger_image);
   };
 
   const waitForAnimationFrames = frameCount => {

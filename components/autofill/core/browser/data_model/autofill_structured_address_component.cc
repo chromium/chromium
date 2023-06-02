@@ -316,6 +316,15 @@ void AddressComponent::FillTreeGaps() {
     return;
   }
 
+  bool has_empty_child = base::ranges::any_of(
+      Subcomponents(), [](const auto* c) { return c->GetValue().empty(); });
+
+  // If the current node is not empty and at least one child is empty, we can
+  // try filling the empty children by parsing the value on the current node.
+  if (!GetValue().empty() && has_empty_child) {
+    TryParseValueAndAssignSubcomponentsRespectingSetValues();
+  }
+
   for (auto* component : subcomponents_) {
     component->FillTreeGaps();
   }
@@ -432,6 +441,68 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
   return false;
 }
 
+void AddressComponent::
+    TryParseValueAndAssignSubcomponentsRespectingSetValues() {
+  for (const auto* parse_expression : GetParseRegularExpressionsByRelevance()) {
+    if (!parse_expression) {
+      continue;
+    }
+    if (ParseValueAndAssignSubcomponentsRespectingSetValues(GetValue(),
+                                                            parse_expression)) {
+      return;
+    }
+  }
+}
+
+bool AddressComponent::ParseValueAndAssignSubcomponentsRespectingSetValues(
+    const std::u16string& value,
+    const RE2* parse_expression) {
+  absl::optional<base::flat_map<std::string, std::string>> result_map =
+      ParseValueByRegularExpression(base::UTF16ToUTF8(value), parse_expression);
+
+  if (!result_map) {
+    return false;
+  }
+
+  // Make sure that parsing matches non-empty values.
+  for (auto* subcomponent : subcomponents_) {
+    if (!subcomponent->GetValue().empty()) {
+      auto it = result_map->find(subcomponent->GetStorageTypeName());
+      if (it == result_map->end() ||
+          base::UTF8ToUTF16(it->second) != subcomponent->GetValue()) {
+        return false;
+      }
+    }
+  }
+
+  // Parsing was successful and results from the result map can be written
+  // to the structure.
+
+  for (auto* subcomponent : subcomponents_) {
+    auto it = result_map->find(subcomponent->GetStorageTypeName());
+    if (subcomponent->GetValue().empty() && it != result_map->end()) {
+      const std::u16string parsed_value = base::UTF8ToUTF16(it->second);
+      if (!parsed_value.empty() &&
+          subcomponent->IsValueCompatibleWithDescendants(parsed_value)) {
+        subcomponent->SetValue(parsed_value, VerificationStatus::kParsed);
+      }
+    }
+  }
+  return true;
+}
+
+bool AddressComponent::IsValueCompatibleWithDescendants(
+    const std::u16string& value) const {
+  if (!GetValue().empty()) {
+    // If the node is token compatible, then the remaining subtree also is.
+    return AreStringTokenCompatible(GetValue(), value);
+  }
+
+  return base::ranges::all_of(Subcomponents(), [value](const auto* c) {
+    return c->IsValueCompatibleWithDescendants(value);
+  });
+}
+
 bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
     const std::u16string& value,
     const RE2* parse_expression) {
@@ -502,10 +573,10 @@ bool AddressComponent::AllDescendantsAreEmpty() const {
 
 bool AddressComponent::IsValueCompatibleWithAncestors(
     const std::u16string& value) const {
-  bool is_node_compatible =
-      GetValue().empty() || (GetValue().find(value) != std::string::npos);
-  return is_node_compatible &&
-         (!parent_ || parent_->IsValueCompatibleWithAncestors(value));
+  if (!GetValue().empty()) {
+    return AreStringTokenCompatible(value, GetValue());
+  }
+  return (!parent_ || parent_->IsValueCompatibleWithAncestors(value));
 }
 
 bool AddressComponent::IsStructureValid() const {
@@ -518,7 +589,7 @@ bool AddressComponent::IsStructureValid() const {
   // information in the components is contained in the unstructured
   // representation.
   return base::ranges::all_of(Subcomponents(), [this](const auto* c) {
-    return GetValue().find(c->GetValue()) != std::u16string::npos;
+    return AreStringTokenCompatible(c->GetValue(), GetValue());
   });
 }
 

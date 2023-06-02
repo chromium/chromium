@@ -12,7 +12,6 @@ declare_args() {
 
 static_library("base") {
   sources = [
-    "bind_to_task_runner.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
     "command_line_switches.cc",

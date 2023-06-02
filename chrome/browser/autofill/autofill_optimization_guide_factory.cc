@@ -4,7 +4,7 @@
 
 #include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,7 +24,8 @@ AutofillOptimizationGuide* AutofillOptimizationGuideFactory::GetForProfile(
 // static
 AutofillOptimizationGuideFactory*
 AutofillOptimizationGuideFactory::GetInstance() {
-  return base::Singleton<AutofillOptimizationGuideFactory>::get();
+  static base::NoDestructor<AutofillOptimizationGuideFactory> instance;
+  return instance.get();
 }
 
 AutofillOptimizationGuideFactory::AutofillOptimizationGuideFactory()

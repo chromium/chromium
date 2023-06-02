@@ -107,13 +107,18 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
       _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
       _profileBookmarkModel.get(), _accountBookmarkModel.get());
-  _profileBookmarkModel->AddNewURL(defaultFolder,
+  BookmarkModel* modelForDefaultFolder =
+      bookmark_utils_ios::GetBookmarkModelForNode(defaultFolder,
+                                                  _profileBookmarkModel.get(),
+                                                  _accountBookmarkModel.get());
+  modelForDefaultFolder->AddNewURL(defaultFolder,
                                    defaultFolder->children().size(),
                                    base::SysNSStringToUTF16(title), URL);
 
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = editAction;
-  action.title = l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
+  action.title =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
   action.accessibilityIdentifier = @"Edit";
 
   NSString* folderTitle =
@@ -136,11 +141,13 @@ using bookmarks::BookmarkNode;
                            toFolder:(const BookmarkNode*)folder {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
+  BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
+      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   for (URLWithTitle* urlWithTitle in URLs) {
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-    _profileBookmarkModel->AddNewURL(
-        folder, folder->children().size(),
-        base::SysNSStringToUTF16(urlWithTitle.title), urlWithTitle.URL);
+    modelForFolder->AddNewURL(folder, folder->children().size(),
+                              base::SysNSStringToUTF16(urlWithTitle.title),
+                              urlWithTitle.URL);
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
@@ -172,11 +179,6 @@ using bookmarks::BookmarkNode;
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   BOOL hasSyncConsent =
       _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  // TODO(crbug.com/1442345): Once `kEnableEmailInBookmarksReadingListSnackbar`
-  // and `kEnableBookmarksAccountStorage` are removed, `saveIntoAccount` can be
-  // set with the value from `ShouldDisplayCloudSlashIconForProfileModel()`. We
-  // will need to rename the function to something like:
-  // `IsLocalOrSyncableModelSynced()`.
   // The bookmark is saved in the account if either following condition is true:
   // * the saved folder is in the account model,
   // * the sync consent has been granted and the bookmark data type is enabled

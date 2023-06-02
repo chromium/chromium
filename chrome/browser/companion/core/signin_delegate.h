@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_COMPANION_CORE_SIGNIN_DELEGATE_H_
 #define CHROME_BROWSER_COMPANION_CORE_SIGNIN_DELEGATE_H_
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-
-class Profile;
+#include "url/gurl.h"
 
 namespace companion {
 
@@ -32,8 +29,11 @@ class SigninDelegate {
   // Starts a signin and sync flow.
   virtual void StartSigninFlow() = 0;
 
-  // Creates the instance.
-  static std::unique_ptr<SigninDelegate> Create(Profile* profile);
+  // Enable the setting for make searches and browsing better.
+  virtual void EnableMsbb(bool enable_msbb) = 0;
+
+  // Loads URL in the browser in a new tab.
+  virtual void LoadUrlInNewTab(const GURL& url) = 0;
 };
 
 }  // namespace companion

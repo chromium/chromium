@@ -212,7 +212,6 @@ crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 # Test is too slow for old phones and laptops, and in Debug mode.
 crbug.com/1356246 [ android android-nexus-5x ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ debug intel monterey ] Pixel_SVGHuge [ Failure ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 
@@ -301,7 +300,11 @@ crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWor
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # WebGL drawingBufferStorage does not work on Android devices or on kevin yet.
-crbug.com/1230619 [ android ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-chromium android-pixel-6 android-t angle-disabled arm no-clang-coverage no-passthrough renderer-skia-vulkan target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-chromium android-s angle-disabled no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-nexus-5x android-nougat android-webview-instrumentation angle-opengles no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-pixel-4 android-r no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
 
@@ -350,8 +353,8 @@ crbug.com/1395227 [ amd-0x679e mac-x86_64 monterey no-asan release ] Pixel_WebGP
 crbug.com/1395227 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
-crbug.com/1445575 [ win10 nvidia-0x2184 target-cpu-64 passthrough ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/1445575 [ win10 nvidia-0x2184 target-cpu-64 passthrough ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1445575 [ debug-x64 no-clang-coverage nvidia-0x2184 passthrough target-cpu-64 win10 ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
+crbug.com/1445575 [ debug-x64 no-clang-coverage nvidia-0x2184 passthrough target-cpu-64 win10 ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
@@ -360,7 +363,6 @@ crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaF
 # Unexplained timeout
 crbug.com/1401962 [ android android-sm-a135m ] Pixel_BackgroundImage [ RetryOnFailure ]
 
-crbug.com/1373965 [ fuchsia oop-c ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ Failure ]
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
@@ -369,7 +371,6 @@ crbug.com/1382332 [ angle-opengles arm chromeos chromeos-board-jacuzzi display-s
 crbug.com/1382332 [ chromeos target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ angle-opengles arm chromeos chromeos-board-jacuzzi display-server-x lacros-chrome passthrough target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/1382332 [ android android-webview-instrumentation angle-disabled no-passthrough ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
@@ -406,9 +407,6 @@ crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_Video_
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_VP9 [ Failure ]
 
-# Samsung flaky incorrect colors
-crbug.com/1445552 [ android android-sm-a135m ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
-crbug.com/1445552 [ android android-sm-a235m ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 
 # DrDC Crash on Pixel 4 Webview
 crbug.com/1446429 [ android-pixel-4 android-r android-webview-instrumentation angle-opengles no-passthrough ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]

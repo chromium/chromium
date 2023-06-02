@@ -110,7 +110,8 @@ class ExternalInstallManager : public ExtensionRegistryObserver {
   std::set<ExtensionId> shown_ids_;
 
   // The error that is currently showing an alert dialog/bubble.
-  raw_ptr<ExternalInstallError> currently_visible_install_alert_;
+  raw_ptr<ExternalInstallError, DanglingUntriaged>
+      currently_visible_install_alert_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

@@ -1,0 +1,71 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "depot@^0.1.6",
+        "scope": null,
+        "escapedName": "depot",
+        "name": "depot",
+        "rawSpec": "^0.1.6",
+        "spec": ">=0.1.6 <0.2.0",
+        "type": "range"
+      },
+      "/Users/addyo/Desktop/Speedometer-a/resources/todomvc/dependency-examples/flight"
+    ]
+  ],
+  "_from": "depot@>=0.1.6 <0.2.0",
+  "_id": "depot@0.1.6",
+  "_inCache": true,
+  "_location": "/depot",
+  "_npmUser": {
+    "name": "appedemic",
+    "email": "derk@appedemic.nl"
+  },
+  "_npmVersion": "1.3.5",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "depot@^0.1.6",
+    "scope": null,
+    "escapedName": "depot",
+    "name": "depot",
+    "rawSpec": "^0.1.6",
+    "spec": ">=0.1.6 <0.2.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/depot/-/depot-0.1.6.tgz",
+  "_shasum": "07e6e0113a488cdff25aa7eb9394d08a999f2d35",
+  "_shrinkwrap": null,
+  "_spec": "depot@^0.1.6",
+  "_where": "/Users/addyo/Desktop/Speedometer-a/resources/todomvc/dependency-examples/flight",
+  "analyze": false,
+  "author": {
+    "name": "Michal Kuklis",
+    "email": "michal.kuklis@gmail.com"
+  },
+  "dependencies": {},
+  "description": "[![build status](https://secure.travis-ci.org/mkuklis/depot.js.png)](http://travis-ci.org/mkuklis/depot.js)",
+  "devDependencies": {
+    "mocha-phantomjs": "latest"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "07e6e0113a488cdff25aa7eb9394d08a999f2d35",
+    "tarball": "https://registry.npmjs.org/depot/-/depot-0.1.6.tgz"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "maintainers": [
+    {
+      "name": "appedemic",
+      "email": "derk@appedemic.nl"
+    }
+  ],
+  "name": "depot",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "version": "0.1.6"
+}

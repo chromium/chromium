@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/unsent_log_store.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/ukm/ukm_pref_names.h"
@@ -79,9 +80,11 @@ UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
                         local_state,
                         prefs::kUkmUnsentLogStore,
                         nullptr,
-                        kMinUnsentLogCount,
-                        kMinUnsentLogBytes,
-                        kMaxLogRetransmitSize,
+                        metrics::UnsentLogStore::UnsentLogStoreLimits{
+                            .min_log_count = kMinUnsentLogCount,
+                            .min_queue_size_bytes = kMinUnsentLogBytes,
+                            .max_log_size_bytes = kMaxLogRetransmitSize,
+                        },
                         client->GetUploadSigningKey(),
                         /*logs_event_manager=*/nullptr) {}
 

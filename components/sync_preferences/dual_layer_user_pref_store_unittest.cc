@@ -898,6 +898,82 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
                              "priority-value"));
 }
 
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldReturnAccountValueForNotActiveTypes) {
+  account_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "pref-value"));
+
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  // `kPrefName` is read from the account store even if PREFERENCES type is not
+  // active.
+  {
+    const base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetValue(kPrefName, &value));
+    EXPECT_EQ(*value, base::Value("pref-value"));
+  }
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPrefName, &value));
+    EXPECT_EQ(*value, base::Value("pref-value"));
+  }
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldRemoveValueFromAccountStoreOnSetValueIfTypeNotActive) {
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
+
+  store()->SetValue(kPrefName, base::Value("new value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "new value"));
+  // `kPrefName` is removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldRemoveValueFromAccountStoreOnSetValueSilentlyIfTypeNotEnabled) {
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
+
+  store()->SetValueSilently(kPrefName, base::Value("new value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "new value"));
+  // `kPrefName` is removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldRemoveValueFromAccountStoreOnReportValueChangedIfTypeNotEnabled) {
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
+
+  store()->ReportValueChanged(kPrefName, 0);
+  // `kPrefName` is removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldRemoveValueFromAccountStoreIfTypeNotEnabled) {
+  // PREFERENCES type is not active.
+  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
+
+  store()->RemoveValue(kPrefName, 0);
+  // `kPrefName` is removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+}
+
 class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   MergeTestPrefModelAssociatorClient()

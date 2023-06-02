@@ -252,7 +252,7 @@ bool IsUnderNonNativeLocalPath(const storage::FileSystemContext& context,
     return false;
   }
 
-  return IsNonNativeFileSystemType(url.type());
+  return !url.TypeImpliesPathIsReal();
 }
 
 // Helper class to convert SelectedFileInfoList into ChooserFileInfoList.

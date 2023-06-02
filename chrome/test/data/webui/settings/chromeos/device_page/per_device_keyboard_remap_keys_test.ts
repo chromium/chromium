@@ -28,6 +28,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         /* dynamicParams= */ url, /* removeSearch= */ true);
 
     document.body.appendChild(page);
+    provider.observeKeyboardSettings(page);
     await flushTasks();
   });
 
@@ -168,13 +169,14 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     // Verify that the remapped key icon is highlighted.
     assertEquals('modifier-remapped', altKeyRow.keyState);
 
-    // Verify that the label for meta key is empty and the key icon is
+    // Verify that the label for meta key is search and the key icon is
     // displayed as launcher.
     const metaKeyRow =
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
             '#metaKey');
     assert(metaKeyRow);
-    assertEquals('', metaKeyRow.get('keyLabel'));
+    assertEquals(
+        page.i18n('perDeviceKeyboardKeySearch'), metaKeyRow.get('keyLabel'));
     assertEquals('os-settings:launcher', metaKeyRow.get('keyIcon'));
 
     const launcherKeyIcon = metaKeyRow.shadowRoot!.querySelector('iron-icon');

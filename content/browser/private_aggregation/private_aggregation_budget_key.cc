@@ -4,8 +4,6 @@
 
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 
-#include <utility>
-
 #include "base/check.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -24,9 +22,8 @@ base::Time FloorToDuration(base::Time time) {
 }
 }  // namespace
 
-PrivateAggregationBudgetKey::TimeWindow::TimeWindow(
-    base::Time api_invocation_time)
-    : start_time_(FloorToDuration(api_invocation_time)) {}
+PrivateAggregationBudgetKey::TimeWindow::TimeWindow(base::Time start_time)
+    : start_time_(FloorToDuration(start_time)) {}
 
 PrivateAggregationBudgetKey::PrivateAggregationBudgetKey(
     url::Origin origin,

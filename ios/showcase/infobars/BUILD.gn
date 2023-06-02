@@ -16,9 +16,9 @@ source_set("infobars") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/browser/autofill/message",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/infobars/modals",

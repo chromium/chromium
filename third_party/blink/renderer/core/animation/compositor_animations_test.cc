@@ -234,7 +234,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       double animation_playback_rate) {
     CompositorAnimations::GetAnimationOnCompositor(
         *element_, timing, NormalizedTiming(timing), 0, absl::nullopt,
-        base::TimeDelta(), effect, keyframe_models, animation_playback_rate);
+        base::TimeDelta(), effect, keyframe_models, animation_playback_rate,
+        /*is_monotonic_timeline=*/true);
   }
 
   CompositorAnimations::FailureReasons
@@ -1808,7 +1809,9 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   std::unique_ptr<cc::KeyframeModel> keyframe_model =
       ConvertToCompositorAnimation(*effect);
-  EXPECT_EQ(cc::KeyframeModel::FillMode::NONE, keyframe_model->fill_mode());
+  // Time based animations implicitly fill forwards to remain active until
+  // the subsequent commit.
+  EXPECT_EQ(cc::KeyframeModel::FillMode::FORWARDS, keyframe_model->fill_mode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1827,7 +1830,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
   EXPECT_EQ(cc::KeyframeModel::Direction::NORMAL, keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
-  EXPECT_EQ(cc::KeyframeModel::FillMode::NONE, keyframe_model->fill_mode());
+  // Time based animations implicitly fill forwards to remain active until
+  // the subsequent commit.
+  EXPECT_EQ(cc::KeyframeModel::FillMode::FORWARDS, keyframe_model->fill_mode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -2372,7 +2377,7 @@ TEST_P(AnimationCompositorAnimationsTest, DetachCompositorTimelinesTest) {
   EXPECT_TRUE(animation.GetCompositorAnimation());
 
   cc::AnimationTimeline* compositor_timeline =
-      animation.timeline()->CompositorTimeline();
+      animation.TimelineInternal()->CompositorTimeline();
   ASSERT_TRUE(compositor_timeline);
   int id = compositor_timeline->id();
   ASSERT_TRUE(host->GetTimelineById(id));
@@ -2602,6 +2607,40 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(animation1->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(animation2->HasActiveAnimationsOnCompositor());
   EXPECT_FALSE(animation3->HasActiveAnimationsOnCompositor());
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       LongActiveDurationWithNegativePlaybackRate) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes move {
+        0% { transform: translateX(10px); }
+        100% { transform: translateX(20px); }
+      }
+      #target {
+        width: 10px;
+        height: 150px;
+        background: green;
+        animation: move 1s 2222222200000;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Element* target = GetDocument().getElementById("target");
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  // Setting a small negative playback rate has the following effects:
+  // The scaled active duration in microseconds now exceeds the max
+  // for an int64. Since the playback rate is negative we need to jump
+  // to the end and play backwards, which triggers problems with math
+  // involving infinity.
+  animation->setPlaybackRate(-0.01);
+  EXPECT_EQ(CompositorAnimations::kInvalidAnimationOrEffect,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
 }
 
 }  // namespace blink

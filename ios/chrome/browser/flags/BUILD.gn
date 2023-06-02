@@ -74,7 +74,6 @@ source_set("flags") {
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/text_selection:text_selection_utils",
     "//ios/chrome/browser/ui/app_store_rating:features",
-    "//ios/chrome/browser/ui/authentication:features",
     "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/download:features",

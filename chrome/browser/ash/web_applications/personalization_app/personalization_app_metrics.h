@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_METRICS_H_
 
 #include "ash/constants/ambient_theme.h"
+#include "ash/constants/ambient_video.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 
@@ -27,6 +28,8 @@ enum class ColorMode {
 
 constexpr char kAmbientModeAnimationThemeHistogramName[] =
     "Ash.Personalization.AmbientMode.AnimationTheme";
+constexpr char kAmbientModeVideoHistogramName[] =
+    "Ash.Personalization.AmbientMode.Video";
 constexpr char kPersonalizationThemeColorModeHistogramName[] =
     "Ash.Personalization.Theme.ColorMode";
 constexpr char kPersonalizationKeyboardBacklightColorHistogramName[] =
@@ -39,6 +42,8 @@ constexpr char kPersonalizationKeyboardBacklightColorHistogramName[] =
 void LogPersonalizationTheme(ColorMode color_mode);
 
 void LogAmbientModeTheme(ash::AmbientTheme animation_theme);
+
+void LogAmbientModeVideo(ash::AmbientVideo video);
 
 void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point);
 

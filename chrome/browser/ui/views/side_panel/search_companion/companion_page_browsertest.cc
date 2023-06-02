@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
@@ -35,6 +37,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
@@ -65,6 +69,9 @@ const char kRelativeUrl4[] = "/simple.html#part1";
 const char kHost[] = "foo.com";
 const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
+const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
+const char kPhReportingUrl[] = "https://foobar.com/";
+
 }  // namespace
 
 // Helper class to generate a script that sends a postmessage to the browser
@@ -77,7 +84,11 @@ struct CompanionScriptBuilder {
   // to the postmessage.
   absl::optional<PromoType> promo_type;
   absl::optional<PromoAction> promo_action;
+  absl::optional<std::string> exps_promo_url;
+  absl::optional<PhFeedback> ph_feedback;
+  absl::optional<std::string> reporting_url;
   absl::optional<bool> is_exps_opted_in;
+  absl::optional<std::string> url_for_open_in_new_tab;
   absl::optional<UiSurface> ui_surface;
   absl::optional<int> ui_surface_position;
   absl::optional<int> child_element_available_count;
@@ -113,9 +124,28 @@ struct CompanionScriptBuilder {
          << ";";
     }
 
+    if (exps_promo_url.has_value()) {
+      ss << "message['expsPromoUrl'] = '" << exps_promo_url.value() << "';";
+    }
+
+    if (ph_feedback.has_value()) {
+      ss << "message['phFeedback'] = "
+         << base::NumberToString(static_cast<size_t>(ph_feedback.value()))
+         << ";";
+    }
+
+    if (reporting_url.has_value()) {
+      ss << "message['reportingUrl'] = '" << reporting_url.value() << "';";
+    }
+
     if (is_exps_opted_in.has_value()) {
       ss << "message['isExpsOptedIn'] = "
          << base::NumberToString(is_exps_opted_in.value()) << ";";
+    }
+
+    if (url_for_open_in_new_tab.has_value()) {
+      ss << "message['urlForOpenInNewTab'] = '"
+         << url_for_open_in_new_tab.value() << "';";
     }
 
     if (ui_surface.has_value()) {
@@ -198,8 +228,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->side_panel_coordinator();
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
   content::WebContents* GetCompanionWebContents(Browser* browser) {
@@ -238,7 +267,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         GetCompanionWebContents(browser());
     EXPECT_TRUE(companion_web_contents);
 
-    // Wait for the navigations in both the frames to complete.
+    // Wait for the navigations in the inner iframe to complete.
     content::TestNavigationObserver nav_observer(companion_web_contents, 1);
     nav_observer.Wait();
   }
@@ -265,10 +294,13 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     const GURL& url = request.GetURL();
 
     std::string query_proto;
-    EXPECT_TRUE(
-        net::GetValueForKeyInQuery(url, "companion_query", &query_proto));
+    net::GetValueForKeyInQuery(url, "companion_query", &query_proto);
     last_proto_from_url_load_ = DeserializeCompanionRequest(query_proto);
 
+    if (request.method == net::test_server::HttpMethod::METHOD_POST) {
+      net::GetValueForKeyInQuery(url, "sourcelang", &last_sourcelang_);
+      net::GetValueForKeyInQuery(url, "targetlang", &last_targetlang_);
+    }
     return nullptr;
   }
 
@@ -278,6 +310,10 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     last_proto_from_url_load_ = absl::nullopt;
     return proto_copy;
   }
+
+  std::string GetLastSourceLang() { return last_sourcelang_; }
+
+  std::string GetLastTargetLang() { return last_targetlang_; }
 
   companion::proto::CompanionUrlParams DeserializeCompanionRequest(
       const std::string& companion_url_param) {
@@ -328,8 +364,19 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     base::FieldTrialParams params;
     params["companion-homepage-url"] =
         companion_server_.GetURL("/companion_iframe.html").spec();
+    params["companion-image-upload-url"] =
+        companion_server_.GetURL("/upload").spec();
+    params["open-links-in-current-tab"] = ShouldOpenLinkInCurrentTab();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
+  }
+
+  virtual std::string ShouldOpenLinkInCurrentTab() { return "false"; }
+
+  void WaitForTabCount(int expected) {
+    while (browser()->tab_strip_model()->count() != expected) {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   void WaitForHistogram(const std::string& histogram_name) {
@@ -349,13 +396,30 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  void ExpectUkmCount(ukm::TestUkmRecorder* ukm_recorder,
+                      size_t expected_count) {
+    EXPECT_EQ(
+        expected_count,
+        ukm_recorder
+            ->GetEntriesByName(ukm::builders::Companion_PageView::kEntryName)
+            .size());
+  }
+
   void ExpectUkmEntry(ukm::TestUkmRecorder* ukm_recorder,
                       const char* metric_name,
                       int expected_value) {
-    // There should be only one UKM entry of Companion_PageView type.
+    ExpectUkmCount(ukm_recorder, 1u);
+    ExpectUkmEntryAt(ukm_recorder, 0, metric_name, expected_value);
+  }
+
+  void ExpectUkmEntryAt(ukm::TestUkmRecorder* ukm_recorder,
+                        int index,
+                        const char* metric_name,
+                        int expected_value) {
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
-    EXPECT_EQ(ukm_recorder->GetEntriesByName(entry_name).size(), 1ul);
-    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[0];
+    EXPECT_LE(index, static_cast<int>(
+                         ukm_recorder->GetEntriesByName(entry_name).size()));
+    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[index];
 
     // Verify the metric.
     ukm_recorder->EntryHasMetric(entry, metric_name);
@@ -375,6 +439,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   absl::optional<companion::proto::CompanionUrlParams>
       last_proto_from_url_load_;
   size_t requests_received_on_server_ = 0;
+  std::string last_sourcelang_;
+  std::string last_targetlang_;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -423,6 +489,71 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
 }
 
+class CompanionPageSameTabBrowserTest : public CompanionPageBrowserTest {
+ public:
+  std::string ShouldOpenLinkInCurrentTab() override { return "true"; }
+};
+
+IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
+                       LinkClickOnCompanionPage) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Click a link on the companion page. It should open in the same tab and
+  // refresh the companion.
+  std::string script =
+      "document.getElementById('some_link').click(); waitForMessage();";
+  EvalJs(script);
+
+  // Close side panel and verify UKM of the second companion entry.
+  side_panel_coordinator()->Close();
+  ExpectUkmCount(&ukm_recorder, 2u);
+  ExpectUkmEntryAt(
+      &ukm_recorder, 1, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  base::StatisticsRecorder::ForgetHistogramForTesting(
+      "Companion.SidePanel.OpenTrigger");
+
+  // Click a link. It should open in a new tab and open the companion side
+  // panel. Wait for that event.
+  EXPECT_TRUE(ExecJs("document.getElementById('some_link').click();"));
+  WaitForHistogram("Companion.SidePanel.OpenTrigger");
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Close side panel and verify UKM. There should be only one entry since the
+  // side panel in the previous tab wasn't closed.
+  side_panel_coordinator()->Close();
+  ExpectUkmCount(&ukm_recorder, 1u);
+  ExpectUkmEntryAt(
+      &ukm_recorder, 0, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel));
+}
+
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
   EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/false, /*exps=*/false);
 
@@ -453,7 +584,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       AutoRefreshOnSigninStateChange) {
   EnableSignInMsbbExps(/*signed_in=*/false, /*msbb=*/false, /*exps=*/false);
 
   // Load a page on the active tab and open companion side panel
@@ -464,6 +596,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
   WaitForCompanionToBeLoaded();
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
+  auto* companion_web_contents = GetCompanionWebContents(browser());
 
   // Inspect the URL from the proto. This will reset the proto.
   auto proto = GetLastCompanionProtoFromUrlLoad();
@@ -473,41 +606,15 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
   // Navigate to a new tab.
   chrome::NewTab(browser());
 
-  // Go back to the original tab. This should refresh the companion.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  WaitForCompanionIframeReload();
+  // Sign-in to chrome. The companion should refresh automatically even though
+  // it's in background.
+  content::TestNavigationObserver nav_observer(companion_web_contents, 1);
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/false, /*exps=*/false);
 
+  nav_observer.Wait();
   proto = GetLastCompanionProtoFromUrlLoad();
   EXPECT_TRUE(proto.has_value());
   EXPECT_TRUE(proto->page_url().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       DontAutoRefreshIfHasAllPermissions) {
-  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
-
-  // Load a page on the active tab and open companion side panel
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-
-  // Inspect the URL from the proto. This will reset the proto.
-  auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
-  EXPECT_FALSE(proto->page_url().empty());
-  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
-
-  // Navigate to a new tab.
-  chrome::NewTab(browser());
-
-  // Go back to the original tab. This should not refresh the companion.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_FALSE(proto.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -691,7 +798,71 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
                  static_cast<int>(companion::PromoEvent::kMsbbRejected));
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ExpsPromoURLLoadsInNewTab) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Show exps promo, user accepts it.
+  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
+  builder.promo_type = PromoType::kExps;
+  builder.promo_action = PromoAction::kAccepted;
+  builder.exps_promo_url = kExpectedExpsPromoUrl;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Verify that a new tab opens up to load the exps URL.
+  WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
+      kExpectedExpsPromoUrl));
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SigninLoadsInNewTab) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Show sign-in promo, user accepts it.
+  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
+  builder.promo_type = PromoType::kSignin;
+  builder.promo_action = PromoAction::kAccepted;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Verify that a new tab opens up to load the sign-in URL.
+  WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
+      "https://accounts.google.com/signin/chrome/sync"));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Load a page on the active tab.
@@ -707,22 +878,122 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
-  // Post message for click metrics. Verify histograms.
-  CompanionScriptBuilder builder(MethodType::kRecordUiSurfaceClicked);
-  builder.ui_surface = UiSurface::kRegionSearch;
+  // Start region search. Verify histograms.
+  CompanionScriptBuilder builder(MethodType::kOnRegionSearchClicked);
   EXPECT_TRUE(ExecJs(builder.Build()));
   WaitForHistogram("Companion.RegionSearch.Clicked");
-
   histogram_tester_->ExpectBucketCount("Companion.RegionSearch.Clicked",
                                        /*sample=*/true,
                                        /*expected_count=*/1);
-  histogram_tester_->ExpectTotalCount("Companion.RegionSearch.ClickPosition",
-                                      0);
 
   side_panel_coordinator()->Close();
   ExpectUkmEntry(
       &ukm_recorder,
       ukm::builders::Companion_PageView::kRegionSearch_ClickCountName, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OnExpsOptInStatusAvailable) {
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Send exps optin status. Verify histograms.
+  CompanionScriptBuilder builder(MethodType::kOnExpsOptInStatusAvailable);
+  builder.is_exps_opted_in = true;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+  WaitForHistogram("Companion.IsUserOptedInToExps");
+  histogram_tester_->ExpectBucketCount("Companion.IsUserOptedInToExps",
+                                       /*sample=*/true,
+                                       /*expected_count=*/1);
+
+  // Verify that the optin status is saved to a pref.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      companion::kExpsOptInStatusGrantedPref));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenInNewTabButtonClicked) {
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Send open in new tab URL.
+  auto open_in_new_tab_url = CreateUrl(kHost, kRelativeUrl2);
+  CompanionScriptBuilder builder(MethodType::kOnOpenInNewTabButtonURLChanged);
+  builder.url_for_open_in_new_tab = open_in_new_tab_url.spec();
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Send another message so that we can wait for the histogram.
+  CompanionScriptBuilder builder2(MethodType::kOnExpsOptInStatusAvailable);
+  builder2.is_exps_opted_in = true;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
+  WaitForHistogram("Companion.IsUserOptedInToExps");
+
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            open_in_new_tab_url);
+  side_panel_coordinator()->OpenInNewTab();
+  WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
+      open_in_new_tab_url.spec()));
+
+  // Close side panel and reopen. The new tab button shouldn't be shown.
+  side_panel_coordinator()->Close();
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            GURL());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Show exps promo, user accepts it.
+  CompanionScriptBuilder builder(MethodType::kOnPhFeedback);
+  builder.ph_feedback = PhFeedback::kReportContent;
+  builder.reporting_url = kPhReportingUrl;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Verify that a new tab opens up to load the exps URL.
+  WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_TRUE(
+      web_contents()->GetVisibleURL().spec().starts_with(kPhReportingUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -814,6 +1085,16 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   std::vector<uint8_t> thumbnail_data(64, 0);
   std::string content_type("image/jpeg");
 
+  std::string source_lang = "";
+  std::string target_lang = "en";
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetSourceLanguage(source_lang);
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetCurrentLanguage(target_lang);
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(web_contents());
   companion_helper->ShowCompanionSidePanelForImage(
@@ -833,6 +1114,56 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kOpenTriggerName,
                  static_cast<int>(SidePanelOpenTrigger::kLensContextMenu));
+  // The language params should be unset when is_image_translate=false.
+  EXPECT_EQ(GetLastSourceLang(), "");
+  EXPECT_EQ(GetLastTargetLang(), "");
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenedFromContextMenuImageSearchWithTranslate) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+
+  // Start a image query via context menu. It should open companion side panel.
+  GURL src_url = CreateUrl(kHost, kRelativeUrl2);
+  gfx::Size original_size(8, 8);
+  gfx::Size downscaled_size(8, 8);
+  std::vector<uint8_t> thumbnail_data(64, 0);
+  std::string content_type("image/jpeg");
+
+  std::string source_lang = "";
+  std::string target_lang = "en";
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetSourceLanguage(source_lang);
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetCurrentLanguage(target_lang);
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  companion_helper->ShowCompanionSidePanelForImage(
+      src_url,
+      /*is_image_translate=*/true,
+      /*additional_query_params_modified=*/"", thumbnail_data, original_size,
+      downscaled_size,
+      /*image_extension=*/"", content_type);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kOpenTriggerName,
+                 static_cast<int>(SidePanelOpenTrigger::kLensContextMenu));
+  EXPECT_EQ(GetLastSourceLang(), source_lang);
+  EXPECT_EQ(GetLastTargetLang(), target_lang);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {

@@ -14,7 +14,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace chromeos {
 
@@ -86,7 +85,6 @@ class SplitButtonView::SplitButton : public views::Button {
               const std::u16string& a11y_name,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
-        button_color_(cros_tokens::kCrosSysOnSurface),
         insets_(insets),
         hovered_pressed_callback_(std::move(hovered_pressed_callback)) {
     // Subtract by the preferred insets so that the focus ring is drawn around
@@ -107,9 +105,11 @@ class SplitButtonView::SplitButton : public views::Button {
   void OnPaintBackground(gfx::Canvas* canvas) override {
     cc::PaintFlags pattern_flags;
     pattern_flags.setAntiAlias(true);
-    // TODO(b/281107973): Get colors from UX for when button is disabled
-    pattern_flags.setColor(GetEnabled() ? button_color_
-                                        : cros_tokens::kIconColorDisabled);
+    pattern_flags.setColor(
+        GetEnabled()
+            ? button_color_
+            : SkColorSetA(GetColorProvider()->GetColor(ui::kColorSysOnSurface),
+                          kMultitaskDisabledButtonOpacity));
     pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
     gfx::Rect pattern_bounds = GetLocalBounds();
     pattern_bounds.Inset(insets_);
@@ -195,10 +195,13 @@ views::Button* SplitButtonView::GetRightBottomButton() {
 void SplitButtonView::OnButtonHoveredOrPressed() {
   const auto* color_provider = GetColorProvider();
   const auto primary_hover_color =
-      color_provider->GetColor(cros_tokens::kCrosSysPrimary);
+      color_provider->GetColor(ui::kColorSysPrimary);
+  border_color_ = primary_hover_color;
   const auto secondary_hover_color =
-      SkColorSetA(color_provider->GetColor(cros_tokens::kCrosSysPrimary),
+      SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
                   kMultitaskHoverButtonOpacity);
+  fill_color_ = SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
+                            kMultitaskHoverBackgroundOpacity);
 
   if (IsHoveredOrPressedState(right_bottom_button_->GetState())) {
     right_bottom_button_->set_button_color(primary_hover_color);
@@ -209,11 +212,11 @@ void SplitButtonView::OnButtonHoveredOrPressed() {
   } else {
     // Reset color.
     fill_color_ = SK_ColorTRANSPARENT;
-    const auto default_color =
-        SkColorSetA(color_provider->GetColor(cros_tokens::kCrosSysOnSurface),
+    border_color_ =
+        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
                     kMultitaskDefaultButtonOpacity);
-    right_bottom_button_->set_button_color(default_color);
-    left_top_button_->set_button_color(default_color);
+    right_bottom_button_->set_button_color(border_color_);
+    left_top_button_->set_button_color(border_color_);
   }
   SchedulePaint();
 }
@@ -241,7 +244,7 @@ void SplitButtonView::OnPaint(gfx::Canvas* canvas) {
 void SplitButtonView::OnThemeChanged() {
   views::View::OnThemeChanged();
   border_color_ =
-      SkColorSetA(GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface),
+      SkColorSetA(GetColorProvider()->GetColor(ui::kColorSysOnSurface),
                   kMultitaskDefaultButtonOpacity);
   right_bottom_button_->set_button_color(border_color_);
   left_top_button_->set_button_color(border_color_);

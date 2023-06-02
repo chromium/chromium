@@ -85,12 +85,10 @@ class NodeLinkMemoryTest : public testing::Test {
   }
 
  private:
-  const Ref<Node> node_a_{MakeRefCounted<Node>(Node::Type::kBroker,
-                                               kTestDriver,
-                                               IPCZ_INVALID_DRIVER_HANDLE)};
-  const Ref<Node> node_b_{MakeRefCounted<Node>(Node::Type::kNormal,
-                                               kTestDriver,
-                                               IPCZ_INVALID_DRIVER_HANDLE)};
+  const Ref<Node> node_a_{
+      MakeRefCounted<Node>(Node::Type::kBroker, kTestDriver)};
+  const Ref<Node> node_b_{
+      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver)};
   Ref<NodeLink> link_a_;
   Ref<NodeLink> link_b_;
 };
@@ -273,8 +271,8 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
       .size = sizeof(options),
       .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
-  const Ref<Node> node_c{MakeRefCounted<Node>(
-      Node::Type::kNormal, kTestDriver, IPCZ_INVALID_DRIVER_HANDLE, &options)};
+  const Ref<Node> node_c{
+      MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver, &options)};
   node_c->SetAssignedName(kOtherTestNonBrokerName);
   auto links = ConnectNodes(node_a(), node_c);
 

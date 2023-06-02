@@ -41,6 +41,7 @@ component("webview") {
     "//ui/content_accelerators",
     "//ui/events",
     "//ui/events:events_base",
+    "//ui/gfx:native_widget_types",
     "//ui/web_dialogs",
     "//url",
   ]
@@ -60,6 +61,10 @@ component("webview") {
     } else {
       sources += [ "unhandled_keyboard_event_handler_default.cc" ]
     }
+  }
+
+  if (is_mac) {
+    deps += [ "//base:base_arc" ]
   }
 }
 

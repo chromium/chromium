@@ -220,7 +220,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         std::vector<CapturedExternalVideoBuffer> scaled_buffers,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
-        gfx::Rect visible_rect) = 0;
+        const gfx::Rect& visible_rect) = 0;
 
     // Reserve an output buffer into which contents can be captured directly.
     // The returned |buffer| will always be allocated with a memory size

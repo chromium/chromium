@@ -40,6 +40,7 @@ class NotificationCenterBubble;
 class NotificationListView;
 class NotificationCenterTray;
 class NotificationCenterView;
+class NotificationCounterView;
 
 // Utility class to facilitate easier testing of the notification center.
 class NotificationCenterTestApi {
@@ -93,20 +94,68 @@ class NotificationCenterTestApi {
   // Returns true if `NotificationCenterBubble` is shown, false otherwise.
   bool IsBubbleShown();
 
-  // Returns true if a pinned icons is shown in the `NotificationCenterTray`.
+  // Returns true if the notification counter is shown in the primary display's
+  // `NotificationCenterTray`.
+  bool IsNotificationCounterShown();
+
+  // Returns true if the notification counter is shown in the
+  // `NotificationCenterTray` associated with the display having an id of
+  // `display_id`. `CHECK()`s that there exists a notification center tray
+  // associated with that display.
+  bool IsNotificationCounterShownOnDisplay(int64_t display_id);
+
+  // Returns true if a pinned icon is shown in the primary display's
+  // `NotificationCenterTray`.
   bool IsPinnedIconShown();
+
+  // Returns true if a pinned icon is shown in the `NotificationCenterTray`
+  // associated with the display having an id of `display_id`. `CHECK()`s that
+  // there exists a notification center tray associated with that display.
+  bool IsPinnedIconShownOnDisplay(int64_t display_id);
 
   // Returns true if a popup associated with the provided `id` exists, false
   // otherwise.
   bool IsPopupShown(const std::string& id);
 
-  // Returns true if `NotificationCenterTray` is showing in the shelf, false
-  // otherwise.
+  // Returns true if the primary display's `NotificationCenterTray` is showing
+  // in the shelf, false otherwise.
   bool IsTrayShown();
+
+  // Returns true if the `NotificationCenterTray` on the display associated with
+  // `display_id` is showing in the shelf, false otherwise. `CHECK()`s that
+  // there exists a notification center tray associated with that display.
+  bool IsTrayShownOnDisplay(int64_t display_id);
+
+  // Returns true if the primary display's `NotificationCenterTray` is
+  // animating, false otherwise.
+  bool IsTrayAnimating();
+
+  // Returns true if the `NotificationCenterTray` on the display associated with
+  // `display_id` is animating, false otherwise. `CHECK()`s that there exists a
+  // notification center tray associated with that display.
+  bool IsTrayAnimatingOnDisplay(int64_t display_id);
+
+  // Returns true if the primary display's `NotificationCounterView` is
+  // animating, false otherwise.
+  bool IsNotificationCounterAnimating();
+
+  // Returns true if the `NotificationCounterView` of the
+  // `NotificationCenterTray` on the display associated with `display_id` is
+  // animating, false otherwise. `CHECK()`s that there exists a notification
+  // center tray associated with that display.
+  bool IsNotificationCounterAnimatingOnDisplay(int64_t display_id);
 
   // Returns true if `QuietModeView` is showing in the `NotificationCenterTray`,
   // false otherwise.
   bool IsDoNotDisturbIconShown();
+
+  // Returns the primary display's `NotificationCounterView`.
+  NotificationCounterView* GetNotificationCounter();
+
+  // Returns the `NotificationCounterView` of the `NotificationCenterTray` on
+  // the display associated with `display_id`. `CHECK()`s that there exists a
+  // notification center tray associated with that display.
+  NotificationCounterView* GetNotificationCounterOnDisplay(int64_t display_id);
 
   // Returns the notification view associated with the provided notification id.
   // Should be only used when the notifications bubble is open.
@@ -122,8 +171,14 @@ class NotificationCenterTestApi {
   // nullptr otherwise.
   message_center::MessagePopupView* GetPopupViewForId(const std::string& id);
 
-  // Returns the `NotificationCenterTray` in the shelf.
+  // Returns the `NotificationCenterTray` for the primary display, or nullptr if
+  // QS revamp is not enabled.
   NotificationCenterTray* GetTray();
+
+  // Returns the `NotificationCenterTray` associated with the display having an
+  // id of `display_id`, or nullptr if there is no display with that id. Also
+  // returns nullptr if QS revamp is not enabled.
+  NotificationCenterTray* GetTrayOnDisplay(int64_t display_id);
 
   // Returns the widget that owns the `TrayBubbleView` for the notification
   // center.
@@ -133,7 +188,13 @@ class NotificationCenterTestApi {
   // and created when the notification center tray is shown.
   NotificationCenterBubble* GetBubble();
 
-  // Returns the top level view for the notification center.
+  // Returns the notification center's top level view associated with the
+  // provided id, or nullptr if there is no such view associated with the id.
+  NotificationCenterView* GetNotificationCenterViewOnDisplay(
+      int64_t display_id);
+
+  // Returns the notification center's top level view associated with the
+  // primary display.
   NotificationCenterView* GetNotificationCenterView();
 
   // Returns the parent view for all notification views.

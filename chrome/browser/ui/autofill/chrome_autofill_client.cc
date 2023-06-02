@@ -386,8 +386,6 @@ ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
     AutofillDriver* driver) {
   auto* cad = static_cast<ContentAutofillDriver*>(driver);
   content::RenderFrameHost* rfh = cad->render_frame_host();
-  if (!rfh)
-    return nullptr;
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<InternalAuthenticatorAndroid>(rfh);
 #else

@@ -77,7 +77,7 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
                 [](const VcHostedEffect* effect, const VcEffectState* state,
                    const ui::Event& event) {
                   if (effect->delegate()) {
-                    effect->delegate()->RecordMetricsForSetValueEffect(
+                    effect->delegate()->RecordMetricsForSetValueEffectOnClick(
                         effect->id(), state->state_value().value());
                   }
 

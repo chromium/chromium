@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script>
+window.onload = function() {
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    document.execCommand("selectall", false);
+    document.designMode="on";
+    document.execCommand("insertparagraph", false);
+    document.execCommand("InsertText", false);
+
+    document.children[0].appendChild(document.createElement('body'));
+    document.body.innerText = "This tests executing an editing command while executing a typing command.\nPASS";
+};
+
+document.addEventListener("DOMNodeRemovedFromDocument",
+    function() { document.execCommand("JustifyNone", false); },true);
+
+</script>

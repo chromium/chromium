@@ -20,32 +20,24 @@ index 1f1696ff..b46239d1 100644
  	}
  
 diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
-index c0d524fc..db899384 100644
+index c0d524fc..f6a2a66d 100644
 --- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
 +++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
-@@ -34,7 +34,10 @@ final class ConfigLoader {
+@@ -34,7 +34,16 @@ final class ConfigLoader {
  
  	static Properties load(final String resource, final Properties system) {
  		final Properties result = new Properties();
 -		loadResource(resource, result);
-+		// Local modification: Do not read from resource file because strict
-+		// mode doesn't allow this. See crbug.com/1401476. Using hardcoded
-+		// properties here.
-+		result.setProperty("output", "none");
++		// Local modification: Do not read from resource file on android because
++		// strict mode doesn't allow this. See crbug.com/1401476. Using
++		// hardcoded properties here.
++		boolean isAndroid = "Android Runtime"
++				.equals(System.getProperty("java.runtime.name"));
++		if (isAndroid) {
++			result.setProperty("output", "none");
++		} else {
++			loadResource(resource, result);
++		}
  		loadSystemProperties(system, result);
  		substSystemProperties(result, system);
  		return result;
-diff --git a/org.jacoco.examples.test/src/test/resources/verify-offline.bsh b/org.jacoco.examples.test/src/test/resources/verify-offline.bsh
-index e583fae0..57f4ef33 100644
---- a/org.jacoco.examples.test/src/test/resources/verify-offline.bsh
-+++ b/org.jacoco.examples.test/src/test/resources/verify-offline.bsh
-@@ -14,7 +14,8 @@ import org.codehaus.plexus.util.*;
- 
- File realBaseDir = new File(basedir, "../../../target/it-offline/build");
- if (!new File(realBaseDir, "target/site/jacoco/index.html").exists()) {
--  throw new RuntimeException();
-+  // For local modification in ConfigLoader.
-+  // throw new RuntimeException();
- }
- if (new File(realBaseDir, "target/site/jacoco-it/index.html").exists()) {
-   throw new RuntimeException();

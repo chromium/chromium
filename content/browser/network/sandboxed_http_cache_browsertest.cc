@@ -15,13 +15,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
+#include "content/browser/network/network_service_util_internal.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -65,11 +66,15 @@ class NonSandboxedNetworkServiceBrowserTest : public ContentBrowserTest {
   NonSandboxedNetworkServiceBrowserTest() {
     std::vector<base::test::FeatureRef> kDisabledFeatures = {
         sandbox::policy::features::kNetworkServiceSandbox,
-        features::kNetworkServiceInProcess,
     };
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/kDisabledFeatures);
+    ForceOutOfProcessNetworkServiceImpl();
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(IsOutOfProcessNetworkService());
   }
 
  private:
@@ -110,9 +115,8 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
       sandbox::policy::features::kNetworkServiceSandbox,
 #endif
     };
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features,
-        /*disabled_features=*/{features::kNetworkServiceInProcess});
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    ForceOutOfProcessNetworkServiceImpl();
   }
 
   void SetUp() override {
@@ -156,6 +160,10 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     ContentBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(IsOutOfProcessNetworkService());
   }
 
   mojo::Remote<SimpleCache> CreateSimpleCache() {

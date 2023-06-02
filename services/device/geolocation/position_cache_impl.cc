@@ -32,10 +32,10 @@ PositionCacheImpl::CacheEntry& PositionCacheImpl::CacheEntry::operator=(
 // static
 PositionCacheImpl::Hash PositionCacheImpl::MakeKey(const WifiData& wifi_data) {
   // Currently we use only WiFi data and base the key only on the MAC addresses.
-  std::u16string key;
+  std::string key;
   const size_t kCharsPerMacAddress = 6 * 3 + 1;  // e.g. "11:22:33:44:55:66|"
   key.reserve(wifi_data.access_point_data.size() * kCharsPerMacAddress);
-  const std::u16string separator(u"|");
+  const std::string separator("|");
   for (const auto& access_point_data : wifi_data.access_point_data) {
     key += separator;
     key += access_point_data.mac_address;

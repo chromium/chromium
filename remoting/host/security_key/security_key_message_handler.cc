@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "remoting/host/security_key/security_key_message_reader_impl.h"
@@ -74,6 +75,8 @@ void SecurityKeyMessageHandler::ProcessSecurityKeyMessage(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   SecurityKeyMessageType message_type = message->type();
+  HOST_LOG << "Received message from pipe. type="
+           << static_cast<int>(message_type);
   if (message_type == SecurityKeyMessageType::CONNECT) {
     HandleConnectRequest(message->payload());
   } else if (message_type == SecurityKeyMessageType::REQUEST) {
@@ -168,7 +171,12 @@ void SecurityKeyMessageHandler::SendMessageWithPayload(
     SecurityKeyMessageType message_type,
     const std::string& message_payload) {
   if (!writer_->WriteMessageWithPayload(message_type, message_payload)) {
+    HOST_LOG << "Failed to send message to pipe. type="
+             << static_cast<int>(message_type);
     OnError();
+  } else {
+    HOST_LOG << "Successfully sent message to pipe. type="
+             << static_cast<int>(message_type);
   }
 }
 

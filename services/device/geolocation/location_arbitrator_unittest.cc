@@ -113,7 +113,8 @@ class TestingLocationArbitrator : public LocationArbitrator {
     return base::WrapUnique(system_location_provider_.get());
   }
 
-  raw_ptr<FakeLocationProvider> network_location_provider_ = nullptr;
+  raw_ptr<FakeLocationProvider, DanglingUntriaged> network_location_provider_ =
+      nullptr;
   raw_ptr<FakeLocationProvider> system_location_provider_ = nullptr;
   bool should_use_system_location_provider_;
 };

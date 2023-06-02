@@ -91,6 +91,7 @@
 #include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -277,7 +278,13 @@ void ShowLoginWizardFinish(
   // display host to be created.
   DCHECK(session_manager::SessionManager::Get());
   DCHECK(LoginDisplayHost::default_host());
-  WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+  // Postpone loading wallpaper if the booting animation might be played.
+  if (!features::IsOobeSimonEnabled() ||
+      session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::OOBE) {
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+  }
+
   // TODO(crbug.com/1105387): Part of initial screen logic.
   MaybeShowDeviceDisabledScreen();
 }
@@ -560,14 +567,17 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
     const bool should_show =
         wizard_controller_->current_screen() == welcome_screen;
-    if (!should_show) {
-      return;
+    if (should_show) {
+      ash::Shell::Get()
+          ->booting_animation_controller()
+          ->ShowAnimationWithEndCallback(base::BindOnce(
+              &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
+              weak_factory_.GetWeakPtr()));
     }
-    ash::Shell::Get()
-        ->booting_animation_controller()
-        ->ShowAnimationWithEndCallback(base::BindOnce(
-            &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
-            weak_factory_.GetWeakPtr()));
+    // Show the underlying OOBE WebUI and wallpaper so they are ready once
+    // animation has finished playing.
+    login_window_->Show();
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   }
 }
 
@@ -769,8 +779,12 @@ void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
     LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() "
                     "NotifyLoginOrLockScreenVisible";
 
-    // Notify that the OOBE page is ready and the first screen is shown.
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
+    // Notify that the OOBE page is ready and the first screen is shown. It
+    // might happen that front-end part isn't fully initialized yet (when
+    // `OobeLazyLoading` is enabled), so wait for it to happen before notifying.
+    GetOobeUI()->IsJSReady(base::BindOnce(
+        &session_manager::SessionManager::NotifyLoginOrLockScreenVisible,
+        base::Unretained(session_manager::SessionManager::Get())));
   } else {
     // TODO(crbug.com/1305245) - Remove once the issue is fixed.
     LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() Not "
@@ -838,7 +852,9 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
   // Subscribe to crash events.
   content::WebContentsObserver::Observe(login_view_->GetWebContents());
   login_view_->LoadURL(url);
-  login_window_->Show();
+  if (!ash::features::IsOobeSimonEnabled()) {
+    login_window_->Show();
+  }
   CHECK(GetOobeUI());
   GetOobeUI()->AddObserver(this);
 }
@@ -1148,11 +1164,15 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI();
-    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572
     display_host->StartWizard(WelcomeView::kScreenId);
+    // Make sure we load an initial wallpaper here. If the booting animation
+    // might be played it will be covered by the StartWizard call.
+    if (!ash::features::IsOobeSimonEnabled()) {
+      WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+    }
     return;
   }
 

@@ -44,6 +44,8 @@ class ExternallyManagedAppInstallTask {
  public:
   using ResultCallback = base::OnceCallback<void(
       ExternallyManagedAppManager::InstallResult result)>;
+  using DataRetrieverFactory =
+      base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
 
   // Constructs a task that will install a Web App for |profile|.
   // |install_options| will be used to decide some of the properties of the
@@ -54,6 +56,7 @@ class ExternallyManagedAppInstallTask {
       WebAppUiManager* ui_manager,
       WebAppInstallFinalizer* install_finalizer,
       WebAppCommandScheduler* command_scheduler,
+      DataRetrieverFactory data_retriever_factory,
       ExternalInstallOptions install_options);
 
   ExternallyManagedAppInstallTask(const ExternallyManagedAppInstallTask&) =
@@ -71,8 +74,7 @@ class ExternallyManagedAppInstallTask {
 
   const ExternalInstallOptions& install_options() { return install_options_; }
 
-  using DataRetrieverFactory =
-      base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
+  // TODO(http://b/283521737): Remove this and use WebContentsManager.
   void SetDataRetrieverFactoryForTesting(
       DataRetrieverFactory data_retriever_factory);
 
@@ -126,8 +128,8 @@ class ExternallyManagedAppInstallTask {
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
-  const ExternalInstallOptions install_options_;
   DataRetrieverFactory data_retriever_factory_;
+  const ExternalInstallOptions install_options_;
 
   base::WeakPtrFactory<ExternallyManagedAppInstallTask> weak_ptr_factory_{this};
 };

@@ -128,8 +128,8 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
   const std::vector<blink::mojom::PermissionsPolicyFeature>&
-  required_permissions_to_load() const {
-    return required_permissions_to_load_;
+  effective_enabled_permissions() const {
+    return effective_enabled_permissions_;
   }
 
  private:
@@ -155,7 +155,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      required_permissions_to_load_;
+      effective_enabled_permissions_;
 };
 
 // Represents a set of fenced frame properties (instantiated from a config) that
@@ -202,8 +202,8 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
   const std::vector<blink::mojom::PermissionsPolicyFeature>&
-  required_permissions_to_load() const {
-    return required_permissions_to_load_;
+  effective_enabled_permissions() const {
+    return effective_enabled_permissions_;
   }
 
  private:
@@ -226,7 +226,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   bool has_fenced_frame_reporting_ = false;
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      required_permissions_to_load_;
+      effective_enabled_permissions_;
 };
 
 }  // namespace blink::FencedFrame

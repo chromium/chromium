@@ -31,7 +31,7 @@ class OptimizationGuideTabUrlProvider
   virtual const std::vector<content::WebContents*> GetAllWebContentsForProfile(
       Profile* profile);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_TAB_URL_PROVIDER_H_

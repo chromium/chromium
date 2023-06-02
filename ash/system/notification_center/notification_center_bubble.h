@@ -66,6 +66,7 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_ =
       nullptr;
 
+  std::unique_ptr<TrayBubbleView> bubble_view_;
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
 };
 

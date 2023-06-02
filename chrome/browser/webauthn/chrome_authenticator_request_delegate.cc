@@ -676,6 +676,17 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
                                       qr_generator_key,
                                       std::move(paired_phones));
   }
+
+#if BUILDFLAG(IS_MAC)
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
+  BrowserWindow* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
+  if (browser_window) {
+    discovery_factory->set_nswindow(reinterpret_cast<uintptr_t>(
+        browser_window->GetNativeWindow().GetNativeNSWindow()));
+  }
+#endif
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(

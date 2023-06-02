@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
@@ -23,6 +24,7 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +36,20 @@ namespace {
 using policy::BrowserPolicyConnectorAsh;
 
 constexpr char kLatencyHistogramVariant[] = "Ash";
+
+device_signals::Trigger DetermineTrigger(Profile* profile) {
+  if (!profile) {
+    return device_signals::Trigger::kUnspecified;
+  }
+  if (ash::ProfileHelper::IsUserProfile(profile)) {
+    return device_signals::Trigger::kBrowserNavigation;
+  }
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
+    return device_signals::Trigger::kLoginScreen;
+  }
+
+  return device_signals::Trigger::kUnspecified;
+}
 
 void GetNetworkDeviceStates(Profile* profile,
                             ash::NetworkStateHandler::DeviceStateList* list) {
@@ -74,6 +90,8 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
               attributes_->GetDeviceSerialNumber());
   signals.Set(device_signals::names::kDeviceHostName,
               ash::NetworkHandler::Get()->network_state_handler()->hostname());
+  signals.Set(device_signals::names::kTrigger,
+              static_cast<int32_t>(DetermineTrigger(profile_)));
   // On ChromeOS the disk is always encrypted. See (b/249756773) for more
   // information.
   signals.Set(device_signals::names::kDiskEncrypted,

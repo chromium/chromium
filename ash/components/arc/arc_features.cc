@@ -84,7 +84,7 @@ BASE_FEATURE(kEnablePerVmCoreScheduling,
 // Only applies on Android T+.
 BASE_FEATURE(kEnableReadOnlyPermissions,
              "ArcEnableReadOnlyPermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 BASE_FEATURE(kEnableUnifiedAudioFocusFeature,
@@ -316,6 +316,12 @@ const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
 // ARCVM.
 BASE_FEATURE(kVmBroadcastPreNotifyANR,
              "ArcVmBroadcastPreAnrHandling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls experimental key to enable ghost window when launch app under ARCVM
+// swap out state.
+BASE_FEATURE(kVmmSwapoutGhostWindow,
+             "ArcVmmSwapoutGhostWindow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls experimental key to enable Vmm swap for ARCVM by keyboard shortcut.

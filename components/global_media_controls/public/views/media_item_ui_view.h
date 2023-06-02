@@ -159,7 +159,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   std::u16string title_;
 
   // The scroll view that is currently holding this item.
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
@@ -173,8 +173,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   raw_ptr<DismissButton> dismiss_button_ = nullptr;
   raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
 
-  raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
-  raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
+  raw_ptr<MediaItemUIFooter, DanglingUntriaged> footer_view_ = nullptr;
+  raw_ptr<MediaItemUIDeviceSelector, DanglingUntriaged> device_selector_view_ =
+      nullptr;
 
   SkColor foreground_color_ = kDefaultForegroundColor;
   SkColor foreground_disabled_color_ = kDefaultForegroundColor;

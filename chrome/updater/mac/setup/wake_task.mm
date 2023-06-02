@@ -78,8 +78,7 @@ NSDictionary* CreateWakeLaunchdPlist(UpdaterScope scope) {
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
-    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
+    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
   };
 
   return launchd_plist;

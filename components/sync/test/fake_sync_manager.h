@@ -25,6 +25,7 @@ class SequencedTaskRunner;
 namespace syncer {
 
 class FakeSyncEncryptionHandler;
+class SyncCycleSnapshot;
 
 class FakeSyncManager : public SyncManager {
  public:
@@ -68,6 +69,12 @@ class FakeSyncManager : public SyncManager {
 
   bool IsInvalidatorEnabled() const { return invalidator_enabled_; }
 
+  // Notifies all observers about the changed |status|.
+  void NotifySyncStatusChanged(const SyncStatus& status);
+
+  // Notifies |observers_| about sync cycle completion.
+  void NotifySyncCycleCompleted(const SyncCycleSnapshot& snapshot);
+
   // SyncManager implementation.
   // Note: we treat whatever message loop this is called from as the sync
   // loop for purposes of callbacks.
@@ -105,6 +112,9 @@ class FakeSyncManager : public SyncManager {
       ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 
  private:
+  void DoNotifySyncStatusChanged(const SyncStatus& status);
+  void DoNotifySyncCycleCompleted(const SyncCycleSnapshot& snapshot);
+
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
   base::ObserverList<SyncManager::Observer>::Unchecked observers_;

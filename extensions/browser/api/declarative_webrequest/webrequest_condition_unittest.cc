@@ -215,8 +215,8 @@ TEST(WebRequestConditionTest, NoUrlAttributes) {
 TEST(WebRequestConditionTest, CreateConditionSet) {
   URLMatcher matcher;
 
-  WebRequestConditionSet::Values conditions;
-  conditions.push_back(base::test::ParseJson(
+  base::Value::List conditions;
+  conditions.Append(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
       "  \"url\": { \n"
@@ -224,7 +224,7 @@ TEST(WebRequestConditionTest, CreateConditionSet) {
       "    \"schemes\": [\"http\"], \n"
       "  }, \n"
       "}"));
-  conditions.push_back(base::test::ParseJson(
+  conditions.Append(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
       "  \"url\": { \n"
@@ -285,8 +285,8 @@ TEST(WebRequestConditionTest, CreateConditionSet) {
 TEST(WebRequestConditionTest, TestPortFilter) {
   URLMatcher matcher;
 
-  WebRequestConditionSet::Values conditions;
-  conditions.push_back(base::test::ParseJson(
+  base::Value::List conditions;
+  conditions.Append(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
       "  \"url\": { \n"

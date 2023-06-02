@@ -43,6 +43,7 @@ static_library("report_queue_factory") {
 
 static_library("report_queue") {
   sources = [
+    "filtered_report_queue.h",
     "report_queue.cc",
     "report_queue.h",
     "report_queue_impl.cc",
@@ -142,6 +143,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "empty_dm_token_retriever_unittest.cc",
+    "filtered_report_queue_unittest.cc",
     "report_queue_configuration_unittest.cc",
     "report_queue_factory_unittest.cc",
     "report_queue_impl_unittest.cc",

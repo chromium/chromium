@@ -78,7 +78,6 @@ public class MainActivity
     private static final String SHARED_PREF_CLOSE_ICON = "CloseIcon";
     private static final String SHARED_PREF_CLOSE_POSITION = "ClosePosition";
     private static final String SHARED_PREF_SIDE_SHEET_POSITION = "SideSheetPosition";
-    private static final String SHARED_PREF_SIDE_SHEET_ANIMATION = "SideSheetAnimation";
     private static final String SHARED_PREF_COLOR = "Color";
     private static final String SHARED_PREF_DECORATION = "Decoration";
     private static final String SHARED_PREF_HEIGHT = "Height";
@@ -134,7 +133,6 @@ public class MainActivity
     private MaterialButtonToggleGroup mDecorationType;
     private MaterialButtonToggleGroup mThemeButton;
     private MaterialButtonToggleGroup mSideSheetPositionToggle;
-    private MaterialButtonToggleGroup mSideSheetAnimationToggle;
     private TextView mToolbarCornerRadiusLabel;
     private SeekBar mToolbarCornerRadiusSlider;
     private CheckBox mBottomToolbarCheckbox;
@@ -172,13 +170,6 @@ public class MainActivity
 
     public static final String EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_DECORATION_TYPE";
-
-    public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT = 0;
-    public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM = 1;
-    public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE = 2;
-
-    public static final String EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR =
-            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR";
 
     public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT = 0;
     public static final int ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE = 1;
@@ -471,13 +462,6 @@ public class MainActivity
                 ? R.id.side_sheet_start_button
                 : R.id.side_sheet_end_button;
         mSideSheetPositionToggle.check(sideSheetPositionType);
-        mSideSheetAnimationToggle = findViewById(R.id.side_sheet_animation_toggle);
-        int sideSheetAnimationType = mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_ANIMATION,
-                                             ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE)
-                        == ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
-                ? R.id.side_sheet_side_button
-                : R.id.side_sheet_bottom_button;
-        mSideSheetAnimationToggle.check(sideSheetAnimationType);
 
         mDecorationType = findViewById(R.id.decoration_type_toggle);
         if (mSharedPref.getInt(SHARED_PREF_DECORATION, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW)
@@ -816,10 +800,6 @@ public class MainActivity
                 mSideSheetPositionToggle.getCheckedButtonId() == R.id.side_sheet_end_button
                 ? ACTIVITY_SIDE_SHEET_POSITION_END
                 : ACTIVITY_SIDE_SHEET_POSITION_START;
-        int sideSheetAnimation =
-                mSideSheetAnimationToggle.getCheckedButtonId() == R.id.side_sheet_side_button
-                ? ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
-                : ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
         int decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
         if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_divider_button) {
             decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
@@ -873,8 +853,6 @@ public class MainActivity
             }
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_POSITION, sideSheetPosition);
             customTabsIntent.intent.putExtra(
-                    EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, sideSheetAnimation);
-            customTabsIntent.intent.putExtra(
                     EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE, decorationType);
         } else {
             editor.putString(
@@ -915,7 +893,6 @@ public class MainActivity
         editor.putInt(SHARED_PREF_BOTTOM_TOOLBAR, toolbarCheck);
         editor.putInt(SHARED_PREF_CLOSE_POSITION, closeButtonPosition);
         editor.putInt(SHARED_PREF_SIDE_SHEET_POSITION, sideSheetPosition);
-        editor.putInt(SHARED_PREF_SIDE_SHEET_ANIMATION, sideSheetAnimation);
         editor.putInt(SHARED_PREF_HEIGHT_RESIZABLE,
                 mPcctHeightResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON,

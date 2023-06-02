@@ -9,7 +9,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.net.CronetTestRule.assertContains;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.os.ConditionVariable;
@@ -177,8 +176,13 @@ public class UploadDataProvidersTest {
         urlRequest.start();
         callback.blockForDone();
         assertTrue(callback.mOnErrorCalled);
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("ByteBuffer limit changed", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("ByteBuffer limit changed");
     }
 
     @Test
@@ -243,8 +247,10 @@ public class UploadDataProvidersTest {
         callback.blockForDone();
         assertFalse(callback.mOnCanceledCalled);
         assertThat(callback.mError).isInstanceOf(CallbackException.class);
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains(exceptionMessage, callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains(exceptionMessage);
     }
 
     @Test

@@ -26,11 +26,7 @@ class WaylandPositioner {
   // Represents the 1-dimensional projection of the gravity/anchor values.
   enum Direction { kNegative = -1, kNeutral = 0, kPositive = 1 };
 
-  // Controls whether anchor and gravity are set using the unstable bitfields or
-  // the stable enums.
-  enum Version { UNSTABLE, STABLE };
-
-  WaylandPositioner(Version v) : version_(v) {}
+  WaylandPositioner() = default;
 
   WaylandPositioner(const WaylandPositioner&) = delete;
   WaylandPositioner& operator=(const WaylandPositioner&) = delete;
@@ -53,8 +49,6 @@ class WaylandPositioner {
   void SetOffset(gfx::Vector2d offset) { offset_ = std::move(offset); }
 
  private:
-  Version version_;
-
   gfx::Size size_;
 
   gfx::Rect anchor_rect_;
@@ -66,13 +60,13 @@ class WaylandPositioner {
   Direction gravity_y_ = kNeutral;
 
   // A bitmask that defines the subset of modifications to the position/size
-  // that are allowed, see zxdg_positioner.constraint_adjustment() for more
+  // that are allowed, see xdg_positioner.constraint_adjustment() for more
   // details.
   uint32_t adjustment_ = XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_NONE;
 
   // Defines an absolute translation (i.e. unaffected by flipping, scaling or
   // resizing) for the placement of the window relative to the |anchor_rect_|.
-  // See zxdg_positioner.set_offset() for more details.
+  // See xdg_positioner.set_offset() for more details.
   gfx::Vector2d offset_;
 };
 

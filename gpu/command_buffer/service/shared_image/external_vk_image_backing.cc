@@ -8,16 +8,16 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_gl_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_overlay_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -78,9 +78,7 @@ class ScopedDedicatedMemoryObject {
   GLuint id() const { return id_; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION gl::GLApi* const api_;
+  raw_ptr<gl::GLApi> const api_;
   GLuint id_;
 };
 
@@ -247,25 +245,25 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size,
+                                                     ToBufferFormat(format))) {
     DLOG(ERROR) << "Invalid image size for format.";
     return nullptr;
   }
 
   auto* vulkan_implementation =
       context_state->vk_context_provider()->GetVulkanImplementation();
-  auto si_format = viz::GetSharedImageFormat(buffer_format);
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                          handle.type));
 
-  VkFormat vk_format = ToVkFormat(si_format);
+  VkFormat vk_format = ToVkFormat(format);
   auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, std::move(handle), size, vk_format, color_space);
   if (!image) {
@@ -280,9 +278,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
   textures.emplace_back(std::move(image));
 
   bool use_separate_gl_texture =
-      UseSeparateGLTexture(context_state.get(), si_format);
+      UseSeparateGLTexture(context_state.get(), format);
   auto backing = std::make_unique<ExternalVkImageBacking>(
-      base::PassKey<ExternalVkImageBacking>(), mailbox, si_format, size,
+      base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
       use_separate_gl_texture);

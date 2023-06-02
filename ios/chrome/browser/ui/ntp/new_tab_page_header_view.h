@@ -52,6 +52,9 @@
 - (CGFloat)searchFieldProgressForOffset:(CGFloat)offset
                          safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
+// The positive offset value to begin the fake omniobx expansion animation.
+- (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode;
+
 // Changes the constraints of searchField based on its initialFrame and the
 // scroll view's y `offset`. Also adjust the alpha values for `_searchBoxBorder`
 // and `_shadow` and the constant values for the `constraints`. `screenWidth` is

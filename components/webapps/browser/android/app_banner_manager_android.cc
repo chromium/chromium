@@ -175,6 +175,16 @@ void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
   manager()->GetData(params, std::move(callback));
 }
 
+bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
+  // Also check if a WebAPK is currently being installed. Installation may take
+  // some time, so ensure we don't accidentally allow a new installation whilst
+  // one is in flight for the current site.
+  return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
+                                         manifest().start_url) ||
+         WebappsClient::Get()->IsInstallationInProgress(web_contents(),
+                                                        manifest_id_);
+}
+
 void AppBannerManagerAndroid::ResetCurrentPageData() {
   AppBannerManager::ResetCurrentPageData();
   native_app_data_.Reset();
@@ -528,14 +538,33 @@ bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
   return Java_AppBannerManager_isRelatedNonWebAppInstalled(env, java_id);
 }
 
-bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
-  // Also check if a WebAPK is currently being installed. Installation may take
-  // some time, so ensure we don't accidentally allow a new installation whilst
-  // one is in flight for the current site.
-  return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
-                                         manifest().start_url) ||
-         WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest_id_);
+// TODO(eirage): Implement for Android.
+bool AppBannerManagerAndroid::IsAppFullyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return false;
+}
+
+bool AppBannerManagerAndroid::IsAppPartiallyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return false;
+}
+
+void AppBannerManagerAndroid::SaveInstallationDismissedForMl(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+}
+void AppBannerManagerAndroid::SaveInstallationIgnoredForMl(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+}
+void AppBannerManagerAndroid::SaveInstallationAcceptedForMl(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+}
+bool AppBannerManagerAndroid::IsMlPromotionBlockedByHistoryGuardrail(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+  return false;
 }
 
 void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

@@ -17,10 +17,11 @@ found in the LICENSE file.
         android:orientation="vertical">
 
         <ImageView
-            android:layout_marginHorizontal="@dimen/standard_illustration_marginHorizontal"
+            android:layout_marginHorizontal="@dimen/done_step_illustration_marginHorizontal"
             android:layout_marginBottom="@dimen/welcome_done_step_illustration_marginVertical"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:maxHeight="@dimen/illustration_maxHeight"
             android:adjustViewBounds="true"
             android:layout_gravity="center_horizontal"
             android:importantForAccessibility="no"
@@ -30,24 +31,30 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/privacy_guide_done_title"
+            android:layout_marginBottom="@dimen/done_step_header_marginBottom"
             style="@style/TextAppearance.Headline.Primary" />
 
         <TextView
-            android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/done_step_description_marginBottom"
             android:text="@string/privacy_guide_done_description"
             style="@style/TextAppearance.TextLarge.Secondary" />
 
-        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+        <TextView
+            android:id="@+id/ps_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/privacy_guide_privacy_sandbox_heading" />
+            android:layout_marginBottom="@dimen/done_step_header_marginBottom"
+            android:text="@string/privacy_guide_privacy_sandbox_heading"
+            android:labelFor="@+id/ps_button"
+            style="@style/TextAppearance.TextMediumThick.Accent1" />
 
         <LinearLayout
+            android:id="@+id/ps_explanation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
+            android:layout_marginBottom="@dimen/done_step_description_marginBottom"
             android:orientation="horizontal">
 
             <TextView
@@ -71,17 +78,19 @@ found in the LICENSE file.
                 app:tint="@color/default_icon_color_tint_list" />
         </LinearLayout>
 
-        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+        <TextView
             android:id="@+id/waa_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/privacy_guide_web_app_activity_heading" />
+            android:layout_marginBottom="@dimen/done_step_header_marginBottom"
+            android:text="@string/privacy_guide_web_app_activity_heading"
+            android:labelFor="@+id/waa_button"
+            style="@style/TextAppearance.TextMediumThick.Accent1" />
 
         <LinearLayout
             android:id="@+id/waa_explanation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
             android:orientation="horizontal">
 
             <TextView

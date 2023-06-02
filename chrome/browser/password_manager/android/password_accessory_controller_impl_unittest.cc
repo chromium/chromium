@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -1013,33 +1014,60 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/true,
-      base::RepeatingClosure());
+      base::RepeatingCallback<void(bool)>());
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(true),
                   autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
 
-  controller()->UpdateCredManReentryUi();
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableUsernameField);
 }
 
 TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/false,
-      base::RepeatingClosure());
+      base::RepeatingCallback<void(bool)>());
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(false),
                   autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
 
-  controller()->UpdateCredManReentryUi();
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableUsernameField);
+}
+
+TEST_F(PasswordAccessoryControllerTest, HideCredManReentryOnNonSignInField) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
+  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  CreateSheetController();
+  cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*render_frame_host=*/nullptr, /*has_results=*/true,
+      base::RepeatingCallback<void(bool)>());
+
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(false),
+                  autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
+
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableNonSearchField);
 }
 
 TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
@@ -1051,13 +1079,17 @@ TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
               OnAccessoryActionAvailabilityChanged)
       .Times(0);
 
-  controller()->UpdateCredManReentryUi();
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableUsernameField);
 }
 
 TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
-  base::MockRepeatingClosure cred_man_callback;
+  base::MockCallback<base::RepeatingCallback<void(bool)>> cred_man_callback;
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/true,
       cred_man_callback.Get());

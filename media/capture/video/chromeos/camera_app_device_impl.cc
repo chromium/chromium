@@ -229,7 +229,7 @@ void CameraAppDeviceImpl::SetReprocessOptions(
     if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
       auto e = BuildMetadataEntry(
           static_cast<cros::mojom::CameraMetadataTag>(kPortraitModeVendorKey),
-          1);
+          uint8_t{1});
       task.extra_metadata.push_back(std::move(e));
     }
     reprocess_task_queue_.push(std::move(task));

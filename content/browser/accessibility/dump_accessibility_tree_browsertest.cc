@@ -210,6 +210,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSCounterText) {
   RunCSSTest(FILE_PATH_LITERAL("counter-text.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSDisplayContents) {
+  RunCSSTest(FILE_PATH_LITERAL("display-contents.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontStyle) {
   RunCSSTest(FILE_PATH_LITERAL("font-style.html"));
 }
@@ -1403,11 +1408,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaTouchPassthrough) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-touchpassthrough.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        DISABLED_AccessibilityAriaTextboxWithSelection) {
   RunAriaTest(FILE_PATH_LITERAL("aria-textbox-with-selection.html"));
 }
@@ -2034,10 +2034,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 class DumpAccessibilityTreeFencedFrameTest : public DumpAccessibilityTreeTest {
  protected:
   DumpAccessibilityTreeFencedFrameTest() {
-    feature_list_.InitWithFeatures({{blink::features::kFencedFrames},
-                                    {features::kPrivacySandboxAdsAPIsOverride},
-                                    {blink::features::kFencedFramesAPIChanges}},
-                                   {/* disabled_features */});
+    feature_list_.InitWithFeatures(
+        {{blink::features::kFencedFrames},
+         {features::kPrivacySandboxAdsAPIsOverride},
+         {blink::features::kFencedFramesAPIChanges},
+         {blink::features::kFencedFramesDefaultMode}},
+        {/* disabled_features */});
 
     UseHttpsTestServer();
   }
@@ -2850,8 +2852,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("portal-with-widget-inside.html"));
 }
 
+// TODO(crbug.com/1367886): Flaky on multiple platforms
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityPortalNameFromVisibleText) {
+                       DISABLED_AccessibilityPortalNameFromVisibleText) {
   RunHtmlTest(FILE_PATH_LITERAL("portal-name-from-visible-text.html"));
 }
 
@@ -3436,6 +3439,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MissingParent) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        NullObjectOnHypertextOffsetComputation) {
+  if (!base::FeatureList::IsEnabled(blink::features::kMutationEvents)) {
+    // TODO(crbug.com/1446498) Remove this test (and the .html file) when
+    // MutationEvents are disabled for good. This is just a crash test related
+    // to `DOMNodeInserted`.
+    return;
+  }
   RunRegressionTest(
       FILE_PATH_LITERAL("null-object-on-hypertext-offset-computation.html"));
 }

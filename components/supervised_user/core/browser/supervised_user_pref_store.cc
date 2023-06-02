@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
@@ -18,7 +17,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
-#include "components/history/core/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/safe_search_api/safe_search_util.h"
@@ -62,6 +60,10 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
     {
         supervised_user::kSigninAllowed,
         prefs::kSigninAllowed,
+    },
+    {
+        supervised_user::kSigninAllowedOnNextStartup,
+        prefs::kSigninAllowedOnNextStartup,
     },
 };
 
@@ -141,11 +143,6 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
     // Manually set preferences that aren't direct copies of the settings value.
     {
-      // Allow history deletion for supervised accounts on supported platforms.
-      bool allow_history_deletion = base::FeatureList::IsEnabled(
-          supervised_user::kAllowHistoryDeletionForChildAccounts);
-      prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory,
-                         allow_history_deletion);
       // Incognito is disabled for supervised users across platforms.
       // First-party sites use signed-in cookies to ensure that parental
       // restrictions are applied for Unicorn accounts.

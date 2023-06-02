@@ -245,8 +245,10 @@ TEST(PasswordListSorterTest, PasskeyVsPasswordSortKey) {
   form.username_value = u"lora";
   CredentialUIEntry password(std::move(form));
 
-  PasskeyCredential passkey_credential(PasskeyCredential::Source::kAndroidPhone,
-                                       "test.com", {}, {}, "lora");
+  PasskeyCredential passkey_credential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("test.com"), PasskeyCredential::CredentialId(),
+      PasskeyCredential::UserId(), PasskeyCredential::Username("lora"));
   CredentialUIEntry passkey(std::move(passkey_credential));
 
   EXPECT_NE(CreateSortKey(password), CreateSortKey(passkey));

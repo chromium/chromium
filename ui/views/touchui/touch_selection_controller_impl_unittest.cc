@@ -364,10 +364,15 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
               textfield_->GetSelectedRange());
   }
 
-  raw_ptr<Widget> textfield_widget_ = nullptr;
-  raw_ptr<Widget> widget_ = nullptr;
+  void CloseHandle1Widget() {
+    GetSelectionController()->GetHandle1View()->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
 
-  raw_ptr<Textfield> textfield_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> textfield_widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+
+  raw_ptr<Textfield, DanglingUntriaged> textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> textfield_test_api_;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
@@ -1223,6 +1228,38 @@ TEST_F(TouchSelectionControllerImplTest, KeyEventDeactivatesTouchSelection) {
   StartTouchEditing();
   EXPECT_TRUE(GetSelectionController());
   generator.PressKey(ui::VKEY_A, 0);
+  RunPendingMessages();
+  EXPECT_FALSE(GetSelectionController());
+}
+
+// Tests that the touch selection controller doesn't crash when a handle widget
+// is destroyed while touch selection is still active. Regression test for
+// https://crbug.com/1448682.
+TEST_F(TouchSelectionControllerImplTest,
+       DestroyingEditingHandleWidgetDoesNotCrash) {
+  CreateTextfield();
+  textfield_->SetText(u"some text in a textfield");
+  textfield_->SetSelectedRange(gfx::Range(7, 7));
+  const gfx::Point cursor_position =
+      GetCursorRect(textfield_->GetSelectionModel()).CenterPoint();
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Tap the textfield to start touch selection.
+  generator.GestureTapAt(cursor_position);
+  EXPECT_TRUE(GetSelectionController());
+
+  // Close one of the handle widgets.
+  CloseHandle1Widget();
+  RunPendingMessages();
+
+  // Try to continue touch selection by tapping at the cursor. This should not
+  // crash.
+  generator.GestureTapAt(cursor_position);
+  generator.GestureTapAt(cursor_position);
+
+  // Check that we can destroy touch selection without crashing.
+  textfield_->DestroyTouchSelection();
   RunPendingMessages();
   EXPECT_FALSE(GetSelectionController());
 }

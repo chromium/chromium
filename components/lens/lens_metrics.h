@@ -64,7 +64,9 @@ enum class AmbientSearchEntryPoint {
   NEW_TAB_PAGE = 6,
   QUICK_ACTION_SEARCH_WIDGET = 7,
   KEYBOARD = 8,
-  kMaxValue = KEYBOARD
+  APP_ICON_LONG_PRESS = 9,
+  SPOTLIGHT = 10,
+  kMaxValue = SPOTLIGHT
 };
 
 // This should be kept in sync with the LensRegionSearchAspectRatio enum

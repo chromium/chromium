@@ -2,9 +2,11 @@ include_rules = [
   "+components/keyed_service",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/sync",
+  "+components/version_info/android/java/src/org/chromium/components/version_info/VersionInfo.java",
   "+content/public/browser",
   "+device/fido",
   "+mojo/public/cpp/bindings",
   "+services/device/public/java/src/org/chromium/device/DeviceFeatureList.java",
+  "+services/device/public/java/src/org/chromium/device/DeviceFeatureMap.java",
   "+third_party/blink/public/mojom/webauthn",
 ]

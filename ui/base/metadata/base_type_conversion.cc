@@ -603,3 +603,9 @@ DEFINE_ENUM_CONVERTERS(
     {ui::MenuSeparatorType::SPACING_SEPARATOR, u"SPACING_SEPARATOR"},
     {ui::MenuSeparatorType::VERTICAL_SEPARATOR, u"VERTICAL_SEPARATOR"},
     {ui::MenuSeparatorType::PADDED_SEPARATOR, u"PADDED_SEPARATOR"})
+
+DEFINE_ENUM_CONVERTERS(ui::ButtonStyle,
+                       {ui::ButtonStyle::kDefault, u"kDefault"},
+                       {ui::ButtonStyle::kProminent, u"kProminent"},
+                       {ui::ButtonStyle::kTonal, u"kTonal"},
+                       {ui::ButtonStyle::kText, u"kText"})

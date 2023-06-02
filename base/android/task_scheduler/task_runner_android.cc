@@ -10,7 +10,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android_runtime_unchecked_jni_headers/Runnable_jni.h"
-#include "base/base_jni_headers/TaskRunnerImpl_jni.h"
+#include "base/base_jni/TaskRunnerImpl_jni.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"

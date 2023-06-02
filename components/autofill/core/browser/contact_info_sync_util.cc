@@ -204,6 +204,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
     s.Set(specifics.mutable_address_between_streets(),
           ADDRESS_HOME_BETWEEN_STREETS);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    s.Set(specifics.mutable_address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
+  }
 
   // Set email, phone and company values and statuses.
   s.Set(specifics.mutable_email_address(), EMAIL_ADDRESS);
@@ -309,6 +313,10 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForBetweenStreets)) {
     s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    s.Set(specifics.address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
   }
 
   // Set email, phone and company values and statuses.
@@ -453,6 +461,10 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   if (d.Delete(trimmed_specifics.mutable_address_between_streets())) {
     trimmed_specifics.clear_address_between_streets();
+  }
+
+  if (d.Delete(trimmed_specifics.mutable_address_admin_level_2())) {
+    trimmed_specifics.clear_address_admin_level_2();
   }
 
   // Delete email, phone and company values and statuses.

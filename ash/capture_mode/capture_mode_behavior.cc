@@ -21,7 +21,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
-#include "ash/wm/mru_window_tracker.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -29,6 +29,8 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
@@ -40,9 +42,6 @@ constexpr int kFullCaptureBarWidth = 376;
 
 // Width of the game capture bar.
 constexpr int kGameCaptureBarWidth = 260;
-
-// Height of the capture bar.
-constexpr int kCaptureBarHeight = 64;
 
 // Returns the current configs before been overwritten by the client-initiated
 // capture mode session
@@ -70,10 +69,11 @@ void SetCaptureModeSessionConfigs(const CaptureModeSessionConfigs& configs) {
 class DefaultBehavior : public CaptureModeBehavior {
  public:
   DefaultBehavior()
-      : CaptureModeBehavior({CaptureModeType::kImage,
-                             CaptureModeSource::kRegion, RecordingType::kWebM,
-                             AudioRecordingMode::kOff,
-                             /*demo_tools_enabled=*/false}) {}
+      : CaptureModeBehavior(
+            {CaptureModeType::kImage, CaptureModeSource::kRegion,
+             RecordingType::kWebM, AudioRecordingMode::kOff,
+             /*demo_tools_enabled=*/false},
+            BehaviorType::kDefault) {}
 
   DefaultBehavior(const DefaultBehavior&) = delete;
   DefaultBehavior& operator=(const DefaultBehavior&) = delete;
@@ -90,7 +90,8 @@ class ProjectorBehavior : public CaptureModeBehavior {
       : CaptureModeBehavior(
             {CaptureModeType::kVideo, CaptureModeSource::kFullscreen,
              RecordingType::kWebM, AudioRecordingMode::kMicrophone,
-             /*demo_tools_enabled=*/true}) {}
+             /*demo_tools_enabled=*/true},
+            BehaviorType::kProjector) {}
 
   ProjectorBehavior(const ProjectorBehavior&) = delete;
   ProjectorBehavior& operator=(const ProjectorBehavior&) = delete;
@@ -180,7 +181,8 @@ class GameDashboardBehavior : public CaptureModeBehavior,
                              features::IsCaptureModeAudioMixingEnabled()
                                  ? AudioRecordingMode::kSystemAndMicrophone
                                  : AudioRecordingMode::kMicrophone,
-                             /*demo_tools_enabled=*/false}) {}
+                             /*demo_tools_enabled=*/false},
+                            BehaviorType::kGameDashboard) {}
 
   GameDashboardBehavior(const GameDashboardBehavior&) = delete;
   GameDashboardBehavior operator=(const GameDashboardBehavior&) = delete;
@@ -233,13 +235,39 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   bool ShouldGifBeSupported() const override { return false; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldAutoSelectFirstCamera() const override { return true; }
+
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<GameCaptureBarView>();
   }
+
   void SetPreSelectedWindow(aura::Window* pre_selected_window) override {
     CHECK(!pre_selected_window_);
     pre_selected_window_ = pre_selected_window;
     pre_selected_window_->AddObserver(this);
+  }
+
+  const char* GetClientMetricComponent() const override {
+    return "GameDashboard.";
+  }
+
+  std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
+      bool for_video) const override {
+    CHECK(for_video);
+
+    return {message_center::ButtonInfo{l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE)},
+            message_center::ButtonInfo{l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE)}};
+  }
+
+  void OnAudioRecordingModeChanged() override {
+    capture_mode_configs_.audio_recording_mode =
+        CaptureModeController::Get()->audio_recording_mode();
+  }
+
+  void OnDemoToolsSettingsChanged() override {
+    capture_mode_configs_.demo_tools_enabled =
+        CaptureModeController::Get()->enable_demo_tools();
   }
 
   // aura::WindowObserver:
@@ -252,10 +280,8 @@ class GameDashboardBehavior : public CaptureModeBehavior,
  protected:
   // CaptureModeBehavior:
   gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const override {
-    const aura::Window* selected_window =
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)[0];
-    CHECK(selected_window);
-    return selected_window->GetBoundsInScreen();
+    CHECK(pre_selected_window_);
+    return pre_selected_window_->GetBoundsInScreen();
   }
 
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
@@ -271,8 +297,9 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 // CaptureModeBehavior:
 
 CaptureModeBehavior::CaptureModeBehavior(
-    const CaptureModeSessionConfigs& configs)
-    : capture_mode_configs_(configs) {}
+    const CaptureModeSessionConfigs& configs,
+    const BehaviorType behavior_type)
+    : capture_mode_configs_(configs), behavior_type_(behavior_type) {}
 
 // static
 std::unique_ptr<CaptureModeBehavior> CaptureModeBehavior::Create(
@@ -387,6 +414,23 @@ const char* CaptureModeBehavior::GetClientMetricComponent() const {
   return "";
 }
 
+std::vector<message_center::ButtonInfo>
+CaptureModeBehavior::GetNotificationButtonsInfo(bool for_video) const {
+  std::vector<message_center::ButtonInfo> buttons_info;
+
+  if (!for_video &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    message_center::ButtonInfo edit_button(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
+    buttons_info.push_back(edit_button);
+  }
+  message_center::ButtonInfo delete_button(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
+  buttons_info.push_back(delete_button);
+
+  return buttons_info;
+}
+
 std::unique_ptr<CaptureModeBarView>
 CaptureModeBehavior::CreateCaptureModeBarView() {
   return std::make_unique<NormalCaptureBarView>(this);
@@ -395,9 +439,9 @@ CaptureModeBehavior::CreateCaptureModeBarView() {
 gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
   auto bounds = GetBarAnchorBoundsInScreen(root);
   const int bar_y = bounds.bottom() - capture_mode::kCaptureBarBottomPadding -
-                    kCaptureBarHeight;
+                    capture_mode::kCaptureBarHeight;
   bounds.ClampToCenteredSize(
-      gfx::Size(GetCaptureBarWidth(), kCaptureBarHeight));
+      gfx::Size(GetCaptureBarWidth(), capture_mode::kCaptureBarHeight));
   bounds.set_y(bar_y);
   return bounds;
 }
@@ -427,5 +471,9 @@ gfx::Rect CaptureModeBehavior::GetBarAnchorBoundsInScreen(
 int CaptureModeBehavior::GetCaptureBarWidth() const {
   return kFullCaptureBarWidth;
 }
+
+void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
+
+void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
 
 }  // namespace ash

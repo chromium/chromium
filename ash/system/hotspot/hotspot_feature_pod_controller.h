@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/system/hotspot/hotspot_icon_animation_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,7 @@ class UnifiedSystemTrayController;
 // detailed page with a Hotspot info.
 class ASH_EXPORT HotspotFeaturePodController
     : public FeaturePodControllerBase,
+      public HotspotIconAnimationObserver,
       public hotspot_config::mojom::CrosHotspotConfigObserver {
  public:
   explicit HotspotFeaturePodController(
@@ -44,6 +46,9 @@ class ASH_EXPORT HotspotFeaturePodController
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
+
+  // HotspotIconAnimationObserver:
+  void HotspotIconChanged() override;
 
  private:
   // mojom::CrosHotspotConfigObserver:

@@ -77,7 +77,7 @@ class PeriodicEventCollectorTest : public ::testing::Test {
   std::unique_ptr<FakeReportingSettings> settings_;
   std::unique_ptr<FakeSampler> sampler_;
   std::unique_ptr<FakeEventDetector> event_detector_;
-  raw_ptr<FakeEventDetector> event_detector_ptr_;
+  raw_ptr<FakeEventDetector, DanglingUntriaged> event_detector_ptr_;
 };
 
 TEST_F(PeriodicEventCollectorTest, Default) {

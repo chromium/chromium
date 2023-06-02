@@ -4,9 +4,9 @@
 
 package org.chromium.net.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -53,7 +53,7 @@ public class UrlResponseMatcherTest {
 
         FakeUrlResponse found = matcher.getMatchingResponse(url, null, null, null);
 
-        assertNotNull(found);
+        assertThat(found).isNotNull();
         assertEquals(found, response);
     }
 
@@ -69,6 +69,6 @@ public class UrlResponseMatcherTest {
         FakeUrlResponse notFound =
                 matcher.getMatchingResponse(urlWithoutResponse, null, null, null);
 
-        assertNull(notFound);
+        assertThat(notFound).isNull();
     }
 }

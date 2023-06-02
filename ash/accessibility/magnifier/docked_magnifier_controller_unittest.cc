@@ -32,6 +32,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "components/prefs/pref_service.h"
@@ -527,8 +528,10 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
   SendKey(ui::VKEY_TAB);
   OverviewItem* item = GetOverviewItemForWindow(window.get());
   ASSERT_TRUE(item);
-  const auto label_bounds_in_screen =
-      item->overview_item_view()->title_label()->GetBoundsInScreen();
+  const auto label_bounds_in_screen = item->overview_item_view()
+                                          ->header_view()
+                                          ->title_label()
+                                          ->GetBoundsInScreen();
   const gfx::Point expected_point_of_interest(
       label_bounds_in_screen.x(), label_bounds_in_screen.CenterPoint().y());
   TestMagnifierLayerTransform(expected_point_of_interest, root_window);

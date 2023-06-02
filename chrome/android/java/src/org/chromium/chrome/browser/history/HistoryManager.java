@@ -690,7 +690,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         } else if (isHistoryClustersUIShowing()) {
             return mHistoryClustersCoordinator.onBackPressed();
         }
-
         return mSelectableListLayout.onBackPressed();
     }
 

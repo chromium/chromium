@@ -9,6 +9,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -104,6 +107,7 @@ class ShoppingListUiTabHelperTest : public testing::Test {
         content::WebContentsTester::For(web_contents_.get());
     web_content_tester->SetLastCommittedURL(url);
     web_content_tester->NavigateAndCommit(url);
+    web_content_tester->TestDidFinishLoad(url);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -347,6 +351,42 @@ TEST_F(ShoppingListUiTabHelperTest, TestIconNotAvailableDuringLoading) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tab_helper_->GetProductImage().IsEmpty());
   EXPECT_FALSE(tab_helper_->ShouldShowPriceTrackingIconView());
+}
+
+TEST_F(ShoppingListUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
+  ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
+                   ->GetEntryForKey(SidePanelEntry::Key(
+                       SidePanelEntry::Id::kShoppingInsights)));
+
+  absl::optional<ProductInfo> info =
+      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(SidePanelRegistry::Get(web_contents_.get())
+                  ->GetEntryForKey(SidePanelEntry::Key(
+                      SidePanelEntry::Id::kShoppingInsights)));
+}
+
+TEST_F(ShoppingListUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
+  ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
+                   ->GetEntryForKey(SidePanelEntry::Key(
+                       SidePanelEntry::Id::kShoppingInsights)));
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
+                   ->GetEntryForKey(SidePanelEntry::Key(
+                       SidePanelEntry::Id::kShoppingInsights)));
 }
 
 }  // namespace commerce

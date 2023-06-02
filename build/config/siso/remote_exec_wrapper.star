@@ -42,6 +42,11 @@ def __step_config(ctx, step_config):
             "use_remote_exec_wrapper": True,
         },
         {
+            "name": "clang/asm",
+            "action": "(.*_)?asm",
+            "use_remote_exec_wrapper": True,
+        },
+        {
             "name": "action_remote",
             "command_prefix": "python3 ../../build/util/action_remote.py",
             "use_remote_exec_wrapper": True,

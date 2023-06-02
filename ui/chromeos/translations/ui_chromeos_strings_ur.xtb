@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ڈوراک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">‏Linux فائلز کھل رہی ہیں…</translation>
 <translation id="1547964879613821194">کینیڈین انگریزی</translation>
 <translation id="1556189134700913550">سبھی پر لاگو کریں</translation>
 <translation id="1561842594491319104">‏Chrome آلات</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">‏Google سائٹ</translation>
 <translation id="1853795129690976061">‏اس فولڈر کا اشتراک Linux کے ساتھ کر دیا گیا ہے</translation>
 <translation id="1864756863218646478">فائل تلاش نہیں کی جا سکی۔</translation>
+<translation id="1877377730633446520">اس میں تقریباً <ph name="REQUIRED_SPACE" /> کا استعمال ہوگا۔ فی الحال آپ کے پاس <ph name="FREE_SPACE" /> دستیاب ہے۔</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، منسلک کریں</translation>
 <translation id="1920670151694390848">ملیالم نقل حرفی</translation>
 <translation id="1920798810075583923">تربوز</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">فائلز کے تاثرات کے پینلز کو پھیلائیں</translation>
 <translation id="1995337122023280937">فائل کے مقام پر جائیں</translation>
 <translation id="2001796770603320721">‏Drive میں نظم کریں</translation>
+<translation id="2004942826429452291">‏فائلز کلاؤڈ میں اور اس Chromebook پر اسٹور ہوں گی۔</translation>
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="2025955442973426285">تگرینی</translation>
 <translation id="2037845485764049925">روسی</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">آلے کی ترتیبات</translation>
 <translation id="2084809735218147718">اشارے سے شکریہ ادا کرتا ہوا شخص</translation>
 <translation id="2088690981887365033">‏VPN نیٹ ورک</translation>
+<translation id="2089751716171649322">‏آف لائن رہنے پر، اپنی Google Drive فائلز تک آسانی سے رسائی حاصل کریں</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />پوشیدگی وضع میں اجازت دیں<ph name="END_BOLD" /> کو آن کریں</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف ہو جائیں گے اور آپ انہیں بحال نہیں کر سکیں گے۔</translation>
 <translation id="2122305276694332719">پوشیدہ نیٹ ورک سے خود کار طور پر منسلک ہونے سے دوسروں کو آپ کا آلہ اور نیٹ ورک کی کچھ ترتیبات دیکھنے میں سہولت ملتی ہے اور اس کی تجویز نہیں کی جاتی ہے۔</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">‏Linux کے ساتھ انسٹال کریں</translation>
 <translation id="2225536596944493418">‏کیا آپ واقعی ‎<ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2230062665678605299">فولڈر "<ph name="FOLDER_NAME" />" بنانے سے قاصر۔ <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">کافی لیے ہوئے شخص</translation>
 <translation id="2251368349685848079">کوڑے دان سے بحال کریں</translation>
 <translation id="2278133026967558505">‏تمام ویب سائٹس اور URLs کے ذریعے فائل تک رسائی</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">ابھی نہیں</translation>
 <translation id="3486821258960016770">منگؤلی</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خرابیاں۔</translation>
+<translation id="3501954296166022751">‏آپ کی Google Drive فائلز آف لائن دستیاب ہیں</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، تفصیلات</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو مطابقت پذیری کرنے کی تیاری ہو رہی ہے...</translation>
 <translation id="3522708245912499433">پُرتگالی</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">اس ترتیب کو تبدیل کرنے سے سبھی اشتراک کردہ نیٹ ورکس پر اثر پڑے گا</translation>
 <translation id="3737576078404241332">سائیڈ بار سے ہٹائیں</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
-<translation id="3780536599611287598">آپ کو فائلوں کو '<ph name="FOLDER_NAME" />' میں منتقل کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="3786301125658655746">آپ آف لائن ہیں</translation>
 <translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3793469551756281394">تقریباً <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> باقی</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، آپ کے منتظم کے زیر انتظام ہے، منسلک کریں</translation>
 <translation id="4470564870223067757">‏Hangul 2 سیٹ</translation>
+<translation id="4472575034687746823">شروع کریں</translation>
 <translation id="4474142134969976028">کوئی مماثل نتیجہ نہیں ہے</translation>
 <translation id="4477002475007461989">رومانیائی</translation>
 <translation id="4477219268485577442">بلغاریائی فونیٹک</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">مَگَر ناشپاتی</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> آئٹمز بحال ہو رہے ہیں</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{پوشیدگی وضع استعمال کرنے کیلئے، آپ کی تنظیم کو ایک ایکسٹینشن درکار ہے}other{پوشیدگی وضع استعمال کرنے کیلئے، آپ کی تنظیم کو کچھ ایکسٹینشنز درکار ہے}}</translation>
-<translation id="4823651846660089135">آلہ صرف پڑھنے کیلئے ہے</translation>
 <translation id="4826849268470072925">‏تمل ITRANS</translation>
 <translation id="482932175346970750">‏اپنے براؤزر میں <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ٹائپ کریں</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -572,6 +573,7 @@
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5500122897333236901">آئس لینڈک</translation>
 <translation id="5508696409934741614">نقطے</translation>
+<translation id="5519161320735100193">‏Google Drive کی ترتیبات</translation>
 <translation id="5522908512596376669">فائل کی فہرست کو فہرست منظر پر تبدیل کر دیا گيا ہے۔</translation>
 <translation id="5524517123096967210">فائل نہیں پڑھی جا سکی۔</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> تصویر</translation>
@@ -618,6 +620,7 @@
 <translation id="5838451609423551646">انتخاب سے تمام اندراجات ہٹا دئے گئے۔</translation>
 <translation id="5838825566232597749">‏US Workman بین الاقوامی</translation>
 <translation id="5845721951356578987">نرس</translation>
+<translation id="5860491529813859533">آن کریں</translation>
 <translation id="5861477046012235702">گیمر</translation>
 <translation id="5864471791310927901">‏DHCP کی تلاش ناکام ہو گئی</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> کا نیٹ ورک <ph name="NETWORK_INDEX" /> غیر فعال ہے، <ph name="SIGNAL_STRENGTH" />% سگنل کی مضبوطی، تفصیلات</translation>
@@ -675,7 +678,6 @@
 <translation id="6327785803543103246">ویب پراکسی کی خودکار دریافت</translation>
 <translation id="6337014272874260727">فوری فائلز سے پن ہٹائیں</translation>
 <translation id="6339145975392024142">‏امریکی بین الاقوامی (PC)</translation>
-<translation id="6346310558342052870">رسائی روک دی گئی</translation>
 <translation id="6356685157277930264">فائلوں کے تاثرات کی ونڈو</translation>
 <translation id="6358884629796491903">ڈریگن</translation>
 <translation id="636254897931573416">ڈومین لاحقہ سے مماثل قدر غلط ہے</translation>
@@ -863,6 +865,7 @@
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7806708061868529807">عبرانی</translation>
 <translation id="78104721049218340">کیڈمینی کی بورڈ کے ساتھ تھائی</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">نیٹ ورک کو ترتیب دینے میں خرابی</translation>
 <translation id="7839804798877833423">ان فائلوں کو بازیافت کرنے میں تقریباً <ph name="FILE_SIZE" /> موبائل ڈیٹا استعمال ہوگا۔</translation>
@@ -875,15 +878,18 @@
 <translation id="7903984238293908205">کٹاکانا</translation>
 <translation id="7908793776359722643">پارٹیشن کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا مٹا دیا جائے گا۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">‏میری ڈرائیو میں موجود آپ کی فائلز خودکار طور پر آپ کے Chromebook پر سِنک ہو جائیں گی تاکہ آپ انٹرنیٹ کنکشن کے بغیر ان تک رسائی حاصل کر سکیں۔</translation>
 <translation id="7925247922861151263">‏AAA چیک ناکام ہوگیا</translation>
 <translation id="7925686952655276919">مطابقت پذیری کیلئے موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="7928710562641958568">آلے کو خارج کریں</translation>
+<translation id="7933875256234974853">‏Drive فائلز کو سِنک کرنے کی تیاری ہو رہی ہے...</translation>
 <translation id="7943385054491506837">‏US کولمیک</translation>
 <translation id="7953739707111622108">اس آلہ کو نہیں کھولا جا سکتا ہے کیونکہ اس کے فائل سسٹم کی شناخت نہیں ہوئی۔</translation>
 <translation id="7969525169268594403">سلوينی</translation>
 <translation id="7972920761225148017">فرانسیسی (سوئٹزر لینڈ)</translation>
 <translation id="7973962044839454485">‏ایک غلط صارف نام یا پاس ورڈ کی وجہ سے PPP کی توثیق ناکام ہو گئی</translation>
 <translation id="7980421588063892270">کول مارک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> فائلز سِنک ہو رہی ہیں</translation>
 <translation id="8000066093800657092">کوئی نیٹ ورک نہیں ہے</translation>
 <translation id="8008366997883261463">ڈاگ</translation>
 <translation id="8028993641010258682">سائز</translation>
@@ -1005,6 +1011,7 @@
 <translation id="8919081441417203123">ڈينش</translation>
 <translation id="8949925099261528566">منسلک، انٹرنیٹ نہیں ہے</translation>
 <translation id="8965697826696209160">اس میں کافی جگہ نہیں ہے۔</translation>
+<translation id="8971742885766657349">سِنک ہو رہا ہے - <ph name="PERCENT" />فیصد</translation>
 <translation id="8997962250644902079">‏چینی (روایتی) Pinyin</translation>
 <translation id="8998871447376656508">‏اپ لوڈ مکمل کرنے کے لیے آپ کی Google Drive میں کافی خالی اسپیس نہیں ہے۔</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
@@ -1038,6 +1045,7 @@
 <translation id="9213073329713032541">انسٹالیشن کامیابی کے ساتھ شروع ہو گئی۔</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">قمری</translation>
+<translation id="937795003075802289">1 فائل سِنک ہو رہی ہے</translation>
 <translation id="938470336146445890">براہ کرم ایک صارف سرٹیفیکیٹ انسٹال کریں۔</translation>
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="943972244133411984">ترمیم کنندہ</translation>

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/update_client/update_client.h"
@@ -18,6 +19,7 @@
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -207,12 +209,13 @@ void ExtensionsBrowserClient::AddDOMActionToActivityLog(
     const std::u16string& url_title,
     int call_type) {}
 
-content::StoragePartitionConfig
-ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
+void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     content::BrowserContext* browser_context,
     content::SiteInstance* owner_site_instance,
     const std::string& partition_name,
-    bool in_memory) {
+    bool in_memory,
+    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+        callback) {
   const GURL& owner_site_url = owner_site_instance->GetSiteURL();
   auto partition_config = content::StoragePartitionConfig::Create(
       browser_context, owner_site_url.host(), partition_name, in_memory);
@@ -235,7 +238,7 @@ ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
                 partition_config.GetFallbackForBlobUrls().value());
     }
   }
-  return partition_config;
+  std::move(callback).Run(partition_config);
 }
 
 void ExtensionsBrowserClient::CreatePasswordReuseDetectionManager(

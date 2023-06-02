@@ -12,7 +12,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/FeatureMap_jni.h"
+#include "base/base_jni/FeatureMap_jni.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 

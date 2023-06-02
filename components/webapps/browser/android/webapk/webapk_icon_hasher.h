@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/webapps/browser/android/webapp_icon.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -61,14 +62,14 @@ class WebApkIconHasher {
       network::mojom::URLLoaderFactory* url_loader_factory,
       base::WeakPtr<content::WebContents> web_contents,
       const url::Origin& request_initiator,
-      const std::set<GURL>& icon_urls,
+      const std::vector<WebappIcon>& webapp_icon,
       Murmur2HashMultipleCallback callback);
 
   static void DownloadAndComputeMurmur2HashWithTimeout(
       network::mojom::URLLoaderFactory* url_loader_factory,
       base::WeakPtr<content::WebContents> web_contents,
       const url::Origin& request_initiator,
-      const GURL& icon_url,
+      const WebappIcon& webapp_icon,
       int timeout_ms,
       Murmur2HashCallback callback);
 
@@ -76,12 +77,13 @@ class WebApkIconHasher {
   WebApkIconHasher(network::mojom::URLLoaderFactory* url_loader_factory,
                    base::WeakPtr<content::WebContents> web_contents,
                    const url::Origin& request_initiator,
-                   const GURL& icon_url,
+                   const WebappIcon& webapp_icon,
                    int timeout_ms,
                    Murmur2HashCallback callback);
   ~WebApkIconHasher();
 
   void OnSimpleLoaderComplete(base::WeakPtr<content::WebContents> web_contents,
+                              int ideal_icon_size,
                               int timeout_ms,
                               std::unique_ptr<std::string> response_body);
 

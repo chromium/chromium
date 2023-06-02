@@ -9,6 +9,7 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
+import '../../components/buttons/oobe_text_button.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
@@ -62,6 +63,7 @@ const SelectedTheme = {
 const UserAction = {
   SELECT: 'select',
   NEXT: 'next',
+  RETURN: 'return',
 };
 
 /**
@@ -89,6 +91,15 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
        * @private
        */
       isInTabletMode_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the button to return to CHOOBE screen should be shown.
+       * @private
+       */
+      shouldShowReturn_: {
         type: Boolean,
         value: false,
       },
@@ -121,6 +132,7 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     if ('selectedTheme' in data) {
       this.selectedTheme = data.selectedTheme;
     }
+    this.shouldShowReturn_ = data['shouldShowReturn'];
   }
 
   getOobeUIInitialState() {
@@ -144,6 +156,10 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     if (themeSelect === 'dark') {
       this.userActed([UserAction.SELECT, SelectedTheme.DARK]);
     }
+  }
+
+  onReturnClicked_() {
+    this.userActed(UserAction.RETURN);
   }
 }
 customElements.define(ThemeSelectionScreen.is, ThemeSelectionScreen);

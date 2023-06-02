@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium সিঙ্ক থেকে ডেটা</translation>
 <translation id="1722370509450468186">পাসওয়ার্ড আপনার অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="1736662517232558588">Chromium ডেটা সাফ করা হয়েছে</translation>
-<translation id="177102542580335555">আপনি এই Chromium প্রোফাইলের জন্য স্ট্যান্ডার্ড নিরাপত্তা সুরক্ষা পাচ্ছেন</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
 <translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
 <ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium ব্যবহার করছিলেন এবং এই ডিভাইসে বুকমার্ক, পাসওয়ার্ড এবং অন্যান্য সেটিংস রয়ে গেছে।</translation>
+<translation id="3661862315467204831">iOS অপারেটিং সিস্টেমে Chromium সেটিংস খুলুন, তারপর "ব্রাউজার ডিফল্ট অ্যাপ" বিকল্পে ট্যাপ করে Chromium বেছে নিন।</translation>
 <translation id="372658070733623520">আপনার Google অ্যাকাউন্টে Chromium ডেটা ব্যবহার এবং সেভ করতে, আপনার পরিচয় যাচাই করুন।</translation>
 <translation id="3805899903892079518">আপনার ফটো এবং ভিডিওগুলিতে Chromium এর অ্যাক্সেস নেই৷ iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন৷</translation>
+<translation id="3827545470516145620">এই ডিভাইসে আপনি স্টান্ডার্ড নিরাপত্তামূলক সুরক্ষা পাচ্ছেন</translation>
 <translation id="3955621079070267756">যেকোনও অ্যাপ থেকে Chromium খুলুন</translation>
 <translation id="4043291146360695975">শুধুমাত্র এই ডিভাইসের 'পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="4099085513035183040">এই সুবিধা Chromium-এর বিটা ভার্সনে কাজ করে না</translation>

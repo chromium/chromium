@@ -21,6 +21,7 @@
 class Profile;
 
 namespace bruschetta {
+class SimpleURLLoaderDownload;
 
 class BruschettaInstallerImpl : public BruschettaInstaller {
  public:
@@ -61,10 +62,18 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void InstallFirmwareDlc();
   void OnFirmwareDlcInstalled(
       guest_os::GuestOsDlcInstallation::Result install_result);
-  void DownloadBootDisk();
-  void OnBootDiskDownloaded(const download::CompletionInfo& completion_info);
-  void DownloadPflash();
-  void OnPflashDownloaded(const download::CompletionInfo& completion_info);
+  // TODO(b/270656010): Pick the winner between the two strategies. Loser gets
+  // deleted, winner gets renamed back to "DownloadBootDisk" and etc.
+  void DownloadBootDiskDownloadService();
+  void OnBootDiskDownloadedDownloadService(
+      const download::CompletionInfo& completion_info);
+  void DownloadPflashDownloadService();
+  void OnPflashDownloadedDownloadService(
+      const download::CompletionInfo& completion_info);
+  void DownloadBootDiskURLLoader();
+  void OnBootDiskDownloadedURLLoader(base::FilePath path, std::string hash);
+  void DownloadPflashURLLoader();
+  void OnPflashDownloadedURLLoader(base::FilePath path, std::string hash);
   void OpenFds();
   void OnOpenFds(std::unique_ptr<Fds> fds);
   void CreateVmDisk();
@@ -98,6 +107,10 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
 
   const raw_ptr<Profile> profile_;
+
+  // The downloaded files get deleted once these go out of scope.
+  std::unique_ptr<SimpleURLLoaderDownload> boot_disk_download_;
+  std::unique_ptr<SimpleURLLoaderDownload> pflash_download_;
 
   base::OnceClosure close_closure_;
 

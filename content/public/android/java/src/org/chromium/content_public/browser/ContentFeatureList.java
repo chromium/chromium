@@ -4,11 +4,10 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.base.FeatureList;
-import org.chromium.content.browser.ContentFeatureListImpl;
+import org.chromium.content.browser.ContentFeatureMap;
 
 /**
- * Static public methods for ContentFeatureList.
+ * Convenience static methods to access {@link ContentFeatureMap}.
  */
 public class ContentFeatureList {
     private ContentFeatureList() {}
@@ -20,9 +19,7 @@ public class ContentFeatureList {
      * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
-        Boolean testValue = FeatureList.getTestValueForFeature(featureName);
-        if (testValue != null) return testValue;
-        return ContentFeatureListImpl.isEnabled(featureName);
+        return ContentFeatureMap.getInstance().isEnabled(featureName);
     }
 
     /**
@@ -36,11 +33,7 @@ public class ContentFeatureList {
      */
     public static int getFieldTrialParamByFeatureAsInt(
             String featureName, String paramName, int defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
-        if (testValue != null) return Integer.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
-        assert FeatureList.isInitialized();
-        return ContentFeatureListImpl.getFieldTrialParamByFeatureAsInt(
+        return ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
                 featureName, paramName, defaultValue);
     }
 
@@ -55,13 +48,12 @@ public class ContentFeatureList {
      */
     public static boolean getFieldTrialParamByFeatureAsBoolean(
             String featureName, String paramName, boolean defaultValue) {
-        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
-        if (testValue != null) return Boolean.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
-        assert FeatureList.isInitialized();
-        return ContentFeatureListImpl.getFieldTrialParamByFeatureAsBoolean(
+        return ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
                 featureName, paramName, defaultValue);
     }
+
+    // TODO(crbug.com/1447098): Use generated constants in ContentFeatures and other generated
+    // Features files, then remove the constants below.
 
     // Alphabetical:
     public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";

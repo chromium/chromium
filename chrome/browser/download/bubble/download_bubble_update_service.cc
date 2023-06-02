@@ -372,7 +372,7 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
     std::vector<DownloadUIModelPtr>& models,
     bool force_backfill_download_items) {
 #if DCHECK_IS_ON()
-  DCHECK(ConsistencyCheckCaches());
+  ConsistencyCheckCaches();
 #endif  // DCHECK_IS_ON()
 
   base::Time cutoff_time = GetCutoffTime();
@@ -454,7 +454,7 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(ConsistencyCheckCaches());
+  ConsistencyCheckCaches();
 #endif  // DCHECK_IS_ON()
   return models.size() == GetMaxNumItemsToShow() ||
          !(download_items_need_backfill || offline_items_need_backfill);
@@ -491,7 +491,7 @@ const AllDownloadUIModelsInfo& DownloadBubbleUpdateService::GetAllModelsInfo(
 
 void DownloadBubbleUpdateService::CacheManager::UpdateAllModelsInfo() {
 #if DCHECK_IS_ON()
-  DCHECK(ConsistencyCheckCaches());
+  ConsistencyCheckCaches();
 #endif  // DCHECK_IS_ON()
 
   AllDownloadUIModelsInfo info;
@@ -532,7 +532,7 @@ void DownloadBubbleUpdateService::CacheManager::UpdateAllModelsInfo() {
 ProgressInfo DownloadBubbleUpdateService::CacheManager::GetProgressInfo()
     const {
 #if DCHECK_IS_ON()
-  DCHECK(ConsistencyCheckCaches());
+  ConsistencyCheckCaches();
 #endif  // DCHECK_IS_ON()
 
   ProgressInfo info;
@@ -1146,43 +1146,32 @@ bool DownloadBubbleUpdateService::IsMainCache(
 }
 
 #if DCHECK_IS_ON()
-bool DownloadBubbleUpdateService::CacheManager::ConsistencyCheckCaches() const {
-  return ConsistencyCheckImpl(download_items_, download_items_iter_map_) &&
-         ConsistencyCheckImpl(offline_items_, offline_items_iter_map_);
+void DownloadBubbleUpdateService::CacheManager::ConsistencyCheckCaches() const {
+  ConsistencyCheckImpl(download_items_, download_items_iter_map_);
+  ConsistencyCheckImpl(offline_items_, offline_items_iter_map_);
 }
 
 template <typename Id, typename Item>
-bool DownloadBubbleUpdateService::CacheManager::ConsistencyCheckImpl(
+void DownloadBubbleUpdateService::CacheManager::ConsistencyCheckImpl(
     const SortedItems<Item>& cache,
     const IterMap<Id, Item>& iter_map) const {
-  if (cache.size() != iter_map.size()) {
-    DLOG(ERROR) << "Cache size " << cache.size()
-                << " does not match index size " << iter_map.size() << ".";
-    return false;
-  }
-  if (cache.size() > GetNumItemsToCache()) {
-    DLOG(ERROR) << "Cache size " << cache.size() << " exceeds max size "
-                << GetNumItemsToCache() << ".";
-    return false;
-  }
+  DCHECK_EQ(cache.size(), iter_map.size())
+      << "Cache size " << cache.size() << " does not match index size "
+      << iter_map.size() << ".";
+  DCHECK_LE(cache.size(), GetNumItemsToCache())
+      << "Cache size " << cache.size() << " exceeds max size "
+      << GetNumItemsToCache() << ".";
   for (auto it = cache.begin(); it != cache.end(); ++it) {
     const ItemSortKey& key = it->first;
     const Item& item = it->second;
-    if (key != GetSortKey(item)) {
-      DLOG(ERROR) << "Key does not match item.";
-      return false;
-    }
+    // The state of the stored key and the current state of the item may not
+    // always match, if we haven't received the update notification yet.
+    DCHECK_EQ(key.start_time, GetSortKey(item).start_time)
+        << "Start time in key does not match item.";
     const Id& id = GetItemId(item);
     auto iter_map_it = iter_map.find(id);
-    if (iter_map_it == iter_map.end()) {
-      DLOG(ERROR) << "Item id not in index.";
-      return false;
-    }
-    if (iter_map_it->second != it) {
-      DLOG(ERROR) << "Index inconsistent.";
-      return false;
-    }
+    DCHECK(iter_map_it != iter_map.end()) << "Item id not in index.";
+    DCHECK(iter_map_it->second == it) << "Index inconsistent.";
   }
-  return true;
 }
 #endif  // DCHECK_IS_ON()

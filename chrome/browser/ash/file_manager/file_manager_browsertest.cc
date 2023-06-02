@@ -178,8 +178,14 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableInlineStatusSync() {
-    options.enable_inline_status_sync = true;
+  TestCase& EnableInlineSyncStatus() {
+    options.enable_inline_sync_status = true;
+    return *this;
+  }
+
+  TestCase& EnableInlineSyncStatusProgressEvents() {
+    options.enable_inline_sync_status = true;
+    options.enable_inline_sync_status_progress_events = true;
     return *this;
   }
 
@@ -215,6 +221,11 @@ struct TestCase {
 
   TestCase& EnableBulkPinning() {
     options.enable_drive_bulk_pinning = true;
+    return *this;
+  }
+
+  TestCase& EnableDriveShortcuts() {
+    options.enable_drive_shortcuts = true;
     return *this;
   }
 
@@ -275,8 +286,8 @@ struct TestCase {
       full_name += "_MirrorSync";
     }
 
-    if (options.enable_inline_status_sync) {
-      full_name += "_InlineStatusSync";
+    if (options.enable_inline_sync_status) {
+      full_name += "_InlineSyncStatus";
     }
 
     if (options.file_transfer_connector_report_only) {
@@ -297,6 +308,10 @@ struct TestCase {
 
     if (options.enable_drive_bulk_pinning) {
       full_name += "_DriveBulkPinning";
+    }
+
+    if (options.enable_drive_shortcuts) {
+      full_name += "_DriveShortcuts";
     }
 
     switch (options.device_mode) {
@@ -747,7 +762,8 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile())
         ->SetIdentityManagerForTesting(
             identity_test_environment_->identity_manager());
   }
@@ -1539,19 +1555,26 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
         TestCase("driveAvailableOfflineActionBar"),
         TestCase("driveLinkToDirectory"),
+        TestCase("driveLinkToDirectory").EnableDriveShortcuts(),
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveEncryptionBadge"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
-        TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
+        TestCase("driveInlineSyncStatusSingleFile").EnableInlineSyncStatus(),
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineSyncStatus(),
+        TestCase("driveInlineSyncStatusSingleFileProgressEvents")
+            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("driveInlineSyncStatusParentFolderProgressEvents")
+            .EnableInlineSyncStatusProgressEvents(),
         TestCase("driveFolderShouldShowOfflineTickWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
+            .EnableBulkPinning(),
+        TestCase("driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin")
             .EnableBulkPinning()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
@@ -2171,7 +2194,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("hideSearchInTrash").EnableSearchV2(),
         TestCase("searchTrashedFiles").EnableSearchV2(),
         TestCase("matchDriveFilesByName").EnableSearchV2(),
-        TestCase("searchSharedWithMe").EnableSearchV2()
+        TestCase("searchSharedWithMe").EnableSearchV2(),
+        TestCase("searchDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
+        TestCase("searchDocumentsProviderWithTypeOptions")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
+        TestCase("searchDocumentsProviderWithRecencyOptions")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

@@ -5,7 +5,8 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {OsSettingsFilesPageElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {OneDriveBrowserProxy, Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
@@ -13,7 +14,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
+import {assertAsync} from '../utils.js';
+
+import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+
 suite('<os-settings-files-page>', () => {
+  /* The <os-settings-files-page> app. */
   let filesPage: OsSettingsFilesPageElement;
 
   setup(() => {
@@ -53,9 +59,13 @@ suite('<os-settings-files-page>', () => {
     assertEquals(Router.getInstance().currentRoute, routes.SMB_SHARES);
   });
 
-  test('Office row is hidden when showOfficeSettings is false', async () => {
-    assertEquals(null, filesPage.shadowRoot!.querySelector('#office'));
-  });
+  test(
+      'OneDrive and Office rows are hidden when showOfficeSettings is false',
+      async () => {
+        assertEquals(
+            null, filesPage.shadowRoot!.querySelector('#OneDriveLink'));
+        assertEquals(null, filesPage.shadowRoot!.querySelector('#office'));
+      });
 
   test('Deep link to disconnect Google Drive', async () => {
     const params = new URLSearchParams();
@@ -75,21 +85,88 @@ suite('<os-settings-files-page>', () => {
   });
 
   suite('with showOfficeSettings enabled', () => {
+    /* The BrowserProxy element to make assertions on when mojo methods are
+       called. */
+    let testOneDriveProxy: OneDriveTestBrowserProxy;
+
     setup(() => {
       loadTimeData.overrideValues({
         showOfficeSettings: true,
       });
-      filesPage = document.createElement('os-settings-files-page');
-      document.body.appendChild(filesPage);
       flush();
     });
 
     teardown(() => {
       filesPage.remove();
       Router.getInstance().resetRouteForTesting();
+      testOneDriveProxy.handler.reset();
+    });
+
+    async function setupFilesPage(options: ProxyOptions) {
+      testOneDriveProxy = new OneDriveTestBrowserProxy(options);
+      OneDriveBrowserProxy.setInstance(testOneDriveProxy);
+      filesPage = document.createElement('os-settings-files-page');
+      document.body.appendChild(filesPage);
+      await filesPage.initPromise;
+    }
+
+    test('OneDrive row shows Disconnected', async () => {
+      await setupFilesPage({email: null});
+      const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#OneDriveLink');
+      assert(oneDriveRow);
+      assertEquals('Disconnected', oneDriveRow.subLabel);
+    });
+
+    test('OneDrive row shows email address', async () => {
+      const email = 'email@gmail.com';
+      await setupFilesPage({
+        email: email,
+      });
+      const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#OneDriveLink');
+      assert(oneDriveRow);
+      assertEquals('Signed in as ' + email, oneDriveRow.subLabel);
+    });
+
+    test('OneDrive row adds email address on OneDrive mount', async () => {
+      await setupFilesPage({email: null});
+      const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#OneDriveLink');
+      assert(oneDriveRow);
+      assertEquals('Disconnected', oneDriveRow.subLabel);
+
+      // Simulate OneDrive mount: mount signal to observer and ability to return
+      // an email address.
+      const email = 'email@gmail.com';
+      testOneDriveProxy.handler.setResultFor(
+          'getUserEmailAddress', {email: email});
+      testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+      await assertAsync(() => oneDriveRow.subLabel === 'Signed in as ' + email);
+    });
+
+    test('OneDrive row removes email address on OneDrive unmount', async () => {
+      const email = 'email@gmail.com';
+      await setupFilesPage({
+        email: email,
+      });
+      const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#OneDriveLink');
+      assert(oneDriveRow);
+      assertEquals('Signed in as ' + email, oneDriveRow.subLabel);
+
+      // Simulate OneDrive unmount: unmount signal and returns an empty email
+      // address.
+      testOneDriveProxy.handler.setResultFor(
+          'getUserEmailAddress', {email: null});
+      testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+      await assertAsync(() => oneDriveRow.subLabel === 'Disconnected');
     });
 
     test('Navigates to OFFICE route on click', async () => {
+      await setupFilesPage({});
       const officeRow =
           filesPage.shadowRoot!.querySelector<HTMLElement>('#office');
       assert(officeRow);

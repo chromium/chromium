@@ -83,7 +83,7 @@ void FakeWebFrameImpl::set_call_java_script_function_callback(
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   if (call_java_script_function_callback_) {
     call_java_script_function_callback_.Run();
   }
@@ -107,7 +107,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   bool success = CallJavaScriptFunction(name, parameters);
@@ -127,7 +127,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
 
 bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world) {
   last_received_content_world_ = content_world;
   return CallJavaScriptFunction(name, parameters);
@@ -135,7 +135,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
 
 bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {

@@ -22,6 +22,8 @@ enum DialogViewId : int {
                              // save bubble
   FOOTNOTE_VIEW,             // The footnote view of either an upload
                              // save bubble or a manage cards view.
+  LEGAL_MESSAGE_VIEW,        // The view containing terms of service and
+                             // the privacy notice
   SIGN_IN_PROMO_VIEW,        // Contains the sign-in promo view
   MANAGE_CARDS_VIEW,         // The manage cards view
   MANAGE_IBANS_VIEW,         // The manage IBANs view

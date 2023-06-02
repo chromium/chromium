@@ -186,12 +186,16 @@ interface SmartCardConnection {
   Control(uint32 control_code, array<uint8> data)
       => (SmartCardDataResult result);
 
+  // Gets an attribute from the Interface Device Handler (reader driver).
+  GetAttrib(uint32 id) => (SmartCardDataResult result);
+
+  // Sets an attribute of the Interface Device Handler.
+  SetAttrib(uint32 id, array<uint8> data) => (SmartCardResult result);
+
   // TODO(crbug.com/1386175): Add methods:
   // * BeginTransaction()
   // * EndTransaction()
   // * Status()
-  // * GetAttrib()
-  // * SetAttrib()
 };
 
 // An interface to a valid context in a PC/SC (winscard.h) provider.

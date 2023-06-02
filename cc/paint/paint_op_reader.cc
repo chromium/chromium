@@ -22,6 +22,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
+#include "cc/paint/color_filter.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_flags.h"
@@ -38,6 +39,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/private/SkGainmapInfo.h"
 #include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
@@ -298,8 +300,7 @@ void PaintOpReader::Read(PaintFlags* flags) {
                   DeserializationError::kSkPathEffectUnflattenFailure);
   ReadFlattenable(&flags->mask_filter_, SkMaskFilter::Deserialize,
                   DeserializationError::kSkMaskFilterUnflattenFailure);
-  ReadFlattenable(&flags->color_filter_, SkColorFilter::Deserialize,
-                  DeserializationError::kSkColorFilterUnflattenFailure);
+  Read(&flags->color_filter_);
 
   if (enable_security_constraints_) {
     size_t bytes = 0;
@@ -757,6 +758,12 @@ void PaintOpReader::Read(gpu::Mailbox* mailbox) {
   ReadData(sizeof(gpu::Mailbox::Name), (*mailbox).name);
 }
 
+void PaintOpReader::Read(SkHighContrastConfig* config) {
+  ReadSimple(&config->fGrayscale);
+  ReadEnum<SkHighContrastConfig::InvertStyle,
+           SkHighContrastConfig::InvertStyle::kLast>(&config->fInvertStyle);
+  ReadSimple(&config->fContrast);
+}
 void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
   if (!options_->is_privileged) {
     valid_ = false;
@@ -827,6 +834,19 @@ const volatile void* PaintOpReader::ExtractReadableMemory(size_t bytes) {
   const volatile void* extracted_memory = memory_;
   DidRead(bytes);
   return extracted_memory;
+}
+
+void PaintOpReader::Read(sk_sp<ColorFilter>* filter) {
+  ColorFilter::Type type;
+  ReadEnum(&type);
+  if (!valid_) {
+    return;
+  }
+  if (type == ColorFilter::Type::kNull) {
+    *filter = nullptr;
+    return;
+  }
+  *filter = ColorFilter::Deserialize(*this, type);
 }
 
 void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
@@ -926,14 +946,11 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
 void PaintOpReader::ReadColorFilterPaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
-  sk_sp<SkColorFilter> color_filter;
+  sk_sp<ColorFilter> color_filter;
   sk_sp<PaintFilter> input;
 
-  ReadFlattenable(&color_filter, SkColorFilter::Deserialize,
-                  DeserializationError::kSkColorFilterUnflattenFailure);
+  Read(&color_filter);
   Read(&input);
-  if (!color_filter)
-    SetInvalid(DeserializationError::kZeroSkColorFilterBytes);
   if (!valid_)
     return;
   filter->reset(new ColorFilterPaintFilter(std::move(color_filter),

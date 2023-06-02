@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "cc/paint/color_filter.h"
 #include "cc/paint/paint_export.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -115,10 +115,10 @@ class CC_PAINT_EXPORT PaintFlags {
   }
   ALWAYS_INLINE void setStrokeJoin(Join join) { bitfields_.join_type_ = join; }
 
-  ALWAYS_INLINE const sk_sp<SkColorFilter>& getColorFilter() const {
+  ALWAYS_INLINE const sk_sp<ColorFilter>& getColorFilter() const {
     return color_filter_;
   }
-  ALWAYS_INLINE void setColorFilter(sk_sp<SkColorFilter> filter) {
+  ALWAYS_INLINE void setColorFilter(sk_sp<ColorFilter> filter) {
     color_filter_ = std::move(filter);
   }
   ALWAYS_INLINE const sk_sp<SkMaskFilter>& getMaskFilter() const {
@@ -195,7 +195,7 @@ class CC_PAINT_EXPORT PaintFlags {
   sk_sp<SkPathEffect> path_effect_;
   sk_sp<PaintShader> shader_;
   sk_sp<SkMaskFilter> mask_filter_;
-  sk_sp<SkColorFilter> color_filter_;
+  sk_sp<ColorFilter> color_filter_;
   sk_sp<SkDrawLooper> draw_looper_;
   sk_sp<PaintFilter> image_filter_;
 

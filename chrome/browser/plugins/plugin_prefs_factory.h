@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_FACTORY_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 
 class PluginPrefs;
@@ -19,7 +19,7 @@ class PluginPrefsFactory : public RefcountedProfileKeyedServiceFactory {
 
  private:
   friend class PluginPrefs;
-  friend struct base::DefaultSingletonTraits<PluginPrefsFactory>;
+  friend base::NoDestructor<PluginPrefsFactory>;
 
   // Helper method for PluginPrefs::GetForTestingProfile.
   static scoped_refptr<RefcountedKeyedService> CreateForTestingProfile(

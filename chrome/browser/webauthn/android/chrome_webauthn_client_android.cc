@@ -17,12 +17,15 @@ void ChromeWebAuthnClientAndroid::OnWebAuthnRequestPending(
     content::RenderFrameHost* frame_host,
     const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     bool is_conditional_request,
-    base::RepeatingCallback<void(const std::vector<uint8_t>& id)> callback) {
+    base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
+        getAssertionCallback,
+    base::RepeatingCallback<void()> hybridCallback) {
   auto* delegate = WebAuthnRequestDelegateAndroid::GetRequestDelegate(
       content::WebContents::FromRenderFrameHost(frame_host));
 
   delegate->OnWebAuthnRequestPending(
-      frame_host, credentials, is_conditional_request, std::move(callback));
+      frame_host, credentials, is_conditional_request,
+      std::move(getAssertionCallback), std::move(hybridCallback));
 }
 
 void ChromeWebAuthnClientAndroid::CleanupWebAuthnRequest(

@@ -86,12 +86,11 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
       ash::DeskTemplateType type,
       const base::Uuid& uuid) const override;
 
+  std::string GetCacheGuid() override;
+
   // Other helper methods.
   bool HasUuid(const base::Uuid& uuid) const;
-
   const ash::DeskTemplate* GetUserEntryByUUID(const base::Uuid& uuid) const;
-
-  absl::optional<base::Uuid> GetFloatingWorkspaceUuid();
 
  private:
   friend class DeskModelWrapper;
@@ -104,8 +103,8 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // Notify all observers that the model is loaded;
   void NotifyDeskModelLoaded();
 
-  // Notify all observers of any `new_entries` when they are added/updated via
-  // sync.
+  // Notify all observers of any `new_entries` when they are added/updated
+  // via sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
       const std::vector<const ash::DeskTemplate*>& new_entries);
 

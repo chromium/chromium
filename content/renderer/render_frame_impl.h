@@ -134,6 +134,7 @@ class WebMediaStreamDeviceObserver;
 class WebString;
 class WebURL;
 struct FramePolicy;
+struct JavaScriptFrameworkDetectionResult;
 }  // namespace blink
 
 namespace gfx {
@@ -598,6 +599,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
+  void DidObserveJavaScriptFrameworks(
+      const blink::JavaScriptFrameworkDetectionResult&) override;
   void DidObserveSubresourceLoad(
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(

@@ -87,12 +87,41 @@ void SafeBrowsingMetricsCollector::StartLogging() {
 void SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging() {
   LogDailyOptInMetrics();
   LogDailyEventMetrics();
+  MaybeLogDailyEsbProtegoPingSentLast24Hours();
   RemoveOldEventsFromPref();
 
   pref_service_->SetInt64(
       prefs::kSafeBrowsingMetricsLastLogTime,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
   ScheduleNextLoggingAfterInterval(base::Days(kMetricsLoggingIntervalDay));
+}
+
+void SafeBrowsingMetricsCollector::
+    MaybeLogDailyEsbProtegoPingSentLast24Hours() {
+  if (GetSafeBrowsingState(*pref_service_) !=
+      SafeBrowsingState::ENHANCED_PROTECTION) {
+    return;
+  }
+
+  auto last_ping_with_token = pref_service_->GetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime);
+  auto last_ping_without_token = pref_service_->GetTime(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime);
+  auto most_recent_ping_type = last_ping_with_token > last_ping_without_token
+                                   ? ProtegoPingType::kWithToken
+                                   : ProtegoPingType::kWithoutToken;
+  auto most_recent_ping_time =
+      std::max(last_ping_with_token, last_ping_without_token);
+
+  auto most_recent_collector_run_time = PrefValueToTime(
+      pref_service_->GetValue(prefs::kSafeBrowsingMetricsLastLogTime));
+
+  bool sent_ping_since_last_collector_run =
+      most_recent_ping_time > most_recent_collector_run_time;
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours",
+      sent_ping_since_last_collector_run ? most_recent_ping_type
+                                         : ProtegoPingType::kNone);
 }
 
 void SafeBrowsingMetricsCollector::ScheduleNextLoggingAfterInterval(

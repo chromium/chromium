@@ -332,7 +332,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  raw_ptr<ServiceWorkerContextCore> context_;
+  raw_ptr<ServiceWorkerContextCore, DanglingUntriaged> context_;
   scoped_refptr<ServiceWorkerRegistration> registration1_;
   scoped_refptr<ServiceWorkerRegistration> registration2_;
   scoped_refptr<ServiceWorkerRegistration> registration3_;

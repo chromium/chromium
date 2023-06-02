@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/FieldTrialList_jni.h"
+#include "base/base_jni/FieldTrialList_jni.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"

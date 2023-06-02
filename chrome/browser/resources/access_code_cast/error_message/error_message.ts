@@ -19,7 +19,8 @@ enum ErrorMessage {
   NETWORK,
   PERMISSION,
   TOO_MANY_REQUESTS,
-  PROFILE_SYNC_ERROR
+  PROFILE_SYNC_ERROR,
+  DIFFERENT_NETWORK
 }
 
 export class ErrorMessageElement extends PolymerElement {
@@ -31,7 +32,6 @@ export class ErrorMessageElement extends PolymerElement {
           [
             AddSinkResultCode.UNKNOWN_ERROR,
             AddSinkResultCode.SINK_CREATION_ERROR,
-            AddSinkResultCode.CHANNEL_OPEN_ERROR,
             AddSinkResultCode.INTERNAL_MEDIA_ROUTER_ERROR,
           ],
         ],
@@ -57,6 +57,10 @@ export class ErrorMessageElement extends PolymerElement {
         [
           ErrorMessage.PROFILE_SYNC_ERROR,
           [AddSinkResultCode.PROFILE_SYNC_ERROR],
+        ],
+        [
+          ErrorMessage.DIFFERENT_NETWORK,
+          [AddSinkResultCode.CHANNEL_OPEN_ERROR],
         ],
       ];
 

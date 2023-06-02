@@ -1,0 +1,30 @@
+<style include="demo">
+  paper-progress {
+    --paper-progress-active-color: var(--google-blue-500);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    paper-progress {
+      --paper-progress-active-color: var(--google-blue-300);
+    }
+  }
+
+  paper-spinner-lite {
+    --paper-spinner-color: var(--google-blue-500);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    paper-spinner-lite {
+      --paper-spinner-color: var(--google-blue-300);
+    }
+  }
+</style>
+<h1>paper-progress</h1>
+<div class="demos">
+  <paper-progress indeterminate></paper-progress>
+</div>
+
+<h1>paper-spinner-lite</h1>
+<div class="demos">
+  <paper-spinner-lite active></paper-spinner-lite>
+</div>

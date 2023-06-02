@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -30,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,10 +38,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -99,6 +93,8 @@ public class IncognitoReauthControllerImplTest {
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
     private ObservableSupplierImpl<Profile> mProfileObservableSupplier;
 
+    private boolean mIsIncognitoReauthPendingOnRestore;
+
     private void switchToIncognitoTabModel() {
         doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
         mIncognitoReauthController.onBeforeIncognitoTabModelSelected();
@@ -107,21 +103,6 @@ public class IncognitoReauthControllerImplTest {
     private void switchToRegularTabModel() {
         doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
         mIncognitoReauthController.onAfterRegularTabModelChanged();
-    }
-
-    private Tab prepareTabForRestoreOrLauncherShortcut(boolean isRestore) {
-        TabImpl tab = mock(TabImpl.class);
-        doReturn(true).when(tab).isInitialized();
-        UserDataHost userDataHost = new UserDataHost();
-        CriticalPersistedTabData criticalPersistedTabData = mock(CriticalPersistedTabData.class);
-        userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-        doReturn(userDataHost).when(tab).getUserDataHost();
-        doReturn(0).when(criticalPersistedTabData).getRootId();
-        @TabLaunchType
-        Integer launchType =
-                isRestore ? TabLaunchType.FROM_RESTORE : TabLaunchType.FROM_LAUNCHER_SHORTCUT;
-        doReturn(launchType).when(criticalPersistedTabData).getTabLaunchTypeAtCreation();
-        return tab;
     }
 
     @Before
@@ -164,7 +145,8 @@ public class IncognitoReauthControllerImplTest {
 
         mIncognitoReauthController = new IncognitoReauthControllerImpl(mTabModelSelectorMock,
                 mActivityLifecycleDispatcherMock, mLayoutStateProviderOneshotSupplier,
-                mProfileObservableSupplier, mIncognitoReauthCoordinatorFactoryMock, TASK_ID);
+                mProfileObservableSupplier, mIncognitoReauthCoordinatorFactoryMock,
+                () -> mIsIncognitoReauthPendingOnRestore, TASK_ID);
         mProfileObservableSupplier.set(mProfileMock);
 
         verify(mLayoutStateProviderMock, times(1))
@@ -281,9 +263,7 @@ public class IncognitoReauthControllerImplTest {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
         switchToIncognitoTabModel();
-        Tab incognitoTab = prepareTabForRestoreOrLauncherShortcut(/*isRestore=*/true);
-        doReturn(true).when(incognitoTab).isIncognito();
-        doReturn(incognitoTab).when(mIncognitoTabModelMock).getTabAt(0);
+        mIsIncognitoReauthPendingOnRestore = true;
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         assertTrue("IncognitoReauthCoordinator should be created for restored"
@@ -298,9 +278,7 @@ public class IncognitoReauthControllerImplTest {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
         switchToIncognitoTabModel();
-        Tab incognitoTab = prepareTabForRestoreOrLauncherShortcut(/*isRestore=*/false);
-        doReturn(true).when(incognitoTab).isIncognito();
-        doReturn(incognitoTab).when(mIncognitoTabModelMock).getTabAt(0);
+        mIsIncognitoReauthPendingOnRestore = false;
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         assertFalse("IncognitoReauthCoordinator should not be created for Incognito tabs"

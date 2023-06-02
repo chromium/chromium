@@ -34,6 +34,10 @@ build_webui_tests("build") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/bookmarks/tsc/*",
             target_gen_dir),
+    "chrome://bookmarks-side-panel.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir),
     "chrome://read-later.top-chrome/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/reading_list/tsc/*",
             target_gen_dir),
@@ -50,6 +54,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
+    "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/side_panel/user_notes:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/page_image_service:build_ts",

@@ -1297,7 +1297,7 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   data->Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
   data->Append("</script>", static_cast<size_t>(9));
 
-  frame->ForceSynchronousDocumentInstall("text/html", data);
+  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"), data);
 
   v8::Isolate* isolate = ToIsolate(frame);
   ScriptState* script_state = ToScriptStateForMainWorld(frame);

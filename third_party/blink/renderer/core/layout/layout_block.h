@@ -326,10 +326,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutObjectChildList children_;
 
-  // Note these quirk values can't be put in LayoutBlockRareData since they are
-  // set too frequently.
-  unsigned descendants_with_floats_marked_for_layout_ : 1;
-
   unsigned has_positioned_objects_ : 1;
   unsigned has_svg_text_descendants_ : 1;
 

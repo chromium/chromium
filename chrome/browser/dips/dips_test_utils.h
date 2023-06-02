@@ -25,6 +25,68 @@ namespace testing {
 class MatchResultListener;
 }
 
+constexpr char kStorageAccessScript[] = R"(
+    async function accessDatabase() {
+      var my_db = openDatabase('my_db', '1.0', 'description', 1024);
+      var num_rows;
+      await new Promise((resolve, reject) => {
+        my_db.transaction((tx) => {
+          tx.executeSql('CREATE TABLE IF NOT EXISTS tbl (id unique, data)');
+          tx.executeSql('INSERT INTO tbl (id, data) VALUES (1, "foo")');
+          tx.executeSql('SELECT * FROM tbl', [], (tx, results) => {
+            num_rows = results.rows.length;
+          });
+        }, reject, resolve);
+      });
+      if(num_rows <= 0) {throw new Error('Failed to access!')}
+    }
+
+    function accessLocalStorage() {
+      localStorage.setItem('foo', 'bar');
+      return localStorage.getItem('foo');
+    }
+
+    function accessSessionStorage() {
+      sessionStorage.setItem('foo', 'bar');
+      return sessionStorage.getItem('foo') == 'bar';
+    }
+
+    async function accessFileSystem() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(TEMPORARY, 1024, resolve, reject);
+      });
+      return new Promise((resolve, reject) => {
+        fs.root.getFile('foo.txt', {create: true, exclusive: true}, resolve,
+          reject);
+      });
+    }
+
+    function accessIndexedDB() {
+      var request = indexedDB.open('my_db', 2);
+
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore('store');
+      }
+      return new Promise((resolve) => {
+        request.onsuccess = () => {
+          request.result.close();
+          resolve(true);
+        }
+        request.onerror = () => {throw new Error('Failed to access!')}
+      });
+    }
+
+    function accessCache() {
+      return caches.open("cache")
+      .then((cache) => cache.put("/foo", new Response("bar")))
+      .then(() => true)
+      .catch(() => {throw new Error('Failed to access!')});
+    }
+
+    // Placeholder for execution statement.
+    access%s();
+  )";
+
 using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
 
 class URLCookieAccessObserver : public content::WebContentsObserver {
@@ -35,6 +97,8 @@ class URLCookieAccessObserver : public content::WebContentsObserver {
 
   void Wait();
 
+  bool CookieAccessedInPrimaryPage() const;
+
  private:
   // WebContentsObserver overrides
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
@@ -44,6 +108,7 @@ class URLCookieAccessObserver : public content::WebContentsObserver {
 
   GURL url_;
   CookieOperation access_type_;
+  bool cookie_accessed_in_primary_page_ = false;
   base::RunLoop run_loop_;
 };
 
@@ -151,6 +216,31 @@ class ScopedInitDIPSFeature {
       override_profile_selections_for_dips_service_;
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_for_dips_cleanup_service_;
+};
+
+// Waits for a window to open.
+class OpenedWindowObserver : public content::WebContentsObserver {
+ public:
+  explicit OpenedWindowObserver(content::WebContents* web_contents,
+                                WindowOpenDisposition open_disposition);
+
+  void Wait() { run_loop_.Run(); }
+  content::WebContents* window() { return window_; }
+
+ private:
+  // WebContentsObserver overrides:
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
+
+  const WindowOpenDisposition open_disposition_;
+  raw_ptr<content::WebContents> window_ = nullptr;
+  base::RunLoop run_loop_;
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_TEST_UTILS_H_

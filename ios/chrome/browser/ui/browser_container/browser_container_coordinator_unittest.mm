@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
@@ -32,10 +33,16 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
   BrowserContainerCoordinatorTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    mocked_handler_ = OCMStrictProtocolMock(@protocol(ActivityServiceCommands));
+    mocked_activity_service_handler_ =
+        OCMStrictProtocolMock(@protocol(ActivityServiceCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mocked_handler_
+        startDispatchingToTarget:mocked_activity_service_handler_
                      forProtocol:@protocol(ActivityServiceCommands)];
+    mocked_browser_coordinator_handler_ =
+        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mocked_browser_coordinator_handler_
+                     forProtocol:@protocol(BrowserCoordinatorCommands)];
   }
 
   BrowserContainerCoordinator* CreateAndStartCoordinator() {
@@ -52,7 +59,8 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  id mocked_handler_;
+  id mocked_activity_service_handler_;
+  id mocked_browser_coordinator_handler_;
   ScopedKeyWindow scoped_key_window_;
 };
 

@@ -122,8 +122,9 @@ ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
     browser_dictionary.Set(kBrowserId, browser_id.AsUTF8Unsafe());
   }
 
-  if (include_device_info)
+  if (include_device_info) {
     browser_dictionary.Set(kMachineUser, GetOSUsername());
+  }
 
   browser_dictionary.Set(kChromeVersion, version_info::GetVersionNumber());
   return browser_dictionary;

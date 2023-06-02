@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">یہ ایکسٹینشن سائٹس پر آپ کا ڈیٹا پڑھ اور اسے تبدیل کر سکتی ہے۔ آپ کنٹرول کر سکتے ہیں کہ ایکسٹینشن کن سائٹس تک رسائی حاصل کر سکتی ہے۔</translation>
 <translation id="1007057452468855774">‏Google Play اسٹور آن کریں</translation>
 <translation id="1008186147501209563">بُک مارکس برآمد کریں</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> آپ کے سائن ان کرنے کے طریقے کو یاد رکھتا ہے اور ممکن ہونے پر آپ کو خودکار طور پر سائن ان کرتا ہے۔ آف ہونے پر، آپ سے ہر بار توثیق کرنے کیلئے کہا جائے گا۔</translation>
 <translation id="1008557486741366299">ابھی نہیں</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{اپنے ڈیٹا کا تحفظ کرنے کے لیے، اجازتوں کو اس سائٹ سے ہٹا دیا گیا جسے آپ نے 2 ماہ سے ملاحظہ نہیں کیا ہے}other{اپنے ڈیٹا کا تحفظ کرنے کے لیے، اجازتوں کو ان سائٹس سے ہٹا دیا گیا جنہیں آپ نے 2 ماہ سے ملاحظہ نہیں کیا ہے}}</translation>
 <translation id="1009663062402466586">گیم کنٹرولز اب دستیاب ہے</translation>
@@ -202,6 +203,7 @@
 <translation id="1166212789817575481">دائیں جانب والے ٹیبز بند کریں</translation>
 <translation id="1166583374608765787">نام میں ہوئی اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> ڈیسک سے تعلق رکھتی ہے</translation>
+<translation id="1167262726334064738">نیا پاس ورڈ آزمائیں</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> میں کھولا جا رہا ہے…</translation>
 <translation id="116896278675803795">زبان کو منتخب کردہ مواد سے مماثل کرنے کے لیے خودکار طور پر تبدیل کریں</translation>
 <translation id="1169266963600477608">گیم کنٹرولز</translation>
@@ -225,6 +227,7 @@
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> کو</translation>
 <translation id="1183237619868651138">مقامی کیش میں <ph name="EXTERNAL_CRX_FILE" /> کو انسٹال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="1185924365081634987">یہ نیٹ ورک خرابی حل کرنے کیلئے آپ <ph name="GUEST_SIGNIN_LINK_START" />مہمان کے بطور براؤز<ph name="GUEST_SIGNIN_LINK_END" /> کرنے کی بھی کوشش کر سکتے ہیں۔</translation>
+<translation id="1187692277738768150">جب آپ اس پاس ورڈ کو استعمال اور محفوظ کرتے ہیں:</translation>
 <translation id="1187722533808055681">معطل ویک اپس</translation>
 <translation id="1188807932851744811">لاگ اپ لوڈ نہیں ہوا۔</translation>
 <translation id="1190086046506744802">لائنوں کے درمیان بہت زیادہ جگہ ہے</translation>
@@ -240,6 +243,7 @@
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1195558154361252544">تمام سائٹس کے لیے اطلاعات کو خودکار طور پر مسدود کر دیا گیا ہے سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="1197088940767939838">نارنجی</translation>
+<translation id="1197185198920566650">اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="1197199342062592414">آئیے شروع کریں</translation>
 <translation id="11978075283960463">ایپ میں اسٹور کردہ ڈیٹا: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">غیر فعال کریں</translation>
@@ -293,10 +297,12 @@
 <translation id="124116460088058876">مزید زبانیں</translation>
 <translation id="1241381048229838873">سبھی بُک مارکس دکھائیں</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> آپ کی ترتیبات کو دوبارہ ترتیب دینا چاہتا ہے۔</translation>
+<translation id="1243002225871118300">ڈسپلے اور ٹیکسٹ کے سائز کو تبدیل کریں</translation>
 <translation id="1243314992276662751">اپ لوڈ کریں</translation>
 <translation id="1243436884219965846">پاس ورڈز کا جائزہ لیں</translation>
 <translation id="1244265436519979884">‏Linux بحالی فی الحال جاری ہے</translation>
 <translation id="1244303850296295656">ایکسٹینشن میں خرابی</translation>
+<translation id="1244917379075403655">"ترتیبات" پر کلک کریں</translation>
 <translation id="1245628370644070008">مقامی ڈیٹا کی بازیابی</translation>
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1247372569136754018">مائیکروفون (داخلی)</translation>
@@ -473,7 +479,6 @@
 <translation id="1410806973194718079">پالیسیز کو چیک کرنے سے قاصر</translation>
 <translation id="1411400282355634827">بلوٹوتھ آلے کی تمام اجازتیں ری سیٹ کریں؟</translation>
 <translation id="1411724932979011919">‏آپ کے اندراج کا فارمیٹ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;‎ ہونا چاہیے</translation>
-<translation id="1412681350727866021">اضافی ایکسٹینشنز</translation>
 <translation id="1414315029670184034">سائٹس کو اپنا کیمرا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="1414648216875402825">آپ <ph name="PRODUCT_NAME" /> کے ایک ناپائیدار ورژن میں اپ ڈیٹ کر رہے ہیں جس میں ایسی خصوصیات شامل ہیں جو جاری ہیں۔ کریشز اور غیر متوقع بگز پیش آئیں گے۔ براہ کرم احتیاط سے آگے بڑھیں۔</translation>
 <translation id="1415708812149920388">کلپ بورڈ پڑھنے کی رسائی مسترد کر دی گئی</translation>
@@ -659,6 +664,7 @@
 <translation id="1567993339577891801">‏JavaScript کونسول</translation>
 <translation id="1569466257325986920">‏اگلی بار جب آپ کے Google اکاؤنٹ کا پاس ورڈ تبدیل ہوتا ہے تو آپ کے Google اکاؤنٹ میں سائن ان کرنے کے بعد آپ کا مقامی ڈیٹا خودکار طور پر بازیافت ہو جائے گا</translation>
 <translation id="1570604804919108255">اطلاعات کو غیر خاموش کریں</translation>
+<translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' بُک مارک فولڈر بنایا گیا۔</translation>
 <translation id="1571304935088121812">صارف نام کاپی کریں</translation>
 <translation id="1571738973904005196">ٹیب ملاحظہ کریں: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (مہمان)</translation>
@@ -706,6 +712,7 @@
 <translation id="1604774728851271529">‏Linux اپ گریڈ کرنے کے لیے آپ کو نیٹ ورک کنکشن کی ضرورت ہے۔ انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1605744057217831567">سبھی سائٹ کا ڈیٹا اور اجازتیں دیکھیں</translation>
 <translation id="1606077700029460857">ماؤس کی ترتیبات کو تبدیل کریں</translation>
+<translation id="1606307079840340755">آپ کے پاس پوائنٹ فراہم کنندہ کو صرف اس آلے سے ہٹا دیا جائے گا۔ اپنی سبسکرپشن میں تبدیلیاں کرنے کیلئے، سبسکرپشن فراہم کنندہ سے رابطہ کریں۔</translation>
 <translation id="1606566847233779212">آپ کی شامل کردہ مخصوص سائٹس کو ہٹائیں؟</translation>
 <translation id="1607139524282324606">داخلہ صاف کریں</translation>
 <translation id="1607499585984539560">صارف ڈومین کے ساتھ الحاق یافتہ نہیں ہے</translation>
@@ -713,7 +720,6 @@
 <translation id="1610272688494140697">ایپ کی ترتیبات</translation>
 <translation id="161042844686301425">سیان</translation>
 <translation id="1611432201750675208">آپ کا آلہ مقفل ہے</translation>
-<translation id="1611776894942218234">آلہ کا بی ٹا چینل میں ہونا ضروری ہے</translation>
 <translation id="1612019740169791082">‏آپ کا کنٹینر ڈسک کی سائز تبدیل کرنے کو سپورٹ کرنے کے لئے کنفیگر نہیں کیا گیا ہے۔ Linux کے لیے مختص کی گئی جگہ کی مقدار کو ایڈجسٹ کرنے کے لیے بیک اپ لیں اور اسے نئے کنٹینر میں بحال کریں۔</translation>
 <translation id="1613019471223620622"><ph name="DOMAIN" /> پر <ph name="USERNAME" /> کیلئے پاس ورڈ دکھائیں</translation>
 <translation id="1613149688105334014">‏Chrome ایپس کے پرانے ورژنز دسمبر، 2022 کے بعد نہیں کھلیں گے۔ آپ چیک کر سکتے ہیں کہ کیا نیا ورژن دستیاب ہے۔</translation>
@@ -907,6 +913,7 @@
 <translation id="177336675152937177">میزبانی کردہ ایپ کا ڈیٹا</translation>
 <translation id="1776712937009046120">صارف کو شامل کریں</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
+<translation id="177814385589420211">فنکشن کلیدوں اور سسٹم کی سرفہرست قطار کی کلیدوں کے درمیان تبدیل کرنے کے لیے تلاش کی کلید کو ہولڈ کریں</translation>
 <translation id="1778457539567749232">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="1778991607452011493">ڈیبگ لاگز بھیجیں (تجویز کردہ)</translation>
 <translation id="1779441632304440041">کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ مضبوط پاس ورڈز تخلیق کرنا یقینی بنائیں۔</translation>
@@ -1321,7 +1328,6 @@
 <translation id="2114995631896158695">‏کوئی SIM کارڈ داخل نہیں کیا گیا</translation>
 <translation id="2116619964159595185">سائٹس عام طور پر کم توانائی والے بیکن کو سیٹ اپ کرنے یا مطابقت پذیر کرنے، صحت یا تندرستی کے ٹریکر یا اسمارٹ لائٹ بلب جیسی خصوصیات کے لئے بلوٹوتھ آلات سے منسلک ہوتی ہیں</translation>
 <translation id="2117655453726830283">اگلی سلائیڈ</translation>
-<translation id="2119349053129246860"><ph name="APP" /> میں کھولیں</translation>
 <translation id="2119461801241504254">محفوظ براؤزنگ آن ہے اور نقصان دہ سائٹس اور ڈاؤن لوڈز سے آپ کی حفاظت کر رہی ہے</translation>
 <translation id="2120297377148151361">سرگرمی اور تعاملات</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> کو مسدود کر دیا گیا</translation>
@@ -1349,6 +1355,7 @@
 <translation id="2142582065325732898">‏حالیہ Chrome ٹیبز کو دیکھنے کے لیے <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> کو آن کریں۔ <ph name="LINK2_BEGIN" />مزید جانيں<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">ہمیشہ پوری اسکرین میں ٹول بار دکھائیں</translation>
 <translation id="2143778271340628265">دستی پراکسی کنفیگریشن</translation>
+<translation id="2143808295261240440">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="2143915448548023856">ڈسپلے کی ترتیبات</translation>
 <translation id="2144536955299248197">سرٹیفکیٹ کا ناظر: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">‏Linux Android ایپ ڈیولپمنٹ</translation>
@@ -1435,6 +1442,8 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 لائن نہیں دکھائی گئی&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> لائنز نہیں دکھائی گئیں&gt;}}</translation>
 <translation id="2218019600945559112">ماؤس اور ٹچ پیڈ</translation>
 <translation id="2218515861914035131">سادہ متن کے بطور پیسٹ کریں</translation>
+<translation id="221872881068107022">معکوس اسکرولنگ</translation>
+<translation id="2219007152108311874">ہر دورے پر پوچھیں</translation>
 <translation id="2220409419896228519">‏اپنی پسندیدہ Google ایپس میں بُک مارکس شامل کریں</translation>
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
@@ -1464,6 +1473,7 @@
 <translation id="2241053333139545397">متعدد ویب سائٹس پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="2241634353105152135">بس ایک بار</translation>
 <translation id="2242687258748107519">فائل کی معلومات</translation>
+<translation id="2243452222143104807">غیر فعال ٹیب</translation>
 <translation id="2245603955208828424">حرف بہ حرف ایک آئٹم سے دوسرے آئٹم پر جانے کے لئے تیر کے نشان والی کلیدیں استعمال کریں</translation>
 <translation id="2246129643805925002">آپ کو تازہ ترین خصوصیات اور سیکیورٹی میں بہتری فراہم کرنے کے لئے آپ کا <ph name="DEVICE_TYPE" /> پس منظر میں خودکار طور پر اپ ڈیٹ ہو جائے گا۔ آپ ترتیبات میں اپ ڈیٹ کی ترجیحات کا جائزہ لے سکتے ہیں۔</translation>
 <translation id="2246549592927364792">‏Google سے تصویر کی تفصیلات حاصل کریں؟</translation>
@@ -1491,6 +1501,7 @@
 <translation id="2263679799334060788">‏آپ کے تاثرات سے ہمیں Google Cast کو بہتر بنانے میں مدد ملتی ہے اور یہ قابل ستائش ہے۔ کاسٹ سے متعلق مسائل کو حل کرنے کیلئے براہ کرم <ph name="BEGIN_LINK" /> مرکز امداد<ph name="END_LINK" /> سے رجوع کریں۔</translation>
 <translation id="2266957463645820432">‏IPP اوور USB (IPPUSB)‎</translation>
 <translation id="2268130516524549846">بلوٹوتھ غیر فعال کر دیا گیا</translation>
+<translation id="2269895253281481171">اگر یہ کبھی خطرے میں ہو تو آپ کو مطلع کیا جائے گا</translation>
 <translation id="2270450558902169558">ڈومین میں موجود کسی بھی آلہ کے ساتھ ڈیٹا کا تبادلہ کریں: <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />انسٹالیشن <ph name="BEGIN_BOLD" />آپ کی ہارڈ ڈرائیو کو مکمل طور پر مٹا دے گی<ph name="END_BOLD" />۔ یقینی بنائیں کہ آپ کے ڈیٹا کا بیک اپ لیا جا چکا ہے۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ایک بار انسٹالیشن شروع ہو جانے کے بعد اسے منسوخ نہیں کیا جا سکتا۔<ph name="END_PARAGRAPH2" /></translation>
@@ -1573,6 +1584,7 @@
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% مکمل</translation>
 <translation id="2318143611928805047">کاغذ کا سائز</translation>
 <translation id="2318817390901984578">‏Android ایپس استعمال کرنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو چارج اور اپ ڈیٹ کریں۔</translation>
+<translation id="2319072477089403627">‏آپ کے Android فون سے منسلک کیا جا رہا ہے...</translation>
 <translation id="2319459402137712349">کی بورڈ کھولنے کے لیے کسی بھی ٹیکسٹ فیلڈ کو منتخب کریں۔ آپ اپنی اسکرین کے نیچے کی بورڈ آئیکن کو بھی منتخب کر سکتے ہیں۔</translation>
 <translation id="2319993584768066746">سائن ان اسکرین کی تصاویر</translation>
 <translation id="2322193970951063277">ہیڈرز اور فوٹرز</translation>
@@ -1808,7 +1820,6 @@
 <translation id="2508428939232952663">‏Google Play اسٹور اکاؤنٹ</translation>
 <translation id="2509495747794740764">اسکیل کی مقدار کا 10 سے 200 کے درمیان کا نمبر ہونا ضروری ہے۔</translation>
 <translation id="2509566264613697683">8x</translation>
-<translation id="2510332280791537533">‏اس Chrome پروفائل کے لیے آپ کو معیاری حفاظتی تحفظ مل رہا ہے</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (منتخب کیا گیا)</translation>
 <translation id="2513396635448525189">لاگ ان کی تصویر</translation>
 <translation id="2514326558286966059">اپنے فنگر پرنٹ سے تیزی سے غیر مقفل کریں</translation>
@@ -1918,11 +1929,13 @@
 <translation id="2610780100389066815">‏Microsoft ٹرسٹ لسٹ سائننگ</translation>
 <translation id="2611776654555141051">ٹول کا مستطیل</translation>
 <translation id="2612676031748830579">کارڈ نمبر</translation>
+<translation id="2612685984116544489">بڑی میموری کی بچتیں</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> پر کسی بھی ایکسٹینشنز کی اجازت نہ دیں</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکے گا</translation>
 <translation id="2616008379779647117">کیپشن کی زبان</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="2618797463720777311">قریبی آلات کے ساتھ اشتراک کو سیٹ اپ کریں</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا ہے۔</translation>
 <translation id="2620245777360407679">فی الحال ہاٹ اسپاٹ سے منسلک آلات</translation>
 <translation id="2620436844016719705">سسٹم</translation>
@@ -2122,7 +2135,6 @@
 <translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
 <translation id="2783024642731649028">آپ کے کارٹ میں <ph name="MERCHANT_NAME" />، <ph name="MERCHANT_DOMAIN" /> کی جانب سے <ph name="DISCOUNT_TEXT" /> پر 1 آئٹم، <ph name="RELATIVE_TIME" /> پہلے دیکھا گیا</translation>
 <translation id="2783298271312924866">ڈاؤن لوڈ کردہ</translation>
-<translation id="2783321960289401138">شارٹ کٹ بنائیں…</translation>
 <translation id="2783829359200813069">مرموزکاری کی اقسام منتخب کریں</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> کے ساتھ اپنی سیکیورٹی کلید کو استعمال کریں</translation>
 <translation id="2785267875302712148">پاس ورڈ چیک اپ</translation>
@@ -2160,6 +2172,7 @@
 <translation id="2806372837663997957">آپ جس آلے کے ساتھ اشتراک کرنے کی کوشش کر رہے ہیں اس نے قبول نہیں کیا</translation>
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
+<translation id="2808714658215073920">‏Wi-Fi سے منسلک ہو رہا ہے...</translation>
 <translation id="2809586584051668049">اور <ph name="NUMBER_ADDITIONAL_DISABLED" /> مزید</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2811564570599779918">اسپام اور دھوکہ دہی میں تخفیف</translation>
@@ -2290,6 +2303,7 @@
 <translation id="2923234477033317484">یہ اکاؤنٹ ہٹائیں</translation>
 <translation id="2923644930701689793">اپنے فون کے کیمرا رول تک رسائی حاصل کریں</translation>
 <translation id="292371311537977079">‏Chrome کی ترتیبات</translation>
+<translation id="2925658782192398150">ہو گیا، کوئی مسئلہ نہیں ملا</translation>
 <translation id="2926085873880284723">ڈیفالٹ شارٹ کٹس بحال کریں</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> تعاون یافتہ نہیں ہے۔</translation>
 <translation id="2927017729816812676">کیش اسٹوریج</translation>
@@ -2335,6 +2349,7 @@
 <translation id="2963151496262057773">مندرجہ ذیل پلگ ان جواب نہیں دے رہا ہے: <ph name="PLUGIN_NAME" />کیا آپ اسے بند کرنا چاہیں گے؟</translation>
 <translation id="2964193600955408481">‏Wi-Fi کو غیر فعال کریں</translation>
 <translation id="2964245677645334031">قریبی آلات کے ساتھ اشتراک کی مرئیت</translation>
+<translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> بک مارک فولڈر کے لیے مزید اختیارات</translation>
 <translation id="2966937470348689686">‏Android کی ترجیحات کا نظم کریں</translation>
 <translation id="2967926928600500959">‏ان اصولوں سے مماثل URLs کو ایک مخصوص براؤزر میں زبردستی کھولا جائے گا۔</translation>
 <translation id="2972581237482394796">&amp;واپس لائیں</translation>
@@ -2452,6 +2467,7 @@
 <translation id="3060952009917586498">آلہ کی زبان تبدیل کریں۔ موجودہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
 <translation id="3060987956645097882">‏ہم آپ کے فون کے ساتھ کنکشن قائم کرنے سے قاصر تھے۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
 <translation id="3061302636956643119">‏پروسیسنگ کے لیے ٹیکسٹ Google کو بھیجا جائے گا۔</translation>
+<translation id="306179102415443347">‏Google پاس ورڈ مینیجر تک فوری طور پر پہنچنے کیلئے اپنا شارٹ کٹ استعمال کریں۔ آپ اپنا شارٹ کٹ اپنے کمپیوٹر کی ہوم اسکرین یا ایپ لانچر پر منتقل کر سکتے ہیں۔</translation>
 <translation id="3064871050034234884">سائٹس آواز چلا سکتی ہیں</translation>
 <translation id="3065041951436100775">ٹیب بند ہونے سے متعلق تاثرات۔</translation>
 <translation id="3065522099314259755">کی بورڈ دہرانے میں تاخیر</translation>
@@ -2613,6 +2629,7 @@
 <translation id="3233271424239923319">‏Linux کی ایپس اور فائلز کا بیک اپ لیں</translation>
 <translation id="3234251228180563751">صارف کے نام میں 1000 سے زیادہ حروف ہیں</translation>
 <translation id="3234978181857588512">آلہ پر محفوظ کریں</translation>
+<translation id="3236322872705622658">بہت بڑی میموری کی بچتیں</translation>
 <translation id="3238192140106069382">منسلک ہونے اور تصدیق کرنے کی کوشش کر رہا ہے</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> کے لیے وقت کی حد ہٹا دی گئی</translation>
 <translation id="3241638166094654466">ہر لائن میں سیلز:</translation>
@@ -2624,6 +2641,7 @@
 <translation id="3244294424315804309">آواز بند کرنا جاری رکھیں</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - نیٹ ورک کی خرابی</translation>
 <translation id="3248902735035392926">حفاظتی معاملات۔ کچھ وقت نکالیں اور ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کریں<ph name="END_LINK" /></translation>
+<translation id="3249323165366527554">جب آپ کے <ph name="EMAIL" /> کا پاس ورڈ <ph name="GOOGLE_PASSWORD_MANAGER" /> میں خودکار طور پر محفوظ ہو جائے تو سائن اپ کریں اور نسبتًا تیزی سے سائن ان کریں۔</translation>
 <translation id="3251714896659475029">‏<ph name="SUPERVISED_USER_NAME" /> کو "Ok Google" کے ساتھ Google اسسٹنٹ تک رسائی حاصل کرنے دیں</translation>
 <translation id="3251759466064201842">&lt;سرٹیفکیٹ کا حصہ نہیں ہے&gt;</translation>
 <translation id="325238099842880997">بچوں کو گھر میں کھیلنے، دریافت کرنے اور اسکول کا کام کرنے میں مدد کے لئے ڈیجیٹل گراؤنڈ رولز سیٹ کریں</translation>
@@ -2663,6 +2681,7 @@
 <translation id="3280243678470289153">‏Chrome میں رہیں</translation>
 <translation id="328119399589609861">مائیکروفون، کیمرا اور مزید تک آلے کی رسائی کو کنٹرول کریں</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> کے ساتھ ایک ٹیب کا اشتراک کیا جا رہا ہے</translation>
+<translation id="3283148363895519428">سیٹ اپ جاری رکھنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کا فون آس پاس ہے اور بلوٹوتھ آن ہے۔</translation>
 <translation id="3284050785966252943">آٹو فل میٹا ڈیٹا کا پیش منظر</translation>
 <translation id="3285322247471302225">نیا &amp;ٹیب</translation>
 <translation id="3285500645985761267">متعلقہ سائٹس کو گروپ میں آپ کی سرگرمی دیکھنے کی اجازت دیں</translation>
@@ -2826,9 +2845,6 @@
 <translation id="3434272557872943250">‏اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ families.google.com پر ان ترتیبات اور ان کو ایڈجسٹ کرنے کے طریقے کے بارے میں مزید جانيں۔</translation>
 <translation id="3434475275396485144">یہ ترتیب آپ کے فون کے منتظم کے زیر انتظام ہے</translation>
 <translation id="3434512374684753970">آڈیو اور ویڈیو</translation>
-<translation id="343517373502662180">‏<ph name="BEGIN_PARAGRAPH1" />اگلی اسکرین پر، اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں۔<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />یہ وہی اکاؤنٹ ہے جو آپ Gmail، ‏YouTube، ‏Chrome اور دیگر Google سروسز کے لیے استعمال کرتے ہیں۔ اپنے اکاؤنٹ کو ذاتی نوعیت کے تجربے اور اپنی تمام معلومات تک آسانی رسائی حاصل کرنے کے لیے استعمال کریں۔<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />اگر آپ کے پاس Google اکاؤنٹ نہیں ہے تو آپ اگلی اسکرین پر اکاؤنٹ بنا سکیں گے۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" آپ کے <ph name="CODE_TYPE" /> کی درخواست کر رہا ہے</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="343578350365773421">کاغذ ختم ہو گیا</translation>
@@ -2845,6 +2861,7 @@
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> کو دیکھ سکے گا</translation>
 <translation id="3445047461171030979">‏Google اسسٹنٹ کے فوری جوابات</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
+<translation id="3445315354416458913">درمیانی میموری کی بچتیں</translation>
 <translation id="344537926140058498">آپ کی تنظیم نے اس فائل کو مسدود کر دیا کیونکہ اس میں حساس یا خطرناک مواد ہے۔ اس کے مالک سے درست کرنے کو کہیں۔</translation>
 <translation id="3445925074670675829">‏USB-C آلہ</translation>
 <translation id="3446274660183028131">‏براہ کرم Windows انسٹال کرنے کیلئے Parallels ڈیسک ٹاپ شروع کریں۔</translation>
@@ -2873,6 +2890,13 @@
 <translation id="346298925039590474">یہ موبائل نیٹ ورک اس آلہ پر سبھی صارفین کیلئے دستیاب ہوگا</translation>
 <translation id="3464145797867108663">دفتری پروفائل شامل کریں</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> اور مزید کیلئے رعایتیں حاصل کریں</translation>
+<translation id="3466476162566821406">‏کوڈ کی توثیق کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ اس بات کو یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ اور Wi-Fi آن ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    اپنے Wi-Fi اور Google اکاؤنٹ کی معلومات کو اپنے <ph name="DEVICE_TYPE" /> میں شامل کرنے کیلئے، آپ اپنے فون کا استعمال کر سکتے ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    قریبی آلات پر بطور <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> دکھائی دے رہا ہے...</translation>
 <translation id="3468298837301810372">لیبل</translation>
 <translation id="3468999815377931311">‏Android فون</translation>
 <translation id="3469583217479686109">انتخاب کرنے کا ٹول</translation>
@@ -2912,6 +2936,7 @@
 <translation id="3496995426334945408">‏سائٹس عام طور پر ویڈیو گیمز یا ویب فارمز جیسی متعامل خصوصیات دکھانے کے لیے JavaScript کا استعمال کرتی ہیں</translation>
 <translation id="3497501929010263034">‏<ph name="VENDOR_NAME" /> سے USB آلہ (پروڈکٹ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">‏Doodle کا اشتراک کریں</translation>
+<translation id="3497915391670770295">اپنے آلات پر بھیجیں</translation>
 <translation id="3500417806337761827">‏اشتراک کو ماؤنٹ کرنے میں خرابی۔ بہت سارے SMB اشتراکات پہلے ہی ماؤنٹ کیے گئے ہیں۔</translation>
 <translation id="3503995387997205657">آپ اپنی گزشتہ ایپس کو بحالی کر سکتے ہیں</translation>
 <translation id="3505100368357440862">خریداری کی تجاویز</translation>
@@ -2998,6 +3023,7 @@
 <translation id="3587438013689771191">درج ذیل کے بارے میں مزید جانیں: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3588790464166520201">ادائیگی کے ہینڈلرز کو انسٹال کرنے کی اجازت ہے</translation>
+<translation id="358966288223211204">بہت بڑی میموری کی بچتیں</translation>
 <translation id="3589766037099229847">غیر محفوظ مواد مسدود ہو گیا</translation>
 <translation id="3590194807845837023">پروفائل غیر مقفل کریں اور دوبارہ شروع کریں</translation>
 <translation id="3590295622232282437">نظم کردہ سیشن میں داخل ہو رہے ہیں۔</translation>
@@ -3046,7 +3072,6 @@
 <translation id="3627320433825461852">1 منٹ سے کم باقی ہے</translation>
 <translation id="3627588569887975815">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="3627671146180677314">‏Netscape سرٹیفکیٹ کی تجدید کا وقت</translation>
-<translation id="3627879631695760395"><ph name="APP" /> انسٹال کریں...</translation>
 <translation id="3628275722731025472">بلوٹوتھ آف کریں</translation>
 <translation id="3629664892718440872">یہ انتخاب یاد رکھیں</translation>
 <translation id="3630132874740063857">آپ کا فون</translation>
@@ -3388,6 +3413,7 @@
 <translation id="3902789559055749153">منتخب کریں کہ آپ <ph name="APP_NAME" /> کے لئے کس طرح پاس کی تخلیق کرنا چاہتے ہیں</translation>
 <translation id="3903187154317825986">پہلے سے شامل کی بورڈ</translation>
 <translation id="3904326018476041253">مقام کی سروسز</translation>
+<translation id="3905218345729976782">‏Android فون کی مدد سے Wi-Fi سے منسلک کریں</translation>
 <translation id="3905761538810670789">ایپ کو درست کریں</translation>
 <translation id="3908288065506437185">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="3908501907586732282">ایکسٹینشن فعال کریں</translation>
@@ -3478,6 +3504,7 @@
 <translation id="397703832102027365">مکمل کیا جا رہا ہے…</translation>
 <translation id="3977145907578671392">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات پوشیدگی وضع میں کام نہ کریں</translation>
 <translation id="3977886311744775419">خودکار اپ ڈیٹس نیٹ ورک کی اس قسم پر ڈاؤن لوڈ نہیں ہوتے ہیں، لیکن آپ دستی طور پر اپ ڈیٹس چیک کر سکتے ہیں۔</translation>
+<translation id="3978325380690188371">‏ChromeVox آن ہونے پر دبی رہنے والی کلیدیں دستیاب نہیں ہوتی ہیں</translation>
 <translation id="3979395879372752341">نیا ایکسٹینشن شامل کر دیا گیا (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> کو فعال کریں</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> کے لئے <ph name="DEVICE_NAME" /> کے بطور قریبی آلات کے لئے مرئی ہے...</translation>
@@ -3678,7 +3705,6 @@
 <translation id="4159501637165962616">‏<ph name="BEGIN_PARAGRAPH1" />آپ کے ChromeOS آلات کو خودکار رپورٹس بھیجنے کی اجازت دینے سے ہمیں یہ ترجیح دینے میں مدد ملتی ہے کہ ChromeOS میں کیا درست اور بہتر کرنا ہے۔ ان رپورٹس میں ایسی چیزیں شامل ہو سکتی ہیں جیسے ChromeOS کے کریش ہونے پر، آپ کون سی خصوصیات استعمال کرتے ہیں، آپ عام طور پر کتنی میموری استعمال کرتے ہیں، اور Android ایپ کا ڈائیگناسٹک اور استعمال کا ڈیٹا۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر ایپس کو سنک کرنے کی سہولت کو فعال کیا گیا ہے تو Android اور ویب ایپس سمیت، ایپ کا دیگر ڈائیگناسٹک اور استعمال کا ڈیٹا جمع کیا جائے گا۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے ChromeOS آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />اگر آپ کے Google اکاؤنٹ کے لیے ویب اور ایپ کی سرگرمی کی ترتیب آن ہے تو آپ کا Android ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ آپ account.google.com پر اپنا ڈیٹا دیکھ سکتے ہیں، اسے حذف کر سکتے ہیں اور اپنے اکاؤنٹ کی ترتیبات تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH3" /></translation>
-<translation id="4161601078867475601">‏Google پاس ورڈ مینیجر</translation>
 <translation id="4163560723127662357">نامعلوم کی بورڈ</translation>
 <translation id="4165942112764990069">‏<ph name="USER_EMAIL" /> ایک درست تنظیم سے تعلق نہیں رکھتا۔ اپنے منتظم سے رابطہ کریں۔ اگر آپ منتظم ہیں تو آپ مندرجہ ذیل لنک کو ملاحظہ کر کے اپنی تنظیم کو سیٹ اپ کر سکتے ہیں: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
@@ -3732,6 +3758,7 @@
 <translation id="42126664696688958">برآمد کریں</translation>
 <translation id="42137655013211669">سرور نے اس ماخذ تک رسائی کو ممنوع کر دیا۔</translation>
 <translation id="4214192212360095377">ابھی آف کریں</translation>
+<translation id="4217558091331485702">کھولنے سے پہلے اسکین کریں</translation>
 <translation id="4217571870635786043">املاء</translation>
 <translation id="4218081191298393750">اس ٹیب کو خاموش کرنے کے لیے اسپیکر کے آئیکن پر کلک کریں</translation>
 <translation id="4220648711404560261">فعال کرتے وقت ایک خرابی پیش آ گئی۔</translation>
@@ -3817,6 +3844,7 @@
 <translation id="429234155571566255">یہ حال ہی میں دیکھی گئی ترکیبیں ہیں</translation>
 <translation id="4295072614469448764">آپ کے ٹرمنل میں ایپ دستیاب ہے۔ آپ کے لانچر میں ایک آئیکن بھی ہو سکتا ہے۔</translation>
 <translation id="4295979599050707005">‏براہ کرم یہ تصدیق کرنے کیلئے دوبارہ سائن ان کریں کہ آپ کا اکاؤنٹ <ph name="USER_EMAIL" /> Chrome اور Google Play میں موجود ویب سائٹس، ایپس اور ایکسٹینشنز کے ساتھ استعمال کیا جا سکتا ہے۔ آپ یہ اکاؤنٹ بھی ہٹا سکتے ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304"><ph name="APP_NAME" /> سے ایپلیکیشنز انسٹال اور ان کی سلسلہ بندی کی گئی</translation>
 <translation id="4297219207642690536">ری سٹارٹ اور ری سیٹ کریں</translation>
 <translation id="4297813521149011456">ڈسپلے کی گردش</translation>
 <translation id="4299022904780065004">نئی &amp;پوشیدگی ونڈو</translation>
@@ -3850,6 +3878,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> اَن انسٹال ہو رہی ہے...</translation>
 <translation id="4326146840124313313">‏Chrome کی مضبوط ترین سیکیورٹی آپ کو خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے بچانے کے لیے بہت کچھ کرتی ہے</translation>
 <translation id="4326484226728068206">آپ کے کارٹ میں <ph name="MERCHANT_NAME" />، <ph name="MERCHANT_DOMAIN" /> کی جانب سے <ph name="DISCOUNT_TEXT" /> پر آئٹمز، <ph name="RELATIVE_TIME" /> پہلے دیکھے گئے</translation>
+<translation id="4328507707463585900">یہ ٹیب <ph name="MEMORY_USAGE" /> استعمال کر رہا ہے</translation>
 <translation id="4330191372652740264">برف کا پانی</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="4332976768901252016">پیرنٹل کنٹرولز ترتیب دیں</translation>
@@ -3865,6 +3894,7 @@
 <translation id="434198521554309404">تیز۔ محفوظ۔ استعمال میں آسان ہے۔</translation>
 <translation id="4343250402091037179">‏کسی مخصوص سائٹ یا Chrome کا حصہ تلاش کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں، اس کے بعد اپنا پسندیدہ کی بورڈ شارٹ کٹ درج کریں۔</translation>
 <translation id="434404122609091467">آپ کی موجودہ سروس کے فراہم کنندہ کے ساتھ۔</translation>
+<translation id="4345457680916430965"><ph name="APP" /> میں کھولیں</translation>
 <translation id="4345587454538109430">کنفیگر کریں…</translation>
 <translation id="4345732373643853732">صارف نام سرور کے لیے نامعلوم ہے</translation>
 <translation id="4348426576195894795">‏اس اکاؤنٹ کو ہٹانے سے اس کے ساتھ سائن ان کردہ Chrome کی سبھی پروفائلز بھی حذف ہو جائیں گی</translation>
@@ -3896,6 +3926,7 @@
 <translation id="436926121798828366">آپ اسے <ph name="SETTINGS_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں</translation>
 <translation id="4369735607080757018">ڈیٹا کی محدود اقسام کا اشتراک ان کے اشتہارات کی کارکردگی کی پیمائش کرنے کے لیے کیا جاتا ہے، جیسے کہ دن کا وہ وقت جب آپ کو اشتہار دکھایا گیا تھا۔</translation>
 <translation id="4370975561335139969">آپ کی جانب سے درج کردہ ای میل اور پاس ورڈ مماثل نہیں ہیں</translation>
+<translation id="4373418556073552953">‏اپنے Android فون سے سائن ان کریں</translation>
 <translation id="4374805630006466253">مختلف فون یا ٹیبلیٹ استعمال کریں</translation>
 <translation id="4374831787438678295">‏Linux انسٹالر</translation>
 <translation id="4375035964737468845">ڈاؤن لوڈ کردہ فائلیں کھولیں</translation>
@@ -4055,6 +4086,7 @@
 <translation id="450552327874992444">پہلے ہی شامل کردہ لفظ</translation>
 <translation id="4507128560633489176">ڈیٹا صاف کر دیا گیا۔</translation>
 <translation id="4507373251891673233">آپ نے <ph name="HOST" /> سے تمام ایکسٹینشنز کو مسدود کر دیا ہے</translation>
+<translation id="4507401683427517298">"شارٹ کٹ شامل کریں" پر کلک کریں</translation>
 <translation id="4508032221004253235">‏یہ مقام کی اجازت والی ایپس اور ویب سائٹس ساتھ ہی ChromeOS کو بھی آپ کے Wi-Fi یا موبائل نیٹ ورکس کے ذریعے متعین کردہ مقام کا استعمال کرنے کی اجازت دیتا ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="4508765956121923607">ما&amp;خذ دیکھیں</translation>
@@ -4115,9 +4147,9 @@
 <translation id="4554591392113183336">بیرونی ایکسٹینشن موجودہ ورژن کے مقابلہ ویسا ہی یا اس سے کم تر ورژن پر ہے۔</translation>
 <translation id="4555769855065597957">سایہ</translation>
 <translation id="4555863373929230635">‏اپنے Google اکاؤنٹ میں پاس ورڈز محفوظ کرنے کیلئے، سائن ان کریں اور مطابقت پذیری آن کریں۔</translation>
-<translation id="4556194354084985730">اپنے محفوظ کردہ پاس ورڈز کے ساتھ آسانی سے سائٹس اور ایپس میں سائن ان کریں۔ آف ہونے پر، سائن ان کرنے سے پہلے آپ سے تصدیق کے لیے کہا جائے گا۔</translation>
 <translation id="4558426062282641716">خودکار شروع کرنے کی اجازت طلب کی گئی</translation>
 <translation id="4559617833001311418">یہ سائٹ آپ کے موشن اور لائٹ سینسرز تک رسائی حاصل کر رہی ہے۔</translation>
+<translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> بک مارک کے لیے مزید اختیارات</translation>
 <translation id="4561893854334016293">حال میں کسی اجازت کو تبدیل نہیں کیا گیا</translation>
 <translation id="4562155214028662640">فنگر پرنٹ شامل کریں</translation>
 <translation id="4563210852471260509">ان پٹ کی ابتدائی زبان چینی ہے</translation>
@@ -4210,6 +4242,7 @@
 <translation id="4643612240819915418">&amp;ویڈیو نئے ٹیب میں کھولیں</translation>
 <translation id="4643833688073835173">‏آپ کے آلے کے سامنے موجود لوگوں کا پتہ لگانے کے لیے آپ کا Chromebook پہلے سے موجود سینسر کا استعمال کرتا ہے۔ آپ کے آلے پر تمام ڈیٹا پر فوری طور پر کاروائی کی جاتی ہے اور پھر حذف کر دی جاتی ہے۔ سینسر ڈیٹا Google کو کبھی بھی نہیں بھیجا جاتا ہے۔</translation>
 <translation id="4644205769234414680">پوشیدگی میں اجازت دیں</translation>
+<translation id="4645575059429386691">آپ کے والدین کے زیر انتظام</translation>
 <translation id="4645676300727003670">&amp;رکھیں</translation>
 <translation id="4646675363240786305">پورٹس</translation>
 <translation id="4647090755847581616">ٹیب &amp;بند کریں</translation>
@@ -4348,11 +4381,13 @@
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
 <translation id="4770119228883592393">‏اجازت کی درخواست کی گئی، جواب دینے کے لیے ⌘ + Option + نیچے تیر کا نشان دبائیں</translation>
 <translation id="4773112038801431077">‏Linux کو اپ گریڈ کریں</translation>
+<translation id="4774456473286455263">‏اپنے Android فون کی مدد سے سیٹ اپ کریں</translation>
 <translation id="477647109558161443">ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="4776594120007763294">بعد میں پڑھنے کی خاطر صفحہ شامل کرنے کے لیے، بٹن پر کلک کریں</translation>
 <translation id="4777458362738635055">اس آلہ کے دیگر صارفین یہ نیٹ ورک استعمال کر سکتے ہيں</translation>
 <translation id="4777825441726637019">‏Play اسٹور</translation>
 <translation id="4777943778632837590">نیٹ ورک کے نام کے سرورز کو کنفیگر کریں</translation>
+<translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
 <translation id="4779083564647765204">زوم</translation>
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4779766576531456629">‏eSIM سیلولر نیٹ ورک کا نام تبدیل کریں</translation>
@@ -4401,6 +4436,7 @@
 <translation id="4819323978093861656">{0,plural, =0{ابھی بند ہو رہا ہے۔}=1{بند ہو رہا ہے: 1 سیکنڈ}other{بند ہو رہا ہے: # سیکنڈ}}</translation>
 <translation id="4819607494758673676">‏Google اسسٹنٹ کی اطلاعات</translation>
 <translation id="4820236583224459650">بطور فعال ٹکٹ سیٹ کریں</translation>
+<translation id="4820795723433418303">فنکشن کلیدوں کو سرفہرست قطار کی کلیدوں کے بطور استعمال کریں</translation>
 <translation id="4821935166599369261">&amp;پروفائلنگ فعال ہے</translation>
 <translation id="4823484602432206655">صارف اور آلہ کی ترتیبات پڑھیں اور انہیں تبدیل کریں</translation>
 <translation id="4824037980212326045">‏Linux کا بیک اپ اور بحالی</translation>
@@ -4500,6 +4536,7 @@
 <translation id="4893336867552636863">یہ اس آلہ سے آپ کے براؤزنگ ڈیٹا کو مستقل طور پر حذف کر دے گا۔</translation>
 <translation id="4893454800196085005">‏اچھی - DVD</translation>
 <translation id="4893522937062257019">مقفل اسکرین پر</translation>
+<translation id="4895799941222633551">شارٹ کٹ تخلیق کریں...</translation>
 <translation id="4898011734382862273">سرٹیفیکیٹ "<ph name="CERTIFICATE_NAME" />" ایک سرٹیفیکیشن ادارہ کی نمائندگی کرتی ہے</translation>
 <translation id="4899052647152077033">رنگوں کو الٹ کریں</translation>
 <translation id="4899696330053002588">اشتہارات پر مشتمل ہے</translation>
@@ -4532,6 +4569,7 @@
 <translation id="4925320384394644410">آپ کے پورٹس یہاں دکھائی دیں گے</translation>
 <translation id="49265687513387605">اسکرین کاسٹ کرنے سے قاصر۔ چیک کر کے دیکھیں کہ آیا آپ نے اپنی اسکرین کا اشتراک کرنے کیلئے پرامپٹ کی توثیق کر دی ہے۔</translation>
 <translation id="4927753642311223124">یہاں دیکھنے کیلئے کچھ نہیں ہے، آگے بڑھیں۔</translation>
+<translation id="4928629450964837566">نسبتًا محفوظ پاس ورڈ کا استعمال کریں</translation>
 <translation id="4929386379796360314">پرنٹ کی منزلیں</translation>
 <translation id="4930447554870711875">ڈویلپرز</translation>
 <translation id="4930714375720679147">آن کریں</translation>
@@ -4595,6 +4633,7 @@
 <translation id="4992458225095111526">پاور واش کی توثیق کریں</translation>
 <translation id="4992473555164495036">آپ کے منتظم نے اندراج کے دستیاب طریقوں کو محدود کیا ہوا ہے۔</translation>
 <translation id="4994426888044765950">اگر آپ کسی کلید کو دبائے رکھیں گے تو اس کلید کے حرف کو دہرایا جائے گا</translation>
+<translation id="4994719343483700883">درمیانی میموری کی بچتیں</translation>
 <translation id="4994754230098574403">ترتیب دیا جا رہا ہے</translation>
 <translation id="4995293419989417004">اشتہار کے موضوعات کے بارے میں مزید جانیں</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏کوئی <ph name="VM_TYPE" /> VMs نہیں ملی}=1{‏1 <ph name="VM_TYPE" /> VM ملی: <ph name="VM_NAME_LIST" />}other{‏{NUM_VMS} <ph name="VM_TYPE" /> VMs مل گئیں: <ph name="VM_NAME_LIST" />}}</translation>
@@ -4602,6 +4641,7 @@
 <translation id="4998430619171209993">آن</translation>
 <translation id="4999804342505941663">'ڈسٹرب نہ کریں' کو آن کریں</translation>
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
+<translation id="5003967926796347400">‏"Google پاس ورڈ مینیجر" پر کلک کریں</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5006118752738286774">2 سال پہلے</translation>
 <translation id="5006218871145547804">‏Crostini Android ایپ ADB</translation>
@@ -4614,6 +4654,7 @@
 <translation id="5010886807652684893">ویژوئل منظر</translation>
 <translation id="5015344424288992913">پراکسی کو حل کیا جا رہا ہے…</translation>
 <translation id="5016491575926936899">آپ اپنے کمپیوٹر سے ٹیکسٹ بھیج، اپنے انٹرنیٹ کنکشن کا اشتراک، گفتگو کی اطلاعات کا جواب اور اپنے فون کے ساتھ اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کر سکتے ہیں۔<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="5016983299133677671">نیا پاس ورڈ آزمائیں</translation>
 <translation id="5017643436812738274">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے Ctrl+Search+7 دبائیں۔</translation>
 <translation id="5018207570537526145">ایکسٹینشن ویب سائٹ کھولیں</translation>
 <translation id="5018526990965779848">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنا Android تجربہ بہتر بنانے میں مدد کریں۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
@@ -4659,6 +4700,7 @@
 <translation id="5059429103770496207">ڈسپلے کی طرز</translation>
 <translation id="5059526285558225588">منتخب کریں کہ کیا اشتراک کرنا ہے</translation>
 <translation id="5060332552815861872">محفوظ کرنے کے لیے 1 پرنٹر دستیاب ہے۔</translation>
+<translation id="5060419232449737386">کیپشن کی ترتیبات</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{اس فولڈر میں ایک بُک مارک شامل ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}other{اس فولڈر میں # بُک مارکس شامل ہیں۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}}</translation>
 <translation id="5062930723426326933">سائن ان ناکام ہوگیا، براہ کرم انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5063480226653192405">استعمال</translation>
@@ -4668,6 +4710,7 @@
 <translation id="5067867186035333991">پوچھیں کہ آیا <ph name="HOST" /> آپ کے مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="5068553687099139861">پاس ورڈز دکھائیں</translation>
 <translation id="5068919226082848014">پزّا</translation>
+<translation id="506934332411950286">‏اپنے Android فون سے Wi-Fi کو منتقل کرنا</translation>
 <translation id="5070710277167211639">‏نیویگیشنز کو HTTPS میں اپ گریڈ کریں اور ایسی سائٹس جو اسے سپورٹ نہیں کرتی ہیں وہ لوڈ کرنے سے پہلے آپ کو متنبہ کریں</translation>
 <translation id="5070773577685395116">سمجھ نہیں آئی؟</translation>
 <translation id="5071295820492622726">حالیہ ڈاؤن لوڈز پر واپس جائیں</translation>
@@ -4682,6 +4725,7 @@
 <translation id="5078638979202084724">سبھی ٹیبز کو بُک مارک کریں</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5079010647467150187">‏پہلے سے موجود VPN کو شامل کریں...</translation>
+<translation id="5079699784114005398">‏آن ہونے کے بعد، اپنے Google اکاؤنٹ سے سائن ان کرنے پر آپ کی ایپس کسی بھی ChromeOS آلات پر دستیاب ہوں گی۔ Chrome براؤزر سے انسٹال کردہ ویب ایپس کی مطابقت پذیری ہو جائے گی چاہے براؤزر کی مطابقت پذیری آف ہی کیوں نہ ہو۔</translation>
 <translation id="508059534790499809">‏Kerberos ٹکٹ ریفریش کریں</translation>
 <translation id="5081960376148623587">منتخب کریں کہ آیا صفحات کو پیشگی لوڈ کیا جائے</translation>
 <translation id="5084328598860513926">فراہمی کے بہاؤ میں مداخلت ہو گئی۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -4757,6 +4801,7 @@
 <translation id="5145464978649806571">اگر آپ اپنے آلے سے دور ہو جاتے ہیں تو آپ کی اسکرین خودکار طور پر مقفل ہو جائے گی۔ جب آپ اپنے آلے کے سامنے ہوں گے تو آپ کی اسکرین زیادہ دیر تک فعال رہے گی۔ اگر مقفل اسکرین غیر فعال ہوتی ہے تو آپ کا آلہ مقفل ہونے کے بجائے سلیپ وضع میں چلا جائے گا۔</translation>
 <translation id="514575469079499857">‏مقام کا تعین کرنے کے لیے اپنا IP پتہ استعمال کریں (ڈیفالٹ)</translation>
 <translation id="5146896637028965135">سسٹم کی آواز</translation>
+<translation id="5147992672778369947">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="5148277445782867161">‏آپ کے آلہ کا مقام متعین کرنے میں مدد کرنے کے لئے Google کی مقام کی سروس Wi-Fi، موبائل نیٹ ورکس اور سینسرز جیسے ذرائع کا استعمال کرتی ہے۔</translation>
 <translation id="5150254825601720210">‏Netscape سرٹیفکیٹ SSL سرور کا نام</translation>
 <translation id="5151354047782775295">ڈسک کی جگہ خالی کریں یا منتخب کردہ ڈیٹا خودکار طور پر حذف ہوسکتا ہے</translation>
@@ -4767,7 +4812,7 @@
 <translation id="5155327081870541046">‏ایڈریس بار میں، اس سائٹ کا شارٹ کٹ درج کریں جسے آپ تلاش کرنا چاہتے ہیں، جیسے "bookmarks@"۔ پھر، اپنا پسندیدہ کی بورڈ شارٹ کٹ دبائیں، اور اپنی تلاش کی اصطلاح درج کریں۔</translation>
 <translation id="5156638757840305347">کرسر کے ظاہر ہونے یا منتقل ہونے پر اسے نمایاں کیا جاتا ہے</translation>
 <translation id="5157250307065481244">سائٹ کی تفصیلات دیکھیں</translation>
-<translation id="5157635116769074044">اسکرین شروع کرنے کیلئے اس صفحہ کو پن کریں…</translation>
+<translation id="5157701529792771331">خودکار طور پر کیپشنز کا ترجمہ کرتا ہے</translation>
 <translation id="5158206172605340248">لہجے کے نشانات کا مینیو مسترد کر دیا گیا۔</translation>
 <translation id="5159094275429367735">‏Crostini سیٹ اپ کریں</translation>
 <translation id="5159419673777902220">آپ کے والد/والدہ نے ایکسٹینشن کی اجازتیں غیر فعال کر دی ہیں</translation>
@@ -4830,6 +4875,7 @@
 <translation id="5213114823401215820">بند گروپ دوبارہ کھولیں</translation>
 <translation id="5213481667492808996">آپ کی '<ph name="NAME" />' کی ڈیٹا سروس استعمال کیلئے تیار ہے</translation>
 <translation id="5213891612754844763">پراکسی ترتیبات دکھائيں</translation>
+<translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' بُک مارک بنایا گیا۔</translation>
 <translation id="5215502535566372932">ملک منتخب کریں</translation>
 <translation id="5222403284441421673">غیر محفوظ ڈاؤن لوڈ مسدود ہو گیا</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
@@ -4851,6 +4897,7 @@
 <translation id="5236374273162681467">‏آسانی سے اپنے سبھی آلات پر ان کا استعمال کرنے کیلئے آپ انہیں اپنے Google اکاؤنٹ میں منتقل کر سکتے ہیں</translation>
 <translation id="523862956770478816">سائٹ کی اجازتیں</translation>
 <translation id="5239752869099890912">ان ایکسٹینشنز کے لیے اس سائٹ پر اپنی اپ ڈیٹ کردہ ترتیبات کو لاگو کرنے کی خاطر اس صفحہ کو دوبارہ لوڈ کریں</translation>
+<translation id="5240931875940563122">‏Android فون سے سائن ان کریں</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" فعال کریں؟</translation>
 <translation id="5243522832766285132">براہ کرم کچھ دیر میں دوبارہ کوشش کریں</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> میں مطابقت پذیری کی جا رہی ہے</translation>
@@ -4986,6 +5033,7 @@
 <translation id="5359910752122114278">1 نتیجہ</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> ٹیب</translation>
 <translation id="5360150013186312835">ٹول بار میں دکھائیں</translation>
+<translation id="5362064243740598112">چھوٹی میموری کی بچتیں</translation>
 <translation id="5362741141255528695">نجی کلید والی فائل منتخب کریں۔</translation>
 <translation id="5363109466694494651">پاور واش کریں اور لوٹیں</translation>
 <translation id="5365881113273618889">آپ کے منتخب کردہ فولڈر میں حساس فائلز شامل ہیں۔ کیا آپ واقعی "<ph name="APP_NAME" />" کو اس فولڈر میں لکھنے کی مستقل رسائی دینا چاہتے ہیں؟</translation>
@@ -5042,12 +5090,14 @@
 <translation id="5414566801737831689">اپنی ملاحظہ کردہ سائٹس کے آئیکنز کو پڑھیں</translation>
 <translation id="5414836363063783498">توثیق ہو رہی ہے…</translation>
 <translation id="5417312524372586921">براؤزر تھیمز</translation>
+<translation id="5417353542809767994">فوری طور پر ایک مضبوط پاس ورڈ کا استعمال کریں</translation>
 <translation id="541737483547792035">اسکرین کو بڑا کریں</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420274697768050645">اضافی سیکیورٹی کیلئے آلہ کو غیر مقفل کرنے کیلئے پاس ورڈ کی ضرورت ہوتی ہے</translation>
 <translation id="5420438158931847627">متن اور تصاویر کی نفاست کا تعین کرتی ہے</translation>
 <translation id="5422781158178868512">معذرت، آپ کے خارجی اسٹوریج آلہ کی شناخت نہیں ہو سکی۔</translation>
 <translation id="5423505005476604112">Crostini</translation>
+<translation id="5423753908060469325">شارٹ کٹ تخلیق کریں...</translation>
 <translation id="5423829801105537712">املا کی بنیادی جانچ</translation>
 <translation id="5425042808445046667">ڈاؤن لوڈ کرنا جاری رکھیں</translation>
 <translation id="5425863515030416387">سبھی آلات پر آسانی سے سائن ان کریں</translation>
@@ -5157,11 +5207,13 @@
 <translation id="5511379779384092781">بہت ہی کم</translation>
 <translation id="5511823366942919280">کیا آپ واقعی اس آلہ کو "شارک" کے بطور تشکیل دینا چاہتے ہیں؟</translation>
 <translation id="5512739112435045339">اپنے آلہ پر جگہ خالی کریں۔ پھر دوبارہ ڈاؤن لوڈ کرنے کی کوشش کریں</translation>
+<translation id="5513807280330619196">کیلکولیٹر</translation>
 <translation id="5514315914873062345">ٹیب</translation>
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">‏Android فون کے ساتھ سیٹ اپ کریں</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519900055135507385">اس اکاؤنٹ کو کسی مضبوط پاس ورڈ کے ذریعے مزید محفوظ رکھیں۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5522156646677899028">اس ایکسٹینشن میں ایک سنگین سیکیورٹی خطرہ شامل ہے۔</translation>
 <translation id="5522403133543437426">ایڈریس بار میں سرچ انجن کا استعمال کیا جاتا ہے۔</translation>
@@ -5286,7 +5338,6 @@
 <translation id="5627086634964711283">یہ آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو بھی کنٹرول کرتا ہے۔</translation>
 <translation id="5627676517703583263">‏Chrome کے ساتھ اسمارٹ براؤز کا لطف اٹھائیں</translation>
 <translation id="5627832140542566187">ڈسپلے کی سمت بندی</translation>
-<translation id="5628393161682339323">جب میں نے ایکسٹینشن پر کلک کیا</translation>
 <translation id="562935524653278697">آپ کے منتظم نے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی مطابقت پذیری غیر فعال کر دی ہے۔</translation>
 <translation id="5631017369956619646">‏CPU کا استعمال</translation>
 <translation id="5632059346822207074">‏اجازت کی درخواست کی گئی، جواب دینے کے ليے Ctrl + Forward دبائیں</translation>
@@ -5376,9 +5427,9 @@
 <translation id="571222594670061844">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> سے منسلک ہے</translation>
 <translation id="5713960379473463904">اسپیس ان پٹ کی طرز</translation>
+<translation id="5715254110426566593">‏Steam جلد ہی Chromebook پر آ رہا ہے۔ یہ دیکھنے کیلئے اپ ڈیٹس چیک کریں کہ آیا Steam دستیاب ہے۔</translation>
 <translation id="5715711091495208045">پلگ ان بروکر: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">آپ کو اب اسے تبدیل کرنا چاہیے</translation>
-<translation id="5719603411793408026">ڈیفالٹ سرچ انجنز</translation>
 <translation id="5719854774000914513">‏سائٹس HID آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="572155275267014074">‏Android کی ترتیبات</translation>
 <translation id="5722086096420375088">سبز اور سفید</translation>
@@ -5438,6 +5489,7 @@
 <translation id="5780973441651030252">کارروائی کی ترجیح</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> کے بطور مطابقت پذیر بنائیں</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> کو کمانڈز بھیجیں</translation>
+<translation id="5782040878821624922">یہ کسی بھی آلہ پر دستیاب ہے</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
 <translation id="5785583009707899920">‏Chrome فائل کی افادیتیں</translation>
@@ -5482,6 +5534,7 @@
 <translation id="5810809306422959727">یہ اکاؤنٹ پیرنٹل کنٹرولز کے لیے محفوظ نہیں ہے</translation>
 <translation id="5811614940486072060">یہ فائل عام طور پر ڈاؤن لوڈ نہیں کی جاتی ہے اور یہ خطرناک ہو سکتی ہے</translation>
 <translation id="5812674658566766066">سبھی کو پھیلائیں</translation>
+<translation id="5814764845837381214">چھوٹی میموری کی بچتیں</translation>
 <translation id="5815645614496570556">‏X.400 پتہ</translation>
 <translation id="5816434091619127343">پرنٹر میں درخواست کردہ تبدیلیاں کرنے سے پرنٹر ناقابل استعمال ہو جائے گا۔</translation>
 <translation id="581659025233126501">مطابقت پذیری آن کریں</translation>
@@ -5552,6 +5605,13 @@
 <translation id="586567932979200359">آپ <ph name="PRODUCT_NAME" /> کو اس کی ڈسک امیج سے چلا رہے ہیں۔ اسے آپ کے کمپیوٹر پر انسٹال کرنے سے یہ آپ کو اسے ڈسک امیج کے بغیر چلانے دیتا ہے اور یقینی بناتا ہے کہ اسے اپ ٹو ڈیٹ رکھا جائے گا۔</translation>
 <translation id="5865733239029070421">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتا ہے</translation>
 <translation id="5867841422488265304">ویب پتہ تلاش کریں یا ٹائپ کریں</translation>
+<translation id="5867855474018538405">‏QR کوڈ اسکین کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ اس بات کو یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ اور Wi-Fi آن ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    اپنے Wi-Fi اور Google اکاؤنٹ کی معلومات کو اپنے <ph name="DEVICE_TYPE" /> میں شامل کرنے کیلئے، آپ اپنے فون کا استعمال کر سکتے ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    قریبی آلات پر بطور <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> دکھائی دے رہا ہے...</translation>
 <translation id="5868434909835797817">آپ کے آلے پر مائیکروفون آف ہے</translation>
 <translation id="5869029295770560994">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
@@ -5621,7 +5681,6 @@
 <translation id="592740088639760830">اس کنٹینر کو روکیں</translation>
 <translation id="592880897588170157">‏PDF فائلیں Chrome میں خودکار طور پر کھولنے کے بجائے انہیں ڈاؤن لوڈ کریں</translation>
 <translation id="5928969282301718193">ابھی کیلئے سب ہو گیا</translation>
-<translation id="592919310198008711">جب میں نے ایکسٹینشن پر کلک کیا</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> کو درکار ہے کہ آپ <ph name="DEVICE_TYPE" /> کو فوری طور پر اپ ڈیٹ کریں۔</translation>
 <translation id="5932224571077948991">سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
 <translation id="59324397759951282">‏<ph name="MANUFACTURER_NAME" /> کی جانب سے USB آلہ</translation>
@@ -5650,6 +5709,7 @@
 <translation id="5949544233750246342">فائل کو پارس کرنے سے قاصر</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> مقامی فونٹس استعمال کرنا چاہتی ہے</translation>
 <translation id="5951624318208955736">مانیٹر</translation>
+<translation id="595262438437661818">کسی ایکسٹینشن کو اس سائٹ تک رسائی درکار نہیں ہے</translation>
 <translation id="5953211687820750364">‏یہ فہرست <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           اور <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> سے متاثر ہے</translation>
 <translation id="5955282598396714173">آپ کے پاس ورڈ کی میعاد ختم ہو گئی ہے۔ براہ کرم اس کو تبدیل کرنے کیلئے سائن آؤٹ کر کے دوبارہ سائن ان کریں۔</translation>
@@ -5758,6 +5818,8 @@
 <translation id="6052488962264772833">کاسٹ کرنا شروع کرنے کے لیے رسائی کا کوڈ ٹائپ کریں</translation>
 <translation id="6052976518993719690">‏SSL سرٹیفکیشن اتھارٹی</translation>
 <translation id="6053401458108962351">براؤزنگ ڈیٹا &amp;صاف کریں…</translation>
+<translation id="6053717018321787060">‏آپ کا Google اکاؤنٹ وہی اکاؤنٹ ہے جو آپ Gmail، ‏YouTube، ‏Chrome اور دیگر Google سروسز کیلئے استعمال کرتے ہیں۔
+    اپنے تمام بُک مارکس اور فائلز وغیرہ تک آسانی سے رسائی حاصل کرنے کیلئے اپنے اکاؤنٹ کا استعمال کریں۔ اگر آپ کے پاس اکاؤنٹ نہیں ہے تو آپ اگلی اسکرین پر ایک اکاؤنٹ تخلیق کر سکتے ہیں۔</translation>
 <translation id="6054284857788651331">حال ہی میں بند ٹیب گروپ</translation>
 <translation id="6054961935262556546">نظر آنے کو تبدیل کریں</translation>
 <translation id="6055171183283175969">آپ کا درج کردہ پاس ورڈ غلط ہے۔</translation>
@@ -5780,6 +5842,7 @@
 <translation id="6070311415473175157">تلاش کرنے کے لیے تصویر کا علاقہ منتخب کریں</translation>
 <translation id="6071181508177083058">پاس ورڈ کی توثیق کریں</translation>
 <translation id="6071576563962215370">سسٹم آلہ کے انسٹالیشن کے وقت کے انتسابات کا لاک تشکیل دینے میں ناکام ہوگیا۔</translation>
+<translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> میموری کی بچت ہوئی</translation>
 <translation id="6072442788591997866">اس آلہ پر <ph name="APP_NAME" /> کی اجازت نہیں ہے۔ اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
 <translation id="6073903501322152803">ایکسیسبیلٹی کی خصوصیات شامل کریں</translation>
@@ -5806,6 +5869,7 @@
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="6087746524533454243">براؤزر کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="6087960857463881712">زبردست چہرہ</translation>
+<translation id="6088475950266477163">ترتیبات</translation>
 <translation id="608912389580139775">اس صفحے کو اپنی پڑھنے کی فہرست میں شامل کرنے کیلئے بُک مارک آئیکن پر کلک کریں</translation>
 <translation id="6090760257419195752">برخاست کردہ وارننگز</translation>
 <translation id="6091761513005122595">اشتراک کو کامیابی کے ساتھ ماؤنٹ کر دیا گیا۔</translation>
@@ -5827,6 +5891,7 @@
 <translation id="6104068876731806426">‏Google اکاؤنٹس</translation>
 <translation id="6104311680260824317">‏ڈومین میں آلہ کو شامل نہیں کیا جا سکا۔ سرور متعین Kerberos مرموز کاری کی اقسام کو سپورٹ نہیں کرتا ہے۔ مرموز کاری کی ترتیبات کے لیے "مزید احتیارات" چیک کریں۔</translation>
 <translation id="6104796831253957966">پرنٹر کی قطار فُل ہے</translation>
+<translation id="6104929924898022309">فنکشن کلیدوں کے رویے کو تبدیل کرنے کے لیے تلاش کی کلید کا استعمال کریں</translation>
 <translation id="6106167152849320869">اگر آپ گزشتہ مرحلے میں ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا بھی انتخاب کرتے ہیں تو یہ ڈیٹا انسٹال شدہ ایپس کے لیے جمع کیا جائے گا۔</translation>
 <translation id="6111972606040028426">‏Google اسسٹنٹ کو فعال کریں</translation>
 <translation id="6112294629795967147">سائز تبدیل کرنے کے لیے ٹچ کریں</translation>
@@ -5836,7 +5901,6 @@
 <translation id="6113942107547980621">‏Smart Lock کا استعمال کرنے کے لیے اپنے فون پربنیادی صارف پروفائل پر سوئچ کریں</translation>
 <translation id="6116921718742659598">زبان اور ان پٹ کی ترتیبات تبدیل کریں</translation>
 <translation id="6119927814891883061">آلہ کا نام <ph name="DEVICE_NAME" /> رکھیں</translation>
-<translation id="6120205520491252677">اسکرین شروع کرنے کیلئے اس صفحہ کو پن کریں…</translation>
 <translation id="6120707837086723438">‏آپ تراکیب کیلئے اپنی حالیہ تلاش کی سرگرمی کی بنیاد پر تجویز کردہ تراکیب کو دیکھ رہے ہیں۔
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5968,6 +6032,7 @@
 <translation id="6234108445915742946">‏Chrome کی سروس کی شرائط 31 مارچ کو بدل رہی ہیں</translation>
 <translation id="6234474535228214774">انسٹال زیر التوا ہے</translation>
 <translation id="6235208551686043831">‏آلہ کا کیمرا آن ہو گیا ہے۔ براہ کرم اپنے eSIM کے QR کوڈ کو کیمرے کے سامنے رکھیں۔</translation>
+<translation id="6237297174664969437">‏آپ کسی بھی وقت یہ منتخب کر سکتے ہیں کہ براؤزر کے کون سے ڈیٹا کو Chrome کی ترتیبات میں مطابقت پذیر کرنا ہے۔ <ph name="LINK_BEGIN" />آلے کی ترتیبات<ph name="LINK_END" /> میں، آپ Chrome براؤزر سے انسٹال کردہ ویب ایپس کے لیے مطابقت پذیری کو کنٹرول کر سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="6237474966939441970">اسٹائلس نوٹ لینے والی ایپ</translation>
 <translation id="623755660902014047">Reading Mode</translation>
 <translation id="6238767809035845642">دوسرے آلے سے اشتراک کردہ متن</translation>
@@ -6087,12 +6152,14 @@
 <translation id="6343003829431264373">صرف جفت صفحات</translation>
 <translation id="6344170822609224263">نیٹ ورک کنکشنز کی رسائی فہرست</translation>
 <translation id="6344576354370880196">محفوظ کردہ پرنٹرز</translation>
+<translation id="6344608411615208519">آپ کا <ph name="BEGIN_LINK" />براؤزر آپ کے والدین کے زیر انتظام<ph name="END_LINK" /> ہے</translation>
 <translation id="6345418402353744910">پراکسی <ph name="PROXY" /> کیلئے آپ کا صارف نام اور پاس ورڈ درکار ہے تاکہ منتظم آپ کے نیٹ ورک کو ترتیب دے سکے</translation>
 <translation id="6345878117466430440">بطور پڑھا ہوا مارک کریں</translation>
 <translation id="6347010704471250799">اطلاع دکھائیں</translation>
 <translation id="634887995541211148">‏اپنے آلے پر Bruschetta چلائیں۔</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355395056805388423">‏Google اکاؤنٹ کی معلومات حاصل کی جا رہی ہے...</translation>
 <translation id="635609604405270300">آلے کو آن رکھیں</translation>
 <translation id="63566973648609420">‏صرف وہ شخص جس کے پاس آپ کا پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا یا اس کے ذریعے اسٹور نہیں کیا جاتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو <ph name="BEGIN_LINK" />مطابقت پذیری دوبارہ ترتیب دینے<ph name="END_LINK" /> کی ضرورت ہوگی۔</translation>
 <translation id="6357305427698525450">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> یا  <ph name="APP_NAME_2" /> میں کھلیں گے۔</translation>
@@ -6117,12 +6184,12 @@
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6378392501584240055">‏Wi-Fi نیٹ ورکس میں کھولیں</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
-<translation id="6382958439467370461">کوئی غیر فعال شارٹ کٹ نہیں</translation>
 <translation id="6383382161803538830">‏Reading mode اس صفحے پر دستیاب نہیں ہے</translation>
 <translation id="638418309848716977">تعاون یافتہ لنکس</translation>
 <translation id="6384275966486438344">اپنی تلاش کی ترتیبات کو اس سے تبدیل کریں: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{بغیر نام کا گروپ - 1 ٹیب}other{بغیر نام کا گروپ - # ٹیبز}}</translation>
 <translation id="6385149369087767061">انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں</translation>
+<translation id="6385382178401976503">کارڈ: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">‏وارننگ - تفصیلی لاگنگ فعال ہے، ذیل کے لاگز میں URLs یا دیگر حساس معلومات شامل ہو سکتی ہیں۔ براہ کرم جائزہ لے کر یقینی بنائیں کہ آپ یہ معلومات جمع کروا کر مطمئن ہیں۔</translation>
 <translation id="6387674443318562538">عمودی تقسیم کریں</translation>
 <translation id="6388429472088318283">زبانیں تلاش کریں</translation>
@@ -6179,6 +6246,7 @@
 <translation id="6434104957329207050">پوائنٹ اسکیننگ کی رفتار</translation>
 <translation id="6434309073475700221">مسترد کریں</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> کو استعمال کرنے سے پہلے آپ کے آلے کو اپ ڈیٹ کرنے کی ضرورت ہے۔</translation>
+<translation id="6435339218366409950">کیپشنز کا ترجمہ کرنے کے لیے زبان منتخب کریں</translation>
 <translation id="6436164536244065364">ویب اسٹور میں دیکھیں</translation>
 <translation id="6436610005579237680">‏جب آپ سوالات پوچھتے ہیں تو آپ کے زیادہ مطابق جوابات حاصل کرنے کے لیے اپنی اسکرین پر موجود چیزوں کی اسکرین شاٹ تک Google اسسٹنٹ کو رسائی حاصل کرنے دیں۔ آپ کی اسسٹنٹ ان گانوں یا ویڈیوز کے بارے میں بھی معلومات استعمال کر سکتی ہے جو چل رہے ہیں۔</translation>
 <translation id="6436778875248895551">آپ کے منتظم نے "<ph name="EXTENSION_NAME" />" ایکسٹینشن کو مسدود کر دیا ہے</translation>
@@ -6301,6 +6369,7 @@
 <translation id="6537613839935722475">نام حروف، اعداد اور ہائفنز (-) کا استعمال کر سکتا ہے</translation>
 <translation id="6538098297809675636">کوڈ کا پتہ لگانے میں خرابی</translation>
 <translation id="653920215766444089">پوائنٹنگ آلات کی تلاش کی جا رہی ہے</translation>
+<translation id="6539674013849300372">مضبوط پاس ورڈ کی مدد سے آن لائن نسبتًا زیادہ محفوظ رہیں۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="653983593749614101">دوبارہ شروع ہو رہا ہے...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> صرف اس وقت فعال کریں جب آپ کو معلوم ہو کہ آپ کیا کر رہے ہیں یا اگر آپ سے ایسا کرنے کو کہا گیا ہو، کیونکہ ڈیٹا جمع کرنے سے کارکردگی کم ہو سکتی ہے۔</translation>
 <translation id="6541638731489116978">اس سائٹ کو آپ کے موشن سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
@@ -6495,6 +6564,7 @@
 <translation id="671226373742585927">‏سائیڈ پینل کو بند کرنے کے لیے "X" بٹن پر کلک کریں</translation>
 <translation id="6712943853047024245">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے اس صارف نام کے ساتھ پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="6713233729292711163">دفتری پروفائل شامل کریں</translation>
+<translation id="6713441551032149301">فنکشن کلیدوں اور سسٹم کی سر فہرست قطار کی کلیدوں کے درمیان تبدیل کرنے کے لیے لانچر کلید کو ہولڈ کریں</translation>
 <translation id="6713668088933662563">ان زبانوں کو ترجمہ کرنے کی کبھی بھی پیشکش نہ کریں</translation>
 <translation id="6715803357256707211">‏آپ کی Linux ایپلیکیشن کو انسٹال کرنے کے دوران ایک خرابی پیش آ گئی۔ تفصیلات کے لیے اطلاع پر کلک کریں۔</translation>
 <translation id="671619610707606484">اس سے سائٹس کا اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا صاف ہو جائے گا</translation>
@@ -6516,7 +6586,6 @@
 <translation id="6728528977475057549">‏<ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا IBAN</translation>
 <translation id="6729192290958770680">اپنا صارف نام درج کریں</translation>
 <translation id="6731320427842222405">اس میں چند منٹ لگ سکتے ہیں</translation>
-<translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' تخلیق ہو گیا۔</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">کوکیز اور دیگر سائٹ ڈیٹا کو دکھائیں…</translation>
 <translation id="6736243959894955139">پتہ</translation>
@@ -6535,6 +6604,7 @@
 <translation id="67465227497040338"><ph name="DOMAIN" /> کیلئے پاس ورڈ دکھائیں</translation>
 <translation id="6748465660675848252">آپ آگے بڑھ سکتے ہیں لیکن آپ کے صرف مطابقت پذیر ڈیٹا اور ترتیبات کو بحال کیا جائے گا۔ سبھی مقامی ڈیٹا ضائع ہو جائے گا۔</translation>
 <translation id="6748980958975836188">‏میں نے پڑھا اور میں <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_LINK2" /> سے اتفاق کرتا ہوں۔</translation>
+<translation id="6749473226660745022">تصاویر</translation>
 <translation id="6750757184909117990">سیلولر کو غیرفعال کریں</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (پوشیدگی)</translation>
 <translation id="6756157672127672536">‏فائل ایپ ان فائلوں تک فوری رسائی فراہم کرتی ہے جنہیں آپ نے Google Drive، خارجی اسٹوریج یا اپنے ChromeOS آلے پر محفوظ کیا ہے۔</translation>
@@ -6616,6 +6686,7 @@
 <translation id="6811034713472274749">صفحہ دیکھے جانے کیلئے تیار ہے</translation>
 <translation id="6811151703183939603">مضبوط</translation>
 <translation id="6811332638216701903">‏DHCP میزبان کا نام</translation>
+<translation id="6811792477922751991">فنکشن کلیدوں کے رویے کو تبدیل کرنے کے لیے لانچر کلید کا استعمال کریں</translation>
 <translation id="6812349420832218321">‏<ph name="PRODUCT_NAME" /> کو root کے بطور نہیں چلایا جا سکتا ہے۔</translation>
 <translation id="6812841287760418429">تبدیلیاں برقرار رکھیں</translation>
 <translation id="6813907279658683733">پوری اسکرین</translation>
@@ -6994,6 +7065,7 @@
 <translation id="7141105143012495934">سائن ان ناکام ہو گیا کیونکہ آپ کے اکاؤنٹ کی تفصیلات کی بازیافت نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
 <translation id="7141844554192012199">چیک اپ</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
+<translation id="7144856456372460176"><ph name="APP" /> انسٹال کریں...</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="7148426638542880639">ہو سکتا ہے سائٹس اس طرح کام نہ کریں جیسا آپ کی توقع ہے۔ اس اختیار کو منتخب کریں اگر آپ اپنے آلے پر ان سائٹس کے بارے میں معلومات نہیں چھوڑنا چاہتے جنہیں آپ دیکھتے ہیں۔</translation>
 <translation id="7149839598364933473">اس آلے کو ایک <ph name="DEVICE_OS" /> آلے میں تبدیل کریں۔</translation>
@@ -7005,6 +7077,7 @@
 <translation id="7159953856712257647">بطور ڈیفالٹ انسٹال ہے</translation>
 <translation id="7160182524506337403">اب آپ اپنے فون کی اطلاعات دیکھ سکتے ہیں</translation>
 <translation id="7163202347044721291">فعالیت کے کوڈ کی توثیق کی جا رہی ہے...</translation>
+<translation id="7165263843655074092">آپ کو اس آلے پر معیاری حفاظتی تحفظ حاصل ہو رہا ہے</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" نشان زد مقامات میں تصاویر، ویڈیوز اور آواز والی فائلیں پڑھ سکتا ہے۔</translation>
 <translation id="7166815366658507447">ہاٹ اسپاٹ فعال ہے</translation>
 <translation id="7167327771183668296">خودکار کلکس</translation>
@@ -7076,6 +7149,7 @@
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
 <translation id="7228854227189381547">سوئچ نہ کریں</translation>
 <translation id="7230222852462421043">&amp;ونڈو بحال کریں</translation>
+<translation id="7230881857327093958">تبدیلیوں کا اطلاق سیٹ اپ کے بعد ہوگا</translation>
 <translation id="7231260028442989757">اپنے فون کی اطلاعات دیکھیں، برخاست کریں اور ان کا جواب دیں</translation>
 <translation id="7232750842195536390">نام کی تبدییلی ناکام ہو گئی</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> سے تصاویر تلاش کریں</translation>
@@ -7287,6 +7361,7 @@
 <translation id="7411614333737930931">براہ کرم اپنا آلہ ری اسٹارٹ کریں اور دوبارہ کوشش کریں</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7412226954991670867">‏GPU میموری</translation>
+<translation id="7412494426921990001">‏Chrome مینیو پر کلک کریں</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">سیٹ اپ مکمل ہو گيا</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> کا جائزہ لیں</translation>
@@ -7353,7 +7428,6 @@
 <translation id="7465635034594602553">کچھ غلط ہوگیا۔ براہ کرم کچھ منٹس انتظار کریں اور <ph name="APP_NAME" /> کو دوبارہ چلائیں۔</translation>
 <translation id="7465778193084373987">‏Netscape سرٹیفیکیٹ کالعدم کرنے کا URL</translation>
 <translation id="7466431077154602932">مختصر منظر</translation>
-<translation id="7466556884531675354">کوئی نوٹس محفوظ نہیں کیا گیا</translation>
 <translation id="746861123368584540">ایکسٹینشن لوڈ ہو گیا</translation>
 <translation id="7470424110735398630">آپ کے کلپ بورڈ کو دیکھنے کی اجازت ہے</translation>
 <translation id="747114903913869239">خرابی: ایکسٹینشن کو ڈیکوڈ کرنے سے قاصر</translation>
@@ -7364,6 +7438,7 @@
 <translation id="7475671414023905704">‏Netscape گمشدہ پاس ورڈ کا URL</translation>
 <translation id="7476454130948140105">اپ ڈیٹ کے لیے بیٹری بہت کم ہے (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کو خودکار طور پر مسدود کر دیا گیا</translation>
+<translation id="7477599578899108080">میموری کا زیادہ استعمال: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">‏اس صفحہ کیلئے QR کوڈ تخلیق کریں</translation>
 <translation id="7477793887173910789">اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں</translation>
 <translation id="7478069565037869084">حروف کے درمیان زیادہ جگہ</translation>
@@ -7375,6 +7450,7 @@
 <translation id="7481358317100446445">تیار ہے</translation>
 <translation id="748138892655239008">سرٹیفکیٹ کی بنیادی پابندیاں</translation>
 <translation id="7483145199632798061">Chrome Refresh 2023</translation>
+<translation id="748385830131645364">بڑی میموری کی بچتیں</translation>
 <translation id="7484645889979462775">اس سائٹ کیلئے کبھی نہیں</translation>
 <translation id="7487141338393529395">املا کی بہتر جانچ آن کریں</translation>
 <translation id="7487969577036436319">کوئی اجزاء انسٹال نہیں ہیں</translation>
@@ -7544,7 +7620,6 @@
 <translation id="7637272932128132922">جب یہ ٹیب غیر فعال تھا، میموری سیور نے دوسرے ٹاسکس کے لیے میموری کو خالی کر دیا۔ آپ اسے <ph name="SETTINGS_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="7637593984496473097">ڈسک میں کافی اسپیس نہیں ہے</translation>
 <translation id="7639914187072011620">‏سرور سے SAML ری ڈائریکٹ URL بازیاب کرنے میں ناکام ہو گیا</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> آپ کو آپ کے محفوظ کردہ پاس ورڈز کے ساتھ اہل سائٹس پر خودکار طور پر سائن ان کرتا ہے۔</translation>
 <translation id="7641513591566880111">نیا پروفائل نام</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> کو شامل کیا گیا</translation>
 <translation id="7642778300616172920">حساس مواد چھپائیں</translation>
@@ -7611,6 +7686,7 @@
 <translation id="7684212569183643648">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="7684559058815332124">کیپٹو پورٹل لاگ ان صفحہ ملاحظہ کریں</translation>
 <translation id="7684718995427157417">‏اپنی ایپس کو تخلیق کرنے اور ٹیسٹ کرنے کے لیے، Android ڈیبگ برِج (ADB) کو فعال کریں۔ نوٹ کریں کہ یہ کارروائی ان Android ایپس کو انسٹال کرنے کی اجازت دیتی ہے جن کی تصدیق Google کے ذریعے نہیں کی گئی ہے، اور غیر فعال کرنے کے لیے فیکٹری ری سیٹ کی ضرورت ہوتی ہے۔</translation>
+<translation id="7684913007876670600">‏اس صفحہ کا آسان منظر دکھانے کے لیے، سائیڈ پینل کھولیں اور Reading Mode منتخب کریں</translation>
 <translation id="7685049629764448582">‏JavaScript میموری</translation>
 <translation id="7685087414635069102">‏PIN درکار ہے</translation>
 <translation id="7686086654630106285">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید</translation>
@@ -7684,6 +7760,7 @@
 <translation id="7744192722284567281">ڈیٹا کی خلاف ورزی میں ملا</translation>
 <translation id="7744649840067671761">تفویض شروع کرنے کیلئے نیا سوئچ یا کی بورڈ کی کلید دبائیں۔
 تفویض کو ہٹانے کیلئے تفویض کردہ سوئچ یا کلید دبائیں۔</translation>
+<translation id="7746045113967198252">ٹیکسٹ سمیت، اپنی اسکرین پر موجود آئٹمز کو زیادہ بڑا یا زیادہ چھوٹا بنائیں۔ آپ بعد میں اسے ترتیبات &gt; آلہ &gt; ڈسپلیز میں بھی دیکھ سکتے ہیں۔</translation>
 <translation id="7746739418892731373">‏آپ اپنی Google تصاویر کی لائبریری سے تصویر اور ویڈیو کی ہائی لائٹس کو دیکھ رہے ہیں۔ آپ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> پر اپنی ہائی لائٹس میں دکھائی جانے والی چیزوں کو کنٹرول کر سکتے ہیں۔
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7737,6 +7814,10 @@
 <translation id="7784796923038949829">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>
 <translation id="778480864305029524">‏فوری ٹیدرنگ استعمال کرنے کے لیے، اطلاعات برائے Google Play سروسز کو آن کریں۔</translation>
 <translation id="7785471469930192436">قابل اطلاق ہونے پر اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
+<translation id="7786663536153819505">‏QR کوڈ اسکین کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔
+    <ph name="BR" />
+    <ph name="BR" />
+    قریبی آلات پر بطور <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> دکھائی دے رہا ہے...</translation>
 <translation id="7786889348652477777">ایپ &amp;دوبارہ لوڈ کریں</translation>
 <translation id="7787308148023287649">کسی دوسری اسکرین پر ڈسپلے کریں</translation>
 <translation id="7788298548579301890">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایپ شامل کی ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
@@ -7756,6 +7837,7 @@
 <translation id="7800518121066352902">گ&amp;ھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="7801679634091975683">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Lacros Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
+<translation id="7803657407897251194">‏اپنے Android آلے کی مدد سے سیٹ اپ کرنا جاری رکھنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو کسی نیٹ ورک سے منسلک کریں</translation>
 <translation id="7804072833593604762">ٹیب بند ہو گیا</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7805906048382884326">ٹپ بند کریں</translation>
@@ -7785,7 +7867,6 @@
 <translation id="7835178595033117206">بُک مارک ہٹا دیا گیا</translation>
 <translation id="7836577093182643605">ان موضوعات کی فہرست جنہیں آپ نے مسدود کیا ہے اور ان کا اشتراک سائٹس کے ساتھ نہیں کرنا چاہتے ہیں</translation>
 <translation id="7836850009646241041">اپنی سیکیورٹی کلید کو دوبارہ چھونے کی کوشش کریں</translation>
-<translation id="7837290304480415481">اجازتوں اور ترتیبات کا نظم کریں</translation>
 <translation id="7837776265184002579">آپ  کے ہوم پیج کو <ph name="URL" /> پر تبدیل کر دیا گیا۔</translation>
 <translation id="7838838951812478896">'<ph name="NETWORK_NAME" />' کو <ph name="DEVICE_NAME" /> سے محفوظ نہیں کیا جا سکا</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> کو <ph name="DEVICE_NAME" /> پر بھیجا گیا}other{<ph name="ATTACHMENTS" /> کو <ph name="DEVICE_NAME" /> پر بھیجا گیا}}</translation>
@@ -7795,6 +7876,7 @@
 <translation id="7842062217214609161">کوئی شارٹ کٹ نہیں ہے</translation>
 <translation id="7842692330619197998">‏اگر آپ ایک نیا اکاؤنٹ بنانا چاہتے ہیں تو g.co/ChromeEnterpriseAccount ملاحظہ کریں۔</translation>
 <translation id="784273751836026224">‏Linux اَن انسٹال کریں</translation>
+<translation id="784475655832336580">‏ChromeVox آن ہونے پر کی بورڈ فوکس کے ساتھ آئٹم کو ہائی لائٹ کریں دستیاب نہیں ہے</translation>
 <translation id="7844992432319478437">مختلف کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7847212883280406910">‏<ph name="IDS_SHORT_PRODUCT_OS_NAME" /> پر سوئچ کرنے کیلئے Ctrl + Alt + S دبائیں</translation>
@@ -7810,6 +7892,7 @@
 <translation id="7851720427268294554">‏IPP پارسر</translation>
 <translation id="78526636422538552">‏مزید Google اکاؤنٹس شامل کرنے کا عمل غیر فعال ہے</translation>
 <translation id="7853747251428735">مزید ٹولز</translation>
+<translation id="7853999103056713222">نسبتًا محفوظ پاس ورڈ کا استعمال کریں</translation>
 <translation id="7855678561139483478">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
 <translation id="7857004848504343806">‏آپ کے کمپیوٹر میں ایک محفوظ ماڈیول شامل ہے جو سیکیورٹی کی کئی اہم خصوصیات کو ChromeOS Flex میں لاگو کرنے کیلئے استعمال ہوتا ہے۔ مزید جاننے کیلئے Chromebook کا مرکز امداد ملاحظہ کریں: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">متنی تجاویز</translation>
@@ -8019,7 +8102,6 @@
 <translation id="8030852056903932865">منظوری دیں</translation>
 <translation id="8032244173881942855">ٹیب کاسٹ کرنے سے قاصر۔</translation>
 <translation id="8032569120109842252">پیروی ہو رہی ہے</translation>
-<translation id="8033023935541439900">لہجے کے نشانات کا مینیو کھلا ہے۔ نیویگیٹ کرنے کے لیے بائیں یا دائیں دبائیں اور داخل کرنے کے لیے انٹر دبائیں۔</translation>
 <translation id="8033827949643255796">منتخب کردہ</translation>
 <translation id="8033958968890501070">وقت ختم ہو گیا</translation>
 <translation id="8035059678007243127">بیک/فارورڈکیش کردہ پوشیدگی صفحہ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -8090,6 +8172,7 @@
 <translation id="8086610718778464681">‏Linux ایپس اور فائلز کا بیک اپ نہیں لے سکتے</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{یہ فائل مرموز کردہ ہے۔ اس کے مالک سے غیر مرموز کرنے کو کہیں۔}other{ان فائلز میں سے کچھ مرموز کردہ ہیں۔ ان کے مالک سے غیر مرموز کرنے کو کہیں۔}}</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
+<translation id="8089547136368562137">‏یہ Google کے بہترین حصوں کے ذریعہ محفوظ ہے</translation>
 <translation id="8090234456044969073">جو ویب سائٹس آپ سب سے زیادہ کثرت سے ملاحظہ کرتے ہیں ان کی ایک فہرست پڑھیں</translation>
 <translation id="8090513782447872344">آپ کسی بھی وقت واپس آ کر ایک اور نظر ڈال سکتے ہیں</translation>
 <translation id="809312780580957751">‏اس آلے پر Steam انسٹال نہیں کیا جا سکا</translation>
@@ -8123,6 +8206,7 @@
 <translation id="8113476325385351118">‏اس سائٹ کو MIDI آلات کا مکمل کنٹرول حاصل کرنے سے مسدود کرنا جاری رکھیں</translation>
 <translation id="8115139559594092084">‏آپ کے Google Drive سے</translation>
 <translation id="8116972784401310538">&amp;بک مارک مینیجر</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> آپ کے سائن ان کرنے کے طریقے کو یاد رکھتا ہے اور ممکن ہونے پر آپ کو خودکار طور پر سائن ان کرتا ہے۔ آف ہونے پر، آپ سے ہر بار توثیق کرنے کیلئے کہا جائے گا۔</translation>
 <translation id="8118362518458010043">‏Chrome کی جانب سے غیر فعال ہے۔ یہ ایکسٹینشن غیر محفوظ ہو سکتی ہے۔</translation>
 <translation id="8118488170956489476">آپ کا ادارہ آپ کے <ph name="BEGIN_LINK" />براؤزر کا نظم کرتا ہے<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">ریفریش کی شرح ڈسپلے کریں</translation>
@@ -8201,6 +8285,7 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> پر سوئچ کریں</translation>
 <translation id="8184318863960255706">مزید معلومات</translation>
 <translation id="8184472985242519288">یکساں</translation>
+<translation id="8186047833733689201">ایکسینٹ نشانات کا مینو کھلا ہے۔ نیویگیٹ کرنے کیلئے بائیں، دائیں یا نمبر کی کلیدیں دبائیں اور داخل کرنے کیلئے انٹر دبائیں۔</translation>
 <translation id="8186609076106987817">سرور فائل کو تلاش نہیں کر سکا۔</translation>
 <translation id="8188389033983459049">اپنے آلے کی ترتیبات چیک کریں اور جاری رکھنے کیلئے اسے آن کریں</translation>
 <translation id="8188742492803591566">‏اپنی اسکرین کاسٹ کرنا شروع کرنے کے لیے Chromecast یا TV پر دکھایا گیا رسائی کوڈ درج کریں۔</translation>
@@ -8273,7 +8358,6 @@
 <translation id="8248381369318572865">اپنے مائیکروفون تک رسائی حاصل کریں اور اپنی اسپیچ کا تجزیہ کریں</translation>
 <translation id="8248887045858762645">‏Chrome تجویز</translation>
 <translation id="8249048954461686687">‏OEM فولڈر</translation>
-<translation id="8249615410597138718">اپنے آلات پر بھیجیں</translation>
 <translation id="8250210000648910632">اسٹوریج کی جگہ ختم ہو چکی ہے</translation>
 <translation id="8251441930213048644">اب ریفریش کریں</translation>
 <translation id="8251509999076836464"><ph name="DEVICE_NAME" /> سے جوڑا بنایا جا رہا ہے</translation>
@@ -8302,7 +8386,6 @@
     <ph name="BEGIN_PARAGRAPH3" />مالک ترتیبات &gt; جدید ترین &gt; خودکار طور پر Google کو ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں سے اس خصوصیت کو کنٹرول کر سکتا ہے۔<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />اگر آپ کی اضافی 'ویب اور ایپ سرگرمی' کی ترتیب آپ کے بچے کے لیے آن ہے، تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ families.google.com پر ان ترتیبات اور انہیں ایڈجسٹ کرنے کے طریقہ کے بارے میں مزید جانیں۔<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">کلائنٹ کا غلط سرٹیفکیٹ</translation>
-<translation id="8270162672241199380">‏Steam انسٹالر</translation>
 <translation id="827097179112817503">ہوم بٹن دکھائیں</translation>
 <translation id="8271268254812352141">دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کرنے اور دبائے رکھنے پر تعریفیں، ترجمے یا یونٹ کی تبدیلیاں حاصل کریں۔ <ph name="LINK_BEGIN" />ویب سائٹ کی زبانوں<ph name="LINK_END" /> میں ترجمے کی زبانوں کو حسب ضرورت بنائیں۔</translation>
 <translation id="8271379370373330993">والدین، اگلے کچھ اقدامات آپ کے لئے ہیں۔ اکاؤنٹ سیٹ اپ کے بعد آپ <ph name="DEVICE_TYPE" /> بچے کو واپس دے سکتے ہیں۔</translation>
@@ -8364,6 +8447,7 @@
 <translation id="8325413836429495820">آپ کے کلپ بورڈ کو دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8326478304147373412">‏PKCS #7، سرٹیفیکیٹ چین</translation>
 <translation id="8327386430364625757">ریاضی کا فونٹ</translation>
+<translation id="8327538105740918488">آپ بعد میں کبھی بھی اس پاس ورڈ کو تبدیل کر سکتے ہیں۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="8327676037044516220">اجازتیں اور مواد کی ترتیبات</translation>
 <translation id="8330617762701840933">ان ویب سائٹس کی فہرست جو متبادل براؤزر پر ری ڈائریکٹ ہوتی ہیں۔</translation>
 <translation id="8330689128072902965">قریبی رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ تبدیل کرنے کے لیے کلک کریں۔</translation>
@@ -8377,6 +8461,7 @@
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{یہ آلہ 1 گھنٹے کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {HOURS} گھنٹوں کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="8338952601723052325">ڈویلپر کی ویب سائٹ</translation>
+<translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
@@ -8508,7 +8593,9 @@
 <translation id="8449036207308062757">اسٹوریج کا نظم کریں</translation>
 <translation id="8449836157089738489">سبھی کو نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="8451512073679317615">اسسٹنٹ</translation>
+<translation id="8452105022015742247">‏اپنے Android فون سے Google اکاؤنٹ کی معلومات کو منتقل کرنا</translation>
 <translation id="845702320058262034">منسلک نہیں ہو سکتا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
+<translation id="8457251154056341970">آپ کو دوبارہ اس صفحے پر <ph name="MODULE_NAME" /> دکھائی نہیں دیں گے</translation>
 <translation id="8457451314607652708">بُک مارکس درآمد کریں</translation>
 <translation id="8458341576712814616">شارٹ کٹ</translation>
 <translation id="8458627787104127436">سبھی (<ph name="URL_COUNT" />) کو نئی ونڈو میں کھولیں</translation>
@@ -8581,6 +8668,7 @@
 <translation id="8514955299594277296">سائٹس کو اپنے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہ دیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="8517759303731677493">ترمیم کریں…</translation>
 <translation id="8519895319663397036">‏پاس ورڈز درآمد نہیں کر سکتے۔ فائل کا سائز ‎150 KB سے کم ہونا چاہیے۔</translation>
+<translation id="851991974800416566">فوری طور پر ایک مضبوط پاس ورڈ کا استعمال کریں</translation>
 <translation id="8523493869875972733">تبدیلیاں برقرار رکھیں</translation>
 <translation id="8523849605371521713">پالیسی کے ذریعے شامل کیا گیا</translation>
 <translation id="8524783101666974011">‏کارڈز کو اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
@@ -8641,6 +8729,7 @@
 <translation id="8581809080475256101">آگے جانے کیلئے دبائیں، سرگزشت دیکھنے کیلئے سیاق و سباق کا مینیو</translation>
 <translation id="8584280235376696778">&amp;ویڈیو نئے ٹیب میں کھولیں</translation>
 <translation id="8584427708066927472">پاس ورڈ کو اس آلے سے حذف کیا گیا</translation>
+<translation id="858451212965845553">اپنے آلات پر بھیجیں</translation>
 <translation id="8584843865238667486">‏<ph name="USAGE_PAGE" /> استعمال کے صفحے سے <ph name="USAGE" /> استعمال والے HID آلات</translation>
 <translation id="8585480574870650651">‏Crostini ہٹائیں</translation>
 <translation id="8585841788766257444">ذیل میں فہرست کردہ سائٹس ڈیفالٹ کے بجائے حسب ضرورت ترتیب کی پیروی کرتی ہیں</translation>
@@ -8738,6 +8827,7 @@
 <translation id="8665110742939124773">آپ نے ایک غلط رسائی کوڈ درج کیا ہے۔ دوبارہ کوشش کریں۔</translation>
 <translation id="8665180165765946056">بیک اپ مکمل ہو گیا</translation>
 <translation id="866611985033792019">ای میل صارفین کی شناخت کرنے کیلئے اس سرٹیفکیٹ پر بھروسہ کریں</translation>
+<translation id="8666268818656583275">‏F کلیدوں کا رویہ اب سسٹم کی سرفہرست قطار کی کلیدوں جیسا ہوگا</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> کے لیے اجازتوں کو دوبارہ اجازت مل گئی</translation>
 <translation id="8666759526542103597">براؤزر کی بنیاد اشتہار کی ذاتی نوعیت سازی کے بارے میں</translation>
 <translation id="8667261224612332309">آپ کے پاس ایسے پاس ورڈز ہیں جنہیں بہتر بنایا جا سکتا ہے</translation>
@@ -8869,6 +8959,7 @@
 <translation id="8771300903067484968">ابتدائی صفحہ کے پس منظر کو ڈیفالٹ پس منظر پر دوبارہ ترتیب دے دیا گیا ہے۔</translation>
 <translation id="8773280816776735812">‏IBAN قدر کو دکھائیں</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> محفوظ کریں</translation>
+<translation id="8774286683882091094">غیر فعال ٹیب بچتیں: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">بحالی کی تصدیق کریں</translation>
 <translation id="8774934320277480003">اوپری مارجن</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>
@@ -8879,6 +8970,7 @@
 <translation id="8776294611668764629">‏آپ کی تنظیم نے اس فائل کو مسدود کر دیا کیونکہ یہ سیکیورٹی چیک کے لیے بہت بڑی ہے۔ آپ ‎50 MB تک کی فائلز کھول سکتے ہیں۔</translation>
 <translation id="8777628254805677039">‏root پاس ورڈ</translation>
 <translation id="8778393144535275552">ڈسپلے کردہ ڈیٹا کو صاف کریں</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">سائٹس صرف کوکیز کو از خود سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں</translation>
 <translation id="8780123805589053431">‏Google سے تصویر کی تفصیلات حاصل کریں</translation>
 <translation id="8780443667474968681">صوتی تلاش بند کر دی گئی ہے۔</translation>
@@ -8903,7 +8995,6 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ٹیب کو دوسری ونڈو میں منتقل کریں}other{ٹیبز کو دوسری ونڈو میں منتقل کریں}}</translation>
 <translation id="8805140816472474147">مطابقت پذیری کا آغاز کرنے کیلئے مطابقت پذیری کی ترتیبات کی تصدیق کریں۔</translation>
 <translation id="8805385115381080995">براؤزنگ تیز تر ہے کیونکہ کسی سائٹ کے آپ سے اس بات کی تصدیق کرنے کے لیے کہنے کا امکان کم ہوتا ہے کہ آپ ایک حقیقی شخص ہیں</translation>
-<translation id="8806680466228877631"><ph name="SHORTCUT" /> حادثاتی طور پر بند ٹیبز کو دوبارہ کھول سکتا ہے</translation>
 <translation id="8807588541160250261">جب کوئی آلہ منسلک نہ ہو</translation>
 <translation id="8807632654848257479">مستحکم</translation>
 <translation id="8808478386290700967">ویب اسٹور</translation>
@@ -9087,7 +9178,6 @@
 <translation id="8965037249707889821">پرانا پاس ورڈ درج کریں</translation>
 <translation id="89667524227025535">‏آلے کا کیمرا استعمال کر کے QR کوڈ اسکین کریں یا اپنے کیریئر کے ذریعے فراہم کردہ فعالیت کا کوڈ درج کریں</translation>
 <translation id="8966809848145604011">دیگر پروفائلز</translation>
-<translation id="8966870118594285808">اگر آپ نے کسی ٹیب کو حادثاتی طور پر بند کر دیا ہے تو اسے دوبارہ کھولیں</translation>
 <translation id="8967427617812342790">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="8968527460726243404">‏ChromeOS سسٹم امیج رائٹر</translation>
 <translation id="8968766641738584599">کارڈ کو محفوظ کریں</translation>
@@ -9146,6 +9236,7 @@
 <translation id="9013037634206938463">‏Linux کو انسٹال کرنے کے لیے <ph name="INSTALL_SIZE" /> خالی جگہ کی ضرورت ہے۔ خالی جگہ میں اضافہ کرنے کے لیے، اپنے آلہ سے فائلز حذف کریں۔</translation>
 <translation id="9014206344398081366">‏ChromeVox ٹیوٹوریل</translation>
 <translation id="901668144954885282">‏Google Drive پر بیک اپ لیں</translation>
+<translation id="90181708067259747">تاریخ اختتام: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">انسٹالیشن مکمل ہو گئی</translation>
 <translation id="9019062154811256702">آٹو فل کی ترتیبات پڑھیں اور تبدیل کریں</translation>
 <translation id="9019894137004772119">‏مقام استعمال کریں۔ مقام کی اجازت والی ایپس اور سروسز کو اپنے آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کے لیے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
@@ -9213,7 +9304,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
 <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> پر Google کی طرف سے جمع کیے جانے والے ڈیٹا اور ڈیٹا جمع کیے جانے کی وجہ کے بارے میں جانیں۔</translation>
-<translation id="9066777626153702300">غیرفعال سائٹس</translation>
 <translation id="9066782832737749352">ٹیکسٹ ٹو اسپیچ</translation>
 <translation id="9068298336633421551">‏مقام کی اجازت والی Android ایپس اور سروسز کو اس آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقفے وقفے سے مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
 <translation id="9068598199622656904">کی بورڈ شارٹ کٹس کے لیے، ایک ہی وقت میں کلیدوں کو دبائے رکھنے کے بجائے ایک وقت میں ایک کلید دبائیں</translation>
@@ -9320,7 +9410,6 @@
         <ph name="BREAK" />
         آپ کارڈ مینیو سے ترتیبات کا نظم کر سکتے یا حسب ضرورت Chrome میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="9154194610265714752">اپ ڈیٹ کر دیا گیا</translation>
-<translation id="91568222606626347">شارٹ کٹ بنائیں…</translation>
 <translation id="9157096865782046368">0.8 سیکنڈز</translation>
 <translation id="9157697743260533322">سبھی صارفین کیلئے خودکار اپ ڈیٹس کو ترتیب دینا ناکام ہوگیا (پرواز سے پہلے شروع کرنے میں خرابی: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">پرنٹر کا دروازہ کھلا ہے</translation>
@@ -9420,6 +9509,7 @@
 <translation id="950307215746360464">سیٹ اپ کی گائیڈ</translation>
 <translation id="951991426597076286">مسترد کریں</translation>
 <translation id="952471655966876828">آلہ کے آن ہونے اور استعمال ہونے پر یہ خودکار طور پر منسلک ہو جائے گا</translation>
+<translation id="952880932803612259">‏ایپس، ویب سائٹس اور سسٹم سروسز کو اپنا مقام استعمال کرنے کی اجازت دیں۔ آپ کے آلہ کے مقام کا تعین کرنے میں مدد کرنے کے لیے، مقام Wi‑Fi، موبائل نیٹ ورکس اور سینسرز جیسے وسائل کا استعمال کر سکتا ہے۔</translation>
 <translation id="953434574221655299">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کی اجازت ہے</translation>
 <translation id="956500788634395331">آپ ممکنہ طور پر نقصان دہ ایکسٹینشنز سے محفوظ ہیں</translation>
 <translation id="957179356621191750">6 نقطہ</translation>

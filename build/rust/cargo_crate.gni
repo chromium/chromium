@@ -103,7 +103,7 @@ template("cargo_crate") {
   if (defined(invoker.rustc_metadata)) {
     _rustc_metadata = invoker.rustc_metadata
   } else if (defined(invoker.epoch)) {
-    _rustc_metadata = invoker.epoch
+    _rustc_metadata = "${_crate_name}-${invoker.epoch}"
   }
 
   # Executables need to have unique names. Work out a prefix.

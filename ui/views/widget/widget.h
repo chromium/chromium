@@ -1188,7 +1188,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // ui::ColorProviderSource:
   ui::ColorProviderManager::Key GetColorProviderKey() const override;
-  absl::optional<SkColor> GetUserColor() const override;
+
+  // Gets the user color for this widget. This is used as an input to generate
+  // color palettes for the material design system. Tracks the user color of the
+  // parent widget by default.
+  virtual absl::optional<SkColor> GetUserColor() const;
+
+  // Gets the color mode for this widget. Tracks the color mode of the parent
+  // widget by default.
+  virtual ui::ColorProviderManager::ColorMode GetColorMode() const;
 
  private:
   // Type of ways to ignore activation changes.

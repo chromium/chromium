@@ -76,9 +76,6 @@ class CameraAppHelperImpl : public TabletModeObserver,
   void OpenFileInGallery(const std::string& name) override;
   void OpenFeedbackDialog(const std::string& placeholder) override;
   void OpenUrlInBrowser(const GURL& url) override;
-  void SetCameraUsageMonitor(
-      mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
-      SetCameraUsageMonitorCallback callback) override;
   void GetWindowStateController(
       GetWindowStateControllerCallback callback) override;
   void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;

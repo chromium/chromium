@@ -125,14 +125,6 @@ void SessionDataDeleterInternal::Run(
         // Fire and forget. Session cookies will be cleaned up on start as well.
         // (SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup)
         base::DoNothing());
-
-    // Only clear client hints preference when durable client hints cache was
-    // disabled.
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kDurableClientHintsCache)) {
-      host_content_settings_map->ClearSettingsForOneType(
-          ContentSettingsType::CLIENT_HINTS);
-    }
   }
 
   if (!storage_policy_.get() || !storage_policy_->HasSessionOnlyOrigins())

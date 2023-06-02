@@ -86,20 +86,19 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrame) {
                          /*is_main_frame=*/true, security_origin_,
                          &fake_web_state_);
 
-  std::vector<base::Value> function_params;
-
+  base::Value::List function_params;
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.functionName()", last_received_script_);
 
-  function_params.push_back(base::Value("param1"));
+  function_params.Append("param1");
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_received_script_);
 
-  function_params.push_back(base::Value(true));
-  function_params.push_back(base::Value(27));
-  function_params.push_back(base::Value(3.14));
+  function_params.Append(true);
+  function_params.Append(27);
+  function_params.Append(3.14);
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)",
@@ -112,20 +111,20 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
                          /*is_main_frame=*/false, security_origin_,
                          &fake_web_state_);
 
-  std::vector<base::Value> function_params;
+  base::Value::List function_params;
 
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.functionName()", last_received_script_);
 
-  function_params.push_back(base::Value("param1"));
+  function_params.Append("param1");
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_received_script_);
 
-  function_params.push_back(base::Value(true));
-  function_params.push_back(base::Value(27));
-  function_params.push_back(base::Value(3.14));
+  function_params.Append(true);
+  function_params.Append(27);
+  function_params.Append(3.14);
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)",

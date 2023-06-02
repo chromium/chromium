@@ -38,7 +38,7 @@ int RotationToDegrees(display::Display::Rotation rotation) {
 }  // namespace
 
 DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
-    : screen_(screen ? screen : display::Screen::GetScreen()) {
+    : provided_screen_(screen) {
   // Do not use/call on the screen object in this constructor yet because a
   // subclass may pass not-yet-initialized screen instance.
 }
@@ -130,8 +130,10 @@ DisplayInfoProvider::GetAllDisplaysInfoList(
 void DisplayInfoProvider::GetAllDisplaysInfo(
     bool /* single_unified*/,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
-  int64_t primary_id = screen_->GetPrimaryDisplay().id();
-  std::vector<display::Display> displays = screen_->GetAllDisplays();
+  const display::Screen* screen =
+      provided_screen_ ? provided_screen_.get() : display::Screen::GetScreen();
+  int64_t primary_id = screen->GetPrimaryDisplay().id();
+  std::vector<display::Display> displays = screen->GetAllDisplays();
   DisplayUnitInfoList all_displays;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

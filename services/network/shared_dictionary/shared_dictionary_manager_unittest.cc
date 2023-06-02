@@ -128,10 +128,10 @@ class SharedDictionaryManagerTest
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager() {
     switch (GetParam()) {
       case TestManagerType::kInMemory:
-        return SharedDictionaryManager::CreateInMemory();
+        return SharedDictionaryManager::CreateInMemory(/*cache_max_size=*/0);
       case TestManagerType::kOnDisk:
         return SharedDictionaryManager::CreateOnDisk(
-            database_path_, cache_directory_path_,
+            database_path_, cache_directory_path_, /*cache_max_size=*/0,
 #if BUILDFLAG(IS_ANDROID)
             /*app_status_listener=*/nullptr,
 #endif  // BUILDFLAG(IS_ANDROID)

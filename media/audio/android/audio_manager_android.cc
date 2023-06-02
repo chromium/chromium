@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
 #include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_track_output_stream.h"
@@ -256,8 +257,9 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  if (UseAAudio())
+  if (UseAAudioOutput()) {
     return new AAudioOutputStream(this, params, AAUDIO_USAGE_MEDIA);
+  }
 
   return new OpenSLESOutputStream(this, params, SL_ANDROID_STREAM_MEDIA);
 }
@@ -268,7 +270,7 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
     const LogCallback& log_callback) {
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
-  if (UseAAudio()) {
+  if (UseAAudioOutput()) {
     const aaudio_usage_t usage = communication_mode_is_on_
                                      ? AAUDIO_USAGE_VOICE_COMMUNICATION
                                      : AAUDIO_USAGE_MEDIA;
@@ -299,6 +301,11 @@ AudioInputStream* AudioManagerAndroid::MakeLinearInputStream(
   // needs it.
   DLOG_IF(ERROR, !device_id.empty()) << "Not implemented!";
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
+
+  if (UseAAudioInput()) {
+    return new AAudioInputStream(this, params);
+  }
+
   return new OpenSLESInputStream(this, params);
 }
 
@@ -318,6 +325,10 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
   if (!SetAudioDevice(device_id)) {
     LOG(ERROR) << "Unable to select audio device!";
     return NULL;
+  }
+
+  if (UseAAudioInput()) {
+    return new AAudioInputStream(this, params);
   }
 
   // Create a new audio input stream and enable or disable all audio effects
@@ -517,9 +528,6 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
 }
 
 bool AudioManagerAndroid::UseAAudio() {
-  if (!base::FeatureList::IsEnabled(features::kUseAAudioDriver))
-    return false;
-
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_Q) {
     // We need APIs that weren't added until API Level 28. Also, AAudio crashes
@@ -527,10 +535,27 @@ bool AudioManagerAndroid::UseAAudio() {
     return false;
   }
 
-  if (!is_aaudio_available_.has_value())
+  if (!is_aaudio_available_.has_value()) {
     is_aaudio_available_ = InitAAudio();
+  }
 
   return is_aaudio_available_.value();
+}
+
+bool AudioManagerAndroid::UseAAudioOutput() {
+  if (!base::FeatureList::IsEnabled(features::kUseAAudioDriver)) {
+    return false;
+  }
+
+  return UseAAudio();
+}
+
+bool AudioManagerAndroid::UseAAudioInput() {
+  if (!base::FeatureList::IsEnabled(features::kUseAAudioInput)) {
+    return false;
+  }
+
+  return UseAAudio();
 }
 
 }  // namespace media

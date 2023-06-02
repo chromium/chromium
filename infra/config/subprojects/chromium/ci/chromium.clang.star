@@ -393,7 +393,7 @@ ci.builder(
     name = "ToTiOS",
     builderless = False,
     cores = None,
-    os = os.MAC_12,
+    os = os.MAC_DEFAULT,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
@@ -406,7 +406,7 @@ ci.builder(
     name = "ToTiOSDevice",
     builderless = False,
     cores = None,
-    os = os.MAC_12,
+    os = os.MAC_DEFAULT,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",

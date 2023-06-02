@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult(
       'Verifies that BinaryResourceViewFactory interprets base64 data correctly');

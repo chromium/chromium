@@ -28,11 +28,17 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
  public:
   enum HandlerType { kSignin, kUser, kManagedGuest };
 
-  static ScreensaverImagesPolicyHandler Create(PrefService* pref_service);
+  static std::unique_ptr<ScreensaverImagesPolicyHandler> Create(
+      PrefService* pref_service);
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   ScreensaverImagesPolicyHandler(PrefService* pref_service, HandlerType state);
+  ScreensaverImagesPolicyHandler(const ScreensaverImagesPolicyHandler&) =
+      delete;
+  ScreensaverImagesPolicyHandler& operator=(
+      const ScreensaverImagesPolicyHandler&) = delete;
+
   ~ScreensaverImagesPolicyHandler() override;
 
   // AmbientManagedPhotoSource overrides

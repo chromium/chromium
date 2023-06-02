@@ -28,7 +28,6 @@
 
 [
     Exposed=Window,
-    Custom=LegacyCallAsFunction,
     LegacyUnenumerableNamedProperties
 ] interface HTMLAllCollection {
     readonly attribute unsigned long length;

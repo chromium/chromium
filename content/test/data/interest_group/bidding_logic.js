@@ -29,7 +29,7 @@ function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
         '/echoall?report_win_beacon'
   });
   if (typeof privateAggregation !== 'undefined') {
-    privateAggregation.reportContributionForEvent(
+    privateAggregation.contributeToHistogramOnEvent(
         'auctionwinner', {bucket: 3n, value: 5});
   }
 }

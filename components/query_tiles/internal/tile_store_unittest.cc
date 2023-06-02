@@ -96,8 +96,8 @@ class TileStoreTest : public testing::Test {
   bool load_result_;
   EntriesMap in_memory_entries_;
   ProtoMap db_entries_;
-  raw_ptr<FakeDB<TileGroupProto, TileGroup>> db_;
   std::unique_ptr<Store<TileGroup>> store_;
+  raw_ptr<FakeDB<TileGroupProto, TileGroup>> db_;
 };
 
 // Test Initializing and loading an empty database .

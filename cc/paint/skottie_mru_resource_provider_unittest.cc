@@ -83,7 +83,7 @@ class SkottieMRUResourceProviderTest : public ::testing::Test {
 
   FrameDataStub frame_data_stub_;
   sk_sp<SkottieMRUResourceProvider> provider_;
-  raw_ptr<skresources::ResourceProvider> provider_base_;
+  raw_ptr<skresources::ResourceProvider, DanglingUntriaged> provider_base_;
 };
 
 TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {

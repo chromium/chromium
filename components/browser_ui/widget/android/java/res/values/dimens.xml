@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Miscellaneous -->
     <dimen name="action_bar_shadow_height">10dp</dimen>
+    <dimen name="bottom_sheet_corner_radius">16dp</dimen>
     <dimen name="card_padding">16dp</dimen>
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
@@ -64,6 +65,8 @@ found in the LICENSE file.
     <!-- SelectableListLayout dimensions -->
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
     <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
+    <dimen name="search_row_modern_bg_horizontal_inset">14dp</dimen>
+    <dimen name="search_row_modern_bg_vertical_inset">0dp</dimen>
     <dimen name="search_toolbar_modern_bg_vertical_inset">8dp</dimen>
     <dimen name="search_toolbar_modern_bg_horizontal_inset">8dp</dimen>
     <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>

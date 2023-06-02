@@ -80,6 +80,10 @@ absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only = false);
 
+// Searches for the first app id in the registry which is not locally installed
+// and for which the |url| is in scope.
+bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_HELPERS_H_

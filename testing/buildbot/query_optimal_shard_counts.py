@@ -414,6 +414,11 @@ def main(args):
     if int(r['optimal_shard_count']) == int(r['shard_count']):
       continue
 
+    # Throw out any attempt to shard to 1. This will lock the test suite
+    # and prevent go/nplus1shardsproposal from running new shardings
+    if int(r['optimal_shard_count']) == 1:
+      continue
+
     # Shard values may have changed over the lookback period, so the query
     # results could have multiple rows for each builder+test_suite. Logic below
     # skips the rows that are for outdated shard counts.

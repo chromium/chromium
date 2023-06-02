@@ -134,10 +134,13 @@ class ASH_EXPORT CaptureModeSession
   // Called when switching a capture type from another capture type.
   void A11yAlertCaptureType();
 
-  // Called when either the capture source, type, or recording type changes.
+  // Called when either the capture source, type, recording type, audio
+  // recording mode or demo tools changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
   void OnRecordingTypeChanged();
+  void OnAudioRecordingModeChanged();
+  void OnDemoToolsSettingsChanged();
 
   // When performing capture, or at the end of the 3-second count down, the DLP
   // manager is checked for any restricted content. The DLP manager may choose
@@ -265,6 +268,11 @@ class ASH_EXPORT CaptureModeSession
   // and will no longer be shown to the user.
   void MaybeDismissUserNudgeForever();
 
+  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
+  // the `current_root_`, potentially moving the bar to a new display if
+  // `current_root_` is different`.
+  void RefreshBarWidgetBounds();
+
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
@@ -296,10 +304,9 @@ class ASH_EXPORT CaptureModeSession
   // could be shown, otherwise, returns false.
   bool CanShowWidget(views::Widget* widget) const;
 
-  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
-  // the `current_root_`, potentially moving the bar to a new display if
-  // `current_root_` is different`.
-  void RefreshBarWidgetBounds();
+  // Triggers a selfie camera visibility update during capture mode session on
+  // capture mode type changed.
+  void MaybeUpdateSelfieCamInSessionVisibility();
 
   // If possible, this recreates and shows the nudge that alerts the user about
   // the new folder selection settings. The nudge will be created on top of the

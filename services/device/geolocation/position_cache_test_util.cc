@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "base/check_op.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 
 namespace device {
@@ -19,11 +18,9 @@ WifiData CreateUniqueWifiData(int number_of_access_points) {
     AccessPointData single_access_point;
     single_access_point.channel = 2;
     single_access_point.mac_address =
-        base::ASCIIToUTF16(base::Uuid::GenerateRandomV4().AsLowercaseString());
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
     single_access_point.radio_signal_strength = 4;
     single_access_point.signal_to_noise = 5;
-    single_access_point.ssid =
-        base::ASCIIToUTF16(base::Uuid::GenerateRandomV4().AsLowercaseString());
     wifi_data.access_point_data.insert(single_access_point);
   }
   return wifi_data;

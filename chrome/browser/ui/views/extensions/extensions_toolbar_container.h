@@ -282,6 +282,8 @@ class ExtensionsToolbarContainer
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
+  void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
+                                    const url::Origin& origin) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

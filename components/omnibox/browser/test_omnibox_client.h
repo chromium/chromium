@@ -50,8 +50,8 @@ class TestOmniboxClient : public OmniboxClient {
 
  private:
   SessionID session_id_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   GURL page_url_for_last_favicon_request_;

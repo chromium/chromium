@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory.</translation>
 <translation id="2736805085127235148">Mae hysbysiadau Chrome wedi'u diffodd yng ngosodiadau eich dyfais ar hyn o bryd.</translation>
 <translation id="2767464022270041271">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
+<translation id="2840432500933227975">Agorwch y Gosodiadau Chrome yn iOS yna tapiwch "Browser Default APP" a dewiswch Chrome.</translation>
 <translation id="2869959624320573933">Mewngofnodi i Chrome</translation>
 <translation id="2957447865124070833">Dewiswch <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan symudol bob tro.</translation>
 <translation id="3706101708757577809">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="3720541637541300822">Cloi Tabiau Anhysbys Pan Fyddwch yn Cau Chrome</translation>
+<translation id="3827545470516145620">Rydych yn cael diogelwch safonol ar y ddyfais hon</translation>
 <translation id="384394811301901750">Ni all Google Chrome ddefnyddio'ch camera ar hyn o bryd</translation>
 <translation id="3980220367029651214">Rydych yn newid cyfrifon cysoni o <ph name="USER_EMAIL1" /> i <ph name="USER_EMAIL2" />. Mae eich data Chrome presennol yn cael eu rheoli gan <ph name="DOMAIN" />. Bydd hyn yn dileu eich data o'r ddyfais hon, ond bydd eich data yn aros yn <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chrome.</translation>
@@ -150,7 +152,6 @@ Pethau i'w hystyried:
   • Os bydd Chrome yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
 
   • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Rydych yn cael amddiffyniad diogelwch safonol ar gyfer y proffil Chrome hwn</translation>
 <translation id="9112744793181547300">Gosod Chrome fel y porwr diofyn?</translation>
 <translation id="9122931302567044771">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
 </translationbundle>

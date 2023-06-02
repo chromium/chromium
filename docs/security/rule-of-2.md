@@ -276,6 +276,14 @@ external constraints require the use of Protobuf. Note that this only applies to
 Protobuf as a container format; the data contained within a Protobuf must be
 handled according to this rule as well.
 
+As another special case, we trust the
+[RE2](https://cs.chromium.org/chromium/src/third_party/re2/README.chromium)
+regular expression library to evaluate untrustworthy patterns over untrustworthy
+input strings, because its grammar is sufficiently limited and hostile input is
+part of the threat model against which it's been tested for years. It is **not**
+the case, however, that text matched by an RE2 regular expression is necessarily
+"sanitized" or "safe". That requires additional security judgment.
+
 ### Safe Languages
 
 Where possible, it's great to use a memory-safe language. Of the currently
@@ -303,11 +311,6 @@ implementation. A canonical example of this is the
 class, which is a Java wrapper [around C++
 Skia](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/libs/hwui/jni/BitmapFactory.cpp;l=586;drc=864d304156d1ef8985ee39c3c1858349b133b365).
 These APIs are therefore not considered memory-safe under the rule.
-
-Regular expressions ([re2](https://cs.chromium.org/chromium/src/third_party/re2/README.chromium))
-using trustworthy patterns can be used at high privilege to match on
-untrustworthy input strings. This does not automatically turn the matched text
-or captured groups into safe values.
 
 ## Safe Types
 

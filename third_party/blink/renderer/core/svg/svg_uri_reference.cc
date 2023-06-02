@@ -46,12 +46,11 @@ class SVGElementReferenceObserver : public IdTargetObserver {
   void IdTargetChanged() override { closure_.Run(); }
   base::RepeatingClosure closure_;
 };
-}
+}  // namespace
 
 SVGURIReference::SVGURIReference(SVGElement* element)
     : href_(MakeGarbageCollected<SVGAnimatedHref>(element)) {
   DCHECK(element);
-  href_->AddToPropertyMap(element);
 }
 
 const String& SVGURIReference::HrefString() const {
@@ -60,6 +59,21 @@ const String& SVGURIReference::HrefString() const {
 
 SVGAnimatedString* SVGURIReference::href() const {
   return href_.Get();
+}
+
+SVGAnimatedPropertyBase* SVGURIReference::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  return href_->PropertyFromAttribute(attribute_name);
+}
+
+void SVGURIReference::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{href_.Get()};
+    SVGElement::SynchronizeAllSVGAttributes(attrs);
+  }
+  // Specific (name != AnyQName()) sync of href_ will be handled
+  // by the normal path in SVGElement::SynchronizeAttribute(),
+  // which will be dealt with by the caller.
 }
 
 void SVGURIReference::Trace(Visitor* visitor) const {

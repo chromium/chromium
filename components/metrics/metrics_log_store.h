@@ -39,25 +39,14 @@ class MetricsServiceClient;
 class MetricsLogStore : public LogStore {
  public:
   // Configurable limits for ensuring and restricting local log storage.
-  //
-  // |min_{initial,ongoing}_log_queue_count| are the minimum numbers of unsent
-  // logs that UnsentLogStore must persist before deleting old logs.
-  //
-  // |min_{initial,ongoing}_log_queue_size| are the minimum numbers of bytes in
-  // total across all logs within the initial or ongoing log queue that
-  // UnsentLogStore must persist before deleting old logs.
-  //
-  // If both |min_..._log_queue_count| and |min_..._log_queue_size| are 0, then
-  // this LogStore won't persist unsent logs to local storage.
-  //
-  // |max_ongoing_log_size| is the maximum size of any individual ongoing log.
-  // When set to 0, no limits are imposed, i.e. individual logs can be any size.
   struct StorageLimits {
-    size_t min_initial_log_queue_count = 0;
-    size_t min_initial_log_queue_size = 0;
-    size_t min_ongoing_log_queue_count = 0;
-    size_t min_ongoing_log_queue_size = 0;
-    size_t max_ongoing_log_size = 0;
+    // Log store limits for |initial_log_queue_|. See
+    // comments at //components/metrics/unsent_log_store.h for more details.
+    UnsentLogStore::UnsentLogStoreLimits initial_log_queue_limits;
+
+    // Log store limits for |ongoing_log_queue_|.See
+    // comments at //components/metrics/unsent_log_store.h for more details.
+    UnsentLogStore::UnsentLogStoreLimits ongoing_log_queue_limits;
   };
 
   // Constructs a MetricsLogStore that persists data into |local_state|.

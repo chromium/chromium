@@ -463,18 +463,6 @@ void GLES2CommandBufferStub::OnGpuSwitched(
   client().OnGpuSwitched(active_gpu_heuristic);
 }
 
-void GLES2CommandBufferStub::OnTakeFrontBuffer(const Mailbox& mailbox) {
-  TRACE_EVENT0("gpu", "CommandBufferStub::OnTakeFrontBuffer");
-  DCHECK(gles2_decoder_);
-  gles2_decoder_->TakeFrontBuffer(mailbox);
-}
-
-void GLES2CommandBufferStub::OnReturnFrontBuffer(const Mailbox& mailbox,
-                                                 bool is_lost) {
-  // No need to pull texture updates.
-  gles2_decoder_->ReturnFrontBuffer(mailbox, is_lost);
-}
-
 void GLES2CommandBufferStub::OnSetDefaultFramebufferSharedImage(
     const Mailbox& mailbox,
     int samples_count,

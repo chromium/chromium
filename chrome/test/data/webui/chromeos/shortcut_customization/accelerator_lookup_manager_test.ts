@@ -9,7 +9,7 @@ import {fakeAcceleratorConfig, fakeAmbientConfig, fakeLayoutInfo} from 'chrome:/
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {Accelerator, AcceleratorCategory, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo, StandardAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
   let provider: FakeShortcutProvider|null = null;
@@ -92,6 +92,27 @@ suite('acceleratorLookupManagerTest', function() {
       assertEquals(
           1, getManager().getSubcategories(AcceleratorCategory.kBrowser)!.size);
     });
+  });
+
+  test('GetIsCategoryLocked', async () => {
+    // First, initialize the accelerators into the AcceleratorLookupManager.
+    getProvider().setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    const {config: accelConfig} = await getProvider().getAccelerators();
+    assertDeepEquals(fakeAcceleratorConfig, accelConfig);
+    getManager().setAcceleratorLookup(accelConfig);
+
+    // Then, initialize the layout infos into the AcceleratorLookupManager.
+    getProvider().setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
+    const {layoutInfos: layoutInfos} =
+        await getProvider().getAcceleratorLayoutInfos();
+    assertDeepEquals(fakeLayoutInfo, layoutInfos);
+    getManager().setAcceleratorLayoutLookup(layoutInfos);
+
+    // We expect that kWindowsAndDesks category is not locked.
+    assertFalse(
+        getManager().isCategoryLocked(AcceleratorCategory.kWindowsAndDesks));
+    // We expect that kBrowser category is locked.
+    assertTrue(getManager().isCategoryLocked(AcceleratorCategory.kBrowser));
   });
 
   test('ReplaceBasicAccelerator', () => {

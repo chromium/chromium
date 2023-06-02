@@ -30,6 +30,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
+#include "ui/base/clipboard/clipboard.h"
 
 using content::WebContents;
 
@@ -278,11 +279,30 @@ size_t NavigationEventList::FindRetargetingNavigationEvent(
 }
 
 void NavigationEventList::RecordNavigationEvent(
-    std::unique_ptr<NavigationEvent> nav_event) {
+    std::unique_ptr<NavigationEvent> nav_event,
+    absl::optional<CopyPasteEntry> last_copy_paste_entry) {
   // Skip page refresh and in-page navigation.
   if (nav_event->source_url == nav_event->GetDestinationUrl() &&
       nav_event->source_tab_id == nav_event->target_tab_id)
     return;
+
+  // If the nav entry is without referrer, BROWSER_INITIATED
+  // and there is a recent copy, guess this is a paste to
+  // omnibox and modify nav event. This enables attribution
+  // in referrer chain.
+  if (nav_event->navigation_initiation ==
+          ReferrerChainEntry::BROWSER_INITIATED &&
+      nav_event->source_url.is_empty() &&
+      nav_event->source_main_frame_url.is_empty() &&
+      last_copy_paste_entry.has_value() &&
+      nav_event->original_request_url ==
+          last_copy_paste_entry.value().target_) {
+    nav_event->navigation_initiation =
+        ReferrerChainEntry::COPY_PASTE_USER_INITIATED;
+    nav_event->source_url = last_copy_paste_entry.value().source_frame_url_;
+    nav_event->source_main_frame_url =
+        last_copy_paste_entry.value().source_main_frame_url_;
+  }
 
   if (navigation_events_.size() == size_limit_)
     navigation_events_.pop_front();
@@ -335,6 +355,18 @@ std::size_t NavigationEventList::CleanUpNavigationEvents() {
 
   return removal_count;
 }
+
+// -------------------------CopyPasteEntry---------------------
+CopyPasteEntry::CopyPasteEntry(GURL target,
+                               GURL source_frame_url,
+                               GURL source_main_frame_url,
+                               base::Time recorded_time)
+    : target_(target),
+      source_frame_url_(source_frame_url),
+      source_main_frame_url_(source_main_frame_url),
+      recorded_time_(recorded_time) {}
+
+CopyPasteEntry::CopyPasteEntry(const CopyPasteEntry& other) = default;
 
 // -----------------SafeBrowsingNavigationObserverManager-----------
 // static
@@ -399,6 +431,7 @@ SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager(
     PrefService* pref_service)
     : navigation_event_list_(GetNavigationRecordMaxSize()),
       pref_service_(pref_service) {
+  ui::Clipboard::GetForCurrentThread()->AddObserver(this);
   // Schedule clean up in 2 minutes.
   ScheduleNextCleanUpAfterInterval(GetNavigationFootprintTTL());
 }
@@ -407,7 +440,8 @@ void SafeBrowsingNavigationObserverManager::RecordNavigationEvent(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<NavigationEvent> nav_event) {
   navigation_event_list_.RemovePendingNavigationEvent(navigation_handle);
-  navigation_event_list_.RecordNavigationEvent(std::move(nav_event));
+  navigation_event_list_.RecordNavigationEvent(std::move(nav_event),
+                                               last_copy_paste_entry_);
 }
 
 void SafeBrowsingNavigationObserverManager::RecordPendingNavigationEvent(
@@ -488,6 +522,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpStaleNavigationFootprints() {
   CleanUpNavigationEvents();
   CleanUpUserGestures();
   CleanUpIpAddresses();
+  CleanUpCopyData();
   ScheduleNextCleanUpAfterInterval(GetNavigationFootprintTTL());
 }
 
@@ -629,7 +664,9 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
 }
 
 SafeBrowsingNavigationObserverManager::
-    ~SafeBrowsingNavigationObserverManager() {}
+    ~SafeBrowsingNavigationObserverManager() {
+  ui::Clipboard::GetForCurrentThread()->RemoveObserver(this);
+}
 
 void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
     content::WebContents* source_web_contents,
@@ -694,7 +731,8 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
         ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
   }
 
-  navigation_event_list_.RecordNavigationEvent(std::move(nav_event));
+  navigation_event_list_.RecordNavigationEvent(std::move(nav_event),
+                                               last_copy_paste_entry_);
 }
 
 // static
@@ -754,6 +792,17 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
 }
 
+void SafeBrowsingNavigationObserverManager::OnCopyURL(
+    const GURL& url,
+    const GURL& source_frame_url,
+    const GURL& source_main_frame_url) {
+  if (base::FeatureList::IsEnabled(
+          kSafeBrowsingReferrerChainWithCopyPasteNavigation)) {
+    last_copy_paste_entry_.emplace(url, source_frame_url, source_main_frame_url,
+                                   base::Time::Now());
+  }
+}
+
 void SafeBrowsingNavigationObserverManager::CleanUpNavigationEvents() {
   navigation_event_list_.CleanUpNavigationEvents();
 }
@@ -777,6 +826,15 @@ void SafeBrowsingNavigationObserverManager::CleanUpIpAddresses() {
       it = host_to_ip_map_.erase(it);
     else
       ++it;
+  }
+}
+
+void SafeBrowsingNavigationObserverManager::CleanUpCopyData() {
+  if (last_copy_paste_entry_.has_value()) {
+    if (IsEventExpired(last_copy_paste_entry_.value().recorded_time_,
+                       GetNavigationFootprintTTL())) {
+      last_copy_paste_entry_ = absl::nullopt;
+    }
   }
 }
 
@@ -928,6 +986,11 @@ void SafeBrowsingNavigationObserverManager::RemoveSafeBrowsingAllowlistDomains(
     ReferrerChain* out_referrer_chain) {
   bool is_url_removed_by_policy = false;
   for (ReferrerChainEntry& entry : *out_referrer_chain) {
+    // entry can be empty if it is removed in
+    // MaybeRemoveNonUserGestureReferrerEntries.
+    if (!entry.has_url()) {
+      continue;
+    }
     if (IsURLAllowlistedByPolicy(GURL(entry.url()), *pref_service_)) {
       entry.clear_url();
       is_url_removed_by_policy = true;

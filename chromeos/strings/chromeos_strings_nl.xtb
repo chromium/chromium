@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Bureaus</translation>
 <translation id="1018219910092211213">Kan DNS niet omzetten</translation>
 <translation id="1018656279737460067">Geannuleerd</translation>
-<translation id="1022433422498218992">Algemene bedieningselementen</translation>
+<translation id="1020274983236703756">Er zijn nu exclusieve <ph name="PRODUCT_NAME" />-items beschikbaar</translation>
 <translation id="1022628058306505708">Aardestroom</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Verificatietype</translation>
 <translation id="1776228893584526149">Achtergrondtint</translation>
 <translation id="1782199038061388045">vertaling</translation>
-<translation id="1790209694022261219">Vensters en bureaus</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1801418420130173017">Donker thema uitzetten</translation>
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
+<translation id="1836553715834333258">Systeemkleur</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
+<translation id="1840474674287087346">Desktopkleur</translation>
 <translation id="1851218745569890714">Videovergaderingen</translation>
 <translation id="1852934301711881861">Chrome OS Flex installeren</translation>
 <translation id="1856388568474281774">Pijl-omlaag</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Browsernavigatie</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
-<translation id="2902312830803030883">Meer acties</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
 <translation id="2940811910881150316">Kan apparaat niet testen. Open de klep opnieuw om te testen.</translation>
-<translation id="2981143481017883351">Er zijn nu exclusieve Chromebook-items beschikbaar</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3017079585324758401">Achtergrond</translation>
-<translation id="3020183492814296499">Snelkoppelingen</translation>
 <translation id="3027578600144895987">Camera sluiten</translation>
 <translation id="3031560714565892478">Apparaat is een videocamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3226657629376379887">Actiemenu voor indeling</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
+<translation id="3248223063252096240">Exclusief voor <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3275729367986477355">Avatar-afbeelding</translation>
 <translation id="3283504360622356314">{0,plural, =1{Bestand bewerken}other{Bestanden bewerken}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Sleutelrichting</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
+<translation id="3305294846493618482">meer</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Vensters</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
-<translation id="3386675685417744672">Exclusief voor Chromebook</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3639846061339007994">boven</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
+<translation id="3663574643422533538">Selecteer exclusieve <ph name="PRODUCT_NAME" />-kunst</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">WAARSCHUWING</translation>
 <translation id="4054683689023980771">Afbeelding downloaden</translation>
 <translation id="4060260348856573701">Nieuwe APN</translation>
-<translation id="4079743696465895866">Selecteer kunstwerken exclusief voor de Chromebook</translation>
 <translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Album selecteren: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB-touchpad</translation>
+<translation id="4113067922640381334">Je hebt nu toegang tot nieuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />achtergronden<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Donkere modus</translation>
 <translation id="4130035430755296270">Plaats de muisaanwijzer voor meer lay-outopties.</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Scannen naar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
+<translation id="4500966230243561393">Interfacekleur</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
 <translation id="4507392511610824664">helderheid omhoog</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Test stoppen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Foto's, tijd, weer en mediagegevens tonen als je scherm inactief is.</translation>
+<translation id="5035083460461104704">Themakleur</translation>
 <translation id="5038292761217083259">toetsenbord meerkleurig</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Engine updaten</translation>
 <translation id="5984145644188835034">Standaardachtergrond</translation>
 <translation id="6017514345406065928">Groen</translation>
+<translation id="6019566113895157499">Sneltoetsen</translation>
 <translation id="6034694447310538551">Elke maand automatisch resetten aanzetten</translation>
 <translation id="6037291330010597344">De documentinvoer van de scanner is leeg. Voeg documenten toe en probeer het opnieuw.</translation>
 <translation id="6040143037577758943">Sluiten</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
+<translation id="7633068090678117093">Achtergrondafbeelding</translation>
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="765159867434478292">Splitsen</translation>
 <translation id="7656388927906093505">Apparaat is een muis.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8593058461203131755">media pauzeren</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
+<translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lichtpaars</translation>
 <translation id="8651481478098336970">geluid uitzetten</translation>
 <translation id="8655295600908251630">Kanaal</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8936793075252196307">IP-adres van client</translation>
+<translation id="8944651180182756621">Launcher-kleur</translation>
 <translation id="894617464444543719">Apparaat is een telefoon.</translation>
 <translation id="8957423540740801332">rechts</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9161276708550942948">spatie</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
+<translation id="9174334653006917325">UI-kleur</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Je toetsenbord kan automatisch worden afgestemd op je achtergrond</translation>
 <translation id="9189000703457422362">Kan geen verbinding maken met dit netwerk via automatisch waargenomen APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>

@@ -49,12 +49,7 @@ SVGFEDiffuseLightingElement::SVGFEDiffuseLightingElement(Document& document)
           this,
           svg_names::kKernelUnitLengthAttr,
           0.0f)),
-      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {
-  AddToPropertyMap(diffuse_constant_);
-  AddToPropertyMap(surface_scale_);
-  AddToPropertyMap(kernel_unit_length_);
-  AddToPropertyMap(in1_);
-}
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {}
 
 SVGAnimatedNumber* SVGFEDiffuseLightingElement::kernelUnitLengthX() {
   return kernel_unit_length_->FirstNumber();
@@ -160,6 +155,33 @@ bool SVGFEDiffuseLightingElement::TaintsOrigin() const {
   // (see above), so we should have a ComputedStyle here.
   DCHECK(style);
   return style->LightingColor().IsCurrentColor();
+}
+
+SVGAnimatedPropertyBase* SVGFEDiffuseLightingElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kDiffuseConstantAttr) {
+    return diffuse_constant_.Get();
+  } else if (attribute_name == svg_names::kSurfaceScaleAttr) {
+    return surface_scale_.Get();
+  } else if (attribute_name == svg_names::kKernelUnitLengthAttr) {
+    return kernel_unit_length_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEDiffuseLightingElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{diffuse_constant_.Get(),
+                                     surface_scale_.Get(),
+                                     kernel_unit_length_.Get(), in1_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

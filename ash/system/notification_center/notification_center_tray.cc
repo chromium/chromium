@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/notification_metrics_recorder.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -28,11 +29,14 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kNotificationCenter,
                          RoundedCornerBehavior::kStartRounded),
+      notification_metrics_recorder_(
+          std::make_unique<NotificationMetricsRecorder>(this)),
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(
               shelf,
               /*model=*/nullptr,
               /*notification_center_tray=*/this)) {
+  DCHECK(features::IsQsRevampEnabled());
   SetID(VIEW_ID_SA_NOTIFICATION_TRAY);
   set_use_bounce_in_animation(false);
 
@@ -40,27 +44,22 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
-
-  // TODO(b/255986529): Rewrite the `NotificationIconsController` class so that
-  // we do not have to add icon views that are owned by the
-  // `NotificationCenterTray` from the controller. We should make sure views are
-  // only added by host views.
-  notification_icons_controller_->AddNotificationTrayItems(tray_container());
-
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    privacy_indicators_view_ = tray_container()->AddChildView(
-        std::make_unique<PrivacyIndicatorsTrayItemView>(shelf));
-  }
-
-  for (auto* tray_item : tray_container()->children()) {
-    static_cast<TrayItemView*>(tray_item)->AddObserver(this);
-  }
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
   for (auto* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->RemoveObserver(this);
   }
+}
+
+void NotificationCenterTray::AddNotificationCenterTrayObserver(
+    Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void NotificationCenterTray::RemoveNotificationCenterTrayObserver(
+    Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void NotificationCenterTray::OnTrayItemVisibilityAboutToChange(
@@ -91,6 +90,33 @@ NotificationListView* NotificationCenterTray::GetNotificationListView() {
 
 bool NotificationCenterTray::IsBubbleShown() const {
   return !!bubble_;
+}
+
+void NotificationCenterTray::Initialize() {
+  TrayBackgroundView::Initialize();
+
+  // Add all child `TrayItemView`s.
+  // TODO(b/255986529): Rewrite the `NotificationIconsController` class so that
+  // we do not have to add icon views that are owned by the
+  // `NotificationCenterTray` from the controller. We should make sure views are
+  // only added by host views.
+  notification_icons_controller_->AddNotificationTrayItems(tray_container());
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    privacy_indicators_view_ = tray_container()->AddChildView(
+        std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
+  }
+  for (auto* tray_item : tray_container()->children()) {
+    static_cast<TrayItemView*>(tray_item)->AddObserver(this);
+  }
+  for (auto& observer : observers_) {
+    observer.OnAllTrayItemsAdded();
+  }
+
+  // Update this tray's visibility as well as the visibility of all of its tray
+  // items according to the current state of notifications.
+  UpdateVisibility();
+  notification_icons_controller_->UpdateNotificationIcons();
+  notification_icons_controller_->UpdateNotificationIndicators();
 }
 
 std::u16string NotificationCenterTray::GetAccessibleNameForBubble() {
@@ -179,6 +205,8 @@ void NotificationCenterTray::OnAnyBubbleVisibilityChanged(
 }
 
 void NotificationCenterTray::UpdateLayout() {
+  TrayBackgroundView::UpdateLayout();
+
   if (features::IsPrivacyIndicatorsEnabled()) {
     privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
   }

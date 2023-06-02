@@ -36,6 +36,12 @@ class BrowsingTopicsService : public KeyedService {
       bool observe,
       std::vector<blink::mojom::EpochTopicPtr>& topics) = 0;
 
+  // Returns the number of distinct epochs versions for `main_frame_origin`.
+  // Must be called when topics are eligible (i.e. `HandleTopicsWebApi` would
+  // return true for the same main frame context).
+  virtual int NumVersionsInEpochs(
+      const url::Origin& main_frame_origin) const = 0;
+
   // Get the topics state to show in the chrome://topics-internals page. If
   // `calculate_now` is true, this will first trigger a calculation before
   // invoking `callback` with the topics state.

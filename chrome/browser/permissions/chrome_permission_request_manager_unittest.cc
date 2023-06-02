@@ -149,7 +149,7 @@ class ChromePermissionRequestManagerTest
   permissions::MockPermissionRequest request2_;
   permissions::MockPermissionRequest request_mic_;
   permissions::MockPermissionRequest request_camera_;
-  raw_ptr<permissions::PermissionRequestManager> manager_;
+  raw_ptr<permissions::PermissionRequestManager, DanglingUntriaged> manager_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 

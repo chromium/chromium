@@ -10,6 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -151,7 +152,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   SEQUENCE_CHECKER(sequence_checker_);
 
   // To expose client callbacks from VideoEncodeAccelerator.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   std::unique_ptr<MediaLog> media_log_;
 

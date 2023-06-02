@@ -34,6 +34,7 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Mock;
+using ::testing::Optional;
 using ::testing::SaveArg;
 using ::testing::Values;
 
@@ -153,7 +154,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     was_on_commit_called_ = true;
   }
   void OnConfirmCompositionText(bool keep_selection) override {
-    was_on_confirm_composition_text_called_ = true;
+    last_on_confirm_composition_arg_ = keep_selection;
   }
   void OnPreeditChanged(const ui::CompositionText& composition_text) override {
     was_on_preedit_changed_called_ = true;
@@ -185,8 +186,8 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
 
-  bool was_on_confirm_composition_text_called() const {
-    return was_on_confirm_composition_text_called_;
+  const absl::optional<bool>& last_on_confirm_composition_arg() const {
+    return last_on_confirm_composition_arg_;
   }
 
   bool was_on_preedit_changed_called() const {
@@ -220,7 +221,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 
  private:
   bool was_on_commit_called_ = false;
-  bool was_on_confirm_composition_text_called_ = false;
+  absl::optional<bool> last_on_confirm_composition_arg_;
   bool was_on_preedit_changed_called_ = false;
   bool was_on_set_preedit_region_called_ = false;
   bool was_on_clear_grammar_fragments_called_ = false;
@@ -1203,14 +1204,102 @@ TEST_P(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
                                          "ab😀cあdef");
   });
 
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_confirm_composition_text_called());
+  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
+              Optional(true));
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);
   // Cursor position is set to `range` position explicitly by OnCursorPosition.
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             range);
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0));
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       MAYBE(OnConfirmCompositionTextExtendedKeepSelectionNoComposition)) {
+  input_method_context_->SetSurroundingText(u"abcd", gfx::Range(0, 4),
+                                            gfx::Range(0, 4), absl::nullopt,
+                                            absl::nullopt);
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zcr_extended_text_input_v1_send_confirm_preedit(
+        server->text_input_extension_v1()->extended_text_input()->resource(),
+        /*selection_behavior=*/
+        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_UNCHANGED);
+  });
+
+  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
+              Optional(true));
+  // Selection range should not be changed.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(0, 4));
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       MAYBE(OnConfirmCompositionTextExtendedKeepSelectionComposition)) {
+  input_method_context_->SetSurroundingText(
+      u"abcd", gfx::Range(0, 4), gfx::Range(2), absl::nullopt, absl::nullopt);
+  input_method_context_->OnPreeditString("xyz", {}, 1);
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zcr_extended_text_input_v1_send_confirm_preedit(
+        server->text_input_extension_v1()->extended_text_input()->resource(),
+        /*selection_behavior=*/
+        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_UNCHANGED);
+  });
+
+  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
+              Optional(true));
+  // Selection range should not be changed.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(3));
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       MAYBE(OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition)) {
+  input_method_context_->SetSurroundingText(u"abcd", gfx::Range(0, 4),
+                                            gfx::Range(0, 4), absl::nullopt,
+                                            absl::nullopt);
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zcr_extended_text_input_v1_send_confirm_preedit(
+        server->text_input_extension_v1()->extended_text_input()->resource(),
+        /*selection_behavior=*/
+        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_AFTER_PREEDIT);
+  });
+
+  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
+              Optional(false));
+  // Selection range should not be changed.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(0, 4));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
+            gfx::Range(0));
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       MAYBE(OnConfirmCompositionTextExtendedDontKeepSelectionComposition)) {
+  input_method_context_->SetSurroundingText(
+      u"abcd", gfx::Range(0, 4), gfx::Range(2), absl::nullopt, absl::nullopt);
+  input_method_context_->OnPreeditString("xyz", {}, 1);
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zcr_extended_text_input_v1_send_confirm_preedit(
+        server->text_input_extension_v1()->extended_text_input()->resource(),
+        /*selection_behavior=*/
+        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_AFTER_PREEDIT);
+  });
+
+  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
+              Optional(false));
+  // Selection range should move to the end of commit.
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(5));
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
             gfx::Range(0));
 }
@@ -1268,8 +1357,8 @@ TEST_P(WaylandInputMethodContextTest,
                                          expected_sent_text.c_str());
   });
 
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_confirm_composition_text_called());
+  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
+              Optional(true));
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);

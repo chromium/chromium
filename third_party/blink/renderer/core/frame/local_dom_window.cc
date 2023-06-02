@@ -2243,7 +2243,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 
   FrameTree::FindResult result =
       GetFrame()->Tree().FindOrCreateFrameForNavigation(
-          frame_request, target.empty() ? "_blank" : target);
+          frame_request, target.empty() ? AtomicString("_blank") : target);
   if (!result.frame)
     return nullptr;
 
@@ -2332,7 +2332,7 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
   // We always create a new window here.
   FrameTree::FindResult result =
       GetFrame()->Tree().FindOrCreateFrameForNavigation(frame_request,
-                                                        "_blank");
+                                                        AtomicString("_blank"));
   if (!result.frame)
     return nullptr;
 

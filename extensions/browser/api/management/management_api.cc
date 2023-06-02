@@ -21,6 +21,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/management/management_api_constants.h"
@@ -31,6 +33,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/requirements_checker.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/error_utils.h"
@@ -269,6 +272,15 @@ void AddExtensionInfo(const Extension* source_extension,
   }
 }
 
+bool PlatformSupportsApprovalFlowForExtensions() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS devices have this feature already shipped.
+  return true;
+#else
+  return base::FeatureList::IsEnabled(
+      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
+}
 }  // namespace
 
 ExtensionFunction::ResponseAction ManagementGetAllFunction::Run() {
@@ -412,8 +424,9 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   extension_id_ = params->id;
 
-  if (ExtensionsBrowserClient::Get()->IsAppModeForcedForApp(extension_id_))
+  if (ExtensionsBrowserClient::Get()->IsAppModeForcedForApp(extension_id_)) {
     return RespondNow(Error(keys::kCannotChangePrimaryKioskAppError));
+  }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
   const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
@@ -431,38 +444,33 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
   const ManagementPolicy* policy =
       ExtensionSystem::Get(browser_context())->management_policy();
   if (!policy->ExtensionMayModifySettings(extension(), target_extension,
-                                          nullptr)) {
+                                          /*error=*/nullptr)) {
     return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
-      ManagementAPI::GetFactoryInstance()
-          ->Get(browser_context())
-          ->GetSupervisedUserExtensionsDelegate();
-  if (supervised_user_extensions_delegate &&
-      supervised_user_extensions_delegate->IsChild() &&
-      // Don't prompt the user if the extension has unsupported requirements.
-      // TODO(crbug/1071978): If OnRequirementsChecked() passes, the extension
-      // will enable, bypassing parent approval.
-      !HasUnsupportedRequirements(extension_id_) &&
-      // Only ask for parent approval if the extension still requires approval.
-      !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
-          *target_extension)) {
+  if (PlatformSupportsApprovalFlowForExtensions() &&
+      IsExtensionApprovalFlowRequired(target_extension)) {
     // Either ask for parent permission or notify the child that their parent
     // has disabled this action.
     auto extension_approval_callback = base::BindOnce(
         &ManagementSetEnabledFunction::OnExtensionApprovalDone, this);
     AddRef();  // Matched in OnExtensionApprovalDone().
+
+    SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+        ManagementAPI::GetFactoryInstance()
+            ->Get(browser_context())
+            ->GetSupervisedUserExtensionsDelegate();
+    CHECK(supervised_user_extensions_delegate)
+        << "Implied by IsExtensionApprovalFlowRequired";
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
         *target_extension, GetSenderWebContents(),
         std::move(extension_approval_callback));
     return RespondLater();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (should_enable &&
-      policy->MustRemainDisabled(target_extension, nullptr, nullptr)) {
+      policy->MustRemainDisabled(target_extension, /*reason=*/nullptr,
+                                 /*error=*/nullptr)) {
     return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
   }
 
@@ -519,10 +527,38 @@ void ManagementSetEnabledFunction::OnInstallPromptDone(bool did_accept) {
 }
 
 bool ManagementSetEnabledFunction::HasUnsupportedRequirements(
-    const std::string& extension_id) {
+    const std::string& extension_id) const {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   return prefs->GetDisableReasons(extension_id) &
          disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT;
+}
+
+bool ManagementSetEnabledFunction::IsExtensionApprovalFlowRequired(
+    const Extension* target_extension) const {
+  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+      ManagementAPI::GetFactoryInstance()
+          ->Get(browser_context())
+          ->GetSupervisedUserExtensionsDelegate();
+
+  if (!supervised_user_extensions_delegate) {
+    return false;
+  }
+  if (!supervised_user_extensions_delegate->IsChild()) {
+    return false;
+  }
+  // Don't prompt the user if the extension has unsupported requirements.
+  // TODO(crbug/1071978): If OnRequirementsChecked() passes, the extension
+  // will enable, bypassing parent approval.
+  if (HasUnsupportedRequirements(extension_id_)) {
+    return false;
+  }
+  // Only ask for parent approval if the extension still requires
+  // approval.
+  if (supervised_user_extensions_delegate->IsExtensionAllowedByParent(
+          *target_extension)) {
+    return false;
+  }
+  return true;
 }
 
 void ManagementSetEnabledFunction::OnRequirementsChecked(
@@ -540,9 +576,8 @@ void ManagementSetEnabledFunction::OnRequirementsChecked(
 
 void ManagementSetEnabledFunction::OnExtensionApprovalDone(
     SupervisedUserExtensionsDelegate::ExtensionApprovalResult result) {
-// TODO(crbug.com/1320442): Investigate whether ENABLE_SUPERVISED_USERS can
-// be ported to //extensions.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1320442): Investigate whether ENABLE_SUPERVISED_USERS can
+  // be ported to //extensions.
   switch (result) {
     case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved: {
       const ManagementAPIDelegate* delegate =
@@ -571,7 +606,6 @@ void ManagementSetEnabledFunction::OnExtensionApprovalDone(
   }
   // Matches the AddRef in Run().
   Release();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ManagementUninstallFunctionBase::ManagementUninstallFunctionBase() = default;

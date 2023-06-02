@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
+
 namespace ash {
 
-class KioskAppManagerObserver {
+class KioskAppManagerObserver : public base::CheckedObserver {
  public:
   // Invoked when the app data is changed or loading state is changed.
   virtual void OnKioskAppDataChanged(const std::string& app_id) {}
@@ -38,7 +40,7 @@ class KioskAppManagerObserver {
   virtual void OnKioskSessionInitialized() {}
 
  protected:
-  virtual ~KioskAppManagerObserver() = default;
+  ~KioskAppManagerObserver() override = default;
 };
 
 }  // namespace ash

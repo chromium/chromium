@@ -235,7 +235,7 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TooltipTestView> view_ = nullptr;
+  raw_ptr<TooltipTestView, DanglingUntriaged> view_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
@@ -1136,7 +1136,7 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
 
  protected:
   // Owned by |controller_|.
-  raw_ptr<TestTooltip> test_tooltip_;
+  raw_ptr<TestTooltip, DanglingUntriaged> test_tooltip_;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
@@ -1238,11 +1238,11 @@ class TooltipControllerTest3 : public ViewsTestBase {
 
  protected:
   // Owned by |controller_|.
-  raw_ptr<TestTooltip> test_tooltip_ = nullptr;
+  raw_ptr<TestTooltip, DanglingUntriaged> test_tooltip_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TooltipTestView> view_;
+  raw_ptr<TooltipTestView, DanglingUntriaged> view_;
 
  private:
   std::unique_ptr<TooltipController> controller_;

@@ -87,6 +87,10 @@ const GURL& AshWebViewImpl::GetVisibleURL() {
   return web_contents_->GetVisibleURL();
 }
 
+bool AshWebViewImpl::IsErrorDocument() {
+  return web_contents_->GetPrimaryMainFrame()->IsErrorDocument();
+}
+
 views::View* AshWebViewImpl::GetInitiallyFocusedView() {
   return web_view_;
 }

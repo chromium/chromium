@@ -308,6 +308,9 @@
       <message name="IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Rich Answers view.">
         Additional info related to your selection
       </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT" desc="Display text for the Google Search link label on the Rich Answers view.">
+        Open in Google Search
+      </message>
 
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu.">
@@ -1015,6 +1018,7 @@
         <message name="IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY" desc="The message shown when the amount of available memory on a device is less than 500 MB  and the memory test can not be run.">
           You need at least 500 MB free to run a Memory test. To free up space, go to Settings > Storage management.
         </message>
+        <message name="IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY_CPU" desc="The message shown when the amount of available memory on a device is less than 625 MB and the cpu test can not be run." translateable="false">You need at least 625 MB of available memory to run the CPU test. To free up memory, close tabs and apps.</message>
         <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health.">
           Battery health
         </message>
@@ -2494,7 +2498,7 @@
           Dawn to dark
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO_DESCRIPTION" desc="Description for the radio button to choose the topic source from video animation. The radio button allows the user to set which video to play for ambient mode.">
-          Select Chromebook exclusive artwork
+          Select <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive artwork
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW" desc="A11y label for the selected topic source row in ambient mode.">
           <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> <ph name="TOPIC_SOURCE_DESC">$2<ex>Select your memories</ex></ph> selected, press Enter to select <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> albums
@@ -2694,10 +2698,10 @@
           Earth Flow
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
-          Chromebook exclusive
+          <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE" desc="Title for the Time of Day promo banner.">
-          Exclusive Chromebook assets now available
+          Exclusive <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> assets now available
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION" desc="Description shown in the Time of Day promo banner.">
           You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/collection?id=_time_of_day_chromebook_collection"&gt;</ph>wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE">&lt;a href="chrome://personalization/ambient"&gt;</ph>screen saver<ph name="END_LINK_SCREENSAVER_SUBPAGE">&lt;/a&gt;</ph>
@@ -2742,6 +2746,36 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Change wallpaper', 'Background'">
           Desktop
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT1" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Dawn to dark wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT2" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Cloud flow wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT3" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Earth flow wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT4" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Sunrise wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT5" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Sunset wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT1" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          Dawn to dark screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT2" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          Cloud flow screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT3" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          Earth flow screen saver
         </message>
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, which allow the user to set backgrounds to be displayed when the device is idle.">
           Screen saver
@@ -3920,7 +3954,7 @@
 
         <!-- Shortcut Customization -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app">
-          Shortcuts
+          Key Shortcuts
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app.">
           Keyboard settings
@@ -3986,7 +4020,7 @@
           Text
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESKS" desc="Category named 'Windows and Desks' shown on the navigation sidebar">
-          Windows and Desks
+          Windows and desks
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar">
           Accessibility
@@ -3998,7 +4032,7 @@
           Developer
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL_CONTROLS" desc="Subcategory named 'GeneralControls' shown within main shortcuts section">
-          General Controls
+          General controls
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_APPS" desc="Subcategory named 'Apps' shown within main shortcuts section">
           Apps

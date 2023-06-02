@@ -403,7 +403,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   THREAD_CHECKER(thread_checker_);
 
-  raw_ptr<ProxyDelegate> proxy_delegate_ = nullptr;
+  raw_ptr<ProxyDelegate, DanglingUntriaged> proxy_delegate_ = nullptr;
 
   // Flag used by |SetReady()| to check if |this| has been deleted by a
   // synchronous callback.

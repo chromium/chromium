@@ -140,7 +140,7 @@ void InputMethodEngine::DiacriticsSettingsChanged() {
   const bool new_value =
       profile_->GetPrefs()->GetBoolean(ash::prefs::kLongPressDiacriticsEnabled);
   if (!new_value) {
-    SystemNudgeController::RecordNudgeAction(
+    SystemNudgeController::MaybeRecordNudgeAction(
         NudgeCatalogName::kDisableDiacritics);
   }
 }

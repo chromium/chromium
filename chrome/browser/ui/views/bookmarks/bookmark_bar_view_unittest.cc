@@ -218,7 +218,7 @@ class BookmarkBarViewInWidgetTest : public BookmarkBarViewBaseTest {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<BookmarkBarView> bookmark_bar_view_ = nullptr;
+  raw_ptr<BookmarkBarView, DanglingUntriaged> bookmark_bar_view_ = nullptr;
 };
 
 // Verify that in instant extended mode the visibility of the apps shortcut
@@ -542,16 +542,18 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   ASSERT_TRUE(keyed_service->model());
 
   // Add 3 saved tab groups.
-  keyed_service->model()->Add(SavedTabGroup(
-      std::u16string(u"tab group 1"), tab_groups::TabGroupColorId::kGrey, {}));
+  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 1"),
+                                            tab_groups::TabGroupColorId::kGrey,
+                                            {}, absl::nullopt));
 
   base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, button_2_id));
+                                            {}, absl::nullopt, button_2_id));
 
-  keyed_service->model()->Add(SavedTabGroup(
-      std::u16string(u"tab group 3"), tab_groups::TabGroupColorId::kGrey, {}));
+  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 3"),
+                                            tab_groups::TabGroupColorId::kGrey,
+                                            {}, absl::nullopt));
 
   // Save the position of the 3rd button. The 4th button is an overflow menu
   // that is only visible when there are more than 4 groups saved.

@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("manifest.gni")
 import("strings/accessibility_strings.gni")
 
 assert(is_chromeos_ash)
@@ -35,32 +36,6 @@ group("build") {
       "select_to_speak:build",
       "switch_access:build",
     ]
-  }
-}
-
-template("manifest") {
-  version_file = "//chrome/VERSION"
-  version_script = "//build/util/version.py"
-  template_file = invoker.input_file
-  output_file = invoker.output_file
-  key = invoker.key
-  action(target_name) {
-    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_manifest.py"
-    inputs = [
-      version_file,
-      version_script,
-    ]
-    sources = [ template_file ]
-    outputs = [ output_file ]
-    args = [
-      "--key=$key",
-      "--version_file=" + rebase_path(version_file, root_build_dir),
-      "--output_manifest=" + rebase_path(output_file, root_build_dir),
-    ]
-    if (defined(invoker.is_guest_manifest) && invoker.is_guest_manifest) {
-      args += [ "--is_guest_manifest=1" ]
-    }
-    args += rebase_path(sources, root_build_dir)
   }
 }
 

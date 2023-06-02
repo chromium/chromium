@@ -497,7 +497,8 @@ void ProfileMenuView::BuildIdentity() {
   profile_name = profile_attributes->GetLocalProfileName();
   if (!web_app::AppBrowserController::IsWebApp(browser())) {
     edit_button_params = EditButtonParams(
-        &vector_icons::kEditIcon,
+        features::IsChromeRefresh2023() ? &kEditChromeRefreshIcon
+                                        : &vector_icons::kEditIcon,
         l10n_util::GetStringUTF16(
             IDS_PROFILES_CUSTOMIZE_PROFILE_BUTTON_TOOLTIP),
         base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
@@ -564,8 +565,9 @@ void ProfileMenuView::BuildAutofillButtons() {
                           base::Unretained(this)));
 
   AddShortcutFeatureButton(
-      features::IsChromeRefresh2023() ? kLocationOnChromeRefreshIcon
-                                      : vector_icons::kLocationOnIcon,
+      features::IsChromeRefresh2023()
+          ? vector_icons::kLocationOnChromeRefreshIcon
+          : vector_icons::kLocationOnIcon,
       l10n_util::GetStringUTF16(IDS_PROFILES_ADDRESSES_LINK),
       base::BindRepeating(&ProfileMenuView::OnAddressesButtonClicked,
                           base::Unretained(this)));

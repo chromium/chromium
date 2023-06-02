@@ -135,6 +135,7 @@
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
@@ -856,6 +857,10 @@ Shell::~Shell() {
   window_cycle_controller_.reset();
   overview_controller_.reset();
 
+  // As clients of `capture_mode_controller_`, `projector_controller_` and
+  // `game_dashboard_controller_` need to be destroyed before
+  // `capture_mode_controller_`
+  projector_controller_.reset();
   game_dashboard_controller_.reset();
 
   // This must be destroyed before deleting all the windows below in
@@ -1009,8 +1014,6 @@ Shell::~Shell() {
 
   display_color_manager_.reset();
   projecting_observer_.reset();
-
-  projector_controller_.reset();
 
   partial_magnifier_controller_.reset();
 
@@ -1168,10 +1171,8 @@ void Shell::Init(
   }
 
   // Manages lifetime of DiagnosticApp logs.
-  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
-    diagnostics_log_controller_ =
-        std::make_unique<diagnostics::DiagnosticsLogController>();
-  }
+  diagnostics_log_controller_ =
+      std::make_unique<diagnostics::DiagnosticsLogController>();
 
   pcie_peripheral_notification_controller_ =
       std::make_unique<PciePeripheralNotificationController>(
@@ -1571,6 +1572,7 @@ void Shell::Init(
   }
 
   if (features::IsHotspotEnabled()) {
+    hotspot_icon_animation_ = std::make_unique<HotspotIconAnimation>();
     hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
   }
 
@@ -1677,8 +1679,11 @@ void Shell::Init(
   // `clipboard_history_controller_` is destroyed.
   chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
       [](ClipboardHistoryControllerImpl* controller) {
-        return clipboard_history_util::GetItemDescriptorsFrom(
-            controller->history()->GetItems());
+        if (clipboard_history_util::IsEnabledInCurrentMode()) {
+          return clipboard_history_util::GetItemDescriptorsFrom(
+              controller->history()->GetItems());
+        }
+        return std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>();
       },
       clipboard_history_controller_.get()));
   chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(

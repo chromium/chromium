@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class NtpBackgroundService;
@@ -23,7 +23,7 @@ class NtpBackgroundServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<NtpBackgroundServiceFactory>;
+  friend base::NoDestructor<NtpBackgroundServiceFactory>;
 
   NtpBackgroundServiceFactory();
   ~NtpBackgroundServiceFactory() override;

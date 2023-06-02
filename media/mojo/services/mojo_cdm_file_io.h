@@ -94,7 +94,7 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
   raw_ptr<Delegate> delegate_ = nullptr;
 
   // Results of cdm::FileIO operations are sent asynchronously via |client_|.
-  raw_ptr<cdm::FileIOClient> client_ = nullptr;
+  raw_ptr<cdm::FileIOClient, DanglingUntriaged> client_ = nullptr;
 
   mojo::Remote<mojom::CdmStorage> cdm_storage_;
 

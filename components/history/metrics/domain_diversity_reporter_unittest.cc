@@ -116,13 +116,12 @@ class DomainDiversityReporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<DomainDiversityReporter> reporter_;
-
  private:
   base::ScopedTempDir history_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<DomainDiversityReporter> reporter_;
 
   // The mock clock used by DomainDiversity internally.
   TestClock test_clock_;

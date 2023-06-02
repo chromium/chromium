@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
 
-#include <list>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -16,11 +15,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -33,57 +33,6 @@ using network::mojom::ContentSecurityPolicyType;
 
 class CSPDirectiveListTest : public testing::Test {
  public:
-  // Simple CSP delegate that stores the console messages logged by the
-  // ContentSecurityPolicy context and allows retrieving them.
-  class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
-                                public ContentSecurityPolicyDelegate {
-   public:
-    Vector<String>& console_messages() { return console_messages_; }
-
-    // ContentSecurityPolicyDelegate override
-    const SecurityOrigin* GetSecurityOrigin() override {
-      return security_origin_.get();
-    }
-    const KURL& Url() const override { return url_; }
-    void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override {}
-    void SetRequireTrustedTypes() override {}
-    void AddInsecureRequestPolicy(
-        mojom::blink::InsecureRequestPolicy) override {}
-    std::unique_ptr<SourceLocation> GetSourceLocation() override {
-      return nullptr;
-    }
-    absl::optional<uint16_t> GetStatusCode() override { return absl::nullopt; }
-    String GetDocumentReferrer() override { return ""; }
-    void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,
-                                Element*) override {}
-    void PostViolationReport(const SecurityPolicyViolationEventInit&,
-                             const String& stringified_report,
-                             bool is_frame_ancestors_violation,
-                             const Vector<String>& report_endpoints,
-                             bool use_reporting_api) override {}
-    void Count(WebFeature) override {}
-    void AddConsoleMessage(ConsoleMessage* message) override {
-      console_messages_.push_back(message->Message());
-    }
-    void AddInspectorIssue(AuditsIssue) override {}
-    void DisableEval(const String& error_message) override {}
-    void SetWasmEvalErrorMessage(const String& error_message) override {}
-    void ReportBlockedScriptExecutionToInspector(
-        const String& directive_text) override {}
-    void DidAddContentSecurityPolicies(
-        WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {
-    }
-
-    void Trace(Visitor*) const override {}
-
-   private:
-    const KURL url_ = KURL("https://example.test/index.html");
-    const scoped_refptr<SecurityOrigin> security_origin_ =
-        SecurityOrigin::Create(url_);
-    Vector<String> console_messages_;
-  };
-
-  CSPDirectiveListTest() : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({network::features::kReporting}, {});
   }
@@ -99,7 +48,6 @@ class CSPDirectiveListTest : public testing::Test {
   }
 
  protected:
-  Persistent<ContentSecurityPolicy> csp;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -165,26 +113,35 @@ TEST_F(CSPDirectiveListTest, IsMatchingNoncePresent) {
        "foo", false},
   };
 
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
   KURL blocked_url = KURL("https://blocked.com");
   for (const auto& test : cases) {
-    // Report-only
-    network::mojom::blink::ContentSecurityPolicyPtr directive_list =
-        CreateList(test.list, ContentSecurityPolicyType::kReport);
-    EXPECT_EQ(test.expected,
-              CSPDirectiveListAllowFromSource(
-                  *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-                  blocked_url, blocked_url,
-                  ResourceRequest::RedirectStatus::kNoRedirect,
-                  ReportingDisposition::kSuppressReporting, test.nonce));
+    for (auto reporting_disposition : {ReportingDisposition::kSuppressReporting,
+                                       ReportingDisposition::kReport}) {
+      // Report-only
+      network::mojom::blink::ContentSecurityPolicyPtr directive_list =
+          CreateList(test.list, ContentSecurityPolicyType::kReport);
 
-    // Enforce
-    directive_list = CreateList(test.list, ContentSecurityPolicyType::kEnforce);
-    EXPECT_EQ(test.expected,
-              CSPDirectiveListAllowFromSource(
-                  *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-                  blocked_url, blocked_url,
-                  ResourceRequest::RedirectStatus::kNoRedirect,
-                  ReportingDisposition::kSuppressReporting, test.nonce));
+      EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+          *directive_list, context, CSPDirectiveName::ScriptSrcElem,
+          blocked_url, blocked_url,
+          ResourceRequest::RedirectStatus::kNoRedirect, reporting_disposition,
+          test.nonce));
+
+      // Enforce
+      directive_list =
+          CreateList(test.list, ContentSecurityPolicyType::kEnforce);
+      EXPECT_EQ(test.expected,
+                CSPDirectiveListAllowFromSource(
+                    *directive_list, context, CSPDirectiveName::ScriptSrcElem,
+                    blocked_url, blocked_url,
+                    ResourceRequest::RedirectStatus::kNoRedirect,
+                    reporting_disposition, test.nonce));
+    }
   }
 }
 
@@ -237,6 +194,11 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceNoNonce) {
        false},
   };
 
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message()
                  << "List: `" << test.list << "`, URL: `" << test.url << "`");
@@ -245,19 +207,17 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceNoNonce) {
     // Report-only
     network::mojom::blink::ContentSecurityPolicyPtr directive_list =
         CreateList(test.list, ContentSecurityPolicyType::kReport);
-    EXPECT_EQ(test.expected,
-              CSPDirectiveListAllowFromSource(
-                  *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-                  script_src, script_src,
-                  ResourceRequest::RedirectStatus::kNoRedirect,
-                  ReportingDisposition::kSuppressReporting, String(),
-                  IntegrityMetadataSet(), kParserInserted));
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::ScriptSrcElem, script_src,
+        script_src, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(),
+        IntegrityMetadataSet(), kParserInserted));
 
     // Enforce
     directive_list = CreateList(test.list, ContentSecurityPolicyType::kEnforce);
     EXPECT_EQ(test.expected,
               CSPDirectiveListAllowFromSource(
-                  *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
+                  *directive_list, context, CSPDirectiveName::ScriptSrcElem,
                   script_src, script_src,
                   ResourceRequest::RedirectStatus::kNoRedirect,
                   ReportingDisposition::kSuppressReporting, String(),
@@ -296,6 +256,11 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
        false},
   };
 
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message()
                  << "List: `" << test.list << "`, URL: `" << test.url << "`");
@@ -304,13 +269,11 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     // Report-only 'script-src'
     network::mojom::blink::ContentSecurityPolicyPtr directive_list = CreateList(
         String("script-src ") + test.list, ContentSecurityPolicyType::kReport);
-    EXPECT_EQ(
-        test.expected,
-        CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce),
-            IntegrityMetadataSet(), kParserInserted));
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::ScriptSrcElem, resource,
+        resource, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(test.nonce),
+        IntegrityMetadataSet(), kParserInserted));
 
     // Enforce 'script-src'
     directive_list = CreateList(String("script-src ") + test.list,
@@ -318,20 +281,18 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     EXPECT_EQ(
         test.expected,
         CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+            *directive_list, context, CSPDirectiveName::ScriptSrcElem, resource,
+            resource, ResourceRequest::RedirectStatus::kNoRedirect,
             ReportingDisposition::kSuppressReporting, String(test.nonce),
             IntegrityMetadataSet(), kParserInserted));
 
     // Report-only 'style-src'
     directive_list = CreateList(String("style-src ") + test.list,
                                 ContentSecurityPolicyType::kReport);
-    EXPECT_EQ(
-        test.expected,
-        CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::StyleSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce)));
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::StyleSrcElem, resource,
+        resource, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(test.nonce)));
 
     // Enforce 'style-src'
     directive_list = CreateList(String("style-src ") + test.list,
@@ -339,25 +300,21 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     EXPECT_EQ(
         test.expected,
         CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::StyleSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+            *directive_list, context, CSPDirectiveName::StyleSrcElem, resource,
+            resource, ResourceRequest::RedirectStatus::kNoRedirect,
             ReportingDisposition::kSuppressReporting, String(test.nonce)));
 
     // Report-only 'style-src'
     directive_list = CreateList(String("default-src ") + test.list,
                                 ContentSecurityPolicyType::kReport);
-    EXPECT_EQ(
-        test.expected,
-        CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce)));
-    EXPECT_EQ(
-        test.expected,
-        CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::StyleSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(test.nonce)));
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::ScriptSrcElem, resource,
+        resource, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(test.nonce)));
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::StyleSrcElem, resource,
+        resource, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(test.nonce)));
 
     // Enforce 'style-src'
     directive_list = CreateList(String("default-src ") + test.list,
@@ -365,15 +322,15 @@ TEST_F(CSPDirectiveListTest, AllowFromSourceWithNonce) {
     EXPECT_EQ(
         test.expected,
         CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+            *directive_list, context, CSPDirectiveName::ScriptSrcElem, resource,
+            resource, ResourceRequest::RedirectStatus::kNoRedirect,
             ReportingDisposition::kSuppressReporting, String(test.nonce),
             IntegrityMetadataSet(), kParserInserted));
     EXPECT_EQ(
         test.expected,
         CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::StyleSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+            *directive_list, context, CSPDirectiveName::StyleSrcElem, resource,
+            resource, ResourceRequest::RedirectStatus::kNoRedirect,
             ReportingDisposition::kSuppressReporting, String(test.nonce)));
   }
 }
@@ -443,6 +400,11 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
       {"'sha256-yay'", "https://a.com/file", "", false},
   };
 
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message()
                  << "List: `" << test.list << "`, URL: `" << test.url
@@ -457,13 +419,11 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
     // Report-only 'script-src'
     network::mojom::blink::ContentSecurityPolicyPtr directive_list = CreateList(
         String("script-src ") + test.list, ContentSecurityPolicyType::kReport);
-    EXPECT_EQ(
-        test.expected,
-        CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kSuppressReporting, String(),
-            integrity_metadata, kParserInserted));
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::ScriptSrcElem, resource,
+        resource, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(), integrity_metadata,
+        kParserInserted));
 
     // Enforce 'script-src'
     directive_list = CreateList(String("script-src ") + test.list,
@@ -471,8 +431,8 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
     EXPECT_EQ(
         test.expected,
         CSPDirectiveListAllowFromSource(
-            *directive_list, csp.Get(), CSPDirectiveName::ScriptSrcElem,
-            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+            *directive_list, context, CSPDirectiveName::ScriptSrcElem, resource,
+            resource, ResourceRequest::RedirectStatus::kNoRedirect,
             ReportingDisposition::kSuppressReporting, String(),
             integrity_metadata, kParserInserted));
   }
@@ -511,13 +471,18 @@ TEST_F(CSPDirectiveListTest, WorkerSrc) {
       {"default-src https://example.test", true},
   };
 
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
   for (const auto& test : cases) {
     SCOPED_TRACE(test.list);
     const KURL resource("https://example.test/worker.js");
     network::mojom::blink::ContentSecurityPolicyPtr directive_list =
         CreateList(test.list, ContentSecurityPolicyType::kEnforce);
     EXPECT_EQ(test.allowed, CSPDirectiveListAllowFromSource(
-                                *directive_list, csp.Get(),
+                                *directive_list, context,
                                 CSPDirectiveName::WorkerSrc, resource, resource,
                                 ResourceRequest::RedirectStatus::kNoRedirect,
                                 ReportingDisposition::kSuppressReporting));
@@ -557,13 +522,18 @@ TEST_F(CSPDirectiveListTest, WorkerSrcChildSrcFallback) {
        false},
   };
 
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
   for (const auto& test : cases) {
     SCOPED_TRACE(test.list);
     const KURL resource("https://example.test/worker.js");
     network::mojom::blink::ContentSecurityPolicyPtr directive_list =
         CreateList(test.list, ContentSecurityPolicyType::kEnforce);
     EXPECT_EQ(test.allowed, CSPDirectiveListAllowFromSource(
-                                *directive_list, csp.Get(),
+                                *directive_list, context,
                                 CSPDirectiveName::WorkerSrc, resource, resource,
                                 ResourceRequest::RedirectStatus::kNoRedirect,
                                 ReportingDisposition::kSuppressReporting));
@@ -948,13 +918,16 @@ TEST_F(CSPDirectiveListTest, StrictDynamicIgnoresAllowlistWarning) {
         MakeGarbageCollected<ContentSecurityPolicy>();
     TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
     context->BindToDelegate(*test_delegate);
-    EXPECT_EQ(
-        testCase.allowed,
-        CSPDirectiveListAllowFromSource(
-            *testCase.directive_list, context, CSPDirectiveName::ScriptSrcElem,
-            testCase.script_url, testCase.script_url,
-            ResourceRequest::RedirectStatus::kNoRedirect,
-            ReportingDisposition::kReport, testCase.script_nonce));
+    for (auto reporting_disposition : {ReportingDisposition::kSuppressReporting,
+                                       ReportingDisposition::kReport}) {
+      EXPECT_EQ(
+          testCase.allowed,
+          CSPDirectiveListAllowFromSource(
+              *testCase.directive_list, context,
+              CSPDirectiveName::ScriptSrcElem, testCase.script_url,
+              testCase.script_url, ResourceRequest::RedirectStatus::kNoRedirect,
+              reporting_disposition, testCase.script_nonce));
+    }
     static const char* message =
         "Note that 'strict-dynamic' is present, so "
         "host-based allowlisting is disabled.";

@@ -14,10 +14,14 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+
+// TODO(crbug.com/1424800): Remove once the restore issue has been resolved.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+#endif
 
 namespace chrome {
 namespace {
@@ -81,6 +85,8 @@ BrowserTabRestorer::BrowserTabRestorer(Browser* browser)
   BrowserList::AddObserver(this);
   browser_->profile()->SetUserData(kBrowserTabRestorerKey,
                                    base::WrapUnique(this));
+  VLOG(1) << "BrowserTabRestorer::BrowserTabRestorer, loading tabs from last "
+             "session.";
   tab_restore_service_->LoadTabsFromLastSession();
 }
 
@@ -103,9 +109,6 @@ void BrowserTabRestorer::OnBrowserRemoved(Browser* browser) {
 
 void RestoreTab(Browser* browser) {
   base::RecordAction(base::UserMetricsAction("RestoreTab"));
-  auto* reopen_tab_iph =
-      ReopenTabInProductHelpFactory::GetForProfile(browser->profile());
-  reopen_tab_iph->TabReopened();
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser->profile());

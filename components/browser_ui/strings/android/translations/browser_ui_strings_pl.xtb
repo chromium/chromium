@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
 <translation id="4428065317363009941">Personalizacja reklam</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
-<translation id="4440642537584213025">Rozwiń <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# plik cookie}few{# pliki cookie}many{# plików cookie}other{# pliku cookie}}</translation>
 <translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
 <translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
+<translation id="7895868624847501462">Spowoduje to usunięcie wszystkich danych lokalnych (w tym plików cookie) oraz zresetowanie wszystkich uprawnień witryny <ph name="DOMAIN" /> i jej wszystkich podstron</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> witryna w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}few{<ph name="FPS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}many{<ph name="FPS_MEMBERS_COUNT" /> witryn w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}other{<ph name="FPS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}}</translation>
 <translation id="7986741934819883144">Wybierz kontakt</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
+<translation id="8338445138528827481">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Możesz powiększać lub pomniejszać odwiedzane witryny</translation>
 <translation id="8372893542064058268">Zezwalaj na synchronizowanie w tle z określoną stroną.</translation>
 <translation id="8376384591331888629">Również pliki cookie innych firm na tej stronie</translation>

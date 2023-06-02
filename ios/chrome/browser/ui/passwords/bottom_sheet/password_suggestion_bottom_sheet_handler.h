@@ -16,6 +16,9 @@
 // Displays the password details menu.
 - (void)displayPasswordDetailsForFormSuggestion:(FormSuggestion*)formSuggestion;
 
+// Cleanup bottom sheet after it has been dismissed.
+- (void)stop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_

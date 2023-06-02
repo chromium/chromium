@@ -125,6 +125,32 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
     }
   }
 
+  // Only perform cleanup and copying of unpacked extensions if the path exists
+  // for the test since this is less common than for packed extensions.
+  if (base::PathExists(params.unpacked_extensions_dir)) {
+    base::FilePath unpacked_extensions_install_dir =
+        profile_dir.AppendASCII(extensions::kUnpackedInstallDirectoryName);
+    if (!base::DeletePathRecursively(unpacked_extensions_install_dir)) {
+      LOG(ERROR) << "Failed to clean unpacked extensions directory";
+      return nullptr;
+    }
+    if (params.unpacked_extensions_dir.empty()) {
+      if (base::File::Error error = base::File::FILE_OK;
+          !base::CreateDirectoryAndGetError(unpacked_extensions_install_dir,
+                                            &error)) {
+        LOG(ERROR) << "Failed to create unpacked extensions directory: "
+                   << error;
+        return nullptr;
+      }
+    } else {
+      if (!base::CopyDirectory(params.unpacked_extensions_dir,
+                               unpacked_extensions_install_dir, true)) {
+        LOG(ERROR) << "Failed to copy unpacked extensions directory";
+        return nullptr;
+      }
+    }
+  }
+
   if (params.profile_is_supervised) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     profile_builder.SetIsSupervisedProfile();
@@ -187,6 +213,8 @@ bool ExtensionServiceTestBase::ExtensionServiceInitParams::
     return false;
   }
   extensions_dir = filepath.AppendASCII(extensions::kInstallDirectoryName);
+  unpacked_extensions_dir =
+      filepath.AppendASCII(extensions::kUnpackedInstallDirectoryName);
   return true;
 }
 
@@ -226,6 +254,8 @@ void ExtensionServiceTestBase::InitializeExtensionService(
   profile_ = BuildTestingProfile(params, temp_dir_, policy_service_.get());
   extensions_install_dir_ =
       profile_->GetPath().AppendASCII(extensions::kInstallDirectoryName);
+  unpacked_install_dir_ = profile_->GetPath().AppendASCII(
+      extensions::kUnpackedInstallDirectoryName);
 
   CreateExtensionService(params);
   registry_ = ExtensionRegistry::Get(profile());
@@ -403,7 +433,8 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
   service_ = system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
-      params.autoupdate_enabled, params.extensions_enabled);
+      unpacked_install_dir_, params.autoupdate_enabled,
+      params.extensions_enabled);
 
   service_->component_loader()->set_ignore_allowlist_for_testing(true);
 

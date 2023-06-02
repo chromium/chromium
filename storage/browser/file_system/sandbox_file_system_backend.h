@@ -80,7 +80,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   CreateStorageKeyEnumerator();
 
  private:
-  raw_ptr<SandboxFileSystemBackendDelegate> delegate_;  // Not owned.
+  raw_ptr<SandboxFileSystemBackendDelegate, DanglingUntriaged>
+      delegate_;  // Not owned.
 };
 
 }  // namespace storage

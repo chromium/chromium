@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Opposite direction subgrids do not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id="target" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+  <div id="subgrid" style="display: grid; grid-template-columns: subgrid; direction: rtl; grid-column: span 4;">x</div>
+</div>
+<script>
+  test(() => {
+    let subgrid = document.getElementById("subgrid");
+    let actual = window.getComputedStyle(subgrid)['grid-template-columns'];
+    assert_equals(actual, "subgrid [] [] [] [] []");
+  }, 'Opposite direction subgrids do not crash');
+</script>

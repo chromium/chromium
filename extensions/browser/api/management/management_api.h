@@ -114,7 +114,9 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
  private:
   void OnInstallPromptDone(bool did_accept);
 
-  bool HasUnsupportedRequirements(const std::string& extension_id);
+  bool HasUnsupportedRequirements(const std::string& extension_id) const;
+
+  bool IsExtensionApprovalFlowRequired(const Extension* target_extension) const;
 
   void OnRequirementsChecked(const PreloadCheck::Errors& errors);
 

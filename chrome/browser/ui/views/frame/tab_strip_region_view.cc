@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/tip_marquee_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -118,17 +117,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   // aligned control and the end of the TabStripRegionView.
   const auto control_padding = gfx::Insets::TLBR(
       0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
-
-  tip_marquee_view_ = AddChildView(std::make_unique<TipMarqueeView>());
-  tip_marquee_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(
-          views::LayoutOrientation::kHorizontal,
-          views::MinimumFlexSizeRule::kPreferredSnapToMinimum)
-          .WithOrder(2));
-  tip_marquee_view_->SetProperty(views::kCrossAxisAlignmentKey,
-                                 views::LayoutAlignment::kCenter);
-  tip_marquee_view_->SetProperty(views::kMarginsKey, control_padding);
 
   SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 

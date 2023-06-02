@@ -7,9 +7,10 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -155,6 +156,23 @@ ExternalVkImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 ExternalVkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    gfx::GpuMemoryBufferHandle handle) {
+  CHECK(CanImportGpuMemoryBuffer(handle.type));
+  return ExternalVkImageBacking::CreateFromGMB(
+      context_state_, command_pool_.get(), mailbox, std::move(handle), format,
+      size, color_space, surface_origin, alpha_type, usage);
+}
+
+std::unique_ptr<SharedImageBacking>
+ExternalVkImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
@@ -164,14 +182,13 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  DCHECK(CanImportGpuMemoryBuffer(handle.type));
   if (plane != gfx::BufferPlane::DEFAULT) {
     LOG(ERROR) << "Invalid plane";
     return nullptr;
   }
-  return ExternalVkImageBacking::CreateFromGMB(
-      context_state_, command_pool_.get(), mailbox, std::move(handle),
-      buffer_format, size, color_space, surface_origin, alpha_type, usage);
+  return CreateSharedImage(mailbox, viz::GetSharedImageFormat(buffer_format),
+                           size, color_space, surface_origin, alpha_type, usage,
+                           debug_label, std::move(handle));
 }
 
 bool ExternalVkImageBackingFactory::CanImportGpuMemoryBuffer(

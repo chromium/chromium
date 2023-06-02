@@ -42,7 +42,6 @@
             <!-- Used by lacros. -->
             <include name="IDR_PRODUCT_LOGO_256_CANARY" file="google_chrome/product_logo_256_canary.png" type="BINDATA" />
             <!-- Used by ChromeOS OOBE -->
-            <include name="IDR_CROS_OOBE_FIRST_ANIMATION" file="google_chrome/chromeos/oobe/project_simon/first_animation.json" type="BINDATA" />
             <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="google_chrome/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
             <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="google_chrome/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
           </if>
@@ -150,6 +149,7 @@
         <!-- Borealis icons -->
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_STEAM_192" file="borealis/logo_borealis_steam_192.png" type="BINDATA" />
+        <include name="IDR_LOGO_BOREALIS_STEAM_PENDING_192" file="borealis/logo_borealis_steam_pending_192.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_SPLASH" file="borealis/logo_borealis_splash.png" type="BINDATA" />
         <include name="IDR_LOGO_BOREALIS_FLAIR" file="borealis/logo_borealis_flair_64.png" type="BINDATA" />
         <!-- TODO(b/248938308): Replace the below large .png files with svg/lottie when we update to WebUI. -->

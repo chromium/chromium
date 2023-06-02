@@ -26,6 +26,10 @@ class CORE_EXPORT NGScoreLineBreakContext {
   NGLineInfoList& LineInfoList() { return line_info_list_; }
 
   NGLineBreakPoints& LineBreakPoints() { return line_break_points_; }
+  wtf_size_t LineBreakPointsIndex() { return line_break_points_index_; }
+  // Returns the current `NGLineBreakPoint` if it exists. The current is
+  // incremented by `DidCreateLine()`.
+  const NGLineBreakPoint* CurrentLineBreakPoint() const;
 
   // True if `NGScoreLineBreaker` can handle next line.
   bool IsActive() const { return line_break_points_.empty() && !is_suspended_; }
@@ -37,13 +41,32 @@ class CORE_EXPORT NGScoreLineBreakContext {
  private:
   NGLineInfoList line_info_list_;
   NGLineBreakPoints line_break_points_;
+  wtf_size_t line_break_points_index_ = 0;
   bool is_suspended_ = false;
 };
+
+inline const NGLineBreakPoint* NGScoreLineBreakContext::CurrentLineBreakPoint()
+    const {
+  if (line_break_points_.empty()) {
+    return nullptr;
+  }
+  DCHECK_LT(line_break_points_index_, line_break_points_.size());
+  return &line_break_points_[line_break_points_index_];
+}
 
 inline void NGScoreLineBreakContext::DidCreateLine() {
   // Resume from the suspended state if all lines are consumed.
   if (UNLIKELY(is_suspended_ && line_info_list_.IsEmpty())) {
     is_suspended_ = false;
+  }
+
+  // Advance the `CurrentLineBreakPoint()` to the next line.
+  if (!line_break_points_.empty()) {
+    DCHECK_LT(line_break_points_index_, line_break_points_.size());
+    if (++line_break_points_index_ >= line_break_points_.size()) {
+      line_break_points_.Shrink(0);
+      line_break_points_index_ = 0;
+    }
   }
 }
 

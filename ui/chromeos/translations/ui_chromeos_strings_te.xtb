@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - హోస్ట్</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ఫైళ్లను తెరుస్తోంది...</translation>
 <translation id="1547964879613821194">కెనడియన్ ఆంగ్లం</translation>
 <translation id="1556189134700913550">అన్నింటికీ వర్తింపజేయి</translation>
 <translation id="1561842594491319104">Chrome పరికరాలు</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google సైట్</translation>
 <translation id="1853795129690976061">ఈ ఫోల్డర్ Linuxతో షేర్ చేయబడింది</translation>
 <translation id="1864756863218646478">ఫైల్‌ను కనుగొనబడలేదు.</translation>
+<translation id="1877377730633446520">ఇది సుమారు <ph name="REQUIRED_SPACE" /> స్పేస్‌ను ఉపయోగిస్తుంది. ప్రస్తుతం మీ వద్ద <ph name="FREE_SPACE" /> స్పేస్ ఖాళీగా ఉంది.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, కనెక్ట్ చేయండి</translation>
 <translation id="1920670151694390848">మలయాళం ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="1920798810075583923">పుచ్చకాయ</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు విస్తరించు</translation>
 <translation id="1995337122023280937">ఫైల్ లొకేషన్‌కు వెళ్ళు</translation>
 <translation id="2001796770603320721">డిస్క్‌లో మేనేజ్ చేయండి</translation>
+<translation id="2004942826429452291">ఫైల్స్ క్లౌడ్‌లో, ఈ Chromebookలో స్టోర్ చేయబడతాయి.</translation>
 <translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో స్టోరేజ్‌ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="2025955442973426285">టైగ్రిన్యా</translation>
 <translation id="2037845485764049925">రష్యన్</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">పరికర సెట్టింగ్‌లు</translation>
 <translation id="2084809735218147718">సంజ్ఞ ద్వారా థ్యాంక్ యు చెబుతున్న వ్యక్తి</translation>
 <translation id="2088690981887365033">VPN నెట్‌వర్క్</translation>
+<translation id="2089751716171649322">మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పుడు మీ Google Drive ఫైల్స్‌ను సులభంగా యాక్సెస్ చేయండి</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />అజ్ఞాత మోడ్‌లో అనుమతించండి<ph name="END_BOLD" /> ఆప్షన్‌ను ఆన్ చేయండి</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు తొలగించబడతాయి, మీరు వాటిని రీస్టోర్ చేయలేరు.</translation>
 <translation id="2122305276694332719">దాచబడిన నెట్‌వర్క్‌కు ఆటోమేటిక్‌గా కనెక్ట్ చేయడం వలన మీ పరికరాన్ని, కొన్ని నెట్‌వర్క్‌ల సెట్టింగ్‌లను ఇతరులు చూడగలుగుతారు, కనుక ఇది సిఫార్సు చేయబడదు.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linuxతో ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2225536596944493418">మీరు <ph name="NUMBER_OF_ITEMS" /> అంశాలను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ఫోల్డర్‌ను క్రియేట్ చేయడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">మీ Google Drive కాష్ క్లియర్ చేయబడింది.</translation>
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
 <translation id="2278133026967558505">అన్ని వెబ్‌సైట్‌లు, URLలకు ఫైల్ యాక్సెస్‌ను ఇవ్వండి</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> లోపాలు.</translation>
+<translation id="3501954296166022751">మీ Google Drive ఫైల్స్ ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సింక్ చేయడానికి సిద్ధం చేస్తోంది...</translation>
 <translation id="3522708245912499433">పోర్చుగీస్</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">ఈ సెట్టింగ్‌ను మార్చడం వలన అన్ని భాగస్వామ్య నెట్‌వర్క్‌లు ప్రభావితం అవుతాయి</translation>
 <translation id="3737576078404241332">సైడ్‌బార్ నుండి తీసివేయండి</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
-<translation id="3780536599611287598">'<ph name="FOLDER_NAME" />'లోకి ఫైళ్లను తరలించడానికి మీకు అనుమతి లేదు.</translation>
 <translation id="3786301125658655746">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="3793469551756281394">దాదాపు <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> సమయం మిగిలి ఉంది</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">అనుకూల పేరు సర్వర్‌లు</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, కనెక్ట్ చేయండి</translation>
 <translation id="4470564870223067757">హాంగుల్ 2 సెట్</translation>
+<translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4474142134969976028">మ్యాచ్ అయ్యే ఫలితాలు ఏవీ లేవు</translation>
 <translation id="4477002475007461989">రొమేనియన్</translation>
 <translation id="4477219268485577442">బల్గేరియన్ ఫోనెటిక్</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">వెన్నపండు</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ఐటెమ్‌లను రీస్టోర్ చేస్తోంది</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{అజ్ఞాత మోడ్‌ను ఉపయోగించడానికి, మీ సంస్థకు ఎక్స్‌టెన్షన్ అవసరం}other{అజ్ఞాత మోడ్‌ను ఉపయోగించడానికి, మీ సంస్థకు ఎక్స్‌టెన్షన్‌లు అవసరం}}</translation>
-<translation id="4823651846660089135">పరికరం చదవడానికి మాత్రమే</translation>
 <translation id="4826849268470072925">తమిళం ITRANS</translation>
 <translation id="482932175346970750">మీ బ్రౌజర్‌లో <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> అని టైప్ చేయండి</translation>
 <translation id="4843566743023903107">Chromebaseలు</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5500122897333236901">ఐస్‌లాండిక్</translation>
 <translation id="5508696409934741614">చుక్కలు</translation>
+<translation id="5519161320735100193">Google Drive సెట్టింగ్‌లు</translation>
 <translation id="5522908512596376669">ఫైల్ లిస్ట్‌, "లిస్ట్‌ వీక్షణ"కు మార్చబడింది.</translation>
 <translation id="5524517123096967210">ఫైల్‌ను చదవడం సాధ్యపడదు.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> చిత్రం</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">అన్ని నమోదుల ఎంపిక తీసివేయబడింది.</translation>
 <translation id="5838825566232597749">US వర్క్‌మాన్ అంతర్జాతీయం</translation>
 <translation id="5845721951356578987">నర్స్</translation>
+<translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="5861477046012235702">గేమర్</translation>
 <translation id="5864471791310927901">DHCP లుక్‌అప్ విఫలమైంది</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" />‌లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" /> యాక్టివేట్ చేయబడలేదు, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">వెబ్ ప్రాక్సీ స్వీయశోధన</translation>
 <translation id="6337014272874260727">క్విక్ ఫైల్స్ నుండి పిన్‌ను తీసివేయండి</translation>
 <translation id="6339145975392024142">US అంతర్జాతీయం (PC)</translation>
-<translation id="6346310558342052870">యాక్సెస్ నియంత్రించబడింది</translation>
 <translation id="6356685157277930264">ఫైల్స్ అభిప్రాయ విండో</translation>
 <translation id="6358884629796491903">డ్రాగన్</translation>
 <translation id="636254897931573416">చెల్లని డొమైన్ సఫిక్స్ మ్యాచ్ విలువ</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7806708061868529807">హిబ్రూ</translation>
 <translation id="78104721049218340">కెడ్మానీ కీబోర్డ్‌తో థాయ్</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో ఎర్రర్</translation>
 <translation id="7839804798877833423">ఈ ఫైళ్లను పొందడానికి మొబైల్ డేటాలో సుమారుగా <ph name="FILE_SIZE" /> ఉపయోగించబడుతుంది.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">కటకానా</translation>
 <translation id="7908793776359722643">విభజనను ఫార్మాట్ చేయడం వలన దానిలో స్టోర్ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">నా డ్రైవ్‌లోని మీ ఫైల్స్ ఆటోమేటిక్‌గా మీ Chromebookకు సింక్ అవుతాయి, కాబట్టి మీరు ఇంటర్నెట్ కనెక్షన్ లేకుండానే వాటిని యాక్సెస్ చేయగలరు.</translation>
 <translation id="7925247922861151263">AAA తనిఖీ విఫలమైంది</translation>
 <translation id="7925686952655276919">సింక్ కోసం మొబైల్ డేటాను ఉపయోగించవద్దు</translation>
 <translation id="7928710562641958568">పరికరాన్ని తీసివేయండి</translation>
+<translation id="7933875256234974853">Drive ఫైల్స్‌ను సింక్ చేయడానికి సిద్ధం అవుతోంది...</translation>
 <translation id="7943385054491506837">యుఎస్ కోల్‌మక్</translation>
 <translation id="7953739707111622108">పరికరం తెరవడం సాధ్యం కాదు. ఎందుకంటే దాని ఫైల్‌సిస్టమ్ గుర్తించబడలేదు.</translation>
 <translation id="7969525169268594403">స్లోవేనియన్</translation>
 <translation id="7972920761225148017">ఫ్రెంచ్ (స్విట్జర్లాండ్)</translation>
 <translation id="7973962044839454485">వినియోగదారు పేరు లేదా పాస్‌వర్డ్ తప్పు అయినందున PPP ప్రామాణీకరణ విఫలమైంది</translation>
 <translation id="7980421588063892270">కోల్‌మాక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ఫైల్స్ సింక్ అవుతున్నాయి</translation>
 <translation id="8000066093800657092">ఏ నెట్‌వర్క్ లేదు</translation>
 <translation id="8008366997883261463">జాక్ రస్సెల్ టెర్రియర్</translation>
 <translation id="8028993641010258682">సైజ్‌</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">డేనిష్</translation>
 <translation id="8949925099261528566">కనెక్ట్ చేయబడింది, ఇంటర్నెట్ లేదు</translation>
 <translation id="8965697826696209160">తగినంత ఖాళీ లేదు.</translation>
+<translation id="8971742885766657349">సింక్ చేయడం - <ph name="PERCENT" />% పూర్తయింది</translation>
 <translation id="8997962250644902079">చైనీస్ (సాంప్రదాయ) పిన్యిన్</translation>
 <translation id="8998871447376656508">అప్‌లోడ్‌ను పూర్తి చేయడానికి మీ Google Driveలో తగినంత ఖాళీ స్థలం లేదు.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9219908252191632183">లూనార్</translation>
+<translation id="937795003075802289">1 ఫైల్ సింక్ అవుతోంది</translation>
 <translation id="938470336146445890">దయచేసి వినియోగదారు సర్టిఫికెట్‌ను ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="943972244133411984">వీరు ఎడిట్ చేశారు</translation>

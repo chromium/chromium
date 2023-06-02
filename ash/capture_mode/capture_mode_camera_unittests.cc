@@ -28,6 +28,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -35,9 +41,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
+#include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
@@ -76,9 +84,7 @@ namespace ash {
 
 namespace {
 
-constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
-constexpr char kDefaultCameraDisplayName[] = "Default Cam";
-constexpr char kDefaultCameraModelId[] = "0def:c000";
+constexpr char kTestUser[] = "user@test";
 
 // The app ID used for the capture mode camera and microphone recording privacy
 // indicators.
@@ -90,11 +96,6 @@ constexpr char kCaptureModePrivacyIndicatorId[] = "system-capture-mode";
 // of whether the recording type drop down button is visible or not.
 constexpr int kMinRegionLengthForCameraToIntersectLabelButton =
     capture_mode::kMinCaptureSurfaceShortSideLengthForVisibleCamera + 20;
-
-TestCaptureModeDelegate* GetTestDelegate() {
-  return static_cast<TestCaptureModeDelegate*>(
-      CaptureModeController::Get()->delegate_for_testing());
-}
 
 CaptureModeCameraController* GetCameraController() {
   return CaptureModeController::Get()->camera_controller();
@@ -123,45 +124,6 @@ bool IsWindowStackedRightBelow(aura::Window* window, aura::Window* sibling) {
       base::ranges::find(children, sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == window;
 }
-
-// Defines a waiter for the camera devices change notifications.
-class CameraDevicesChangeWaiter : public CaptureModeCameraController::Observer {
- public:
-  CameraDevicesChangeWaiter() { GetCameraController()->AddObserver(this); }
-  CameraDevicesChangeWaiter(const CameraDevicesChangeWaiter&) = delete;
-  CameraDevicesChangeWaiter& operator=(const CameraDevicesChangeWaiter&) =
-      delete;
-  ~CameraDevicesChangeWaiter() override {
-    GetCameraController()->RemoveObserver(this);
-  }
-
-  int camera_change_event_count() const { return camera_change_event_count_; }
-  int selected_camera_change_event_count() const {
-    return selected_camera_change_event_count_;
-  }
-
-  void Wait() { loop_.Run(); }
-
-  // CaptureModeCameraController::Observer:
-  void OnAvailableCamerasChanged(const CameraInfoList& cameras) override {
-    ++camera_change_event_count_;
-    loop_.Quit();
-  }
-
-  void OnSelectedCameraChanged(const CameraId& camera_id) override {
-    ++selected_camera_change_event_count_;
-  }
-
- private:
-  base::RunLoop loop_;
-
-  // Tracks the number of times the observer call `OnAvailableCamerasChanged()`
-  // was triggered.
-  int camera_change_event_count_ = 0;
-
-  // Tracks the number of times `OnSelectedCameraChanged()` was triggered.
-  int selected_camera_change_event_count_ = 0;
-};
 
 gfx::Rect GetTooSmallToFitCameraRegion() {
   return {100, 100,
@@ -210,30 +172,6 @@ class CaptureModeCameraTest : public AshTestBase {
     WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
   }
-
-  void AddFakeCamera(const std::string& device_id,
-                     const std::string& display_name,
-                     const std::string& model_id,
-                     media::VideoFacingMode camera_facing_mode =
-                         media::MEDIA_VIDEO_FACING_NONE) {
-    CameraDevicesChangeWaiter waiter;
-    GetTestDelegate()->video_source_provider()->AddFakeCamera(
-        device_id, display_name, model_id, camera_facing_mode);
-    waiter.Wait();
-  }
-
-  void RemoveFakeCamera(const std::string& device_id) {
-    CameraDevicesChangeWaiter waiter;
-    GetTestDelegate()->video_source_provider()->RemoveFakeCamera(device_id);
-    waiter.Wait();
-  }
-
-  void AddDefaultCamera() {
-    AddFakeCamera(kDefaultCameraDeviceId, kDefaultCameraDisplayName,
-                  kDefaultCameraModelId);
-  }
-
-  void RemoveDefaultCamera() { RemoveFakeCamera(kDefaultCameraDeviceId); }
 
   // Adds the default camera, sets it as the selected camera, then removes it,
   // which triggers the camera disconnection grace period. Returns a pointer to
@@ -4118,6 +4056,200 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
 
+// -----------------------------------------------------------------------------
+// CameraPreviewWithQsRevampTest:
+
+class CameraPreviewWithQsRevampTest : public CaptureModeCameraTest {
+ public:
+  CameraPreviewWithQsRevampTest() : scoped_feature_list_(features::kQsRevamp) {}
+  CameraPreviewWithQsRevampTest(const CameraPreviewWithQsRevampTest&) = delete;
+  CameraPreviewWithQsRevampTest& operator=(
+      const CameraPreviewWithQsRevampTest&) = delete;
+  ~CameraPreviewWithQsRevampTest() override = default;
+
+  // CaptureModeCameraTest:
+  void SetUp() override {
+    CaptureModeCameraTest::SetUp();
+
+    auto test_api = std::make_unique<NotificationCenterTestApi>(
+        GetPrimaryNotificationCenterTray());
+    // Add a notification to show the notification center tray in the shelf.
+    test_api->AddNotification();
+    ASSERT_TRUE(test_api->IsTrayShown());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CameraPreviewWithQsRevampTest,
+       AvoidCollisionWithNotificationBubbleShownFirst) {
+  NotificationCenterTray* notification_center_tray =
+      GetPrimaryNotificationCenterTray();
+
+  // Click the notification center tray to open the corresponding bubble.
+  LeftClickOn(notification_center_tray);
+  EXPECT_TRUE(notification_center_tray->IsBubbleShown());
+
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  // Verify current default snap position is `kBottomRight` before we select a
+  // camera device.
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  EXPECT_TRUE(notification_center_tray->IsBubbleShown());
+
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  // The camera preview should not intersect with the notification bubble when
+  // it is shown. The snap position should be updated to avoid this.
+  EXPECT_FALSE(
+      notification_center_tray->GetBubbleView()->GetBoundsInScreen().Intersects(
+          preview_widget->GetWindowBoundsInScreen()));
+  EXPECT_NE(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+}
+
+TEST_F(CameraPreviewWithQsRevampTest,
+       AvoidCollisionWithCameraPreviewShownFirst) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  StartVideoRecordingImmediately();
+
+  NotificationCenterTray* notification_center_tray =
+      GetPrimaryNotificationCenterTray();
+
+  // The camera preview should be snapped to the bottom right when the
+  // notification bubble is not shown.
+  EXPECT_FALSE(notification_center_tray->IsBubbleShown());
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+
+  // Click the notification center tray to open the corresponding bubble. The
+  // camera preview snap position should be updated to avoid the collision.
+  LeftClickOn(notification_center_tray);
+  EXPECT_TRUE(notification_center_tray->IsBubbleShown());
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_FALSE(
+      notification_center_tray->GetBubbleView()->GetBoundsInScreen().Intersects(
+          preview_widget->GetWindowBoundsInScreen()));
+  EXPECT_NE(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+}
+
+// -----------------------------------------------------------------------------
+// CameraPreviewWithHoldingSpaceTest:
+
+class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
+ public:
+  CameraPreviewWithHoldingSpaceTest() = default;
+  CameraPreviewWithHoldingSpaceTest(const CameraPreviewWithHoldingSpaceTest&) =
+      delete;
+  CameraPreviewWithHoldingSpaceTest& operator=(
+      const CameraPreviewWithHoldingSpaceTest&) = delete;
+  ~CameraPreviewWithHoldingSpaceTest() override = default;
+
+  HoldingSpaceModel* model() { return &model_; }
+
+  testing::NiceMock<MockHoldingSpaceClient>* client() {
+    return &holding_space_client_;
+  }
+
+  HoldingSpaceTestApi* holding_space_test_api() {
+    return holding_space_test_api_.get();
+  }
+
+  // CaptureModeCameraTest:
+  void SetUp() override {
+    CaptureModeCameraTest::SetUp();
+
+    holding_space_test_api_ = std::make_unique<HoldingSpaceTestApi>();
+    AccountId user_account = AccountId::FromUserEmail(kTestUser);
+    HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+        user_account, client(), model());
+
+    TestSessionControllerClient* session = GetSessionControllerClient();
+    session->AddUserSession(kTestUser);
+    holding_space_prefs::MarkTimeOfFirstAvailability(
+        session->GetUserPrefService(user_account));
+    holding_space_prefs::MarkTimeOfFirstAdd(
+        session->GetUserPrefService(user_account));
+    session->SwitchActiveUser(user_account);
+  }
+
+  void TearDown() override {
+    holding_space_test_api_.reset();
+    CaptureModeCameraTest::TearDown();
+  }
+
+ private:
+  std::unique_ptr<HoldingSpaceTestApi> holding_space_test_api_;
+  testing::NiceMock<MockHoldingSpaceClient> holding_space_client_;
+  HoldingSpaceModel model_;
+};
+
+TEST_F(CameraPreviewWithHoldingSpaceTest,
+       AvoidCollisionWithHoldingSpaceBubbleShownFirst) {
+  EXPECT_TRUE(holding_space_test_api()->IsShowingInShelf());
+  // Tap on the holding space tray to show the corresponding bubble.
+  holding_space_test_api()->Show();
+  EXPECT_TRUE(holding_space_test_api()->IsShowing());
+
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  // Verify current default snap position is `kBottomRight` before we select a
+  // camera device.
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  EXPECT_TRUE(holding_space_test_api()->IsShowing());
+
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  // The camera preview should not intersect with the holding space bubble when
+  // it is shown. The snap position should be updated to avoid this.
+  EXPECT_FALSE(
+      holding_space_test_api()->GetBubble()->GetBoundsInScreen().Intersects(
+          preview_widget->GetWindowBoundsInScreen()));
+  EXPECT_NE(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+}
+
+TEST_F(CameraPreviewWithHoldingSpaceTest,
+       AvoidCollisionWithCameraPreviewShownFirst) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  StartVideoRecordingImmediately();
+
+  EXPECT_TRUE(holding_space_test_api()->IsShowingInShelf());
+  // The camera preview should be snapped to the bottom right when the holding
+  // space bubble is not shown.
+  EXPECT_FALSE(holding_space_test_api()->IsShowing());
+  EXPECT_EQ(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+
+  // Tap on the holding space tray to show the corresponding bubble. The camera
+  // preview snap position should be updated to avoid the collision.
+  holding_space_test_api()->Show();
+  EXPECT_TRUE(holding_space_test_api()->IsShowing());
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_FALSE(
+      holding_space_test_api()->GetBubble()->GetBoundsInScreen().Intersects(
+          preview_widget->GetWindowBoundsInScreen()));
+  EXPECT_NE(camera_controller->camera_preview_snap_position(),
+            CameraPreviewSnapPosition::kBottomRight);
+}
+
+// -----------------------------------------------------------------------------
+// ProjectorCaptureModeCameraTest:
+
 class ProjectorCaptureModeCameraTest : public CaptureModeCameraTest {
  public:
   ProjectorCaptureModeCameraTest() = default;
@@ -4500,13 +4632,9 @@ class CaptureModePrivacyIndicatorsTest
       public testing::WithParamInterface<bool> {
  public:
   CaptureModePrivacyIndicatorsTest() {
-    if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kPrivacyIndicators, features::kQsRevamp}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({features::kPrivacyIndicators},
-                                            {features::kQsRevamp});
-    }
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kPrivacyIndicators, true},
+         {features::kQsRevamp, IsQsRevampEnabled()}});
   }
   CaptureModePrivacyIndicatorsTest(const CaptureModePrivacyIndicatorsTest&) =
       delete;

@@ -24,7 +24,8 @@ BinaryUploadService* CloudBinaryUploadServiceFactory::GetForProfile(
 // static
 CloudBinaryUploadServiceFactory*
 CloudBinaryUploadServiceFactory::GetInstance() {
-  return base::Singleton<CloudBinaryUploadServiceFactory>::get();
+  static base::NoDestructor<CloudBinaryUploadServiceFactory> instance;
+  return instance.get();
 }
 
 CloudBinaryUploadServiceFactory::CloudBinaryUploadServiceFactory()

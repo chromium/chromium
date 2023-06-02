@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace content {
@@ -34,7 +34,7 @@ class TriggeredProfileResetterFactory : public ProfileKeyedServiceFactory {
       const TriggeredProfileResetterFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<TriggeredProfileResetterFactory>;
+  friend base::NoDestructor<TriggeredProfileResetterFactory>;
   friend class TriggeredProfileResetterTest;
 
   TriggeredProfileResetterFactory();

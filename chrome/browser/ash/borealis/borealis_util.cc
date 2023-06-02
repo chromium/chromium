@@ -5,24 +5,14 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
 #include "base/base64.h"
-#include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
-#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/crx_file/id_util.h"
 #include "components/exo/shell_surface_util.h"
-#include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/display/screen.h"
 
 namespace borealis {
 
@@ -38,27 +28,7 @@ const char kBorealisAppIdRegex[] = "(?:steam:\\/\\/rungameid\\/)(\\d+)";
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 
-const char kInsertCoinSuccessMessage[] = "Success";
-const char kInsertCoinRejectMessage[] = "Coin Invalid";
-
 namespace {
-
-// Base feedback form URL, without query parameters for prefilling.
-static constexpr char kFeedbackUrl[] =
-    "https://docs.google.com/forms/d/e/"
-    "1FAIpQLScGvT2BIwYJe9g15OINX2pvw6TgK8e2ihvSq3hHZudAneRmuA/"
-    "viewform?usp=pp_url";
-// Query parameter keys for prefilling form data.
-static constexpr char kAppNameKey[] = "entry.504707995";
-// JSON keys for prefilling JSON section.
-static constexpr char kJSONAppIdKey[] = "steam_appid";
-static constexpr char kJSONBoardKey[] = "board";
-static constexpr char kJSONMonitorsExternal[] = "external_monitors";
-static constexpr char kJSONMonitorsInternal[] = "internal_monitors";
-static constexpr char kJSONPlatformKey[] = "platform_version";
-static constexpr char kJSONProtonKey[] = "proton_version";
-static constexpr char kJSONSpecsKey[] = "specs";
-static constexpr char kJSONSteamKey[] = "steam_runtime_version";
 
 // App IDs prefixed with this are identified with a numeric "Borealis ID".
 const base::StringPiece kBorealisWindowWithIdPrefix(
@@ -76,65 +46,6 @@ static constexpr char kSteamClientId[] =
 // 769 is the Steam App ID assigned to the Steam Big Picture client as of 2023.
 static constexpr char kSteamBigPictureId[] =
     "borealis_anon:org.chromium.guest_os.borealis.xprop.769";
-
-GURL AssembleUrlAsync(std::string owner_id,
-                      absl::optional<int> game_id,
-                      std::string window_title) {
-  GURL url(kFeedbackUrl);
-  url = net::AppendQueryParameter(url, kAppNameKey, window_title);
-
-  base::Value::Dict json_root;
-
-  // System specs
-  json_root.Set(kJSONBoardKey, base::SysInfo::HardwareModelName());
-  json_root.Set(
-      kJSONSpecsKey,
-      base::StringPrintf("%ldGB; %s",
-                         (long)(base::SysInfo::AmountOfPhysicalMemory() /
-                                (1000 * 1000 * 1000)),
-                         base::SysInfo::CPUModelName().c_str()));
-  json_root.Set(kJSONPlatformKey, base::SysInfo::OperatingSystemVersion());
-
-  // Number of monitors
-  int internal_displays = 0;
-  int external_displays = 0;
-  for (const display::Display& d :
-       display::Screen::GetScreen()->GetAllDisplays()) {
-    if (d.IsInternal()) {
-      internal_displays++;
-    } else {
-      external_displays++;
-    }
-  }
-  json_root.Set(kJSONMonitorsInternal, internal_displays);
-  json_root.Set(kJSONMonitorsExternal, external_displays);
-
-  // Proton/SLR versions
-  borealis::CompatToolInfo compat_tool_info;
-  std::string output;
-  if (borealis::GetCompatToolInfo(owner_id, &output)) {
-    compat_tool_info = borealis::ParseCompatToolInfo(game_id, output);
-  } else {
-    LOG(WARNING) << "Failed to get compat tool version info:";
-    LOG(WARNING) << output;
-  }
-  json_root.Set(kJSONProtonKey, compat_tool_info.proton);
-  json_root.Set(kJSONSteamKey, compat_tool_info.slr);
-
-  // Steam GameID
-  if (!game_id.has_value() && compat_tool_info.game_id.has_value()) {
-    game_id = compat_tool_info.game_id.value();
-  }
-  if (game_id.has_value()) {
-    json_root.Set(kJSONAppIdKey, base::StringPrintf("%d", game_id.value()));
-  }
-
-  std::string device_info;
-  base::JSONWriter::Write(json_root, &device_info);
-  url = net::AppendQueryParameter(url, kDeviceInformationKey, device_info);
-  return url;
-}
-
 }  // namespace
 
 absl::optional<int> GetBorealisAppId(std::string exec) {
@@ -158,41 +69,17 @@ absl::optional<int> GetBorealisAppId(const aura::Window* window) {
   return absl::nullopt;
 }
 
-void FeedbackFormUrl(Profile* const profile,
-                     const std::string& app_id,
-                     const std::string& window_title,
-                     base::OnceCallback<void(GURL)> url_callback) {
-  const guest_os::GuestOsRegistryService* registry_service =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-
-  // Exclude windows that aren't games.
+bool IsNonGameBorealisApp(const std::string& app_id) {
   if (app_id.find(kIgnoredAppIdPrefix) != std::string::npos ||
       app_id == kClientAppId) {
-    std::move(url_callback).Run(GURL());
-    return;
+    return true;
   }
 
   if (app_id == kZenityId || app_id == kSteamClientId ||
       app_id == kSteamBigPictureId) {
-    std::move(url_callback).Run(GURL());
-    return;
+    return true;
   }
-
-  // Attempt to get the Borealis app ID.
-  // TODO(b/173977876): Implement this in a more reliable way.
-  absl::optional<int> game_id;
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
-      registry_service->GetRegistration(app_id);
-  if (registration.has_value()) {
-    game_id = GetBorealisAppId(registration->Exec());
-  }
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::MayBlock(),
-      base::BindOnce(&AssembleUrlAsync,
-                     ash::ProfileHelper::GetUserIdHashFromProfile(profile),
-                     std::move(game_id), std::move(window_title)),
-      std::move(url_callback));
+  return false;
 }
 
 bool IsExternalURLAllowed(const GURL& url) {

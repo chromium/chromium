@@ -51,6 +51,7 @@ class MockSiteDataObserver
   ~MockSiteDataObserver() override = default;
 
   MOCK_METHOD(void, OnSiteDataAccessed, (const AccessDetails& access_details));
+  MOCK_METHOD(void, OnStatefulBounceDetected, ());
 };
 
 class MockPageSpecificContentSettingsDelegate

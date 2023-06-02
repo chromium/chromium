@@ -67,7 +67,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kSupports,
     kPositionFallback,
     kTry,
-    kInitial,
+    kStartingStyle,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -103,10 +103,10 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsImportRule() const { return GetType() == kImport; }
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
-  bool IsInitialRule() const { return GetType() == kInitial; }
+  bool IsStartingStyleRule() const { return GetType() == kStartingStyle; }
   bool IsConditionRule() const {
     return GetType() == kContainer || GetType() == kMedia ||
-           GetType() == kSupports || GetType() == kInitial;
+           GetType() == kSupports || GetType() == kStartingStyle;
   }
 
   StyleRuleBase* Copy() const;
@@ -539,14 +539,14 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
-class StyleRuleInitial : public StyleRuleCondition {
+class StyleRuleStartingStyle : public StyleRuleCondition {
  public:
-  explicit StyleRuleInitial(HeapVector<Member<StyleRuleBase>> rules);
-  StyleRuleInitial(const StyleRuleInitial&) = default;
+  explicit StyleRuleStartingStyle(HeapVector<Member<StyleRuleBase>> rules);
+  StyleRuleStartingStyle(const StyleRuleStartingStyle&) = default;
 
   bool ConditionIsSupported() const { return true; }
-  StyleRuleInitial* Copy() const {
-    return MakeGarbageCollected<StyleRuleInitial>(*this);
+  StyleRuleStartingStyle* Copy() const {
+    return MakeGarbageCollected<StyleRuleStartingStyle>(*this);
   }
 
   void SetConditionText(const ExecutionContext*, String);
@@ -652,9 +652,9 @@ struct DowncastTraits<StyleRuleCharset> {
 };
 
 template <>
-struct DowncastTraits<StyleRuleInitial> {
+struct DowncastTraits<StyleRuleStartingStyle> {
   static bool AllowFrom(const StyleRuleBase& rule) {
-    return rule.IsInitialRule();
+    return rule.IsStartingStyleRule();
   }
 };
 

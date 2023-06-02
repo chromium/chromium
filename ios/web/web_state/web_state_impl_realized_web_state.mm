@@ -710,34 +710,22 @@ const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();
 }
 
-GURL WebStateImpl::RealizedWebState::GetCurrentURL(
-    URLVerificationTrustLevel* trust_level) const {
-  if (!trust_level) {
-    auto ignore_trust = URLVerificationTrustLevel::kNone;
-    return [web_controller_ currentURLWithTrustLevel:&ignore_trust];
-  }
-  GURL result = [web_controller_ currentURLWithTrustLevel:trust_level];
-
+absl::optional<GURL>
+WebStateImpl::RealizedWebState::GetLastCommittedURLIfTrusted() const {
   NavigationItemImpl* item = navigation_manager_->GetLastCommittedItemImpl();
-  GURL lastCommittedURL = item ? item->GetURL() : GURL();
+  if (!item) {
+    return GURL();
+  }
 
-  bool equalOrigins;
-  if (result.SchemeIs(url::kAboutScheme) &&
-      GetWebClient()->IsAppSpecificURL(GetLastCommittedURL())) {
-    // This special case is added for any app specific URLs that have been
-    // rewritten to about:// URLs.  In this case, an about scheme does not have
-    // an origin to compare, only a path.
-    equalOrigins = result.path() == lastCommittedURL.path();
-  } else {
-    equalOrigins = result.DeprecatedGetOriginAsURL() ==
-                   lastCommittedURL.DeprecatedGetOriginAsURL();
+  if (item->IsUntrusted()) {
+    return absl::nullopt;
   }
-  UMA_HISTOGRAM_BOOLEAN("Web.CurrentOriginEqualsLastCommittedOrigin",
-                        equalOrigins);
-  if (!equalOrigins || (item && item->IsUntrusted())) {
-    *trust_level = URLVerificationTrustLevel::kMixed;
-  }
-  return result;
+
+  return item->GetVirtualURL();
+}
+
+GURL WebStateImpl::RealizedWebState::GetCurrentURL() const {
+  return [web_controller_ currentURL];
 }
 
 id<CRWWebViewProxy> WebStateImpl::RealizedWebState::GetWebViewProxy() const {

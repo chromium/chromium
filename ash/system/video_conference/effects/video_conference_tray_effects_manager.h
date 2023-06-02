@@ -78,6 +78,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // Notifies all observers about effect support state changed.
   void NotifyEffectSupportStateChanged(VcEffectId effect_id, bool is_supported);
 
+  // Records the current state of all effects to metrics.
+  void RecordInitialStates();
+
  private:
   // Returns a vector of `VcHostedEffect` objects of type
   // `VcEffectType::kToggle`, in no special order.

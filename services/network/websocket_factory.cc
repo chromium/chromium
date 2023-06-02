@@ -23,7 +23,7 @@ WebSocketFactory::WebSocketFactory(NetworkContext* context)
 
 WebSocketFactory::~WebSocketFactory() {
   // Subtle: This is important to avoid WebSocketFactory::Remove calls during
-  // |connections_| destruction.
+  // `connections_` destruction.
   WebSocketSet connections = std::move(connections_);
 }
 
@@ -50,10 +50,11 @@ void WebSocketFactory::CreateWebSocket(
     return;
   }
 
-  // If |require_network_isolation_key| is set, |isolation_info| must not be
+  // If `require_network_anonymization_key` is set, `isolation_info` must not be
   // empty.
-  if (context_->require_network_isolation_key())
+  if (context_->require_network_anonymization_key()) {
     DCHECK(!isolation_info.IsEmpty());
+  }
 
   if (throttler_.HasTooManyPendingConnections(process_id)) {
     // Too many websockets!

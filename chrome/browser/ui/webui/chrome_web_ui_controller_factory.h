@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_ui.h"
@@ -71,7 +71,7 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
   ~ChromeWebUIControllerFactory() override;
 
  private:
-  friend struct base::DefaultSingletonTraits<ChromeWebUIControllerFactory>;
+  friend base::NoDestructor<ChromeWebUIControllerFactory>;
 
   // Gets the data for the favicon for a WebUI page. Returns NULL if the WebUI
   // does not have a favicon.

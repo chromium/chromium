@@ -673,6 +673,50 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
             text_edit_provider->GetSelection(selections.Receive()));
 }
 
+TEST_F(AXPlatformNodeTextProviderTest, ITextRangeProviderGetSelectionRefCount) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea name="Document"
+    ++++2 kStaticText name="hello"
+  )HTML"));
+
+  Init(update);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ComPtr<ITextProvider> root_text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &root_text_provider));
+
+  ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
+  root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
+
+  AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
+  AXTreeData& selected_tree_data =
+      const_cast<AXTreeData&>(owner->GetDelegate()->GetTreeData());
+  selected_tree_data.sel_focus_object_id = 2;
+  selected_tree_data.sel_anchor_object_id = 2;
+  selected_tree_data.sel_anchor_offset = 0;
+  selected_tree_data.sel_focus_offset = 5;
+
+  base::win::ScopedSafearray selections;
+  root_text_provider->GetSelection(selections.Receive());
+  ASSERT_NE(nullptr, selections.Get());
+
+  LONG index = 0;
+  ComPtr<ITextRangeProvider> text_range_provider;
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+
+  // Validate that there was only one reference to the `text_range_provider`.
+  ASSERT_EQ(1U, text_range_provider->Release());
+
+  // This is needed to avoid calling SafeArrayDestroy from SafeArray's dtor when
+  // exiting the scope, which would crash trying to release the already
+  // destroyed `text_range_provider`.
+  selections.Release();
+}
+
 TEST_F(AXPlatformNodeTextProviderTest,
        TestRemoveTextInvalidatingPositionForComparison) {
   TestAXTreeUpdate initial_state(std::string(R"HTML(

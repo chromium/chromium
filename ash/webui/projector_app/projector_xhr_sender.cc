@@ -14,8 +14,10 @@
 #include "base/strings/string_util.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -118,6 +120,8 @@ inline std::string RequestTypeToString(projector::mojom::RequestType method) {
       return "GET";
     case projector::mojom::RequestType::kPatch:
       return "PATCH";
+    case projector::mojom::RequestType::kDelete:
+      return "DELETE";
   }
 
   NOTREACHED_NORETURN();
@@ -126,6 +130,16 @@ inline std::string RequestTypeToString(projector::mojom::RequestType method) {
 // The maximum number of retries for the SimpleURLLoader requests. Three times
 // is an arbitrary number to start with.
 const int kMaxRetries = 3;
+
+void HandleAccessTokenErrorState(const std::string& email,
+                                 const GoogleServiceAuthError& error) {
+  LOG(ERROR) << "Failed to request access token, error state:" << error.state()
+             << ", error detail:" << error.ToString();
+  if (error.state() ==
+      GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
+    ProjectorAppClient::Get()->HandleAccountReauth(email);
+  }
+}
 
 }  // namespace
 
@@ -205,7 +219,7 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
         /*response_body=*/std::string(),
         /*response_code=*/projector::mojom::XhrResponseCode::
             kTokenFetchFailure);
-    LOG(ERROR) << "Failed to reqeust access token, error:" << error.ToString();
+    HandleAccessTokenErrorState(email, error);
     return;
   }
 
@@ -261,7 +275,7 @@ void ProjectorXhrSender::SendRequest(
       url_loader_factory_,
       base::BindOnce(&ProjectorXhrSender::OnSimpleURLLoaderComplete,
                      weak_factory_.GetWeakPtr(), next_request_id_,
-                     std::move(callback)));
+                     std::move(callback), token));
 
   loader_map_.emplace(next_request_id_++, std::move(loader));
 }
@@ -269,6 +283,7 @@ void ProjectorXhrSender::SendRequest(
 void ProjectorXhrSender::OnSimpleURLLoaderComplete(
     int request_id,
     SendRequestCallback callback,
+    const std::string& token,
     std::unique_ptr<std::string> response_body) {
   auto& loader = loader_map_[request_id];
 
@@ -293,6 +308,13 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
     LOG(ERROR) << "Failed to send XHR request, Http error code: "
                << response_code
                << ", response body: " << response_body_or_empty;
+
+    if (response_code == net::HTTP_UNAUTHORIZED) {
+      // We show an error message that ask user to open screencast app and try
+      // again. If the user do so, `HandleAccessTokenErrorState` will be called
+      // for reauth.
+      oauth_token_fetcher_.InvalidateToken(token);
+    }
   }
 
   loader_map_.erase(request_id);

@@ -222,11 +222,9 @@ bool DualReadingListModel::NeedsExplicitUploadToSyncServer(
   DCHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
          !account_model_->IsTrackingSyncMetadata());
 
-  return !local_or_syncable_model_->IsTrackingSyncMetadata() &&
+  return account_model_->IsTrackingSyncMetadata() &&
          local_or_syncable_model_->GetEntryByURL(url) != nullptr &&
-         account_model_->GetEntryByURL(url) == nullptr &&
-         base::FeatureList::IsEnabled(
-             switches::kReadingListEnableSyncTransportModeUponSignIn);
+         account_model_->GetEntryByURL(url) == nullptr;
 }
 
 void DualReadingListModel::MarkAllForUploadToSyncServerIfNeeded() {
@@ -539,8 +537,6 @@ void DualReadingListModel::ReadingListWillRemoveEntry(
     return;
   }
 
-  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
-
   if (model == account_model_.get() &&
       local_or_syncable_model_->GetEntryByURL(url)) {
     // The entry was removed via sync from `account_model_`, but the fact that
@@ -560,8 +556,6 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
   if (suppress_observer_notifications_) {
     return;
   }
-
-  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
 
   if (local_or_syncable_model_->GetEntryByURL(url)) {
     // The entry is still present in `local_or_syncable_model_`, so this is an

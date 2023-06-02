@@ -965,7 +965,9 @@ bool DesktopNativeWidgetAura::IsActive() const {
 }
 
 void DesktopNativeWidgetAura::PaintAsActiveChanged() {
-  desktop_window_tree_host_->PaintAsActiveChanged();
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->PaintAsActiveChanged();
+  }
 }
 
 void DesktopNativeWidgetAura::SetZOrderLevel(ui::ZOrderLevel order) {

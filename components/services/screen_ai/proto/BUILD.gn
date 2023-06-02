@@ -9,6 +9,7 @@ proto_library("proto") {
     "chrome_screen_ai.proto",
     "view_hierarchy.proto",
   ]
+  cc_generator_options = "lite"
 }
 
 proto_library("view_hierarchy_proto_descriptor") {

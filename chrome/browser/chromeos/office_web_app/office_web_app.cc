@@ -22,6 +22,18 @@ constexpr char kMicrosoft365WebAppUrl[] =
     "https://www.microsoft365.com/?from=Homescreen";
 constexpr char kMicrosoft365FallbackName[] = "Microsoft 365";
 
+void OnOfficeWebAppInstalled(
+    Profile* profile,
+    base::OnceCallback<void(webapps::InstallResultCode)> callback,
+    const GURL& install_url,
+    web_app::ExternallyManagedAppManager::InstallResult result) {
+  if (webapps::IsSuccess(result.code)) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+    proxy->SetSupportedLinksPreference(*result.app_id);
+  }
+  std::move(callback).Run(result.code);
+}
+
 }  // namespace
 
 void InstallMicrosoft365(
@@ -39,13 +51,7 @@ void InstallMicrosoft365(
 
   provider->externally_managed_app_manager().InstallNow(
       std::move(options),
-      base::BindOnce(
-          [](base::OnceCallback<void(webapps::InstallResultCode)> callback,
-             const GURL& install_url,
-             web_app::ExternallyManagedAppManager::InstallResult result) {
-            std::move(callback).Run(result.code);
-          },
-          std::move(callback)));
+      base::BindOnce(&OnOfficeWebAppInstalled, profile, std::move(callback)));
 }
 
 }  // namespace chromeos

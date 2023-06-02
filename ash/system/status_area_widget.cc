@@ -156,7 +156,9 @@ void StatusAreaWidget::Initialize() {
   if (features::IsQsRevampEnabled()) {
     notification_center_tray_ =
         AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
-    notification_center_tray_->views::View::AddObserver(this);
+    notification_center_tray_->AddObserver(this);
+    animation_controller_ = std::make_unique<StatusAreaAnimationController>(
+        notification_center_tray());
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
@@ -182,11 +184,6 @@ void StatusAreaWidget::Initialize() {
 
   EnsureTrayOrder();
 
-  if (features::IsQsRevampEnabled()) {
-    animation_controller_ = std::make_unique<StatusAreaAnimationController>(
-        notification_center_tray());
-  }
-
   UpdateAfterLoginStatusChange(
       Shell::Get()->session_controller()->login_status());
   UpdateLayout(/*animate=*/false);
@@ -205,7 +202,7 @@ StatusAreaWidget::~StatusAreaWidget() {
   // some unittests. During the test environment tear-down, removing the
   // observer will lead to a crash.
   if (features::IsQsRevampEnabled() && notification_center_tray_) {
-    notification_center_tray_->views::View::RemoveObserver(this);
+    notification_center_tray_->RemoveObserver(this);
   }
 
   // If QsRevamp flag is enabled, reset `animation_controller_` before

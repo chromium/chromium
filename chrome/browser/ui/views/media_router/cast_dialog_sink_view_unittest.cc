@@ -76,40 +76,6 @@ class CastDialogSinkViewTest : public ChromeViewsTestBase {
   TestingProfile profile_;
 };
 
-// If the correct policies are not set, then CastDialogSinkView should only
-// contain a CastSinkButton.
-TEST_F(CastDialogSinkViewTest, CastSinkButton) {
-  UIMediaSink sink_1 = CreateAvailableSink();
-  CastDialogSinkView sink_view_1(
-      &profile_, sink_1, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
-  EXPECT_NE(nullptr, sink_view_1.cast_sink_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_1.freeze_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_1.stop_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_1.title_for_test());
-  EXPECT_EQ(nullptr, sink_view_1.subtitle_for_test());
-
-  UIMediaSink sink_2 = CreateNonfreezableSink();
-  CastDialogSinkView sink_view_2(
-      &profile_, sink_2, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
-  EXPECT_NE(nullptr, sink_view_2.cast_sink_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_2.freeze_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_2.stop_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_2.title_for_test());
-  EXPECT_EQ(nullptr, sink_view_2.subtitle_for_test());
-
-  UIMediaSink sink_3 = CreateFreezableSink();
-  CastDialogSinkView sink_view_3(
-      &profile_, sink_3, views::Button::PressedCallback(),
-      views::Button::PressedCallback(), views::Button::PressedCallback());
-  EXPECT_NE(nullptr, sink_view_3.cast_sink_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_3.freeze_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_3.stop_button_for_test());
-  EXPECT_EQ(nullptr, sink_view_3.title_for_test());
-  EXPECT_EQ(nullptr, sink_view_3.subtitle_for_test());
-}
-
 TEST_F(CastDialogSinkViewTest, FreezableSink) {
   // Enable the proper features / prefs.
   base::test::ScopedFeatureList scoped_feature_list;

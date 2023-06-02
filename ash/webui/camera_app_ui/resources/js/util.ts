@@ -8,7 +8,6 @@ import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
-import * as tooltip from './tooltip.js';
 import {AspectRatioSet, Facing, FpsRange, Resolution} from './type.js';
 
 /**
@@ -188,11 +187,10 @@ export function setupI18nElements(rootElement: DocumentFragment|Element): void {
     element.setAttribute(
         'tooltip-false', getMessage(element, 'i18n-tooltip-false'));
   }
-  for (const element of getElements('i18n-aria')) {
-    setAriaLabel(element, 'i18n-aria');
-  }
-  for (const element of tooltip.setup(getElements('i18n-label'))) {
-    setAriaLabel(element, 'i18n-label');
+  for (const attribute of ['i18n-aria', 'i18n-label']) {
+    for (const element of getElements(attribute)) {
+      setAriaLabel(element, attribute);
+    }
   }
 }
 

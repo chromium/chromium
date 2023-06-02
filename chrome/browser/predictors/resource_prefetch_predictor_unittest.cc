@@ -143,7 +143,7 @@ class ResourcePrefetchPredictorTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> db_task_runner_;
 
   std::unique_ptr<LoadingPredictor> loading_predictor_;
-  raw_ptr<ResourcePrefetchPredictor> predictor_;
+  raw_ptr<ResourcePrefetchPredictor, DanglingUntriaged> predictor_;
   scoped_refptr<StrictMock<MockResourcePrefetchPredictorTables>> mock_tables_;
 
   RedirectDataMap test_host_redirect_data_;

@@ -1,9 +1,11 @@
 # mypy: allow-untyped-defs
 
 import threading
+import time
 import traceback
 from queue import Empty
 from collections import namedtuple
+from typing import Optional
 
 from mozlog import structuredlog, capture
 
@@ -698,16 +700,17 @@ class TestRunnerManager(threading.Thread):
 
         self.test_count += 1
         is_unexpected = expected != status and status not in known_intermittent
+        is_pass_or_expected = status in ["OK", "PASS"] or (not is_unexpected)
 
         if is_unexpected or subtest_unexpected:
             self.unexpected_tests.add(test.id)
 
         # A result is unexpected pass if the test or any subtest run
-        # unexpectedly, and the overall status is OK (for test harness test), or
-        # PASS (for reftest), and all unexpected results for subtests (if any) are
-        # unexpected pass.
+        # unexpectedly, and the overall status is expected or passing (OK for test
+        # harness test, or PASS for reftest), and all unexpected results for
+        # subtests (if any) are unexpected pass.
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
-                              status in ["OK", "PASS"] and subtest_all_pass_or_expected)
+                              is_pass_or_expected and subtest_all_pass_or_expected)
         if is_unexpected_pass:
             self.unexpected_pass_tests.add(test.id)
 
@@ -962,10 +965,19 @@ class ManagerGroup:
             self.pool.add(manager)
         self.wait()
 
-    def wait(self):
-        """Wait for all the managers in the group to finish"""
+    def wait(self, timeout: Optional[float] = None) -> None:
+        """Wait for all the managers in the group to finish.
+
+        Arguments:
+            timeout: Overall timeout (in seconds) for all threads to join. The
+                default value indicates an indefinite timeout.
+        """
+        deadline = None if timeout is None else time.time() + timeout
         for manager in self.pool:
-            manager.join()
+            manager_timeout = None
+            if deadline is not None:
+                manager_timeout = max(0, deadline - time.time())
+            manager.join(manager_timeout)
 
     def stop(self):
         """Set the stop flag so that all managers in the group stop as soon

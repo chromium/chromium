@@ -686,6 +686,10 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
             if (supported_eotfs_bitfield[entry])
               supported_color_transfer_ids_.insert(kTransferIDMap[entry]);
           }
+          hdr_static_metadata_ =
+              absl::make_optional<gfx::HDRStaticMetadata>({});
+          hdr_static_metadata_->supported_eotf_mask =
+              base::checked_cast<uint8_t>(supported_eotfs_bitfield.to_ulong());
 
           // See CEA 861.3-2015, Sec.7.5.13, "HDR Static Metadata Data Block"
           // for details on the following calculations.
@@ -694,8 +698,6 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           if (length_of_data_block <= 3)
             break;
           const uint8_t desired_content_max_luminance = edid[data_offset + 4];
-          hdr_static_metadata_ =
-              absl::make_optional<gfx::HDRStaticMetadata>({});
           hdr_static_metadata_->max =
               50.0 * pow(2, desired_content_max_luminance / 32.0);
 

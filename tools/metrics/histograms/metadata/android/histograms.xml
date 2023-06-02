@@ -56,6 +56,13 @@ chromium-metrics-reviews@google.com.
   <variant name="Waived" summary="strongest binding of Waived"/>
 </variants>
 
+<variants name="CustomizationDelegate">
+  <variant name="GService" summary="GService"/>
+  <variant name="None" summary="None-valid"/>
+  <variant name="Phenotype" summary="Phenotype/Heterodyne"/>
+  <variant name="PreloadApk" summary="Preload-APK"/>
+</variants>
+
 <variants name="MessageIdentifiers">
   <variant name=".AboutThisSite"/>
   <variant name=".AddToHomescreenIPH"/>
@@ -578,6 +585,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BackPress.SecondaryActivity" enum="SecondaryActivity"
+    expires_after="2023-11-05">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Records the secondary activity which intercepts the back press when the user
+    does the Backpress gesture and it's not handled by the system.
+  </summary>
+</histogram>
+
 <histogram name="Android.BindingManger.ConnectionsDroppedDueToMaxSize"
     units="connections" expires_after="2023-10-22">
   <owner>ckitagawa@chromium.org</owner>
@@ -763,7 +780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ContactsPicker.ContactCount" units="Contacts"
-    expires_after="2023-09-10">
+    expires_after="2023-11-19">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -773,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ContactsPicker.DialogAction"
-    enum="ContactsPickerDialogAction" expires_after="2023-09-10">
+    enum="ContactsPickerDialogAction" expires_after="2023-11-19">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1389,7 +1406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.FeatureModules.StartupTime" units="ms"
-    expires_after="2023-09-18">
+    expires_after="2023-11-19">
   <owner>agrieve@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
@@ -2611,7 +2628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
-    expires_after="2022-09-04">
+    expires_after="2023-11-12">
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -2705,6 +2722,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PartnerCustomization.DelegateConflict" enum="Boolean"
+    expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records whether a delegate confict occurred due to starting up multiple
+    async background tasks that use different delegates. Recorded when a partner
+    customization delegate is changed from one kind of delegate to another.
+    Recorded at startup.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerCustomization.DelegateUnusedReason"
+    enum="PartnerDelegateUnusedReason" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records a reason that a delegate could not be used for partner
+    customization. Multiple records can be written when more than one delegate
+    is tried and fails during a single initialization session. Recorded when a
+    partner customization delegate tries to initialize but fails. Delegates may
+    lazily initialize, so having one succeed may cause another to be skipped and
+    the skipped one's potential failure would not be recorded. Trying to use the
+    PreloadApk delegate is only done when actually needed so these numbers
+    should reflect actual usage attempts.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.TryFailedDuration.{CustomizationDelegate}"
+    units="ms" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of time it took for the {CustomizationDelegate} delegate
+    to run in the async task that does partner customization. Recorded when the
+    task completes but was unable to use the delegate for some reason - see
+    DelegateUnusedReason histogram for some possible reasons. Trying to use the
+    PreloadApk delegate is only done when actually needed so these numbers
+    should reflect actual usage attempts.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.PartnerCustomization.TrySucceededDuration.{CustomizationDelegate}"
+    units="ms" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the amount of time it took for the {CustomizationDelegate} delegate
+    to run in the async task that does partner customization. Recorded when the
+    task completes successfully and a delegate providing customizations is
+    found. Trying to use the PreloadApk delegate is only done when actually
+    needed so these numbers should reflect actual usage attempts.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerCustomization.Usage"
+    enum="PartnerCustomizationUsage" expires_after="2023-09-01">
+  <owner>donnd@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records which customization usage is being invoked, at the time it is
+    requested. The possible usages include a custom Homepage URL, suppressing
+    incognito, etc.
+  </summary>
+</histogram>
+
 <histogram name="Android.PartnerCustomizationInitializedBeforeInitialTab"
     enum="Boolean" expires_after="2023-11-12">
   <owner>wenyufu@chromium.org</owner>
@@ -2717,14 +2802,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PartnerHomepageCustomization.Delegate"
-    enum="PartnerHomepageCustomizationDelegate" expires_after="M120">
+<histogram name="Android.PartnerHomepageCustomization.Delegate2"
+    enum="PartnerCustomizationProviderDelegate" expires_after="M120">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
     Records which delegate will be used to provide the home page URL that is
-    needed for a custom provider's home page. Recorded at startup on Android.
+    needed for a custom provider's customization. Recorded at startup on
+    Android.
   </summary>
 </histogram>
 
@@ -3014,7 +3100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.DomainSettingChanged"
-    enum="Boolean" expires_after="2023-08-13">
+    enum="Boolean" expires_after="2023-11-19">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -3585,7 +3671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabSwitcher.SetupRecyclerView.Time" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>skavuluru@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -3674,7 +3760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Toolbar.BitmapCapture" enum="ToolbarCaptureType"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
   <summary>
@@ -4245,13 +4331,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Gfx.SaveHWUIStateDuration" units="ms"
-    expires_after="2023-12-01">
+<histogram name="Android.WebView.Gfx.SaveHWUIStateMicroseconds"
+    units="microseconds" expires_after="2023-12-01">
   <owner>blundell@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
-    Tracks the amount of time that it took for WebView to save HWUI state.
-    Recorded once per saving of HWUI state.
+    Tracks the amount of time that it took for WebView to save HWUI's GL state.
+    Recorded once per saving of HWUI state when drawing with GL. This is
+    recorded only on devices that support high resolution timers.
   </summary>
 </histogram>
 
@@ -4584,7 +4671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RequestedWithHeader.CommittedHeaderMode"
-    enum="CommittedRequestedWithHeaderMode" expires_after="2023-07-01">
+    enum="CommittedRequestedWithHeaderMode" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4599,7 +4686,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.HadWebContentsForPartitionOrigin"
-    enum="BooleanAvailable" expires_after="2023-07-01">
+    enum="BooleanAvailable" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4632,7 +4719,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize"
-    units="entries" expires_after="2023-07-01">
+    units="entries" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4643,7 +4730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RequestedWithHeader.OriginTrialEnabled"
-    enum="BooleanEnabled" expires_after="2023-07-01">
+    enum="BooleanEnabled" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4654,7 +4741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RequestedWithHeader.PageSchemeIsCryptographic"
-    enum="BooleanSecure" expires_after="2023-07-01">
+    enum="BooleanSecure" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4684,7 +4771,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize"
-    units="entries" expires_after="2023-07-01">
+    units="entries" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4713,7 +4800,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderModeAllowListSize"
-    units="entries" expires_after="2023-07-01">
+    units="entries" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

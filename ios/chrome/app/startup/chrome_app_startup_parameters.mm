@@ -55,6 +55,8 @@ NSString* const kWidgetKitHostDinoGameWidget = @"dino-game-widget";
 // Host used to identify the Lockscreen Launcher widget.
 NSString* const kWidgetKitHostLockscreenLauncherWidget =
     @"lockscreen-launcher-widget";
+// Host used to identify the Chrome Shortcuts widget.
+NSString* const kWidgetKitHostShortcutsWidget = @"shortcuts-widget";
 // Path for search action.
 NSString* const kWidgetKitActionSearch = @"/search";
 // Path for incognito action.
@@ -67,6 +69,8 @@ NSString* const kWidgetKitActionQRReader = @"/qrreader";
 NSString* const kWidgetKitActionLens = @"/lens";
 // Path for Game action.
 NSString* const kWidgetKitActionGame = @"/game";
+// Path for open URL action.
+NSString* const kWidgetKitActionOpenURL = @"/open";
 
 const CGFloat kAppGroupTriggersVoiceSearchTimeout = 15.0;
 
@@ -128,7 +132,9 @@ enum class WidgetKitExtensionAction {
   ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH = 8,
   ACTION_LOCKSCREEN_LAUNCHER_GAME = 9,
   ACTION_QUICK_ACTIONS_LENS = 10,
-  kMaxValue = ACTION_QUICK_ACTIONS_LENS,
+  ACTION_SHORTCUTS_SEARCH = 11,
+  ACTION_SHORTCUTS_OPEN = 12,
+  kMaxValue = ACTION_SHORTCUTS_OPEN,
 };
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
@@ -218,6 +224,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       command = app_group::kChromeAppGroupQRScannerCommand;
     } else if ([completeURL.path isEqualToString:kWidgetKitActionLens]) {
       command = app_group::kChromeAppGroupLensCommand;
+    } else if ([completeURL.path isEqual:kWidgetKitActionOpenURL]) {
+      command = app_group::kChromeAppGroupOpenURLCommand;
     } else if ([completeURL.path isEqualToString:kWidgetKitActionGame]) {
       if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
@@ -568,7 +576,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
             secureSourceApp:secureSourceApp
                 completeURL:url
             applicationMode:ApplicationModeForTabOpening::NORMAL];
-    [params setPostOpeningAction:START_LENS];
+    [params setPostOpeningAction:START_LENS_FROM_HOME_SCREEN_WIDGET];
     action = ACTION_LENS;
   }
 
@@ -660,7 +668,19 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
     }
   }
-
+  if ([secureSourceApp isEqualToString:kWidgetKitHostShortcutsWidget]) {
+    switch (action) {
+      case ACTION_NEW_SEARCH:
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_SEARCH);
+        break;
+      case ACTION_OPEN_URL:
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
   return params;
 }
 

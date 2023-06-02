@@ -135,9 +135,7 @@ void ClearSystemActiveBit(const std::string& id) {
 bool GetActiveBit(UpdaterScope scope, const std::string& id) {
   switch (scope) {
     case UpdaterScope::kUser:
-      // TODO(crbug/1159498): Standardize registry access.
       return GetUserActiveBit(id);
-
     case UpdaterScope::kSystem:
       return GetSystemActiveBit(id);
   }
@@ -146,10 +144,8 @@ bool GetActiveBit(UpdaterScope scope, const std::string& id) {
 void ClearActiveBit(UpdaterScope scope, const std::string& id) {
   switch (scope) {
     case UpdaterScope::kUser:
-      // TODO(crbug/1159498): Standardize registry access.
       ClearUserActiveBit(id);
       break;
-
     case UpdaterScope::kSystem:
       ClearSystemActiveBit(id);
       break;

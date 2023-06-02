@@ -34,7 +34,6 @@ enum PresentationSourceType {
   "mirroring",
 };
 
-[RuntimeEnabled=SiteInitiatedMirroring]
 dictionary PresentationSource {
   required PresentationSourceType type;
 

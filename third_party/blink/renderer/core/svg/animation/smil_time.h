@@ -69,16 +69,16 @@ class SMILTime {
   static constexpr SMILTime Earliest() { return base::TimeDelta::Min(); }
   static constexpr SMILTime Epsilon() { return base::Microseconds(1); }
   static constexpr SMILTime FromSecondsD(double seconds) {
-    return std::min(SMILTime(base::Seconds(seconds)), Latest());
+    return FromTimeDelta(base::Seconds(seconds));
   }
-  static constexpr SMILTime FromMicroseconds(int64_t us) {
-    return std::min(SMILTime(base::Microseconds(us)), Latest());
+  static constexpr SMILTime FromTimeDelta(base::TimeDelta delta) {
+    return std::min(SMILTime(delta), Latest());
   }
+  base::TimeDelta ToTimeDelta() const { return time_; }
 
   // Used for computing progress. Don't use for anything else.
   double InternalValueAsDouble() const { return time_.InMicrosecondsF(); }
   double InSecondsF() const { return time_.InSecondsF(); }
-  int64_t InMicroseconds() const { return time_.InMicroseconds(); }
 
   bool IsFinite() const { return *this < Indefinite(); }
   bool IsIndefinite() const { return *this == Indefinite(); }
@@ -105,11 +105,6 @@ class SMILTime {
   SMILTime operator-() const { return -time_; }
   // Division and /modulo are used primarily for computing interval
   // progress/repeats.
-  double operator/(SMILTime other) const {
-    DCHECK(IsFinite());
-    DCHECK(other.IsFinite());
-    return time_ / other.time_;
-  }
   int64_t IntDiv(SMILTime other) const {
     DCHECK(IsFinite());
     DCHECK(other.IsFinite());

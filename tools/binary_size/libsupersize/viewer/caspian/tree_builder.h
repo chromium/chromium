@@ -67,6 +67,7 @@ class TreeBuilder {
   char sep_;
   std::vector<FilterFunc> filters_;
   std::vector<const BaseSymbol*> symbols_;
+  std::unordered_map<std::string_view, DiffStatus> source_to_diff_status_;
 };  // TreeBuilder
 }  // namespace caspian
 #endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_TREE_BUILDER_H_

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -36,7 +37,8 @@ namespace views {
 // TestDialogClientView.
 class DialogClientViewTest : public test::WidgetTest {
  public:
-  DialogClientViewTest() = default;
+  DialogClientViewTest()
+      : test::WidgetTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   DialogClientViewTest(const DialogClientViewTest&) = delete;
   DialogClientViewTest& operator=(const DialogClientViewTest&) = delete;
@@ -178,8 +180,8 @@ class DialogClientViewTest : public test::WidgetTest {
 
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
-  raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<DialogDelegateView> delegate_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<DialogDelegateView, DanglingUntriaged> delegate_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;
@@ -553,6 +555,75 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
       ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
+
+// TODO(https://crbug.com/1449221): investigate the tests on ChromeOS and
+// fuchsia
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+class DesktopDialogClientViewTest : public DialogClientViewTest {
+ public:
+  void SetUp() override {
+    set_native_widget_type(NativeWidgetType::kDesktop);
+    DialogClientViewTest::SetUp();
+  }
+};
+
+// Ensures that unintended clicks are protected properly when a root window's
+// bound has been changed.
+TEST_F(DesktopDialogClientViewTest,
+       IgnorePossiblyUnintendedClicks_TopLevelWindowBoundsChanged) {
+  SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SizeAndLayoutWidget();
+  widget()->Show();
+  task_environment()->FastForwardBy(
+      base::Milliseconds(GetDoubleClickInterval() * 2));
+
+  // Create another widget on top, change window's bounds, click event to the
+  // old widget should be ignored.
+  auto* widget1 = CreateTopLevelNativeWidget();
+  widget1->SetBounds(gfx::Rect(50, 50, 100, 100));
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_FALSE(widget()->IsClosed());
+
+  cancel_button.NotifyClick(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
+      ui::EF_NONE, ui::EF_NONE));
+  EXPECT_TRUE(widget()->IsClosed());
+  widget1->CloseNow();
+}
+
+// Ensures that unintended clicks are protected properly when a root window has
+// been closed.
+TEST_F(DesktopDialogClientViewTest,
+       IgnorePossiblyUnintendedClicks_CloseRootWindow) {
+  SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SizeAndLayoutWidget();
+  widget()->Show();
+  task_environment()->FastForwardBy(
+      base::Milliseconds(GetDoubleClickInterval() * 2));
+
+  // Create another widget on top, close the top window, click event to the old
+  // widget should be ignored.
+  auto* widget1 = CreateTopLevelNativeWidget();
+  widget1->CloseNow();
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_FALSE(widget()->IsClosed());
+
+  cancel_button.NotifyClick(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
+      ui::EF_NONE, ui::EF_NONE));
+  EXPECT_TRUE(widget()->IsClosed());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 
 // Ensures that repeated clicks with short intervals after view has been shown
 // are also ignored.

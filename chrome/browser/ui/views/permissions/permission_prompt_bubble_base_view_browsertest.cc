@@ -35,6 +35,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -51,6 +52,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -298,39 +300,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   permission_request_manager->UpdateAnchor();
 }
 
-// Test bubbles showing when tabs move between windows. Simulates a situation
-// that could result in permission bubbles not being dismissed, and a problem
-// referencing a temporary drag window. See http://crbug.com/754552.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SwitchBrowserWindow DISABLED_SwitchBrowserWindow
-#else
-#define MAYBE_SwitchBrowserWindow SwitchBrowserWindow
-#endif
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
-                       MAYBE_SwitchBrowserWindow) {
-  ShowUi("geolocation");
-  TabStripModel* strip = browser()->tab_strip_model();
-
-  // Drag out into a dragging window. E.g. see steps in [BrowserWindowController
-  // detachTabsToNewWindow:..].
-  std::vector<TabStripModelDelegate::NewStripContents> contentses(1);
-  contentses.back().add_types = AddTabTypes::ADD_ACTIVE;
-  contentses.back().web_contents = strip->DetachWebContentsAtForInsertion(0);
-  Browser* dragging_browser = strip->delegate()->CreateNewStripWithContents(
-      std::move(contentses), gfx::Rect(100, 100, 640, 480), false);
-
-  // Attach the tab back to the original window. E.g. See steps in
-  // [BrowserWindowController moveTabViews:..].
-  TabStripModel* drag_strip = dragging_browser->tab_strip_model();
-  std::unique_ptr<content::WebContents> removed_contents =
-      drag_strip->DetachWebContentsAtForInsertion(0);
-  strip->InsertWebContentsAt(0, std::move(removed_contents),
-                             AddTabTypes::ADD_ACTIVE);
-
-  // Clear the request. There should be no crash.
-  test_api_->SimulateWebContentsDestroyed();
-}
-
 // crbug.com/989858
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest \
@@ -443,11 +412,11 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
 // If were to add a new parameter to |PermissionPromptBubbleBaseViewBrowserTest|
 // to toggle the PermissionStorageAccessAPI, we would have to add extra Gold
 // images for each of the other eleven tests, even though this flag only affects
-// the SAA prompt.
-class SAAEnabledPermissionPromptBubbleViewBrowserTest
+// the Storage Access prompt.
+class StorageAccessEnabledPermissionPromptBubbleViewBrowserTest
     : public PermissionPromptBubbleBaseViewBrowserTest {
  public:
-  SAAEnabledPermissionPromptBubbleViewBrowserTest() {
+  StorageAccessEnabledPermissionPromptBubbleViewBrowserTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           {permissions::features::kPermissionStorageAccessAPI,
@@ -464,9 +433,32 @@ class SAAEnabledPermissionPromptBubbleViewBrowserTest
 
 // Host wants to access storage from the site in which it's embedded. Prompt
 // with new Google UI.
-IN_PROC_BROWSER_TEST_P(SAAEnabledPermissionPromptBubbleViewBrowserTest,
-                       InvokeUi_storage_access) {
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
+    InvokeUi_storage_access) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
+    OpenHelpCenterLinkInNewTab) {
+  ShowUi("storage_access");
+
+  // Get link widget from the prompt.
+  views::Widget* prompt = test_api_->GetPromptWindow();
+  EXPECT_TRUE(prompt);
+  auto* label_with_link =
+      static_cast<views::StyledLabel*>(prompt->GetRootView()->GetViewByID(
+          permissions::PermissionPromptViewID::
+              VIEW_ID_PERMISSION_PROMPT_DESCRIPTION_WITH_LINK));
+  EXPECT_TRUE(label_with_link);
+
+  // Click on the help center link and check that it opens on a new tab.
+  content::WebContentsAddedObserver new_tab_observer;
+  label_with_link->ClickFirstLinkForTesting();
+  GURL url = GURL(permissions::kEmbeddedContentHelpCenterURL);
+
+  EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
 }
 
 class QuietUIPromoBrowserTest
@@ -1038,9 +1030,10 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionPromptBubbleBaseViewBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionPromptBubbleBaseViewBrowserTest,
                          ::testing::Values(false, true));
-INSTANTIATE_TEST_SUITE_P(All,
-                         SAAEnabledPermissionPromptBubbleViewBrowserTest,
-                         ::testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
+    ::testing::Values(false, true));
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionPromptBubbleBaseViewQuietUiBrowserTest,
                          ::testing::Values(false, true));

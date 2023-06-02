@@ -280,7 +280,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::ScopedTempDir temp_dir_;
-  raw_ptr<SiteEngagementService> service_;
+  raw_ptr<SiteEngagementService, DanglingUntriaged> service_;
   base::SimpleTestClock clock_;
 };
 

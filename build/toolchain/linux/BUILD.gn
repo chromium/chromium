@@ -215,7 +215,6 @@ clang_toolchain("lacros_clang_x64") {
     also_build_lacros_chrome = false
     chromeos_is_browser_only = true
     use_clang_coverage = false
-    dcheck_always_on = false
   }
 }
 

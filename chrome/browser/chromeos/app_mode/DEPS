@@ -19,5 +19,6 @@ specific_include_rules = {
     "+ash/session/session_controller_impl.h",
     "+ash/shell.h",
     "+ash/test/ash_test_helper.h",
+    "+ash/wm/overview/overview_controller.h"
   ],
 }

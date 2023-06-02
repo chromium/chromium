@@ -49,7 +49,7 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
       HistoryClustersServiceFactory::GetForBrowserContext(profile);
   return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) &&
          history_clusters_service &&
-         history_clusters_service->IsJourneysEnabled() &&
+         history_clusters_service->IsJourneysEnabledAndVisible() &&
          !profile->IsIncognitoProfile() && !profile->IsGuestSession();
 }
 
@@ -128,9 +128,11 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
 }
 
 bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(&GetBrowser());
-  if (!browser_view)
+  SidePanelUI* side_panel_ui =
+      SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser());
+  if (!side_panel_ui) {
     return false;
+  }
 
   if (history_clusters_ui_) {
     history_clusters_ui_->SetQuery(query);
@@ -140,9 +142,7 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
     initial_query_ = query;
   }
 
-  if (auto* side_panel_coordinator = browser_view->side_panel_coordinator()) {
-    side_panel_coordinator->Show(SidePanelEntry::Id::kHistoryClusters);
-  }
+  side_panel_ui->Show(SidePanelEntry::Id::kHistoryClusters);
 
   return true;
 }

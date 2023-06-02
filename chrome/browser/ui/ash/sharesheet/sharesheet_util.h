@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/style/typography.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/text_constants.h"
 
@@ -38,6 +39,12 @@ std::unique_ptr<views::Label> CreateShareLabel(
     const SkColor color,
     const gfx::HorizontalAlignment alignment,
     const int text_style = ash::STYLE_SHARESHEET);
+
+std::unique_ptr<views::Label> CreateShareLabel(
+    const std::u16string& text,
+    const TypographyToken style,
+    const ui::ColorId color_id,
+    const gfx::HorizontalAlignment alignment);
 
 }  // namespace sharesheet
 }  // namespace ash

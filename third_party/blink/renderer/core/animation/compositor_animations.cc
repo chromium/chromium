@@ -36,6 +36,7 @@
 
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/filter_animation_curve.h"
+#include "cc/base/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
@@ -654,7 +655,8 @@ void CompositorAnimations::StartAnimationOnCompositor(
     CompositorAnimation& compositor_animation,
     const EffectModel& effect,
     Vector<int>& started_keyframe_model_ids,
-    double animation_playback_rate) {
+    double animation_playback_rate,
+    bool is_monotonic_timeline) {
   DCHECK(started_keyframe_model_ids.empty());
   // TODO(petermayo): Pass the PaintArtifactCompositor before
   // BlinkGenPropertyTrees is always on.
@@ -668,7 +670,8 @@ void CompositorAnimations::StartAnimationOnCompositor(
   Vector<std::unique_ptr<cc::KeyframeModel>> keyframe_models;
   GetAnimationOnCompositor(element, timing, normalized_timing, group,
                            start_time, time_offset, keyframe_effect,
-                           keyframe_models, animation_playback_rate);
+                           keyframe_models, animation_playback_rate,
+                           is_monotonic_timeline);
   DCHECK(!keyframe_models.empty());
   for (auto& keyframe_model : keyframe_models) {
     int id = keyframe_model->id();
@@ -731,7 +734,8 @@ bool CompositorAnimations::ConvertTimingForCompositor(
     const Timing::NormalizedTiming& normalized_timing,
     base::TimeDelta time_offset,
     CompositorTiming& out,
-    double animation_playback_rate) {
+    double animation_playback_rate,
+    bool is_monotonic_timeline) {
   timing.AssertValid();
 
   if (animation_playback_rate == 0)
@@ -778,7 +782,68 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   out.fill_mode = timing.fill_mode == Timing::FillMode::AUTO
                       ? Timing::FillMode::NONE
                       : timing.fill_mode;
+
+  // If we have a monotonic timeline we ensure that the animation will fill
+  // after finishing until it is removed by a subsequent main thread commit.
+  // This allows developers to apply a post animation style or start a
+  // subsequent animation without flicker.
+  if (base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
+      is_monotonic_timeline) {
+    if (animation_playback_rate >= 0) {
+      switch (out.fill_mode) {
+        case Timing::FillMode::BOTH:
+        case Timing::FillMode::FORWARDS:
+          break;
+        case Timing::FillMode::BACKWARDS:
+          out.fill_mode = Timing::FillMode::BOTH;
+          break;
+        case Timing::FillMode::NONE:
+          out.fill_mode = Timing::FillMode::FORWARDS;
+          break;
+        case Timing::FillMode::AUTO:
+          NOTREACHED();
+          break;
+      }
+    } else {
+      switch (out.fill_mode) {
+        case Timing::FillMode::BOTH:
+        case Timing::FillMode::BACKWARDS:
+          break;
+        case Timing::FillMode::FORWARDS:
+          out.fill_mode = Timing::FillMode::BOTH;
+          break;
+        case Timing::FillMode::NONE:
+          out.fill_mode = Timing::FillMode::BACKWARDS;
+          break;
+        case Timing::FillMode::AUTO:
+          NOTREACHED();
+          break;
+      }
+    }
+  }
+
   out.iteration_start = timing.iteration_start;
+
+  // Verify that timing calculations will be correct in gfx::KeyframeModel,
+  // which uses times in base::TimeDelta rather than AnimationTimeDelta.
+  // AnimationTimeDelta is backed by a double or int64 depending on the compile
+  // options. base::TimeDelta is backed by an int64. Thus, base::TimeDelta
+  // saturates at a much lower time delta. The largest quantity worked with
+  // is the active duration or scaled active duration depending on the magnitude
+  // of the playback rate. If this value cannot be expressed in int64, then we
+  // cannot composite the animation.
+  if (animation_playback_rate < 0) {
+    AnimationTimeDelta active_duration =
+        out.scaled_duration * out.adjusted_iteration_count;
+    if (std::abs(animation_playback_rate) < 1) {
+      active_duration /= std::abs(animation_playback_rate);
+    }
+    // base::TimeDelta ticks are in microseconds.
+    if (active_duration.InSecondsF() >
+        std::numeric_limits<int64_t>::max() / 1e6) {
+      return false;
+    }
+  }
 
   DCHECK_GT(out.scaled_duration, AnimationTimeDelta());
   DCHECK(out.adjusted_iteration_count > 0 ||
@@ -891,12 +956,13 @@ void CompositorAnimations::GetAnimationOnCompositor(
     base::TimeDelta time_offset,
     const KeyframeEffectModelBase& effect,
     Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
-    double animation_playback_rate) {
+    double animation_playback_rate,
+    bool is_monotonic_timeline) {
   DCHECK(keyframe_models.empty());
   CompositorTiming compositor_timing;
-  [[maybe_unused]] bool timing_valid =
-      ConvertTimingForCompositor(timing, normalized_timing, time_offset,
-                                 compositor_timing, animation_playback_rate);
+  [[maybe_unused]] bool timing_valid = ConvertTimingForCompositor(
+      timing, normalized_timing, time_offset, compositor_timing,
+      animation_playback_rate, is_monotonic_timeline);
 
   PropertyHandleSet properties = effect.Properties();
   DCHECK(!properties.empty());

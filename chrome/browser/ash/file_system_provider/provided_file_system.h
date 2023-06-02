@@ -44,6 +44,7 @@ namespace file_system_provider {
 
 class NotificationManagerInterface;
 class RequestDispatcher;
+class ODFSMetrics;
 
 // Automatically calls the |update_callback| after all of the callbacks created
 // with |CreateCallback| are called.
@@ -257,6 +258,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   ProvidedFileSystemInfo file_system_info_;
   std::unique_ptr<NotificationManagerInterface> notification_manager_;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
+  std::unique_ptr<ODFSMetrics> odfs_metrics_;
   std::unique_ptr<OperationRequestManager> request_manager_;
   Watchers watchers_;
   Queue watcher_queue_;

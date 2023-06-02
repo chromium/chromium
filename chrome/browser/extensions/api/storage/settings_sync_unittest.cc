@@ -293,7 +293,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
   std::unique_ptr<MockSyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncChangeProcessorWrapperForTest>
       sync_processor_wrapper_;
-  raw_ptr<SyncValueStoreCache> sync_cache_;
+  raw_ptr<SyncValueStoreCache, DanglingUntriaged> sync_cache_;
 };
 
 // Get a semblance of coverage for both EXTENSION_SETTINGS and APP_SETTINGS

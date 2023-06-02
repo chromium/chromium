@@ -51,6 +51,7 @@ constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
     CASE(kGesturePinchEnd, GESTURE_PINCH_END);
     CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
     CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
+    CASE(kMouseMoved, MOUSE_MOVED_EVENT);
   }
 }
 

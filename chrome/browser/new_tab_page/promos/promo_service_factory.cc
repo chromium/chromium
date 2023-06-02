@@ -26,7 +26,8 @@ PromoService* PromoServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 PromoServiceFactory* PromoServiceFactory::GetInstance() {
-  return base::Singleton<PromoServiceFactory>::get();
+  static base::NoDestructor<PromoServiceFactory> instance;
+  return instance.get();
 }
 
 PromoServiceFactory::PromoServiceFactory()

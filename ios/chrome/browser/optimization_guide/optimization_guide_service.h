@@ -83,7 +83,8 @@ class OptimizationGuideService
 
   // Some initialization parts must be done once the browser_state is fully
   // initialized.
-  void DoFinalInit();
+  void DoFinalInit(download::BackgroundDownloadService*
+                       background_download_service = nullptr);
 
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called right after the browser has

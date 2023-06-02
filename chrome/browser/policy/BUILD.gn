@@ -182,7 +182,6 @@ source_set("policy_specific_browser_tests") {
     "policy_network_browsertest.cc",
     "site_isolation_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
-    "test/event_path_policy_browsertest.cc",
     "test/hsts_policy_browsertest.cc",
     "test/network_prediction_policy_browsertest.cc",
     "test/offset_parent_new_spec_behavior_policy_browsertest.cc",

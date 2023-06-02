@@ -46,6 +46,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
     PAGE_ACCESS_PERMISSIONS_PAGE,
     VIEW_WEB_PERMISSIONS,
+    POLICY_INSTALLED,
     // NOTE: If you update this, you probably need to update the
     // ContextMenuAction enum below.
   };
@@ -72,7 +73,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kPageAccessLearnMore = 11,
     kPageAccessPermissionsPage = 12,
     kViewWebPermissions = 13,
-    kMaxValue = kViewWebPermissions,
+    kPolicyInstalled = 14,
+    kMaxValue = kPolicyInstalled,
   };
 
   // Location where the context menu is open from.
@@ -137,6 +139,10 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
  private:
   void InitMenu(const Extension* extension, bool can_show_icon_in_toolbar);
 
+  // Constructs the menu when `kExtensionsMenuAccessControl` is enabled.
+  void InitMenuWithFeature(const Extension* extension,
+                           bool can_show_icon_in_toolbar);
+
   // Adds the page access items based on the current site setting pointed by
   // `web_contents`.
   void CreatePageAccessItems(const Extension* extension,
@@ -167,7 +173,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The extension action of the extension we are displaying the menu for (if
   // it has one, otherwise NULL).
-  raw_ptr<ExtensionAction> extension_action_;
+  raw_ptr<ExtensionAction, DanglingUntriaged> extension_action_;
 
   const raw_ptr<Browser> browser_;
 

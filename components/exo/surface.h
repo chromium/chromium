@@ -386,7 +386,9 @@ class Surface final : public ui::PropertyHandler {
   void SetOcclusionTracking(bool tracking);
 
   // Triggers sending an occlusion update to observers.
-  void OnWindowOcclusionChanged();
+  void OnWindowOcclusionChanged(
+      aura::Window::OcclusionState old_occlusion_state,
+      aura::Window::OcclusionState new_occlusion_state);
 
   // Triggers sending a locking status to observers.
   // true : lock a frame to normal or restore state

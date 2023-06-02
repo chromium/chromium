@@ -96,10 +96,10 @@ class SingleFieldFormFillRouterTest : public testing::Test {
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
+  std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   std::unique_ptr<MockIBANManager> iban_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
-  std::unique_ptr<PrefService> prefs_;
   FormFieldData test_field_;
 };
 

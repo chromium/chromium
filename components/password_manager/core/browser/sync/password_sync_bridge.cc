@@ -73,7 +73,9 @@ enum class SyncMetadataReadError {
 
 std::string ComputeClientTag(
     const sync_pb::PasswordSpecificsData& password_data) {
-  return base::EscapePath(GURL(password_data.origin()).spec()) + "|" +
+  GURL origin(password_data.origin());
+
+  return base::EscapePath(origin.is_valid() ? origin.spec() : "") + "|" +
          base::EscapePath(password_data.username_element()) + "|" +
          base::EscapePath(password_data.username_value()) + "|" +
          base::EscapePath(password_data.password_element()) + "|" +

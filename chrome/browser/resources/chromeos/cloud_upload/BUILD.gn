@@ -25,12 +25,15 @@ build_webui("build") {
     "images/connect_one_drive.svg",
     "images/install_office_app_icon.svg",
     "images/install_office.svg",
+    "images/install_onedrive_alone.svg",
     "images/one_drive_success.svg",
+    "images/onedrive_app_icon.svg",
     "images/welcome.svg",
     "main.html",
   ]
   web_component_files = [
     "base_setup_page.ts",
+    "connect_onedrive.ts",
     "file_handler_card.ts",
     "file_handler_page.ts",
     "move_confirmation_page.ts",

@@ -31,6 +31,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
+<translation id="1555506416658437797">edit payment methods.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
@@ -82,6 +83,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2399868464369312507">Google Chrome is trying to edit payment methods.</translation>
 <translation id="2401189691232800402">Chrome OS system</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -391,6 +393,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
+<translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8504220326736535258">Chrome blocked this file because it has malware</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
@@ -407,6 +410,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8649026945479135076">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
+<translation id="8684875378076460854">Chrome recommends scanning this file because it may be dangerous</translation>
 <translation id="8686817260976772516">With Chrome profiles you can separate all of your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>

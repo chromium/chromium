@@ -26,7 +26,6 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_action_policy_util.h"
-#import "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -857,8 +856,8 @@ TEST_F(CRWWebControllerResponseTest, IFrameDownloadWithNSHTTPURLResponse) {
   EXPECT_EQ("", task->GetMimeType());
 }
 
-// Tests `currentURLWithTrustLevel:` method.
-TEST_F(CRWWebControllerTest, CurrentUrlWithTrustLevel) {
+// Tests `currentURL` method.
+TEST_F(CRWWebControllerTest, CurrentUrl) {
   GURL url("http://chromium.test");
   AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
 
@@ -876,9 +875,7 @@ TEST_F(CRWWebControllerTest, CurrentUrlWithTrustLevel) {
   [fake_wk_list_ setCurrentURL:@"http://chromium.test"];
   [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:nil];
 
-  URLVerificationTrustLevel trust_level = kNone;
-  EXPECT_EQ(url, [web_controller() currentURLWithTrustLevel:&trust_level]);
-  EXPECT_EQ(kAbsolute, trust_level);
+  EXPECT_EQ(url, [web_controller() currentURL]);
 }
 
 // Test fixture to test decidePolicyForNavigationAction:decisionHandler:

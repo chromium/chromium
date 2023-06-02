@@ -100,6 +100,13 @@ class GPUMappedDOMArrayBuffer : public DOMArrayBuffer {
     CHECK(result && IsDetached());
   }
 
+  // Due to an unusual non-owning backing these array buffers can't be shared
+  // for internal use.
+  bool ShareNonSharedForInternalUse(ArrayBufferContents& result) override {
+    result.Detach();
+    return false;
+  }
+
   void Trace(Visitor* visitor) const override {
     DOMArrayBuffer::Trace(visitor);
     visitor->Trace(owner_);

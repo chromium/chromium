@@ -87,7 +87,7 @@ class BrowserSwitcherNavigationThrottleTest
   Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
 
  private:
-  raw_ptr<MockBrowserSwitcherSitelist> sitelist_;
+  raw_ptr<MockBrowserSwitcherSitelist, DanglingUntriaged> sitelist_;
 
   std::unique_ptr<Rule> bogus_rule_ =
       CanonicalizeRule("//example.com/", ParsingMode::kDefault);

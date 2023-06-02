@@ -223,6 +223,10 @@ class SavedDeskTest : public OverviewTestBase {
     return static_cast<SavedDeskRegularIconView*>(icon_view);
   }
 
+  SavedDeskItemHoverState GetHoverState(const SavedDeskItemView* item_view) {
+    return SavedDeskItemViewTestApi(item_view).GetHoverState();
+  }
+
   // Shows the saved desk library by emulating a click on the library button. It
   // is required to have at least one entry in the desk model for the button to
   // be visible and clickable.
@@ -2175,51 +2179,48 @@ TEST_F(SavedDeskTest, HoverOnTemplateItemView) {
   OpenOverviewAndShowSavedDeskGrid();
   SavedDeskItemView* first_item = GetItemViewFromSavedDeskGrid(0);
   SavedDeskItemView* second_item = GetItemViewFromSavedDeskGrid(1);
-  auto* hover_container_view1 =
-      SavedDeskItemViewTestApi(first_item).hover_container();
-  auto* hover_container_view2 =
-      SavedDeskItemViewTestApi(second_item).hover_container();
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kIcons);
 
   // Move the mouse to hover over `first_item`.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kHover);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kIcons);
+
   // Move the mouse to hover over `second_item`.
   event_generator->MoveMouseTo(second_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_TRUE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kHover);
 
   // Long press on the `first_item`.
   LongPressAt(first_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kHover);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kIcons);
   // Long press on the `second_item`.
   LongPressAt(second_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_TRUE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kHover);
 
   // Move the mouse to hover over `first_item` again.
   event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kHover);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kIcons);
 
   // Long press on the `second_item`.
   LongPressAt(second_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_TRUE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kHover);
 
   // Move the mouse but make it still remain on top of `first_item`.
   event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kHover);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kIcons);
 
   // Test to make sure hover is updated after dragging to another item.
   event_generator->DragMouseTo(second_item->GetBoundsInScreen().CenterPoint());
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_TRUE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(first_item), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(second_item), SavedDeskItemHoverState::kHover);
 }
 
 // Tests that when a supported app doesn't have any app launch info and a
@@ -3590,12 +3591,8 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   SavedDeskItemView* template2 = GetItemViewFromSavedDeskGrid(1);
   SavedDeskNameView* name_view1 = template1->name_view();
   SavedDeskNameView* name_view2 = template2->name_view();
-  auto* hover_container_view1 =
-      SavedDeskItemViewTestApi(template1).hover_container();
-  auto* hover_container_view2 =
-      SavedDeskItemViewTestApi(template2).hover_container();
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(template1), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(template2), SavedDeskItemHoverState::kIcons);
 
   // Tests that long pressing on template1 which is in edit mode should commit
   // changes and bring up the hover button.
@@ -3606,13 +3603,13 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   EXPECT_TRUE(name_view1->HasSelection());
   LongGestureTap(template1->GetBoundsInScreen().CenterPoint(), event_generator);
   EXPECT_FALSE(name_view1->HasFocus());
-  EXPECT_TRUE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(template1), SavedDeskItemHoverState::kHover);
+  EXPECT_EQ(GetHoverState(template2), SavedDeskItemHoverState::kIcons);
 
   // Test that long pressing the library view outside of template2 which is in
   // edit mode should commit changes.
   LeftClickOn(name_view2);
-  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_EQ(GetHoverState(template1), SavedDeskItemHoverState::kIcons);
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view2->HasFocus());
   EXPECT_TRUE(name_view2->HasSelection());
@@ -3620,8 +3617,8 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   p.Offset(0, -50);
   LongGestureTap(p, event_generator);
   EXPECT_FALSE(name_view2->HasFocus());
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_FALSE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(template1), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(template2), SavedDeskItemHoverState::kIcons);
 
   // Tests that long pressing on template2 when template1 in edit mode should
   // commit changes for template1 and bring up the hover button for template2.
@@ -3631,8 +3628,8 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   EXPECT_TRUE(name_view1->HasSelection());
   LongGestureTap(template2->GetBoundsInScreen().CenterPoint(), event_generator);
   EXPECT_FALSE(name_view1->HasFocus());
-  EXPECT_FALSE(hover_container_view1->GetVisible());
-  EXPECT_TRUE(hover_container_view2->GetVisible());
+  EXPECT_EQ(GetHoverState(template1), SavedDeskItemHoverState::kIcons);
+  EXPECT_EQ(GetHoverState(template2), SavedDeskItemHoverState::kHover);
 }
 
 // Tests that right clicking on the wallpaper while showing the saved desks grid

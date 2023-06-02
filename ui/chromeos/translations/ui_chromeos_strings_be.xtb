@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англійская (ЗША) з раскладкай Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Табліцы Google</translation>
-<translation id="1538729222189715449">Адкрываюцца файлы Linux...</translation>
 <translation id="1547964879613821194">Англійская (Канада)</translation>
 <translation id="1556189134700913550">Прымяніць да ўсяго</translation>
 <translation id="1561842594491319104">Chrome</translation>
@@ -147,7 +146,6 @@
 <translation id="2208919847696382164">Усталюйце пакет Linux</translation>
 <translation id="2225536596944493418">Сапраўды выдаліць гэтыя элементы (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не ўдалося стварыць папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Кэш Google Дыска ачышчаны.</translation>
 <translation id="2239068707900391003">Чалавек з кубкам кавы</translation>
 <translation id="2251368349685848079">Аднавіць са сметніцы</translation>
 <translation id="2278133026967558505">Доступ да файла з усіх вэб-сайтаў і URL-адрасоў</translation>
@@ -330,7 +328,6 @@
 <translation id="3727148787322499904">Змена гэтай налады закране ўсе абагуленыя сеткі</translation>
 <translation id="3737576078404241332">Выдаліць з бакавой панэлі</translation>
 <translation id="3749289110408117711">Назва файла</translation>
-<translation id="3780536599611287598">У вас няма дазволу на перамяшчэнне файлаў у папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Вы па-за сеткай</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3793469551756281394">Прыблізны час да завяршэння: <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +416,7 @@
 <translation id="4462159676511157176">Карыстальніцкія серверы даменных імён</translation>
 <translation id="4465725236958772856">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, знаходзіцца пад кіраваннем адміністратара, падключыцца</translation>
 <translation id="4470564870223067757">Карэйскі алфавіт (хангыль), рэжым 2 Set</translation>
+<translation id="4472575034687746823">Пачаць</translation>
 <translation id="4474142134969976028">Адпаведных вынікаў няма</translation>
 <translation id="4477002475007461989">Румынская</translation>
 <translation id="4477219268485577442">Балгарская фанетычная</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Авакада</translation>
 <translation id="4805966553127040832">Элементы (<ph name="COUNT" />) аднаўляюцца</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуецца пашырэнне}one{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}few{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}many{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}other{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}}</translation>
-<translation id="4823651846660089135">Прылада толькі для чытання</translation>
 <translation id="4826849268470072925">Тамільская (раскладка ITRANS)</translation>
 <translation id="482932175346970750">Увядзіце <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> у адрасным радку браўзера.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -618,6 +615,7 @@
 <translation id="5838451609423551646">Скасаваны выбар усіх элементаў</translation>
 <translation id="5838825566232597749">ЗША (Workman, міжнародная)</translation>
 <translation id="5845721951356578987">Медработнік</translation>
+<translation id="5860491529813859533">Уключыць</translation>
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Не ўдалося выканаць пошук DHCP</translation>
 <translation id="5896749729057314184">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -675,7 +673,6 @@
 <translation id="6327785803543103246">Аўтаматычная наладка проксі-сервера</translation>
 <translation id="6337014272874260727">Выдаліць з раздзела "Хуткія файлы"</translation>
 <translation id="6339145975392024142">ЗША, міжнародная (PC)</translation>
-<translation id="6346310558342052870">Доступ абмежаваны</translation>
 <translation id="6356685157277930264">Акно водгукаў на праграму "Файлы"</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Несапраўднае значэнне супадзення па суфіксе дамена</translation>
@@ -1005,6 +1002,7 @@
 <translation id="8919081441417203123">Дацкая</translation>
 <translation id="8949925099261528566">Падключана, доступу да інтэрнэту няма</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
+<translation id="8971742885766657349">Сінхранізацыя: <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="8998871447376656508">Не ўдалося завяршыць запампоўванне: на Google Дыску недастаткова свабоднага месца.</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>

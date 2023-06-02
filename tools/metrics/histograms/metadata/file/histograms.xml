@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DirectoryListLoad.{RootType}.{NumFiles}"
-    units="ms" expires_after="2023-06-27">
+    units="ms" expires_after="2024-06-27">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -739,6 +739,211 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
+    expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: size of files transfered to/from ODFS.
+  </summary>
+  <token key="Direction">
+    <variant name="Download"/>
+    <variant name="Upload"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Completion.{Handler}"
+    enum="FileSystemProviderOperationCompletion" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Breakdown of how many times ODFS
+    fileSystemProviderHandler handler completed successfully, completed after a
+    warning is shown, aborted via the notification or aborted automatically.
+  </summary>
+  <token key="Handler">
+    <variant name="onAbortRequested"/>
+    <variant name="onAddWatcherRequested"/>
+    <variant name="onCloseFileRequested"/>
+    <variant name="onConfigureRequested"/>
+    <variant name="onCopyEntryRequested"/>
+    <variant name="onCreateDirectoryRequested"/>
+    <variant name="onCreateFileRequested"/>
+    <variant name="onDeleteEntryRequested"/>
+    <variant name="onExecuteActionRequested"/>
+    <variant name="onGetActionsRequested"/>
+    <variant name="onGetMetadataRequested"/>
+    <variant name="onMountRequested"/>
+    <variant name="onMoveEntryRequested"/>
+    <variant name="onOpenFileRequested"/>
+    <variant name="onReadDirectoryRequested"/>
+    <variant name="onReadFileRequested"/>
+    <variant name="onRemoveWatcherRequested"/>
+    <variant name="onTruncateRequested"/>
+    <variant name="onUnmountRequested"/>
+    <variant name="onWriteFileRequested"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Error.{Handler}"
+    enum="PlatformFileError" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Result returned by ODFS fileSystemProviderHandler
+    handler.
+  </summary>
+  <token key="Handler">
+    <variant name="onAbortRequested"/>
+    <variant name="onAddWatcherRequested"/>
+    <variant name="onCloseFileRequested"/>
+    <variant name="onConfigureRequested"/>
+    <variant name="onCopyEntryRequested"/>
+    <variant name="onCreateDirectoryRequested"/>
+    <variant name="onCreateFileRequested"/>
+    <variant name="onDeleteEntryRequested"/>
+    <variant name="onExecuteActionRequested"/>
+    <variant name="onGetActionsRequested"/>
+    <variant name="onGetMetadataRequested"/>
+    <variant name="onMountRequested"/>
+    <variant name="onMoveEntryRequested"/>
+    <variant name="onOpenFileRequested"/>
+    <variant name="onReadDirectoryRequested"/>
+    <variant name="onReadFileRequested"/>
+    <variant name="onRemoveWatcherRequested"/>
+    <variant name="onTruncateRequested"/>
+    <variant name="onUnmountRequested"/>
+    <variant name="onWriteFileRequested"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.Time.{Handler}"
+    units="ms" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: ODFS fileSystemProviderHandler handler execution
+    time.
+  </summary>
+  <token key="Handler">
+    <variant name="onAbortRequested"/>
+    <variant name="onAddWatcherRequested"/>
+    <variant name="onCloseFileRequested"/>
+    <variant name="onConfigureRequested"/>
+    <variant name="onCopyEntryRequested"/>
+    <variant name="onCreateDirectoryRequested"/>
+    <variant name="onCreateFileRequested"/>
+    <variant name="onDeleteEntryRequested"/>
+    <variant name="onExecuteActionRequested"/>
+    <variant name="onGetActionsRequested"/>
+    <variant name="onGetMetadataRequested"/>
+    <variant name="onMountRequested"/>
+    <variant name="onMoveEntryRequested"/>
+    <variant name="onOpenFileRequested"/>
+    <variant name="onReadDirectoryRequested"/>
+    <variant name="onReadFileRequested"/>
+    <variant name="onRemoveWatcherRequested"/>
+    <variant name="onTruncateRequested"/>
+    <variant name="onUnmountRequested"/>
+    <variant name="onWriteFileRequested"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.GraphAPI.ResponseCode.{Operation}"
+    enum="OfficeGraphAPIResult" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: HTTP response code of select Microsoft GraphAPI
+    calls.
+  </summary>
+  <token key="Operation">
+    <variant name="CopyEntry"/>
+    <variant name="CreateDirectory"/>
+    <variant name="CreateFile"/>
+    <variant name="CreateUploadSession"/>
+    <variant name="DeleteEntry"/>
+    <variant name="GetAccessTokenFromCode"/>
+    <variant name="GetAccessTokenFromRefreshToken"/>
+    <variant name="GetAuthCode"/>
+    <variant name="GetDelta"/>
+    <variant name="GetDrive"/>
+    <variant name="GetProfile"/>
+    <variant name="MoveEntry"/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.GraphAPI.Time.{Operation}"
+    units="ms" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: latency of select Microsoft GraphAPI calls.
+  </summary>
+  <token key="Operation">
+    <variant name="CopyEntry"/>
+    <variant name="CreateDirectory"/>
+    <variant name="CreateFile"/>
+    <variant name="CreateUploadSession"/>
+    <variant name="DeleteEntry"/>
+    <variant name="GetAccessTokenFromCode"/>
+    <variant name="GetAccessTokenFromRefreshToken"/>
+    <variant name="GetAuthCode"/>
+    <variant name="GetDelta"/>
+    <variant name="GetDrive"/>
+    <variant name="GetProfile"/>
+    <variant name="MoveEntry"/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.MimeType.{Direction}"
+    enum="DownloadMimeTypeResult" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: type of files transferred to/from ODFS.
+  </summary>
+  <token key="Direction">
+    <variant name="Download"/>
+    <variant name="Upload"/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.Throughput.{Direction}"
+    units="KiB/s" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: ODFS file transfer speed to/from Microsoft OneDrive.
+  </summary>
+  <token key="Direction">
+    <variant name="Download"/>
+    <variant name="Upload"/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{ProviderName}"
+    enum="OfficeFilesSourceVolume" expires_after="M124">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the source volume an office file is opened
+    from.
+  </summary>
+  <token key="ProviderName">
+    <variant name="GoogleDrive"
+        summary="The file was opened using the file task for Google
+                 Drive/Workspace"/>
+    <variant name="MicrosoftOneDrive"
+        summary="The file was opened using the file task for
+                 OneDrive/Microsoft 365"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{ProviderName}"
     enum="OfficeFilesTransferRequired" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
@@ -753,6 +958,32 @@ chromium-metrics-reviews@google.com.
     <variant name="OneDrive"
         summary="The file must be transferred to Microsoft OneDrive"/>
   </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.Open.UploadResult.{ProviderName}"
+    enum="OfficeFilesUploadResult" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the result of the upload-to-cloud workflow
+    for office files.
+  </summary>
+  <token key="ProviderName">
+    <variant name="GoogleDrive"
+        summary="The file must be transferred to Google Drive"/>
+    <variant name="OneDrive"
+        summary="The file must be transferred to Microsoft OneDrive"/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.Setup.FileHandlerSelection"
+    enum="OfficeSetupFileHandler" expires_after="M124">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The file handler the user selects to open an Office
+    file with on the first page of setup.
+  </summary>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{ProviderName}"
@@ -904,6 +1135,7 @@ chromium-metrics-reviews@google.com.
     ChromeOS File Browser: The time it took to complete user search request.
   </summary>
   <token key="Source">
+    <variant name="DocumentsProvider"/>
     <variant name="Drive"/>
     <variant name="Local"/>
     <variant name="Removable"/>
@@ -1004,7 +1236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.UpdateAvailableApps.{NumApps}" units="ms"
-    expires_after="2023-06-27">
+    expires_after="2024-06-27">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

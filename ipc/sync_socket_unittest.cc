@@ -160,7 +160,7 @@ class SyncSocketClientListener : public IPC::Listener {
   }
 
   raw_ptr<base::SyncSocket> socket_;
-  raw_ptr<IPC::Channel> chan_;
+  raw_ptr<IPC::Channel, DanglingUntriaged> chan_;
 };
 
 using SyncSocketTest = IPCChannelMojoTestBase;

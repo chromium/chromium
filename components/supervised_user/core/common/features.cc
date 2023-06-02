@@ -47,19 +47,6 @@ constexpr base::FeatureParam<std::string> kLocalWebApprovalsPreferredButton{
     &kLocalWebApprovals, "preferred_button",
     kLocalWebApprovalsPreferredButtonLocal};
 
-// Enables child accounts (i.e. Unicorn accounts) to clear their browsing
-// history data from Settings.
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(b/251192695): launch on Chrome OS
-BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
-             "AllowHistoryDeletionForChildAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
-             "AllowHistoryDeletionForChildAccounts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables the proto api for ClassifyURL calls.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
@@ -76,10 +63,10 @@ BASE_FEATURE(kRetireStaticDenyList,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new local extension approvals experience, which requests approval
-// through a platform-specific Parent Access Widget.
+// through a platform-specific Parent Access Widget. Available on ChromeOS.
 BASE_FEATURE(kLocalExtensionApprovalsV2,
              "LocalExtensionApprovalsV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stops creating Supervised User Service for Incognito profile.
 BASE_FEATURE(kUpdateSupervisedUserFactoryCreation,
@@ -147,6 +134,30 @@ BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
 BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
+             "SupervisedPrefsControlledBySupervisedStore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to display a "Managed by your parent" or similar text for supervised
+// users in various UI surfaces.
+BASE_FEATURE(kEnableManagedByParentUi,
+             "EnableManagedByParentUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool CanDisplayFirstTimeInterstitialBanner() {
+  return base::FeatureList::IsEnabled(kEnableSupervisionOnDesktopAndIOS) &&
+         base::FeatureList::IsEnabled(
+             kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+}
+// The URL which the "Managed by your parent" UI links to. This is defined as a
+// FeatureParam (but with the currently correct default) because:
+// * We expect to change this URL in the near-term, this allows us to gradually
+//   roll out that change
+// * If the exact URL needs changing this can be done without requiring a binary
+//   rollout
+constexpr base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl{
+    &kEnableManagedByParentUi, "more_info_url",
+    "https://familylink.google.com/setting/resource/94"};
 
 bool IsSynchronousSignInCheckingEnabled() {
   return base::FeatureList::IsEnabled(kSynchronousSignInChecking);

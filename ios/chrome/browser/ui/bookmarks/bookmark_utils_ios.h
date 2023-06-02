@@ -20,7 +20,6 @@
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
-class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -124,11 +123,6 @@ bool AreAllAvailableBookmarkModelsLoaded(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
 
-// Whether the Cloud Slash icon should be displayed for the profile model.
-// For nodes in account model, the icon should never been shown.
-bool ShouldDisplayCloudSlashIconForProfileModel(
-    SyncSetupService* sync_setup_service);
-
 // Returns true if the user is signed in and they opted in for the account
 // bookmark storage.
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
@@ -168,16 +162,19 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
     int position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state);
 
 // Updates a bookmark node position, and returns a snackbar with an undo action.
-// Returns nil if the operation wasn't successful or there's nothing to undo.
+// `node` and `folder` must belong to the same model. Returns nil if the
+// operation wasn't successful or there's nothing to undo.
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     size_t position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state);
 
 // Deletes all nodes in `bookmarks` from models in `bookmark_models` that are
@@ -240,6 +237,22 @@ NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
 
 // Converts NSString entered by the user to a GURL.
 GURL ConvertUserDataToGURL(NSString* urlString);
+
+// Uses `IsBookmarked` to check whether `url` is bookmarked in any of the
+// provided bookmark models. `account_model` can be null.
+bool IsBookmarked(const GURL& url,
+                  bookmarks::BookmarkModel* local_model,
+                  bookmarks::BookmarkModel* account_model);
+
+// Uses `GetMostRecentlyAddedUserNodeForURL` to find the most recently added
+// bookmark node with the corresponding URL in both models. If both models
+// contain matching entries - compares them and returns the most recently added
+// entry. If only one model has a matching entry - returns that entry. If no
+// models contain matching entries - returns null. `account_model` can be null.
+const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
+    const GURL& url,
+    bookmarks::BookmarkModel* local_model,
+    bookmarks::BookmarkModel* account_model);
 
 }  // namespace bookmark_utils_ios
 

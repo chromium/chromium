@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -46,9 +47,9 @@ std::pair<uint8_t*, size_t> GetSampleBufferBaseAddressAndSize(
 struct I420Planes {
   size_t width;
   size_t height;
-  uint8_t* y_plane_data;
-  uint8_t* u_plane_data;
-  uint8_t* v_plane_data;
+  raw_ptr<uint8_t> y_plane_data;
+  raw_ptr<uint8_t> u_plane_data;
+  raw_ptr<uint8_t> v_plane_data;
   size_t y_plane_stride;
   size_t u_plane_stride;
   size_t v_plane_stride;
@@ -121,8 +122,8 @@ I420Planes GetI420PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
 struct NV12Planes {
   size_t width;
   size_t height;
-  uint8_t* y_plane_data;
-  uint8_t* uv_plane_data;
+  raw_ptr<uint8_t> y_plane_data;
+  raw_ptr<uint8_t> uv_plane_data;
   size_t y_plane_stride;
   size_t uv_plane_stride;
 };

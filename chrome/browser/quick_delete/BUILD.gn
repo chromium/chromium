@@ -10,6 +10,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteTabsFilter.java",
   ]
   deps = [
     ":java_resources",
@@ -55,6 +56,7 @@ robolectric_library("junit") {
   sources = [
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegateUnitTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegateTest.java",
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteTabsFilterTest.java",
   ]
   deps = [
     ":java",

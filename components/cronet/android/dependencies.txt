@@ -47,6 +47,7 @@
 //third_party/boringssl
 //third_party/boringssl/src/third_party/fiat
 //third_party/brotli
+//third_party/cpu_features
 //third_party/icu
 //third_party/ijar
 //third_party/jdk

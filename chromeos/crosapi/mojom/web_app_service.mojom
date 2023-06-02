@@ -30,8 +30,8 @@ struct WebApkCreationParams {
 
 // Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
 // lacros-chrome.
-// Next version: 5
-// Next method id: 6
+// Next version: 7
+// Next method id: 8
 [Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
 interface WebAppProviderBridge {
   // Called when a web app described by |info| is installed in ARC (Android
@@ -70,6 +70,18 @@ interface WebAppProviderBridge {
     url.mojom.Url install_url,
     url.mojom.Url origin_url,
     bool is_renderer_initiated);
+
+  // Returns all apps that have a parent app, and maps the apps' IDs to their
+  // parent app's ID. The key is the sub app's ID, the value is the parent app's
+  // ID.
+  [MinVersion=5]
+  GetSubAppToParentMap@6() => (map<string, string> parent_apps);
+
+  // Called when a web app described by |preload_install_info| is preloaded and
+  // installs this web app in the primary profile of Lacros.
+  [MinVersion=6]
+  InstallPreloadWebApp@7(PreloadWebAppInstallInfo preload_install_info)
+    => (string app_id, WebAppInstallResultCode install_result);
 };
 
 // An interface implemented in ash-chrome. Allows lacros-chrome:

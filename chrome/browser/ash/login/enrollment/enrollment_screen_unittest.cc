@@ -12,8 +12,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
+#include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -60,6 +60,7 @@ void ConfigureZeroTouchEnrollment() {
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 
 class EnrollmentScreenUnitTest : public testing::Test {
  public:
@@ -133,22 +134,20 @@ class EnrollmentScreenUnitTest : public testing::Test {
   // Initializes NetworkHandler and required DBus clients.
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
-  // Closure passed to EnterpriseEnrollmentHelper::SetupEnrollmentHelperMock
-  // which creates the EnterpriseEnrollmentHelperMock object that will
+  // Closure passed to EnrollmentLauncher::SetupEnrollmentHelperMock
+  // which creates the MockEnrollmentLauncher object that will
   // eventually be tied to the EnrollmentScreen. It also sets up the
   // appropriate expectations for testing with the Google Mock framework.
   // The template parameter should_enroll indicates whether or not
-  // the EnterpriseEnrollmentHelper should be mocked to successfully enroll.
-  void SetupMockEnrollmentHelper(AttestationEnrollmentStatus status) {
-    std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-        std::make_unique<EnterpriseEnrollmentHelperMock>();
-    EnterpriseEnrollmentHelperMock* mock_ptr = mock.get();
+  // the EnrollmentLauncher should be mocked to successfully enroll.
+  void SetupMockEnrollmentLauncher(MockEnrollmentLauncher* mock,
+                                   AttestationEnrollmentStatus status) {
     if (status == AttestationEnrollmentStatus::SUCCESS) {
       // Define behavior of EnrollUsingAttestation to successfully enroll.
       EXPECT_CALL(*mock, EnrollUsingAttestation())
           .Times(AnyNumber())
-          .WillRepeatedly(Invoke([mock_ptr]() {
-            static_cast<EnrollmentScreen*>(mock_ptr->status_consumer())
+          .WillRepeatedly(Invoke([mock]() {
+            static_cast<EnrollmentScreen*>(mock->status_consumer())
                 ->ShowEnrollmentStatusOnSuccess();
           }));
     } else {
@@ -163,8 +162,8 @@ class EnrollmentScreenUnitTest : public testing::Test {
                         DM_STATUS_TEMPORARY_UNAVAILABLE);
       EXPECT_CALL(*mock, EnrollUsingAttestation())
           .Times(AnyNumber())
-          .WillRepeatedly(Invoke([mock_ptr, enrollment_status]() {
-            mock_ptr->status_consumer()->OnEnrollmentError(enrollment_status);
+          .WillRepeatedly(Invoke([mock, enrollment_status]() {
+            mock->status_consumer()->OnEnrollmentError(enrollment_status);
           }));
     }
     // Define behavior of ClearAuth to only run the callback it is given.
@@ -172,8 +171,6 @@ class EnrollmentScreenUnitTest : public testing::Test {
         .Times(AnyNumber())
         .WillRepeatedly(Invoke(
             [](base::OnceClosure callback) { std::move(callback).Run(); }));
-
-    EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
   }
 
   void ConfigureRestoreAfterRollback() {
@@ -201,8 +198,14 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   void TestEnrollmentFlowShouldComplete(
       const policy::EnrollmentConfig& config) {
-    // Define behavior of EnterpriseEnrollmentHelperMock to successfully enroll.
-    SetupMockEnrollmentHelper(AttestationEnrollmentStatus::SUCCESS);
+    // Define behavior of MockEnrollmentLauncher to successfully enroll.
+    NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+    SetupMockEnrollmentLauncher(&mock_enrollment_launcher,
+                                AttestationEnrollmentStatus::SUCCESS);
+
+    ScopedEnrollmentLauncherFactoryOverrideForTesting
+        enrollment_launcher_factory_override(base::BindRepeating(
+            FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
     SetUpEnrollmentScreen(config);
 
@@ -216,9 +219,14 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   void TestEnrollmentFlowRetriesOnFailure(
       const policy::EnrollmentConfig& config) {
-    // Define behavior of EnterpriseEnrollmentHelperMock to always fail
-    // enrollment.
-    SetupMockEnrollmentHelper(AttestationEnrollmentStatus::DMSERVER_ERROR);
+    // Define behavior of MockEnrollmentLauncher to always fail enrollment.
+    NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+    SetupMockEnrollmentLauncher(&mock_enrollment_launcher,
+                                AttestationEnrollmentStatus::DMSERVER_ERROR);
+
+    ScopedEnrollmentLauncherFactoryOverrideForTesting
+        enrollment_launcher_factory_override(base::BindRepeating(
+            FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
     SetUpEnrollmentScreen(config);
 
@@ -233,10 +241,15 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   void TestEnrollmentFlowShouldUseFallback(
       const policy::EnrollmentConfig& config) {
-    // Define behavior of EnterpriseEnrollmentHelperMock to fail
-    // attestation-based enrollment.
-    SetupMockEnrollmentHelper(
+    // Define behavior of MockEnrollmentLauncher to fail attestation-based
+    // enrollment.
+    NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+    SetupMockEnrollmentLauncher(
+        &mock_enrollment_launcher,
         AttestationEnrollmentStatus::DEVICE_NOT_SETUP_FOR_ZERO_TOUCH);
+    ScopedEnrollmentLauncherFactoryOverrideForTesting
+        enrollment_launcher_factory_override(base::BindRepeating(
+            FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
     SetUpEnrollmentScreen(config);
 
@@ -330,9 +343,13 @@ TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldRetryEnrollment) {
 TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldNotRetryOnTopOfUser) {
   ConfigureZeroTouchEnrollment();
 
-  // Define behavior of EnterpriseEnrollmentHelperMock to always fail
-  // enrollment.
-  SetupMockEnrollmentHelper(AttestationEnrollmentStatus::DMSERVER_ERROR);
+  // Define behavior of MockEnrollmentLauncher to always fail enrollment.
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupMockEnrollmentLauncher(&mock_enrollment_launcher,
+                              AttestationEnrollmentStatus::DMSERVER_ERROR);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   SetUpEnrollmentScreen(GetZeroTouchEnrollmentConfig());
 
@@ -352,8 +369,13 @@ TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldNotRetryOnTopOfUser) {
 TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldNotRetryAfterSuccess) {
   ConfigureZeroTouchEnrollment();
 
-  // Define behavior of EnterpriseEnrollmentHelperMock to successfully enroll.
-  SetupMockEnrollmentHelper(AttestationEnrollmentStatus::SUCCESS);
+  // Define behavior of MockEnrollmentLauncher to successfully enroll.
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupMockEnrollmentLauncher(&mock_enrollment_launcher,
+                              AttestationEnrollmentStatus::SUCCESS);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   SetUpEnrollmentScreen(GetZeroTouchEnrollmentConfig());
 

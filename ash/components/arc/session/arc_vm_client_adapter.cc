@@ -375,8 +375,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     request.set_mglru_reclaim_swappiness(0);
   }
 
-  request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
-      ash::features::kConsumerAutoUpdateToggleAllowed));
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports))
     request.set_vm_memory_psi_period(kVmMemoryPSIReportsPeriod.Get());
   else

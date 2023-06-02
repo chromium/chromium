@@ -31,7 +31,8 @@ class AboutThisSiteSidePanelView
       public AboutThisSiteWebContentsUserData::Delegate,
       public base::SupportsWeakPtr<AboutThisSiteSidePanelView> {
  public:
-  explicit AboutThisSiteSidePanelView(BrowserView* browser_view);
+  explicit AboutThisSiteSidePanelView(
+      content::WebContents* parent_web_contents);
   AboutThisSiteSidePanelView(const AboutThisSiteSidePanelView&) = delete;
   AboutThisSiteSidePanelView& operator=(const AboutThisSiteSidePanelView&) =
       delete;
@@ -73,10 +74,11 @@ class AboutThisSiteSidePanelView
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 
+  BrowserView* outer_browser_view();
   content::WebContentsDelegate* outer_delegate();
 
   GURL last_url_;
-  raw_ptr<BrowserView> browser_view_;
+  base::WeakPtr<content::WebContents> parent_web_contents_;
   raw_ptr<views::WebView> loading_indicator_web_view_;
   raw_ptr<views::WebView> web_view_;
 };

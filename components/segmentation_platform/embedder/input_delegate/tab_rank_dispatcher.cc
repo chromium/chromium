@@ -7,6 +7,8 @@
 #include <queue>
 #include <vector>
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
@@ -22,6 +24,49 @@ namespace segmentation_platform {
 namespace {
 constexpr uint32_t kTabCandidateLimit = 30;
 
+void RecordDelayFromStartupToFirstSyncUpdate(
+    base::TimeDelta sync_delay_duration) {
+  base::UmaHistogramLongTimes100(
+      "SegmentationPlatform.SyncSessions.TimeFromStartupToFirstSyncUpdate",
+      sync_delay_duration);
+}
+
+void RecordDelayFromTabLoadToSyncUpdate(base::TimeDelta sync_delay_duration) {
+  base::UmaHistogramLongTimes100(
+      "SegmentationPlatform.SyncSessions.TimeFromTabLoadedToSyncUpdate",
+      sync_delay_duration);
+}
+
+void RecordTabCountAtStartup(long cross_device_tab_count) {
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.SyncSessions.TabsCountAtStartup",
+      cross_device_tab_count);
+}
+
+void RecordTabCountFromStartupToFirstSyncUpdate(long cross_device_tab_count) {
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.SyncSessions.TotalTabsCountAtFirstSyncUpdate",
+      cross_device_tab_count);
+}
+
+void RecordRecent1HourTabCountAtFirstSyncUpdate(long cross_device_tab_count) {
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.SyncSessions.Recent1HourTabCountAtFirstSyncUpdate",
+      cross_device_tab_count);
+}
+
+void RecordRecent1DayTabCountAtFirstSyncUpdate(long cross_device_tab_count) {
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.SyncSessions.Recent1DayTabCountAtFirstSyncUpdate",
+      cross_device_tab_count);
+}
+
+void RecordTabCountAtSyncUpdate(long cross_device_tab_count) {
+  base::UmaHistogramCounts1000(
+      "SegmentationPlatform.SyncSessions.RecordTabCountAtSyncUpdate",
+      cross_device_tab_count);
+}
+
 }  // namespace
 
 TabRankDispatcher::TabRankDispatcher(
@@ -29,8 +74,14 @@ TabRankDispatcher::TabRankDispatcher(
     sync_sessions::SessionSyncService* session_sync_service,
     std::unique_ptr<TabFetcher> tab_fetcher)
     : tab_fetcher_(std::move(tab_fetcher)),
+      chrome_startup_timestamp_(base::Time::Now()),
       segmentation_service_(segmentation_service),
-      session_sync_service_(session_sync_service) {}
+      session_sync_service_(session_sync_service) {
+  RecordTabCountAtStartup(
+      tab_fetcher_->GetRemoteTabsCountAfterTime(base::Time()));
+
+  SubscribeToForeignSessionsChanged();
+}
 
 TabRankDispatcher::~TabRankDispatcher() = default;
 
@@ -47,9 +98,11 @@ void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
 
   std::queue<RankedTab> candidate_tabs;
   for (const auto& tab : all_tabs) {
-    if (tab_fetcher_->GetTimeSinceModified(tab) <= tab_filter.max_tab_age) {
-      candidate_tabs.push(RankedTab{.tab = tab});
+    if (!tab_filter.max_tab_age.is_zero() &&
+        tab_fetcher_->GetTimeSinceModified(tab) > tab_filter.max_tab_age) {
+      continue;
     }
+    candidate_tabs.push(RankedTab{.tab = tab});
   }
   GetNextResult(segmentation_key, std::move(candidate_tabs),
                 std::multiset<RankedTab>(), std::move(callback));
@@ -60,7 +113,7 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
                                       std::multiset<RankedTab> results,
                                       RankedTabsCallback callback) {
   if (candidate_tabs.empty()) {
-    std::move(callback).Run(false, std::move(results));
+    std::move(callback).Run(true, std::move(results));
     return;
   }
 
@@ -98,6 +151,46 @@ void TabRankDispatcher::OnGetResult(const std::string& segmentation_key,
   }
   GetNextResult(segmentation_key, std::move(candidate_tabs), std::move(results),
                 std::move(callback));
+}
+
+void TabRankDispatcher::SubscribeToForeignSessionsChanged() {
+  foreign_session_updated_subscription_ =
+      session_sync_service_->SubscribeToForeignSessionsChanged(
+          base::BindRepeating(&TabRankDispatcher::OnForeignSessionUpdated,
+                              weak_factory_.GetWeakPtr()));
+}
+
+void TabRankDispatcher::OnForeignSessionUpdated() {
+  base::Time foreign_session_updated_time = base::Time::Now();
+  RecordTabCountAtSyncUpdate(
+      tab_fetcher_->GetRemoteTabsCountAfterTime(base::Time()));
+
+  absl::optional<base::Time> sync_session_modified_timestamp =
+      tab_fetcher_->GetLatestRemoteSessionModifiedTime();
+
+  if (!sync_session_modified_timestamp.has_value()) {
+    return;
+  }
+  if (session_updated_counter_ == 0 &&
+      chrome_startup_timestamp_ > sync_session_modified_timestamp.value()) {
+    // Delay Metrics.
+    RecordDelayFromStartupToFirstSyncUpdate(foreign_session_updated_time -
+                                            chrome_startup_timestamp_);
+    // Tab Count Metrics.
+    RecordTabCountFromStartupToFirstSyncUpdate(
+        tab_fetcher_->GetRemoteTabsCountAfterTime(base::Time()));
+    RecordRecent1HourTabCountAtFirstSyncUpdate(
+        tab_fetcher_->GetRemoteTabsCountAfterTime(foreign_session_updated_time -
+                                                  base::Hours(1)));
+    RecordRecent1DayTabCountAtFirstSyncUpdate(
+        tab_fetcher_->GetRemoteTabsCountAfterTime(foreign_session_updated_time -
+                                                  base::Days(1)));
+
+  } else {
+    RecordDelayFromTabLoadToSyncUpdate(foreign_session_updated_time -
+                                       sync_session_modified_timestamp.value());
+  }
+  session_updated_counter_++;
 }
 
 }  // namespace segmentation_platform

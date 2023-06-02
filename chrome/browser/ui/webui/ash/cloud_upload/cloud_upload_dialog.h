@@ -232,6 +232,12 @@ absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
     Profile* profile,
     const FileSystemURL& android_onedrive_file_url);
 
+// Launches the 'Connect OneDrive' dialog which is triggered from the Services
+// menu in Files app. This is a simplified version of setup where we just
+// connect to OneDrive. There is no 'done' callback because files app doesn't
+// need it.
+bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent);
+
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {
  public:

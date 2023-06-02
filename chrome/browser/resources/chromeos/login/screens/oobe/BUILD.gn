@@ -129,6 +129,7 @@ js_library("quick_start") {
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_loading_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

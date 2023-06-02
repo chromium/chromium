@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">O Chrome não conseguiu verificar todas as palavras-passe. Tente novamente amanhã.</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão atualmente desativadas nas Definições do dispositivo.</translation>
 <translation id="2767464022270041271">Não existem palavras-passe guardadas. O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando as guardar.</translation>
+<translation id="2840432500933227975">Abra as Definições do Chrome no iOS, toque em "APP de navegador predefinida" e selecione o Chrome.</translation>
 <translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2957447865124070833">Selecione <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chrome serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Isto significa que o Chrome irá pedir sempre o site para dispositivos móveis.</translation>
 <translation id="3706101708757577809">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="3720541637541300822">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
+<translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode utilizar a câmara neste momento</translation>
 <translation id="3980220367029651214">Está a mudar as contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os seus dados do Chrome existentes são geridos por <ph name="DOMAIN" />. Esta ação elimina os seus dados deste dispositivo, embora permaneçam em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A sua entidade requer que se mantenha sem sessão iniciada no Chrome.</translation>
@@ -150,7 +152,6 @@ Aspetos a considerar:
   • Se o Chrome falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
 
   • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Vai obter a proteção de segurança padrão para este perfil do Chrome</translation>
 <translation id="9112744793181547300">Pretende definir o Chrome como a predefinição?</translation>
 <translation id="9122931302567044771">Isto significa que o Chrome irá pedir sempre o site para computador.</translation>
 </translationbundle>

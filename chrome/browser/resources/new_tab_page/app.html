@@ -35,7 +35,8 @@
   }
 
   :host([modules-redesigned-enabled_]) {
-    --ntp-module-border-radius: 24px;
+    --ntp-module-border-radius: 16px;
+    --ntp-module-item-border-radius: 12px;
     --ntp-module-layout-width: 360px;
     --ntp-module-width: 360px;
   }
@@ -57,6 +58,11 @@
     position: absolute;
     top: 0;
     width: 100%;
+  }
+
+  #oneGoogleBarScrim[fixed] {
+    /* Prevent scrim from bouncing when overscrolling. */
+    position: fixed;
   }
 
   #oneGoogleBar {
@@ -334,7 +340,8 @@
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
-      <div id="oneGoogleBarScrim" hidden$="[[!showOneGoogleBarScrim_]]"></div>
+      <div id="oneGoogleBarScrim" hidden$="[[!showOneGoogleBarScrim_]]"
+          fixed$="[[scrolledToTop_]]"></div>
       <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
           hidden$="[[!oneGoogleBarLoaded_]]"
           allow="camera [[oneGoogleBarIframeOrigin_]]; display-capture [[oneGoogleBarIframeOrigin_]]"> <!-- presubmit: ignore-long-line -->

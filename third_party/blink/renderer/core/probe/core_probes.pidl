@@ -183,10 +183,10 @@ interface CoreProbes {
   void DidFinishDebuggerTask(CoreProbeSink*);
   void LifecycleEvent([Keep] LocalFrame*, DocumentLoader*, const char* name, double timestamp);
   void PaintTiming([Keep] Document*, const char* name, double timestamp);
-  void DidCreateAudioContext(Document*);
-  void DidCloseAudioContext(Document*);
-  void DidResumeAudioContext(Document*);
-  void DidSuspendAudioContext(Document*);
+  void DidCreateAudioContext(ExecutionContext*);
+  void DidCloseAudioContext(ExecutionContext*);
+  void DidResumeAudioContext(ExecutionContext*);
+  void DidSuspendAudioContext(ExecutionContext*);
   void DidProduceCompilationCache(CoreProbeSink*, const ClassicScript&, v8::Local<v8::Script> script);
   void ApplyCompilationModeOverride(ExecutionContext*, const ClassicScript&, v8::ScriptCompiler::CachedData** cached_data, v8::ScriptCompiler::CompileOptions*);
   void NodeCreated([Keep] Node* node);

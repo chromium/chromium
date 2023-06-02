@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_IN_SESSION_PASSWORD_SYNC_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_IN_SESSION_PASSWORD_SYNC_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -22,8 +22,7 @@ class InSessionPasswordSyncManagerFactory : public ProfileKeyedServiceFactory {
   static InSessionPasswordSyncManager* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      InSessionPasswordSyncManagerFactory>;
+  friend base::NoDestructor<InSessionPasswordSyncManagerFactory>;
 
   InSessionPasswordSyncManagerFactory();
   ~InSessionPasswordSyncManagerFactory() override;

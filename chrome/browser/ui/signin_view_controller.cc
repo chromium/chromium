@@ -273,7 +273,6 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
     const AccountInfo& account_info,
     bool force_new_profile,
     bool show_link_data_option,
-    SkColor profile_color,
     signin::SigninChoiceCallback callback) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -281,7 +280,7 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
           browser_, account_info, force_new_profile, show_link_data_option,
-          profile_color, std::move(callback)),
+          std::move(callback)),
       GetOnModalDialogClosedCallback());
 #else
   NOTREACHED() << "Enterprise confirmation dialog modal not supported";

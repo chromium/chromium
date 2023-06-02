@@ -39,7 +39,10 @@ enum class EndRecordingReason {
   kProjectorTranscriptionError,
   kLowDriveFsQuota,
   kVideoEncoderReconfigurationFailure,
-  kMaxValue = kVideoEncoderReconfigurationFailure,
+  kKeyboardShortcut,
+  kGameDashboardStopRecordingButton,
+  kGameToolbarStopRecordingButton,
+  kMaxValue = kGameToolbarStopRecordingButton,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
@@ -154,7 +157,9 @@ void RecordCaptureModeRecordingDuration(base::TimeDelta recording_duration,
 
 // Records the given video file `size_in_kb`. The used histogram will depend on
 // whether this video file was GIF or WebM.
-void RecordVideoFileSizeKB(bool is_gif, int size_in_kb);
+void RecordVideoFileSizeKB(bool is_gif,
+                           const CaptureModeBehavior* behavior,
+                           int size_in_kb);
 
 // Records if the user has switched modes during a capture session.
 void RecordCaptureModeSwitchesFromInitialMode(bool switched);
@@ -184,7 +189,8 @@ void RecordNumberOfScreenshotsTakenInLastWeek(
 void RecordScreenshotNotificationQuickAction(CaptureQuickAction action);
 
 // Records the location where screen capture is saved.
-void RecordSaveToLocation(CaptureModeSaveToLocation save_location);
+void RecordSaveToLocation(CaptureModeSaveToLocation save_location,
+                          const CaptureModeBehavior* behavior);
 
 // Records the `reason` for which the capture folder is switched to default
 // downloads folder.

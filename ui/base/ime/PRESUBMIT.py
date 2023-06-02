@@ -11,8 +11,6 @@ for more details about the presubmit API built into depot_tools.
 import filecmp
 import os
 
-USE_PYTHON3 = True
-
 CHARACTER_COMPOSER_DATA_SOURCES=['character_composer_sequences.txt']
 CHARACTER_COMPOSER_DATA_HEADER='character_composer_data.h'
 CHARACTER_COMPOSER_DATA_GENERATOR='generate_character_composer_data.py'

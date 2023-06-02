@@ -4,7 +4,7 @@
 
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -25,7 +25,8 @@ AutofillOfferManager* AutofillOfferManagerFactory::GetForBrowserContext(
 
 // static
 AutofillOfferManagerFactory* AutofillOfferManagerFactory::GetInstance() {
-  return base::Singleton<AutofillOfferManagerFactory>::get();
+  static base::NoDestructor<AutofillOfferManagerFactory> instance;
+  return instance.get();
 }
 
 AutofillOfferManagerFactory::AutofillOfferManagerFactory()

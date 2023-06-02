@@ -136,7 +136,13 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
   EXPECT_EQ(sync_service->GetActiveDataTypes(), expected_active_types);
 }
 
-IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
+// TODO(crbug.com/1450589): Flaky on ChromeOS bot
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AshSyncsOnlyOSTypes DISABLED_AshSyncsOnlyOSTypes
+#else
+#define MAYBE_AshSyncsOnlyOSTypes AshSyncsOnlyOSTypes
+#endif
+IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, MAYBE_AshSyncsOnlyOSTypes) {
   // With LacrosOnly, Sync in the Ash browser is not enabled anymore.
   ASSERT_FALSE(crosapi::browser_util::IsAshBrowserSyncEnabled());
 

@@ -60,6 +60,8 @@ SearchResultImageListView::SearchResultImageListView(
 
   image_view_container_ =
       AddChildView(std::make_unique<views::BoxLayoutView>());
+  image_view_container_->SetPaintToLayer();
+  image_view_container_->layer()->SetFillsBoundsOpaquely(false);
 
   // TODO(crbug.com/1352636) replace mock results with real results.
   int dummy_search_result_id = 0;
@@ -131,24 +133,10 @@ SearchResultImageView* SearchResultImageListView::GetResultViewAt(
   return image_views_[index];
 }
 
-bool SearchResultImageListView::HasAnimatingChildView() {
-  // TODO(crbug.com/1352636) Update once animations are defined by UX.
-  return false;
-}
-
 void SearchResultImageListView::AppendShownResultMetadata(
     std::vector<SearchResultAimationMetadata>* result_metadata_) {
   // TODO(crbug.com/1352636) Update once animations are defined by UX.
   return;
-}
-
-absl::optional<SearchResultContainerView::ResultsAnimationInfo>
-SearchResultImageListView::ScheduleResultAnimations(
-    const ResultsAnimationInfo& aggregate_animation_info) {
-  SetVisible(true);
-  // TODO(crbug.com/1352636) Update once animations are defined by UX. There is
-  // no animation information to be returned for this container.
-  return absl::nullopt;
 }
 
 std::vector<SearchResultImageView*>
@@ -180,17 +168,31 @@ int SearchResultImageListView::DoUpdate() {
   for (size_t i = 0; i < image_views_.size(); ++i) {
     SearchResultImageView* result_view = GetResultViewAt(i);
     if (i < num_results) {
-      result_view->SetVisible(true);
       result_view->SetResult(display_results[i]);
       result_view->SizeToPreferredSize();
     } else {
-      result_view->SetVisible(false);
       result_view->SetResult(nullptr);
     }
   }
-  image_info_container_->SetVisible(num_results == 1);
-  SetVisible(num_results > 0);
+
   return num_results;
+}
+
+void SearchResultImageListView::UpdateResultsVisibility(bool force_hide) {
+  SetVisible(num_results() > 0 && !force_hide);
+  for (size_t i = 0; i < image_views_.size(); ++i) {
+    SearchResultImageView* result_view = GetResultViewAt(i);
+    result_view->SetVisible(i < num_results() && !force_hide);
+  }
+  image_info_container_->SetVisible(num_results() == 1 && !force_hide);
+}
+
+views::View* SearchResultImageListView::GetTitleLabel() {
+  return title_label_.get();
+}
+
+std::vector<views::View*> SearchResultImageListView::GetViewsToAnimate() {
+  return {image_view_container_};
 }
 
 BEGIN_METADATA(SearchResultImageListView, SearchResultContainerView)

@@ -43,6 +43,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -442,33 +443,39 @@ void EcheTray::OnConnectionStatusChanged(
       break;
 
     case eche_app::mojom::ConnectionStatus::kConnectionStatusConnected:
+      PA_LOG(INFO) << "Connection successful, updating UI to connected.";
       eche_connection_status_handler_->SetConnectionStatusForUi(
           connection_status);
       has_reported_initializer_result_ = true;
       base::UmaHistogramBoolean("Eche.NetworkCheck.Result", true);
+      StartGracefulCloseInitializer();
       break;
     case eche_app::mojom::ConnectionStatus::kConnectionStatusFailed:
+      PA_LOG(WARNING) << "Connection failed, updating UI to error state.";
       eche_connection_status_handler_->SetConnectionStatusForUi(
           connection_status);
       base::UmaHistogramBoolean("Eche.NetworkCheck.Result", false);
       has_reported_initializer_result_ = true;
+      StartGracefulCloseInitializer();
       break;
     case eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected:
-      if (!has_reported_initializer_result_) {
-        // If we've timedout or been disconnected before a success/failure has
-        // come in, report failure.
+      // If we've timed out or been disconnected before a success/failure has
+      // come in, report failure, unless we intentionally disconnected in
+      // preparation for an app stream launch.
+      if (!has_reported_initializer_result_ && !on_initializer_closed_) {
+        PA_LOG(WARNING)
+            << "Disconnected without result, updating UI to error state.";
         base::UmaHistogramBoolean("Eche.NetworkCheck.Result", false);
         eche_connection_status_handler_->SetConnectionStatusForUi(
             eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
       }
-
-      StartGracefulCloseInitializer();
+      initializer_webview_.reset();
       break;
   }
 }
 
 void EcheTray::OnRequestBackgroundConnectionAttempt() {
-  if (!features::IsEcheNetworkConnectionStateEnabled() || IsInitialized()) {
+  if (!features::IsEcheNetworkConnectionStateEnabled() || web_view_) {
     return;
   }
   has_reported_initializer_result_ = false;
@@ -476,13 +483,30 @@ void EcheTray::OnRequestBackgroundConnectionAttempt() {
   initializer_webview_->Navigate(GURL(kEchePrewarmConnectionUrl));
   initializer_timeout_ = std::make_unique<base::DelayTimer>(
       FROM_HERE, kInitializerTimeout, this,
-      &EcheTray::StartGracefulCloseInitializer);
+      &EcheTray::OnBackgroundConnectionTimeout);
   initializer_timeout_->Reset();  // Starts the timer.
   SetIconVisibility(false);
 }
 
 void EcheTray::CloseInitializer() {
   initializer_webview_.reset();
+  if (on_initializer_closed_) {
+    std::move(on_initializer_closed_).Run();
+  }
+}
+
+void EcheTray::OnBackgroundConnectionTimeout() {
+  if (!initializer_webview_ || web_view_) {
+    return;
+  }
+
+  // Notify that the connection attempt failed reset the connection status for
+  // timeouts, this happens automatically for other failures.
+  eche_connection_status_handler_->SetConnectionStatusForUi(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
+  eche_connection_status_handler_->OnConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  StartGracefulCloseInitializer();
 }
 
 void EcheTray::StartGracefulCloseInitializer() {
@@ -610,6 +634,22 @@ void EcheTray::InitBubble(
     const std::u16string& phone_name,
     eche_app::mojom::ConnectionStatus last_connection_status,
     eche_app::mojom::AppStreamLaunchEntryPoint entry_point) {
+  // We only support a single connection between the phone and chromebook, if
+  // there's an existing background connection it must first be disconnected
+  // before we can continue with the app stream initialization.
+  // TODO(b/283880725) re-use the existing connection instead of terminating it
+  // and starting a new one.
+  if (initializer_webview_) {
+    PA_LOG(INFO)
+        << "Active background connection must be terminated prior to launching "
+           "app.  Saving launch details and will retry once ready.";
+    on_initializer_closed_ =
+        base::BindOnce(&EcheTray::InitBubble, base::Unretained(this),
+                       phone_name, last_connection_status, entry_point);
+    StartGracefulCloseInitializer();
+    return;
+  }
+
   if (features::IsEcheNetworkConnectionStateEnabled() &&
       last_connection_status !=
           eche_app::mojom::ConnectionStatus::kConnectionStatusConnected &&
@@ -621,6 +661,26 @@ void EcheTray::InitBubble(
     base::UmaHistogramEnumeration(
         "Eche.StreamEvent",
         eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+    switch (entry_point) {
+      case eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST:
+        base::UmaHistogramEnumeration(
+            "Eche.StreamEvent.FromLauncher",
+            eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+        break;
+      case eche_app::mojom::AppStreamLaunchEntryPoint::NOTIFICATION:
+        base::UmaHistogramEnumeration(
+            "Eche.StreamEvent.FromNotification",
+            eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+        break;
+      case eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS:
+        base::UmaHistogramEnumeration(
+            "Eche.StreamEvent.FromRecentApps",
+            eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+        break;
+      case eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN:
+        NOTREACHED();
+        break;
+    }
   }
   init_stream_timestamp_ = base::TimeTicks::Now();
   TrayBubbleView::InitParams init_params;
@@ -632,7 +692,7 @@ void EcheTray::InitBubble(
       kShellWindowId_AlwaysOnTopContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = GetAnchor();
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets = GetTrayBubbleInsets(GetBubbleWindowContainer());
   init_params.shelf_alignment = shelf()->alignment();
   const gfx::Size eche_size = CalculateSizeForEche();
   init_params.preferred_width = eche_size.width();
@@ -653,11 +713,6 @@ void EcheTray::InitBubble(
       ->SetFlexForView(header_view_, 0, true);
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
       ->set_inside_border_insets(kBubblePadding);
-
-  // Stop any in-progress prewearm channel operation.
-  if (initializer_webview_) {
-    initializer_webview_.reset();
-  }
 
   // TODO(b/271478560): Re-use initializer_webview_ when available, once support
   // launching apps on prewarmed connection is available.

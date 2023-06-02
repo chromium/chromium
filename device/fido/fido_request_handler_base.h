@@ -74,6 +74,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // contain the hybrid or internal transports.
     bool is_only_hybrid_or_internal = false;
 
+    // True this process has iCloud Keychain support. Only meaningful on macOS.
+    bool has_icloud_keychain = false;
+
     // The intersection of transports supported by the client and allowed by the
     // relying party.
     base::flat_set<FidoTransportProtocol> available_transports;
@@ -81,6 +84,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Whether the platform authenticator has a matching credential for the
     // request. This is only set for a GetAssertion request.
     RecognizedCredential has_platform_authenticator_credential =
+        RecognizedCredential::kNoRecognizedCredential;
+
+    // This field mirrors the previous one but is specific to iCloud
+    // Keychain. They are separate because a macOS system can have both the
+    // Chromium platform authenticator and iCloud Keychain as platform
+    // authenticators.
+    RecognizedCredential has_icloud_keychain_credential =
         RecognizedCredential::kNoRecognizedCredential;
 
     // The set of recognized platform credential user entities that can fulfill
@@ -112,12 +122,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Whether the native Windows API reports that a user verifying platform
     // authenticator is available.
     bool win_is_uvpaa = false;
-
-    // Contains the authenticator ID of the native Windows
-    // authenticator if |has_win_native_api_authenticator| is true.
-    // This allows the observer to distinguish it from other
-    // authenticators.
-    std::string win_native_api_authenticator_id;
 
     // Indicates whether the request is occurring in an off-the-record
     // BrowserContext (e.g. Chrome Incognito mode).
@@ -347,6 +351,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // platform authenticator whether it has responsive discoverable credentials
   // and whether it has responsive credentials at all.
   void OnHavePlatformCredentialStatus(
+      AuthenticatorType authenticator_type,
       std::vector<DiscoverableCredentialMetadata> user_entities,
       RecognizedCredential has_credentials);
 

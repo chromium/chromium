@@ -135,7 +135,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
   // Two buttons, one prominent
   row_view_->SetUIInfoForTesting(
       DownloadUIModel::BubbleUIInfo()
-          .AddSubpageSummary(std::u16string())
+          .AddSubpageSummary(u"fake summary")
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
@@ -153,7 +153,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
   // Two buttons, none prominent
   DownloadUIModel::BubbleUIInfo info =
       DownloadUIModel::BubbleUIInfo()
-          .AddSubpageSummary(std::u16string())
+          .AddSubpageSummary(u"fake summary")
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
@@ -173,7 +173,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
 
   // One button, none prominent
   info = DownloadUIModel::BubbleUIInfo()
-             .AddSubpageSummary(std::u16string())
+             .AddSubpageSummary(u"fake summary")
              .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
              .AddPrimaryButton(DownloadCommands::Command::KEEP)
              // OK button
@@ -189,7 +189,7 @@ TEST_F(DownloadBubbleSecurityViewTest,
   // No buttons, none prominent
   row_view_->SetUIInfoForTesting(
       DownloadUIModel::BubbleUIInfo()
-          .AddSubpageSummary(std::u16string())
+          .AddSubpageSummary(u"fake summary")
 
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP));

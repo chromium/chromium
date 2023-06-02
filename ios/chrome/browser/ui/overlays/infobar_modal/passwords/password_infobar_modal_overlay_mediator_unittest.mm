@@ -8,14 +8,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_password_modal_consumer.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
@@ -32,10 +30,6 @@
 #error "This file requires ARC support."
 #endif
 
-using password_infobar_modal_responses::UpdateCredentialsInfo;
-using password_infobar_modal_responses::NeverSaveCredentials;
-using password_infobar_modal_responses::PresentPasswordSettings;
-
 namespace {
 // Consts used in tests.
 const char kUrlHost[] = "chromium.test";
@@ -49,15 +43,10 @@ const char kAccount[] = "foobar@gmail.com";
 class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   PasswordInfobarModalOverlayMediatorTest()
-      : callback_installer_(&callback_receiver_,
-                            {InfobarModalMainActionResponse::ResponseSupport(),
-                             NeverSaveCredentials::ResponseSupport(),
-                             PresentPasswordSettings::ResponseSupport()}),
-        delegate_(
+      : delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {}
 
   ~PasswordInfobarModalOverlayMediatorTest() override {
-    EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
     EXPECT_OCMOCK_VERIFY(delegate_);
   }
 
@@ -73,122 +62,103 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
         MockIOSChromeSavePasswordInfoBarDelegate::Create(
             kUsername, kPassword, GURL(std::string("http://") + kUrlHost),
             account_to_store_password));
-    request_ = OverlayRequest::CreateWithConfig<
-        PasswordInfobarModalOverlayRequestConfig>(infobar_.get());
-    callback_installer_.InstallCallbacks(request_.get());
+    request_ =
+        OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+            infobar_.get(), InfobarOverlayType::kModal);
+    consumer_ = [[FakeInfobarPasswordModalConsumer alloc] init];
     mediator_ = [[PasswordInfobarModalOverlayMediator alloc]
         initWithRequest:request_.get()];
     mediator_.delegate = delegate_;
+    mediator_.consumer = consumer_;
   }
 
  protected:
   std::unique_ptr<InfoBarIOS> infobar_;
-  MockOverlayRequestCallbackReceiver callback_receiver_;
-  FakeOverlayRequestCallbackInstaller callback_installer_;
   std::unique_ptr<OverlayRequest> request_;
   id<OverlayRequestMediatorDelegate> delegate_ = nil;
   PasswordInfobarModalOverlayMediator* mediator_ = nil;
+  FakeInfobarPasswordModalConsumer* consumer_;
 };
 
 // Tests that a PasswordInfobarModalOverlayMediator correctly sets up its
 // consumer when the password is saved to an account.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingToAccount) {
   InitInfobar(kAccount);
-  FakeInfobarPasswordModalConsumer* consumer =
-      [[FakeInfobarPasswordModalConsumer alloc] init];
-  mediator_.consumer = consumer;
 
-  EXPECT_NSEQ(kUsername, consumer.username);
-  EXPECT_NSEQ(kMaskedPassword, consumer.maskedPassword);
-  EXPECT_NSEQ(kPassword, consumer.unmaskedPassword);
+  EXPECT_NSEQ(kUsername, consumer_.username);
+  EXPECT_NSEQ(kMaskedPassword, consumer_.maskedPassword);
+  EXPECT_NSEQ(kPassword, consumer_.unmaskedPassword);
   EXPECT_NSEQ(
       l10n_util::GetNSStringF(IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL,
                               base::UTF8ToUTF16(std::string(kAccount))),
-      consumer.detailsTextMessage);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(kUrlHost), consumer.URL);
+      consumer_.detailsTextMessage);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(kUrlHost), consumer_.URL);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON),
-              consumer.saveButtonText);
+              consumer_.saveButtonText);
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON),
-      consumer.cancelButtonText);
+      consumer_.cancelButtonText);
   EXPECT_EQ(mock_delegate().IsCurrentPasswordSaved(),
-            consumer.currentCredentialsSaved);
+            consumer_.currentCredentialsSaved);
 }
 
 // Tests that a PasswordInfobarModalOverlayMediator correctly sets up its
 // consumer for when the password is saved only to the device.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumerSavingLocally) {
   InitInfobar();
-  FakeInfobarPasswordModalConsumer* consumer =
-      [[FakeInfobarPasswordModalConsumer alloc] init];
-  mediator_.consumer = consumer;
 
-  EXPECT_NSEQ(kUsername, consumer.username);
-  EXPECT_NSEQ(kMaskedPassword, consumer.maskedPassword);
-  EXPECT_NSEQ(kPassword, consumer.unmaskedPassword);
+  EXPECT_NSEQ(kUsername, consumer_.username);
+  EXPECT_NSEQ(kMaskedPassword, consumer_.maskedPassword);
+  EXPECT_NSEQ(kPassword, consumer_.unmaskedPassword);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING),
-              consumer.detailsTextMessage);
-  EXPECT_NSEQ(base::SysUTF8ToNSString(kUrlHost), consumer.URL);
+              consumer_.detailsTextMessage);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(kUrlHost), consumer_.URL);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON),
-              consumer.saveButtonText);
+              consumer_.saveButtonText);
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON),
-      consumer.cancelButtonText);
+      consumer_.cancelButtonText);
   EXPECT_EQ(mock_delegate().IsCurrentPasswordSaved(),
-            consumer.currentCredentialsSaved);
+            consumer_.currentCredentialsSaved);
 }
 
-// Tests that `-updateCredentialsWithUsername:password:` dispatches an
-// UpdateCredentials response before accepting the infobar and dismissing the
-// overlay.
+// Tests that `-updateCredentialsWithUsername:password:` calls the
+// `UpdateCredentials()` delegate method before accepting the infobar and
+// dismissing the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, UpdateCredentials) {
-  // Since the UpdateCredentials response is not stateless, it is verified using
-  // a block rather than the mock callback receiver.
   InitInfobar();
-  __block NSString* username = nil;
-  __block NSString* password = nil;
-  request_->GetCallbackManager()->AddDispatchCallback(
-      OverlayDispatchCallback(base::BindRepeating(^(OverlayResponse* response) {
-                                UpdateCredentialsInfo* info =
-                                    response->GetInfo<UpdateCredentialsInfo>();
-                                ASSERT_TRUE(info);
-                                username = info->username();
-                                password = info->password();
-                              }),
-                              UpdateCredentialsInfo::ResponseSupport()));
-  // Notify the mediator to update the credentials.  In addition to dispatching
-  // the UpdateCredentialsInfo response, this should also trigger the main
-  // action and dismissal.
-  EXPECT_CALL(
-      callback_receiver_,
-      DispatchCallback(request_.get(),
-                       InfobarModalMainActionResponse::ResponseSupport()));
+
+  EXPECT_CALL(mock_delegate(), UpdateCredentials(kUsername, kPassword));
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ updateCredentialsWithUsername:kUsername password:kPassword];
-  // Verify that the update credentials callback was executed with the passed
-  // username and password.
-  EXPECT_NSEQ(kUsername, username);
-  EXPECT_NSEQ(kPassword, password);
 }
 
-// Tests that `-neverSaveCredentialsForCurrentSite` dispatches a
-// NeverSaveCredentials response then stops the overlay.
+// Tests that `-neverSaveCredentialsForCurrentSite` calls the `Cancel()`
+// delegate method then stops the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, NeverSaveCredentials) {
   InitInfobar();
-  EXPECT_CALL(callback_receiver_,
-              DispatchCallback(request_.get(),
-                               NeverSaveCredentials::ResponseSupport()));
+
+  EXPECT_CALL(mock_delegate(), Cancel());
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverSaveCredentialsForCurrentSite];
 }
 
-// Tests that `-presentPasswordSettings` dispatches a PresentPasswordSettings
-// response then stops the overlay.
+// Tests that `-presentPasswordSettings` calls the `Cancel()` delegate method
+// then stops the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, PresentPasswordSettings) {
   InitInfobar();
-  EXPECT_CALL(callback_receiver_,
-              DispatchCallback(request_.get(),
-                               PresentPasswordSettings::ResponseSupport()));
+
+  id commands_handler =
+      OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+  [mock_delegate().GetDispatcher()
+      startDispatchingToTarget:commands_handler
+                   forProtocol:@protocol(ApplicationSettingsCommands)];
+  [[commands_handler expect] showSavedPasswordsSettingsFromViewController:nil
+                                                         showCancelButton:YES
+                                                       startPasswordCheck:NO];
+
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
+
   [mediator_ presentPasswordSettings];
+  [commands_handler verify];
 }

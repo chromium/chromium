@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://file-manager/foreground/elements/icons.js';
 import 'chrome://file-manager/widgets/xf_breadcrumb.js';
 import 'chrome://file-manager/widgets/xf_icon.js';
 import 'chrome://file-manager/widgets/xf_tree.js';
 import 'chrome://file-manager/widgets/xf_tree_item.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 

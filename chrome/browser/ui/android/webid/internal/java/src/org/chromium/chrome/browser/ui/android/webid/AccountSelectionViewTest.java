@@ -65,11 +65,11 @@ public class AccountSelectionViewTest {
     private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
 
     private static final Account ANA = new Account("Ana", "ana@email.example", "Ana Doe", "Ana",
-            TEST_PROFILE_PIC, /*hints=*/new String[0], true);
-    private static final Account NO_ONE =
-            new Account("", "", "No Subject", "", TEST_PROFILE_PIC, /*hints=*/new String[0], true);
+            TEST_PROFILE_PIC, /*loginHints=*/new String[0], true);
+    private static final Account NO_ONE = new Account(
+            "", "", "No Subject", "", TEST_PROFILE_PIC, /*loginHints=*/new String[0], true);
     private static final Account BOB =
-            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, /*hints=*/new String[0], true);
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, /*loginHints=*/new String[0], true);
 
     private class RpContext {
         public String mValue;

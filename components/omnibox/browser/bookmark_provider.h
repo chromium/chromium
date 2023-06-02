@@ -60,13 +60,10 @@ class BookmarkProvider : public AutocompleteProvider {
   std::pair<int, int> CalculateBookmarkMatchRelevance(
       const bookmarks::TitledUrlMatch& match) const;
 
-  // Removes any URL matches for query parameter keys (if the matching word
-  // starts immediately after a '?' or '&').
-  void RemoveQueryParamKeyMatches(bookmarks::TitledUrlMatch& match);
-
   const raw_ptr<AutocompleteProviderClient> client_;
   const raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
-  const raw_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged>
+      account_bookmark_model_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_PROVIDER_H_

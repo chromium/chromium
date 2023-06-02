@@ -319,10 +319,11 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
 
   // Get the source texture - RGBA format is guaranteed to have 1 valid texture
   // if the CopyOutputRequest succeeded:
-  const gpu::MailboxHolder& plane = result->GetTextureResult()->planes[0];
-  gl->WaitSyncTokenCHROMIUM(plane.sync_token.GetConstData());
+  const gpu::MailboxHolder& mailbox_holder =
+      result->GetTextureResult()->mailbox_holders[0];
+  gl->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
   GLuint src_texture =
-      gl->CreateAndTexStorage2DSharedImageCHROMIUM(plane.mailbox.name);
+      gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_holder.mailbox.name);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
 

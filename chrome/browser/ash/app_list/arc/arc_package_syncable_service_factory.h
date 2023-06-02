@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_PACKAGE_SYNCABLE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_PACKAGE_SYNCABLE_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace arc {
@@ -25,7 +25,7 @@ class ArcPackageSyncableServiceFactory : public ProfileKeyedServiceFactory {
   static ArcPackageSyncableServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ArcPackageSyncableServiceFactory>;
+  friend base::NoDestructor<ArcPackageSyncableServiceFactory>;
 
   ArcPackageSyncableServiceFactory();
   ~ArcPackageSyncableServiceFactory() override;

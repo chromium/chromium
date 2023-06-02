@@ -246,7 +246,7 @@ static const std::map<v4l2_enum_type, std::vector<VideoCodecProfile>>
 }  // namespace
 
 std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
-    base::RepeatingCallback<int(int, void*)> ioctl_cb,
+    const IoctlAsCallback& ioctl_cb,
     uint32_t codec_as_pix_fmt) {
   if (!base::Contains(kV4L2CodecPixFmtToProfileCID, codec_as_pix_fmt)) {
     // This is OK: there are many codecs that are not supported by Chrome.
@@ -295,9 +295,8 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
   return profiles;
 }
 
-std::vector<uint32_t> EnumerateSupportedPixFmts(
-    base::RepeatingCallback<int(int, void*)> ioctl_cb,
-    v4l2_buf_type buf_type) {
+std::vector<uint32_t> EnumerateSupportedPixFmts(const IoctlAsCallback& ioctl_cb,
+                                                v4l2_buf_type buf_type) {
   DCHECK(buf_type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE ||
          buf_type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 
@@ -316,11 +315,10 @@ std::vector<uint32_t> EnumerateSupportedPixFmts(
   return pix_fmts;
 }
 
-void GetSupportedResolution(
-    const base::RepeatingCallback<int(int, void*)>& ioctl_cb,
-    uint32_t pixelformat,
-    gfx::Size* min_resolution,
-    gfx::Size* max_resolution) {
+void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
+                            uint32_t pixelformat,
+                            gfx::Size* min_resolution,
+                            gfx::Size* max_resolution) {
   constexpr gfx::Size kDefaultMaxCodedSize(1920, 1088);
   *max_resolution = kDefaultMaxCodedSize;
   constexpr gfx::Size kDefaultMinCodedSize(16, 16);

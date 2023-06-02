@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `https://crbug.com/738932 Tests the snapshot view is not empty on repeatitive expand-collapse.\n`);
-  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 25;

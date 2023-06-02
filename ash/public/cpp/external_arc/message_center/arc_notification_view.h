@@ -17,10 +17,6 @@ namespace arc {
 class ArcAccessibilityHelperBridgeTest;
 }
 
-namespace views {
-class Painter;
-}
-
 namespace ash {
 
 class ArcNotificationContentView;
@@ -63,7 +59,6 @@ class ArcNotificationView : public message_center::MessageView,
   void OnContainerAnimationEnded() override;
   void OnSettingsButtonPressed(const ui::Event& event) override;
   void OnSnoozeButtonPressed(const ui::Event& event) override;
-  void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void UpdateBackgroundPainter() override;
   base::TimeDelta GetBoundsAnimationDuration(
@@ -77,7 +72,6 @@ class ArcNotificationView : public message_center::MessageView,
   void Layout() override;
   bool HasFocus() const override;
   void RequestFocus() override;
-  void OnPaint(gfx::Canvas* canvas) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void ChildPreferredSizeChanged(View* child) override;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
@@ -104,7 +98,7 @@ class ArcNotificationView : public message_center::MessageView,
 
   const bool shown_in_popup_;
 
-  std::unique_ptr<views::Painter> focus_painter_;
+  const bool is_group_child_;
 };
 
 }  // namespace ash

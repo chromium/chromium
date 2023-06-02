@@ -17,6 +17,7 @@
 <translation id="1414495520565016063">Chromium にログインしました</translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
 <translation id="1553461853655228091">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
+<translation id="1555506416658437797">お支払い方法を編集します。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理者が、アップデートを適用するために Chromium を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1625909126243026060">Chromium のプライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="1632539827495546968">このアカウントを 1 回だけ使用する場合は、Chromium ブラウザの<ph name="GUEST_LINK_BEGIN" />ゲストモード<ph name="GUEST_LINK_END" />を使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
@@ -132,10 +133,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> さんはこの Chromium プロフィールにすでにログインしています。ブラウジング環境を分ける場合は、Chromium で自分用のプロフィールを作成できます。</translation>
 <translation id="391789666908693569">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chromium ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>
 <translation id="3945058413678539331">Chromium がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
+<translation id="3962623956404948996">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします</translation>
 <translation id="3997429360543082038">Chromium OS について</translation>
 <translation id="4019629340646866719">Chromium OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chromium の品質向上にご協力ください</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
+<translation id="4050599136622776556">Chromium がお支払い方法を編集しようとしています。</translation>
+<translation id="4055805654398742145">パスワード マネージャー(&amp;A)</translation>
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chromium</translation>
 <translation id="421369550622382712">Chromium の優れたアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>

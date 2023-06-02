@@ -63,6 +63,10 @@ class NET_EXPORT CertVerifyProc
     // (Note that this entirely disables the online revocation/AIA code paths.
     // Theoretically we could still check for cached results.)
     VERIFY_DISABLE_NETWORK_FETCHES = 1 << 4,
+
+    // Also update GetNetConstants() in net/log/net_log_util.cc when updating
+    // this enum.
+    VERIFY_FLAGS_LAST = VERIFY_DISABLE_NETWORK_FETCHES
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

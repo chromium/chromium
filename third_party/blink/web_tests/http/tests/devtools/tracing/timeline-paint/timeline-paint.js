@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {PerformanceTestRunner} from 'performance_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a paint event\n`);
-  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <iframe src="../resources/timeline-iframe-paint.html" style="position: absolute; left: 40px; top: 40px; width: 100px; height: 100px; border: none"></iframe>

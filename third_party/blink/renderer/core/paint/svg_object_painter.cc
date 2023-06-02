@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 
+#include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
 
 namespace blink {
 
@@ -18,7 +18,7 @@ namespace {
 void ApplyColorInterpolation(const ComputedStyle& style,
                              cc::PaintFlags& flags) {
   if (style.ColorInterpolation() == EColorInterpolation::kLinearrgb) {
-    flags.setColorFilter(SkColorFilters::SRGBToLinearGamma());
+    flags.setColorFilter(cc::ColorFilter::MakeSRGBToLinearGamma());
   }
 }
 

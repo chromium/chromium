@@ -178,6 +178,8 @@ suite('CardsTest', () => {
     assertDeepEquals(['foo', true], handler.getArgs('setModuleDisabled')[0]);
     assertCardCheckedStatus(cards, 'foo name', false);
     assertEquals(1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
+    assertEquals(
+        1, metrics.count('NewTabPage.Modules.Disabled.Customize', 'foo'));
 
     // Act.
     fooCheckbox.click();
@@ -186,6 +188,8 @@ suite('CardsTest', () => {
     assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
     assertCardCheckedStatus(cards, 'foo name', true);
     assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
+    assertEquals(
+        1, metrics.count('NewTabPage.Modules.Enabled.Customize', 'foo'));
   });
 
   suite('Chrome Cart', () => {

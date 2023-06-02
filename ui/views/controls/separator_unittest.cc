@@ -35,7 +35,7 @@ class SeparatorTest : public ViewsTestBase {
   void ExpectDrawAtLeastOnePixel(float image_scale);
 
   std::unique_ptr<Widget> widget_;
-  raw_ptr<Separator> separator_;
+  raw_ptr<Separator, DanglingUntriaged> separator_;
 
   SkColor expected_foreground_color_ = gfx::kPlaceholderColor;
 

@@ -52,8 +52,7 @@ void SidePanelToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
   DCHECK(browser_view->unified_side_panel());
-  DCHECK(browser_view->side_panel_coordinator());
-  browser_view->side_panel_coordinator()->Toggle();
+  SidePanelUI::GetSidePanelUIForBrowser(browser_)->Toggle();
 }
 
 void SidePanelToolbarButton::UpdateToolbarButtonIcon() {

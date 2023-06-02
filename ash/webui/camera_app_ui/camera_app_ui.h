@@ -7,7 +7,6 @@
 
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
-#include "ash/webui/camera_app_ui/camera_app_window_manager.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
@@ -69,8 +68,6 @@ class CameraAppUI : public ui::MojoWebUIController,
   CameraAppUIDelegate* delegate() { return delegate_.get(); }
 
   aura::Window* window();
-
-  CameraAppWindowManager* app_window_manager();
 
   const GURL& url();
 

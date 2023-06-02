@@ -39,11 +39,8 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
 
   // Overridden from SearchResultContainerView:
   SearchResultImageView* GetResultViewAt(size_t index) override;
-  bool HasAnimatingChildView() override;
   void AppendShownResultMetadata(
       std::vector<SearchResultAimationMetadata>* result_metadata_) override;
-  absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
-      const ResultsAnimationInfo& aggregate_animation_info) override;
 
   // Returns all search result image views children of this view.
   std::vector<SearchResultImageView*> GetSearchResultImageViews();
@@ -59,6 +56,9 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Overridden from SearchResultContainerView:
   void OnSelectedResultChanged() override;
   int DoUpdate() override;
+  void UpdateResultsVisibility(bool force_hide) override;
+  views::View* GetTitleLabel() override;
+  std::vector<views::View*> GetViewsToAnimate() override;
 
   // The singleton delegate for search result image views that implements
   // support for context menu and drag-and-drop operations. This delegate needs

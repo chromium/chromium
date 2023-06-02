@@ -13,9 +13,14 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsCallback;
@@ -37,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -47,6 +53,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -69,6 +76,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -106,6 +115,32 @@ public class CustomTabActivityAppMenuTest {
                                           .around(mModuleOverridesRule);
 
     private String mTestPage;
+
+    private class TestContext extends ContextWrapper {
+        public TestContext(Context baseContext) {
+            super(baseContext);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public List<ResolveInfo> queryBroadcastReceivers(Intent intent, int filters) {
+                    return new ArrayList<ResolveInfo>();
+                }
+            };
+        }
+
+        @Override
+        public Object getSystemService(String name) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                if (name.equals(Context.SHORTCUT_SERVICE)) {
+                    return null;
+                }
+            }
+            return super.getSystemService(name);
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -360,6 +395,28 @@ public class CustomTabActivityAppMenuTest {
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_menu_id);
         Assert.assertNotNull(sharePropertyModel);
         Assert.assertTrue(sharePropertyModel.get(AppMenuItemProperties.ENABLED));
+    }
+
+    /**
+     * Tests that the Add to Home screen item is not shown in the menu if there is no pin to home
+     * screen capability
+     */
+    @Test
+    @SmallTest
+    public void testAddToHomeScreenMenuItemNoHomeScreen() throws Exception {
+        Context contextToRestore = ContextUtils.getApplicationContext();
+        TestContext testContext = new TestContext(contextToRestore);
+        ContextUtils.initApplicationContextForTests(testContext);
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        openAppMenuAndAssertMenuShown();
+        PropertyModel addToHomeScreenPropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
+                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.add_to_homescreen_id);
+
+        Assert.assertNull(addToHomeScreenPropertyModel);
+
+        ContextUtils.initApplicationContextForTests(contextToRestore);
     }
 
     /**

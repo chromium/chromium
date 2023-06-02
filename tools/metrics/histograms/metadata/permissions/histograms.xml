@@ -23,6 +23,10 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="AllPermissionTypes">
+<!-- Should be kept in sync with variants SettingsAllPermissionTypes in
+  tools/metrics/histograms/metadata/settings/histograms.xml.
+-->
+
   <variant name="AR"/>
   <variant name="AudioAndVideoCapture"/>
   <variant name="AudioCapture"/>
@@ -539,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Dismissed" units="%"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

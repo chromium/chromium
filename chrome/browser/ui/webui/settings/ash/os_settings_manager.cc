@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
@@ -49,7 +50,8 @@ OsSettingsManager::OsSettingsManager(
       hierarchy_(std::make_unique<Hierarchy>(sections_.get())),
       settings_user_action_tracker_(
           std::make_unique<SettingsUserActionTracker>(hierarchy_.get(),
-                                                      sections_.get())),
+                                                      sections_.get(),
+                                                      profile->GetPrefs())),
       search_handler_(
           std::make_unique<SearchHandler>(search_tag_registry_.get(),
                                           sections_.get(),

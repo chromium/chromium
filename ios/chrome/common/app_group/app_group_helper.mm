@@ -37,4 +37,19 @@
   return [NSUserDefaults standardUserDefaults];
 }
 
++ (NSURL*)widgetsFaviconsFolder {
+  NSString* applicationGroup = [AppGroupHelper applicationGroup];
+  if (!applicationGroup) {
+    return nil;
+  }
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:applicationGroup];
+  NSURL* chromeURL = [groupURL URLByAppendingPathComponent:@"Chrome"
+                                               isDirectory:YES];
+  NSURL* contentWidgetFaviconsURL =
+      [chromeURL URLByAppendingPathComponent:@"ContentWidgetFavicons"
+                                 isDirectory:YES];
+  return contentWidgetFaviconsURL;
+}
+
 @end

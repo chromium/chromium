@@ -21,6 +21,8 @@ const char kHistogramFirstMeaningfulPaintSuffix[] =
 const char kHistogramFirstPaintSuffix[] = "PaintTiming.NavigationToFirstPaint";
 const char kHistogramForegroundToFirstContentfulPaintSuffix[] =
     "PaintTiming.ForegroundToFirstContentfulPaint";
+const char kHistogramLargestContentfulPaintSuffix[] =
+    "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramLoadEventFiredBackgroundSuffix[] =
     "DocumentTiming.NavigationToLoadEventFired.Background";
 const char kHistogramLoadEventFiredSuffix[] =

@@ -65,8 +65,7 @@ void CfmBrowserService::OnAdaptorDisconnect() {
 }
 
 void CfmBrowserService::OnBindService(
-    mojo::ScopedMessagePipeHandle receiver_pipe,
-    const absl::optional<std::string>&) {
+    mojo::ScopedMessagePipeHandle receiver_pipe) {
   receivers_.Add(
       this, mojo::PendingReceiver<mojom::CfmBrowser>(std::move(receiver_pipe)));
 }

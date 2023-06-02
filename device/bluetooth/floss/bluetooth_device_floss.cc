@@ -101,27 +101,19 @@ AddressType BluetoothDeviceFloss::GetAddressType() const {
 }
 
 VendorIDSource BluetoothDeviceFloss::GetVendorIDSource() const {
-  NOTIMPLEMENTED();
-
-  return VendorIDSource::VENDOR_ID_UNKNOWN;
+  return static_cast<VendorIDSource>(vpi_.vendorIdSrc);
 }
 
 uint16_t BluetoothDeviceFloss::GetVendorID() const {
-  NOTIMPLEMENTED();
-
-  return 0;
+  return vpi_.vendorId;
 }
 
 uint16_t BluetoothDeviceFloss::GetProductID() const {
-  NOTIMPLEMENTED();
-
-  return 0;
+  return vpi_.productId;
 }
 
 uint16_t BluetoothDeviceFloss::GetDeviceID() const {
-  NOTIMPLEMENTED();
-
-  return 0;
+  return vpi_.version;
 }
 
 uint16_t BluetoothDeviceFloss::GetAppearance() const {
@@ -731,6 +723,18 @@ void BluetoothDeviceFloss::OnGetRemoteUuids(DBusResult<UUIDList> ret) {
   TriggerInitDevicePropertiesCallback();
 }
 
+void BluetoothDeviceFloss::OnGetRemoteVendorProductInfo(
+    DBusResult<FlossAdapterClient::VendorProductInfo> ret) {
+  if (ret.has_value()) {
+    vpi_ = *ret;
+  } else {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteVendorProductInfo() failed: "
+                         << ret.error();
+  }
+
+  TriggerInitDevicePropertiesCallback();
+}
+
 void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
   if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to connect all enabled profiles: "
@@ -840,7 +844,7 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
   // This must be incremented when adding more properties below
   // and followed up with a TriggerInitDevicePropertiesCallback()
   // in the callback.
-  num_pending_properties_ += 4;
+  num_pending_properties_ += 5;
   // TODO(b/204708206): Update with property framework when available
   FlossDBusManager::Get()->GetAdapterClient()->GetRemoteType(
       base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteType,
@@ -856,6 +860,10 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
       AsFlossDeviceId());
   FlossDBusManager::Get()->GetAdapterClient()->GetRemoteUuids(
       base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteUuids,
+                     weak_ptr_factory_.GetWeakPtr()),
+      AsFlossDeviceId());
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteVendorProductInfo(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteVendorProductInfo,
                      weak_ptr_factory_.GetWeakPtr()),
       AsFlossDeviceId());
 }

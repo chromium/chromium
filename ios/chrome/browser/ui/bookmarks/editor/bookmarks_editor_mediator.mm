@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_consumer.h"
@@ -30,9 +29,9 @@
                                        SyncObserverModelBridge> {
   PrefService* _prefs;
 
+  // Observer for the bookmark model of `self.bookmark`.
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridgeObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
-  SyncSetupService* _syncSetupService;
   ChromeBrowserState* _browserState;
   // Whether the user manually changed the folder. In which case it must be
   // saved as last used folder on "save".
@@ -47,6 +46,7 @@
 @implementation BookmarksEditorMediator {
   base::WeakPtr<bookmarks::BookmarkModel> _profileBookmarkModel;
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
+  syncer::SyncService* _syncService;
 }
 
 - (instancetype)
@@ -54,7 +54,6 @@
             accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
                     bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
                            prefs:(PrefService*)prefs
-                syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
                     browserState:(ChromeBrowserState*)browserState {
   self = [super init];
@@ -79,8 +78,8 @@
     _prefs = prefs;
     _bookmarkModelBridgeObserver.reset(
         new BookmarkModelBridge(self, self.bookmarkModel));
+    _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
-    _syncSetupService = syncSetupService;
     _browserState = browserState;
   }
   return self;
@@ -92,8 +91,9 @@
   _bookmark = nullptr;
   _folder = nullptr;
   _prefs = nullptr;
-  _bookmarkModelBridgeObserver = nullptr;
-  _syncObserverModelBridge = nullptr;
+  _bookmarkModelBridgeObserver.reset();
+  _syncService = nullptr;
+  _syncObserverModelBridge.reset();
   _browserState = nullptr;
 }
 
@@ -115,11 +115,10 @@
 
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
   bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
-      self.bookmark, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+      self.folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   switch (type) {
     case bookmarks::StorageType::kLocalOrSyncable:
-      return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-          _syncSetupService);
+      return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
     case bookmarks::StorageType::kAccount:
       return NO;
   }
@@ -176,18 +175,28 @@
 }
 
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+       willDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.ignoresBookmarkModelChanges) {
     return;
   }
 
-  if (self.bookmark == node) {
+  if (self.bookmark->HasAncestor(node)) {
     _bookmark = nullptr;
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
-  } else if (self.folder == node) {
-    [self changeFolder:self.bookmarkModel->mobile_node()];
+  } else if (self.folder->HasAncestor(node)) {
+    // This might happen when the user has changed `self.folder` but has not
+    // commited the changes by pressing done. And in the background the chosen
+    // folder was deleted.
+    [self changeFolder:model->mobile_node()];
   }
+}
+
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
+  // No-op. Bookmark deletion handled in
+  // `bookmarkModel:willDeleteNode:fromFolder:`
 }
 
 - (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
@@ -242,11 +251,15 @@
   [self bookmarkModel]->GetNodesByURL([self bookmark]->url(), &nodesVector);
   std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),
                                                  nodesVector.end());
-
-  [self.delegate
-      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              nodes, {[self bookmarkModel]}, _browserState)];
-  _bookmark = nullptr;
+  if (!nodesVector.empty()) {
+    // TODO (crbug.com/1445455): figure out why it is sometime empty and ensure
+    // it is not the case.
+    //  Temporary fix for crbug.com/1444667
+    [self.delegate
+        showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+                                nodes, {[self bookmarkModel]}, _browserState)];
+    [self.delegate bookmarkEditorMediatorWantsDismissal:self];
+  }
 }
 
 #pragma mark - SyncObserverModelBridge

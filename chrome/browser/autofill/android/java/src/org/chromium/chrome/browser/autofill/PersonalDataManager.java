@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -380,50 +379,6 @@ public class PersonalDataManager {
             mPhoneNumber = phoneNumber;
             mEmailAddress = emailAddress;
             mLanguageCode = languageCode;
-        }
-
-        /**
-         * Builds a profile with the given values, assuming those are reviewed by the user and thus
-         * are marked {@link VerificationStatus.USER_VERIFIED}.
-         */
-        public AutofillProfile(String guid, boolean isLocal, @Source int source,
-                String honorificPrefix, String fullName, String companyName, String streetAddress,
-                String region, String locality, String dependentLocality, String postalCode,
-                String sortingCode, String countryCode, String phoneNumber, String emailAddress,
-                String languageCode) {
-            this(guid, isLocal, source,
-                    new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(streetAddress, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(region, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(locality, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(dependentLocality, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(postalCode, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(sortingCode, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(countryCode, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(phoneNumber, VerificationStatus.USER_VERIFIED),
-                    new ValueWithStatus(emailAddress, VerificationStatus.USER_VERIFIED),
-                    languageCode);
-        }
-
-        /**
-         * Builds an empty local profile with country code from the default locale.
-         * All other fields are empty strings with {@link VerificationStatus.NO_STATUS},
-         * because JNI does not handle null strings.
-         */
-        public AutofillProfile() {
-            this("" /* guid */, true /* isLocal */, Source.LOCAL_OR_SYNCABLE,
-                    ValueWithStatus.EMPTY /* honorificPrefix */,
-                    ValueWithStatus.EMPTY /* fullName */, ValueWithStatus.EMPTY /* companyName */,
-                    ValueWithStatus.EMPTY /* streetAddress */, ValueWithStatus.EMPTY /* region */,
-                    ValueWithStatus.EMPTY /* locality */,
-                    ValueWithStatus.EMPTY /* dependentLocality */,
-                    ValueWithStatus.EMPTY /* postalCode */, ValueWithStatus.EMPTY /* sortingCode */,
-                    new ValueWithStatus(Locale.getDefault().getCountry(),
-                            VerificationStatus.USER_VERIFIED) /* country */,
-                    ValueWithStatus.EMPTY /* phoneNumber */,
-                    ValueWithStatus.EMPTY /* emailAddress */, "" /* languageCode */);
         }
 
         /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */

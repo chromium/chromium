@@ -57,6 +57,7 @@ const char kRemoveBond[] = "RemoveBond";
 const char kGetRemoteType[] = "GetRemoteType";
 const char kGetRemoteClass[] = "GetRemoteClass";
 const char kGetRemoteAppearance[] = "GetRemoteAppearance";
+const char kGetRemoteVendorProductInfo[] = "GetRemoteVendorProductInfo";
 const char kGetConnectionState[] = "GetConnectionState";
 const char kGetRemoteUuids[] = "GetRemoteUuids";
 const char kGetBondState[] = "GetBondState";
@@ -393,6 +394,13 @@ const DBusTypeInfo& GetDBusTypeInfo(const FlossDeviceId*) {
 }
 
 template <>
+const DBusTypeInfo& GetDBusTypeInfo(
+    const FlossAdapterClient::VendorProductInfo*) {
+  static DBusTypeInfo info{"a{sv}", "VendorProductInfo"};
+  return info;
+}
+
+template <>
 DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo(
     const device::BluetoothUUID*) {
   static DBusTypeInfo info{"ay", "BluetoothUUID"};
@@ -632,6 +640,25 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
   return struct_reader.ReadDBusParam(reader, device);
 }
 
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(
+    dbus::MessageReader* reader,
+    FlossAdapterClient::VendorProductInfo* vpi) {
+  static StructReader<FlossAdapterClient::VendorProductInfo> struct_reader({
+      {"vendor_id_src",
+       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::vendorIdSrc)},
+      {"vendor_id",
+       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::vendorId)},
+      {"product_id",
+       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::productId)},
+      {"version",
+       CreateFieldReader(&FlossAdapterClient::VendorProductInfo::version)},
+  });
+
+  return struct_reader.ReadDBusParam(reader, vpi);
+}
+
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const FlossDeviceId& device) {
@@ -769,6 +796,11 @@ template void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<device::BluetoothDevice::UUIDList> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 

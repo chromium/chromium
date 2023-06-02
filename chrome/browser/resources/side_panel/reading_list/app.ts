@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://read-later.top-chrome/shared/sp_empty_state.js';
+import 'chrome://read-later.top-chrome/shared/sp_footer.js';
 import 'chrome://read-later.top-chrome/shared/sp_heading.js';
+import 'chrome://read-later.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
@@ -21,8 +23,8 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronSelectableBehavior} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selectable.js';
+import {DomRepeat, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './reading_list.mojom-webui.js';
@@ -31,13 +33,15 @@ import {MARKED_AS_READ_UI_EVENT, ReadingListItemElement} from './reading_list_it
 
 const navigationKeys: Set<string> = new Set(['ArrowDown', 'ArrowUp']);
 
-const ReadingListAppElementBase = HelpBubbleMixin(PolymerElement) as
-    {new (): PolymerElement & HelpBubbleMixinInterface};
+const ReadingListAppElementBase = mixinBehaviors(
+                                      [IronSelectableBehavior],
+                                      HelpBubbleMixin(PolymerElement)) as {
+  new (): PolymerElement & HelpBubbleMixinInterface & IronSelectableBehavior,
+};
 
 export interface ReadingListAppElement {
   $: {
     readingListList: HTMLElement,
-    selector: IronSelectorElement,
     unreadItemsList: DomRepeat,
   };
 }
@@ -58,6 +62,12 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
   static get properties() {
     return {
+      /** Property for IronSelectableBehavior */
+      attrForSelected: {
+        type: String,
+        value: 'data-url',
+      },
+
       unreadItems_: {
         type: Array,
         value: [],
@@ -159,6 +169,11 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
                 READING_LIST_UNREAD_ELEMENT_ID, firstUnreadItem);
           }
         });
+  }
+
+  /** Overridden from IronSelectableBehavior to allow nested items. */
+  override get items() {
+    return Array.from(this.shadowRoot!.querySelectorAll('reading-list-item'));
   }
 
   /**
@@ -279,12 +294,12 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     }
     switch (e.key) {
       case 'ArrowDown':
-        this.$.selector.selectNext();
-        (this.$.selector.selectedItem as ReadingListItemElement).focus();
+        this.selectNext();
+        (this.selectedItem as ReadingListItemElement).focus();
         break;
       case 'ArrowUp':
-        this.$.selector.selectPrevious();
-        (this.$.selector.selectedItem as ReadingListItemElement).focus();
+        this.selectPrevious();
+        (this.selectedItem as ReadingListItemElement).focus();
         break;
       default:
         assertNotReached();
@@ -294,12 +309,15 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   }
 
   private onItemFocus_(e: Event) {
-    this.$.selector.selected =
-        (e.currentTarget as ReadingListItemElement).dataset['url']!;
+    this.selected = (e.currentTarget as ReadingListItemElement).dataset['url']!;
   }
 
   private shouldShowHr_(): boolean {
     return this.unreadItems_.length > 0 && this.readItems_.length > 0;
+  }
+
+  private shouldShowList_(): boolean {
+    return this.unreadItems_.length > 0 || this.readItems_.length > 0;
   }
 }
 

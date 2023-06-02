@@ -240,8 +240,8 @@ def _ComputeIds(root, predetermined_tids):
               'avoid conflicts with system-defined resource IDs.')
 
       if tid not in predetermined_tids and id in predetermined_ids:
-        raise exception.IdRangeOverlap('ID %d overlaps between %s and %s'
-                                       % (id, tid, predetermined_ids[tid]))
+        raise exception.IdRangeOverlap('ID %d overlaps between %s and %s' %
+                                       (id, tid, predetermined_ids[id]))
 
       ids[id] = tid
       tids[tid] = id

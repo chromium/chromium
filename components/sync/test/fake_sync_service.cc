@@ -104,9 +104,11 @@ bool FakeSyncService::RequiresClientUpgrade() const {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool FakeSyncService::IsSyncFeatureDisabledViaDashboard() const {
   return false;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void FakeSyncService::DataTypePreconditionChanged(ModelType type) {}
 

@@ -15,6 +15,8 @@ import androidx.annotation.StringRes;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 
+import java.util.Objects;
+
 /** An implementation of the {@link ButtonData}. */
 public class ButtonDataImpl implements ButtonData {
     private boolean mCanShow;
@@ -102,5 +104,23 @@ public class ButtonDataImpl implements ButtonData {
                 currentSpec.getSupportsTinting(), currentSpec.getIPHCommandBuilder(),
                 currentSpec.getButtonVariant(), currentSpec.getActionChipLabelResId());
         setButtonSpec(newSpec);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ButtonDataImpl)) {
+            return false;
+        }
+        ButtonDataImpl that = (ButtonDataImpl) o;
+        return mCanShow == that.mCanShow && mIsEnabled == that.mIsEnabled
+                && Objects.equals(mButtonSpec, that.mButtonSpec);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mCanShow, mIsEnabled, mButtonSpec);
     }
 }

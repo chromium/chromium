@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 13) {
+  if (Object.keys(interestGroup).length !== 15) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -74,8 +74,12 @@ function validateInterestGroup(interestGroup) {
     throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
   }
 
-  if (!interestGroup.updateUrl.startsWith('https://a.test') ||
-      !interestGroup.updateUrl.endsWith('/not_found_update_url.json')) {
+  if (!interestGroup.updateURL.startsWith('https://a.test') ||
+      !interestGroup.updateURL.endsWith('/not_found_update_url.json')) {
+    throw 'Incorrect updateURL ' + interestGroup.updateURL;
+  }
+
+  if (interestGroup.updateUrl !== interestGroup.updateURL) {
     throw 'Incorrect updateUrl ' + interestGroup.updateUrl;
   }
 
@@ -84,6 +88,16 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup.dailyUpdateUrl.startsWith('https://a.test') ||
       !interestGroup.dailyUpdateUrl.endsWith('/not_found_update_url.json')) {
     throw 'Incorrect dailyUpdateUrl ' + interestGroup.dailyUpdateUrl;
+  }
+
+  if (!interestGroup.trustedBiddingSignalsURL.startsWith('https://a.test') ||
+      (!interestGroup.trustedBiddingSignalsURL.includes(
+          'trusted_bidding_signals.json') &&
+       // TODO(mmenke): Remove this once v1 format is no longer supported.
+       !interestGroup.trustedBiddingSignalsURL.includes(
+          'trusted_bidding_signals_v1.json'))) {
+    throw 'Incorrect trustedBiddingSignalsURL ' +
+        interestGroup.trustedBiddingSignalsURL;
   }
 
   if (!interestGroup.trustedBiddingSignalsUrl.startsWith('https://a.test') ||
@@ -195,7 +209,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 14) {
+    if (Object.keys(browserSignals).length !== 15) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -221,6 +235,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     }
     if (browserSignals.adCost !== 3)
       throw 'Wrong adCost ' + browserSignals.adCost;
+    if (!browserSignals.hasOwnProperty("enforcedKAnon"))
+      throw 'Missing enforcedKAnon';
   }
 }
 

@@ -17,6 +17,7 @@
 <translation id="1414495520565016063">Anda sudah masuk ke Chromium!</translation>
 <translation id="1524282610922162960">Bagikan tab Chromium</translation>
 <translation id="1553461853655228091">Chromium memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
+<translation id="1555506416658437797">mengedit metode pembayaran.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1625909126243026060">Meninjau kontrol privasi dan keamanan utama di Chromium</translation>
 <translation id="1632539827495546968">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat menggunakan <ph name="GUEST_LINK_BEGIN" />mode Tamu<ph name="GUEST_LINK_END" /> di browser Chromium. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
@@ -132,10 +133,13 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> telah login ke profil Chromium ini. Agar penjelajahan Anda tetap terpisah, Chromium dapat membuat profil tersendiri untuk Anda.</translation>
 <translation id="391789666908693569">Akun Anda dikelola oleh <ph name="MANAGER_NAME" />. Administrator dapat melihat dan mengedit profil browser Chromium ini beserta datanya seperti bookmark, histori, dan sandi.</translation>
 <translation id="3945058413678539331">Chromium mencoba menyalin sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
+<translation id="3962623956404948996">Chromium merekomendasikan pemindaian file ini karena file mungkin berbahaya</translation>
 <translation id="3997429360543082038">Tentang ChromiumOS</translation>
 <translation id="4019629340646866719">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Bantu Chromium jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
+<translation id="4050599136622776556">Chromium mencoba mengedit metode pembayaran.</translation>
+<translation id="4055805654398742145">Pengelola S&amp;andi</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Login Jaringan - Chromium</translation>
 <translation id="421369550622382712">Temukan aplikasi, game, ekstensi, dan tema yang hebat untuk Chromium.</translation>

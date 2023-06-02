@@ -129,10 +129,7 @@ using bookmarks::BookmarkNode;
 }
 
 - (BookmarkModel*)bookmarkModel {
-  AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-
-  Profile* lastProfile = appDelegate.lastProfile;
+  Profile* lastProfile = AppController.sharedController.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nullptr;

@@ -32,8 +32,7 @@ struct FunctionInfo {
   size_t record_bytes;  // rounded to sizeof(size_t) bytes
   InterceptionType type;
   InterceptorId id;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
+  // Not a raw_ptr<> as this represents an address in another process.
   RAW_PTR_EXCLUSION const void* interceptor_address;
   char function[1];  // placeholder for null terminated name
   // char interceptor[]           // followed by the interceptor function
@@ -52,8 +51,7 @@ struct DllPatchInfo {
 // All interceptions:
 struct SharedMemory {
   size_t num_intercepted_dlls;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
+  // Not a raw_ptr<> as this represents an address in another process.
   RAW_PTR_EXCLUSION void* interceptor_base;
   DllPatchInfo dll_list[1];  // placeholder for the list of dlls
 };
@@ -67,8 +65,7 @@ struct ThunkData {
 struct DllInterceptionData {
   size_t data_bytes;
   size_t used_bytes;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
+  // Not a raw_ptr as this represents a DLL base address not PA allocated memory.
   RAW_PTR_EXCLUSION void* base;
   int num_thunks;
 #if defined(_WIN64)

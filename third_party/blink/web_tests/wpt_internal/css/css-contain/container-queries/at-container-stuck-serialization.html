@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>CSS Container Queries: state(stuck) conditionText serialization</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-queries">
+<link rel="help" href="https://drafts.csswg.org/cssom/#serialize-a-css-rule">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/css-contain/container-queries/support/cq-testcommon.js"></script>
+<style id="testSheet">
+  @container state(        stuck:top) { }
+  @container STate(stuck:    ) { }
+  @container STate(stuck) { }
+  @container  state(  ( stuck: BOTTOM) OR ( STUCK: INset-inline-START  ) ) { }
+  @container state (stuck: top) { }
+</style>
+<script>
+  setup(() => {
+    assert_implements_container_queries();
+    assert_equals(testSheet.sheet.cssRules.length, 5);
+  });
+
+  const tests = [
+      ["state(stuck: top)", "Normalize spaces"],
+      ["STate(stuck: )", "No value - invalid, serializes as <general-enclosed>"],
+      ["state(stuck)", "Boolean context"],
+      ["state((stuck: bottom) or (stuck: inset-inline-start))", "Logical with 'or'"],
+      ["state (stuck: top)", "Not a state function with space before '('"]
+  ].map((e, i) => [testSheet.sheet.cssRules[i], ...e]);
+
+  tests.forEach((t) => {
+    test(() => assert_equals(t[0].conditionText, t[1]), t[2]);
+  });
+</script>

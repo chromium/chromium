@@ -269,6 +269,8 @@ class ASH_EXPORT WallpaperControllerImpl
       const AccountId& account_id,
       DailyGooglePhotosIdCache& ids_out) const override;
 
+  void SetTimeOfDayWallpaper(const AccountId& account_id,
+                             SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
@@ -704,6 +706,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnAllOnlineWallpaperVariantsDownloaded(
       const OnlineWallpaperParams& params,
       SetWallpaperCallback callback);
+
+  // Called as a callback for `SetTimeOfDayWallpaper`.
+  void OnTimeOfDayWallpaperSetAfterOobe(bool success);
 
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;

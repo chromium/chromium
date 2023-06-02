@@ -109,7 +109,7 @@ class CodeItemParser {
                              sizeof(dex::CodeItem))) {
       return false;
     }
-    source_ = std::move(BufferSource(image_).Skip(code_map_item.offset));
+    source_ = BufferSource(image_, code_map_item.offset);
     return true;
   }
 
@@ -220,7 +220,7 @@ class CodeItemParser {
   // |image|, returns |insns| bytes as ConstBufferView.
   static ConstBufferView GetCodeItemInsns(ConstBufferView image,
                                           offset_t code_item_offset) {
-    BufferSource source(BufferSource(image).Skip(code_item_offset));
+    BufferSource source(image, code_item_offset);
     const auto* code_item = source.GetPointer<const dex::CodeItem>();
     DCHECK(code_item);
     BufferRegion insns{0, code_item->insns_size * kInstrUnitSize};
@@ -529,7 +529,7 @@ bool ParseItemOffsets(ConstBufferView image,
   // Sanity check: |image| should at least fit |map_item.size| copies of "N".
   if (!image.covers_array(map_item.offset, map_item.size, sizeof(uint32_t)))
     return false;
-  BufferSource source = std::move(BufferSource(image).Skip(map_item.offset));
+  BufferSource source(image, map_item.offset);
   item_offsets->clear();
   for (uint32_t i = 0; i < map_item.size; ++i) {
     if (!source.AlignOn(image, 4U))
@@ -544,7 +544,9 @@ bool ParseItemOffsets(ConstBufferView image,
     for (uint32_t j = 0; j < unsafe_size; ++j) {
       item_offsets->push_back(
           base::checked_cast<offset_t>(source.begin() - image.begin()));
-      source.Skip(item_width);
+      if (!source.Skip(item_width)) {
+        return false;
+      }
     }
   }
   return true;
@@ -573,8 +575,7 @@ bool ParseAnnotationsDirectoryItems(
                           sizeof(dex::AnnotationsDirectoryItem))) {
     return false;
   }
-  BufferSource source = std::move(
-      BufferSource(image).Skip(annotations_directory_map_item.offset));
+  BufferSource source(image, annotations_directory_map_item.offset);
   annotations_directory_item_offsets->clear();
   field_annotation_offsets->clear();
   method_annotation_offsets->clear();
@@ -591,7 +592,9 @@ bool ParseAnnotationsDirectoryItems(
     for (uint32_t i = 0; i < unsafe_size; ++i) {
       item_offsets->push_back(
           base::checked_cast<offset_t>(source.begin() - image.begin()));
-      source.Skip(item_width);
+      if (!source.Skip(item_width)) {
+        return false;
+      }
     }
     return true;
   };
@@ -1791,7 +1794,7 @@ bool DisassemblerDex::ParseHeader() {
   static_assert(
       offsetof(dex::MapList, list) == sizeof(decltype(dex::MapList::size)),
       "MapList size error.");
-  source = std::move(BufferSource(image_).Skip(header_->map_off));
+  source = BufferSource(image_, header_->map_off);
   decltype(dex::MapList::size) list_size = 0;
   if (!source.GetValue(&list_size) || list_size > dex::kMaxItemListSize)
     return false;

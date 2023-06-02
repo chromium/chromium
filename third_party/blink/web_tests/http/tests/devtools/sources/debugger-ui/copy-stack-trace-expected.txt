@@ -2,9 +2,9 @@ Tests that debugger will copy valid stack trace upon context menu action.
 
 Set timer for test function.
 Script execution paused.
-functionBaz (copy-stack-trace.js:22)
-functionBar (copy-stack-trace.js:17)
-testFunction (copy-stack-trace.js:12)
+functionBaz (copy-stack-trace.js:25)
+functionBar (copy-stack-trace.js:20)
+testFunction (copy-stack-trace.js:15)
 setTimeout (async)
 scheduleTestFunction (VM:3)
 (anonymous) (VM:1)

@@ -5,14 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_
 #define IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_
 
-// The possible types of items for the Set Up List.
+// The possible types of items for the Set Up List. This enum must match the
+// UMA histogram enum IOSSetUpListItemType.
 enum class SetUpListItemType {
   kSignInSync = 1,
   kDefaultBrowser = 2,
   kAutofill = 3,
   kFollow = 4,
-
-  kMaxValue = kFollow
+  kAllSet = 5,
+  kMaxValue = kAllSet
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_

@@ -24,10 +24,10 @@ component("memory") {
   ]
   sources = [
     "aligned_memory.h",
-    "kstaled.cc",
-    "kstaled.h",
     "memory.cc",
     "memory.h",
+    "mglru.cc",
+    "mglru.h",
     "pagemap.cc",
     "pagemap.h",
     "pressure/system_memory_pressure_evaluator.cc",

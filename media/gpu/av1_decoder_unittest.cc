@@ -152,7 +152,7 @@ class AV1DecoderTest : public ::testing::Test {
   }
 
   // Owned by |decoder_|.
-  raw_ptr<MockAV1Accelerator> mock_accelerator_;
+  raw_ptr<MockAV1Accelerator, DanglingUntriaged> mock_accelerator_;
 
   std::unique_ptr<AV1Decoder> decoder_;
   int32_t bitstream_id_ = 0;

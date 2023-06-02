@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
@@ -79,7 +78,7 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
   }
 
   std::unique_ptr<MockWlanApi> wlan_api_;
-  raw_ptr<MockPollingPolicy> polling_policy_ = nullptr;
+  raw_ptr<MockPollingPolicy, DanglingUntriaged> polling_policy_ = nullptr;
 
  private:
   ~WifiDataProviderCommonWithMock() override = default;
@@ -134,8 +133,8 @@ class GeolocationWifiDataProviderCommonTest : public testing::Test {
   WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_callback_;
   scoped_refptr<WifiDataProviderCommonWithMock> provider_;
 
-  raw_ptr<MockWlanApi> wlan_api_ = nullptr;
-  raw_ptr<MockPollingPolicy> polling_policy_ = nullptr;
+  raw_ptr<MockWlanApi, DanglingUntriaged> wlan_api_ = nullptr;
+  raw_ptr<MockPollingPolicy, DanglingUntriaged> polling_policy_ = nullptr;
 };
 
 TEST_F(GeolocationWifiDataProviderCommonTest, CreateDestroy) {
@@ -205,10 +204,9 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoScanWithResults) {
   EXPECT_CALL(*polling_policy_, PollingInterval()).Times(AtLeast(1));
   AccessPointData single_access_point;
   single_access_point.channel = 2;
-  single_access_point.mac_address = u"00:11:22:33:44:55";
+  single_access_point.mac_address = "00:11:22:33:44:55";
   single_access_point.radio_signal_strength = 4;
   single_access_point.signal_to_noise = 5;
-  single_access_point.ssid = u"foossid";
 
   WifiData::AccessPointDataSet data_out({single_access_point});
 
@@ -226,7 +224,8 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoScanWithResults) {
   WifiData data;
   EXPECT_TRUE(provider_->GetData(&data));
   ASSERT_EQ(1u, data.access_point_data.size());
-  EXPECT_EQ(single_access_point.ssid, data.access_point_data.begin()->ssid);
+  EXPECT_EQ(single_access_point.mac_address,
+            data.access_point_data.begin()->mac_address);
 }
 
 TEST_F(GeolocationWifiDataProviderCommonTest, DelayedByPolicy) {

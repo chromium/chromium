@@ -9,6 +9,8 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_squiggly_progress_view.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/animation/ink_drop.h"
@@ -45,6 +47,7 @@ constexpr int kBackgroundCornerRadius = 12;
 constexpr int kArtworkCornerRadius = 10;
 constexpr int kSourceLineHeight = 18;
 constexpr int kTitleArtistLineHeight = 20;
+constexpr int kNotMediaActionButtonId = -1;
 
 constexpr auto kArtworkSize = gfx::Size(80, 80);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
@@ -53,36 +56,42 @@ constexpr auto kControlsButtonSize = gfx::Size(32, 32);
 class MediaButton : public views::ImageButton {
  public:
   MediaButton(PressedCallback callback,
-              int icon_size,
-              gfx::Size button_size,
+              int button_id,
+              const gfx::VectorIcon& vector_icon,
+              int tooltip_text_id,
               ui::ColorId foreground_color_id,
               ui::ColorId foreground_disabled_color_id)
-      : ImageButton(callback),
-        icon_size_(icon_size),
+      : ImageButton(std::move(callback)),
+        icon_size_(button_id == static_cast<int>(MediaSessionAction::kPlay)
+                       ? kPlayPauseIconSize
+                       : kControlsIconSize),
         foreground_color_id_(foreground_color_id),
         foreground_disabled_color_id_(foreground_disabled_color_id) {
     views::ConfigureVectorImageButton(this);
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  button_size.height() / 2);
     SetInstallFocusRingOnFocus(true);
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetFlipCanvasOnPaintForRTLUI(false);
+
+    auto button_size = (button_id == static_cast<int>(MediaSessionAction::kPlay)
+                            ? kPlayPauseButtonSize
+                            : kControlsButtonSize);
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  button_size.height() / 2);
     SetPreferredSize(button_size);
-    views::SetImageFromVectorIconWithColorId(
-        this, *GetVectorIconForMediaAction(GetActionFromButtonTag(*this)),
-        foreground_color_id_, foreground_disabled_color_id_, icon_size_);
+
+    Update(button_id, vector_icon, tooltip_text_id);
   }
 
-  void set_tag(int tag) {
-    views::ImageButton::set_tag(tag);
-
-    SetTooltipText(
-        GetAccessibleNameForMediaAction(GetActionFromButtonTag(*this)));
-    SetAccessibleName(
-        GetAccessibleNameForMediaAction(GetActionFromButtonTag(*this)));
+  void Update(int button_id,
+              const gfx::VectorIcon& vector_icon,
+              int tooltip_text_id) {
+    if (button_id != kNotMediaActionButtonId) {
+      SetID(button_id);
+    }
+    SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
     views::SetImageFromVectorIconWithColorId(
-        this, *GetVectorIconForMediaAction(GetActionFromButtonTag(*this)),
-        foreground_color_id_, foreground_disabled_color_id_, icon_size_);
+        this, vector_icon, foreground_color_id_, foreground_disabled_color_id_,
+        icon_size_);
   }
 
  private:
@@ -178,15 +187,16 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
 
-  // |play_pause_container| holds the play/pause button and dismiss button.
+  // Create the play/pause button.
   auto* play_pause_container =
       main_row->AddChildView(std::make_unique<views::BoxLayoutView>());
   play_pause_container->SetInsideBorderInsets(kPlayPauseContainerInsets);
   play_pause_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
 
-  play_pause_button_ =
-      CreateMediaButton(play_pause_container, MediaSessionAction::kPlay);
+  play_pause_button_ = CreateMediaButton(
+      play_pause_container, static_cast<int>(MediaSessionAction::kPlay),
+      kPlayArrowIcon, IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       theme_.secondary_container_color_id, kPlayPauseButtonSize.height() / 2));
 
@@ -198,7 +208,10 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   controls_row->SetBetweenChildSpacing(kControlsRowSeparator);
 
   // Create the previous track button.
-  CreateMediaButton(controls_row, MediaSessionAction::kPreviousTrack);
+  CreateMediaButton(
+      controls_row, static_cast<int>(MediaSessionAction::kPreviousTrack),
+      kMediaPreviousTrackIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
 
   // Create the squiggly progress view.
   squiggly_progress_view_ =
@@ -210,11 +223,22 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   controls_row->SetFlexForView(squiggly_progress_view_, 1);
 
   // Create the next track button.
-  CreateMediaButton(controls_row, MediaSessionAction::kNextTrack);
+  CreateMediaButton(
+      controls_row, static_cast<int>(MediaSessionAction::kNextTrack),
+      kMediaNextTrackIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
+
+  // Create the start casting button.
+  start_casting_button_ = CreateMediaButton(
+      controls_row, kNotMediaActionButtonId, kMediaCastIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING);
 
   // Create the picture in picture button.
   picture_in_picture_button_ = CreateMediaButton(
-      controls_row, MediaSessionAction::kEnterPictureInPicture);
+      controls_row,
+      static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
+      kMediaEnterPipIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
 
   item_->SetView(this);
 }
@@ -225,21 +249,20 @@ MediaNotificationViewAshImpl::~MediaNotificationViewAshImpl() {
 
 MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
     views::View* parent,
-    MediaSessionAction action) {
+    int button_id,
+    const gfx::VectorIcon& vector_icon,
+    int tooltip_text_id) {
   auto button = std::make_unique<MediaButton>(
-      views::Button::PressedCallback(),
-      action == MediaSessionAction::kPlay ? kPlayPauseIconSize
-                                          : kControlsIconSize,
-      action == MediaSessionAction::kPlay ? kPlayPauseButtonSize
-                                          : kControlsButtonSize,
+      views::Button::PressedCallback(), button_id, vector_icon, tooltip_text_id,
       theme_.primary_foreground_color_id, theme_.secondary_foreground_color_id);
-  button->SetCallback(
-      base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
-                          base::Unretained(this), button.get()));
-  button->set_tag(static_cast<int>(action));
-
   auto* button_ptr = parent->AddChildView(std::move(button));
-  action_buttons_.push_back(button_ptr);
+
+  if (button_id != kNotMediaActionButtonId) {
+    button_ptr->SetCallback(
+        base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
+                            base::Unretained(this), button_ptr));
+    action_buttons_.push_back(button_ptr);
+  }
   return button_ptr;
 }
 
@@ -248,16 +271,31 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
   bool playing =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;
-  play_pause_button_->set_tag(static_cast<int>(
-      playing ? MediaSessionAction::kPause : MediaSessionAction::kPlay));
+  if (playing) {
+    play_pause_button_->Update(
+        static_cast<int>(MediaSessionAction::kPause), kPauseIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE);
+  } else {
+    play_pause_button_->Update(
+        static_cast<int>(MediaSessionAction::kPlay), kPlayArrowIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
+  }
 
   bool in_picture_in_picture =
       session_info &&
       session_info->picture_in_picture_state ==
           media_session::mojom::MediaPictureInPictureState::kInPictureInPicture;
-  picture_in_picture_button_->set_tag(static_cast<int>(
-      in_picture_in_picture ? MediaSessionAction::kExitPictureInPicture
-                            : MediaSessionAction::kEnterPictureInPicture));
+  if (in_picture_in_picture) {
+    picture_in_picture_button_->Update(
+        static_cast<int>(MediaSessionAction::kExitPictureInPicture),
+        kMediaExitPipIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP);
+  } else {
+    picture_in_picture_button_->Update(
+        static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
+        kMediaEnterPipIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
+  }
 
   UpdateActionButtonsVisibility();
   container_->OnMediaSessionInfoChanged(session_info);
@@ -265,6 +303,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
 
 void MediaNotificationViewAshImpl::UpdateWithMediaMetadata(
     const media_session::MediaMetadata& metadata) {
+  source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   source_label_->SetText(metadata.source_title);
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);
@@ -309,8 +348,8 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
 void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
   for (auto* button : action_buttons_) {
-    bool should_show =
-        base::Contains(enabled_actions_, GetActionFromButtonTag(*button));
+    bool should_show = base::Contains(
+        enabled_actions_, static_cast<MediaSessionAction>(button->GetID()));
     if (should_show != button->GetVisible()) {
       button->SetVisible(should_show);
       should_invalidate_layout = true;
@@ -323,7 +362,8 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
 }
 
 void MediaNotificationViewAshImpl::ButtonPressed(views::Button* button) {
-  item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*button));
+  item_->OnMediaSessionActionButtonPressed(
+      static_cast<MediaSessionAction>(button->GetID()));
 }
 
 void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {

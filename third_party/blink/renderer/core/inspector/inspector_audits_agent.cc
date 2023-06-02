@@ -80,7 +80,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
   Element* element = info.element;
 
   StringBuilder sb;
-  auto element_id = element->getAttribute("id").LowerASCII();
+  auto element_id = element->GetIdAttribute().LowerASCII();
   sb.Append(element->nodeName().LowerASCII());
   if (!element_id.empty()) {
     sb.Append("#");

@@ -50,6 +50,7 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
                                            **kwargs)
     executor_kwargs["close_after_done"] = True
     executor_kwargs["sanitizer_enabled"] = sanitizer_enabled
+    executor_kwargs["reuse_window"] = kwargs.get("reuse_window", False)
 
     capabilities = {
         "goog:chromeOptions": {
@@ -134,6 +135,9 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     if webtranport_h3_port is not None:
         chrome_options["args"].append(
             f"--origin-to-force-quic-on=web-platform.test:{webtranport_h3_port[0]}")
+
+    if test_type == "wdspec":
+        executor_kwargs["binary_args"] = chrome_options["args"]
 
     executor_kwargs["capabilities"] = capabilities
 

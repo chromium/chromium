@@ -255,6 +255,8 @@ TEST_F(HighEfficiencyBubbleViewTest,
   AddNewTab(kMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(2, tab_strip_model->GetTabCount());
 
   SetTabDiscardState(0, true);
@@ -262,11 +264,13 @@ TEST_F(HighEfficiencyBubbleViewTest,
 
   EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
   tab_strip_model->SelectNextTab();
+  web_contents->WasHidden();
 
   EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
   ClickPageActionChip();
 
   tab_strip_model->SelectPreviousTab();
+  web_contents->WasShown();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
@@ -310,7 +314,7 @@ TEST_F(HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
 
   ClickPageActionChip();
 
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+  views::Label* label = GetDialogLabel<views::Label>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
   EXPECT_EQ(
       label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),

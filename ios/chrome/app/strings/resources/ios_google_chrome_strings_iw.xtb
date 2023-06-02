@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
 <translation id="2736805085127235148">‏ההתראות מ-Chrome מושבתות עכשיו בהגדרות המכשיר.</translation>
 <translation id="2767464022270041271">‏אין סיסמאות שמורות. למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
+<translation id="2840432500933227975">‏פותחים את הגדרות Chrome ב-iOS, מקישים על 'אפליקציית ברירת מחדל לדפדפן' ובוחרים ב-Chrome.</translation>
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2957447865124070833">‏בוחרים באפשרות <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chrome שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">‏כלומר, Chrome תמיד יבקש את האתר לנייד.</translation>
 <translation id="3706101708757577809">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="3720541637541300822">‏כרטיסיות מצב אנונימי יינעלו כש-Chrome ייסגר</translation>
+<translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="3980220367029651214">‏מתבצעת החלפה של חשבונות סנכרון מ-<ph name="USER_EMAIL1" /> ל-<ph name="USER_EMAIL2" />. הנתונים הקיימים שלך ב-Chrome מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chrome.</translation>
@@ -150,7 +152,6 @@
   • אם Chrome קורס, הפרטים על הקריסה עשויים לכלול גם פרטים אישיים מסוימים.
 
   • אם הסנכרון מופעל, המדדים עשויים לכלול גם פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">‏יש לך אבטחה ברמה רגילה לפרופיל Chrome הזה</translation>
 <translation id="9112744793181547300">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 <translation id="9122931302567044771">‏כלומר, Chrome תמיד יבקש את האתר למחשב.</translation>
 </translationbundle>

@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -26,6 +27,7 @@ import java.util.Set;
  * Call {@link AwOriginVerificationScheduler#init} to initialize the statement list and call
  * {@link AwOriginVerificationScheduler#validate} to perform a validation.
  */
+@Lifetime.Singleton
 public class AwOriginVerificationScheduler extends OriginVerificationScheduler {
     private static final String TAG = "AwOriginVerification";
 

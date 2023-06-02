@@ -22,7 +22,8 @@ RecoveryInstallGlobalErrorFactory::RecoveryInstallGlobalErrorFactory()
   DependsOn(GlobalErrorServiceFactory::GetInstance());
 }
 
-RecoveryInstallGlobalErrorFactory::~RecoveryInstallGlobalErrorFactory() {}
+RecoveryInstallGlobalErrorFactory::~RecoveryInstallGlobalErrorFactory() =
+    default;
 
 // static
 RecoveryInstallGlobalError*
@@ -34,7 +35,8 @@ RecoveryInstallGlobalErrorFactory::GetForProfile(Profile* profile) {
 // static
 RecoveryInstallGlobalErrorFactory*
 RecoveryInstallGlobalErrorFactory::GetInstance() {
-  return base::Singleton<RecoveryInstallGlobalErrorFactory>::get();
+  static base::NoDestructor<RecoveryInstallGlobalErrorFactory> instance;
+  return instance.get();
 }
 
 KeyedService* RecoveryInstallGlobalErrorFactory::BuildServiceInstanceFor(

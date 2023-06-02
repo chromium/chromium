@@ -18,6 +18,23 @@ namespace blink {
 
 class WindowPerformance;
 
+struct LargestContentfulPaintDetailsForReporting {
+  double image_paint_time = 0;
+  uint64_t image_paint_size = 0;
+  absl::optional<base::TimeDelta> image_load_start = absl::nullopt;
+  absl::optional<base::TimeDelta> image_load_end = absl::nullopt;
+  blink::LargestContentfulPaintType type =
+      blink::LargestContentfulPaintType::kNone;
+  double image_bpp = 0.0;
+  double text_paint_time = 0;
+  uint64_t text_paint_size = 0;
+  base::TimeTicks paint_time = base::TimeTicks();
+  absl::optional<WebURLRequest::Priority> image_request_priority =
+      absl::nullopt;
+  bool is_loaded_from_memory_cache = false;
+  bool is_preloaded_with_early_hints = false;
+};
+
 // This class is used for reporting purposes (e.g. ukm) of non-web-exposed
 // metrics.
 class BLINK_EXPORT WebPerformanceMetricsForReporting {
@@ -78,20 +95,8 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
       const;
   double FirstMeaningfulPaint() const;
-  double LargestImagePaintForMetrics() const;
-  uint64_t LargestImagePaintSizeForMetrics() const;
-  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadStart() const;
-  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadEnd() const;
-  bool LargestContentfulPaintImageIsLoadedFromMemoryCache() const;
-  bool LargestContentfulPaintImageIsPreloadedWithEarlyHints() const;
-  double LargestTextPaintForMetrics() const;
-  uint64_t LargestTextPaintSizeForMetrics() const;
-  base::TimeTicks LargestContentfulPaintAsMonotonicTimeForMetrics() const;
-  blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
+  LargestContentfulPaintDetailsForReporting LargestContentfulDetailsForMetrics()
       const;
-  double LargestContentfulPaintImageBPPForMetrics() const;
-  absl::optional<WebURLRequest::Priority>
-  LargestContentfulPaintImageRequestPriorityForMetrics() const;
   double FirstEligibleToPaint() const;
   double FirstInputOrScrollNotifiedTimestamp() const;
   absl::optional<base::TimeDelta> FirstInputDelay() const;

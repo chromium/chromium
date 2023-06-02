@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 
-#include "ash/capture_mode/camera_video_frame_handler.h"
 #include "ash/capture_mode/camera_video_frame_renderer.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -18,6 +17,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "components/capture_mode/camera_video_frame_handler.h"
 
 namespace ash {
 
@@ -194,7 +194,8 @@ aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
 
 void CaptureModeTestApi::SetForceUseGpuMemoryBufferForCameraFrames(bool value) {
   DCHECK(controller_->camera_controller());
-  CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(value);
+  capture_mode::CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(
+      value);
 }
 
 size_t CaptureModeTestApi::GetNumberOfAvailableCameras() const {

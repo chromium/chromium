@@ -530,7 +530,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 mTabReparentingControllerSupplier,
                 /*ephemeralTabCoordinatorSupplier=*/new ObservableSupplierImpl<>(),
-                false, mBackPressManager);
+                false, mBackPressManager, ()->null);
         // clang-format on
     }
 
@@ -775,7 +775,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onInitialLayoutInflationComplete() {
         mInflateInitialLayoutEndMs = SystemClock.elapsedRealtime();
 
-        mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
+        if (mRootUiCoordinator.getStatusBarColorController() != null) {
+            mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
+        }
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
         mCompositorViewHolderSupplier.set(
@@ -819,7 +821,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         mTabModelSelectorSupplier.set(tabModelSelector);
         mActivityTabProvider.setTabModelSelector(tabModelSelector);
-        mRootUiCoordinator.getStatusBarColorController().setTabModelSelector(tabModelSelector);
+        if (mRootUiCoordinator.getStatusBarColorController() != null) {
+            mRootUiCoordinator.getStatusBarColorController().setTabModelSelector(tabModelSelector);
+        }
 
         Pair<? extends TabCreator, ? extends TabCreator> tabCreators = createTabCreators();
         mTabCreatorManagerSupplier.set(
@@ -1021,8 +1025,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         Tab tab = getActivityTab();
         TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
-        if (tabModelSelector != null && !tabModelSelector.isReparentingInProgress()
-                && tab != null) {
+        // If tab reparenting is in progress and the activity Tab isn't being reparented, e.g.
+        // because it's an NTP, skip hiding the Tab since it will be destroyed when the Activity is
+        // destroyed prior to recreation.
+        if (tab != null
+                && ((tabModelSelector != null && !tabModelSelector.isReparentingInProgress())
+                        || AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(
+                                tab.getId()))) {
             tab.hide(TabHidingType.ACTIVITY_HIDDEN);
         }
     }
@@ -2216,6 +2225,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
+        if (mRootUiCoordinator.getBottomSheetController() != null
+                && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
+            BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
+            return true;
+        }
+
         if (mCompositorViewHolderSupplier.hasValue()) {
             LayoutManagerImpl layoutManager =
                     mCompositorViewHolderSupplier.get().getLayoutManager();
@@ -2239,12 +2254,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (exitFullscreenIfShowing()) {
             BackPressManager.record(Type.FULLSCREEN);
-            return true;
-        }
-
-        if (mRootUiCoordinator.getBottomSheetController() != null
-                && mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
-            BackPressManager.record(BackPressHandler.Type.BOTTOM_SHEET);
             return true;
         }
 
@@ -2458,7 +2467,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.disable_price_tracking_menu_id) {
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModelSupplier.get(),
                     mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab),
-                    /*enabled=*/false, mSnackbarManager, getResources(), (success) -> {});
+                    /*enabled=*/false, mSnackbarManager, getResources(),
+                    Profile.getLastUsedRegularProfile(), (success) -> {});
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }
@@ -2917,5 +2927,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             this.isTablet = isTablet;
             this.changed = changed;
         }
+    }
+
+    @Override
+    protected int getAutomotiveToolbarImplementation() {
+        return AutomotiveToolbarImplementation.WITH_ACTION_BAR;
     }
 }

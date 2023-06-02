@@ -143,9 +143,6 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   // Callback for the "saveDump" message.
   void HandleSaveDump(const base::Value::List& args);
 
-  // Callback for the "reportProcess" message.
-  void HandleReportProcess(const base::Value::List& args);
-
   // Callback for the "startProfiling" message.
   void HandleStartProfiling(const base::Value::List& args);
 
@@ -192,10 +189,6 @@ void MemoryInternalsDOMHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "saveDump",
       base::BindRepeating(&MemoryInternalsDOMHandler::HandleSaveDump,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "reportProcess",
-      base::BindRepeating(&MemoryInternalsDOMHandler::HandleReportProcess,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "startProfiling",
@@ -271,11 +264,6 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List& args) {
       nullptr, 0, FILE_PATH_LITERAL(".json.gz"),
       web_ui_->GetWebContents()->GetTopLevelNativeWindow(), nullptr);
 #endif
-}
-
-void MemoryInternalsDOMHandler::HandleReportProcess(
-    const base::Value::List& args) {
-  // TODO(etienneb): Delete the use of this method.
 }
 
 void MemoryInternalsDOMHandler::HandleStartProfiling(

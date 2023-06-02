@@ -1,0 +1,13 @@
+Tests using NetInfo from multiple frames.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL Child frame fired event but type not yet changed.
+FAIL Child frame fired event but downlinkMax not yet changed.
+FAIL Main frame connection type changed before firing its event.
+FAIL Event fired but type not yet changed.
+FAIL Event fired but downlinkMax not yet changed.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

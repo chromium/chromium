@@ -85,6 +85,7 @@ enum RequestType {
     kPost = 0,
     kGet = 1,
     kPatch = 2,
+    kDelete = 3,
 };
 
 // Sent from the browser to the JS WebUI to provide information

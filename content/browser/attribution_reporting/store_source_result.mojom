@@ -16,4 +16,7 @@ enum StoreSourceResult {
   kExcessiveReportingOrigins = 4,
   kProhibitedByBrowserPolicy = 5,
   kSuccessNoised = 6,
+  kDestinationReportingLimitReached = 7,
+  kDestinationGlobalLimitReached = 8,
+  kDestinationBothLimitsReached = 9,
 };

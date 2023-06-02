@@ -59,6 +59,18 @@ void BookmarkModelBridge::BookmarkNodeAdded(
   [observer_ bookmarkModel:model didChangeChildrenForNode:parent];
 }
 
+void BookmarkModelBridge::OnWillRemoveBookmarks(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node) {
+  CHECK(model_observation_.IsObservingSource(model));
+  SEL selector = @selector(bookmarkModel:willDeleteNode:fromFolder:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ bookmarkModel:model willDeleteNode:node fromFolder:parent];
+  }
+}
+
 void BookmarkModelBridge::BookmarkNodeRemoved(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,

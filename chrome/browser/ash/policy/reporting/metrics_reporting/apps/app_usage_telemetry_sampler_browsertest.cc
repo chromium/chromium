@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -52,6 +53,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 #include "url/gurl.h"
 
 using ::testing::AllOf;
@@ -385,6 +387,37 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   ::content::RunAllTasksUntilIdle();
   ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+}
+
+IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
+                       PRE_ReportUsageDataOnSessionTermination) {
+  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // PRE-condition.
+}
+
+IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
+                       ReportUsageDataOnSessionTermination) {
+  // Install web app and simulate its usage.
+  const auto& app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
+  static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
+  ::chromeos::MissiveClientTestObserver missive_observer(
+      base::BindRepeating(&IsAppUsageTelemetry));
+  SimulateAppUsage(app_id, kAppUsageDuration);
+
+  // Terminate session and verify data being enqueued.
+  ::ash::SessionTerminationManager::Get()->StopSession(
+      ::login_manager::SessionStopReason::USER_REQUESTS_SIGNOUT);
+  const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
+  const auto metric_data = AssertAppUsageTelemetryData(priority, record);
+
+  // Data reported only includes usage from the web app. Derivative usage from
+  // the native Chrome component application (since these leverage the browser)
+  // should be filtered out by the policy setting.
+  const auto& app_usage_data =
+      metric_data.telemetry_data().app_telemetry().app_usage_data();
+  ASSERT_THAT(app_usage_data.app_usage().size(), Eq(1));
+  const auto& app_usage = app_usage_data.app_usage().at(0);
+  VerifyAppUsage(app_usage, app_id, kAppUsageDuration);
 }
 
 }  // namespace

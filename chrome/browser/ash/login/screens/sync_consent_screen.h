@@ -117,10 +117,17 @@ class SyncConsentScreen : public BaseScreen,
   // Called when sync engine initialization timed out.
   void OnTimeout();
 
-  void HandleContinue(const bool opted_in,
-                      const bool review_sync,
-                      const base::Value::List& consent_description_list,
-                      const std::string& consent_confirmation);
+  void OnAshContinue(const bool opted_in,
+                     const bool review_sync,
+                     const base::Value::List& consent_description_list,
+                     const std::string& consent_confirmation);
+
+  void OnLacrosContinue(const base::Value::List& consent_description_list,
+                        const std::string& consent_confirmation);
+
+  void RecordAllConsents(const bool opted_in,
+                         const base::Value::List& consent_description_list,
+                         const std::string& consent_confirmation);
 
   // Sets internal condition "Sync disabled by policy" for tests.
   static void SetProfileSyncDisabledByPolicyForTesting(bool value);

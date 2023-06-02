@@ -271,6 +271,8 @@ class VIEWS_EXPORT MenuController
   friend class MenuItemView;
   friend class SubmenuView;
 
+  struct MenuPart;
+
   class MenuScrollTask;
 
   struct SelectByCharDetails;
@@ -307,7 +309,7 @@ class VIEWS_EXPORT MenuController
     ~State();
 
     // The selected menu item.
-    raw_ptr<MenuItemView> item = nullptr;
+    raw_ptr<MenuItemView, DanglingUntriaged> item = nullptr;
 
     // Used to capture a hot tracked child button when a nested menu is opened
     // and to restore the hot tracked state when exiting a nested menu.
@@ -330,38 +332,6 @@ class VIEWS_EXPORT MenuController
 
     // Is the current menu a context menu.
     bool context_menu = false;
-  };
-
-  // Used by GetMenuPart to indicate the menu part at a particular location.
-  struct MenuPart {
-    // Type of part.
-    enum class Type { kNone, kMenuItem, kScrollUp, kScrollDown };
-
-    // Convenience for testing type == kScrollDown or type == kScrollUp.
-    bool is_scroll() const {
-      return type == Type::kScrollDown || type == Type::kScrollUp;
-    }
-
-    // Type of part.
-    Type type = Type::kNone;
-
-    // If type is kMenuItem, this is the menu item the mouse is over, otherwise
-    // this is null.
-    // NOTE: if type is kMenuItem and the mouse is not over a valid menu item
-    //       but is over a menu (for example, the mouse is over a separator or
-    //       empty menu), this is null and parent is the menu the mouse was
-    //       clicked on.
-    raw_ptr<MenuItemView, DanglingUntriaged> menu = nullptr;
-
-    // If type is kMenuItem but the mouse is not over a menu item this is the
-    // parent of the menu item the user clicked on. Otherwise this is null.
-    raw_ptr<MenuItemView, DanglingUntriaged> parent = nullptr;
-
-    // This is the submenu the mouse is over.
-    raw_ptr<SubmenuView, DanglingUntriaged> submenu = nullptr;
-
-    // Whether the controller should apply SELECTION_OPEN_SUBMENU to this item.
-    bool should_submenu_show = false;
   };
 
   // Sets the selection to |menu_item|. A value of NULL unselects
@@ -421,18 +391,7 @@ class VIEWS_EXPORT MenuController
   // If over_any_menu is non-null it is set to indicate whether the location
   // is over any menu. It is possible for this to return NULL, but
   // over_any_menu to be true. For example, the user clicked on a separator.
-  MenuItemView* GetMenuItemAt(View* menu, int x, int y);
-
-  // If there is an empty menu item at the specified location, it is returned.
-  MenuItemView* GetEmptyMenuItemAt(View* source, int x, int y);
-
-  // Returns true if the coordinate is over the scroll buttons of the
-  // SubmenuView's MenuScrollViewContainer. If true is returned, part is set to
-  // indicate which scroll button the coordinate is.
-  bool IsScrollButtonAt(SubmenuView* source,
-                        int x,
-                        int y,
-                        MenuPart::Type* part);
+  MenuItemView* GetMenuItemAt(View* menu, const gfx::Point& location);
 
   // Returns the target for the mouse event. The coordinates are in terms of
   // source's scroll view container.
@@ -454,17 +413,6 @@ class VIEWS_EXPORT MenuController
   // target at |source_loc|.
   MenuHostRootView* GetRootView(SubmenuView* source,
                                 const gfx::Point& source_loc);
-
-  // Converts the located event from |source|'s geometry to |dst|'s geometry,
-  // iff the root view of source and dst differ.
-  void ConvertLocatedEventForRootView(View* source,
-                                      View* dst,
-                                      ui::LocatedEvent* event);
-
-  // Returns true if the SubmenuView contains the specified location. This does
-  // NOT included the scroll buttons, only the submenu view.
-  bool DoesSubmenuContainLocation(SubmenuView* submenu,
-                                  const gfx::Point& screen_loc);
 
   // Returns whether the location is over the ACTIONABLE_SUBMENU's submenu area.
   bool IsLocationOverSubmenuAreaOfActionableSubmenu(
@@ -773,10 +721,10 @@ class VIEWS_EXPORT MenuController
   // screen coordinates). Otherwise this will be (0, 0).
   gfx::Point menu_start_mouse_press_loc_;
 
-  // If the mouse was under the menu when the menu was run, this will have its
-  // location. Otherwise it will be null. This is used to ignore mouse move
-  // events triggered by the menu opening, to avoid selecting the menu item
-  // over the mouse.
+  // Set to the location, relative to the root menu item's widget, of the mouse
+  // cursor if any submenu is opened while the cursor is over that menu. This is
+  // used to ignore mouse move events triggered by the menu opening, to avoid
+  // auto-selecting the menu item under the mouse.
   absl::optional<gfx::Point> menu_open_mouse_loc_;
 
   // Controls behavior differences between a combobox and other types of menu

@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.feed;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -74,19 +72,9 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         instance.addOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                AccessibilityManager accessibilityManager =
-                        (AccessibilityManager) instance.getContext().getSystemService(
-                                Context.ACCESSIBILITY_SERVICE);
-                if (accessibilityManager != null && accessibilityManager.isEnabled()) {
-                    try {
-                        accessibilityManager.interrupt();
-                    } catch (NullPointerException e) {
-                        // The interrupt call can throw an exception due to a framework bug
-                        // (http://b/32507871).
-                    }
-                    instance.announceForAccessibility(activity.getResources().getString(
-                            R.string.accessibility_swipe_refresh));
-                }
+                instance.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+                instance.setContentDescription(
+                        activity.getResources().getString(R.string.accessibility_swipe_refresh));
                 RecordUserAction.record("MobilePullGestureReloadNTP");
             }
         });

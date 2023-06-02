@@ -12,7 +12,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 
-void ConfigureInkdropForRefresh2023(views::View* const host,
+void ConfigureInkDropForRefresh2023(views::View* const host,
                                     const ChromeColorIds hover_color_id,
                                     const ChromeColorIds ripple_color_id) {
   CHECK(features::IsChromeRefresh2023());
@@ -42,9 +42,7 @@ void ConfigureInkdropForRefresh2023(views::View* const host,
         const float hover_alpha = SkColorGetA(hover_color);
 
         auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
-            host->size(), host->height() / 2,
-            gfx::PointF(host->GetLocalBounds().CenterPoint()),
-            SkColorSetA(hover_color, SK_AlphaOPAQUE));
+            gfx::SizeF(host->size()), SkColorSetA(hover_color, SK_AlphaOPAQUE));
         ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
         return ink_drop_highlight;
       },

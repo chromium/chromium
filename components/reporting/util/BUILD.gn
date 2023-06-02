@@ -105,6 +105,42 @@ source_set("wrapped_rate_limiter") {
   ]
 }
 
+source_set("rate_limiter_leaky_bucket") {
+  sources = [
+    "rate_limiter_leaky_bucket.cc",
+    "rate_limiter_leaky_bucket.h",
+  ]
+
+  deps = [
+    ":rate_limiter_interface",
+    "//base",
+  ]
+}
+
+source_set("rate_limiter_token_bucket") {
+  sources = [
+    "rate_limiter_token_bucket.cc",
+    "rate_limiter_token_bucket.h",
+  ]
+
+  deps = [
+    ":rate_limiter_interface",
+    "//base",
+  ]
+}
+
+source_set("rate_limiter_slide_window") {
+  sources = [
+    "rate_limiter_slide_window.cc",
+    "rate_limiter_slide_window.h",
+  ]
+
+  deps = [
+    ":rate_limiter_interface",
+    "//base",
+  ]
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
@@ -112,6 +148,9 @@ source_set("unit_tests") {
   sources = [
     "disconnectable_client_unittest.cc",
     "file_unittest.cc",
+    "rate_limiter_leaky_bucket_unittest.cc",
+    "rate_limiter_slide_window_unittest.cc",
+    "rate_limiter_token_bucket_unittest.cc",
     "refcounted_closure_list_unittest.cc",
     "status_macros_unittest.cc",
     "status_unittest.cc",
@@ -122,6 +161,9 @@ source_set("unit_tests") {
     ":disconnectable_client",
     ":file",
     ":rate_limiter_interface",
+    ":rate_limiter_leaky_bucket",
+    ":rate_limiter_slide_window",
+    ":rate_limiter_token_bucket",
     ":refcounted_closure_list",
     ":status",
     ":status_macros",

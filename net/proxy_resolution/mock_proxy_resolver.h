@@ -40,7 +40,7 @@ class MockAsyncProxyResolver : public ProxyResolver {
    private:
     raw_ptr<MockAsyncProxyResolver> resolver_;
     const GURL url_;
-    raw_ptr<ProxyInfo> results_;
+    raw_ptr<ProxyInfo, DanglingUntriaged> results_;
     CompletionOnceCallback callback_;
   };
 

@@ -112,18 +112,7 @@ SVGFEConvolveMatrixElement::SVGFEConvolveMatrixElement(Document& document)
       target_y_(
           MakeGarbageCollected<SVGAnimatedInteger>(this,
                                                    svg_names::kTargetYAttr,
-                                                   0)) {
-  AddToPropertyMap(preserve_alpha_);
-  AddToPropertyMap(divisor_);
-  AddToPropertyMap(bias_);
-  AddToPropertyMap(kernel_unit_length_);
-  AddToPropertyMap(kernel_matrix_);
-  AddToPropertyMap(in1_);
-  AddToPropertyMap(edge_mode_);
-  AddToPropertyMap(order_);
-  AddToPropertyMap(target_x_);
-  AddToPropertyMap(target_y_);
-}
+                                                   0)) {}
 
 SVGAnimatedNumber* SVGFEConvolveMatrixElement::kernelUnitLengthX() {
   return kernel_unit_length_->FirstNumber();
@@ -244,6 +233,48 @@ FilterEffect* SVGFEConvolveMatrixElement::Build(
       kernel_matrix_->CurrentValue()->ToFloatVector());
   effect->InputEffects().push_back(input1);
   return effect;
+}
+
+SVGAnimatedPropertyBase* SVGFEConvolveMatrixElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kPreserveAlphaAttr) {
+    return preserve_alpha_.Get();
+  } else if (attribute_name == svg_names::kDivisorAttr) {
+    return divisor_.Get();
+  } else if (attribute_name == svg_names::kBiasAttr) {
+    return bias_.Get();
+  } else if (attribute_name == svg_names::kKernelUnitLengthAttr) {
+    return kernel_unit_length_.Get();
+  } else if (attribute_name == svg_names::kKernelMatrixAttr) {
+    return kernel_matrix_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else if (attribute_name == svg_names::kEdgeModeAttr) {
+    return edge_mode_.Get();
+  } else if (attribute_name == order_->AttributeName()) {
+    return order_.Get();
+  } else if (attribute_name == svg_names::kTargetXAttr) {
+    return target_x_.Get();
+  } else if (attribute_name == svg_names::kTargetYAttr) {
+    return target_y_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEConvolveMatrixElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{
+        preserve_alpha_.Get(), divisor_.Get(),
+        bias_.Get(),           kernel_unit_length_.Get(),
+        kernel_matrix_.Get(),  in1_.Get(),
+        edge_mode_.Get(),      order_.Get(),
+        target_x_.Get(),       target_y_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

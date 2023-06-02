@@ -61,6 +61,10 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   bool WillRespondToMouseClickEvents() override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedString> svg_target_;
 };
 

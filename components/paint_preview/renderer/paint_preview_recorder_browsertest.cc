@@ -114,7 +114,16 @@ class PaintPreviewRecorderRenderViewTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
+// TODO(crbug.com/1448918): The color returned on iOS is incorrect.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_TestCaptureMainFrameAndClipping \
+  DISABLED_TestCaptureMainFrameAndClipping
+#else
+#define MAYBE_TestCaptureMainFrameAndClipping TestCaptureMainFrameAndClipping
+#endif
+
+TEST_P(PaintPreviewRecorderRenderViewTest,
+       MAYBE_TestCaptureMainFrameAndClipping) {
   LoadHTML(
       "<!doctype html>"
       "<body>"

@@ -173,6 +173,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
         .Append("device_keys");
   }
 
+  void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
+
   void Wait() { task_environment_.RunUntilIdle(); }
 
   void WriteTestingProfileKeys() {

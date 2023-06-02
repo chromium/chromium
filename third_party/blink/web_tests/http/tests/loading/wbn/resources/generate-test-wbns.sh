@@ -29,9 +29,3 @@ gen-bundle \
   -primaryURL http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js \
   -dir empty-resource/ \
   -o wbn/empty-resource.wbn
-
-gen-bundle \
-  -version b2 \
-  -har uuid-in-package-html.har \
-  -primaryURL uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae \
-  -o wbn/uuid-in-package-html.wbn

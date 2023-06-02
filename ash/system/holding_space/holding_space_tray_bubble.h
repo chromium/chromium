@@ -34,6 +34,8 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   HoldingSpaceTrayBubble& operator=(const HoldingSpaceTrayBubble&) = delete;
   ~HoldingSpaceTrayBubble() override;
 
+  void Init();
+
   void AnchorUpdated();
 
   TrayBubbleView* GetBubbleView();

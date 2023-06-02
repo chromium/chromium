@@ -171,10 +171,6 @@ inline Atomic64 Release_CompareAndSwap(volatile Atomic64* ptr,
   return old_value;
 }
 
-inline void NoBarrier_Store(volatile Atomic64* ptr, Atomic64 value) {
-  ((AtomicLocation64)ptr)->store(value, std::memory_order_relaxed);
-}
-
 inline void Release_Store(volatile Atomic64* ptr, Atomic64 value) {
   ((AtomicLocation64)ptr)->store(value, std::memory_order_release);
 }

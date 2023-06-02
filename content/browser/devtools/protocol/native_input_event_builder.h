@@ -8,13 +8,11 @@
 #include "build/build_config.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 
-namespace content {
-namespace protocol {
+namespace content::protocol {
 
 class NativeInputEventBuilder {
  public:
-#if BUILDFLAG(IS_MAC)
-  // This returned object has a retain count of 1.
+#if BUILDFLAG(IS_APPLE)
   static gfx::NativeEvent CreateEvent(const NativeWebKeyboardEvent& event);
 #else
   // We only need this for Macs because they require an OS event to process
@@ -25,7 +23,6 @@ class NativeInputEventBuilder {
 #endif
 };
 
-}  // namespace protocol
-}  // namespace content
+}  // namespace content::protocol
 
 #endif  // CONTENT_BROWSER_DEVTOOLS_PROTOCOL_NATIVE_INPUT_EVENT_BUILDER_H_

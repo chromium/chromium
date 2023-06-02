@@ -19,6 +19,24 @@ reviewer.
 
 <histograms>
 
+<variants name="DIPSCookieMode">
+  <variant name=".Block3PC"
+      summary="in a NON-off-the-record profile, with third-party cookies
+               blocked"/>
+  <variant name=".OffTheRecord"
+      summary="in an off-the-record profile, with third-party cookies enabled"/>
+  <variant name=".OffTheRecord_Block3PC"
+      summary="in an off-the-record profile, with third-party cookies blocked"/>
+  <variant name=".Standard"
+      summary="in a NON-off-the-record profile, with third-party cookies
+               enabled"/>
+</variants>
+
+<variants name="DIPSRedirectType">
+  <variant name="Client" summary="client-side"/>
+  <variant name="Server" summary="server-side"/>
+</variants>
+
 <histogram name="Privacy.AboutThisSite.PageLoadValidation"
     enum="AboutThisSiteStatus" expires_after="2023-10-15">
   <owner>dullweber@chromium.org</owner>
@@ -685,9 +703,9 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus"
-    enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus"
-    expires_after="2023-10-08">
+    name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2"
+    enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2"
+    expires_after="2023-11-23">
   <owner>anthonygarant@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -701,15 +719,49 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult"
-    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult"
-    expires_after="2023-11-12">
+<histogram
+    name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
+    units="counts" expires_after="2023-11-22">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of reporting origins stored per site in budget storage.
+    Recorded once every time that budget is attempted to be consumed to reflect
+    the state of stored budget data for the requested site and API. Not recorded
+    in the case of certain errors that fail before the storage is actually
+    queried.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2"
+    enum="PrivacySandboxPrivateAggregationBudgeterRequestResult2"
+    expires_after="2023-11-24">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
     Records the result of a request to consume budget for the Private
     Aggregation API. Recorded for each individual aggregatable report request
     (but not each individual histogram contribution).
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.PrivateAggregation.BudgetStorage.BeginInitializationCount"
+    units="units" expires_after="2023-11-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <summary>
+    Count the number of times the budget storage begins initialization. This
+    metric is intended to be used in conjunction with the
+    &quot;PrivacySandbox.PrivateAggregation.BudgetStorage.ShutdownBeforeFinishingInitialization&quot;
+    metric, which does not measure cases where the browser is shut down
+    abruptly.
+
+    To get the actual number of times the browser is shut down before finishing
+    initialization, including cases where shut down abruptly, subtract the
+    number of true events for &quot;ShutdownBeforeFinishingInitialization&quot;;
+    from this metric's total count.
   </summary>
 </histogram>
 

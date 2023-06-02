@@ -29,21 +29,38 @@ std::string HexEncodeAggregationKey(absl::uint128);
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool AggregationKeyIdHasValidLength(const std::string& key);
 
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::optional<uint64_t> ParseUint64(const base::Value::Dict& dict,
-                                     base::StringPiece key);
+// Returns false if `dict` contains `key` but the value is invalid (e.g. not a
+// string, negative), returns true otherwise.
+[[nodiscard]] COMPONENT_EXPORT(ATTRIBUTION_REPORTING) bool ParseUint64(
+    const base::Value::Dict& dict,
+    base::StringPiece key,
+    absl::optional<uint64_t>& out);
 
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::optional<int64_t> ParseInt64(const base::Value::Dict& dict,
-                                   base::StringPiece key);
+// Returns false if `dict` contains `key` but the value is invalid (e.g. not a
+// string, int64 overflow), returns true otherwise.
+[[nodiscard]] COMPONENT_EXPORT(ATTRIBUTION_REPORTING) bool ParseInt64(
+    const base::Value::Dict& dict,
+    base::StringPiece key,
+    absl::optional<int64_t>& out);
 
-int64_t ParsePriority(const base::Value::Dict& dict);
+// Returns false if `dict` contains `priority` key but the value is invalid,
+// returns true otherwise.
+[[nodiscard]] bool ParsePriority(const base::Value::Dict& dict,
+                                 absl::optional<int64_t>& out);
 
+// Returns `debug_key` value as we do not need to fail the source registration
+// if the value is invalid, see
+// https://github.com/WICG/attribution-reporting-api/issues/793 for context.
 absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 
-bool ParseDebugReporting(const base::Value::Dict& dict);
+// Returns false if `dict` contains `debug_reporting` key but the value is
+// invalid, returns true otherwise.
+[[nodiscard]] bool ParseDebugReporting(const base::Value::Dict& dict);
 
-absl::optional<uint64_t> ParseDeduplicationKey(const base::Value::Dict& dict);
+// Returns false if `dict` contains `deduplication_key` key but the value is
+// invalid, returns true otherwise.
+[[nodiscard]] bool ParseDeduplicationKey(const base::Value::Dict& dict,
+                                         absl::optional<uint64_t>& out);
 
 void SerializeUint64(base::Value::Dict&, base::StringPiece key, uint64_t value);
 

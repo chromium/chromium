@@ -11,7 +11,8 @@
 
 // static
 UrlLanguageHistogramFactory* UrlLanguageHistogramFactory::GetInstance() {
-  return base::Singleton<UrlLanguageHistogramFactory>::get();
+  static base::NoDestructor<UrlLanguageHistogramFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -32,7 +33,7 @@ UrlLanguageHistogramFactory::UrlLanguageHistogramFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-UrlLanguageHistogramFactory::~UrlLanguageHistogramFactory() {}
+UrlLanguageHistogramFactory::~UrlLanguageHistogramFactory() = default;
 
 KeyedService* UrlLanguageHistogramFactory::BuildServiceInstanceFor(
     content::BrowserContext* const browser_context) const {

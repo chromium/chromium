@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/platform_apps/shortcut_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
@@ -19,7 +19,8 @@ AppShortcutManager* AppShortcutManagerFactory::GetForProfile(Profile* profile) {
 }
 
 AppShortcutManagerFactory* AppShortcutManagerFactory::GetInstance() {
-  return base::Singleton<AppShortcutManagerFactory>::get();
+  static base::NoDestructor<AppShortcutManagerFactory> instance;
+  return instance.get();
 }
 
 AppShortcutManagerFactory::AppShortcutManagerFactory()
@@ -35,7 +36,7 @@ AppShortcutManagerFactory::AppShortcutManagerFactory()
       base::BindRepeating(&web_app::UpdateShortcutsForAllApps));
 }
 
-AppShortcutManagerFactory::~AppShortcutManagerFactory() {}
+AppShortcutManagerFactory::~AppShortcutManagerFactory() = default;
 
 KeyedService* AppShortcutManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

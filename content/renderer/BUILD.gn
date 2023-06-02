@@ -275,7 +275,6 @@ target(link_target_type, "renderer") {
     "//media:media_buildflags",
     "//media/capture",
     "//media/gpu",
-    "//media/gpu/ipc/client",
     "//media/gpu/ipc/common",
     "//media/midi",
     "//media/midi:mojo",
@@ -339,8 +338,8 @@ target(link_target_type, "renderer") {
 
       # Used by Android WebView only.
       "//components/viz/service",
-      "//third_party/android_ndk:cpu_features",
       "//third_party/ashmem",
+      "//third_party/cpu_features:ndk_compat",
       "//third_party/libphonenumber",
     ]
   }

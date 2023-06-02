@@ -48,7 +48,7 @@ declare_args() {
 #     [list of strings] The set of protocols that each child must use.
 #
 #   include_coverage_shard (optional)
-#     Whether to include the `enable_coverage_data.cml` in a merged manifest.
+#     Whether to include the `coverage.shard.cml` in a merged manifest.
 #     Overrides the default based on `fuchsia_code_coverage`.
 #     Should only be used in rare exceptions that do not use CML-based routing.
 #
@@ -83,7 +83,7 @@ template("fuchsia_component_manifest") {
                                "testonly",
                              ])
       sources = [
-        "${fuchsia_sdk}/build/enable_coverage_data.cml",
+        "${fuchsia_sdk}/pkg/sys/testing/coverage.shard.cml",
         manifest,
       ]
       output_name = manifest_rel_path

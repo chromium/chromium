@@ -8,7 +8,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
+#import "components/trusted_vault/features.h"
 #import "components/trusted_vault/trusted_vault_registration_verifier.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
@@ -37,7 +37,7 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
   DCHECK(backend_);
 
   if (base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultVerifyDeviceRegistration)) {
+          trusted_vault::kSyncTrustedVaultVerifyDeviceRegistration)) {
     backend_->SetDeviceRegistrationPublicKeyVerifierForUMA(
         base::BindOnce(&IOSTrustedVaultClient::VerifyDeviceRegistration,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -107,8 +107,26 @@ id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(
 
 void IOSTrustedVaultClient::VerifyDeviceRegistration(
     const std::string& gaia_id) {
+  // It is possible for this method to be called with a `gaia_id` for an
+  // account that is no longer known by the AccountManagerService. It is
+  // not possible to verify the registration in that case, so bail out.
+  //
+  // One possible scenario is when an EG test signin with a real identity
+  // and leak the gaia id in the backend, then another EG test restarts
+  // the tested application with a fake identity service. In that case the
+  // backend will call the registration with the previously recorded gaia
+  // id but it will not be know to the identity service which will return
+  // a null identity.
+  //
+  // See https://crbug.com/1448766 for investigation of the resulting crash.
+  id<SystemIdentity> identity =
+      account_manager_service_->GetIdentityWithGaiaID(gaia_id);
+  if (!identity) {
+    return;
+  }
+
   backend_->GetPublicKeyForIdentity(
-      account_manager_service_->GetIdentityWithGaiaID(gaia_id),
+      identity,
       base::BindOnce(
           &IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey,
           weak_ptr_factory_.GetWeakPtr(), gaia_id));

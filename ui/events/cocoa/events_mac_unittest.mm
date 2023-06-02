@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/owned_objc.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -18,6 +19,10 @@
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace ui {
 
@@ -29,13 +34,13 @@ const CGEventFlags kNoEventFlags = static_cast<CGEventFlags>(0);
 
 class EventsMacTest : public CocoaTest {
  public:
-  EventsMacTest() {}
+  EventsMacTest() = default;
 
   EventsMacTest(const EventsMacTest&) = delete;
   EventsMacTest& operator=(const EventsMacTest&) = delete;
 
   gfx::Point Flip(gfx::Point window_location) {
-    NSRect window_frame = [test_window() frame];
+    NSRect window_frame = test_window().frame;
     CGFloat content_height =
         NSHeight([test_window() contentRectForFrameRect:window_frame]);
     window_location.set_y(content_height - window_location.y());
@@ -85,7 +90,7 @@ class EventsMacTest : public CocoaTest {
   const gfx::Point default_location_ = gfx::Point(10, 20);
 };
 
-// Trackpad scroll sequences below determined empirically on OSX 10.11 (linking
+// Trackpad scroll sequences below determined empirically on OS X 10.11 (linking
 // to 10.10 SDK), and dumping out with NSLog in -[NSView scrollWheel:]. First
 // created using a Magic Trackpad 2 on a MacPro. See the Trackpad* test cases
 // below for example event streams.
@@ -93,55 +98,64 @@ NSArray* EventsMacTest::TrackpadScrollSequence(bool initial_rest,
                                                int32_t delta_y,
                                                int32_t momentum_delta_y) {
   int32_t delta_x = 0;  // Just test vertical scrolling for now.
-  base::scoped_nsobject<NSMutableArray> events([[NSMutableArray alloc] init]);
+  NSMutableArray* events = [NSMutableArray array];
 
   // Resting part.
   if (initial_rest) {
     // MayBegin always has a zero delta.
     [events addObject:cocoa_test_event_utils::TestScrollEvent(
-        Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-        NSEventPhaseMayBegin, NSEventPhaseNone)];
+                          Flip(default_location_).ToCGPoint(), test_window(),
+                          delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                          NSEventPhaseMayBegin, NSEventPhaseNone)];
     if (delta_y == 0) {
       // Rest and release: event gets cancelled.
       DCHECK_EQ(0, momentum_delta_y);  // Pretty sure this is impossible.
       [events addObject:cocoa_test_event_utils::TestScrollEvent(
-          Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-          NSEventPhaseCancelled, NSEventPhaseNone)];
-      return events.autorelease();
+                            Flip(default_location_).ToCGPoint(), test_window(),
+                            delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                            NSEventPhaseCancelled, NSEventPhaseNone)];
+      return events;
     }
   }
 
   // With or without a rest, a begin is sent. It can have a non-zero
   // deviceDeltaY but regular deltaY is always 0.
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseBegan, NSEventPhaseNone)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseBegan, NSEventPhaseNone)];
 
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, delta_y,
-      true, NSEventPhaseChanged, NSEventPhaseNone)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, delta_y,
+                        /*has_precise_deltas=*/true, NSEventPhaseChanged,
+                        NSEventPhaseNone)];
 
   // With or without momentum, an end is sent for the non-momentum part.
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseEnded, NSEventPhaseNone)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseEnded, NSEventPhaseNone)];
 
   if (momentum_delta_y == 0)
-    return events.autorelease();
+    return events;
 
   // Flick part. Basically the same, but with phase and momentumPhase swapped.
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseNone, NSEventPhaseBegan)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseNone, NSEventPhaseBegan)];
 
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x,
-      momentum_delta_y, true, NSEventPhaseNone, NSEventPhaseChanged)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, momentum_delta_y, /*has_precise_deltas=*/true,
+                        NSEventPhaseNone, NSEventPhaseChanged)];
 
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseNone, NSEventPhaseEnded)];
-  return events.autorelease();
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseNone, NSEventPhaseEnded)];
+  return events;
 }
 
 }  // namespace
@@ -150,66 +164,75 @@ TEST_F(EventsMacTest, EventFlagsFromNative) {
   // Left click.
   NSEvent* left =
       cocoa_test_event_utils::MouseEventWithType(NSEventTypeLeftMouseUp, 0);
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, EventFlagsFromNative(left));
+  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(left)));
 
   // Right click.
   NSEvent* right =
       cocoa_test_event_utils::MouseEventWithType(NSEventTypeRightMouseUp, 0);
-  EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON, EventFlagsFromNative(right));
+  EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(right)));
 
   // Middle click.
   NSEvent* middle =
       cocoa_test_event_utils::MouseEventWithType(NSEventTypeOtherMouseUp, 0);
-  EXPECT_EQ(EF_MIDDLE_MOUSE_BUTTON, EventFlagsFromNative(middle));
+  EXPECT_EQ(EF_MIDDLE_MOUSE_BUTTON,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(middle)));
 
   // Caps + Left
   NSEvent* caps = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp, NSEventModifierFlagCapsLock);
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_CAPS_LOCK_ON, EventFlagsFromNative(caps));
+  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_CAPS_LOCK_ON,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(caps)));
 
   // Shift + Left
   NSEvent* shift = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp, NSEventModifierFlagShift);
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_SHIFT_DOWN, EventFlagsFromNative(shift));
+  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_SHIFT_DOWN,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(shift)));
 
   // Ctrl + Left. Note we map this to a right click on Mac and remove Control.
   NSEvent* ctrl = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp, NSEventModifierFlagControl);
-  EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON, EventFlagsFromNative(ctrl));
+  EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(ctrl)));
 
   // Ctrl + Right. Remains a right click.
   NSEvent* ctrl_right = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeRightMouseUp, NSEventModifierFlagControl);
   EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON | EF_CONTROL_DOWN,
-            EventFlagsFromNative(ctrl_right));
+            EventFlagsFromNative(base::apple::OwnedNSEvent(ctrl_right)));
 
   // Alt + Left
   NSEvent* alt = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp, NSEventModifierFlagOption);
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_ALT_DOWN, EventFlagsFromNative(alt));
+  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_ALT_DOWN,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(alt)));
 
   // Cmd + Left
   NSEvent* cmd = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp, NSEventModifierFlagCommand);
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_COMMAND_DOWN, EventFlagsFromNative(cmd));
+  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_COMMAND_DOWN,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(cmd)));
 
   // Shift + Ctrl + Left. Also mapped to a right-click. Control removed.
   NSEvent* shiftctrl = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp,
       NSEventModifierFlagShift | NSEventModifierFlagControl);
   EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON | EF_SHIFT_DOWN,
-            EventFlagsFromNative(shiftctrl));
+            EventFlagsFromNative(base::apple::OwnedNSEvent(shiftctrl)));
 
   // Cmd + Alt + Right
   NSEvent* cmdalt = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseUp,
       NSEventModifierFlagCommand | NSEventModifierFlagOption);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_COMMAND_DOWN | EF_ALT_DOWN,
-            EventFlagsFromNative(cmdalt));
+            EventFlagsFromNative(base::apple::OwnedNSEvent(cmdalt)));
 
   // Make sure a repeat key-down event gets ui::EF_IS_REPEAT set.
   NSEvent* repeat_key_down = cocoa_test_event_utils::KeyDownEventWithRepeat();
-  EXPECT_EQ(ui::EF_IS_REPEAT, EventFlagsFromNative(repeat_key_down));
+  EXPECT_EQ(ui::EF_IS_REPEAT,
+            EventFlagsFromNative(base::apple::OwnedNSEvent(repeat_key_down)));
 }
 
 // Tests mouse button presses and mouse wheel events.
@@ -219,55 +242,71 @@ TEST_F(EventsMacTest, ButtonEvents) {
 
   NSEvent* event =
       TestMouseEvent(kCGEventLeftMouseDown, location, kNoEventFlags);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, ui::EventTypeFromNative(event));
-  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON,
+            ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
 
   event =
       TestMouseEvent(kCGEventOtherMouseDown, location, kCGEventFlagMaskShift);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   EXPECT_EQ(ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
-            ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+            ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
 
   event = TestMouseEvent(kCGEventRightMouseUp, location, kNoEventFlags);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, ui::EventTypeFromNative(event));
-  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON,
+            ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
 
   // Scroll up.
   event = TestScrollEvent(location, 0, 1);
-  EXPECT_EQ(ui::ET_SCROLL, ui::EventTypeFromNative(event));
-  EXPECT_EQ(0, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
-  offset = ui::GetMouseWheelOffset(event);
+  EXPECT_EQ(ui::ET_SCROLL,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
+  offset = ui::GetMouseWheelOffset(base::apple::OwnedNSEvent(event));
   EXPECT_GT(offset.y(), 0);
   EXPECT_EQ(0, offset.x());
 
   // Scroll down.
   event = TestScrollEvent(location, 0, -1);
-  EXPECT_EQ(ui::ET_SCROLL, ui::EventTypeFromNative(event));
-  EXPECT_EQ(0, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
-  offset = ui::GetMouseWheelOffset(event);
+  EXPECT_EQ(ui::ET_SCROLL,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
+  offset = ui::GetMouseWheelOffset(base::apple::OwnedNSEvent(event));
   EXPECT_LT(offset.y(), 0);
   EXPECT_EQ(0, offset.x());
 
   // Scroll left.
   event = TestScrollEvent(location, 1, 0);
-  EXPECT_EQ(ui::ET_SCROLL, ui::EventTypeFromNative(event));
-  EXPECT_EQ(0, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
-  offset = ui::GetMouseWheelOffset(event);
+  EXPECT_EQ(ui::ET_SCROLL,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
+  offset = ui::GetMouseWheelOffset(base::apple::OwnedNSEvent(event));
   EXPECT_EQ(0, offset.y());
   EXPECT_GT(offset.x(), 0);
 
   // Scroll right.
   event = TestScrollEvent(location, -1, 0);
-  EXPECT_EQ(ui::ET_SCROLL, ui::EventTypeFromNative(event));
-  EXPECT_EQ(0, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
-  offset = ui::GetMouseWheelOffset(event);
+  EXPECT_EQ(ui::ET_SCROLL,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(0, ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
+  offset = ui::GetMouseWheelOffset(base::apple::OwnedNSEvent(event));
   EXPECT_EQ(0, offset.y());
   EXPECT_LT(offset.x(), 0);
 }
@@ -280,19 +319,22 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
                           NSWindowStyleMaskResizable;
 
   // First check that the window provided by ui::CocoaTest is how we think.
-  DCHECK_EQ(NSWindowStyleMaskBorderless, [test_window() styleMask]);
-  [test_window() setStyleMask:style_mask];
-  DCHECK_EQ(style_mask, [test_window() styleMask]);
+  DCHECK_EQ(NSWindowStyleMaskBorderless, test_window().styleMask);
+  test_window().styleMask = style_mask;
+  DCHECK_EQ(style_mask, test_window().styleMask);
 
   // EventLocationFromNative should behave the same as the ButtonEvents test.
   NSEvent* event =
       TestMouseEvent(kCGEventLeftMouseDown, location, kNoEventFlags);
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, ui::EventTypeFromNative(event));
-  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, ui::EventFlagsFromNative(event));
-  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON,
+            ui::EventFlagsFromNative(base::apple::OwnedNSEvent(event)));
+  EXPECT_EQ(location, gfx::ToFlooredPoint(ui::EventLocationFromNative(
+                          base::apple::OwnedNSEvent(event))));
 
   // And be explicit, to ensure the test doesn't depend on some property of the
-  // test harness. The change to the frame rect could be OS-specfic, so set it
+  // test harness. The change to the frame rect could be OS-specific, so set it
   // to a known value.
   const CGFloat kTestHeight = 400;
   NSRect content_rect = NSMakeRect(0, 0, 600, kTestHeight);
@@ -302,23 +344,25 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
                              location:NSMakePoint(0, 0)  // Bottom-left corner.
                         modifierFlags:0
                             timestamp:0
-                         windowNumber:[test_window() windowNumber]
+                         windowNumber:test_window().windowNumber
                               context:nil
                           eventNumber:0
                            clickCount:0
                              pressure:1.0];
   // Bottom-left corner should be flipped.
   EXPECT_EQ(gfx::Point(0, kTestHeight),
-            gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+            gfx::ToFlooredPoint(
+                ui::EventLocationFromNative(base::apple::OwnedNSEvent(event))));
 
   // Removing the border, and sending the same event should move it down in the
   // toolkit-views coordinate system.
   int height_change = NSHeight(frame_rect) - kTestHeight;
   EXPECT_GT(height_change, 0);
-  [test_window() setStyleMask:NSWindowStyleMaskBorderless];
+  test_window().styleMask = NSWindowStyleMaskBorderless;
   [test_window() setFrame:frame_rect display:YES];
   EXPECT_EQ(gfx::Point(0, kTestHeight + height_change),
-            gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+            gfx::ToFlooredPoint(
+                ui::EventLocationFromNative(base::apple::OwnedNSEvent(event))));
 }
 
 // Test that window-less events preserve location (are in screen coordinates).
@@ -331,35 +375,44 @@ TEST_F(EventsMacTest, NoWindowLocation) {
   NSEvent* event = [NSEvent eventWithCGEvent:mouse];
   EXPECT_FALSE(event.window);
   EXPECT_EQ(gfx::Point(location),
-            gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
+            gfx::ToFlooredPoint(
+                ui::EventLocationFromNative(base::apple::OwnedNSEvent(event))));
 }
 
 // Testing for ui::EventTypeFromNative() not covered by ButtonEvents.
 TEST_F(EventsMacTest, EventTypeFromNative) {
   NSEvent* event =
       cocoa_test_event_utils::KeyEventWithType(NSEventTypeKeyDown, 0);
-  EXPECT_EQ(ui::ET_KEY_PRESSED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_KEY_PRESSED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::KeyEventWithType(NSEventTypeKeyUp, 0);
-  EXPECT_EQ(ui::ET_KEY_RELEASED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_KEY_RELEASED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeLeftMouseDragged, 0);
-  EXPECT_EQ(ui::ET_MOUSE_DRAGGED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_DRAGGED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   event = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeRightMouseDragged, 0);
-  EXPECT_EQ(ui::ET_MOUSE_DRAGGED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_DRAGGED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   event = cocoa_test_event_utils::MouseEventWithType(
       NSEventTypeOtherMouseDragged, 0);
-  EXPECT_EQ(ui::ET_MOUSE_DRAGGED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_DRAGGED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::MouseEventWithType(NSEventTypeMouseMoved, 0);
-  EXPECT_EQ(ui::ET_MOUSE_MOVED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_MOVED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 
   event = cocoa_test_event_utils::EnterEvent();
-  EXPECT_EQ(ui::ET_MOUSE_ENTERED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_ENTERED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
   event = cocoa_test_event_utils::ExitEvent();
-  EXPECT_EQ(ui::ET_MOUSE_EXITED, ui::EventTypeFromNative(event));
+  EXPECT_EQ(ui::ET_MOUSE_EXITED,
+            ui::EventTypeFromNative(base::apple::OwnedNSEvent(event)));
 }
 
 // Verify that a mouse wheel scroll event is correctly lacking phase data.
@@ -368,7 +421,7 @@ TEST_F(EventsMacTest, MouseWheelScroll) {
 
   NSEvent* ns_wheel = TestScrollEvent(default_location_, 0, wheel_delta_y);
   EXPECT_FALSE([ns_wheel hasPreciseScrollingDeltas]);
-  ui::ScrollEvent wheel(ns_wheel);
+  ui::ScrollEvent wheel((base::apple::OwnedNSEvent(ns_wheel)));
   EXPECT_EQ(ui::ET_SCROLL, wheel.type());
 
   // Currently wheel events still say two for finger count, but this may change.
@@ -394,17 +447,17 @@ TEST_F(EventsMacTest, MouseWheelScroll) {
 //     {deviceD,d}elta{X,Y,Z}=0 count:0 phase=Cancelled momentumPhase=None.
 TEST_F(EventsMacTest, TrackpadRestRelease) {
   NSArray* ns_events = TrackpadScrollSequence(true, 0, 0);
-  ASSERT_EQ(2u, [ns_events count]);
+  ASSERT_EQ(2u, ns_events.count);
   EXPECT_TRUE([ns_events[0] hasPreciseScrollingDeltas]);
 
-  ui::ScrollEvent rest(ns_events[0]);
+  ui::ScrollEvent rest((base::apple::OwnedNSEvent(ns_events[0])));
   EXPECT_EQ(ui::ET_SCROLL, rest.type());
   EXPECT_EQ(2, rest.finger_count());
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, rest.momentum_phase());
   EXPECT_EQ(0, rest.y_offset_ordinal());
   EXPECT_EQ(default_location_, rest.location());
 
-  ui::ScrollEvent cancel(ns_events[1]);
+  ui::ScrollEvent cancel((base::apple::OwnedNSEvent(ns_events[1])));
   EXPECT_EQ(ui::ET_SCROLL, cancel.type());
   EXPECT_EQ(2, cancel.finger_count());
   EXPECT_EQ(ui::EventMomentumPhase::END, cancel.momentum_phase());
@@ -426,19 +479,19 @@ TEST_F(EventsMacTest, TrackpadScrollThenRest) {
   int32_t delta_y = 21;
 
   NSArray* ns_events = TrackpadScrollSequence(false, delta_y, 0);
-  ASSERT_EQ(3u, [ns_events count]);
+  ASSERT_EQ(3u, ns_events.count);
 
-  ui::ScrollEvent begin(ns_events[0]);
+  ui::ScrollEvent begin((base::apple::OwnedNSEvent(ns_events[0])));
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, begin.momentum_phase());
   EXPECT_EQ(0, begin.y_offset_ordinal());
 
-  ui::ScrollEvent update(ns_events[1]);
+  ui::ScrollEvent update((base::apple::OwnedNSEvent(ns_events[1])));
   // There's no momentum yet, so phase is none.
   EXPECT_EQ(ui::EventMomentumPhase::NONE, update.momentum_phase());
   // Note: No pixel conversion for "precise" deltas.
   EXPECT_EQ(delta_y, update.y_offset_ordinal());
 
-  ui::ScrollEvent end(ns_events[2]);
+  ui::ScrollEvent end((base::apple::OwnedNSEvent(ns_events[2])));
   EXPECT_EQ(ui::EventMomentumPhase::END, end.momentum_phase());
   EXPECT_EQ(0, end.y_offset_ordinal());
 }
@@ -449,21 +502,21 @@ TEST_F(EventsMacTest, TrackpadRestThenScrollThenRest) {
   int32_t delta_y = 21;
 
   NSArray* ns_events = TrackpadScrollSequence(true, delta_y, 0);
-  ASSERT_EQ(4u, [ns_events count]);
+  ASSERT_EQ(4u, ns_events.count);
 
-  ui::ScrollEvent rest(ns_events[0]);
+  ui::ScrollEvent rest((base::apple::OwnedNSEvent(ns_events[0])));
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, rest.momentum_phase());
   EXPECT_EQ(0, rest.y_offset_ordinal());
 
-  ui::ScrollEvent begin(ns_events[1]);
+  ui::ScrollEvent begin((base::apple::OwnedNSEvent(ns_events[1])));
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, begin.momentum_phase());
   EXPECT_EQ(0, begin.y_offset_ordinal());
 
-  ui::ScrollEvent update(ns_events[2]);
+  ui::ScrollEvent update((base::apple::OwnedNSEvent(ns_events[2])));
   EXPECT_EQ(ui::EventMomentumPhase::NONE, update.momentum_phase());
   EXPECT_EQ(delta_y, update.y_offset_ordinal());
 
-  ui::ScrollEvent end(ns_events[3]);
+  ui::ScrollEvent end((base::apple::OwnedNSEvent(ns_events[3])));
   EXPECT_EQ(ui::EventMomentumPhase::END, end.momentum_phase());
   EXPECT_EQ(0, end.y_offset_ordinal());
 }
@@ -487,19 +540,19 @@ TEST_F(EventsMacTest, TrackpadScrollThenFlick) {
   int32_t momentum_delta_y = 33;
 
   NSArray* ns_events = TrackpadScrollSequence(false, delta_y, momentum_delta_y);
-  ASSERT_EQ(6u, [ns_events count]);
+  ASSERT_EQ(6u, ns_events.count);
 
   // Non-momentum part.
   {
-    ui::ScrollEvent begin(ns_events[0]);
+    ui::ScrollEvent begin((base::apple::OwnedNSEvent(ns_events[0])));
     EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, begin.momentum_phase());
     EXPECT_EQ(0, begin.y_offset_ordinal());
 
-    ui::ScrollEvent update(ns_events[1]);
+    ui::ScrollEvent update((base::apple::OwnedNSEvent(ns_events[1])));
     EXPECT_EQ(ui::EventMomentumPhase::NONE, update.momentum_phase());
     EXPECT_EQ(delta_y, update.y_offset_ordinal());
 
-    ui::ScrollEvent end(ns_events[2]);
+    ui::ScrollEvent end((base::apple::OwnedNSEvent(ns_events[2])));
     // Even though the event stream continues, AppKit doesn't provide a way to
     // know this without peeking at future events. So this "end" mid-stream is
     // unavoidable.
@@ -508,17 +561,17 @@ TEST_F(EventsMacTest, TrackpadScrollThenFlick) {
   }
   // Momentum part.
   {
-    ui::ScrollEvent begin(ns_events[3]);
+    ui::ScrollEvent begin((base::apple::OwnedNSEvent(ns_events[3])));
     // Since a momentum "begin" is really a continuation of the stream, it's
     // currently treated as an update, but the offsets should always be zero.
     EXPECT_EQ(ui::EventMomentumPhase::INERTIAL_UPDATE, begin.momentum_phase());
     EXPECT_EQ(0, begin.y_offset_ordinal());
 
-    ui::ScrollEvent update(ns_events[4]);
+    ui::ScrollEvent update((base::apple::OwnedNSEvent(ns_events[4])));
     EXPECT_EQ(ui::EventMomentumPhase::INERTIAL_UPDATE, update.momentum_phase());
     EXPECT_EQ(momentum_delta_y, update.y_offset_ordinal());
 
-    ui::ScrollEvent end(ns_events[5]);
+    ui::ScrollEvent end((base::apple::OwnedNSEvent(ns_events[5])));
     EXPECT_EQ(ui::EventMomentumPhase::END, end.momentum_phase());
     EXPECT_EQ(0, end.y_offset_ordinal());
   }
@@ -560,7 +613,8 @@ TEST_F(EventsMacTest, HandleModifierOnlyKeyEvents) {
                                       << test_case.description);
     NSEvent* native_event = cocoa_test_event_utils::KeyEventWithModifierOnly(
         test_case.key_code, test_case.modifier_flags);
-    std::unique_ptr<ui::Event> event = EventFromNative(native_event);
+    std::unique_ptr<ui::Event> event =
+        EventFromNative(base::apple::OwnedNSEvent(native_event));
     EXPECT_TRUE(event);
     EXPECT_EQ(test_case.expected_type, event->type());
     EXPECT_EQ(test_case.expected_key_code, event->AsKeyEvent()->key_code());

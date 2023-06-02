@@ -56,6 +56,11 @@ constexpr char kUwpDeviceIdPrefix[] = "\\\\?\\SWD#MMDEVAPI#";
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
+// Max allowed absolute difference between a QPC-based timestamp and a default
+// base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
+constexpr base::TimeDelta kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps =
+    base::Milliseconds(500);
+
 // Converts a COM error into a human-readable string.
 std::string ErrorToString(HRESULT hresult) {
   return CoreAudioUtil::ErrorToString(hresult);
@@ -237,6 +242,18 @@ bool InitializeUWPSupport() {
   return initialization_result;
 }
 
+void LogFakeAudioCaptureTimestamps(bool use_fake_audio_capture_timestamps,
+                                   base::TimeDelta abs_delta_time) {
+  TRACE_EVENT_INSTANT2(
+      "audio", "AudioCaptureWinTimestamps", TRACE_EVENT_SCOPE_THREAD,
+      "use_fake_audio_capture_timestamps", use_fake_audio_capture_timestamps,
+      "abs_timestamp_diff_ms", abs_delta_time.InMilliseconds());
+  base::UmaHistogramBoolean("Media.Audio.Capture.Win.FakeTimestamps",
+                            use_fake_audio_capture_timestamps);
+  base::UmaHistogramLongTimes("Media.Audio.Capture.Win.AbsTimestampDiffMs",
+                              abs_delta_time);
+}
+
 }  // namespace
 
 // Counts how often an OS capture callback reports a data discontinuity and logs
@@ -412,13 +429,6 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
       // stats when the stream is closed.
       GetAudioCaptureEffects(uwp_device_id);
     }
-  }
-
-  use_fake_audio_capture_timestamps_ =
-      base::FeatureList::IsEnabled(media::kUseFakeAudioCaptureTimestamps);
-  if (use_fake_audio_capture_timestamps_) {
-    SendLogMessage("%s => (WARNING: capture timestamps will be fake)",
-                   __func__);
   }
 
   // Obtain an IAudioClient interface which enables us to create and initialize
@@ -866,6 +876,28 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       return;
     }
 
+    // Check if QPC-based timestamps provided by IAudioCaptureClient::GetBuffer
+    // can be used for audio timestamps or not. If not, base::TimeTicks::Now()
+    // will be used instead to generate the timestamps (called "fake" here). In
+    // the majority of cases, fake timestamps will not be utilized and the
+    // difference in `delta_time` below will be about the same size as the
+    // native buffer size (e.g. 10 msec).
+    // http://crbug.com/1439283 for details why this check is needed.
+    if (!use_fake_audio_capture_timestamps_.has_value()) {
+      base::TimeDelta delta_time =
+          base::TimeTicks::Now() -
+          base::TimeTicks::FromQPCValue(capture_time_100ns);
+      use_fake_audio_capture_timestamps_ =
+          (delta_time.magnitude() >
+           kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps);
+      if (use_fake_audio_capture_timestamps_) {
+        LOG(WARNING) << "WAIS::" << __func__
+                     << " => (WARNING: capture timestamps will be fake)";
+      }
+      LogFakeAudioCaptureTimestamps(use_fake_audio_capture_timestamps_.value(),
+                                    delta_time.magnitude());
+    }
+
     // The data in the packet is not correlated with the previous packet's
     // device position; this is possibly due to a stream state transition or
     // timing glitch. Note that, usage of this flag was added after the existing
@@ -978,6 +1010,11 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
                  << ErrorToString(hr).c_str() << "])";
       return;
     }
+
+    TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"),
+                 "AudioInputCallback::OnData", "capture_time",
+                 capture_time - base::TimeTicks(), "time_ticks_now",
+                 base::TimeTicks::Now() - base::TimeTicks());
 
     // Get a cached AGC volume level which is updated once every second on the
     // audio manager thread. Note that, |volume| is also updated each time

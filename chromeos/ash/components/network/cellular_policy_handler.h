@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -66,6 +67,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void InstallESim(const std::string& smdp_address,
                    const base::Value::Dict& onc_config);
 
+  // Installs the policy eSIM profile defined in |onc_config|. The Shill service
+  // configuration will be updated to match the GUID provided by |onc_config|
+  // and to include the ICCID of the installed profile. Installations are
+  // performed using a queue, and each installation will be retried a fix number
+  // of times.
+  void InstallESim(const base::Value::Dict& onc_config);
+
  private:
   // This enum allows us to treat a retry differently depending on what the
   // reason for retrying is.
@@ -101,18 +109,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   friend class CellularPolicyHandlerTest;
 
   // Represents policy eSIM install request parameters. Requests are queued and
-  // processed one at a time. |smdp_address| represents the smdp address that
-  // will be used to install the eSIM profile as activation code and
-  // |onc_config| is the ONC configuration of the cellular policy.
+  // processed one at a time. |activation_code| represents the SM-DP+ activation
+  // code that will be used to install the eSIM profile, and |onc_config| is the
+  // ONC configuration of the cellular policy.
   struct InstallPolicyESimRequest {
-    InstallPolicyESimRequest(const std::string& smdp_address,
+    InstallPolicyESimRequest(policy_util::SmdxActivationCode activation_code,
                              const base::Value::Dict& onc_config);
     InstallPolicyESimRequest(const InstallPolicyESimRequest&) = delete;
     InstallPolicyESimRequest& operator=(const InstallPolicyESimRequest&) =
         delete;
     ~InstallPolicyESimRequest();
 
-    const std::string smdp_address;
+    const policy_util::SmdxActivationCode activation_code;
     base::Value::Dict onc_config;
     net::BackoffEntry retry_backoff;
   };
@@ -129,11 +137,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
 
   void ResumeInstallIfNeeded();
   void ProcessRequests();
+  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request,
+                     InstallRetryReason reason);
+  void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
+  void PopRequest();
+
   void AttemptInstallESim();
   void SetupESim(const dbus::ObjectPath& euicc_path);
-  base::Value::Dict GetNewShillProperties();
-  const std::string& GetCurrentSmdpAddress() const;
-  std::string GetCurrentPolicyGuid() const;
+
   void OnRefreshProfileList(
       const dbus::ObjectPath& euicc_path,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
@@ -142,12 +153,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
-  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request,
-                     InstallRetryReason reason);
-  void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
-  void PopRequest();
-  absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
   void OnWaitTimeout();
+
+  base::Value::Dict GetNewShillProperties();
+  const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
+  absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
   bool HasNonCellularInternetConnectivity();
 
   raw_ptr<CellularESimProfileHandler, ExperimentalAsh>

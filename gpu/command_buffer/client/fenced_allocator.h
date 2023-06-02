@@ -272,7 +272,7 @@ class FencedAllocatorWrapper {
 
  private:
   FencedAllocator allocator_;
-  raw_ptr<void> base_;
+  raw_ptr<void, DanglingUntriaged> base_;
 };
 
 }  // namespace gpu

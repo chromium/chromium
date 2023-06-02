@@ -156,7 +156,11 @@ class FileManagerBrowserTestBase
     bool enable_mirrorsync = false;
 
     // Whether test should run with the FilesInlineSyncStatus flag.
-    bool enable_inline_status_sync = false;
+    bool enable_inline_sync_status = false;
+
+    // Whether test should run with the FilesInlineSyncStatusProgressEvents
+    // flag.
+    bool enable_inline_sync_status_progress_events = false;
 
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;
@@ -175,6 +179,9 @@ class FileManagerBrowserTestBase
 
     // Whether tests should enable the Google Drive bulk pinning feature.
     bool enable_drive_bulk_pinning = false;
+
+    // Whether to enable Drive shortcuts showing a badge or not.
+    bool enable_drive_shortcuts = false;
 
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;

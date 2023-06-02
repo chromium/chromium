@@ -31,8 +31,7 @@ StatusData::StatusData(StatusGroupType group,
 std::unique_ptr<StatusData> StatusData::copy() const {
   auto result =
       std::make_unique<StatusData>(group, code, message, packed_root_cause);
-  for (const auto& frame : frames)
-    result->frames.push_back(frame.Clone());
+  result->frames = frames.Clone();
   if (cause)
     result->cause = cause->copy();
   result->data = data.Clone();
@@ -46,8 +45,7 @@ StatusData& StatusData::operator=(const StatusData& copy) {
   code = copy.code;
   message = copy.message;
   packed_root_cause = copy.packed_root_cause;
-  for (const auto& frame : copy.frames)
-    frames.push_back(frame.Clone());
+  frames = copy.frames.Clone();
   if (copy.cause)
     cause = copy.cause->copy();
   data = copy.data.Clone();
@@ -55,7 +53,7 @@ StatusData& StatusData::operator=(const StatusData& copy) {
 }
 
 void StatusData::AddLocation(const base::Location& location) {
-  frames.push_back(MediaSerialize(location));
+  frames.Append(MediaSerialize(location));
 }
 
 std::ostream& operator<<(std::ostream& stream,

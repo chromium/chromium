@@ -20,27 +20,10 @@
 
 namespace {
 
-const char kDeclineTranslate[] = "Translate.DeclineTranslate";
-const char kPerformTranslate[] = "Translate.Translate";
-const char kPerformTranslateAmpCacheUrl[] = "Translate.Translate.AMPCacheURL";
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
-const char kModifySourceLang[] = "Translate.ModifyOriginalLang";
 const char kShowErrorUI[] = "Translate.ShowErrorUI";
-
-// Returns whether |url| fits pattern of an AMP cache url.
-// Note this is a copy of logic in amp_page_load_metrics_observer.cc
-// TODO(crbug.com/1064974) Factor out into shared utility.
-bool IsLikelyAmpCacheUrl(const GURL& url) {
-  // Our heuristic to identify AMP cache URLs is to check for the presence of
-  // the amp_js_v query param.
-  for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    if (it.GetKey() == "amp_js_v")
-      return true;
-  }
-  return false;
-}
 
 }  // namespace
 
@@ -96,8 +79,6 @@ void TranslateUIDelegate::UpdateAndRecordSourceLanguageIndex(
           language_index)) {
     return;
   }
-
-  UMA_HISTOGRAM_BOOLEAN(kModifySourceLang, true);
 
   if (translate_manager_) {
     translate_manager_->GetActiveTranslateMetricsLogger()->LogSourceLanguage(
@@ -194,9 +175,6 @@ void TranslateUIDelegate::Translate() {
         translate_manager_->GetActiveTranslateMetricsLogger()
             ->GetNextManualTranslationType(
                 /*is_context_menu_initiated_translation=*/false));
-    UMA_HISTOGRAM_BOOLEAN(kPerformTranslate, true);
-    if (IsLikelyAmpCacheUrl(translate_driver_->GetLastCommittedURL()))
-      UMA_HISTOGRAM_BOOLEAN(kPerformTranslateAmpCacheUrl, true);
   }
 }
 
@@ -230,10 +208,6 @@ void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
                           : metrics::TranslateEventProto::USER_IGNORE);
     if (explicitly_closed)
       translate_manager_->GetLanguageState()->set_translation_declined(true);
-  }
-
-  if (explicitly_closed) {
-    UMA_HISTOGRAM_BOOLEAN(kDeclineTranslate, true);
   }
 }
 

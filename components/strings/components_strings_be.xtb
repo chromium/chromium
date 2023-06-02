@@ -979,6 +979,7 @@
 <translation id="3380864720620200369">Ідэнтыфікатар кліента:</translation>
 <translation id="3381668585148405088">Пацвердзіце куплю</translation>
 <translation id="3383566085871012386">Бягучы парадак прыярытэту</translation>
+<translation id="3384522979010096022">Ваша арганізацыя не дазваляе вам праглядаць гэты сайт</translation>
 <translation id="3387261909427947069">Спосабы аплаты</translation>
 <translation id="3391030046425686457">Адрас дастаўкі</translation>
 <translation id="3391482648489541560">змяненне файлаў</translation>
@@ -1101,7 +1102,6 @@
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
 <translation id="3677008721441257057">Вы мелі на ўвазе &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не ўдалося падпісаць запыт</translation>
-<translation id="3678342917559046352">Няправільнае пашырэнне: дапускаецца адно з наступных значэнняў: &lt;extension_id&gt; або &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Адкрыйце старонку ва ўкладцы інкогніта (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Інфармацыя аб сертыфікаце</translation>
 <translation id="3681421644246505351">Chrome вызначае цікавыя для вас тэмы на падставе нядаўняй гісторыі прагляду вамі сайтаў.</translation>
@@ -1131,6 +1131,7 @@
 <translation id="3740319564441798148">Аўтобусныя і чыгуначныя дальнія маршруты</translation>
 <translation id="3743765582345153106">Заўсёды спраўджваць пры аўтазапаўненні</translation>
 <translation id="3744111561329211289">Фонавая сінхранізацыя</translation>
+<translation id="3744212718085287312">Абараніць свае даныя, выкарыстоўваючы наступным разам віртуальную картку?</translation>
 <translation id="3744286742364977428">Спампаваныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам: у прыватнасці, яны могуць быць правераны на наяўнасць канфідэнцыяльных даных або шкодных праграм альбо адпраўлены на захоўванне ў адпаведнасці з палітыкамі кампаніі.</translation>
 <translation id="3744899669254331632">Наведаць сайт <ph name="SITE" /> зараз нельга: ён адправіў зашыфраваныя ўліковыя даныя, якія Chromium не можа апрацаваць. Звычайна сеткавыя памылкі і атакі – часовая з'ява, таму гэта старонка будзе, хутчэй за ўсё, працаваць пазней.</translation>
 <translation id="3748148204939282805">Зламыснікі на сайце <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могуць падмануць вас і прымусіць зрабіць што-небудзь небяспечнае – напрыклад, усталяваць ПЗ або выдаць асабістую інфармацыю (паролі, нумары тэлефонаў або даныя крэдытных картак і падобнае). <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1239,6 +1240,7 @@
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4040350669425716613">Вышэйшыя навучальныя ўстановы</translation>
 <translation id="4047351652147966654">18 x 24 цалі</translation>
+<translation id="404831776305217138">URL-адрас для абнаўлення пашырэння з ідэнтыфікатарам "<ph name="EXTENSION_ID" />" з'яўляецца недапушчальным або яго схема не падтрымліваецца. Падтрымліваюцца наступныя схемы: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> і <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Вы зможаце выкарыстоўваць яго ў другіх прадуктах Google</translation>
 <translation id="405399507749852140">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі</translation>
 <translation id="4056223980640387499">Сепія</translation>
@@ -1345,7 +1347,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Нататка</translation>
 <translation id="425582637250725228">Магчыма, унесеныя змены не будуць захаваны.</translation>
-<translation id="425869179292622354">Абараніць яе, выкарыстоўваючы віртуальную картку?</translation>
 <translation id="4258748452823770588">Недапушчальны подпіс</translation>
 <translation id="4261046003697461417">Дадаваць анатацыі ў абароненыя дакументы нельга</translation>
 <translation id="4265872034478892965">Дазволена адміністратарам</translation>
@@ -2285,6 +2286,8 @@
 <translation id="6569060085658103619">Вы праглядаеце старонку пашырэння</translation>
 <translation id="6569366777234823130">Драмы</translation>
 <translation id="6573200754375280815">Дзве дзіркі справа</translation>
+<translation id="6576181918031900030">Пачаць трансляцыю</translation>
+<translation id="6578434528542148658">Недапушчальны ідэнтыфікатар пашырэння.</translation>
 <translation id="657902945730878902">Рысаванне і размалёўванне</translation>
 <translation id="6579630537141957243">Падключыць прыладу MIDI?</translation>
 <translation id="6579990219486187401">Светла-ружовы</translation>
@@ -2963,7 +2966,6 @@
 <translation id="8190193880870196235">Пад кіраваннем пашырэння</translation>
 <translation id="8194797478851900357">&amp;Адрабіць перамяшчэнне</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
-<translation id="8201077131113104583">Недапушчальны URL-адрас абнаўлення для пашырэння з ідэнтыфікатарам "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Зводка па заказе</translation>
 <translation id="8202370299023114387">Канфлікт</translation>
 <translation id="8208363704094329105">300 x 400 мм</translation>
@@ -3023,7 +3025,6 @@
 <translation id="8298115750975731693">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць старонку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Паказваецца раздзел "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Згіб напалову</translation>
-<translation id="8307888238279532626">Усталяваныя праграмы, і як часта яны выкарыстоўваліся</translation>
 <translation id="831997045666694187">Вечар</translation>
 <translation id="8321476692217554900">апавяшчэнні</translation>
 <translation id="8329068931308448247">Канверт № 14</translation>

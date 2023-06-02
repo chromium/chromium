@@ -186,7 +186,8 @@ class PreinstalledWebAppManager {
 
   std::unique_ptr<DeviceDataInitializedEvent> device_data_initialized_event_;
 
-  base::ObserverList<PreinstalledWebAppManager::Observer> observers_;
+  base::ObserverList<PreinstalledWebAppManager::Observer, /*check_empty=*/true>
+      observers_;
 
   base::WeakPtrFactory<PreinstalledWebAppManager> weak_ptr_factory_{this};
 };

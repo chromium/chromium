@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -290,6 +291,85 @@ TEST_F(ArcVmmManagerTest, EnableSwapRequestWillEnableHeartbeat) {
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(ArcVmmManagerTest, NotResendSameStateRequestButHeartbeat) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(1, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  // Not resend same request, but leave to next heart beat.
+  manager()->SetSwapState(SwapState::ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(1, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // Not resend same request, but leave to next heart beat.
+  manager()->SetSwapState(SwapState::ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(1, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  EXPECT_EQ(0, client()->force_enable_count());
+  EXPECT_EQ(2, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ArcVmmManagerTest, ReForceEnable) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  // Disable.
+  manager()->SetSwapState(SwapState::DISABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(1, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  // Re-enable, expect re-send force_enable to concierge.
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(1, client()->disable_count());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  // Re-disable, expect re-send force_enable to concierge.
+  manager()->SetSwapState(SwapState::DISABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(2, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(2, client()->disable_count());
 }
 
 // This test verify the weak ptr safety in scheduler.

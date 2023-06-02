@@ -179,6 +179,10 @@ const char* FakeAmbientBackendControllerImpl::GetPromoBannerUrl() const {
   return kFakeUrl;
 }
 
+const char* FakeAmbientBackendControllerImpl::GetTimeOfDayProductName() const {
+  return "Product Name";
+}
+
 void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
     bool success,
     const absl::optional<AmbientSettings>& settings) {

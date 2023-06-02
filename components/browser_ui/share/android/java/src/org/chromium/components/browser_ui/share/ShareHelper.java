@@ -335,10 +335,10 @@ public class ShareHelper {
                 }
             } else {
                 intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TITLE, params.getTitle());
                 // For text sharing, only set the preview title when preview image is provided. This
                 // is meant to avoid confusion about the content being shared.
                 if (params.getPreviewImageUri() != null) {
-                    intent.putExtra(Intent.EXTRA_TITLE, params.getTitle());
                     intent.setClipData(ClipData.newRawUri("", params.getPreviewImageUri()));
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }

@@ -40,24 +40,27 @@ class SafeWebBundleParser {
   void OpenDataSource(
       mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source);
 
-  // Parses the integrity block of a signed web bundle. See
-  // web_package::mojom::WebBundleParser::ParseIntegrityBlock for
+  // Parses the integrity block of a Signed Web Bundle. See
+  // `web_package::mojom::WebBundleParser::ParseIntegrityBlock` for
   // details. This method fails when it's called before the previous call
   // finishes.
   void ParseIntegrityBlock(
       web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback
           callback);
 
-  // Parses metadata. If `offset` is >= 0, then parsing of the web bundle starts
-  // at that offset. See web_package::mojom::WebBundleParser::ParseMetadata for
+  // Parses metadata of a (Signed) Web Bundle. If `offset` is specified, then
+  // parsing of the metadata starts at that offset. If `offset` is not set, then
+  // parsing either starts at offset 0 for non-random-access data sources, or at
+  // a position based on the `length` field of the Web Bundle for random access
+  // data sources. See `web_package::mojom::WebBundleParser::ParseMetadata` for
   // details. This method fails when it's called before the previous call
   // finishes.
   void ParseMetadata(
-      int64_t offset,
+      absl::optional<uint64_t> offset,
       web_package::mojom::WebBundleParser::ParseMetadataCallback callback);
 
-  // Parses response. See web_package::mojom::WebBundleParser::ParseResponse for
-  // details.
+  // Parses a response from a (Signed) Web Bundle. See
+  // `web_package::mojom::WebBundleParser::ParseResponse` for details.
   void ParseResponse(
       uint64_t response_offset,
       uint64_t response_length,

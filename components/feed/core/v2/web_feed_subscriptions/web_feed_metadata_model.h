@@ -53,7 +53,7 @@ class WebFeedMetadataModel {
   static WebFeedInFlightChange MakePendingInFlightChange(
       const feedstore::PendingWebFeedOperation& operation);
   Operation* FindOperation(base::StringPiece web_feed_id);
-  raw_ptr<FeedStore> store_;
+  raw_ptr<FeedStore, DanglingUntriaged> store_;
   std::vector<Operation> pending_operations_;
   int next_id_ = 0;
 };

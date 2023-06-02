@@ -63,7 +63,8 @@ class PasswordAccessoryController
 
   // Asks the controller to update the UI allowing users to continue with the
   // CredMan conditional UI.
-  virtual void UpdateCredManReentryUi() = 0;
+  virtual void UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType focused_field_type) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_

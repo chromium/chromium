@@ -22,13 +22,24 @@
 
 #pragma mark - Public
 
-- (void)recordTimeSpentInNTP:(base::TimeDelta)timeSpent {
-  UmaHistogramMediumTimes(kNTPTimeSpentHistogram, timeSpent);
+- (void)recordTimeSpentInHome:(base::TimeDelta)timeSpent
+               isStartSurface:(BOOL)startSurface {
+  if (startSurface) {
+    UmaHistogramMediumTimes(kStartTimeSpentHistogram, timeSpent);
+  } else {
+    UmaHistogramMediumTimes(kNTPTimeSpentHistogram, timeSpent);
+  }
 }
 
-- (void)recordNTPImpression:(IOSNTPImpressionType)impressionType {
-  UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType,
-                            IOSNTPImpressionType::kMaxValue);
+- (void)recordHomeImpression:(IOSNTPImpressionType)impressionType
+              isStartSurface:(BOOL)startSurface {
+  if (startSurface) {
+    UMA_HISTOGRAM_ENUMERATION(kStartImpressionHistogram, impressionType,
+                              IOSNTPImpressionType::kMaxValue);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType,
+                              IOSNTPImpressionType::kMaxValue);
+  }
   [self recordImpressionForTileAblation];
 }
 
@@ -54,15 +65,6 @@
 
 - (void)recordIdentityDiscTapped {
   base::RecordAction(base::UserMetricsAction(kNTPIdentityDiscTappedAction));
-}
-
-- (void)recordHomeActionType:(IOSHomeActionType)type
-              onStartSurface:(BOOL)isStartSurface {
-  if (isStartSurface) {
-    UMA_HISTOGRAM_ENUMERATION(kHomeActionOnStartSurfaceHistogram, type);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kHomeActionOnNTPHistogram, type);
-  }
 }
 
 #pragma mark - Private

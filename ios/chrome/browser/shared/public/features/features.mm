@@ -14,6 +14,10 @@ BASE_FEATURE(kDefaultBrowserBlueDotPromo,
              "DefaultBrowserBlueDotPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSPaymentsBottomSheet,
+             "IOSPaymentsBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<BlueDotPromoUserGroup>::Option
     kBlueDotPromoUserGroupOptions[] = {
         {BlueDotPromoUserGroup::kAllDBPromosDisabled, "all-db-promos-disabled"},
@@ -46,10 +50,6 @@ BASE_FEATURE(kIncognitoNtpRevamp,
              "IncognitoNtpRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserFullscreenPromoExperiment,
-             "DefaultBrowserFullscreenPromoExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -68,14 +68,14 @@ BASE_FEATURE(kDefaultBrowserVideoPromo,
 
 BASE_FEATURE(kIOSCustomBrowserEditMenu,
              "IOSCustomBrowserEditMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
     "IOSEditMenuPartialTranslateNoIncognitoParam";
 
 BASE_FEATURE(kIOSEditMenuPartialTranslate,
              "IOSEditMenuPartialTranslate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPartialTranslateEnabled() {
   if (@available(iOS 16, *)) {
@@ -90,7 +90,7 @@ bool ShouldShowPartialTranslateInIncognito() {
   }
   return !base::GetFieldTrialParamByFeatureAsBool(
       kIOSEditMenuPartialTranslate,
-      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
+      kIOSEditMenuPartialTranslateNoIncognitoParam, true);
 }
 
 const char kIOSEditMenuSearchWithTitleParamTitle[] =
@@ -171,6 +171,10 @@ BASE_FEATURE(kTabGridRecencySort,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGridSortedByRecency() {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kTabGridRecencySort);
 }
 
@@ -184,7 +188,7 @@ bool IsNewTabGridTransitionsEnabled() {
 
 BASE_FEATURE(kMultilineFadeTruncatingLabel,
              "MultilineFadeTruncatingLabel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationSettingsMenuItem,
              "NotificationSettingsMenuItem",
@@ -204,7 +208,7 @@ bool IsConsistencyNewAccountInterfaceEnabled() {
 
 BASE_FEATURE(kAddToHomeScreen,
              "AddToHomeScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kAddToHomeScreenDisableIncognitoParam[] =
     "AddToHomeScreenDisableIncognitoParam";
@@ -217,7 +221,7 @@ bool ShouldAddToHomeScreen(bool in_incognito) {
     return true;
   }
   return !base::GetFieldTrialParamByFeatureAsBool(
-      kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, false);
+      kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, true);
 }
 
 BASE_FEATURE(kNewNTPOmniboxLayout,

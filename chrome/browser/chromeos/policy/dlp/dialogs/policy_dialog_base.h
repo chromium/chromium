@@ -14,7 +14,7 @@
 
 namespace policy {
 
-// The callback to be exectued when the user addresses the dialog. When
+// The callback to be executed when the user addresses the dialog. When
 // `should_proceed` is set to true, the action continues and is aborted
 // otherwise.
 using OnDlpRestrictionCheckedCallback =
@@ -35,12 +35,16 @@ class PolicyDialogBase : public views::DialogDelegateView {
     kFiles
   };
 
-  explicit PolicyDialogBase(OnDlpRestrictionCheckedCallback callback);
+  PolicyDialogBase();
   PolicyDialogBase(const PolicyDialogBase& other) = delete;
   PolicyDialogBase& operator=(const PolicyDialogBase& other) = delete;
   ~PolicyDialogBase() override = default;
 
  protected:
+  // Splits `callback` and assigns to accept and cancel callbacks.
+  void SetOnDlpRestrictionCheckedCallback(
+      OnDlpRestrictionCheckedCallback callback);
+
   // Sets up the dialog's upper panel with |title| and |message|.
   void SetupUpperPanel(const std::u16string& title,
                        const std::u16string& message);

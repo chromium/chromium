@@ -21,7 +21,7 @@
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/raw_video.h"
 
 namespace media {
 namespace test {
@@ -71,7 +71,8 @@ uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
 
 std::vector<VideoEncodeAccelerator::Config::SpatialLayer>
 GetDefaultSpatialLayers(const VideoBitrateAllocation& bitrate,
-                        const Video* video,
+                        const gfx::Size& resolution,
+                        uint32_t frame_rate,
                         size_t num_spatial_layers,
                         size_t num_temporal_layers) {
   // Returns empty spatial layer config because one temporal layer stream is
@@ -91,18 +92,18 @@ GetDefaultSpatialLayers(const VideoBitrateAllocation& bitrate,
     VideoEncodeAccelerator::Config::SpatialLayer spatial_layer;
     const int resolution_denom =
         kSpatialLayersResolutionScaleDenom[num_spatial_layers - 1][sid];
-    LOG_IF(WARNING, video->Resolution().width() % resolution_denom != 0)
+    LOG_IF(WARNING, resolution.width() % resolution_denom != 0)
         << "width of SL#" << sid << " is not dividable by " << resolution_denom;
-    LOG_IF(WARNING, video->Resolution().height() % resolution_denom != 0)
+    LOG_IF(WARNING, resolution.height() % resolution_denom != 0)
         << "height of SL#" << sid << " is not dividable by "
         << resolution_denom;
-    spatial_layer.width = video->Resolution().width() / resolution_denom;
-    spatial_layer.height = video->Resolution().height() / resolution_denom;
+    spatial_layer.width = resolution.width() / resolution_denom;
+    spatial_layer.height = resolution.height() / resolution_denom;
     uint32_t spatial_layer_bitrate = 0;
     for (size_t tid = 0; tid < num_temporal_layers; ++tid)
       spatial_layer_bitrate += bitrate.GetBitrateBps(sid, tid);
     spatial_layer.bitrate_bps = spatial_layer_bitrate;
-    spatial_layer.framerate = video->FrameRate();
+    spatial_layer.framerate = frame_rate;
     spatial_layer.num_of_temporal_layers = num_temporal_layers;
     // Note: VideoEncodeAccelerator currently ignores this max_qp parameter.
     spatial_layer.max_qp = 30u;
@@ -132,28 +133,10 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     LOG(ERROR) << "No video specified";
     return nullptr;
   }
-  auto video =
-      std::make_unique<media::test::Video>(video_path, video_metadata_path);
-  if (!video->Load(kMaxReadFrames)) {
-    LOG(ERROR) << "Failed to load " << video_path;
-    return nullptr;
-  }
-
-  // If the video file has the .webm format it needs to be decoded first.
-  // TODO(b/151134705): Add support to cache decompressed video files.
-  if (video->FilePath().MatchesExtension(FILE_PATH_LITERAL(".webm"))) {
-    VLOGF(1) << "Test video " << video->FilePath()
-             << " is compressed, decoding...";
-    if (!video->Decode()) {
-      LOG(ERROR) << "Failed to decode " << video->FilePath();
-      return nullptr;
-    }
-  }
-
-  if (video->PixelFormat() == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
-    LOG(ERROR) << "Test video " << video->FilePath()
-               << " has an invalid video pixel format "
-               << VideoPixelFormatToString(video->PixelFormat());
+  auto video = RawVideo::Create(video_path, video_metadata_path,
+                                /*read_all_frames=*/false);
+  if (!video) {
+    LOG(ERROR) << "Failed to prepare input source for " << video_path;
     return nullptr;
   }
 
@@ -233,16 +216,18 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
   return new VideoEncoderTestEnvironment(
-      std::move(video), enable_bitstream_validator, output_folder, profile,
-      inter_layer_pred_mode, num_spatial_layers, num_temporal_layers, bitrate,
-      save_output_bitstream, reverse, frame_output_config,
-      combined_enabled_features, combined_disabled_features);
+      std::move(video), enable_bitstream_validator, output_folder,
+      video_path.BaseName(), profile, inter_layer_pred_mode, num_spatial_layers,
+      num_temporal_layers, bitrate, save_output_bitstream, reverse,
+      frame_output_config, combined_enabled_features,
+      combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
-    std::unique_ptr<media::test::Video> video,
+    std::unique_ptr<media::test::RawVideo> video,
     bool enable_bitstream_validator,
     const base::FilePath& output_folder,
+    const base::FilePath& output_bitstream_file_base_name,
     VideoCodecProfile profile,
     VideoEncodeAccelerator::Config::InterLayerPredMode inter_layer_pred_mode,
     size_t num_spatial_layers,
@@ -257,13 +242,15 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       video_(std::move(video)),
       enable_bitstream_validator_(enable_bitstream_validator),
       output_folder_(output_folder),
+      output_bitstream_file_base_name_(output_bitstream_file_base_name),
       profile_(profile),
       inter_layer_pred_mode_(inter_layer_pred_mode),
       bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers,
                                                 num_temporal_layers,
                                                 bitrate)),
       spatial_layers_(GetDefaultSpatialLayers(bitrate_,
-                                              video_.get(),
+                                              video_->Resolution(),
+                                              video_->FrameRate(),
                                               num_spatial_layers,
                                               num_temporal_layers)),
       save_output_bitstream_(save_output_bitstream),
@@ -274,13 +261,13 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
 
 VideoEncoderTestEnvironment::~VideoEncoderTestEnvironment() = default;
 
-media::test::Video* VideoEncoderTestEnvironment::Video() const {
+media::test::RawVideo* VideoEncoderTestEnvironment::Video() const {
   return video_.get();
 }
 
-media::test::Video* VideoEncoderTestEnvironment::GenerateNV12Video() {
+media::test::RawVideo* VideoEncoderTestEnvironment::GenerateNV12Video() {
   if (!nv12_video_) {
-    nv12_video_ = video_->ConvertToNV12();
+    nv12_video_ = video_->CreateNV12Video();
     CHECK(nv12_video_);
   }
   return nv12_video_.get();
@@ -319,7 +306,6 @@ bool VideoEncoderTestEnvironment::SaveOutputBitstream() const {
 
 base::FilePath VideoEncoderTestEnvironment::OutputFilePath(
     const VideoCodec& codec,
-    const base::FilePath& base_name,
     bool svc_enable,
     int spatial_idx,
     int temporal_idx) const {
@@ -329,7 +315,7 @@ base::FilePath VideoEncoderTestEnvironment::OutputFilePath(
   auto output_bitstream_filepath =
       OutputFolder()
           .Append(GetTestOutputFilePath())
-          .Append(base_name.ReplaceExtension(extension));
+          .Append(output_bitstream_file_base_name_.ReplaceExtension(extension));
   if (svc_enable) {
     output_bitstream_filepath =
         output_bitstream_filepath.InsertBeforeExtensionASCII(

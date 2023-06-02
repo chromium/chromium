@@ -179,6 +179,10 @@ class ReadingListModelImpl : public ReadingListModel {
 
   bool loaded_ = false;
 
+  // Used to suppress deletions and batch updates notifications when
+  // ReadingListModelLoaded is not broadcasted yet.
+  bool suppress_deletions_batch_updates_notifications_ = false;
+
   std::map<GURL, scoped_refptr<ReadingListEntry>> entries_;
   size_t unread_entry_count_ = 0;
   size_t read_entry_count_ = 0;

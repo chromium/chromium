@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_INSTALLER_FACTORY_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_INSTALLER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
@@ -27,7 +27,7 @@ class PluginVmInstallerFactory : public ProfileKeyedServiceFactory {
   PluginVmInstallerFactory& operator=(const PluginVmInstallerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PluginVmInstallerFactory>;
+  friend base::NoDestructor<PluginVmInstallerFactory>;
 
   PluginVmInstallerFactory();
   ~PluginVmInstallerFactory() override;

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -1058,4 +1059,57 @@ TEST_F(TextFragmentHandlerTest, NotGenerated) {
       shared_highlighting::LinkGenerationError::kNotGenerated;
   EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
 }
+
+TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
+  SimRequest request(
+      "https://example.com/"
+      "test.html#:~:text=test%20page",
+      "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=test%20page");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 2200px;
+      }
+      #first {
+        position: absolute;
+        top: 1000px;
+      }
+      ::target-text {
+        text-decoration: wavy underline overline green 5px;
+        text-underline-offset: 20px;
+        background-color: transparent;
+      }
+    </style>
+    <p id="first">This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
+  Text* first_paragraph =
+      To<Text>(GetDocument().getElementById("first")->firstChild());
+  LayoutText* layout_text = first_paragraph->GetLayoutObject();
+  PhysicalRect marker_rect = layout_text->PhysicalVisualOverflowRect();
+
+  GetTextFragmentHandler().RemoveFragments();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+  PhysicalRect removed_rect = layout_text->PhysicalVisualOverflowRect();
+
+  // Platforms differ in exact sizes, but the relative sizes are sufficient
+  // for testing.
+  EXPECT_EQ(removed_rect.X(), marker_rect.X());
+  EXPECT_GT(removed_rect.Y(), marker_rect.Y());
+  EXPECT_EQ(removed_rect.Width(), marker_rect.Width());
+  EXPECT_GT(marker_rect.Height(), removed_rect.Height());
+}
+
 }  // namespace blink

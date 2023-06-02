@@ -66,6 +66,9 @@ interface ShoppingListHandler {
 
   // Untrack price for bookmark with 'bookmark_id'.
   UntrackPriceForBookmark(int64 bookmark_id);
+
+  // Returns the product info for current url.
+  GetProductInfoForCurrentUrl() => (ProductInfo productInfo);
 };
 
 // WebUI-side handler for requests from the browser.

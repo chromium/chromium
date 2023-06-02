@@ -4,6 +4,7 @@
 import './app_details_item.js';
 import './pin_to_shelf_item.js';
 import './supported_links_item.js';
+import './sub_apps_item.js';
 import './app_management_cros_shared_style.css.js';
 import 'chrome://resources/cr_components/app_management/file_handling_item.js';
 import 'chrome://resources/cr_components/app_management/icons.html.js';

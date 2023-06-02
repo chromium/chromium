@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that Comparison view of heap snapshots will contain added nodes even if their ids are less than the maximumm JS object id in the base snapshot.\n`);
-  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   function createHeapSnapshotA() {

@@ -342,7 +342,7 @@ class NewTabPageHandlerTest : public testing::Test {
   content::TestWebContentsFactory factory_;
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   // Pointer to mock that will eventually be solely owned by the handler.
-  raw_ptr<MockCustomizeChromeFeaturePromoHelper>
+  raw_ptr<MockCustomizeChromeFeaturePromoHelper, DanglingUntriaged>
       mock_customize_chrome_feature_promo_helper_;
   std::unique_ptr<MockCustomizeChromeFeaturePromoHelper>
       mock_customize_chrome_feature_promo_helper_ptr_;
@@ -366,7 +366,7 @@ class NewTabPageHandlerTest : public testing::Test {
 
 class NewTabPageHandlerThemeTest
     : public NewTabPageHandlerTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   NewTabPageHandlerThemeTest() {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -376,12 +376,6 @@ class NewTabPageHandlerThemeTest
       enabled_features.push_back(ntp_features::kNtpRemoveScrim);
     } else {
       disabled_features.push_back(ntp_features::kNtpRemoveScrim);
-    }
-
-    if (ComprehensiveTheme()) {
-      enabled_features.push_back(ntp_features::kNtpComprehensiveTheming);
-    } else {
-      disabled_features.push_back(ntp_features::kNtpComprehensiveTheming);
     }
 
     if (CustomizeChromeSidePanel()) {
@@ -395,8 +389,7 @@ class NewTabPageHandlerThemeTest
   }
 
   bool RemoveScrim() const { return std::get<0>(GetParam()); }
-  bool ComprehensiveTheme() const { return std::get<1>(GetParam()); }
-  bool CustomizeChromeSidePanel() const { return std::get<2>(GetParam()); }
+  bool CustomizeChromeSidePanel() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -560,11 +553,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
     EXPECT_FALSE(theme->background_image->scrim_display.has_value());
   }
 
-  if (ComprehensiveTheme()) {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
-  } else {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->most_visited->background_color);
-  }
+  EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
 }
 
 TEST_P(NewTabPageHandlerThemeTest, SetDailyRefresh) {
@@ -673,7 +662,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetThirdPartyTheme) {
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageHandlerThemeTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 TEST_F(NewTabPageHandlerTest, Histograms) {

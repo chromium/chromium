@@ -63,6 +63,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/browser_container:ui",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp/metrics",
@@ -108,6 +109,7 @@ swift_source_set("overflow_menu_swift") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util:util_swiftui",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/common:timing",
@@ -136,9 +138,13 @@ source_set("feature_flags") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "overflow_menu_mediator_unittest.mm" ]
+  sources = [
+    "overflow_menu_mediator_unittest.mm",
+    "overflow_menu_orderer_unittest.mm",
+  ]
   deps = [
     ":overflow_menu",
+    ":overflow_menu_constants",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
@@ -165,6 +171,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",

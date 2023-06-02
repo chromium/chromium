@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_export.h"
 
 namespace gpu {
@@ -49,14 +48,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   GLImage() = default;
 
   virtual ~GLImage() = default;
-
-  // Get the size of the image.
-  virtual gfx::Size GetSize();
-
- public:
-  // Allow usage of these methods from text sites that are inconvenient to
-  // friend.
-  gfx::Size GetSizeForTesting() { return GetSize(); }
 
  protected:
   // An identifier for subclasses. Necessary for safe downcasting.

@@ -186,7 +186,7 @@ class FakeExtensionMessageBubble {
 
   bool is_closed_;
   ExtensionBubbleAction action_;
-  raw_ptr<ExtensionMessageBubbleController> controller_;
+  raw_ptr<ExtensionMessageBubbleController, DanglingUntriaged> controller_;
 };
 
 class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
@@ -425,7 +425,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  raw_ptr<ExtensionService> service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> service_;
 
  private:
   std::unique_ptr<base::CommandLine> command_line_;

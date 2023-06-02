@@ -901,12 +901,12 @@ static inline void HandleNamespaceAttributes(
       namespace_q_name =
           WTF::g_xmlns_with_colon + ToAtomicString(namespaces[i].prefix);
 
-    QualifiedName parsed_name = g_any_name;
-    if (!Element::ParseAttributeName(parsed_name, xmlns_names::kNamespaceURI,
-                                     namespace_q_name, exception_state))
+    absl::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
+        xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
+    if (!parsed_name) {
       return;
-
-    prefixed_attributes.push_back(Attribute(parsed_name, namespace_uri));
+    }
+    prefixed_attributes.push_back(Attribute(*parsed_name, namespace_uri));
   }
 }
 
@@ -954,12 +954,12 @@ static inline void HandleElementAttributes(
             ? ToAtomicString(attributes[i].localname)
             : attr_prefix + ":" + ToString(attributes[i].localname);
 
-    QualifiedName parsed_name = g_any_name;
-    if (!Element::ParseAttributeName(parsed_name, attr_uri, attr_q_name,
-                                     exception_state))
+    absl::optional<QualifiedName> parsed_name =
+        Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
+    if (!parsed_name) {
       return;
-
-    prefixed_attributes.push_back(Attribute(parsed_name, attr_value));
+    }
+    prefixed_attributes.push_back(Attribute(*parsed_name, attr_value));
   }
 }
 

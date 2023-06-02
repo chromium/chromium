@@ -31,6 +31,10 @@ if (current_cpu == "x86") {
   }
 } else if (current_cpu == "arm64") {
   if (is_chromeos || is_mac) {
+    # This is necessary for CrOS and macOS as they reuse the Linux
+    # configuration, of which there are two (see the later definition of
+    # os_category). Windows is configured with highbd enabled in its arm64
+    # path.
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
@@ -447,7 +451,7 @@ static_library("libvpx") {
     deps += [ ":libvpx_intrinsics_neon" ]
   }
   if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   if (current_cpu == "arm" && arm_assembly_sources != []) {
     deps += [ ":libvpx_assembly_arm" ]

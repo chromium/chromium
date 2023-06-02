@@ -133,7 +133,7 @@ if (enable_java_templates) {
   }
 
   # JNI target implementation. See generate_jni or generate_jar_jni for usage.
-  template("generate_jni_impl") {
+  template("_generate_jni_impl") {
     _prev_jni_output_dir = "$target_gen_dir/$target_name"
     _subdir = rebase_path(target_gen_dir, root_gen_dir)
     _jni_output_dir = "$jni_headers_dir/$_subdir/$target_name"
@@ -171,6 +171,7 @@ if (enable_java_templates) {
       public_deps += _jni_generator_include_deps
 
       inputs = []
+      outputs = []
       args = [
         "--ptr_type=long",
 
@@ -207,6 +208,12 @@ if (enable_java_templates) {
         }
       } else {
         assert(defined(invoker.sources))
+        _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+        args += [
+          "--srcjar-path",
+          rebase_path(_srcjar_output, root_build_dir),
+        ]
+        outputs += [ _srcjar_output ]
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
         _input_names = invoker.sources
@@ -226,7 +233,6 @@ if (enable_java_templates) {
         args += [ "--split_name=${invoker.split_name}" ]
       }
 
-      outputs = []
       foreach(_name, _input_names) {
         _name = get_path_info(_name, "name") + "_jni.h"
         outputs += [ "$_jni_output_dir/$_name" ]
@@ -301,7 +307,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("generate_jni") {
-    generate_jni_impl(target_name) {
+    _generate_jni_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       metadata = {
@@ -336,7 +342,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("generate_jar_jni") {
-    generate_jni_impl(target_name) {
+    _generate_jni_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
@@ -2537,27 +2543,9 @@ if (enable_java_templates && is_android) {
     _non_java_deps = filter_exclude(_invoker_deps, java_target_patterns)
     _java_assetres_deps = [ ":${_java_target_name}__assetres" ]
 
-    _generate_buildconfig_java = !defined(invoker.apk_under_test) && !_omit_dex
-    if (defined(invoker.generate_buildconfig_java)) {
-      _generate_buildconfig_java = invoker.generate_buildconfig_java
-    }
-
     _srcjar_deps = []
-    _generate_final_jni = _generate_buildconfig_java
-    if (defined(invoker.generate_final_jni)) {
-      _generate_final_jni = invoker.generate_final_jni
-    }
     if (defined(invoker.srcjar_deps)) {
       _srcjar_deps = invoker.srcjar_deps
-
-      # TODO(smaier) This is a temporary hack that we can remove as soon as
-      # we migrate all repos onto the 1 registration per .so paradigm.
-      foreach(_srcjar_dep, _srcjar_deps) {
-        if (string_replace(_srcjar_dep, "jni_registration", "") !=
-            _srcjar_dep) {
-          _generate_final_jni = false
-        }
-      }
     }
 
     _use_chromium_linker =
@@ -2618,9 +2606,6 @@ if (enable_java_templates && is_android) {
 
     _generate_productconfig_java =
         defined(invoker.product_config_java_packages) && !_omit_dex
-
-    # TODO(smaier) - there were some remaining usages of this in angle. Once they are removed, remove this line.
-    not_needed(invoker, [ "generate_final_jni" ])
 
     _proguard_enabled =
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
@@ -2980,6 +2965,10 @@ if (enable_java_templates && is_android) {
     # Many possible paths where we wouldn't use this variable.
     not_needed([ "_assertions_implicitly_enabled" ])
 
+    _generate_buildconfig_java = !defined(invoker.apk_under_test) && !_omit_dex
+    if (defined(invoker.generate_buildconfig_java)) {
+      _generate_buildconfig_java = invoker.generate_buildconfig_java
+    }
     if (_generate_buildconfig_java) {
       generate_build_config_srcjar("${_template_name}__build_config_srcjar") {
         forward_variables_from(invoker,
@@ -3019,20 +3008,6 @@ if (enable_java_templates && is_android) {
         }
         _srcjar_deps += [ ":$_locale_target_name" ]
       }
-    }
-
-    # TODO(smaier) remove this once the other repo have removed all usages of this.
-    if (_generate_final_jni) {
-      generate_jni_registration("${_template_name}__final_jni") {
-        if (defined(invoker.bundle_target)) {
-          java_targets = [ invoker.bundle_target ]
-        } else {
-          java_targets = [ ":$_template_name" ]
-        }
-      }
-      _srcjar_deps += [ ":${_template_name}__final_jni" ]
-    } else {
-      not_needed(invoker, [ "bundle_target" ])
     }
 
     if (_is_bundle_module) {
@@ -3605,7 +3580,6 @@ if (enable_java_templates && is_android) {
             "expected_libs_and_assets",
             "expected_libs_and_assets_base",
             "generate_buildconfig_java",
-            "generate_final_jni",
             "generate_native_libraries_java",
             "include_size_info",
             "input_jars_paths",
@@ -3675,6 +3649,10 @@ if (enable_java_templates && is_android) {
       if (defined(invoker.static_library_provider)) {
         metadata.install_artifacts_barrier = []
       }
+
+      # TODO(smaier) - there were some remaining usages of this in angle. Once
+      # they are removed, remove this line.
+      not_needed(invoker, [ "generate_final_jni" ])
     }
   }
 
@@ -3747,7 +3725,6 @@ if (enable_java_templates && is_android) {
             "expected_android_manifest_library_version_offset",
             "expected_android_manifest_version_code_offset",
             "generate_buildconfig_java",
-            "generate_final_jni",
             "generate_native_libraries_java",
             "input_jars_paths",
             "isolated_splits_enabled",

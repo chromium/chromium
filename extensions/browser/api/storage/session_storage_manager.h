@@ -44,7 +44,7 @@ class SessionStorageManager : public KeyedService,
 
     // Owned by the SessionStorageManager. Caller cannot rely on it after any
     // subsequent calls to SessionStorageManager methods.
-    raw_ptr<const base::Value> new_value;
+    raw_ptr<const base::Value, DanglingUntriaged> new_value;
   };
 
   SessionStorageManager(size_t quota_bytes_per_extension,

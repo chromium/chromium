@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/host/active_display_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_connector.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
@@ -66,6 +67,8 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
+  std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
+      ActiveDisplayMonitor::Callback callback) override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
   std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
       override;

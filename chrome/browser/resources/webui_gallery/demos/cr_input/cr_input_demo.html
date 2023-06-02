@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="../demo.css">
-<style include="cr-hidden-style cr-icons">
-  cr-input {
+<style include="cr-hidden-style cr-icons demo">
+  cr-input,
+  cr-textarea {
     max-width: 400px;
     width: 100%;
   }
@@ -95,11 +95,18 @@
       value="The value cannot be changed">
   </cr-input>
 
+  <cr-textarea
+      type="text"
+      label="Textarea"
+      value="{{textareaValue_}}">
+  </cr-textarea>
+
   <div>
     <div>Text input value: [[textValue_]]</div>
     <div>Search input value: [[searchValue_]]</div>
     <div>Email input value: [[emailValue_]]</div>
     <div>Number input value: [[numberValue_]]</div>
     <div>Pin input value: [[pinValue_]]</div>
+    <div>Textarea value: [[textareaValue_]]</div>
   </div>
 </div>

@@ -60,12 +60,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   bool GetAudioOutputAllowedValue() const override;
 
-  bool GetSpeakOnMuteDetectionEnabledValue() const override;
-
-  bool GetShouldShowSpeakOnMuteOptInNudgeValue() const override;
-  void SetShouldShowSpeakOnMuteOptInNudgeValue(
-      bool should_show_opt_in_nudge) override;
-
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;
 
@@ -136,9 +130,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // Notifies the AudioPrefObserver for audio policy pref changes.
   void NotifyAudioPolicyChange();
-
-  // Notifies the AudioPrefObserver for speak-on-mute detection pref changes.
-  void NotifySpeakOnMuteDetectionChange();
 
   base::Value::Dict device_mute_settings_;
   base::Value::Dict device_volume_settings_;

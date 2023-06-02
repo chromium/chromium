@@ -1,7 +1,7 @@
 Tests object store and index entry deletion.
 
 Dumping IndexedDB tree:
-    database: database1 - http://127.0.0.1:8000/
+    database: database1
         Object store: objectStore1
             Index: index1
 Dumping ObjectStore data:

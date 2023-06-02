@@ -97,6 +97,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config) {
     mac_touch_id_config_ = std::move(mac_touch_id_config);
   }
+  // Sets the window on top of which macOS will show any iCloud Keychain UI.
+  // This is passed as a `uintptr_t` to avoid handling `NSWindow` (an ObjC++
+  // type) in C++. See crbug.com/1433041.
+  void set_nswindow(uintptr_t window) { nswindow_ = window; }
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -140,6 +144,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
 #if BUILDFLAG(IS_MAC)
   absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
+  uintptr_t nswindow_ = 0;
 #endif  // BUILDFLAG(IS_MAC)
   absl::optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;

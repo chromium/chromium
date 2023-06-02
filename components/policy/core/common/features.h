@@ -23,6 +23,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kCrowdstrikeSignalReporting);
 POLICY_EXPORT
 BASE_DECLARE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher);
 
+// Enable the policy test page at chrome://policy/test.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kEnablePolicyTestPage);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enable comma-separated strings for list policies on Android.
 // Enabled by default, to be used as a kill switch.

@@ -361,7 +361,8 @@ class VideoCaptureManagerTest : public testing::Test {
 #endif
 
   BrowserTaskEnvironment task_environment_;
-  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource, DanglingUntriaged>
+      screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
   std::map<VideoCaptureControllerID, VideoCaptureController*> controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;

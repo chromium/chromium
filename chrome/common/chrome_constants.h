@@ -47,6 +47,7 @@ extern const char kWebAppProfilePrefix[];
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // filenames
+extern const base::FilePath::CharType kAccountPreferencesFilename[];
 extern const base::FilePath::CharType kCacheDirname[];
 extern const base::FilePath::CharType kCookieFilename[];
 extern const base::FilePath::CharType kCRLSetFilename[];

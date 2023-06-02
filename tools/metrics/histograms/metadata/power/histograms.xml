@@ -41,13 +41,13 @@ chromium-metrics-reviews@google.com.
   -->
 
   <variant name="Actual"
-      summary="Actual capacity of the battery pack. This is usually a few
-               percentage over the design capacity for a new battery and
-               gradully degrade to 80-90% over the course of 2-4 years."/>
+      summary="actual capacity of the battery pack. This is usually a few
+               percent over the design capacity for a new battery and
+               gradually degrades to 80-90% over the course of 2-4 years."/>
   <variant name="Design"
-      summary="The design capacity of the battery pack from the manufacturer.
-               This is used to calculated promised battery life claim when
-               the device is released."/>
+      summary="design capacity of the battery pack from the manufacturer.
+               This is used to calculated the promised battery life claim
+               when a device is released."/>
 </variants>
 
 <variants name="IntervalType">
@@ -63,6 +63,27 @@ chromium-metrics-reviews@google.com.
                time during which Chrome wasn't yet running"/>
   <variant name=".Periodic"
       summary="every sample recorded after the first one"/>
+</variants>
+
+<variants name="ProcessName">
+  <variant name="BrowserProcess" summary=""/>
+  <variant name="GPUProcess" summary=""/>
+  <variant name="NetworkProcess" summary=""/>
+  <variant name="PluginProcess" summary=""/>
+  <variant name="PPAPIFlashProcess" summary="">
+    <obsolete>
+      Ported over from previous suffix based definition where it was removed on
+      2021-03 now that support for Flash has been removed.
+    </obsolete>
+  </variant>
+  <variant name="PPAPIProcess" summary=""/>
+  <variant name="RendererExtensionEventProcess" summary=""/>
+  <variant name="RendererExtensionPersistentProcess" summary=""/>
+  <variant name="RendererProcess" summary=""/>
+<!-- "Total" variant used to exist but was folded into the histogram names and could not be made obsolete. -->
+
+  <variant name="UtilityProcess" summary=""/>
+  <variant name="WorkerProcess" summary=""/>
 </variants>
 
 <variants name="UsageScenario">
@@ -320,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.Availability"
-    enum="CoalitionIDAvailability" expires_after="2023-09-17">
+    enum="CoalitionIDAvailability" expires_after="2023-11-19">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -831,7 +852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1062,7 +1083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1088,12 +1109,12 @@ chromium-metrics-reviews@google.com.
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
-    Chrome OS battery life while in active state, measured in minutes using
-    {BatteryCapacityType} full capacity of the battery pack.
+    Chrome OS battery life while in active state, measured in minutes using the
+    {BatteryCapacityType}.
 
-    This is calculated using size of the battery divide by battery discharge
-    rate sampling in Power.BatteryDischargeRate. Note that the size of the
-    battery is derated by the low battery shutdown percent.
+    This is calculated using size of the battery divided by the battery
+    discharge rate sampling, i.e., Power.BatteryDischargeRate. Note that the
+    size of the battery is derated by the low battery shutdown percent.
   </summary>
   <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
@@ -1103,11 +1124,11 @@ chromium-metrics-reviews@google.com.
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
-    Chrome OS battery life while suspended, measured in hours using
-    {BatteryCapacityType} full capacity of the battery pack.
+    Chrome OS battery life while suspended, measured in hours using the
+    {BatteryCapacityType}.
 
-    This is calculated using size of the battery divide by battery discharge
-    rate sampling in Power.BatteryDischargeRateWhileSuspended.
+    This is calculated using size of the battery divided by the battery
+    discharge rate sampling, i.e., Power.BatteryDischargeRateWhileSuspended.
   </summary>
   <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
@@ -1294,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2023-11-12">
+    expires_after="2023-11-19">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1985,7 +2006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -2023,7 +2044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
@@ -2171,6 +2192,26 @@ chromium-metrics-reviews@google.com.
     starting from the second one.
 
     Only available on Chrome OS devices with Intel CPU.
+  </summary>
+</histogram>
+
+<histogram name="Power.PeripheralReadErrorLatencyMs" units="ms"
+    expires_after="2024-03-01">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The amount of wall time in milliseconds taken to fail a read of the battery
+    capacity of a peripheral.
+  </summary>
+</histogram>
+
+<histogram name="Power.PeripheralReadLatencyMs" units="ms"
+    expires_after="2024-03-01">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The amount of wall time in milliseconds taken to complete a read of the
+    battery capacity of a peripheral.
   </summary>
 </histogram>
 
@@ -2340,7 +2381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -2389,7 +2430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -2576,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2023-09-20">
+    enum="PowerMLSmartDimModelResult" expires_after="2023-11-19">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2589,7 +2630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimParameter.Result"
-    enum="PowerMLSmartDimParameterResult" expires_after="2023-09-20">
+    enum="PowerMLSmartDimParameterResult" expires_after="2023-11-19">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

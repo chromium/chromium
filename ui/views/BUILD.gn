@@ -33,6 +33,7 @@ aggregate_vector_icons("views_vector_icons") {
     "eye_crossed.icon",
     "ic_close.icon",
     "info.icon",
+    "info_chrome_refresh.icon",
     "launch.icon",
     "linux_high_density.icon",
     "linux_low_density.icon",
@@ -296,6 +297,7 @@ component("views") {
     "window/window_button_order_provider.h",
     "window/window_resources.h",
     "window/window_shape.h",
+    "windows_stationarity_monitor.h",
     "word_lookup_client.h",
   ]
 
@@ -498,6 +500,7 @@ component("views") {
     "window/non_client_view.cc",
     "window/window_button_order_provider.cc",
     "window/window_shape.cc",
+    "windows_stationarity_monitor.cc",
   ]
 
   # Other targets in this file (e.g. tests) get access to the internal headers.
@@ -627,6 +630,7 @@ component("views") {
       "widget/native_widget_mac.h",
       "widget/widget_utils_mac.h",
       "window/native_frame_view_mac.h",
+      "windows_stationarity_monitor_mac.h",
     ]
     sources += [
       "accessibility/ax_virtual_view_mac.mm",
@@ -659,9 +663,11 @@ component("views") {
       "widget/native_widget_mac.mm",
       "widget/widget_utils_mac.mm",
       "window/native_frame_view_mac.mm",
+      "windows_stationarity_monitor_mac.mm",
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
     deps += [
+      "//base:base_arc",
       "//components/crash/core/common",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
@@ -748,6 +754,7 @@ component("views") {
       "widget/tooltip_manager_aura.h",
       "widget/widget_aura_utils.h",
       "widget/window_reorderer.h",
+      "windows_stationarity_monitor_aura.h",
     ]
 
     sources += [
@@ -780,6 +787,7 @@ component("views") {
       "widget/native_widget_aura.cc",
       "widget/tooltip_manager_aura.cc",
       "widget/window_reorderer.cc",
+      "windows_stationarity_monitor_aura.cc",
     ]
     if (!is_chromeos_ash) {
       sources += [
@@ -1161,6 +1169,22 @@ source_set("test_support") {
   }
 }
 
+if (is_mac) {
+  # TODO(https://crbug.com/1280317): Merge back into views_unittests once all
+  # .mm files are ARCed.
+  source_set("views_unittests_arc") {
+    testonly = true
+    sources = [ "widget/ax_native_widget_mac_unittest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      ":views",
+      "//testing/gtest",
+      "//ui/accessibility",
+      "//ui/views:test_support",
+    ]
+  }
+}
+
 test("views_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1398,7 +1422,6 @@ test("views_unittests") {
       "controls/native/native_view_host_mac_unittest.mm",
       "controls/tabbed_pane/tabbed_pane_accessibility_mac_unittest.mm",
       "view_unittest_mac.mm",
-      "widget/ax_native_widget_mac_unittest.mm",
       "widget/native_widget_mac_unittest.mm",
       "widget/sublevel_manager_mac_unittest.mm",
     ]
@@ -1407,6 +1430,7 @@ test("views_unittests") {
     sources -= [ "controls/native/native_view_host_unittest.cc" ]
 
     public_deps = [
+      ":views_unittests_arc",
       "//components/remote_cocoa/app_shim",
       "//ui/accelerated_widget_mac",
     ]
@@ -1543,6 +1567,7 @@ source_set("views_interactive_ui_tests") {
       "widget/native_widget_mac_interactive_uitest.mm",
     ]
     deps += [ "//components/remote_cocoa/app_shim" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (use_aura) {

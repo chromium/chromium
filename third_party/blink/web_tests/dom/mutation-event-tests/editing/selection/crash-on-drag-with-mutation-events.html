@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<body style="margin: 0px">
+<div>Make sure WebKit doesn't crash when web authors blast away everything in DOMNodeInserted handler! https://bugs.webkit.org/show_bug.cgi?id=22634</div>
+<div id="dragstart" contentEditable>Drag something from here to the document below</div>
+<iframe src="about:blank" id="iframe"></iframe>
+<script>
+var iframe = document.getElementById("iframe");
+iframe.style.height = "20px";
+var doc = iframe.contentDocument;
+doc.body.style.margin = "0px";
+var divForDrop = document.createElement("div");
+divForDrop.contentEditable = true;
+doc.body.appendChild(divForDrop);
+divForDrop.appendChild(document.createTextNode("Drop on this line!"));
+
+function clearDivDuringInsertion()
+{
+    doc.execCommand("selectall");
+    doc.execCommand("delete");
+    doc.execCommand("selectall");
+}
+
+divForDrop.addEventListener("DOMNodeInserted", clearDivDuringInsertion, true);
+
+if (window.eventSender) {
+    testRunner.dumpAsText();
+
+    var startDiv = document.getElementById("dragstart");
+    startDiv.focus();
+    document.execCommand("selectall");
+
+    var startX = startDiv.offsetLeft + 10;
+    var startY = startDiv.offsetTop + 10;
+
+    var endX = iframe.offsetLeft + divForDrop.offsetLeft + 10;
+    var endY = iframe.offsetTop + divForDrop.offsetTop + 10;
+
+    eventSender.mouseMoveTo(startX, startY);
+    eventSender.mouseDown();
+    eventSender.leapForward(1000);
+
+    eventSender.mouseMoveTo(endX, endY);
+    eventSender.mouseUp();
+
+    document.body.innerHTML = "PASSED, no crash";
+}
+
+</script>

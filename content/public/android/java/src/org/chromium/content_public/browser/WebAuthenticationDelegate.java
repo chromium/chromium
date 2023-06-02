@@ -8,14 +8,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.util.Pair;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Reflects the Android parts of the C++ class <code>WebAuthenticationDelegate</code>.
@@ -57,39 +53,9 @@ public class WebAuthenticationDelegate {
         return WebAuthenticationDelegateJni.get().getIntentSender(mNativeDelegate, webContents);
     }
 
-    /**
-     * Enumerates the different level of WebAuthn support in an Android app.
-     */
-    @IntDef({Support.NONE, Support.APP, Support.BROWSER})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Support {
-        /**
-         * WebAuthn is disabled. The <code>PublicKeyCredential</code> will be missing in Javascript
-         * so that sites can detect that there's no WebAuthn support.
-         */
-        int NONE = 0;
-        /**
-         * The unprivileged Play Services API will be used. This requires that the app be listed in
-         * the Asset Links for the RP ID that it is trying to assert / register for.
-         */
-        int APP = 1;
-        /**
-         * The privileged Play Services API will be used which allows any RP ID.
-         */
-        int BROWSER = 2;
-    }
-
-    /**
-     * @return the current WebAuthn support level for the given {@link WebContents}.
-     */
-    public @Support int getSupportLevel(WebContents webContents) {
-        return WebAuthenticationDelegateJni.get().getSupportLevel(mNativeDelegate, webContents);
-    }
-
     @NativeMethods
     interface Natives {
         long getNativeDelegate();
         IntentSender getIntentSender(long delegatePtr, WebContents webContents);
-        int getSupportLevel(long delegatePtr, WebContents webContents);
     }
 }

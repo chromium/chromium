@@ -41,6 +41,8 @@ source_set("v4l2") {
     "v4l2_framerate_control.h",
     "v4l2_image_processor_backend.cc",
     "v4l2_image_processor_backend.h",
+    "v4l2_queue.cc",
+    "v4l2_queue.h",
     "v4l2_stateful_video_decoder.cc",
     "v4l2_stateful_video_decoder.h",
     "v4l2_stateless_video_decoder.cc",

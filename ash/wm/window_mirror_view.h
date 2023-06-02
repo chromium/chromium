@@ -28,7 +28,8 @@ class ASH_EXPORT WindowMirrorView : public views::View,
                                     public aura::WindowObserver {
  public:
   explicit WindowMirrorView(aura::Window* source,
-                            bool show_non_client_view = false);
+                            bool show_non_client_view = false,
+                            bool sync_bounds = false);
 
   WindowMirrorView(const WindowMirrorView&) = delete;
   WindowMirrorView& operator=(const WindowMirrorView&) = delete;
@@ -78,6 +79,9 @@ class ASH_EXPORT WindowMirrorView : public views::View,
 
   // If true, shows the non client view in the mirror.
   const bool show_non_client_view_;
+
+  // If true, synchronize the bounds from the source to the mirrored layers.
+  const bool sync_bounds_;
 
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_occlusion_tracker_visible_;

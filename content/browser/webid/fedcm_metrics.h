@@ -166,7 +166,7 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
-  enum class NumReturningAccounts {
+  enum class NumAccounts {
     kZero = 0,
     kOne = 1,
     kMultiple = 2,
@@ -182,7 +182,8 @@ class CONTENT_EXPORT FedCmMetrics {
       bool auto_reauthn_success,
       bool is_auto_reauthn_setting_blocked,
       bool is_auto_reauthn_embargoed,
-      absl::optional<base::TimeDelta> time_from_embargo);
+      absl::optional<base::TimeDelta> time_from_embargo,
+      bool requires_user_mediation);
 
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.

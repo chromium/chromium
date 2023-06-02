@@ -56,6 +56,8 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kMacRestoreLocationPermissionsExperimentCount, 0);
 #endif  // BUILDFLAG(IS_MAC)
+
+  registry->RegisterBooleanPref(prefs::kHoverCardImagesEnabled, true);
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {

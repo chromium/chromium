@@ -23,7 +23,6 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/metrics.h"
@@ -308,8 +307,9 @@ Tab* AlertIndicatorButton::GetTab() {
 
 // Returns a cached image, to be shown by the alert indicator for the given
 // |alert_state|.  Uses the global ui::ResourceBundle shared instance.
-gfx::Image GetTabAlertIndicatorImage(TabAlertState alert_state,
-                                     SkColor button_color) {
+ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
+    TabAlertState alert_state,
+    ui::ColorId button_color) {
   const gfx::VectorIcon* icon = nullptr;
   int image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
@@ -356,18 +356,18 @@ gfx::Image GetTabAlertIndicatorImage(TabAlertState alert_state,
       break;
   }
   DCHECK(icon);
-  return gfx::Image(gfx::CreateVectorIcon(*icon, image_width, button_color));
+  return ui::ImageModel::FromVectorIcon(*icon, button_color, image_width);
 }
 
-gfx::Image GetTabAlertIndicatorAffordanceImage(TabAlertState alert_state,
-                                               SkColor button_color) {
+ui::ImageModel GetTabAlertIndicatorAffordanceImage(TabAlertState alert_state,
+                                                   ui::ColorId button_color) {
   switch (alert_state) {
     case TabAlertState::AUDIO_PLAYING:
-      return GetTabAlertIndicatorImage(TabAlertState::AUDIO_MUTING,
-                                       button_color);
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          TabAlertState::AUDIO_MUTING, button_color);
     case TabAlertState::AUDIO_MUTING:
-      return GetTabAlertIndicatorImage(TabAlertState::AUDIO_PLAYING,
-                                       button_color);
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          TabAlertState::AUDIO_PLAYING, button_color);
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::TAB_CAPTURING:
     case TabAlertState::BLUETOOTH_CONNECTED:
@@ -378,22 +378,20 @@ gfx::Image GetTabAlertIndicatorAffordanceImage(TabAlertState alert_state,
     case TabAlertState::HID_CONNECTED:
     case TabAlertState::SERIAL_CONNECTED:
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return GetTabAlertIndicatorImage(alert_state, button_color);
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
+                                                             button_color);
   }
   NOTREACHED_NORETURN();
 }
 
 void AlertIndicatorButton::ResetImages(TabAlertState state) {
-  SkColor color = parent_tab_->GetAlertIndicatorColor(state);
-  gfx::Image indicator_image = GetTabAlertIndicatorImage(state, color);
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromImage(indicator_image));
-  SetImageModel(views::Button::STATE_DISABLED,
-                ui::ImageModel::FromImage(indicator_image));
-  gfx::Image affordance_image =
-      GetTabAlertIndicatorAffordanceImage(state, color);
+  const ui::ColorId color = parent_tab_->GetAlertIndicatorColor(state);
+  const ui::ImageModel indicator_image =
+      GetTabAlertIndicatorImage(state, color);
+  SetImageModel(views::Button::STATE_NORMAL, indicator_image);
+  SetImageModel(views::Button::STATE_DISABLED, indicator_image);
   SetImageModel(views::Button::STATE_PRESSED,
-                ui::ImageModel::FromImage(affordance_image));
+                GetTabAlertIndicatorAffordanceImage(state, color));
 }
 
 BEGIN_METADATA(AlertIndicatorButton, views::ImageButton)

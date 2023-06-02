@@ -107,7 +107,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   base::SimpleTestTickClock tick_clock_;
 
   std::unique_ptr<MockPersistentReportingStore> store_;
-  raw_ptr<TestReportingContext> context_;
+  raw_ptr<TestReportingContext, DanglingUntriaged> context_;
   std::unique_ptr<ReportingService> service_;
 };
 

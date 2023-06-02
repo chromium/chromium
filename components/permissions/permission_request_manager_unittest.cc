@@ -27,6 +27,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 
 namespace permissions {
 
@@ -104,6 +106,19 @@ class PermissionRequestManagerTest
     task_environment()->RunUntilIdle();
   }
 
+  void OpenHelpCenterLink() {
+#if !BUILDFLAG(IS_ANDROID)
+    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                               ui::EventTimeForNow(), 0, 0);
+#else  // BUILDFLAG(IS_ANDROID)
+    const ui::TouchEvent event(
+        ui::ET_TOUCH_MOVED, gfx::PointF(), gfx::PointF(), ui::EventTimeForNow(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 1));
+#endif
+    manager_->OpenHelpCenterLink(event);
+    task_environment()->RunUntilIdle();
+  }
+
   void WaitForFrameLoad() {
     // PermissionRequestManager ignores all parameters. Yay?
     manager_->DOMContentLoaded(nullptr);
@@ -170,7 +185,7 @@ class PermissionRequestManagerTest
   MockPermissionRequest iframe_request_other_domain_;
   MockPermissionRequest iframe_request_camera_other_domain_;
   MockPermissionRequest iframe_request_mic_other_domain_;
-  raw_ptr<PermissionRequestManager> manager_;
+  raw_ptr<PermissionRequestManager, DanglingUntriaged> manager_;
   std::unique_ptr<MockPermissionPromptFactory> prompt_factory_;
   TestPermissionsClient client_;
   base::test::ScopedFeatureList feature_list_;
@@ -458,6 +473,24 @@ TEST_P(PermissionRequestManagerTest, MixOfMediaAndNotMediaRequests) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_LT(prompt_factory_->request_count(), 3);
   Accept();
+}
+
+TEST_P(PermissionRequestManagerTest, OpenHelpCenterLink) {
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       &iframe_request_camera_other_domain_);
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+
+  OpenHelpCenterLink();
+  SUCCEED();
+}
+
+TEST_P(PermissionRequestManagerTest, OpenHelpCenterLink_RequestNotSupported) {
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+
+  EXPECT_DEATH_IF_SUPPORTED(OpenHelpCenterLink(), "");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

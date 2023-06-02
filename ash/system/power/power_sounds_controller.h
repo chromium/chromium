@@ -8,6 +8,8 @@
 #include "ash/system/power/power_status.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 // Controller class to manage power/battery sounds.
@@ -22,6 +24,8 @@ class ASH_EXPORT PowerSoundsController
   PowerSoundsController(const PowerSoundsController&) = delete;
   PowerSoundsController& operator=(const PowerSoundsController&) = delete;
   ~PowerSoundsController() override;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;

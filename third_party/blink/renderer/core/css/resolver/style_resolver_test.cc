@@ -2217,6 +2217,7 @@ TEST_F(StyleResolverTest, IsInertWithFrameAndFullscreen) {
   EXPECT_FALSE(body->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div->GetComputedStyle()->IsInert());
   EXPECT_FALSE(div_text->GetComputedStyle()->IsInert());
+  ExitFullscreen(document);
 }
 
 TEST_F(StyleResolverTest, IsInertWithBackdrop) {
@@ -2271,6 +2272,7 @@ TEST_F(StyleResolverTest, IsInertWithBackdrop) {
   EXPECT_FALSE(IsBackdropInert(html));
   EXPECT_FALSE(IsBackdropInert(body));
   EXPECT_FALSE(IsBackdropInert(dialog));
+  ExitFullscreen(document);
 }
 
 TEST_F(StyleResolverTest, IsInertWithDialogAndFullscreen) {

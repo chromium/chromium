@@ -112,43 +112,6 @@ TEST_F(SecurityDelegateBindingTest, XdgSurfaceHasSecurityDelegate) {
             nullptr);
 }
 
-TEST_F(SecurityDelegateBindingTest, ZxdgSurfaceV6HasSecurityDelegate) {
-  class ClientData : public test::TestClient::CustomData {
-   public:
-    std::unique_ptr<wl_surface> surface;
-    std::unique_ptr<zxdg_surface_v6> zxdg_surface;
-  };
-
-  test::ResourceKey zxdg_surface_key;
-
-  PostToClientAndWait([&](test::TestClient* client) {
-    auto data = std::make_unique<ClientData>();
-
-    data->surface.reset(wl_compositor_create_surface(client->compositor()));
-    data->zxdg_surface.reset(zxdg_shell_v6_get_xdg_surface(
-        client->xdg_shell_v6(), data->surface.get()));
-
-    zxdg_surface_key =
-        test::client_util::GetResourceKey(data->zxdg_surface.get());
-
-    client->set_data(std::move(data));
-  });
-
-  EXPECT_EQ(test::server_util::GetUserDataForResource<WaylandXdgSurface>(
-                server_.get(), zxdg_surface_key)
-                ->shell_surface->GetSecurityDelegate(),
-            server_security_delegate_);
-
-  PostToClientAndWait([](test::TestClient* client) {
-    // Destroy the client objects.
-    client->set_data(nullptr);
-  });
-
-  EXPECT_EQ(test::server_util::GetUserDataForResource<WaylandXdgSurface>(
-                server_.get(), zxdg_surface_key),
-            nullptr);
-}
-
 TEST_F(SecurityDelegateBindingTest, ZcrRemoteSurfaceV1HasSecurityDelegate) {
   class ClientData : public test::TestClient::CustomData {
    public:

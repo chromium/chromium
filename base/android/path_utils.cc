@@ -10,7 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/files/file_path.h"
 
-#include "base/base_jni_headers/PathUtils_jni.h"
+#include "base/base_jni/PathUtils_jni.h"
 
 namespace base {
 namespace android {

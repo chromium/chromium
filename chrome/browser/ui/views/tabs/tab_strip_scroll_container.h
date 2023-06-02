@@ -38,11 +38,11 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   void OnContentsScrolledCallback();
 
-  raw_ptr<views::ImageButton> GetLeadingScrollButtonForTesting() {
+  views::ImageButton* GetLeadingScrollButtonForTesting() {
     return leading_scroll_button_;
   }
 
-  raw_ptr<views::ImageButton> GetTrailingScrollButtonForTesting() {
+  views::ImageButton* GetTrailingScrollButtonForTesting() {
     return trailing_scroll_button_;
   }
 

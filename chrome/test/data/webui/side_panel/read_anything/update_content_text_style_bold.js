@@ -9,7 +9,7 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
@@ -85,7 +85,7 @@
       },
     ],
   };
-  chrome.readAnything.setContentForTesting(axTree, [2, 5]);
+  chrome.readingMode.setContentForTesting(axTree, [2, 5]);
   const expected = '<div><p>Regular text.<b>This should be bolded.</b></p>' +
       '<p><b>Bolded text.</b><b>Bolded text.</b></p></div>';
   assertContainerInnerHTML(expected);

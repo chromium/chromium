@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
+#include "base/ranges/ranges.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
@@ -501,16 +502,85 @@ MakeCredentialResponseFromValue(const base::Value& value) {
 
   absl::optional<device::AttestationObject::ResponseFields> fields =
       device::AttestationObject::ParseForResponseFields(
-          std::move(attestation_object_bytes), /*attestation_acceptable=*/true);
+          std::move(attestation_object_bytes),
+          /*attestation_acceptable=*/true);
   if (!fields) {
     return InvalidMakeCredentialField("attestationObject");
   }
-
   response->attestation_object = std::move(fields->attestation_object_bytes);
-  response->info->authenticator_data = std::move(fields->authenticator_data);
-  response->public_key_algo = fields->public_key_algo;
-  if (fields->public_key_der) {
-    response->public_key_der = std::move(*fields->public_key_der);
+
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnRequireEasyAccessorFieldsInJSON)) {
+    // These fields are checked against the calculated values to ensure that
+    // bugs in providers don't sneak in.
+
+    absl::optional<int> opt_public_key_algo =
+        attestation_response->FindInt("publicKeyAlgorithm");
+    if (!opt_public_key_algo ||
+        *opt_public_key_algo != fields->public_key_algo) {
+      return InvalidMakeCredentialField("publicKeyAlgorithm");
+    }
+    response->public_key_algo = *opt_public_key_algo;
+
+    absl::optional<std::string> opt_authenticator_data =
+        Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
+    if (!opt_authenticator_data) {
+      return InvalidMakeCredentialField("authenticatorData");
+    }
+    response->info->authenticator_data = ToByteVector(*opt_authenticator_data);
+    if (!base::ranges::equal(response->info->authenticator_data,
+                             fields->authenticator_data)) {
+      return InvalidMakeCredentialField("authenticatorData");
+    }
+
+    auto [ok, opt_public_key] =
+        Base64UrlDecodeOptionalStringKey(*attestation_response, "publicKey");
+    if (!ok) {
+      return InvalidMakeCredentialField("publicKey");
+    }
+    if (opt_public_key) {
+      response->public_key_der = ToByteVector(*opt_public_key);
+    }
+    if (fields->public_key_der &&
+        (!opt_public_key || !base::ranges::equal(*response->public_key_der,
+                                                 *fields->public_key_der))) {
+      return InvalidMakeCredentialField("publicKey");
+    }
+  } else {
+    response->info->authenticator_data = std::move(fields->authenticator_data);
+    response->public_key_algo = fields->public_key_algo;
+    if (fields->public_key_der) {
+      response->public_key_der = std::move(*fields->public_key_der);
+    }
+
+    // These three values are things that we have already calculated with
+    // `ParseForResponseFields`, above. We will transition to requiring them
+    // from providers on Android but, for now, just check that they have the
+    // correct value if provided.
+
+    absl::optional<int> opt_public_key_algo =
+        attestation_response->FindInt("publicKeyAlgorithm");
+    if (opt_public_key_algo &&
+        response->public_key_algo != *opt_public_key_algo) {
+      return InvalidMakeCredentialField("publicKeyAlgorithm");
+    }
+
+    auto [ok, opt_authenticator_data] = Base64UrlDecodeOptionalStringKey(
+        *attestation_response, "authenticatorData");
+    if (!ok || (opt_authenticator_data &&
+                !base::ranges::equal(response->info->authenticator_data,
+                                     ToByteVector(*opt_authenticator_data)))) {
+      return InvalidMakeCredentialField("authenticatorData");
+    }
+
+    absl::optional<std::string> opt_public_key_der;
+    std::tie(ok, opt_public_key_der) =
+        Base64UrlDecodeOptionalStringKey(*attestation_response, "publicKey");
+    if (!ok || (response->public_key_der && opt_public_key_der &&
+                !base::ranges::equal(*response->public_key_der,
+                                     ToByteVector(*opt_public_key_der)))) {
+      return InvalidMakeCredentialField("publicKey");
+    }
   }
 
   absl::optional<std::string> client_data_json =

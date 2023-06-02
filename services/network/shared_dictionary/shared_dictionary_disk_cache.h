@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDiskCache {
       disk_cache::EntryResultCallback callback);
   int DoomEntry(const std::string& key, net::CompletionOnceCallback callback);
   int ClearAll(net::CompletionOnceCallback callback);
+  void CreateIterator(
+      base::OnceCallback<void(std::unique_ptr<disk_cache::Backend::Iterator>)>);
 
   base::WeakPtr<SharedDictionaryDiskCache> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

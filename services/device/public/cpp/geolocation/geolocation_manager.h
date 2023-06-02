@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Sets the global instance of the Geolocation Manager.
   static void SetInstance(std::unique_ptr<GeolocationManager> manager);
 
+  void AppAttemptsToUseGeolocation();
+  void AppCeasesToUseGeolocation();
+
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
 // Default empty implementation of Geolocation Manager. It is used on operation
 // systems for which we don't support system-level geolocation. A separate class
@@ -76,9 +79,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   void RemoveObserver(PermissionObserver* observer);
   // Returns the list of permission observers.
   scoped_refptr<PermissionObserverList> GetObserverList() const;
-
-  void AppAttemptsToUseGeolocation();
-  void AppCeasesToUseGeolocation();
 
 #if BUILDFLAG(IS_APPLE)
   // Starts the system level process for watching position updates. These

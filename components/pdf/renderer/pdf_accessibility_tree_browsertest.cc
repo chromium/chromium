@@ -1958,8 +1958,6 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
   EXPECT_EQ(point.x(), 0);
   EXPECT_EQ(point.y(), 0);
 
-  EXPECT_FALSE(pdf_action_target->SetSelected(true));
-  EXPECT_FALSE(pdf_action_target->SetSelected(false));
   EXPECT_FALSE(pdf_action_target->ScrollToMakeVisible());
 }
 

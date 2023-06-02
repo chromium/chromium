@@ -28,11 +28,9 @@ TEST(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
   AppendAmbientVideoAlbums(AmbientVideo::kNewMexico, albums);
   EXPECT_THAT(albums,
               UnorderedElementsAre(
-                  Pointee(FieldsAre(kCloudsAlbumId, false, "Cloud Flow",
-                                    "Chromebook exclusive", _,
+                  Pointee(FieldsAre(kCloudsAlbumId, false, "Cloud Flow", _, _,
                                     AmbientModeTopicSource::kVideo, _)),
-                  Pointee(FieldsAre(kNewMexicoAlbumId, true, "Earth Flow",
-                                    "Chromebook exclusive", _,
+                  Pointee(FieldsAre(kNewMexicoAlbumId, true, "Earth Flow", _, _,
                                     AmbientModeTopicSource::kVideo, _))));
 
   albums.clear();

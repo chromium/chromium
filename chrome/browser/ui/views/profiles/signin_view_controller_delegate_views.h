@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -83,7 +82,6 @@ class SigninViewControllerDelegateViews
       const AccountInfo& account_info,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
-      SkColor profile_color,
       signin::SigninChoiceCallback callback);
 #endif
 

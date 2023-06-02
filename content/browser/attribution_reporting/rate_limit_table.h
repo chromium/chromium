@@ -83,6 +83,11 @@ class CONTENT_EXPORT RateLimitTable {
       const StorableSource& source,
       base::Time source_time);
 
+  [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginPerSiteLimit(
+      sql::Database* db,
+      const StorableSource& source,
+      base::Time source_time);
+
   [[nodiscard]] RateLimitResult SourceAllowedForDestinationLimit(
       sql::Database* db,
       const StorableSource& source,

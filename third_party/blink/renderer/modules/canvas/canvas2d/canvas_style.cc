@@ -74,14 +74,6 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
   }
 }
 
-CanvasStyle::CanvasStyle() : type_(kColor), color_(Color::kBlack) {}
-
-CanvasStyle::CanvasStyle(const CanvasStyle& other) {
-  // Default copy constructor would not use memcpy because Member<> fields
-  // are not technically POD, but it is still safe to memcpy them.
-  memcpy(this, &other, sizeof(CanvasStyle));
-}
-
 void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags,
                                float global_alpha) const {
   switch (type_) {

@@ -25,7 +25,8 @@ ClientAppMetadataProviderServiceFactory::GetForProfile(Profile* profile) {
 // static
 ClientAppMetadataProviderServiceFactory*
 ClientAppMetadataProviderServiceFactory::GetInstance() {
-  return base::Singleton<ClientAppMetadataProviderServiceFactory>::get();
+  static base::NoDestructor<ClientAppMetadataProviderServiceFactory> instance;
+  return instance.get();
 }
 
 ClientAppMetadataProviderServiceFactory::

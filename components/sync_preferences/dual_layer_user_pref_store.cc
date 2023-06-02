@@ -128,10 +128,10 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
 
 bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
                                       const base::Value** result) const {
-  const std::string pref_name(key);
-  if (!IsPrefKeySyncable(pref_name)) {
-    return local_pref_store_->GetValue(key, result);
-  }
+  // Use any existing value from the account store, independent of
+  // ShouldSyncPref(). This is because ShouldSyncPref() only becomes
+  // true after the Sync machinery is initialized, but account-store values
+  // should apply even before that.
 
   const base::Value* account_value = nullptr;
   const base::Value* local_value = nullptr;
@@ -147,7 +147,7 @@ bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
   if (result) {
     // Merge pref if `key` exists in both the stores.
     if (account_value && local_value) {
-      *result = MaybeMerge(pref_name, *local_value, *account_value);
+      *result = MaybeMerge(std::string(key), *local_value, *account_value);
       CHECK(*result);
     } else if (account_value) {
       *result = account_value;
@@ -182,7 +182,7 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
       !GetValue(key, &initial_value) || (*initial_value != value);
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
-    if (IsPrefKeySyncable(key)) {
+    if (ShouldSyncPref(key)) {
       if (IsPrefKeyMergeable(key)) {
         auto [new_local_value, new_account_value] =
             UnmergeValue(key, std::move(value), flags);
@@ -194,6 +194,9 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
       }
     } else {
       local_pref_store_->SetValue(key, std::move(value), flags);
+      // Try removing it from account store for the case where sync machinery
+      // has not loaded yet and the type has not been enabled.
+      account_pref_store_->RemoveValue(key, flags);
     }
   }
 
@@ -214,9 +217,7 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     local_pref_store_->RemoveValue(key, flags);
-    if (IsPrefKeySyncable(key)) {
-      account_pref_store_->RemoveValue(key, flags);
-    }
+    account_pref_store_->RemoveValue(key, flags);
   }
 
   // Remove from the list of merge prefs if exists.
@@ -229,9 +230,10 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
 
 bool DualLayerUserPrefStore::GetMutableValue(const std::string& key,
                                              base::Value** result) {
-  if (!IsPrefKeySyncable(key)) {
-    return local_pref_store_->GetMutableValue(key, result);
-  }
+  // Use any existing value from the account store, independent of
+  // ShouldSyncPref(). This is because ShouldSyncPref() only becomes
+  // true after the Sync machinery is initialized, but account-store values
+  // should apply even before that.
 
   base::Value* local_value = nullptr;
   local_pref_store_->GetMutableValue(key, &local_value);
@@ -265,7 +267,7 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
                                                 uint32_t flags) {
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
-    if (IsPrefKeySyncable(key)) {
+    if (ShouldSyncPref(key)) {
       const base::Value* new_value = nullptr;
       // In case a merged value was updated, it would exist in `merged_prefs_`.
       // Else, get the new value from whichever store has it and copy it to the
@@ -283,11 +285,15 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
         account_pref_store_->SetValueSilently(key, new_value->Clone(), flags);
       }
       // It is possible that the pref just doesn't exist (anymore).
+    } else {
+      // Try removing it from account store for the case where sync machinery
+      // has not loaded yet and the type has not been enabled.
+      account_pref_store_->RemoveValue(key, flags);
     }
     // Forward the ReportValueChanged() call to the underlying stores, so they
     // can notify their own observers.
     local_pref_store_->ReportValueChanged(key, flags);
-    if (IsPrefKeySyncable(key)) {
+    if (ShouldSyncPref(key)) {
       account_pref_store_->ReportValueChanged(key, flags);
     }
   }
@@ -300,7 +306,7 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
 void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
                                               base::Value value,
                                               uint32_t flags) {
-  if (IsPrefKeySyncable(key)) {
+  if (ShouldSyncPref(key)) {
     if (IsPrefKeyMergeable(key)) {
       auto [new_local_value, new_account_value] =
           UnmergeValue(key, std::move(value), flags);
@@ -314,6 +320,12 @@ void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
     }
   } else {
     local_pref_store_->SetValueSilently(key, std::move(value), flags);
+    {
+      base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
+      // Try removing it from account store for the case where sync machinery
+      // has not loaded yet and the type has not been enabled.
+      account_pref_store_->RemoveValue(key, flags);
+    }
   }
 }
 
@@ -399,7 +411,7 @@ void DualLayerUserPrefStore::OnStoreDeletionFromDisk() {
   account_pref_store_->OnStoreDeletionFromDisk();
 }
 
-bool DualLayerUserPrefStore::IsPrefKeySyncable(const std::string& key) const {
+bool DualLayerUserPrefStore::ShouldSyncPref(const std::string& key) const {
   if (!pref_model_associator_client_) {
     // Safer this way.
     return false;
@@ -439,13 +451,15 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
 
   // Clear all synced preferences from the account store.
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
-    if (!IsPrefKeySyncable(pref_name)) {
-      // The write flags only affect persistence, and the account store is in
-      // memory only.
+    if (!ShouldSyncPref(pref_name)) {
+      // The write flags only affect persistence, and the default flag is the
+      // safer choice.
       account_pref_store_->RemoveValue(
           pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }
+
+  CHECK(!active_types_.empty() || account_pref_store_->GetValues().empty());
 }
 
 bool DualLayerUserPrefStore::IsPrefKeyMergeable(const std::string& key) const {
@@ -511,7 +525,7 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
     const std::string& pref_name,
     base::Value value,
     uint32_t flags) const {
-  DCHECK(IsPrefKeySyncable(pref_name));
+  DCHECK(ShouldSyncPref(pref_name));
 
   // Note: There is no "standard" unmerging logic for list or scalar prefs.
   // TODO(crbug.com/1416479): Allow support for custom unmerge logic.
@@ -579,10 +593,8 @@ std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
                                 const base::Value& value,
                                 auto& recurse_and_insert_ref) -> void {
     // Checks if `key` is a pref name using syncable pref database. This is
-    // different from IsPrefKeySyncable() which checks whether or not a pref
+    // different from ShouldSyncPref() which checks whether or not a pref
     // should synced right now based on enabled ModelTypes.
-    // TODO(crbug.com/1446256): Consider renaming IsPrefKeySyncable() to
-    // ShouldSyncPrefKey() to make intent more clear.
     if (pref_model_associator_client_->GetSyncablePrefsDatabase()
             .IsPreferenceSyncable(key)) {
       keys.push_back(key);
@@ -598,6 +610,11 @@ std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
   }
 
   return keys;
+}
+
+base::flat_set<syncer::ModelType>
+DualLayerUserPrefStore::GetActiveTypesForTest() const {
+  return active_types_;
 }
 
 }  // namespace sync_preferences

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
@@ -70,10 +71,19 @@ void AddSliceUpdate(const StreamModel& model,
   }
 }
 
-void AddLoadingSpinner(bool is_at_top, feedui::StreamUpdate* update) {
+void AddLoadingSpinner(bool is_initial_load,
+                       int load_more_indicator_id,
+                       feedui::StreamUpdate* update) {
   feedui::Slice* slice = update->add_updated_slices()->mutable_slice();
-  slice->mutable_loading_spinner_slice()->set_is_at_top(is_at_top);
-  slice->set_slice_id(is_at_top ? "loading-spinner" : "load-more-spinner");
+  slice->mutable_loading_spinner_slice()->set_is_at_top(is_initial_load);
+  // The slice ID is checked on Java code to find out the loading spinner view.
+  // An incremental ID is added to the slice ID in order to differentiate from
+  // pvrevious spinners.
+  slice->set_slice_id(
+      is_initial_load
+          ? "loading-spinner"
+          : base::StrCat({"load-more-spinner",
+                          base::NumberToString(load_more_indicator_id)}));
 }
 
 struct StreamUpdateAndType {
@@ -85,7 +95,8 @@ StreamUpdateAndType MakeStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids,
     const base::flat_set<ContentRevision>& already_sent_content,
     const StreamModel* model,
-    const DrawState& state) {
+    const DrawState& state,
+    int load_more_indicator_id) {
   DCHECK(!state.loading_initial || !state.loading_more)
       << "logic bug: requested both top and bottom spinners.";
 
@@ -123,12 +134,14 @@ StreamUpdateAndType MakeStreamUpdate(
   } else {
     // Add the initial-load spinner if applicable.
     if (state.loading_initial) {
-      AddLoadingSpinner(/*is_at_top=*/true, &update.stream_update);
+      AddLoadingSpinner(/*is_initial_load=*/true, load_more_indicator_id,
+                        &update.stream_update);
       update.type = StreamUpdateType::kInitialLoadingSpinner;
     }
     // Add a loading-more spinner if applicable.
     if (state.loading_more) {
-      AddLoadingSpinner(/*is_at_top=*/false, &update.stream_update);
+      AddLoadingSpinner(/*is_initial_load=*/false, load_more_indicator_id,
+                        &update.stream_update);
       update.type = StreamUpdateType::kLoadingMoreSpinner;
     }
   }
@@ -153,7 +166,7 @@ StreamUpdateAndType GetUpdateForNewSurface(const DrawState& state,
     updated_shared_state_ids = model->GetSharedStateIds();
   }
   return MakeStreamUpdate(std::move(updated_shared_state_ids),
-                          /*already_sent_content=*/{}, model, state);
+                          /*already_sent_content=*/{}, model, state, 0);
 }
 
 base::flat_set<ContentRevision> GetContentSet(const StreamModel* model) {
@@ -342,6 +355,9 @@ void SurfaceUpdater::SetLoadingMore(bool is_loading) {
   DCHECK(!loading_initial_)
       << "SetLoadingMore while still loading the initial state";
   loading_more_ = is_loading;
+  if (loading_more_) {
+    current_load_more_indicator_id_++;
+  }
   SendStreamUpdateIfNeeded();
 }
 
@@ -367,7 +383,8 @@ void SurfaceUpdater::SendStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids) {
   DrawState state = GetState();
   StreamUpdateAndType update =
-      MakeStreamUpdate(updated_shared_state_ids, sent_content_, model_, state);
+      MakeStreamUpdate(updated_shared_state_ids, sent_content_, model_, state,
+                       current_load_more_indicator_id_);
 
   if (load_stream_started_ || loading_more_) {
     launch_reliability_logger_.OnStreamUpdate(update.type);

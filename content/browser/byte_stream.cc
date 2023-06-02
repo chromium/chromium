@@ -103,7 +103,7 @@ class ByteStreamWriterImpl : public ByteStreamWriter {
 
   // Only valid to access on peer_task_runner_ if
   // |*peer_lifetime_flag_ == true|
-  raw_ptr<ByteStreamReaderImpl> peer_;
+  raw_ptr<ByteStreamReaderImpl, DanglingUntriaged> peer_;
 };
 
 class ByteStreamReaderImpl : public ByteStreamReader {
@@ -176,7 +176,7 @@ class ByteStreamReaderImpl : public ByteStreamReader {
 
   // Only valid to access on peer_task_runner_ if
   // |*peer_lifetime_flag_ == true|
-  raw_ptr<ByteStreamWriterImpl> peer_;
+  raw_ptr<ByteStreamWriterImpl, DanglingUntriaged> peer_;
 };
 
 ByteStreamWriterImpl::ByteStreamWriterImpl(

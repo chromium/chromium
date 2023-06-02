@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -24,11 +25,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/internal_api_token.h"
 #include "sql/meta_table.h"
 #include "sql/recover_module/module.h"
+#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -43,9 +46,20 @@ constexpr char kMainDatabaseName[] = "main";
 }  // namespace
 
 // static
+bool BuiltInRecovery::IsSupported() {
+  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
+  // Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(features::kUseBuiltInRecoveryIfSupported);
+#endif  // BUILDFLAG(IS_FUCHSIA)
+}
+
+// static
 bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
                                             int extended_error) {
-  return database && database->is_open() &&
+  return BuiltInRecovery::IsSupported() && database && database->is_open() &&
          !database->DbPath(InternalApiToken()).empty() &&
          IsErrorCatastrophic(extended_error);
 }
@@ -53,8 +67,60 @@ bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
 // static
 SqliteResultCode BuiltInRecovery::RecoverDatabase(Database* database,
                                                   Strategy strategy) {
+  if (!BuiltInRecovery::IsSupported()) {
+    return SqliteResultCode::kAbort;
+  }
+
   auto recovery = BuiltInRecovery(database, strategy);
   return recovery.RecoverAndReplaceDatabase();
+}
+
+// static
+bool BuiltInRecovery::RecoverIfPossible(
+    Database* database,
+    int extended_error,
+    Strategy strategy,
+    const base::Feature* const use_builtin_recovery_if_supported_flag) {
+  // If `BuiltInRecovery` is supported at all, check the flag for this specific
+  // database, provided by the feature team.
+  bool use_builtin_recovery =
+      BuiltInRecovery::IsSupported() &&
+      (!use_builtin_recovery_if_supported_flag ||
+       base::FeatureList::IsEnabled(*use_builtin_recovery_if_supported_flag));
+
+  if (use_builtin_recovery
+          ? !BuiltInRecovery::ShouldAttemptRecovery(database, extended_error)
+          : !database || !database->is_open() ||
+                database->DbPath(InternalApiToken()).empty() ||
+                !Recovery::ShouldRecover(extended_error)) {
+    return false;
+  }
+
+  // Recovery should be attempted. Since recovery must only be attempted from
+  // within a database error callback, reset the error callback to prevent
+  // re-entry.
+  database->reset_error_callback();
+
+  if (use_builtin_recovery) {
+    CHECK(BuiltInRecovery::IsSupported());
+    auto result = BuiltInRecovery::RecoverDatabase(database, strategy);
+    if (!IsSqliteSuccessCode(result)) {
+      DLOG(ERROR) << "Database recovery failed with result code: " << result;
+    }
+  } else {
+    switch (strategy) {
+      case BuiltInRecovery::Strategy::kRecoverOrRaze:
+        Recovery::RecoverDatabase(database,
+                                  database->DbPath(InternalApiToken()));
+        break;
+      case BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze:
+        Recovery::RecoverDatabaseWithMetaVersion(
+            database, database->DbPath(InternalApiToken()));
+        break;
+    }
+  }
+
+  return true;
 }
 
 BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)

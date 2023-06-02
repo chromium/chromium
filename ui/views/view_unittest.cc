@@ -1151,7 +1151,7 @@ class ScopedTestPaintWidget {
   Widget* operator->() { return widget_; }
 
  private:
-  raw_ptr<Widget> widget_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
 };
 
 }  // namespace
@@ -4577,7 +4577,7 @@ class ViewLayerTest : public ViewsTestBase {
   void SchedulePaintOnParent(View* view) { view->SchedulePaintOnParent(); }
 
  private:
-  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -6346,14 +6346,14 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
   int child_view_added_times_ = 0;
   int child_view_removed_times_ = 0;
 
-  raw_ptr<View> child_view_added_parent_ = nullptr;
-  raw_ptr<View> child_view_added_ = nullptr;
-  raw_ptr<View> child_view_removed_ = nullptr;
-  raw_ptr<View> child_view_removed_parent_ = nullptr;
-  raw_ptr<View> view_visibility_changed_ = nullptr;
-  raw_ptr<View> view_visibility_changed_starting_ = nullptr;
-  raw_ptr<View> view_bounds_changed_ = nullptr;
-  raw_ptr<View> view_reordered_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> child_view_added_parent_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> child_view_added_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> child_view_removed_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> child_view_removed_parent_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> view_visibility_changed_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> view_visibility_changed_starting_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> view_bounds_changed_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> view_reordered_ = nullptr;
 };
 
 TEST_F(ViewObserverTest, ViewParentChanged) {

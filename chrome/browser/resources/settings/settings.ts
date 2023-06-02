@@ -73,6 +73,7 @@ export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discar
 export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
 export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
+export {TabDiscardExceptionAddDialogTabs, TabDiscardExceptionTabbedAddDialogElement} from './performance_page/tab_discard_exception_tabbed_add_dialog.js';
 export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard_exception_validation_mixin.js';
 export {PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';

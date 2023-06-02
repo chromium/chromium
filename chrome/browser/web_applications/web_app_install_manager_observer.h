@@ -39,6 +39,10 @@ class WebAppInstallManagerObserver : public base::CheckedObserver {
 
   // Called when the WebAppInstallManager is about to be destroyed.
   virtual void OnWebAppInstallManagerDestroyed() {}
+
+  // Called after web app's install source is removed, currently only used by
+  // tests.
+  virtual void OnWebAppSourceRemovedForTesting(const AppId& app_id) {}
 };
 
 }  // namespace web_app

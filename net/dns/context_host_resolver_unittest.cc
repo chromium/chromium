@@ -104,7 +104,7 @@ class ContextHostResolverTest : public ::testing::Test,
         HostResolverSystemTask::Params(proc, 1u));
   }
 
-  raw_ptr<MockDnsClient> dns_client_;
+  raw_ptr<MockDnsClient, DanglingUntriaged> dns_client_;
   std::unique_ptr<HostResolverManager> manager_;
 };
 

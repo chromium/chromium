@@ -113,7 +113,10 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
     case SigninPromoViewModeNoAccounts: {
       DCHECK(!name);
       DCHECK(!self.userImage);
-      NSString* signInString = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
+      NSString* signInString =
+          self.primaryButtonTitleNoAccountsModeOverride
+              ? self.primaryButtonTitleNoAccountsModeOverride
+              : GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
       [signinPromoView configurePrimaryButtonWithTitle:signInString];
       break;
     }

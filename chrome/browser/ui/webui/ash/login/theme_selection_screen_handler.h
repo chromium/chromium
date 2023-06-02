@@ -28,7 +28,7 @@ class ThemeSelectionScreenView
 
   virtual ~ThemeSelectionScreenView() = default;
 
-  virtual void Show(const std::string& mode) = 0;
+  virtual void Show(base::Value::Dict data) = 0;
 };
 
 class ThemeSelectionScreenHandler : public ThemeSelectionScreenView,
@@ -45,7 +45,7 @@ class ThemeSelectionScreenHandler : public ThemeSelectionScreenView,
   ~ThemeSelectionScreenHandler() override;
 
   // ThemeSelectionScreenView implementation
-  void Show(const std::string& mode) override;
+  void Show(base::Value::Dict data) override;
 
   // BaseScreenHandler implementation
   void DeclareLocalizedValues(

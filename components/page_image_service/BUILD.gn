@@ -36,10 +36,13 @@ source_set("unit_tests") {
     ":page_image_service",
     "//base/test:test_support",
     "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/search_engines",
     "//components/sync:test_support",
+    "//components/variations:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -16,11 +16,13 @@
   <div slot="body">$i18n{kerberosInBrowserDescription}</div>
 
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onVisitWithoutTicket_">
-      $i18n{kerberosInBrowserVisitWithoutTicket}
+    <cr-button class="cancel-button" id="cancel-button"
+        on-click="onCancelButtonClicked_">
+        $i18n{kerberosInBrowserVisitWithoutTicket}
     </cr-button>
-    <cr-button class="action-button" on-click="onManageTickets_">
-      $i18n{kerberosInBrowserManageTickets}
+    <cr-button class="action-button" id="settings-button"
+        on-click="onManageTickets_">
+        $i18n{kerberosInBrowserManageTickets}
     </cr-button>
   </div>
 </cr-dialog>

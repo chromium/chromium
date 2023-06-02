@@ -138,7 +138,7 @@ class MediaDialogViewWithRemotePlaybackTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MediaNotificationService> notification_service_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<MediaDialogView> view_ = nullptr;
+  raw_ptr<MediaDialogView, DanglingUntriaged> view_ = nullptr;
   media_session::test::TestMediaController controller_;
   testing::NiceMock<
       global_media_controls::test::MockMediaSessionNotificationItemDelegate>

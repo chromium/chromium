@@ -144,6 +144,7 @@ enum Setting {
   kAdaptiveCharging = 440,
   kKeyboardBlockMetaFkeyRewrites = 441,
   kKeyboardRemapKeys = 442,
+  kChargingSounds = 443,
 
   // Personalization section.
   kOpenWallpaper = 500,

@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 
 #include <utility>
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -29,12 +30,21 @@ namespace ios {
 namespace {
 
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
-    return nullptr;
-  }
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
+  if (!base::FeatureList::IsEnabled(
+          bookmarks::kEnableBookmarksAccountStorage)) {
+    if (base::FeatureList::IsEnabled(
+            bookmarks::kRollbackBookmarksAccountStorage)) {
+      // Try deleting the file that was used by the account storage. This is a
+      // no-op if the file doesn't exist. Guarded by
+      // `kRollbackBookmarksAccountStorage` to minimize the performance impact.
+      bookmarks::BookmarkModel::WipeAccountStorageForRollback(
+          browser_state->GetStatePath());
+    }
+
+    return nullptr;
+  }
   // Using nullptr for `ManagedBookmarkService`, since managed bookmarks affect
   // only the local bookmark storage.
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
@@ -42,7 +52,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
           browser_state, /*managed_bookmark_service=*/nullptr,
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
-          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state))));
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
+          bookmarks::StorageType::kAccount)));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kAccount);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)

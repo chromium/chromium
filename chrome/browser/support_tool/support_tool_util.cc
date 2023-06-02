@@ -17,6 +17,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/policy_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
@@ -50,9 +51,9 @@ namespace {
 
 // Data collector types that can work on every platform.
 constexpr support_tool::DataCollectorType kDataCollectors[] = {
-    support_tool::CHROME_INTERNAL, support_tool::CRASH_IDS,
-    support_tool::MEMORY_DETAILS, support_tool::POLICIES,
-    support_tool::CHROMEOS_DEVICE_EVENT};
+    support_tool::CHROME_INTERNAL,       support_tool::CRASH_IDS,
+    support_tool::MEMORY_DETAILS,        support_tool::POLICIES,
+    support_tool::CHROMEOS_DEVICE_EVENT, support_tool::PERFORMANCE};
 
 // Data collector types can only work on Chrome OS Ash.
 constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
@@ -134,6 +135,14 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                                   SystemLogSourceDataCollectorAdaptor>(
             "Fetches entries for 'network_event_log' and 'device_event_log'.",
             std::make_unique<system_logs::DeviceEventLogSource>()));
+        break;
+      case support_tool::PERFORMANCE:
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Gathers performance relevant data such as if high efficiency "
+                "or battery saver mode is active and details about current "
+                "battery state.",
+                std::make_unique<system_logs::PerformanceLogSource>()));
         break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case support_tool::CHROMEOS_UI_HIERARCHY:

@@ -107,8 +107,9 @@ class BASE_EXPORT ScopedSafearray {
       array_size_ = 0U;
     }
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
+    // Cannot rewrite this pointer to raw_ptr<>, because this pointer
+    // comes from the operating system and may have been laundered
+    // if rewritten it may generate incorrect DPD error.
     RAW_PTR_EXCLUSION SAFEARRAY* safearray_ = nullptr;
     VARTYPE vartype_ = VT_EMPTY;
     pointer array_ = nullptr;

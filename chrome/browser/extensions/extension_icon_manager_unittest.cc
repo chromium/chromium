@@ -21,7 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/test/test_screen.h"
@@ -276,10 +276,11 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
       const bool has_representation = image_skia.HasRepresentation(scale);
       // We shouldn't have a representation if the extension didn't provide a
       // big enough icon.
-      if (gfx::kFaviconSize * scale > kMaxIconSizeInManifest)
+      if (gfx::kFaviconSize * scale > kMaxIconSizeInManifest) {
         EXPECT_FALSE(has_representation);
-      else
-        EXPECT_EQ(ui::IsSupportedScale(scale), has_representation);
+      } else {
+        EXPECT_EQ(ui::IsScaleFactorSupported(scale_factor), has_representation);
+      }
     }
   }
 

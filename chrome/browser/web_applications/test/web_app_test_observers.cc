@@ -65,6 +65,11 @@ void WebAppInstallManagerObserverAdapter::SetWebAppManifestUpdateDelegate(
   app_manifest_updated_delegate_ = std::move(delegate);
 }
 
+void WebAppInstallManagerObserverAdapter::SetWebAppSourceRemovedDelegate(
+    WebAppSourceRemovedDelegate delegate) {
+  app_source_removed_delegate_ = std::move(delegate);
+}
+
 void WebAppInstallManagerObserverAdapter::OnWebAppInstalled(
     const AppId& app_id) {
   if (app_installed_delegate_)
@@ -99,6 +104,13 @@ void WebAppInstallManagerObserverAdapter::OnWebAppUninstalled(
 
 void WebAppInstallManagerObserverAdapter::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
+}
+
+void WebAppInstallManagerObserverAdapter::OnWebAppSourceRemovedForTesting(
+    const AppId& app_id) {
+  if (app_source_removed_delegate_) {
+    app_source_removed_delegate_.Run(app_id);
+  }
 }
 
 void WebAppInstallManagerObserverAdapter::SignalRunLoopAndStoreAppId(

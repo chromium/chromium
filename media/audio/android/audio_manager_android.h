@@ -121,6 +121,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   // Returns whether or not we can and should use AAudio.
   bool UseAAudio();
+  bool UseAAudioOutput();
+  bool UseAAudioInput();
 
   // Java AudioManager instance.
   base::android::ScopedJavaGlobalRef<jobject> j_audio_manager_;

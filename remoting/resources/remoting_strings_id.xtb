@@ -69,7 +69,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4155497795971509630">Beberapa komponen yang diperlukan tidak ada. Pastikan Anda memasang software versi terbaru dan coba lagi.</translation>
 <translation id="4176825807642096119">Kode akses</translation>
 <translation id="4227991223508142681">Utilitas Penyediaan Host</translation>
-<translation id="4240294130679914010">Pencopot Pemasangan Host Chromoting</translation>
+<translation id="4240294130679914010">Uninstaller Host Chromoting</translation>
 <translation id="4257751272692708833">Penerus URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kode akses tidak valid. Harap coba lagi.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
@@ -101,7 +101,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="533625276787323658">Perangkat sambungan belum disiapkan</translation>
-<translation id="5397086374758643919">Pencopot Pemasangan Host Chrome Desktop Jarak Jauh</translation>
+<translation id="5397086374758643919">Uninstaller Host Chrome Desktop Jarak Jauh</translation>
 <translation id="5419418238395129586">Online terakhir: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Hosting telah dimatikan.</translation>
 <translation id="5601503069213153581">PIN</translation>

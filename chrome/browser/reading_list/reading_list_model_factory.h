@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 class ReadingListModel;
@@ -30,7 +30,7 @@ class ReadingListModelFactory : public ProfileKeyedServiceFactory {
   GetDefaultFactoryForTesting();
 
  private:
-  friend struct base::DefaultSingletonTraits<ReadingListModelFactory>;
+  friend base::NoDestructor<ReadingListModelFactory>;
 
   ReadingListModelFactory();
   ~ReadingListModelFactory() override;

@@ -61,7 +61,7 @@ public class NetworkFetcherTask {
      * Downloads from a given url to a file.
      */
     @VisibleForTesting
-    static void downloadToFile(HttpURLConnection connection, long nativeDownloadFileTask,
+    public static void downloadToFile(HttpURLConnection connection, long nativeDownloadFileTask,
             long mainTaskRunner, GURL gurl, String filePath) {
         long bytesDownloaded = 0;
         try {
@@ -141,7 +141,7 @@ public class NetworkFetcherTask {
      * Posts a request to a URL.
      */
     @VisibleForTesting
-    static void postRequest(HttpURLConnection connection, long nativeNetworkFetcherTask,
+    public static void postRequest(HttpURLConnection connection, long nativeNetworkFetcherTask,
             long mainTaskRunner, GURL gurl, byte[] postData, String contentType,
             String[] headerKeys, String[] headerValues) {
         String eTag = "";
@@ -222,7 +222,8 @@ public class NetworkFetcherTask {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void callProgressCallback(long weakPtr, long taskRunner, long current);
         void callResponseStartedCallback(
                 long weakPtr, long taskRunner, int responseCode, long contentLength);

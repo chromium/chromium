@@ -46,7 +46,7 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
     WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
     base::RunLoop run_loop;
 
-    DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+    DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
     provider->install_finalizer().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppMenu,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   // Trigger app uninstall without waiting for result.
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
   EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(app_id));
-  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {

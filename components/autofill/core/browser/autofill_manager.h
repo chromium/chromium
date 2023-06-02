@@ -318,8 +318,8 @@ class AutofillManager
   virtual bool CanShowAutofillUi() const;
 
   // Forwards call to the same-named `AutofillDriver` function.
-  virtual void TriggerReparseInAllFrames(
-      base::OnceCallback<void(bool success)> trigger_reparse_finished_callback);
+  virtual void TriggerFormExtractionInAllFrames(
+      base::OnceCallback<void(bool success)> form_extraction_finished_callback);
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
@@ -530,7 +530,7 @@ class AutofillManager
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  const raw_ptr<AutofillDriver> driver_;
+  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;
 
   // Do not access this directly. Instead, please use client() or
   // unsafe_client(). These functions check (or explicitly don't check) that the

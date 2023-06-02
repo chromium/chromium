@@ -40,12 +40,14 @@
 #include "ash/system/time/time_of_day.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -72,6 +74,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -97,10 +100,10 @@ const int kPinPasswordToggleButtonHeight = 32;
 const int kPinPasswordToggleButtonPaddingTop = 24;
 const int kPinPasswordToggleButtonPaddingBottom = 20;
 
-// The background color id of the button used for switching between pin and
-// password. Applied only for Jellyroll.
-constexpr ui::ColorId kPinPasswordToggleColorId =
-    cros_tokens::kCrosSysSystemOnBase1;
+// The highlight radius of the button used for switching between pin and
+// password.
+constexpr int kPinPasswordToggleButtonHighlightRadiusDp =
+    kPinPasswordToggleButtonHeight / 2;
 
 // Distance from the end of pin keyboard to the bottom of the big user view.
 const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
@@ -794,6 +797,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_easy_unlock_icon_hovered);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
   DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+    // TODO(b/276246832): We should avoid re-layouting during Authentication.
+    LOG(WARNING)
+        << "LoginAuthUserView::LoginAuthUserView called during Authentication.";
+  }
 
   // Build child views.
   auto user_view = std::make_unique<LoginUserView>(
@@ -837,7 +845,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
 
   if (chromeos::features::IsJellyrollEnabled()) {
-    pin_password_toggle_->SetBackgroundColorId(kPinPasswordToggleColorId);
+    pin_password_toggle_->SetPillButtonType(
+        PillButton::kDefaultElevatedLargeWithoutIcon);
+    pin_password_toggle_->SetBorder(std::make_unique<views::HighlightBorder>(
+        kPinPasswordToggleButtonHighlightRadiusDp,
+        views::HighlightBorder::Type::kHighlightBorderNoShadow));
   }
 
   auto pin_view = std::make_unique<LoginPinView>(
@@ -1363,6 +1375,7 @@ void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
+  AuthEventsRecorder::Get()->OnAuthSubmit();
   LOG(WARNING) << "crbug.com/1339004 : AuthSubmit "
                << password_view_->IsReadOnly() << " / "
                << pin_input_view_->IsReadOnly();

@@ -62,21 +62,8 @@
   return self;
 }
 
-- (void)indexSearchableItems:(NSArray<CSSearchableItem*>*)items
-           completionHandler:(BlockWithError)completionHandler {
+- (void)indexSearchableItems:(NSArray<CSSearchableItem*>*)items {
   __weak SpotlightInterface* weakSelf = self;
-
-  BlockWithError augmentedCallback = ^(NSError* error) {
-    [SpotlightLogger logSpotlightError:error];
-
-    if (!error) {
-      [weakSelf.logger logIndexedItems:items];
-    }
-
-    if (completionHandler) {
-      completionHandler(error);
-    }
-  };
 
   void (^addItems)(BlockWithError) = ^(BlockWithError errorBlock) {
     [weakSelf.searchableIndex indexSearchableItems:items
@@ -85,7 +72,9 @@
 
   [SpotlightInterface doWithRetry:addItems
                        retryCount:self.maxAttempts
-                completionHandler:augmentedCallback];
+                completionHandler:^(NSError* error) {
+                  [SpotlightLogger logSpotlightError:error];
+                }];
 }
 
 - (void)deleteSearchableItemsWithIdentifiers:(NSArray<NSString*>*)identifiers

@@ -299,6 +299,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"noIpAddressText", IDS_NETWORK_DIAGNOSTICS_NO_IP_ADDRESS_TEXT},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
+      {"notEnoughAvailableMemoryCpuMessage",
+       IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY_CPU},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
       {"reconnectLinkText", IDS_DIAGNOSTICS_RECONNECT_LINK_TEXT},
       {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},

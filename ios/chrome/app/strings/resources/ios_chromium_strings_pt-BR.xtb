@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
 <translation id="1722370509450468186">A senha será salva na sua conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dados do Chromium apagados</translation>
-<translation id="177102542580335555">Você está usando a proteção padrão neste perfil do Chromium</translation>
 <translation id="1838412507805038478">O Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste website.</translation>
 <translation id="1843424232666537147">O Google Chrome possui recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava usando o Chromium e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
+<translation id="3661862315467204831">Abra as configurações do Chromium no iOS, toque em "App de navegação padrão" e selecione o Chromium.</translation>
 <translation id="372658070733623520">Confirme sua identidade para usar e salvar dados do Chromium na sua Conta do Google.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
+<translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="3955621079070267756">Abrir o Chromium por qualquer app</translation>
 <translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>

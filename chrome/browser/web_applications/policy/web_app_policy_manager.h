@@ -180,10 +180,10 @@ class WebAppPolicyManager {
 
   // Used to install, uninstall, and update apps. Should outlive this class
   // (owned by WebAppProvider).
-  raw_ptr<ExternallyManagedAppManager> externally_managed_app_manager_ =
-      nullptr;
-  raw_ptr<WebAppRegistrar> app_registrar_ = nullptr;
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<ExternallyManagedAppManager, DanglingUntriaged>
+      externally_managed_app_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> app_registrar_ = nullptr;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;

@@ -48,11 +48,6 @@ bool StubDevToolsClient::WasCrashed() {
   return false;
 }
 
-Status StubDevToolsClient::Connect() {
-  is_connected_ = true;
-  return Status(kOk);
-}
-
 Status StubDevToolsClient::PostBidiCommand(base::Value::Dict command) {
   return Status{kOk};
 }

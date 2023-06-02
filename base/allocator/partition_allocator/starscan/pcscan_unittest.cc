@@ -59,7 +59,10 @@ class PartitionAllocPCScanTestBase : public testing::Test {
     allocator_.init(PartitionOptions{
         .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
         .quarantine = PartitionOptions::Quarantine::kAllowed,
-    });
+        .memory_tagging =
+            base::CPU::GetInstanceNoAllocation().has_mte()
+                ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                : partition_alloc::PartitionOptions::MemoryTagging::kDisabled});
     allocator_.root()->UncapEmptySlotSpanMemoryForTesting();
     allocator_.root()->SwitchToDenserBucketDistribution();
 

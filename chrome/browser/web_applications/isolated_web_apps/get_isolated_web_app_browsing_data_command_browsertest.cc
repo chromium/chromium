@@ -35,8 +35,6 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
   GetIsolatedWebAppBrowsingDataCommandBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
     isolated_web_app_dev_server_ =
         CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
   }
@@ -65,7 +63,6 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 

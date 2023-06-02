@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 
-@class GridTransitionLayout;
+@class LegacyGridTransitionLayout;
 @class PinnedTabsViewController;
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
@@ -95,7 +95,7 @@
 - (void)dropAnimationDidEnd;
 
 // Returns the layout of the pinned tabs to be used in an animated transition.
-- (GridTransitionLayout*)transitionLayout;
+- (LegacyGridTransitionLayout*)transitionLayout;
 
 // Returns whether there is a selected cell in the collection.
 - (BOOL)hasSelectedCell;

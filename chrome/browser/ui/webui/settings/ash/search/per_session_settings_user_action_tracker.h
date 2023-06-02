@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
@@ -19,7 +20,7 @@ namespace ash::settings {
 // should be created for that new session.
 class PerSessionSettingsUserActionTracker {
  public:
-  PerSessionSettingsUserActionTracker();
+  explicit PerSessionSettingsUserActionTracker(PrefService* pref_service);
   PerSessionSettingsUserActionTracker(
       const PerSessionSettingsUserActionTracker& other) = delete;
   PerSessionSettingsUserActionTracker& operator=(
@@ -40,8 +41,7 @@ class PerSessionSettingsUserActionTracker {
   void RecordSettingChange(absl::optional<chromeos::settings::mojom::Setting>
                                setting = absl::nullopt);
 
-  const std::set<chromeos::settings::mojom::Setting>&
-  GetChangedSettingsForTesting() {
+  const std::set<std::string>& GetChangedSettingsForTesting() {
     return changed_settings_;
   }
   const base::TimeDelta& GetTotalTimeSessionActiveForTesting() {
@@ -55,6 +55,11 @@ class PerSessionSettingsUserActionTracker {
   friend class PerSessionSettingsUserActionTrackerTest;
 
   void ResetMetricsCountersAndTimestamp();
+
+  // Returns the size of the pref dict if it changes. Otherwise, no value will
+  // get returned if if there were no new unique settings changed in the
+  // session.
+  absl::optional<int> UpdateSettingsPrefTotalUniqueChanged();
 
   // Time at which the last setting change metric was recorded since the window
   // has been focused, or null if no setting change has been recorded since the
@@ -80,7 +85,7 @@ class PerSessionSettingsUserActionTracker {
   base::TimeTicks last_blur_timestamp_;
 
   // Tracks which settings have been changed in this user session
-  std::set<chromeos::settings::mojom::Setting> changed_settings_;
+  std::set<std::string> changed_settings_;
 
   // Total time the Settings page has been active and in focus from the opening
   // of the page to closing. Blur events pause the timer.
@@ -88,6 +93,8 @@ class PerSessionSettingsUserActionTracker {
 
   // The point in time which the Settings page was last active and in focus.
   base::TimeTicks window_last_active_timestamp_;
+
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace ash::settings

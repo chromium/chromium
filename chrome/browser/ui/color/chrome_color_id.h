@@ -25,6 +25,8 @@
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Avatar colors. */ \
+  /* TODO(crbug.com/1422119): Refactor the Avatar Button colors as Profile */ \
+  /* Menu Button colors. */ \
   E_CPONLY(kColorAvatarButtonHighlightNormal) \
   E_CPONLY(kColorAvatarButtonHighlightSyncError) \
   E_CPONLY(kColorAvatarButtonHighlightSyncPaused) \
@@ -35,6 +37,8 @@
   E_CPONLY(kColorBookmarkBarSeparator) \
   E_CPONLY(kColorBookmarkBarSeparatorChromeRefresh) \
   E_CPONLY(kColorBookmarkButtonIcon) \
+  E_CPONLY(kColorBookmarkDialogTrackPriceIcon) \
+  E_CPONLY(kColorBookmarkDialogProductImageBorder) \
   E_CPONLY(kColorBookmarkDragImageBackground) \
   E_CPONLY(kColorBookmarkDragImageCountBackground) \
   E_CPONLY(kColorBookmarkDragImageCountForeground) \
@@ -104,7 +108,6 @@
   E_CPONLY(kColorFindBarButtonIconDisabled) \
   E_CPONLY(kColorFindBarForeground) \
   E_CPONLY(kColorFindBarMatchCount) \
-  E_CPONLY(kColorFindBarSeparator) \
   /* Flying Indicator colors. */ \
   E_CPONLY(kColorFlyingIndicatorBackground) \
   E_CPONLY(kColorFlyingIndicatorForeground) \
@@ -226,6 +229,8 @@
   E_CPONLY(kColorOmniboxChipBackground) \
   E_CPONLY(kColorOmniboxChipForegroundLowVisibility) \
   E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
+  E_CPONLY(kColorOmniboxChipInkDropHover) \
+  E_CPONLY(kColorOmniboxChipInkDropRipple) \
   E_CPONLY(kColorOmniboxKeywordSelected) \
   E_CPONLY(kColorOmniboxKeywordSeparator) \
   E_CPONLY(kColorOmniboxResultsBackground) \
@@ -290,6 +295,11 @@
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
+  /* Profile Menu colors. */ \
+  E_CPONLY(kColorProfileMenuHeaderBackground) \
+  E_CPONLY(kColorProfileMenuHeaderLabel) \
+  E_CPONLY(kColorProfileMenuIconButton) \
+  E_CPONLY(kColorProfileMenuIconButtonBackground) \
   /* Profiles colors. */ \
   E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* PWA colors. */ \

@@ -222,7 +222,7 @@ class MojoRendererTest : public ::testing::Test {
   std::unique_ptr<MojoCdmService> mojo_cdm_service_;
 
   // Service side mocks and helpers.
-  raw_ptr<StrictMock<MockRenderer>> mock_renderer_;
+  raw_ptr<StrictMock<MockRenderer>, DanglingUntriaged> mock_renderer_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RendererClient* remote_renderer_client_;

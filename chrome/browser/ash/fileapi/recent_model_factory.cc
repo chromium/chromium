@@ -37,7 +37,8 @@ RecentModelFactory::~RecentModelFactory() = default;
 
 // static
 RecentModelFactory* RecentModelFactory::GetInstance() {
-  return base::Singleton<RecentModelFactory>::get();
+  static base::NoDestructor<RecentModelFactory> instance;
+  return instance.get();
 }
 
 KeyedService* RecentModelFactory::BuildServiceInstanceFor(

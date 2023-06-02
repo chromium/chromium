@@ -9,8 +9,10 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
+#include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace {
@@ -335,6 +337,9 @@ void WebRtcVideoTrackSource::DeliverFrame(
     frame_builder.set_update_rect(webrtc::VideoFrame::UpdateRect{
         update_rect->x(), update_rect->y(), update_rect->width(),
         update_rect->height()});
+  }
+  if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
+    frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
   }
   OnFrame(frame_builder.build());
 

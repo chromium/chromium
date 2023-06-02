@@ -12,9 +12,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
@@ -25,6 +27,8 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace web_app {
+
+class UpdateManifest;
 
 // This component is responsible for installing, uninstalling, updating etc.
 // of the policy installed IWAs.
@@ -57,6 +61,7 @@ class IsolatedWebAppPolicyManager {
     virtual void Install(
         const IsolatedWebAppLocation& location,
         const IsolatedWebAppUrlInfo& url_info,
+        const base::Version& expected_version,
         WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) = 0;
   };
 
@@ -65,6 +70,7 @@ class IsolatedWebAppPolicyManager {
     explicit IwaInstallCommandWrapperImpl(web_app::WebAppProvider* provider);
     void Install(const IsolatedWebAppLocation& location,
                  const IsolatedWebAppUrlInfo& url_info,
+                 const base::Version& expected_version,
                  WebAppCommandScheduler::InstallIsolatedWebAppCallback callback)
         override;
     ~IwaInstallCommandWrapperImpl() override = default;
@@ -93,11 +99,6 @@ class IsolatedWebAppPolicyManager {
   IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
       delete;
 
-  // Extracts the URL of the Web Bundle that corresponds to the latest version
-  // of the app in the Update Manifest.
-  static absl::optional<GURL> ExtractWebBundleURL(
-      const base::Value& parsed_update_manifest);
-
  private:
   // Creating root directory where the ephemeral apps will be placed.
   void CreateIwaEphemeralRootDirectory();
@@ -105,14 +106,11 @@ class IsolatedWebAppPolicyManager {
 
   // Downloading of the update manifest of the current app.
   void DownloadUpdateManifest();
-  void OnUpdateManifestDownloaded(
-      std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      std::unique_ptr<std::string>);
 
-  // Parsing of the update manifest from JSON string to Value tree.
-  void ParseUpdateManifest(const std::string& manifest_content);
-  void OnUpdateManifestParsed(absl::optional<base::Value> result,
-                              const absl::optional<std::string>& error);
+  // Callback when the update manifest has been downloaded and parsed.
+  void OnUpdateManifestParsed(
+      base::expected<UpdateManifest, UpdateManifestFetcher::Error>
+          update_manifest);
 
   // Create a new directory for the exact instance of the IWA.
   void CreateIwaDirectory();
@@ -144,6 +142,8 @@ class IsolatedWebAppPolicyManager {
   std::vector<IsolatedWebAppExternalInstallOptions>
       ephemeral_iwa_install_options_;
   std::vector<IsolatedWebAppExternalInstallOptions>::iterator current_app_;
+  std::unique_ptr<UpdateManifestFetcher> current_update_manifest_fetcher_;
+
   const base::FilePath installation_dir_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -153,10 +153,6 @@ class IsolatedWebAppPolicyManager {
   std::unique_ptr<IwaInstallCommandWrapper> installer_;
   base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
       ephemeral_install_cb_;
-
-  data_decoder::DataDecoder data_decoder_;
-  // Dont use this variable directly. Use GetJsonParserPtr() instead.
-  mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
 
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_factory_{this};
 };

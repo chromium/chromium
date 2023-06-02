@@ -37,11 +37,7 @@ SVGFEOffsetElement::SVGFEOffsetElement(Document& document)
       dy_(MakeGarbageCollected<SVGAnimatedNumber>(this,
                                                   svg_names::kDyAttr,
                                                   0.0f)),
-      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {
-  AddToPropertyMap(dx_);
-  AddToPropertyMap(dy_);
-  AddToPropertyMap(in1_);
-}
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {}
 
 void SVGFEOffsetElement::Trace(Visitor* visitor) const {
   visitor->Trace(dx_);
@@ -73,6 +69,29 @@ FilterEffect* SVGFEOffsetElement::Build(SVGFilterBuilder* filter_builder,
       filter, dx_->CurrentValue()->Value(), dy_->CurrentValue()->Value());
   effect->InputEffects().push_back(input1);
   return effect;
+}
+
+SVGAnimatedPropertyBase* SVGFEOffsetElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kDxAttr) {
+    return dx_.Get();
+  } else if (attribute_name == svg_names::kDyAttr) {
+    return dy_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEOffsetElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{dx_.Get(), dy_.Get(), in1_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

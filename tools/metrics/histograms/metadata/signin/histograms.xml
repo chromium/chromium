@@ -470,7 +470,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
-    enum="BooleanCreated" expires_after="2023-09-15">
+    enum="BooleanCreated" expires_after="2023-11-19">
   <owner>pastarmovj@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
@@ -621,15 +621,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Intercept.AccountInfoFetchDuration" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the duration of the account info fetch after signin interception.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Intercept.FRE.Event"
     enum="SigninInterceptFREDialogEvent" expires_after="2023-10-08">
   <owner>alexilin@chromium.org</owner>
@@ -647,26 +638,6 @@ prefs when the profile is loaded.  -->
   <summary>
     Records the outcome of the signin interception heuristic, which runs for
     each signin interception.
-  </summary>
-</histogram>
-
-<histogram name="Signin.Intercept.ProfileCreationDuration" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the duration of the signed-in profile creation after signin
-    interception.
-  </summary>
-</histogram>
-
-<histogram name="Signin.Intercept.ProfileSwitchDuration" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the duration of the signed-in profile switch after signin
-    interception.
   </summary>
 </histogram>
 
@@ -762,7 +733,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSLoginMethodAndSyncState"
-    enum="SigninIOSLoginMethodAndSyncState" expires_after="2023-08-08">
+    enum="SigninIOSLoginMethodAndSyncState" expires_after="2023-11-19">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -780,7 +751,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -832,14 +803,7 @@ the browser and content area. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
-    expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>Tracks the latency of calls to the Kids Management API.</summary>
-</histogram>
-
-<histogram name="Signin.ListFamilyMembersRequest.NetOrHttpStatus"
+<histogram name="Signin.ListFamilyMembersRequest.HttpStatusOrNetError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -850,8 +814,15 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
+    expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>Tracks the latency of calls to the Kids Management API.</summary>
+</histogram>
+
 <histogram name="Signin.ListFamilyMembersRequest.Status"
-    enum="KidsExternalFetcherStatus" expires_after="2023-11-01">
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2023-11-01">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>The status of the fetch to the Kids Management API.</summary>
@@ -870,7 +841,8 @@ the browser and content area. -->
     <variant name="DataError"
         summary="contract error (data in the response missing despite
                  succesful parsing)"/>
-    <variant name="HttpError" summary="transport error"/>
+    <variant name="HttpStatusOrNetError"
+        summary="transport error or HTTP status"/>
     <variant name="NoError" summary="no error recorded"/>
     <variant name="ParseError" summary="parsing error"/>
   </token>
@@ -1310,7 +1282,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOAuth.GetIdentities.ErrorCode"
-    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2023-09-03">
+    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2023-11-19">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

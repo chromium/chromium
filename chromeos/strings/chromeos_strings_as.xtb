@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">ডেস্ক</translation>
 <translation id="1018219910092211213">DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
-<translation id="1022433422498218992">সাধাৰণ নিয়ন্ত্ৰণ</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" />ৰ বিশেষ সম্পদসমূহ এতিয়া উপলব্ধ</translation>
 <translation id="1022628058306505708">পৃথিৱী প্ৰবাহ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ প্ৰকাৰ</translation>
 <translation id="1776228893584526149">ৱালপেপাৰ ৰং</translation>
 <translation id="1782199038061388045">অনুবাদ</translation>
-<translation id="1790209694022261219">ৱিণ্ড’ আৰু ডেস্ক</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1801418420130173017">গাঢ় ৰঙৰ থীম অক্ষম কৰক</translation>
 <translation id="1807246157184219062">পাতল</translation>
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
+<translation id="1836553715834333258">ছিষ্টেমৰ ৰং</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
+<translation id="1840474674287087346">ডেস্কটপৰ ৰং</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
 <translation id="1852934301711881861">ChromeOS Flex ইনষ্টল কৰক</translation>
 <translation id="1856388568474281774">ডাউন এৰ’</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">ব্ৰাউজাৰ নেভিগেশ্বন</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
-<translation id="2902312830803030883">অধিক কাৰ্য</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
 <translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
-<translation id="2981143481017883351">বিশেষ Chromebook সম্পদ এতিয়া উপলব্ধ</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
-<translation id="3020183492814296499">শ্বৰ্টকাট</translation>
 <translation id="3027578600144895987">কেমেৰাটো বন্ধ কৰক</translation>
 <translation id="3031560714565892478">ডিভাইচটো এটা ভিডিঅ’ কেমেৰা।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3226657629376379887">লে’আউট সম্পৰ্কীয় কাৰ্যৰ মেনু</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" />ৰ বিশেষ</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
 <translation id="3275729367986477355">অৱতাৰৰ প্ৰতিচ্ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইল সম্পাদনা কৰক}one{ফাইলসমূহ সম্পাদনা কৰক}other{ফাইলসমূহ সম্পাদনা কৰক}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">চাবিৰ নির্দেশনা</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
+<translation id="3305294846493618482">অধিক</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
 <translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
-<translation id="3386675685417744672">Chromebookৰ বিশেষ</translation>
 <translation id="3404249063913988450">স্ক্ৰীন ছেভাৰ সক্ষম কৰক</translation>
 <translation id="3413935475507503304">আপডে’টটো কাৰ্যকৰী কৰিবলৈ, পৰৱৰ্তীত টিপক।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
 <translation id="3639846061339007994">ওপৰলৈ</translation>
 <translation id="3651050199673793219">তাপমানৰ এটা একক বাছনি কৰক</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" />ৰ বিশেষ শিল্পকৰ্ম বাছনি কৰক</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">সকীয়নি</translation>
 <translation id="4054683689023980771">প্ৰতিচ্ছবি ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="4060260348856573701">নতুন এপিএন</translation>
-<translation id="4079743696465895866">Chromebookৰ বিশেষ শিল্পকৰ্ম বাছনি কৰক</translation>
 <translation id="4093865285251893588">প্ৰ’ফাইলৰ প্রতিচ্ছবি</translation>
 <translation id="409427325554347132">পৰীক্ষাৰ সবিশেষ ছেভ কৰক</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">এলবাম বাছনি কৰক <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">ইউএছবি টাচ্চপেড</translation>
+<translation id="4113067922640381334">আপোনাৰ এতিয়া নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ৱালপেপাৰ<ph name="END_LINK_WALLPAPER_SUBPAGE" />ৰ এক্সেছ আছে</translation>
 <translation id="4117637339509843559">গাঢ় ম’ড</translation>
 <translation id="4130035430755296270">লে’আউটৰ অধিক বিকল্পৰ বাবে মাউছৰ কাৰ্ছৰডাল ঘূৰাই থাকক</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
+<translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
 <translation id="4503223151711056411">লেফ্ট এৰ’</translation>
 <translation id="4507392511610824664">উজ্জ্বলতা বঢ়াওক</translation>
 <translation id="4511264077854731334">প’ৰ্টেল</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">পৰীক্ষা কৰা বন্ধ কৰক</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">আপোনাৰ স্ক্ৰীনখন নিষ্ক্ৰিয় হৈ থাকিলে ফট’, সময়, বতৰ আৰু মিডিয়াৰ তথ্য দেখুৱাওক।</translation>
+<translation id="5035083460461104704">থীমৰ ৰং</translation>
 <translation id="5038292761217083259">কীব’ৰ্ডৰ একাধিক ৰং</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5049856988445523908">ছিম লক কৰা হ’ল (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ডিফ’ল্ট ৱালপেপাৰ</translation>
 <translation id="6017514345406065928">সেউজীয়া ৰং</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">স্বয়ংক্ৰিয়ভাৱে মাহিলী ৰিছেট হোৱাৰ সুবিধাটো সক্ষম কৰক</translation>
 <translation id="6037291330010597344">স্কেনাৰৰ নথিৰ ফীডাৰটো খালী আছে। নথি যোগ দি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">নিৰপেক্ষ</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
+<translation id="7633068090678117093">নেপথ্যৰ প্ৰতিচ্ছবি</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="765159867434478292">বিভক্ত কৰক</translation>
 <translation id="7656388927906093505">ডিভাইচটো এটা মাউচ।</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">আৰম্ভ কৰা হোৱা নাই</translation>
 <translation id="8593058461203131755">মিডিয়া পজ কৰক</translation>
 <translation id="8620617069779373398">ৰ’মিঙৰ স্থিতি</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />ৰ বাবে আৰু অধিক কাৰ্য</translation>
 <translation id="86356131183441916">পাতল বেঙুনীয়া</translation>
 <translation id="8651481478098336970">ভলিউম মিউট কৰক</translation>
 <translation id="8655295600908251630">চেনেল</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">পীয়েৰ</translation>
 <translation id="8930622219860340959">বেতাঁৰ</translation>
 <translation id="8936793075252196307">ক্লায়েণ্টৰ আইপি ঠিকনা</translation>
+<translation id="8944651180182756621">লঞ্চাৰৰ ৰং</translation>
 <translation id="894617464444543719">ডিভাইচটো এটা ফ’ন।</translation>
 <translation id="8957423540740801332">সোঁফালে</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
 <translation id="9161276708550942948">স্পেচ</translation>
 <translation id="9173638680043580060">এক মিনিটতকৈ কম সময় বাকী আছে</translation>
+<translation id="9174334653006917325">UIৰ ৰং</translation>
 <translation id="917720651393141712">পৰীক্ষা কৰক</translation>
 <translation id="9188992814426075118">আপোনাৰ কীব’ৰ্ডে স্বয়ংক্ৰিয়ভাৱে আপোনাৰ ৱালপেপাৰ মিলাব পাৰে</translation>
 <translation id="9189000703457422362">স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা এপিএন ব্যৱহাৰ কৰি এই নেটৱৰ্কৰ সৈতে সংযোগ কৰিব নোৱাৰি। অধিক তথ্যৰ বাবে আপোনাৰ ম’বাইলৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>

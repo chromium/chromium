@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -37,6 +39,7 @@
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -712,6 +715,154 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, MalwareAndEvCert) {
             l10n_util::GetStringFUTF16(
                 IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
                 u"Thawte Inc", u"US"));
+}
+
+// Tests that the "reset warning decisions" button is shown if the user has
+// clicked through an SSL warning or the HTTP interstitial, but not for silent
+// fallback to HTTP under HTTPS-Upgrades.
+// TODO(crbug.com/1394910): Convert these tests to be normal
+// PageInfoBubbleViewBrowserTest when HTTPS-Upgrades is enabled-by-default.
+class PageInfoBubbleViewHttpsUpgradesBrowserTest
+    : public PageInfoBubbleViewBrowserTest {
+ public:
+  PageInfoBubbleViewHttpsUpgradesBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kHttpsUpgrades);
+  }
+  ~PageInfoBubbleViewHttpsUpgradesBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    bad_https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+    bad_https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(bad_https_server_.Start());
+
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(
+        embedded_test_server()->port());
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(bad_https_server_.port());
+  }
+
+  net::EmbeddedTestServer* bad_https_server() { return &bad_https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer bad_https_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+// Navigate to a page with an SSL warning (but no malware status) and click
+// through the SSL warning. The "reset decisions" button should be shown.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHttpsUpgradesBrowserTest,
+                       ResetWarningDecisionsButtonCertWarningOnly) {
+  GURL bad_https_url = bad_https_server()->GetURL("baz.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_https_url));
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingSSLInterstitial(web_contents()));
+
+  // Proceed through the SSL interstitial.
+  content::TestNavigationObserver nav_observer(web_contents(), 1);
+  std::string javascript = "window.certificateErrorPageController.proceed();";
+  ASSERT_TRUE(content::ExecJs(web_contents(), javascript));
+  nav_observer.Wait();
+
+  OpenPageInfoBubble(browser());
+  views::View* reset_decisions_label =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL);
+  EXPECT_TRUE(reset_decisions_label->GetVisible());
+}
+
+// Navigate to a malware page with an SSL warning and click through the warning.
+// The "reset decisions" button should not be displayed (otherwise it's confusing
+// which warning the user is re-enabling).
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHttpsUpgradesBrowserTest,
+                       ResetWarningDecisionsButtonCertAndMalwareWarnings) {
+  GURL bad_https_url = bad_https_server()->GetURL("baz.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_https_url));
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingSSLInterstitial(web_contents()));
+
+  // Proceed through the SSL interstitial.
+  content::TestNavigationObserver nav_observer(web_contents(), 1);
+  std::string javascript = "window.certificateErrorPageController.proceed();";
+  ASSERT_TRUE(content::ExecJs(web_contents(), javascript));
+  nav_observer.Wait();
+
+  // Configure an IdentityInfo for the invalid certificate.
+  PageInfoUI::IdentityInfo identity;
+  identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_ERROR;
+  identity.connection_status = PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED_ERROR;
+  identity.certificate = bad_https_server()->GetCertificate();
+
+  // Have the page also trigger an SB malware warning.
+  identity.safe_browsing_status = PageInfo::SAFE_BROWSING_STATUS_MALWARE;
+
+  OpenPageInfoBubble(browser());
+  SetPageInfoBubbleIdentityInfo(identity);
+
+  // Check that the reset button should not be shown. Can't use GetView()
+  // here because it will fail if the View doesn't exist, so this is a bit
+  // verbose.
+  views::Widget* page_info_bubble =
+      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+  EXPECT_TRUE(page_info_bubble);
+  views::View* view = page_info_bubble->GetRootView()->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL);
+  EXPECT_FALSE(view);
+}
+
+// Navigate to an HTTP page with HTTPS-First Mode enabled and click through the
+// warning. The reset decisions button should be shown.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHttpsUpgradesBrowserTest,
+                       ResetWarningDecisionsButtonHttpsFirstMode) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               true);
+
+  GURL http_url = embedded_test_server()->GetURL("foo.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
+  EXPECT_EQ(http_url, web_contents()->GetLastCommittedURL());
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      web_contents()));
+
+  // Proceed through the HTTPS-First Mode interstitial.
+  content::TestNavigationObserver nav_observer(web_contents(), 1);
+  std::string javascript = "window.certificateErrorPageController.proceed();";
+  ASSERT_TRUE(content::ExecJs(web_contents(), javascript));
+  nav_observer.Wait();
+
+  OpenPageInfoBubble(browser());
+  views::View* reset_decisions_label =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL);
+  EXPECT_TRUE(reset_decisions_label->GetVisible());
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               false);
+}
+
+// Navigate to an HTTP page with HTTPS-Upgrades enabled but not HTTPS-First
+// Mode (so no warning is shown). The reset decisions button should not be
+// shown.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHttpsUpgradesBrowserTest,
+                       ResetWarningDecisionsButtonHttpsUpgrades) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               false);
+
+  GURL http_url = embedded_test_server()->GetURL("foo.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          web_contents()));
+  EXPECT_EQ(http_url, web_contents()->GetLastCommittedURL());
+
+  // Check that the reset button should not be shown. Can't use GetView()
+  // here because it will fail if the View doesn't exist, so this is a bit
+  // verbose.
+  OpenPageInfoBubble(browser());
+  views::Widget* page_info_bubble =
+      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+  EXPECT_TRUE(page_info_bubble);
+  views::View* view = page_info_bubble->GetRootView()->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL);
+  EXPECT_FALSE(view);
 }
 
 class PageInfoBubbleViewPrerenderBrowserTest

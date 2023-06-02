@@ -2,18 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("infobar_banner") {
-  public = [ "infobar_banner_supported_overlay_coordinator_classes.h" ]
-  sources = [ "infobar_banner_supported_overlay_coordinator_classes.mm" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [
-    ":coordinators",
-    "//ios/chrome/browser/ui/overlays/infobar_banner/translate:coordinators",
-  ]
-}
-
 source_set("coordinators") {
   sources = [
     "infobar_banner_overlay_coordinator.h",
@@ -25,8 +13,11 @@ source_set("coordinators") {
   deps = [
     ":mediators",
     "//base",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners",

@@ -80,7 +80,7 @@ class OneGoogleBarServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_env_;
 
   // Owned by the service.
-  raw_ptr<FakeOneGoogleBarLoader> loader_;
+  raw_ptr<FakeOneGoogleBarLoader, DanglingUntriaged> loader_;
 
   std::unique_ptr<OneGoogleBarService> service_;
 };

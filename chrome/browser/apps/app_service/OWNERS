@@ -4,13 +4,11 @@ file://components/services/app_service/OWNERS
 per-file browser_*=alexbn@chromium.org
 per-file instance_registry_updater.*=alexbn@chromium.org
 
+# For GuestOS integrations:
+per-file borealis*=file://chrome/browser/ash/borealis/OWNERS
+per-file bruschetta*=file://chrome/browser/ash/guest_os/OWNERS
+per-file crostini*=file://chrome/browser/ash/guest_os/OWNERS
 per-file plugin_vm*=file://chrome/browser/ash/guest_os/OWNERS
-
-# For files and intent handling system:
-per-file intent*=mxcai@chromium.org
-per-file file*=mxcai@chromium.org
-per-file intent*=tsergeant@chromium.org
-per-file file*=tsergeant@chromium.org
 
 # For policy_id util:
 per-file policy_util*=greengrape@google.com

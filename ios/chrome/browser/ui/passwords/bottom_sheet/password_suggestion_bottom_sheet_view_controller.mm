@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
@@ -33,15 +34,14 @@
 #endif
 
 namespace {
-// Base height value for the bottom sheet without the table view.
-// TODO(crbug.com/1422350): This needs some proper calculation.
-CGFloat const kBaseHeightForBottomSheet = 195;
+// Estimated base height value for the bottom sheet without the table view.
+CGFloat const kEstimatedBaseHeightForBottomSheet = 195;
 
 // Sets a custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
 
-// Row height for each cell in the table view.
-CGFloat const kTableViewRowHeight = 75;
+// Estimated row height for each cell in the table view.
+CGFloat const kTableViewEstimatedRowHeight = 75;
 
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
@@ -87,10 +87,10 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   // The current's page domain. This is used for the password bottom sheet
   // description label.
   NSString* _domain;
-
-  // The password controller handler used to open the password manager.
-  id<PasswordSuggestionBottomSheetHandler> _handler;
 }
+
+// The password controller handler used to open the password manager.
+@property(nonatomic, weak) id<PasswordSuggestionBottomSheetHandler> handler;
 
 @end
 
@@ -100,9 +100,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
     (id<PasswordSuggestionBottomSheetHandler>)handler {
   self = [super init];
   if (self) {
-    _handler = handler;
-
-    [self setUpBottomSheet];
+    self.handler = handler;
   }
   return self;
 }
@@ -126,6 +124,8 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   self.topAlignedLayout = YES;
   self.actionHandler = self;
   self.scrollEnabled = NO;
+
+  [self updateCustomGradientViewHeight:0];
 
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
@@ -157,6 +157,20 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  // Update height constraints for the table view.
+  [self.view layoutIfNeeded];
+  CGFloat minimizedTableViewHeight = _tableView.contentSize.height;
+  if (minimizedTableViewHeight > 0 &&
+      minimizedTableViewHeight != kTableViewEstimatedRowHeight) {
+    _minimizedHeightConstraint.constant = minimizedTableViewHeight;
+    _fullHeightConstraint.constant =
+        minimizedTableViewHeight * _suggestions.count;
+  }
+
+  [self setUpBottomSheet];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   [self.delegate refocus];
 }
@@ -170,7 +184,11 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 }
 
 - (void)dismiss {
-  [self dismissViewControllerAnimated:NO completion:NULL];
+  __weak __typeof(self) weakSelf = self;
+  [self dismissViewControllerAnimated:NO
+                           completion:^{
+                             [weakSelf.handler stop];
+                           }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -363,20 +381,24 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
                                             style:UITableViewStylePlain];
 
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
-  _tableView.rowHeight = [self rowHeight];
+  _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;
   _tableView.scrollEnabled = NO;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
   _tableView.dataSource = self;
+  _tableView.isAccessibilityElement = YES;
+  _tableView.accessibilityIdentifier =
+      kPasswordSuggestionBottomSheetTableViewId;
   [_tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
-  _minimizedHeightConstraint =
-      [_tableView.heightAnchor constraintEqualToConstant:_tableView.rowHeight];
+  _minimizedHeightConstraint = [_tableView.heightAnchor
+      constraintEqualToConstant:kTableViewEstimatedRowHeight];
   _minimizedHeightConstraint.active = YES;
 
   _fullHeightConstraint = [_tableView.heightAnchor
-      constraintEqualToConstant:_tableView.rowHeight * _suggestions.count];
+      constraintEqualToConstant:kTableViewEstimatedRowHeight *
+                                _suggestions.count];
   _fullHeightConstraint.active = NO;
 
   _tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -437,30 +459,57 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   return NSUInteger(indexPath.row) == (_suggestions.count - 1);
 }
 
-// Height of 1 row in the table view
-- (CGFloat)rowHeight {
-  // TODO(crbug.com/1422350): The row height below must be dynamic for
-  // accessibility.
-  return kTableViewRowHeight;
+// Returns the cumulative height of the bottom sheet subviews.
+- (CGFloat)cumulativeHeightOfSubviews {
+  [self.view layoutIfNeeded];
+  CGFloat subviewsHeight = 0;
+  // Add height of the bottom sheet subviews. This include the navigation bar,
+  // the scroll view, the actions stack view and the gradient view.
+  for (UIView* subview in self.view.subviews) {
+    subviewsHeight += CGRectGetHeight(subview.frame);
+  }
+  return subviewsHeight + [self getScrollViewHeightPadding];
 }
 
-// Returns the initial height of the bottom sheet.
+// Returns the initial height of the bottom sheet while showing a single row.
 - (CGFloat)initialHeight {
-  // Initial height for the bottom sheet while showing a single row.
-  return kBaseHeightForBottomSheet + [self rowHeight];
+  CGFloat bottomSheetHeight = [self cumulativeHeightOfSubviews];
+  if (bottomSheetHeight > 0) {
+    return bottomSheetHeight;
+  }
+  // Return an estimated height if we can't calculate the actual height.
+  return kEstimatedBaseHeightForBottomSheet + kTableViewEstimatedRowHeight;
 }
 
 // Returns the desired height for the bottom sheet (can be larger than the
 // screen).
 - (CGFloat)fullHeight {
-  // Desired height for the bottom sheet while showing all rows.
-  return kBaseHeightForBottomSheet + ([self rowHeight] * _suggestions.count);
+  CGFloat bottomSheetHeight = [self cumulativeHeightOfSubviews];
+
+  // when this method is called, the table view has only one row and no padding.
+  CGFloat effectiveRowHeight = _tableView.contentSize.height;
+
+  // Add missing row height without calculating the one that is currently
+  // displayed, hence the -1.
+  if (bottomSheetHeight > 0 && effectiveRowHeight > 0) {
+    return bottomSheetHeight + (effectiveRowHeight * (_suggestions.count - 1));
+  }
+
+  // Return an estimated height for the bottom sheet while showing all rows
+  // (using estimated heights).
+  return kEstimatedBaseHeightForBottomSheet +
+         (kTableViewEstimatedRowHeight * _suggestions.count);
 }
 
 // Enables scrolling of the table view
 - (void)setTableViewScrollEnabled:(BOOL)enabled {
   _tableView.scrollEnabled = enabled;
   self.scrollEnabled = enabled;
+
+  // Add gradient view to show that the user can scroll.
+  if (enabled) {
+    [self updateCustomGradientViewHeight:16];
+  }
 }
 
 // Performs the expand bottom sheet animation.
@@ -499,24 +548,13 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   }
 }
 
-// Opens the password manager settings page.
-- (void)displayPasswordManager {
-  [_handler displayPasswordManager];
-}
-
-// Opens the password details for form suggestion.
-- (void)displayPasswordDetailsForFormSuggestion:
-    (FormSuggestion*)formSuggestion {
-  [_handler displayPasswordDetailsForFormSuggestion:formSuggestion];
-}
-
 // Creates the UI action used to open the password manager.
 - (UIAction*)openPasswordManagerAction {
   __weak __typeof(self) weakSelf = self;
   void (^passwordManagerButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Manager.
     [weakSelf.delegate disableRefocus];
-    [weakSelf displayPasswordManager];
+    [weakSelf.handler displayPasswordManager];
   };
   UIImage* keyIcon =
       CustomSymbolWithPointSize(kPasswordSymbol, kSymbolActionPointSize);
@@ -536,7 +574,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Details.
     [weakSelf.delegate disableRefocus];
-    [weakSelf displayPasswordDetailsForFormSuggestion:formSuggestion];
+    [weakSelf.handler displayPasswordDetailsForFormSuggestion:formSuggestion];
   };
 
   UIImage* infoIcon =

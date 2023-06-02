@@ -26,12 +26,11 @@ namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     BrowserView* browser_view)
-    : ImageView(ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023()
-              ? kLaptopAndSmartphoneChromeRefreshIcon
-              : kLaptopAndSmartphoneIcon,
-          ui::kColorIcon,
-          gfx::kFaviconSize)),
+    : ImageView(ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                                   ? kDevicesChromeRefreshIcon
+                                                   : kDevicesIcon,
+                                               ui::kColorIcon,
+                                               gfx::kFaviconSize)),
       browser_(browser_view->browser()),
       browser_view_(browser_view) {
   SetAccessibleName(l10n_util::GetStringUTF16(

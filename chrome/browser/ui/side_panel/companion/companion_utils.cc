@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -21,6 +22,17 @@ namespace companion {
 
 bool IsCompanionFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kSidePanelCompanion);
+}
+
+bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+  const GURL& url = web_contents->GetLastCommittedURL();
+  // Companion should not be available for any chrome UI pages.
+  return !url.SchemeIs(content::kChromeUIScheme);
 }
 
 bool IsCompanionFeatureEnabledByPolicy(PrefService* pref_service) {
@@ -59,6 +71,14 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
 }
 
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
+  absl::optional<bool> should_force_pin =
+      switches::ShouldForceOverrideCompanionPinState();
+  if (should_force_pin) {
+    pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
+                             *should_force_pin);
+    return;
+  }
+
   bool companion_should_be_default_pinned =
       base::FeatureList::IsEnabled(
           ::features::kSidePanelCompanionDefaultPinned) ||
@@ -69,14 +89,13 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
 }
 
 void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents) {
-  if (search::IsNTPURL(web_contents->GetLastCommittedURL())) {
+  if (web_contents->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme)) {
     return;
   }
 
   Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
   PrefService* const pref_service = browser->profile()->GetPrefs();
-  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion) &&
-      pref_service &&
+  if (IsCompanionFeatureEnabled() && pref_service &&
       pref_service->GetBoolean(
           prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
     browser->window()->MaybeShowFeaturePromo(

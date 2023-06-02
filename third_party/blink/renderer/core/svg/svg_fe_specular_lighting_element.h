@@ -56,6 +56,10 @@ class SVGFESpecularLightingElement final
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedNumber> specular_constant_;
   Member<SVGAnimatedNumber> specular_exponent_;
   Member<SVGAnimatedNumber> surface_scale_;

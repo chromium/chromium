@@ -20,9 +20,7 @@ function setSize(width, height) {
 }
 
 function startPerfTest() {
-    for (i = 0; i < 10; i++) {
-        doRun();
-    }
+    doRun();
     gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
     requestAnimationFrame(startPerfTest);
 }

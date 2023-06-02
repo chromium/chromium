@@ -7,6 +7,7 @@
 
 #import "base/ios/block_types.h"
 
+enum class ContentSuggestionsModuleType;
 @class ContentSuggestionsMostVisitedActionItem;
 @class ContentSuggestionsMostVisitedItem;
 @class ContentSuggestionsReturnToRecentTabItem;
@@ -53,8 +54,13 @@ enum class SetUpListItemType;
 // `order`.
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order;
 
-// Indicates to the consumer to display the SetUpList - a list of tasks that
-// a new user may want to complete.
+// Indicates to the consumer to scroll to the next module because `moduleType`
+// is completed.
+- (void)scrollToNextMagicStackModuleForCompletedModule:
+    (ContentSuggestionsModuleType)moduleType;
+
+// Indicates to the consumer to display the SetUpList - a list of
+// tasks that a new user may want to complete.
 - (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items;
 
 // Marks a Set Up List item complete with an animation and updated appearance.

@@ -60,8 +60,7 @@ std::string GenerateTestSuffix(
   return suffix;
 }
 
-void UseFixedPlaceholderTextAndHideCursor(
-    raw_ptr<SearchBoxView> search_box_view) {
+void UseFixedPlaceholderTextAndHideCursor(SearchBoxView* search_box_view) {
   ASSERT_TRUE(search_box_view);
 
   // Use a fixed placeholder text instead of the one picked randomly to
@@ -164,7 +163,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_answer_card_search_results",
-      /*revision_number=*/1, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -186,7 +185,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_url_search_results",
-      /*revision_number=*/1, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -200,7 +199,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_basics",
-      /*revision_number=*/1, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -222,7 +221,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_gradient_zone",
-      /*revision_number=*/1, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 

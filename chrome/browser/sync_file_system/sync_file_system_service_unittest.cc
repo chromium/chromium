@@ -267,7 +267,8 @@ class SyncFileSystemServiceTest : public testing::Test {
   std::unique_ptr<CannedSyncableFileSystem> file_system_;
 
   // Their ownerships are transferred to SyncFileSystemService.
-  raw_ptr<StrictMock<MockRemoteFileSyncService>> remote_service_;
+  raw_ptr<StrictMock<MockRemoteFileSyncService>, DanglingUntriaged>
+      remote_service_;
   StrictMock<MockLocalChangeProcessor> local_change_processor_;
 
   std::unique_ptr<SyncFileSystemService> sync_service_;

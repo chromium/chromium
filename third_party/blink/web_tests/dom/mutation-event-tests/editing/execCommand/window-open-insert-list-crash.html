@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Crash issue 338542</title>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description('Should not crash if we load a test case from crbug.com/338542.');
+
+window.jsTestIsAsync = true;
+
+window.addEventListener('message', didReceiveMessage, false);
+
+var iframe = document.createElement('iframe');
+iframe.src = 'resources/window-open-insert-list-crash-iframe.html';
+document.body.appendChild(iframe);
+
+function didReceiveMessage(event)
+{
+    if (iframe === null)
+        return;
+    shouldBeEqualToString('event.data', 'FINISH');
+    document.body.removeChild(iframe);
+    iframe = null;
+    testPassed('Did not crash.');
+    window.finishJSTest();
+}
+</script>
+</body>
+</html>

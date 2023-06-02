@@ -27,7 +27,8 @@ constexpr char kFeatureDirname[] = "long_screenshots_tab_service";
 // static
 LongScreenshotsTabServiceFactory*
 LongScreenshotsTabServiceFactory::GetInstance() {
-  return base::Singleton<LongScreenshotsTabServiceFactory>::get();
+  static base::NoDestructor<LongScreenshotsTabServiceFactory> instance;
+  return instance.get();
 }
 
 // static

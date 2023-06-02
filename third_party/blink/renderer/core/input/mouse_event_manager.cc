@@ -702,7 +702,7 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
           .GetSelectionController()
           .MouseDownMayStartSelect() ||
       (mouse_press_node_ && mouse_press_node_->GetLayoutBox() &&
-       mouse_press_node_->GetLayoutBox()->CanBeProgrammaticallyScrolled());
+       mouse_press_node_->GetLayoutBox()->IsUserScrollable());
 
   return swallow_event ? WebInputEventResult::kHandledSystem
                        : WebInputEventResult::kNotHandled;

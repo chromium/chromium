@@ -70,6 +70,6 @@
     [CEReactions, Reflect] attribute DOMString frameBorder;
     [CEReactions, Reflect, URL] attribute USVString longDesc;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString marginHeight;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString marginWidth;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString marginHeight;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString marginWidth;
 };

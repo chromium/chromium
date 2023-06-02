@@ -34,8 +34,8 @@ void FontSizeJavaScriptFeature::AdjustFontSize(web::WebState* web_state,
 
 void FontSizeJavaScriptFeature::AdjustFontSize(web::WebFrame* web_frame,
                                                int size) {
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(size));
+  base::Value::List parameters;
+  parameters.Append(size);
   CallJavaScriptFunction(web_frame, "font_size.adjustFontSize", parameters);
 }
 

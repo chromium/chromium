@@ -17,8 +17,11 @@ public final class FakeAndroidCredentialManager {
     FakeAndroidCredManCreateRequest mCreateRequest;
     FakeAndroidCredManGetRequest mGetRequest;
     FakeAndroidCredManException mErrorResponse;
+    FakeAndroidCredential mCredential;
 
-    public FakeAndroidCredentialManager() {}
+    public FakeAndroidCredentialManager() {
+        mCredential = new FakeAndroidPublicKeyCredential();
+    }
 
     /**
      * Fake implementation of CredentialManager.createCredential().
@@ -47,7 +50,23 @@ public final class FakeAndroidCredentialManager {
             callback.onError(mErrorResponse);
             return;
         }
-        callback.onResult(new FakeAndroidCredManGetResponse());
+        callback.onResult(new FakeAndroidCredManGetResponse(mCredential));
+    }
+
+    /**
+     * Fake implementation of CredentialManager.prepareGetCredential().
+     */
+    public void prepareGetCredential(FakeAndroidCredManGetRequest request,
+            CancellationSignal cancellationSignal, Executor executor,
+            OutcomeReceiver<FakeAndroidCredManPrepareGetCredentialResponse,
+                    FakeAndroidCredManException> callback) {
+        mGetRequest = request;
+
+        if (mErrorResponse != null) {
+            callback.onError(mErrorResponse);
+            return;
+        }
+        callback.onResult(new FakeAndroidCredManPrepareGetCredentialResponse());
     }
 
     /**
@@ -69,5 +88,9 @@ public final class FakeAndroidCredentialManager {
      */
     public void setErrorResponse(FakeAndroidCredManException error) {
         mErrorResponse = error;
+    }
+
+    public void setCredManGetResponseCredential(FakeAndroidCredential credential) {
+        mCredential = credential;
     }
 }

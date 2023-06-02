@@ -125,8 +125,7 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
   flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
   flags.setMaskFilter(SkMaskFilter::MakeBlur(
       SkBlurStyle::kOuter_SkBlurStyle, 4.3));
-  flags.setColorFilter(
-      SkColorMatrixFilter::MakeLightingFilter(SK_ColorYELLOW, SK_ColorGREEN));
+  flags.setColorFilter(ColorFilter::MakeLuma());
 
   SkLayerDrawLooper::Builder looper_builder;
   looper_builder.addLayer();

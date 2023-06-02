@@ -430,6 +430,7 @@ source_set("browser_sources") {
     "guest_view/mime_handler_view/mime_handler_view_guest.h",
     "guest_view/mime_handler_view/mime_handler_view_guest_delegate.cc",
     "guest_view/mime_handler_view/mime_handler_view_guest_delegate.h",
+
     # TODO(crbug.com/730220): Ideally web_view should be a separate target on
     # which the extension system depends.
     "guest_view/web_view/javascript_dialog_helper.cc",
@@ -1019,8 +1020,11 @@ source_set("unit_tests") {
       "//chromeos/ash/components/standalone_browser",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
+      "//components/account_id",
       "//components/feedback",
       "//components/prefs:prefs",
+      "//components/user_manager",
+      "//components/user_manager:test_support",
       "//extensions/shell:app_shell_lib",
     ]
   }

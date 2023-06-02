@@ -43,6 +43,8 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -728,16 +730,27 @@ class IntentUtilsFileTest : public ::testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("testing_profile");
+
+    // kFileSystemTypeLocal versus kFileSystemTypeArcContent means that the
+    // second one needs to go through Fusebox, as its
+    // FileSystemURL::TypeImpliesPathIsReal() returns false.
     ASSERT_TRUE(
         storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-            mount_name_, storage::FileSystemType::kFileSystemTypeExternal,
-            storage::FileSystemMountOption(), base::FilePath(fs_root_)));
+            mount_name_local_, storage::FileSystemType::kFileSystemTypeLocal,
+            storage::FileSystemMountOption(), base::FilePath(fs_root_local_)));
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+            mount_name_arc_, storage::kFileSystemTypeArcContent,
+            storage::FileSystemMountOption(), base::FilePath(fs_root_arc_)));
   }
 
   void TearDown() override {
     ASSERT_TRUE(
         storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
-            mount_name_));
+            mount_name_arc_));
+    ASSERT_TRUE(
+        storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+            mount_name_local_));
     profile_manager_->DeleteAllTestingProfiles();
     profile_ = nullptr;
     profile_manager_.reset();
@@ -758,8 +771,10 @@ class IntentUtilsFileTest : public ::testing::Test {
   }
 
  protected:
-  const std::string mount_name_ = "TestMountName";
-  const std::string fs_root_ = "/path/to/test/filesystemroot";
+  const std::string mount_name_arc_ = "TestMountNameArc";
+  const std::string mount_name_local_ = "TestMountNameLocal";
+  const std::string fs_root_arc_ = "/fake/android/content/path";
+  const std::string fs_root_local_ = "/path/to/test/filesystemroot";
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -767,12 +782,42 @@ class IntentUtilsFileTest : public ::testing::Test {
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 };
 
-TEST_F(IntentUtilsFileTest, ConvertFileSystemScheme) {
+class IntentUtilsFileSystemSchemeTest
+    : public IntentUtilsFileTest,
+      public ::testing::WithParamInterface<storage::FileSystemType> {};
+
+TEST_P(IntentUtilsFileSystemSchemeTest, ConvertFileSystemScheme) {
+  constexpr char fusebox_subdir[] = "my_subdir";
+  constexpr bool read_only = false;
+  fusebox::Server fusebox_server(nullptr);
+  fusebox_server.RegisterFSURLPrefix(
+      fusebox_subdir,
+      base::StrCat({url::kFileSystemScheme, ":",
+                    GetFileManagerOrigin().Serialize(), storage::kExternalDir,
+                    "/", mount_name_arc_}),
+      read_only);
+
+  base::FilePath in_path;
+  base::FilePath out_path;
+  switch (GetParam()) {
+    case storage::kFileSystemTypeLocal:
+      in_path = base::FilePath(storage::kExternalDir).Append(mount_name_local_);
+      out_path = base::FilePath(fs_root_local_);
+      break;
+    case storage::kFileSystemTypeArcContent:
+      in_path = base::FilePath(storage::kExternalDir).Append(mount_name_arc_);
+      out_path = base::FilePath(file_manager::util::kFuseBoxMediaPath)
+                     .Append(fusebox_subdir);
+      break;
+    default:
+      NOTREACHED();
+  }
+
   auto app_service_intent = std::make_unique<apps::Intent>("action");
   app_service_intent->mime_type = "*/*";
-  const std::string path = "Documents/foo.txt";
+  const std::string relative_path = "Documents/foo.txt";
   const std::string mime_type = "text/plain";
-  auto url = ToGURL(base::FilePath(storage::kTestDir), path);
+  auto url = ToGURL(in_path, relative_path);
   EXPECT_TRUE(url.SchemeIsFileSystem());
   app_service_intent->files = std::vector<apps::IntentFilePtr>{};
   auto file = std::make_unique<apps::IntentFile>(url);
@@ -784,9 +829,16 @@ TEST_F(IntentUtilsFileTest, ConvertFileSystemScheme) {
   EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
   ASSERT_TRUE(crosapi_intent->files.has_value());
   ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
-  EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, base::FilePath(path));
+  EXPECT_EQ(crosapi_intent->files.value()[0]->file_path,
+            out_path.Append(base::FilePath(relative_path)));
   EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    IntentUtilsFileSystemScheme,
+    IntentUtilsFileSystemSchemeTest,
+    testing::ValuesIn({storage::kFileSystemTypeLocal,
+                       storage::kFileSystemTypeArcContent}));
 
 TEST_F(IntentUtilsFileTest, ConvertFileScheme) {
   auto app_service_intent = std::make_unique<apps::Intent>("action");
@@ -812,7 +864,7 @@ TEST_F(IntentUtilsFileTest, ConvertFileScheme) {
 TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
   const std::string path = "Documents/foo.txt";
   std::vector<base::FilePath> file_paths;
-  file_paths.push_back(base::FilePath(fs_root_).Append(path));
+  file_paths.push_back(base::FilePath(fs_root_local_).Append(path));
   auto crosapi_intent =
       apps_util::CreateCrosapiIntentForViewFiles(std::move(file_paths));
 
@@ -824,6 +876,7 @@ TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
   ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
   EXPECT_EQ(
       app_service_intent->files[0]->url,
-      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
+      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_local_),
+             path));
 }
 #endif

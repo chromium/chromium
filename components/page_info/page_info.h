@@ -350,6 +350,7 @@ class PageInfo : private content_settings::CookieControlsView {
                        int allowed_cookies,
                        int blocked_cookies) override;
   void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
+  void OnStatefulBounceCountChanged(int bounce_count) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
@@ -435,7 +436,7 @@ class PageInfo : private content_settings::CookieControlsView {
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
-  raw_ptr<PageInfoUI> ui_;
+  raw_ptr<PageInfoUI, DanglingUntriaged> ui_;
 
   // A web contents getter used to retrieve the associated WebContents object.
   base::WeakPtr<content::WebContents> web_contents_;
@@ -478,11 +479,11 @@ class PageInfo : private content_settings::CookieControlsView {
   std::u16string identity_status_description_android_;
 #endif
 
-  // Set when the user has explicitly bypassed an SSL error for this host or
-  // explicitly denied it (the latter of which is not currently possible in the
-  // Chrome UI). When |show_ssl_decision_revoke_button| is true, the connection
-  // area of the page info will include an option for the user to revoke their
-  // decision to bypass the SSL error for this host.
+  // Set when the user has explicitly bypassed an SSL error for this host
+  // and/or the user has explicitly bypassed an HTTP warning (from HTTPS-First
+  // Mode) for this host. When `show_ssl_decision_revoke_button` is true, the
+  // connection area of the page info UI will include an option for the user
+  // to revoke their decision to bypass warnings for this host.
   bool show_ssl_decision_revoke_button_;
 
   // Details about the connection to the website. In case of an encrypted

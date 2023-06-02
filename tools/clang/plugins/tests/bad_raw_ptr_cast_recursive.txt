@@ -1,0 +1,31 @@
+bad_raw_ptr_cast_recursive.cpp:36:26: error: [chromium-style] casting 'void *' to 'A * is not allowed.
+  (void)static_cast<A*>(p);  // Error.
+                         ^
+bad_raw_ptr_cast_recursive.cpp:36:26: note: [chromium-style] 'A *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_recursive.cpp:19:3: note: [chromium-style] 'A' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_recursive.cpp:37:26: error: [chromium-style] casting 'void *' to 'B * is not allowed.
+  (void)static_cast<B*>(p);  // Error.
+                         ^
+bad_raw_ptr_cast_recursive.cpp:37:26: note: [chromium-style] 'B *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_recursive.cpp:23:3: note: [chromium-style] 'B' manages BackupRefPtr or its container here.
+  A* a;
+  ^
+bad_raw_ptr_cast_recursive.cpp:19:3: note: [chromium-style] 'A' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_recursive.cpp:39:26: error: [chromium-style] casting 'void *' to 'D * is not allowed.
+  (void)static_cast<D*>(p);  // Error.
+                         ^
+bad_raw_ptr_cast_recursive.cpp:39:26: note: [chromium-style] 'D *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_recursive.cpp:30:3: note: [chromium-style] 'D' manages BackupRefPtr or its container here.
+  B* b;
+  ^
+bad_raw_ptr_cast_recursive.cpp:23:3: note: [chromium-style] 'B' manages BackupRefPtr or its container here.
+  A* a;
+  ^
+bad_raw_ptr_cast_recursive.cpp:19:3: note: [chromium-style] 'A' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+3 errors generated.

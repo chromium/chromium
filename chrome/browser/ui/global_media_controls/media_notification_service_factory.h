@@ -11,7 +11,7 @@ class Profile;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -32,7 +32,7 @@ class MediaNotificationServiceFactory : public ProfileKeyedServiceFactory {
   static MediaNotificationService* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<MediaNotificationServiceFactory>;
+  friend base::NoDestructor<MediaNotificationServiceFactory>;
 
   MediaNotificationServiceFactory();
   ~MediaNotificationServiceFactory() override;

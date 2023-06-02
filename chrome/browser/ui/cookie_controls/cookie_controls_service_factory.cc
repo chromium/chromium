@@ -17,7 +17,8 @@ CookieControlsService* CookieControlsServiceFactory::GetForProfile(
 
 // static
 CookieControlsServiceFactory* CookieControlsServiceFactory::GetInstance() {
-  return base::Singleton<CookieControlsServiceFactory>::get();
+  static base::NoDestructor<CookieControlsServiceFactory> instance;
+  return instance.get();
 }
 
 // static

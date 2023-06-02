@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import static org.chromium.android_webview.test.common.crash.CrashInfoTest.createCrashInfo;
+import static org.chromium.android_webview.nonembedded.crash.CrashInfo.createCrashInfoForTesting;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.getClipBoardTextOnUiThread;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.setClipBoardTextOnUiThread;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
@@ -63,16 +63,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.crash.CrashInfo;
-import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
-import org.chromium.android_webview.common.crash.CrashUploadUtil;
-import org.chromium.android_webview.common.crash.CrashUploadUtil.CrashUploadDelegate;
-import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.devui.CrashesListFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo.UploadState;
+import org.chromium.android_webview.nonembedded.crash.CrashUploadUtil;
+import org.chromium.android_webview.nonembedded.crash.CrashUploadUtil.CrashUploadDelegate;
+import org.chromium.android_webview.nonembedded.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
@@ -386,7 +386,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_uploaded() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo("123456", systemTime, "0abcde123456",
+        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, "0abcde123456",
                 systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
 
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -423,7 +423,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testOpenBugReportCrash() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo("123456", systemTime, "0abcde123456",
+        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, "0abcde123456",
                 systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
 
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -472,7 +472,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_pending() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
@@ -511,8 +511,8 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_pendingUserRequest() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo("123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME,
-                UploadState.PENDING_USER_REQUESTED);
+        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, null, -1,
+                FAKE_APP_PACKAGE_NAME, UploadState.PENDING_USER_REQUESTED);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -549,7 +549,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_skipped() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
@@ -588,7 +588,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testForceUploadSkippedCrashReport_noWifi() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
 
         File minidumpFile = createMinidumpFile(crashInfo);
@@ -654,7 +654,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testForceUploadSkippedCrashReport_withWifi() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
 
         File minidumpFile = createMinidumpFile(crashInfo);
@@ -721,7 +721,7 @@ public class CrashesListFragmentTest {
                 "This test assumes \"com.android.settings\" package is available", appInfo);
 
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, appPackageName, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
@@ -746,8 +746,8 @@ public class CrashesListFragmentTest {
     // Test when app package name field is missing in the crash info.
     public void testMissingPackageInfo() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo =
-                createCrashInfo("123456", systemTime, null, -1, null, UploadState.PENDING);
+        CrashInfo crashInfo = createCrashInfoForTesting(
+                "123456", systemTime, null, -1, null, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -766,7 +766,8 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     // Test when crash is missing json, but has upload log file and minidump.
     public void testShowingSingleCrashReport_uploaded_missingJson() throws Throwable {
-        CrashInfo crashInfo = createCrashInfo("123456", -1, null, 1000, null, UploadState.UPLOADED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting("123456", -1, null, 1000, null, UploadState.UPLOADED);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
@@ -785,7 +786,8 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     // Test when crash is missing json, but has upload log file and minidump.
     public void testShowingSingleCrashReport_pending_missingJson() throws Throwable {
-        CrashInfo crashInfo = createCrashInfo("123456", -1, null, 1000, null, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting("123456", -1, null, 1000, null, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
 
@@ -808,8 +810,8 @@ public class CrashesListFragmentTest {
         for (int i = 0; i < crashReportsNum; ++i) {
             // Set capture time with an arbitrary chosen 2 second difference to make sure crashes
             // are shown in descending order with most recent crash first.
-            crashInfo[i] = createCrashInfo("abcd" + Integer.toString(i), systemTime + i * 2000,
-                    null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+            crashInfo[i] = createCrashInfoForTesting("abcd" + Integer.toString(i),
+                    systemTime + i * 2000, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
             assertThat(
                     "temp minidump file should exist", createMinidumpFile(crashInfo[i]).exists());
@@ -836,7 +838,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testHideCrashButton_uploaded() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo("123456", systemTime, "0abcde123456",
+        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, "0abcde123456",
                 systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
 
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -867,7 +869,7 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testHideCrashButton_pending() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
@@ -897,7 +899,8 @@ public class CrashesListFragmentTest {
     @Test
     @Feature({"AndroidWebView"})
     public void testHideCrashButton_uploaded_missingJson() throws Throwable {
-        CrashInfo crashInfo = createCrashInfo("123456", -1, null, 1000, null, UploadState.UPLOADED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting("123456", -1, null, 1000, null, UploadState.UPLOADED);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
@@ -926,7 +929,8 @@ public class CrashesListFragmentTest {
     @Test
     @Feature({"AndroidWebView"})
     public void testHideCrashButton_pending_missingJson() throws Throwable {
-        CrashInfo crashInfo = createCrashInfo("123456", -1, null, -1, null, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting("123456", -1, null, -1, null, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
 
@@ -963,7 +967,7 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
 
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfo(
+        CrashInfo crashInfo = createCrashInfoForTesting(
                 "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
@@ -988,9 +992,9 @@ public class CrashesListFragmentTest {
     public void testLongPressCopy() throws Throwable {
         Context context = InstrumentationRegistry.getTargetContext();
         final long systemTime = System.currentTimeMillis();
-        CrashInfo uploadedCrashInfo = createCrashInfo("123456", systemTime - 1000, "0abcde123456",
-                systemTime, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
-        CrashInfo pendingCrashInfo = createCrashInfo(
+        CrashInfo uploadedCrashInfo = createCrashInfoForTesting("123456", systemTime - 1000,
+                "0abcde123456", systemTime, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+        CrashInfo pendingCrashInfo = createCrashInfoForTesting(
                 "78910", systemTime - 2000, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp json log file for uploaded crash should exist",

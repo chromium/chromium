@@ -22,6 +22,13 @@ Shortcut::Shortcut(const std::string& host_app_id, const std::string& local_id)
 
 Shortcut::~Shortcut() = default;
 
+bool Shortcut::operator==(const Shortcut& rhs) const {
+  return this->shortcut_id == rhs.shortcut_id &&
+         this->host_app_id == rhs.host_app_id &&
+         this->local_id == rhs.local_id && this->name == rhs.name &&
+         this->shortcut_source == rhs.shortcut_source;
+}
+
 std::unique_ptr<Shortcut> Shortcut::Clone() const {
   auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
 
@@ -34,7 +41,9 @@ std::unique_ptr<Shortcut> Shortcut::Clone() const {
 std::string Shortcut::ToString() const {
   std::stringstream out;
   out << "shortcut_id: " << shortcut_id << std::endl;
-  out << "- name: " << name << std::endl;
+  if (name.has_value()) {
+    out << "- name: " << name.value() << std::endl;
+  }
   out << "- shortcut_source: " << EnumToString(shortcut_source) << std::endl;
   out << "- host_app_id: " << host_app_id << std::endl;
   out << "- local_id: " << local_id << std::endl;

@@ -283,6 +283,8 @@ external_paths: Mappings between absolute URLs and paths where files imported
                 Note: all absolute URLs must either be listed in |excludes| or
                 be mapped in |external_paths|, otherwise a build time error is
                 raised.
+out_folder: The location where bundled files will be placed in. Defaults to
+            |target_gen_dir|.
 ```
 
 #### **Example**
@@ -315,9 +317,8 @@ if (optimize_webui) {
 ### **minify_js**
 ```
 This rule is used to minify Javascript files to reduce build size.
-Also generates a manifest file to |target_gen_dir| named
-minify_js_manifest.json. This can be used alongside bundle_js(), if
-bundling and minifying is desired.
+This can be used alongside bundle_js(), if bundling and minifying is
+desired.
 ```
 
 #### **Arguments**
@@ -325,6 +326,9 @@ bundling and minifying is desired.
 in_folder: The location of the input files to be minified.
 in_files: The list of JS files to minify with respect to the |in_folder|.
 out_folder: The location where minified files will be outputted.
+out_manifest: The location to write the manifest file of all files
+              outputted by minify_js(). Defaults to
+              $target_gen_dir/${target_name}_manifest.json.
 deps: Targets generating any files being minified.
 ```
 
@@ -386,7 +390,7 @@ generate_grd("build_grd") {
   input_files = [ "my_webui.html" ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
-  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   # Or, configure statically the manifest file name:
   # manifest_files = [ "$target_gen_dir/build_ts.manifest" ]
   grd_prefix = "my_webui"
@@ -740,7 +744,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "my_debug_page_index.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
 }
 
 # Create the pak, header, and resource map files.
@@ -823,7 +827,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "my_debug_page_index.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
 }
 
 # Create the pak, header, and resource map files.

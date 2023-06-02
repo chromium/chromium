@@ -336,13 +336,21 @@ bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
   if (!cws_info_service_) {
     cws_info_service_ = CWSInfoService::Get(profile_);
   }
-  // Return the current live-in-CWS status of the extension in CWS if available,
-  // otherwise assume it's currently published and return true.
+  // Return the current published status of the extension in CWS if available.
+  // Otherwise assume the extension is currently published and return true.
+  // Ignore extensions taken down for malware as they are blocklisted and
+  // unloaded independently of policy.
   // Current publish status may not available if the policy setting just changed
   // to |kDisableUnpublished|. The actual publish status will be retrieved
   // by CWSInfoService separately and will trigger this same policy check.
-  auto live_status = cws_info_service_->IsLiveInCWS(*extension);
-  return live_status.value_or(true);
+  absl::optional<CWSInfoServiceInterface::CWSInfo> cws_info =
+      cws_info_service_->GetCWSInfo(*extension);
+  if (cws_info.has_value() && cws_info->is_present &&
+      cws_info->violation_type !=
+          CWSInfoServiceInterface::CWSViolationType::kMalware) {
+    return cws_info->is_live;
+  }
+  return true;
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(

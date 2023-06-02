@@ -313,13 +313,6 @@ void ShareAndTranslateHostToVM(
   std::move(callback).Run(std::move(file_urls));
 }
 
-base::FilePath SubstituteFuseboxFilePath(const storage::FileSystemURL& url) {
-  if (fusebox::Server* server = fusebox::Server::GetInstance()) {
-    return server->InverseResolveFSURL(url);
-  }
-  return base::FilePath();
-}
-
 }  // namespace
 
 std::vector<base::FilePath> TranslateVMPathsToHost(
@@ -422,10 +415,11 @@ void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
 
   std::vector<FileInfo> list;
   for (auto& url : file_system_urls) {
-    if (!file_manager::util::IsNonNativeFileSystemType(url.type())) {
+    if (url.TypeImpliesPathIsReal()) {
       base::FilePath path = url.path();
       list.emplace_back(std::move(path), std::move(url));
-    } else if (base::FilePath path = SubstituteFuseboxFilePath(url);
+    } else if (base::FilePath path =
+                   fusebox::Server::SubstituteFuseboxFilePath(url);
                !path.empty()) {
       list.emplace_back(std::move(path), std::move(url));
     }
@@ -467,9 +461,10 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
     if (!url.is_valid()) {
       LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
       continue;
-    } else if (!file_manager::util::IsNonNativeFileSystemType(url.type())) {
+    } else if (url.TypeImpliesPathIsReal()) {
       file_info.emplace_back(std::move(url.path()), base::FilePath());
-    } else if (base::FilePath path = SubstituteFuseboxFilePath(url);
+    } else if (base::FilePath path =
+                   fusebox::Server::SubstituteFuseboxFilePath(url);
                !path.empty()) {
       file_info.emplace_back(std::move(path), base::FilePath());
     }

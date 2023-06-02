@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_installer_errors.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
@@ -88,7 +88,6 @@ const ComponentConfig* FindConfig(const std::string& name) {
   return config;
 }
 
-// TODO(xiaochu): add metrics for component usage (https://crbug.com/793052).
 void LogCustomUninstall(absl::optional<bool> result) {}
 
 void FinishCustomUninstallOnUIThread(const std::string& name) {
@@ -288,18 +287,14 @@ void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
 
 update_client::InstallerAttributes
 DemoAppInstallerPolicy::GetInstallerAttributes() const {
-  PrefService* prefs = g_browser_process->local_state();
   update_client::InstallerAttributes demo_app_installer_attributes;
-  demo_app_installer_attributes["retailer_id"] =
-      prefs->GetString(prefs::kDemoModeRetailerId);
-  demo_app_installer_attributes["store_id"] =
-      prefs->GetString(prefs::kDemoModeStoreId);
-  demo_app_installer_attributes["demo_country"] =
-      prefs->GetString(prefs::kDemoModeCountry);
+  demo_app_installer_attributes["retailer_id"] = ash::demo_mode::RetailerName();
+  demo_app_installer_attributes["store_id"] = ash::demo_mode::StoreNumber();
+  demo_app_installer_attributes["demo_country"] = ash::demo_mode::Country();
   demo_app_installer_attributes["is_cloud_gaming_device"] =
-      chromeos::features::IsCloudGamingDeviceEnabled() ? "true" : "false";
+      ash::demo_mode::IsCloudGamingDevice() ? "true" : "false";
   demo_app_installer_attributes["is_feature_aware_device"] =
-      ash::features::IsFeatureAwareDeviceDemoModeEnabled() ? "true" : "false";
+      ash::demo_mode::IsFeatureAwareDevice() ? "true" : "false";
   return demo_app_installer_attributes;
 }
 

@@ -110,9 +110,9 @@ class AboutThisSiteServiceTest : public testing::Test {
   AboutThisSiteService* service() { return service_.get(); }
 
  private:
-  raw_ptr<MockAboutThisSiteServiceClient> client_;
-  std::unique_ptr<AboutThisSiteService> service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
+  std::unique_ptr<AboutThisSiteService> service_;
+  raw_ptr<MockAboutThisSiteServiceClient> client_;
 };
 
 // Tests that correct proto messages are accepted.

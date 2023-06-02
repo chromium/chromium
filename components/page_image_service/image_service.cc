@@ -9,8 +9,10 @@
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -48,36 +50,24 @@ void FulfillAllCallbacks(std::vector<ImageService::ResultCallback> callbacks,
 class ImageService::SuggestEntityImageURLFetcher {
  public:
   SuggestEntityImageURLFetcher(
-      AutocompleteProviderClient* autocomplete_provider_client,
+      const AutocompleteSchemeClassifier& autocomplete_scheme_classifier,
+      mojom::ClientId client_id,
       const std::u16string& search_query,
       const std::string& entity_id)
-      : autocomplete_provider_client_(autocomplete_provider_client),
+      : autocomplete_scheme_classifier_(autocomplete_scheme_classifier),
+        client_id_(client_id),
         search_query_(base::i18n::ToLower(search_query)),
-        entity_id_(entity_id) {
-    DCHECK(autocomplete_provider_client);
-  }
+        entity_id_(entity_id) {}
   SuggestEntityImageURLFetcher(const SuggestEntityImageURLFetcher&) = delete;
 
   // `callback` is called with the result.
-  void Start(base::OnceCallback<void(const GURL&)> callback) {
-    const TemplateURLService* template_url_service =
-        autocomplete_provider_client_->GetTemplateURLService();
-    if (template_url_service == nullptr) {
-      return std::move(callback).Run(GURL());
-    }
-
-    // We are relying on the user's consent to Sync History, which in practice
-    // means only Google should get URL-keyed metadata requests via Suggest.
-    const TemplateURL* template_url =
-        template_url_service->GetDefaultSearchProvider();
-    if (template_url == nullptr ||
-        template_url->GetEngineType(
-            template_url_service->search_terms_data()) !=
-            SEARCH_ENGINE_GOOGLE) {
-      return std::move(callback).Run(GURL());
-    }
-
-    DCHECK(!callback_);
+  void Start(const TemplateURL* template_url,
+             const SearchTermsData& search_terms_data,
+             RemoteSuggestionsService* remote_suggestions_service,
+             base::OnceCallback<void(const GURL&)> callback) {
+    CHECK(template_url);
+    CHECK(remote_suggestions_service);
+    CHECK(!callback_);
     callback_ = std::move(callback);
 
     TemplateURLRef::SearchTermsArgs search_terms_args;
@@ -85,14 +75,10 @@ class ImageService::SuggestEntityImageURLFetcher {
         metrics::OmniboxEventProto::JOURNEYS;
     search_terms_args.search_terms = search_query_;
 
-    loader_ =
-        autocomplete_provider_client_
-            ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-            ->StartSuggestionsRequest(
-                template_url, search_terms_args,
-                template_url_service->search_terms_data(),
-                base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
-                               weak_factory_.GetWeakPtr()));
+    loader_ = remote_suggestions_service->StartSuggestionsRequest(
+        template_url, search_terms_args, search_terms_data,
+        base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
+                       weak_factory_.GetWeakPtr()));
   }
 
  private:
@@ -101,30 +87,40 @@ class ImageService::SuggestEntityImageURLFetcher {
                          std::unique_ptr<std::string> response_body) {
     DCHECK_EQ(loader_.get(), source);
     if (!response_received) {
+      UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
+                                       PageImageServiceResult::kResponseMissing,
+                                       client_id_);
       return std::move(callback_).Run(GURL());
     }
 
     std::string response_json = SearchSuggestionParser::ExtractJsonData(
         source, std::move(response_body));
     if (response_json.empty()) {
+      UmaHistogramEnumerationForClient(
+          kBackendSuggestResultHistogramName,
+          PageImageServiceResult::kResponseMalformed, client_id_);
       return std::move(callback_).Run(GURL());
     }
 
     auto response_data =
         SearchSuggestionParser::DeserializeJsonData(response_json);
     if (!response_data) {
+      UmaHistogramEnumerationForClient(
+          kBackendSuggestResultHistogramName,
+          PageImageServiceResult::kResponseMalformed, client_id_);
       return std::move(callback_).Run(GURL());
     }
 
-    AutocompleteInput input(
-        search_query_, metrics::OmniboxEventProto::JOURNEYS,
-        autocomplete_provider_client_->GetSchemeClassifier());
+    AutocompleteInput input(search_query_, metrics::OmniboxEventProto::JOURNEYS,
+                            *autocomplete_scheme_classifier_);
     SearchSuggestionParser::Results results;
     if (!SearchSuggestionParser::ParseSuggestResults(
-            *response_data, input,
-            autocomplete_provider_client_->GetSchemeClassifier(),
+            *response_data, input, *autocomplete_scheme_classifier_,
             /*default_result_relevance=*/100,
             /*is_keyword_result=*/false, &results)) {
+      UmaHistogramEnumerationForClient(
+          kBackendSuggestResultHistogramName,
+          PageImageServiceResult::kResponseMalformed, client_id_);
       return std::move(callback_).Run(GURL());
     }
 
@@ -134,17 +130,28 @@ class ImageService::SuggestEntityImageURLFetcher {
       GURL url(result.entity_info().image_url());
       if (url.is_valid() &&
           base::i18n::ToLower(result.match_contents()) == search_query_) {
+        UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
+                                         PageImageServiceResult::kSuccess,
+                                         client_id_);
         return std::move(callback_).Run(std::move(url));
       }
     }
 
     // If we didn't find any matching images, still notify the caller.
     if (!callback_.is_null()) {
+      UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
+                                       PageImageServiceResult::kNoImage,
+                                       client_id_);
       std::move(callback_).Run(GURL());
     }
   }
 
-  const raw_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
+  // Embedder-specific logic on how to classify schemes.
+  const raw_ref<const AutocompleteSchemeClassifier>
+      autocomplete_scheme_classifier_;
+
+  // The id of the UI requesting the image.
+  mojom::ClientId client_id_;
 
   // The search query and entity ID we are searching for.
   const std::u16string search_query_;
@@ -160,17 +167,23 @@ class ImageService::SuggestEntityImageURLFetcher {
 };
 
 ImageService::ImageService(
-    std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
+    TemplateURLService* template_url_service,
+    RemoteSuggestionsService* remote_suggestions_service,
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
-    syncer::SyncService* sync_service)
-    : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
+    syncer::SyncService* sync_service,
+    std::unique_ptr<AutocompleteSchemeClassifier>
+        autocomplete_scheme_classifier)
+    : template_url_service_(template_url_service),
+      remote_suggestions_service_(remote_suggestions_service),
       history_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(sync_service)),
       bookmarks_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(
-                  sync_service)) {
+                  sync_service)),
+      autocomplete_scheme_classifier_(
+          std::move(autocomplete_scheme_classifier)) {
   if (opt_guide && base::FeatureList::IsEnabled(
                        kImageServiceOptimizationGuideSalientImages)) {
     opt_guide_ = opt_guide;
@@ -237,25 +250,24 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
   }
 
   if (options.suggest_images &&
-      base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages)) {
-    // TODO(b/244507194): Get our "own" TemplateURLService.
-    if (auto* template_url_service =
-            autocomplete_provider_client_->GetTemplateURLService()) {
-      auto search_metadata =
-          template_url_service->ExtractSearchMetadata(page_url);
-      // Fetch entity-keyed images for Google SRP visits only, because only
-      // Google SRP visits can expect to have a reasonable entity from Google
-      // Suggest.
-      if (search_metadata && search_metadata->template_url &&
-          search_metadata->template_url->GetEngineType(
-              template_url_service->search_terms_data()) ==
-              SEARCH_ENGINE_GOOGLE) {
-        UmaHistogramEnumerationForClient(kBackendHistogramName,
-                                         PageImageServiceBackend::kSuggest,
-                                         client_id);
-        return FetchSuggestImage(/*search_query=*/search_metadata->search_terms,
-                                 /*entity_id=*/"", std::move(callback));
-      }
+      base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages) &&
+      template_url_service_ && remote_suggestions_service_) {
+    auto search_metadata =
+        template_url_service_->ExtractSearchMetadata(page_url);
+    // Fetch entity-keyed images for Google SRP visits only, because only
+    // Google SRP visits can expect to have a reasonable entity from Google
+    // Suggest.
+    if (search_metadata && search_metadata->template_url &&
+        search_metadata->template_url->GetEngineType(
+            template_url_service_->search_terms_data()) ==
+            SEARCH_ENGINE_GOOGLE) {
+      UmaHistogramEnumerationForClient(
+          kBackendHistogramName, PageImageServiceBackend::kSuggest, client_id);
+      return FetchSuggestImage(search_metadata->template_url,
+                               template_url_service_->search_terms_data(),
+                               client_id,
+                               /*search_query=*/search_metadata->search_terms,
+                               /*entity_id=*/"", std::move(callback));
     }
   }
 
@@ -275,18 +287,23 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
   std::move(callback).Run(GURL());
 }
 
-void ImageService::FetchSuggestImage(const std::u16string& search_query,
+void ImageService::FetchSuggestImage(const TemplateURL* template_url,
+                                     const SearchTermsData& search_terms_data,
+                                     mojom::ClientId client_id,
+                                     const std::u16string& search_query,
                                      const std::string& entity_id,
                                      ResultCallback callback) {
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
-      autocomplete_provider_client_.get(), search_query, entity_id);
+      *autocomplete_scheme_classifier_, client_id, search_query, entity_id);
 
   // Use a raw pointer temporary so we can give ownership of the unique_ptr to
   // the callback and have a well defined SuggestEntityImageURLFetcher lifetime.
   auto* fetcher_raw_ptr = fetcher.get();
-  fetcher_raw_ptr->Start(base::BindOnce(
-      &ImageService::OnSuggestImageFetched, weak_factory_.GetWeakPtr(),
-      std::move(fetcher), std::move(callback)));
+  fetcher_raw_ptr->Start(
+      template_url, search_terms_data, remote_suggestions_service_,
+      base::BindOnce(&ImageService::OnSuggestImageFetched,
+                     weak_factory_.GetWeakPtr(), std::move(fetcher),
+                     std::move(callback)));
 }
 
 void ImageService::OnSuggestImageFetched(
@@ -401,7 +418,7 @@ void ImageService::OnOptimizationGuideImageFetched(
   if (iter == decisions.end()) {
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
-        PageImageServiceOptimizationGuideResult::kDecisionMissing, client_id);
+        PageImageServiceResult::kResponseMissing, client_id);
     return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
 
@@ -411,13 +428,13 @@ void ImageService::OnOptimizationGuideImageFetched(
       optimization_guide::OptimizationGuideDecision::kTrue) {
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
-        PageImageServiceOptimizationGuideResult::kNoImage, client_id);
+        PageImageServiceResult::kNoImage, client_id);
     return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
   if (!decision.metadata.any_metadata().has_value()) {
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
-        PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
+        PageImageServiceResult::kResponseMalformed, client_id);
     return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
 
@@ -427,7 +444,7 @@ void ImageService::OnOptimizationGuideImageFetched(
   if (!parsed_any) {
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
-        PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
+        PageImageServiceResult::kResponseMalformed, client_id);
     return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
 
@@ -439,16 +456,16 @@ void ImageService::OnOptimizationGuideImageFetched(
       if (image_url.is_valid()) {
         UmaHistogramEnumerationForClient(
             kBackendOptimizationGuideResultHistogramName,
-            PageImageServiceOptimizationGuideResult::kSuccess, client_id);
+            PageImageServiceResult::kSuccess, client_id);
         return FulfillAllCallbacks(std::move(matching_callbacks), image_url);
       }
     }
   }
 
   // Fail if we can't find any.
-  UmaHistogramEnumerationForClient(
-      kBackendOptimizationGuideResultHistogramName,
-      PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
+  UmaHistogramEnumerationForClient(kBackendOptimizationGuideResultHistogramName,
+                                   PageImageServiceResult::kResponseMalformed,
+                                   client_id);
   return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
 }
 

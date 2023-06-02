@@ -63,6 +63,12 @@ class CORE_EXPORT NGLineBreaker {
 
   bool IsFinished() const { return current_.item_index >= Items().size(); }
 
+  // True if there are items that `NGScoreLineBreaker` doesn't support.
+  // Conditions that can be determined by `CollectInlines` are done by
+  // `NGInlineNode::IsScoreLineBreakDisabled()`, but some conditions can change
+  // withoiut `CollectInlines`. They are determined by this.
+  bool ShouldDisableScoreLineBreak() const { return disable_score_line_break_; }
+
   // Override the available width to compute line breaks. This is reset after
   // each `NextLine`.
   void OverrideAvailableWidth(LayoutUnit available_width);
@@ -303,6 +309,8 @@ class CORE_EXPORT NGLineBreaker {
 
   // True when breaking at soft hyphens (U+00AD) is allowed.
   bool enable_soft_hyphen_ = true;
+
+  bool disable_score_line_break_ = false;
 
   // True when the line should be non-empty if |IsLastLine|..
   bool force_non_empty_if_last_line_ = false;

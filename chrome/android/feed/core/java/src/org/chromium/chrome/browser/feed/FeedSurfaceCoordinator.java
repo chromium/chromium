@@ -579,6 +579,8 @@ public class FeedSurfaceCoordinator
             updateReloadButtonVisibility(/*isReloading=*/false);
             if (mSwipeRefreshLayout == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
+            mSwipeRefreshLayout.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
+            mSwipeRefreshLayout.setContentDescription("");
         });
         getFeatureEngagementTracker().notifyEvent(EventConstants.FEED_SWIPE_REFRESHED);
     }

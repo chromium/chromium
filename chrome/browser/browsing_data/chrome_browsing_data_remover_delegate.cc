@@ -106,7 +106,6 @@
 #include "components/nacl/browser/pnacl_host.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -144,7 +143,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
-#include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/feed/feed_service_factory.h"
@@ -568,17 +566,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     device_event_log::Clear(delete_begin_, delete_end_);
 
-#if BUILDFLAG(IS_ANDROID)
-    explore_sites::ExploreSitesService* explore_sites_service =
-        explore_sites::ExploreSitesServiceFactory::GetForBrowserContext(
-            profile_);
-    if (explore_sites_service) {
-      explore_sites_service->ClearActivities(
-          delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kExploreSites));
-    }
-#endif
-
     CreateCrashUploadList()->Clear(delete_begin_, delete_end_);
 
     FindBarStateFactory::GetForBrowserContext(profile_)->SetLastSearchText(
@@ -798,16 +785,17 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, delete_begin_,
         delete_end_, website_settings_filter);
-#endif
 
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::NOTIFICATION_INTERACTIONS, delete_begin_,
-        delete_end_, website_settings_filter);
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::PRIVATE_NETWORK_GUARD, delete_begin_, delete_end_,
         website_settings_filter);
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA, delete_begin_,
+        delete_end_, website_settings_filter);
+#endif
+
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::NOTIFICATION_INTERACTIONS, delete_begin_,
         delete_end_, website_settings_filter);
 
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
@@ -1159,18 +1147,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           nullable_filter.is_null() || nullable_filter.Run(search_url);
     }
 
-    if (should_clear_zero_suggest_and_session_token) {
-      if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
-        auto* zero_suggest_cache_service =
-            ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
-        if (zero_suggest_cache_service) {
-          zero_suggest_cache_service->ClearCache();
-        }
-      } else {
-        prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
-        prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                       base::Value::Dict());
-      }
+    // `zero_suggest_cache_service` is null if `profile_` is off the record.
+    auto* zero_suggest_cache_service =
+        ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
+    if (should_clear_zero_suggest_and_session_token &&
+        zero_suggest_cache_service) {
+      zero_suggest_cache_service->ClearCache();
     }
 
     // |search_prefetch_service| is null if |profile_| is off the record.

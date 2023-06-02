@@ -12,6 +12,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/audio/arc_audio_bridge.h"
 #include "ash/components/arc/camera/arc_camera_bridge.h"
+#include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
 #include "ash/components/arc/clipboard/arc_clipboard_bridge.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
@@ -316,6 +317,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ash::ApkWebAppService::Get(profile);
   ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
   ArcInitialOptInNotifier::GetForProfile(profile);
+  ArcChromeFeatureFlagsBridge::GetForBrowserContext(profile);
 
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
@@ -486,6 +488,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   CertStoreService::EnsureFactoryBuilt();
   GpuArcVideoKeyedService::EnsureFactoryBuilt();
   input_overlay::ArcInputOverlayManager::EnsureFactoryBuilt();
+  ArcChromeFeatureFlagsBridge::EnsureFactoryBuilt();
 }
 
 }  // namespace arc

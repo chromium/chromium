@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ON_CLICK_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -28,10 +30,15 @@ class PasswordMigrationWarningViewBinder {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == VISIBLE) {
             boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
+            // TODO(crbug.com/1446996): Move this logic out of the view binder.
             if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
                 assert model.get(DISMISS_HANDLER) != null;
                 model.get(DISMISS_HANDLER).onResult(BottomSheetController.StateChangeReason.NONE);
             }
+        } else if (propertyKey == CURRENT_SCREEN) {
+            view.setScreen(model.get(CURRENT_SCREEN));
+        } else if (propertyKey == ON_CLICK_HANDLER) {
+            view.setOnClickHandler(model.get(ON_CLICK_HANDLER));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

@@ -157,7 +157,8 @@ EcheAppManager* EcheAppManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 EcheAppManagerFactory* EcheAppManagerFactory::GetInstance() {
-  return base::Singleton<EcheAppManagerFactory>::get();
+  static base::NoDestructor<EcheAppManagerFactory> instance;
+  return instance.get();
 }
 
 // static

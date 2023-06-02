@@ -91,7 +91,7 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
       // A non-interesting event type for which SaveActiveEventMetrics() is
       // called inside its monitor scope.
-      {CreateEventMetrics(ui::ET_MOUSE_MOVED), Behavior::kSaveInsideScope},
+      {CreateEventMetrics(ui::ET_MOUSE_ENTERED), Behavior::kSaveInsideScope},
   };
   EXPECT_NE(events[0].first, nullptr);
   EXPECT_NE(events[1].first, nullptr);

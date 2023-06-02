@@ -22,6 +22,10 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
       absl::optional<base::TimeDelta>());
 }
 
+mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
+  return mojom::LargestContentfulPaintTiming::New();
+}
+
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
   return !timing.dom_content_loaded_event_start && !timing.load_event_start;
 }

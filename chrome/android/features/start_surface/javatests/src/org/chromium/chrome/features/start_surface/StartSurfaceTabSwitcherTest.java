@@ -291,7 +291,8 @@ public class StartSurfaceTabSwitcherTest {
         waitForView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
                 withId(R.id.tab_list_view)));
 
-        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
+        RecyclerView recyclerView =
+                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the carousel Tab
         // switcher is the last created Tab by tapping the MV tile; the second card is the Tab

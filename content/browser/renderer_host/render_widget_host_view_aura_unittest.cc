@@ -718,13 +718,13 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  raw_ptr<RenderWidgetHostImpl> parent_host_;
-  raw_ptr<RenderWidgetHostViewAura> parent_view_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> parent_host_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> parent_view_;
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  raw_ptr<MockRenderWidgetHostImpl> widget_host_;
-  raw_ptr<FakeRenderWidgetHostViewAura> view_;
+  raw_ptr<MockRenderWidgetHostImpl, DanglingUntriaged> widget_host_;
+  raw_ptr<FakeRenderWidgetHostViewAura, DanglingUntriaged> view_;
 
   raw_ptr<IPC::TestSink> sink_ = nullptr;
   base::test::ScopedFeatureList mojo_feature_list_;
@@ -5841,7 +5841,7 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
   }
 
  private:
-  raw_ptr<RenderWidgetHostViewAura> view_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> view_;
 };
 
 // Provides a mock implementation of the WebContentsViewDelegate class.
@@ -6073,16 +6073,17 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_->Show();
   }
 
-  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_first_process_;
-  raw_ptr<TestRenderWidgetHostView> view_for_first_process_;
+  raw_ptr<MockRenderWidgetHostImpl, DanglingUntriaged>
+      widget_host_for_first_process_;
+  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> view_for_first_process_;
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
   scoped_refptr<SiteInstanceGroup> second_site_instance_group_;
   raw_ptr<MockRenderWidgetHostImpl> widget_host_for_second_process_;
-  raw_ptr<TestRenderWidgetHostView> view_for_second_process_;
+  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> view_for_second_process_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
   scoped_refptr<SiteInstanceGroup> third_site_instance_group_;
   raw_ptr<MockRenderWidgetHostImpl> widget_host_for_third_process_;
-  raw_ptr<TestRenderWidgetHostView> view_for_third_process_;
+  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> view_for_third_process_;
 };
 
 // A group of tests which verify that the IME method results are routed to the
@@ -6640,8 +6641,8 @@ class RenderWidgetHostViewAuraInputMethodTest
 
  protected:
   // Not owned.
-  raw_ptr<ui::MockInputMethod> input_method_ = nullptr;
-  raw_ptr<const ui::TextInputClient> text_input_client_;
+  raw_ptr<ui::MockInputMethod, DanglingUntriaged> input_method_ = nullptr;
+  raw_ptr<const ui::TextInputClient, DanglingUntriaged> text_input_client_;
 };
 
 // This test is for notifying InputMethod for surrounding text changes.

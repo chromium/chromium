@@ -8,8 +8,11 @@
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
-// Start the update service in a platform-specific way. Returns false if the
-// service could not be reached.
+// Start the update service. Returns false if the service can't be reached.
 [[nodiscard]] bool DialUpdateService(UpdaterScope scope);
+
+// Start the update internal service. Returns false if the service can't be
+// reached.
+[[nodiscard]] bool DialUpdateInternalService(UpdaterScope scope);
 }  // namespace updater
 #endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_DIALER_H_

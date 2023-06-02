@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
 <translation id="2736805085127235148">Pemberitahuan Chrome dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="2767464022270041271">Tiada kata laluan yang disimpan. Google Password Manager boleh menyemak kata laluan anda yang disimpan.</translation>
+<translation id="2840432500933227975">Buka Tetapan Chromium dalam iOS, kemudian ketik pada "Penyemak Imbas Lalai APP" dan pilih Chrome.</translation>
 <translation id="2869959624320573933">Log Masuk ke Chrome</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Ini bermakna Chrome akan meminta laman mudah alih setiap masa.</translation>
 <translation id="3706101708757577809">Kini, anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="3720541637541300822">Kunci Tab Inkognito Apabila Anda Menutup Chrome</translation>
+<translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="384394811301901750">Google Chrome tidak dapat menggunakan kamera anda sekarang</translation>
 <translation id="3980220367029651214">Anda bertukar akaun penyegerakan daripada <ph name="USER_EMAIL1" /> kepada <ph name="USER_EMAIL2" />. Data Chrome sedia ada anda diurus oleh <ph name="DOMAIN" />. Ini akan memadamkan data anda daripada peranti ini, tetapi data anda akan kekal dalam <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasi anda menghendaki anda kekal dilog keluar daripada Chrome.</translation>
@@ -150,7 +152,6 @@ Perkara yang perlu dipertimbangkan:
   • Jika Chrome ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
 
   • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Anda mendapat perlindungan keselamatan standard untuk profil Chrome ini</translation>
 <translation id="9112744793181547300">Tetapkan Chrome sebagai Penyemak Imbas Lalai?</translation>
 <translation id="9122931302567044771">Ini bermakna Chrome akan meminta laman desktop setiap masa.</translation>
 </translationbundle>

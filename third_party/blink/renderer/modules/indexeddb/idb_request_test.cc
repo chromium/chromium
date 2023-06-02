@@ -69,7 +69,6 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-namespace {
 
 class BackendDatabaseWithMockedClose
     : public testing::StrictMock<mojom::blink::IDBDatabase> {
@@ -134,8 +133,7 @@ class BackendDatabaseWithMockedClose
   void DeleteRange(int64_t transaction_id,
                    int64_t object_store_id,
                    mojom::blink::IDBKeyRangePtr key_range,
-                   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-                       pending_callbacks) override {}
+                   DeleteRangeCallback callback) override {}
   void GetKeyGeneratorCurrentNumber(
       int64_t transaction_id,
       int64_t object_store_id,
@@ -143,8 +141,7 @@ class BackendDatabaseWithMockedClose
           pending_callbacks) override {}
   void Clear(int64_t transaction_id,
              int64_t object_store_id,
-             mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-                 pending_callbacks) override {}
+             ClearCallback callback) override {}
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id,
@@ -210,6 +207,26 @@ class IDBRequestTest : public testing::Test {
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
+  void EnsureIDBCallbacksDontThrow(IDBRequest* request,
+                                   ExceptionState& exception_state) {
+    ASSERT_TRUE(request->transaction());
+    V8TestingScope scope;
+
+    request->HandleResponse(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Description goes here."));
+    request->HandleResponse(nullptr, IDBKey::CreateInvalid(),
+                            IDBKey::CreateInvalid(),
+                            CreateNullIDBValueForTesting(scope.GetIsolate()));
+    request->HandleResponse(IDBKey::CreateInvalid());
+    request->HandleResponse(CreateNullIDBValueForTesting(scope.GetIsolate()));
+    request->HandleResponse(static_cast<int64_t>(0));
+    request->HandleResponse();
+    request->HandleResponse(IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
+                            CreateNullIDBValueForTesting(scope.GetIsolate()));
+
+    EXPECT_TRUE(!exception_state.HadException());
+  }
+
   URLLoaderMockFactory* url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
@@ -221,26 +238,6 @@ class IDBRequestTest : public testing::Test {
 };
 
 const int64_t IDBRequestTest::kTransactionId;
-
-void EnsureIDBCallbacksDontThrow(IDBRequest* request,
-                                 ExceptionState& exception_state) {
-  ASSERT_TRUE(request->transaction());
-  V8TestingScope scope;
-
-  request->HandleResponse(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError, "Description goes here."));
-  request->HandleResponse(nullptr, IDBKey::CreateInvalid(),
-                          IDBKey::CreateInvalid(),
-                          CreateNullIDBValueForTesting(scope.GetIsolate()));
-  request->HandleResponse(IDBKey::CreateInvalid());
-  request->HandleResponse(CreateNullIDBValueForTesting(scope.GetIsolate()));
-  request->HandleResponse(static_cast<int64_t>(0));
-  request->HandleResponse();
-  request->HandleResponse(IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
-                          CreateNullIDBValueForTesting(scope.GetIsolate()));
-
-  EXPECT_TRUE(!exception_state.HadException());
-}
 
 TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   V8TestingScope scope;
@@ -528,5 +525,4 @@ TEST(IDBRequestAsyncTraceStateTest, MoveAssignment) {
   EXPECT_TRUE(source_state.IsEmpty());
 }
 
-}  // namespace
 }  // namespace blink

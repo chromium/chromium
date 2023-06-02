@@ -62,7 +62,7 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 34;
+constexpr int kCurrentVersionNumber = 35;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 33;
@@ -207,6 +207,8 @@ struct SQLTableBuilders {
   raw_ptr<SQLTableBuilder> password_notes;
   raw_ptr<SQLTableBuilder> passwords_sync_entities_metadata;
   raw_ptr<SQLTableBuilder> passwords_sync_model_metadata;
+  raw_ptr<SQLTableBuilder> incoming_sharing_invitation_sync_entities_metadata;
+  raw_ptr<SQLTableBuilder> incoming_sharing_invitation_sync_model_metadata;
 };
 
 base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
@@ -305,18 +307,30 @@ constexpr char kPasswordsSyncModelMetadataTableName[] = "sync_model_metadata";
 constexpr char kPasswordsSyncEntitiesMetadataTableName[] =
     "sync_entities_metadata";
 
+constexpr char kIncomingSharingInvitationSyncModelMetadataTableName[] =
+    "incoming_sharing_invitation_sync_model_metadata";
+constexpr char kIncomingSharingInvitationSyncEntitiesMetadataTableName[] =
+    "incoming_sharing_invitation_sync_entities_metadata";
+
 const char* SyncModelMetadataTableName(syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
-  return kPasswordsSyncModelMetadataTableName;
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+  return model_type == syncer::PASSWORDS
+             ? kPasswordsSyncModelMetadataTableName
+             : kIncomingSharingInvitationSyncModelMetadataTableName;
 }
 
 const char* SyncEntitiesMetadataTableName(syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
-  return kPasswordsSyncEntitiesMetadataTableName;
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+  return model_type == syncer::PASSWORDS
+             ? kPasswordsSyncEntitiesMetadataTableName
+             : kIncomingSharingInvitationSyncEntitiesMetadataTableName;
 }
 
 bool ClearAllSyncMetadata(sql::Database* db, syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   sql::Statement s1(db->GetCachedStatement(
       SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s",
                                         SyncModelMetadataTableName(model_type))
@@ -352,6 +366,17 @@ void SealVersion(SQLTableBuilders builders, unsigned expected_version) {
   unsigned passwords_sync_model_metadata_version =
       builders.passwords_sync_model_metadata->SealVersion();
   DCHECK_EQ(expected_version, passwords_sync_model_metadata_version);
+
+  unsigned incoming_sharing_invitation_sync_entities_metadata_version =
+      builders.incoming_sharing_invitation_sync_entities_metadata
+          ->SealVersion();
+  CHECK_EQ(expected_version,
+           incoming_sharing_invitation_sync_entities_metadata_version);
+
+  unsigned incoming_sharing_invitation_sync_model_metadata_version =
+      builders.incoming_sharing_invitation_sync_model_metadata->SealVersion();
+  CHECK_EQ(expected_version,
+           incoming_sharing_invitation_sync_model_metadata_version);
 }
 
 // Teaches |builders| about the different DB schemes in different versions.
@@ -525,6 +550,17 @@ void InitializeBuilders(SQLTableBuilders builders) {
                                            "INTEGER NOT NULL DEFAULT 0");
   SealVersion(builders, /*expected_version=*/34u);
 
+  // Version 35.
+  builders.incoming_sharing_invitation_sync_entities_metadata
+      ->AddPrimaryKeyColumn("storage_key");
+  builders.incoming_sharing_invitation_sync_entities_metadata->AddColumn(
+      "metadata", "VARCHAR NOT NULL");
+  builders.incoming_sharing_invitation_sync_model_metadata->AddPrimaryKeyColumn(
+      "id");
+  builders.incoming_sharing_invitation_sync_model_metadata->AddColumn(
+      "model_metadata", "VARCHAR NOT NULL");
+  SealVersion(builders, /*expected_version=*/35u);
+
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -688,6 +724,16 @@ bool MigrateDatabase(unsigned current_version,
 
   if (!builders.passwords_sync_model_metadata->MigrateFrom(current_version,
                                                            db)) {
+    return false;
+  }
+
+  if (!builders.incoming_sharing_invitation_sync_entities_metadata->MigrateFrom(
+          current_version, db)) {
+    return false;
+  }
+
+  if (!builders.incoming_sharing_invitation_sync_model_metadata->MigrateFrom(
+          current_version, db)) {
     return false;
   }
 
@@ -888,10 +934,18 @@ bool LoginDatabase::Init() {
       kPasswordsSyncEntitiesMetadataTableName);
   SQLTableBuilder passwords_sync_model_metadata_builder(
       kPasswordsSyncModelMetadataTableName);
-  SQLTableBuilders builders = {&logins_builder, &insecure_credentials_builder,
-                               &password_notes_builder,
-                               &passwords_sync_entities_metadata_builder,
-                               &passwords_sync_model_metadata_builder};
+  SQLTableBuilder incoming_sharing_invitation_sync_entities_metadata_builder(
+      kIncomingSharingInvitationSyncEntitiesMetadataTableName);
+  SQLTableBuilder incoming_sharing_invitation_sync_model_metadata_builder(
+      kIncomingSharingInvitationSyncModelMetadataTableName);
+  SQLTableBuilders builders = {
+      &logins_builder,
+      &insecure_credentials_builder,
+      &password_notes_builder,
+      &passwords_sync_entities_metadata_builder,
+      &passwords_sync_model_metadata_builder,
+      &incoming_sharing_invitation_sync_entities_metadata_builder,
+      &incoming_sharing_invitation_sync_model_metadata_builder};
   InitializeBuilders(builders);
   InitializeStatementStrings(logins_builder);
 
@@ -921,6 +975,23 @@ bool LoginDatabase::Init() {
   password_notes_table_.Init(&db_);
   field_info_table_.Init(&db_);
 
+  if (!incoming_sharing_invitation_sync_entities_metadata_builder.CreateTable(
+          &db_)) {
+    LOG(ERROR) << "Failed to create the "
+                  "'incoming_sharing_invitation_sync_entities_metadata' table";
+    transaction.Rollback();
+    db_.Close();
+    return false;
+  }
+
+  if (!incoming_sharing_invitation_sync_model_metadata_builder.CreateTable(
+          &db_)) {
+    LOG(ERROR) << "Failed to create the "
+                  "'incoming_sharing_invitation_sync_model_metadata' table";
+    transaction.Rollback();
+    db_.Close();
+    return false;
+  }
   int current_version = meta_table_.GetVersionNumber();
   bool migration_success = FixVersionIfNeeded(&db_, &current_version);
 
@@ -1470,12 +1541,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   if (!form_data_blob.empty()) {
     base::Pickle form_data_pickle = PickleFromSpan(form_data_blob);
     base::PickleIterator form_data_iter(form_data_pickle);
-    bool success =
-        autofill::DeserializeFormData(&form_data_iter, &form->form_data);
-    metrics_util::FormDeserializationStatus status =
-        success ? metrics_util::LOGIN_DATABASE_SUCCESS
-                : metrics_util::LOGIN_DATABASE_FAILURE;
-    metrics_util::LogFormDataDeserializationStatus(status);
+    autofill::DeserializeFormData(&form_data_iter, &form->form_data);
   }
   form->display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
   form->icon_url = GURL(s.ColumnString(COLUMN_ICON_URL));
@@ -1720,7 +1786,8 @@ LoginDatabase::SyncMetadataStore::~SyncMetadataStore() = default;
 std::unique_ptr<syncer::MetadataBatch>
 LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
     syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
@@ -1758,7 +1825,8 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
 std::unique_ptr<sync_pb::ModelTypeState>
 LoginDatabase::SyncMetadataStore::GetModelTypeState(
     syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   auto state = std::make_unique<sync_pb::ModelTypeState>();
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
@@ -1785,7 +1853,8 @@ std::unique_ptr<syncer::MetadataBatch>
 LoginDatabase::SyncMetadataStore::GetAllSyncMetadata(
     syncer::ModelType model_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::GetAllSyncMetadata");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       GetAllSyncEntityMetadata(model_type);
   if (metadata_batch == nullptr) {
@@ -1805,9 +1874,15 @@ LoginDatabase::SyncMetadataStore::GetAllSyncMetadata(
 void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
     syncer::ModelType model_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::DeleteAllSyncMetadata");
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+  if (model_type != syncer::PASSWORDS) {
+    ClearAllSyncMetadata(db_, model_type);
+    return;
+  }
   CHECK_EQ(model_type, syncer::PASSWORDS);
   bool had_unsynced_password_deletions = HasUnsyncedPasswordDeletions();
-  ClearAllSyncMetadata(db_, model_type);
+  ClearAllSyncMetadata(db_, syncer::PASSWORDS);
   if (had_unsynced_password_deletions &&
       password_deletions_have_synced_callback_) {
     // Note: At this point we can't be fully sure whether the deletions actually
@@ -1823,7 +1898,8 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateSyncMetadata");
-  DCHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
 
   int storage_key_int = 0;
   if (!base::StringToInt(storage_key, &storage_key_int)) {
@@ -1848,7 +1924,10 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
 
   s.BindInt(0, storage_key_int);
   s.BindString(1, encrypted_metadata);
-
+  if (model_type != syncer::PASSWORDS) {
+    return s.Run();
+  }
+  CHECK_EQ(model_type, syncer::PASSWORDS);
   bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
   bool result = s.Run();
   if (result && had_unsynced_deletions && !HasUnsyncedPasswordDeletions() &&
@@ -1862,7 +1941,8 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::ClearSyncMetadata");
-  DCHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
 
   int storage_key_int = 0;
   if (!base::StringToInt(storage_key, &storage_key_int)) {
@@ -1877,7 +1957,10 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
                          SyncEntitiesMetadataTableName(model_type))
           .c_str()));
   s.BindInt(0, storage_key_int);
-
+  if (model_type != syncer::PASSWORDS) {
+    return s.Run();
+  }
+  CHECK_EQ(model_type, syncer::PASSWORDS);
   bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
   bool result = s.Run();
   if (result && had_unsynced_deletions && !HasUnsyncedPasswordDeletions() &&
@@ -1891,7 +1974,8 @@ bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
     syncer::ModelType model_type,
     const sync_pb::ModelTypeState& model_type_state) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateModelTypeState");
-  DCHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
 
   // Make sure only one row is left by storing it in the entry with id=1
   // every time.
@@ -1909,7 +1993,8 @@ bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
 bool LoginDatabase::SyncMetadataStore::ClearModelTypeState(
     syncer::ModelType model_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::ClearModelTypeState");
-  DCHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK(model_type == syncer::PASSWORDS ||
+        model_type == syncer::INCOMING_PASSWORD_SHARING_INVITATION);
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s WHERE id=1",

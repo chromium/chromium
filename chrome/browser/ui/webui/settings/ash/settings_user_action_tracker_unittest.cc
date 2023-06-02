@@ -12,9 +12,15 @@
 #include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {
+
+constexpr char kProfileName[] = "user@gmail.com";
 
 namespace mojom {
 using ::chromeos::settings::mojom::Section;
@@ -25,13 +31,27 @@ class SettingsUserActionTrackerTest : public testing::Test {
  protected:
   SettingsUserActionTrackerTest()
       : fake_hierarchy_(&fake_sections_),
-        tracker_(&fake_hierarchy_, &fake_sections_) {
+        tracker_(&fake_hierarchy_, &fake_sections_, GetTestProfilePref()) {
     // Initialize per_session_tracker_ manually since BindInterface is never
     // called on tracker_.
     tracker_.per_session_tracker_ =
-        std::make_unique<PerSessionSettingsUserActionTracker>();
+        std::make_unique<PerSessionSettingsUserActionTracker>(
+            testing_profile_->GetPrefs());
   }
   ~SettingsUserActionTrackerTest() override = default;
+
+  void SetUpTestingProfile() {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
+  }
+
+  PrefService* GetTestProfilePref() {
+    SetUpTestingProfile();
+    test_pref_service_ = testing_profile_->GetPrefs();
+    return test_pref_service_;
+  }
 
   // testing::Test:
   void SetUp() override {
@@ -49,10 +69,18 @@ class SettingsUserActionTrackerTest : public testing::Test {
                                        mojom::Setting::kWifiAddNetwork);
   }
 
+  void TearDown() override { tracker_.per_session_tracker_.reset(); }
+
+  // TestingProfile is bound to the IO thread:
+  // CurrentlyOn(content::BrowserThread::UI).
+  content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   FakeOsSettingsSections fake_sections_;
+  raw_ptr<PrefService> test_pref_service_;
   FakeHierarchy fake_hierarchy_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   SettingsUserActionTracker tracker_;
+  TestingProfile* testing_profile_;
 };
 
 TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBool) {

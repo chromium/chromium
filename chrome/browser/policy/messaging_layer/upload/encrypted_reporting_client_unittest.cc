@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -22,6 +24,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -87,6 +91,13 @@ class EncryptedReportingClientTest : public ::testing::Test {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         url_loader_factory_.GetSafeWeakWrapper());
     BuildPayload();
+
+    cloud_policy_client_.SetDMToken(kDmToken);
+    cloud_policy_client_.client_id_ = kClientId;
+  }
+
+  void TearDown() override {
+    policy::EncryptedReportingJobConfiguration::ResetUploadsStateForTest();
   }
 
   void BuildPayload() {
@@ -129,6 +140,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   std::unique_ptr<policy::DeviceManagementService> device_management_service_;
   network::TestURLLoaderFactory url_loader_factory_;
+  policy::MockCloudPolicyClient cloud_policy_client_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -145,16 +157,26 @@ TEST_F(EncryptedReportingClientTest, Default) {
   EncryptedReportingClient encrypted_reporting_client(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
   encrypted_reporting_client.UploadReport(std::move(merging_payload_),
-                                          std::move(context_), kDmToken,
-                                          kClientId, cb);
+                                          std::move(context_),
+                                          &cloud_policy_client_, cb);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+
+  // Verify request header contains dm token
+  EXPECT_TRUE(base::Contains(
+      (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+      kDmToken));
 
   const std::string& pending_request_url =
       (*url_loader_factory_.pending_requests())[0].request.url.spec();
 
   EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
+
+  // Verify request contains dm token
+  EXPECT_TRUE(base::Contains(
+      (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+      kDmToken));
 
   url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request_url,
@@ -169,8 +191,8 @@ TEST_F(EncryptedReportingClientTest, Default) {
   DecrementSequenceId();
   BuildPayload();
   encrypted_reporting_client.UploadReport(std::move(merging_payload_),
-                                          std::move(context_), kDmToken,
-                                          kClientId, cb);
+                                          std::move(context_),
+                                          &cloud_policy_client_, cb);
 
   // Sequence ID decreased, upload is rejected.
   EXPECT_FALSE(actual_reponse.has_value());
@@ -183,7 +205,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   EncryptedReportingClient encrypted_reporting_client(
       std::make_unique<FakeDelegate>(nullptr));
   encrypted_reporting_client.UploadReport(
-      std::move(merging_payload_), std::move(context_), kDmToken, kClientId,
+      std::move(merging_payload_), std::move(context_), &cloud_policy_client_,
       base::BindLambdaForTesting(
           [&responded,
            &actual_reponse](absl::optional<base::Value::Dict> response) {
@@ -193,6 +215,27 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
 
   ASSERT_TRUE(responded);
   EXPECT_FALSE(actual_reponse.has_value());
+}
+
+// Verify that when the cloud policy client isn't provided, device info is not
+// added to the request headers.
+TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
+  // Set cloud policy client to be nullptr to indicate that device info is
+  // not available, i.e. the device dm token should NOT exists in
+  // the request headers.
+  EncryptedReportingClient encrypted_reporting_client(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client.UploadReport(std::move(merging_payload_),
+                                          std::move(context_), nullptr,
+                                          base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+
+  // Verify request does NOT contain dm token
+  EXPECT_FALSE(base::Contains(
+      (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
+      kDmToken));
 }
 
 }  // namespace reporting

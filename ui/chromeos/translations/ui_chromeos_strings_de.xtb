@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Englisch (USA) mit Dvorak-Tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Host</translation>
 <translation id="1521655867290435174">Google Tabellen</translation>
-<translation id="1538729222189715449">Linux-Dateien werden geöffnet…</translation>
 <translation id="1547964879613821194">Kanadisches Englisch</translation>
 <translation id="1556189134700913550">Auf alle anwenden</translation>
 <translation id="1561842594491319104">Chrome-Geräte</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google Sites-Website</translation>
 <translation id="1853795129690976061">Dieser Ordner wird für Linux freigegeben</translation>
 <translation id="1864756863218646478">Die Datei wurde nicht gefunden.</translation>
+<translation id="1877377730633446520">Dafür wird Speicherplatz von ungefähr <ph name="REQUIRED_SPACE" /> belegt. Momentan ist Speicherplatz von <ph name="FREE_SPACE" /> verfügbar.</translation>
 <translation id="1884013283844450420">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Verbinden</translation>
 <translation id="1920670151694390848">Malayalam (Transliteration)</translation>
 <translation id="1920798810075583923">Wassermelone</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
+<translation id="2004942826429452291">Dateien werden in der Cloud und auf deinem Chromebook gespeichert.</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russisch</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
+<translation id="2089751716171649322">Ganz einfach offline auf Google Drive-Dateien zugreifen</translation>
 <translation id="2111134541987263231">Aktiviere die Option <ph name="BEGIN_BOLD" />Im Inkognitomodus zulassen<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Mit Linux installieren</translation>
 <translation id="2225536596944493418">Möchtest du wirklich <ph name="NUMBER_OF_ITEMS" /> Elemente löschen?</translation>
 <translation id="2230062665678605299">Ordner "<ph name="FOLDER_NAME" />" kann nicht erstellt werden. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Dein Google Drive-Cache wurde geleert.</translation>
 <translation id="2239068707900391003">Person mit Kaffee</translation>
 <translation id="2251368349685848079">Aus Papierkorb wiederherstellen</translation>
 <translation id="2278133026967558505">Dateizugriff durch alle Websites und URLs</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3486821258960016770">Mongolisch</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> Fehler</translation>
+<translation id="3501954296166022751">Deine Google Drive-Dateien sind offline verfügbar</translation>
 <translation id="3509680540198371098">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3511705761158917664">Synchronisierung von <ph name="NUMBER_OF_ITEMS" /> Elementen wird vorbereitet…</translation>
 <translation id="3522708245912499433">Portugiesisch</translation>
@@ -320,6 +322,7 @@
 <translation id="3619593063686672873">Keine zuletzt angesehenen Videos</translation>
 <translation id="3634507049637220048">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, von deinem Administrator verwaltet, Details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> Elemente verschoben.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> Dateien ausgewählt</translation>
 <translation id="3685122418104378273">Die Google Drive-Synchronisierung ist bei der mobilen Datennutzung standardmäßig deaktiviert.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
 <translation id="3690128548376345212">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
@@ -329,7 +332,6 @@
 <translation id="3727148787322499904">Änderungen dieser Einstellung wirken sich auf alle freigegebenen Netzwerke aus</translation>
 <translation id="3737576078404241332">Aus der Seitenleiste entfernen</translation>
 <translation id="3749289110408117711">Dateiname</translation>
-<translation id="3780536599611287598">Du bist nicht dazu berechtigt, Dateien in "<ph name="FOLDER_NAME" />" zu verschieben.</translation>
 <translation id="3786301125658655746">Du bist offline</translation>
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3793469551756281394">Noch ungefähr <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -418,6 +420,7 @@
 <translation id="4462159676511157176">Benutzerdefinierte Nameserver</translation>
 <translation id="4465725236958772856">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
 <translation id="4477002475007461989">Rumänisch</translation>
 <translation id="4477219268485577442">Bulgarisch – phonetisch</translation>
@@ -467,7 +470,6 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> Elemente werden wiederhergestellt…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Für die Verwendung des Inkognitomodus ist in deiner Organisation eine Erweiterung erforderlich}other{Für die Verwendung des Inkognitomodus sind in deiner Organisation einige Erweiterungen erforderlich}}</translation>
-<translation id="4823651846660089135">Gerät ist schreibgeschützt</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
 <translation id="482932175346970750">Gib <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> in deinen Browser ein</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -572,11 +574,13 @@
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>
+<translation id="5519161320735100193">Google Drive-Einstellungen</translation>
 <translation id="5522908512596376669">Die Dateiliste wird jetzt in der Listenansicht angezeigt.</translation>
 <translation id="5524517123096967210">Die Datei konnte nicht gelesen werden.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-Bild</translation>
 <translation id="5534520101572674276">Größe wird berechnet.</translation>
 <translation id="554153475311314364">Griechisch (Transliteration)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> Ordner ausgewählt</translation>
 <translation id="5580591966435005537">virtuelle Maschine</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
 <translation id="5583664733673201137">Punktbreite ist „Voll“</translation>
@@ -599,6 +603,7 @@
 <translation id="5724172041621205163">Thai mit Pattachote-Tastatur</translation>
 <translation id="57383366388012121">Letzter Monat</translation>
 <translation id="5756666464756035725">Ungarisch – QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> Elemente ausgewählt</translation>
 <translation id="5763377084591234761">Deutsch (Schweiz)</translation>
 <translation id="5769519078756170258">Auszuschließende Host oder Domain</translation>
 <translation id="5775750595919327203">Urdu</translation>
@@ -616,6 +621,7 @@
 <translation id="5838451609423551646">Auswahl aller Einträge wurde aufgehoben.</translation>
 <translation id="5838825566232597749">Internationale US-amerikanische Workman-Tastatur</translation>
 <translation id="5845721951356578987">Pflegekraft</translation>
+<translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-Suche fehlgeschlagen</translation>
 <translation id="5896749729057314184">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
@@ -673,7 +679,6 @@
 <translation id="6327785803543103246">Web-Proxy Autodiscovery</translation>
 <translation id="6337014272874260727">Von Schnellzugriff loslösen</translation>
 <translation id="6339145975392024142">US-amerikanisch (PC)</translation>
-<translation id="6346310558342052870">Zugriff eingeschränkt</translation>
 <translation id="6356685157277930264">Feedbackfenster für "Meine Dateien"</translation>
 <translation id="6358884629796491903">Drache</translation>
 <translation id="636254897931573416">Ungültige Übereinstimmung für das Domain-Suffix</translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebräisch</translation>
 <translation id="78104721049218340">Thai mit Kedmanee-Tastatur</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Durch die Formatierung einer Partition werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="7925247922861151263">AAA-Prüfung fehlgeschlagen</translation>
 <translation id="7925686952655276919">Keine mobilen Daten für die Synchronisierung verwenden</translation>
 <translation id="7928710562641958568">Gerät auswerfen</translation>
+<translation id="7933875256234974853">Synchronisierung der Drive-Dateien wird vorbereitet...</translation>
 <translation id="7943385054491506837">USA – Colemak</translation>
 <translation id="7953739707111622108">Dieses Gerät kann nicht geöffnet werden, da das Dateisystem nicht erkannt wurde.</translation>
 <translation id="7969525169268594403">Slowenisch</translation>
 <translation id="7972920761225148017">Französisch (Schweiz)</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7980421588063892270">Englisch (USA) mit Colemak-Tastatur</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> Dateien werden synchronisiert</translation>
 <translation id="8000066093800657092">Kein Netzwerk</translation>
 <translation id="8008366997883261463">Jack Russell</translation>
 <translation id="8028993641010258682">Größe</translation>
@@ -1003,6 +1012,7 @@
 <translation id="8919081441417203123">Dänisch</translation>
 <translation id="8949925099261528566">Verbunden, kein Internet</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
+<translation id="8971742885766657349">Wird synchronisiert – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="8998871447376656508">In deinem Google Drive ist nicht genügend freier Speicherplatz vorhanden, um den Upload abzuschließen.</translation>
 <translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
@@ -1036,6 +1046,7 @@
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>
+<translation id="937795003075802289">1 Datei wird synchronisiert</translation>
 <translation id="938470336146445890">Installiere ein Nutzerzertifikat.</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="943972244133411984">Geändert von</translation>

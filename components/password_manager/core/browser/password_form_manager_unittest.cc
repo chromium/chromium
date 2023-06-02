@@ -3122,7 +3122,8 @@ class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
   }
 
  private:
-  raw_ptr<NiceMock<MockPasswordSaveManager>> mock_password_save_manager_;
+  raw_ptr<NiceMock<MockPasswordSaveManager>, DanglingUntriaged>
+      mock_password_save_manager_;
 };
 
 TEST_F(

@@ -8,12 +8,13 @@ import "third_party/blink/public/mojom/permissions_policy/permissions_policy_fea
 import "url/mojom/origin.mojom";
 
 // This struct mirrors network.mojom.CSPSource, but excludes members not used
-// in permissions policies like `path` and `is_port_wildcard`.
+// in permissions policies like `path`.
 struct OriginWithPossibleWildcards {
   string scheme;
   string host;
   int32 port = -1;
   bool is_host_wildcard = false;
+  bool is_port_wildcard = false;
 };
 
 // This struct holds permissions policy allowlist data that needs to be replicated

@@ -225,7 +225,9 @@ void MaybeInstallUpdater(UpdaterScope scope) {
   install_command.AppendSwitch(kEnableLoggingSwitch);
   install_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                     kLoggingModuleSwitchValue);
-  // TODO(crbug.com/1281971): suppress the installer's UI.
+  if (IsSystemInstall(scope)) {
+    install_command.AppendSwitch(kSystemSwitch);
+  }
   int exit_code = -1;
   if (base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
     VLOG(0) << "Installer returned " << exit_code << ".";
@@ -734,7 +736,7 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   updater::InitLogging(Scope(command_line));
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   // base::CommandLine may reorder arguments and switches, this is not the exact

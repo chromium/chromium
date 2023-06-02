@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {

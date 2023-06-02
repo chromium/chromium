@@ -51,7 +51,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

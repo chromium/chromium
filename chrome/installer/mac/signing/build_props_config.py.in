@@ -40,7 +40,3 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     def notary_team_id(self):
         return super(BuildPropsCodeSignConfig,
                      self).notary_team_id or '@MAC_TEAM_ID@'
-
-    @property
-    def notarization_tool(self):
-        return self._notarization_tool or NotarizationTool.NOTARYTOOL

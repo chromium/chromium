@@ -9,7 +9,6 @@ for more details on the presubmit API built into depot_tools.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
-USE_PYTHON3 = True
 
 import sys
 

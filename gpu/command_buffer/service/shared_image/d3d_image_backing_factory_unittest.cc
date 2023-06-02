@@ -17,6 +17,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -624,7 +625,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
 TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -820,7 +821,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -876,7 +877,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 
     SkCanvas* canvas = scoped_write_access->surface()->getCanvas();
     canvas->clear(SkColors::kRed);
-    scoped_write_access->surface()->flush();
+    skgpu::ganesh::Flush(scoped_write_access->surface());
 
     skia_representation->SetCleared();
   }
@@ -983,7 +984,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -1075,7 +1076,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Create dawn device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -1342,7 +1343,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -1472,7 +1473,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,

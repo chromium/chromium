@@ -8,64 +8,68 @@ import subprocess
 import unittest
 from unittest import mock
 
-from . import notarize, test_config
-from .model import CodeSignedProduct, NotarizationTool, Paths
+from signing import notarize, test_config
+from signing.model import CodeSignedProduct, NotarizationTool, Paths
 
 
-@mock.patch.multiple(
-    'signing.notarize', **{
-        m: mock.DEFAULT
-        for m in ('_submit_altool', '_submit_notarytool', '_get_result_altool',
-                  '_get_result_notarytool', '_get_log_notarytool')
-    })
+@mock.patch.multiple('signing.notarize', **{
+    m: mock.DEFAULT for m in ('_NotarytoolNotarizer', '_AltoolNotarizer')
+})
 class TestConfigurableNotarizationTool(unittest.TestCase):
 
     def test_altool_submit(self, **kwargs):
         uuid = '03e0fb6e-4e80-4b7e-833c-c38ecf3f6efd'
-        kwargs['_submit_altool'].return_value = uuid
+        kwargs['_AltoolNotarizer']().submit.return_value = uuid
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
         self.assertEqual(uuid, notarize.submit('/path/to/app.zip', config))
-        kwargs['_submit_altool'].assert_called_with('/path/to/app.zip', config)
-        kwargs['_submit_notarytool'].assert_not_called()
+        kwargs['_AltoolNotarizer']().submit.assert_called_with(
+            '/path/to/app.zip', config)
+        kwargs['_NotarytoolNotarizer']().submit.assert_not_called()
 
     def test_notarytool_submit(self, **kwargs):
         uuid = '03e0fb6e-4e80-4b7e-833c-c38ecf3f6efd'
-        kwargs['_submit_notarytool'].return_value = uuid
+        kwargs['_NotarytoolNotarizer']().submit.return_value = uuid
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         self.assertEqual(uuid, notarize.submit('/path/to/app.zip', config))
-        kwargs['_submit_notarytool'].assert_called_with('/path/to/app.zip',
-                                                        config)
-        kwargs['_submit_altool'].assert_not_called()
+        kwargs['_NotarytoolNotarizer']().submit.assert_called_with(
+            '/path/to/app.zip', config)
+        kwargs['_AltoolNotarizer']().submit.assert_not_called()
 
     def test_altool_wait_for_results(self, **kwargs):
         uuid = '73b579b0-af5b-46c8-b855-ea6b4d6a926b'
-        kwargs['_get_result_altool'].return_value = notarize.NotarizationResult(
+        kwargs['_NotarytoolNotarizer'](
+        ).get_result.return_value = notarize.NotarizationResult(
             notarize.Status.ERROR, 'Failed', 'Some silly error',
             'https://logs.example.com/notarize.json')
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
         with self.assertRaises(notarize.NotarizationError) as cm:
             list(notarize.wait_for_results([uuid], config))
-        kwargs['_get_result_altool'].assert_called_with(uuid, config)
-        kwargs['_get_result_notarytool'].assert_not_called()
+        kwargs['_AltoolNotarizer']().get_result.assert_called_with(uuid, config)
+        kwargs['_NotarytoolNotarizer']().get_result.assert_not_called()
 
     def test_notarytool_wait_for_results(self, **kwargs):
         uuid = '73b579b0-af5b-46c8-b855-ea6b4d6a926b'
         log_contents = 'The log file contents'
 
-        kwargs['_get_log_notarytool'].return_value = log_contents
-        kwargs[
-            '_get_result_notarytool'].return_value = notarize.NotarizationResult(
-                notarize.Status.ERROR, 'Failed', 'Some silly error',
-                'The log file contents.')
+        kwargs['_NotarytoolNotarizer']()._get_log.return_value = log_contents
+        kwargs['_NotarytoolNotarizer'](
+        ).get_result.return_value = notarize.NotarizationResult(
+            notarize.Status.ERROR, 'Failed', 'Some silly error',
+            'The log file contents.')
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         with self.assertRaises(notarize.NotarizationError) as cm:
             list(notarize.wait_for_results([uuid], config))
-        kwargs['_get_result_notarytool'].assert_called_with(uuid, config)
-        kwargs['_get_result_altool'].assert_not_called()
+        kwargs['_NotarytoolNotarizer']().get_result.assert_called_with(
+            uuid, config)
+        kwargs['_AltoolNotarizer']().get_result.assert_not_called()
 
 
 class TestSubmitAltool(unittest.TestCase):
@@ -78,7 +82,8 @@ class TestSubmitAltool(unittest.TestCase):
             },
         })
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
         uuid = notarize.submit('/tmp/file.dmg', config)
 
         self.assertEqual('0c652bb4-7d44-4904-8c59-1ee86a376ece', uuid)
@@ -97,8 +102,9 @@ class TestSubmitAltool(unittest.TestCase):
             },
         })
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL,
-            notary_asc_provider='[NOTARY-ASC-PROVIDER]')
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL,
+                notary_asc_provider='[NOTARY-ASC-PROVIDER]'))
         uuid = notarize.submit('/tmp/file.dmg', config)
 
         self.assertEqual('746f1537-0613-4e49-a9a0-869f2c9dc8e5', uuid)
@@ -107,25 +113,6 @@ class TestSubmitAltool(unittest.TestCase):
             '--primary-bundle-id', 'test.signing.bundle_id', '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml', '--asc-provider', '[NOTARY-ASC-PROVIDER]'
-        ])
-
-    @mock.patch('signing.commands.run_command_output')
-    def test_valid_upload_with_tool_path(self, run_command_output):
-        run_command_output.return_value = plistlib.dumps({
-            'notarization-upload': {
-                'RequestUUID': '42541f28-b8bf-475e-b153-46a6be2b8cc7'
-            },
-        })
-        config = test_config.TestConfigNotarizationToolOverride(
-            notarization_tool=NotarizationTool.ALTOOL)
-        uuid = notarize.submit('/tmp/file.dmg', config)
-
-        self.assertEqual('42541f28-b8bf-475e-b153-46a6be2b8cc7', uuid)
-        run_command_output.assert_called_once_with([
-            '/fun/bin/altool.custom', '--notarize-app', '--file',
-            '/tmp/file.dmg', '--primary-bundle-id', 'test.signing.bundle_id',
-            '--username', '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
-            '--output-format', 'xml'
         ])
 
     @mock.patch('signing.commands.run_command_output')
@@ -142,7 +129,8 @@ class TestSubmitAltool(unittest.TestCase):
         ]
 
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
         uuid = notarize.submit('/tmp/app.zip', config)
 
         self.assertEqual('600b24b7-8fa2-4fdb-adf9-dff1f8b7858e', uuid)
@@ -165,7 +153,8 @@ class TestSubmitAltool(unittest.TestCase):
         ]
 
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
 
         with self.assertRaises(subprocess.CalledProcessError) as cm:
             notarize.submit('/tmp/app.zip', config)
@@ -197,7 +186,8 @@ class TestSubmitAltool(unittest.TestCase):
         ]
 
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
 
         with self.assertRaises(subprocess.CalledProcessError) as cm:
             notarize.submit('/tmp/app.zip', config)
@@ -223,7 +213,8 @@ class TestSubmitNotarytool(unittest.TestCase):
             'path': '/tmp/file.dmg'
         })
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         uuid = notarize.submit('/tmp/file.dmg', config)
 
         self.assertEqual('13d6aa9b-d204-4f0d-9164-4bda5e730258', uuid)
@@ -239,8 +230,9 @@ class TestSubmitNotarytool(unittest.TestCase):
         run_password_command_output.return_value = plistlib.dumps(
             {'id': 'b53b3ed1-82cb-41b4-9e12-b097b2c05f64'})
         config = test_config.TestConfig(
-            notary_password='@env:NOTARIZE_TEST_PASSWORD',
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notary_password='@env:NOTARIZE_TEST_PASSWORD',
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         uuid = notarize.submit('/tmp/file.dmg', config)
         del os.environ['NOTARIZE_TEST_PASSWORD']
 
@@ -252,21 +244,29 @@ class TestSubmitNotarytool(unittest.TestCase):
         ], 'hunter2')
 
     @mock.patch('signing.commands.run_password_command_output')
-    def test_valid_upload_with_tool_path(self, run_password_command_output):
-        run_password_command_output.return_value = plistlib.dumps({
-            'id': '44346a58-41f9-47c4-b63a-f3831732a553',
-            'message': 'Successfully uploaded file',
-            'path': '/tmp/file.dmg'
-        })
-        config = test_config.TestConfigNotarizationToolOverride(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+    def test_valid_upload_config_team_id_override(self,
+                                                  run_password_command_output):
+        run_password_command_output.return_value = plistlib.dumps(
+            {'id': '13807708-0970-4b25-b1af-34438149f22a'})
+
+        class OverrideTeamID(test_config.TestConfig):
+
+            @property
+            def notary_team_id(self):
+                return 'TeamOverride'
+
+        config = OverrideTeamID(
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL,
+                notary_team_id=None))
+
         uuid = notarize.submit('/tmp/file.dmg', config)
 
-        self.assertEqual('44346a58-41f9-47c4-b63a-f3831732a553', uuid)
+        self.assertEqual('13807708-0970-4b25-b1af-34438149f22a', uuid)
         run_password_command_output.assert_called_once_with([
-            '/fun/bin/notarytool.custom', 'submit', '/tmp/file.dmg',
-            '--apple-id', '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]',
-            '--no-wait', '--output-format', 'plist'
+            'xcrun', 'notarytool', 'submit', '/tmp/file.dmg', '--apple-id',
+            '[NOTARY-USER]', '--team-id', 'TeamOverride', '--no-wait',
+            '--output-format', 'plist'
         ], '[NOTARY-PASSWORD]')
 
 
@@ -286,8 +286,9 @@ class TestGetResultAltool(unittest.TestCase):
         run_command_output.return_value = plist_output
         uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
-        result = notarize._get_result_altool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
         self.assertEqual(notarize.Status.SUCCESS, result.status)
         self.assertEqual('success', result.status_string)
         self.assertEqual(plist_output, result.output)
@@ -311,40 +312,16 @@ class TestGetResultAltool(unittest.TestCase):
         })
         uuid = '0a88b2d8-4098-4d3a-8461-5b543b479d15'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL,
-            notary_asc_provider='[NOTARY-ASC-PROVIDER]')
-        self.assertEqual(notarize.Status.SUCCESS,
-                         notarize._get_result_altool(uuid, config).status)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL,
+                notary_asc_provider='[NOTARY-ASC-PROVIDER]'))
+        self.assertEqual(
+            notarize.Status.SUCCESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
         run_command_output.assert_called_once_with([
             'xcrun', 'altool', '--notarization-info', uuid, '--username',
             '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
             '--output-format', 'xml', '--asc-provider', '[NOTARY-ASC-PROVIDER]'
-        ])
-
-    @mock.patch('signing.commands.run_command_output')
-    def test_success_with_tool_path(self, run_command_output):
-        plist_output = plistlib.dumps({
-            'notarization-info': {
-                'Date': '2019-05-20T13:18:35Z',
-                'LogFileURL': 'https://example.com/log.json',
-                'RequestUUID': '4711f98f-d509-43a4-a3da-537e7e885159',
-                'Status': 'success',
-                'Status Code': 0
-            }
-        })
-        run_command_output.return_value = plist_output
-        uuid = '4711f98f-d509-43a4-a3da-537e7e885159'
-        config = test_config.TestConfigNotarizationToolOverride(
-            notarization_tool=NotarizationTool.ALTOOL)
-        result = notarize._get_result_altool(uuid, config)
-        self.assertEqual(notarize.Status.SUCCESS, result.status)
-        self.assertEqual('success', result.status_string)
-        self.assertEqual(plist_output, result.output)
-        self.assertEqual('https://example.com/log.json', result.log_file)
-        run_command_output.assert_called_once_with([
-            '/fun/bin/altool.custom', '--notarization-info', uuid, '--username',
-            '[NOTARY-USER]', '--password', '[NOTARY-PASSWORD]',
-            '--output-format', 'xml'
         ])
 
     @mock.patch('signing.commands.run_command_output')
@@ -362,8 +339,9 @@ class TestGetResultAltool(unittest.TestCase):
         run_command_output.return_value = plist_output
         uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
-        result = notarize._get_result_altool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
         self.assertEqual(notarize.Status.ERROR, result.status)
         self.assertEqual('invalid', result.status_string)
         self.assertEqual(plist_output, result.output)
@@ -401,11 +379,14 @@ class TestGetResultAltool(unittest.TestCase):
         ]
         uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
-        self.assertEqual(notarize.Status.IN_PROGRESS,
-                         notarize._get_result_altool(uuid, config).status)
-        self.assertEqual(notarize.Status.SUCCESS,
-                         notarize._get_result_altool(uuid, config).status)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
+        self.assertEqual(
+            notarize.Status.IN_PROGRESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
+        self.assertEqual(
+            notarize.Status.SUCCESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
         run_command_output.assert_has_calls(2 * [
             mock.call([
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
@@ -422,10 +403,11 @@ class TestGetResultAltool(unittest.TestCase):
             }]}))
 
         with self.assertRaises(subprocess.CalledProcessError):
-            notarize._get_result_altool(
-                '77c0ad17-479e-4b82-946a-73739cf6ca16',
-                test_config.TestConfig(
+            config = test_config.TestConfig(
+                invoker=test_config.TestInvoker.factory_with_args(
                     notarization_tool=NotarizationTool.ALTOOL))
+            config.invoker.notarizer.get_result(
+                '77c0ad17-479e-4b82-946a-73739cf6ca16', config)
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch('signing.commands.run_command_output')
@@ -447,11 +429,14 @@ class TestGetResultAltool(unittest.TestCase):
         ]
         uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
-        self.assertEqual(notarize.Status.IN_PROGRESS,
-                         notarize._get_result_altool(uuid, config).status)
-        self.assertEqual(notarize.Status.SUCCESS,
-                         notarize._get_result_altool(uuid, config).status)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
+        self.assertEqual(
+            notarize.Status.IN_PROGRESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
+        self.assertEqual(
+            notarize.Status.SUCCESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
         run_command_output.assert_has_calls(2 * [
             mock.call([
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
@@ -477,11 +462,14 @@ class TestGetResultAltool(unittest.TestCase):
         ]
         uuid = 'a11980d4-24ef-4040-bddd-f8341859fb6e'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.ALTOOL)
-        self.assertEqual(notarize.Status.IN_PROGRESS,
-                         notarize._get_result_altool(uuid, config).status)
-        self.assertEqual(notarize.Status.SUCCESS,
-                         notarize._get_result_altool(uuid, config).status)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.ALTOOL))
+        self.assertEqual(
+            notarize.Status.IN_PROGRESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
+        self.assertEqual(
+            notarize.Status.SUCCESS,
+            config.invoker.notarizer.get_result(uuid, config).status)
         run_command_output.assert_has_calls(2 * [
             mock.call([
                 'xcrun', 'altool', '--notarization-info', uuid, '--username',
@@ -505,8 +493,9 @@ class TestGetResultNotarytool(unittest.TestCase):
         run_password_command_output.return_value = plist_output
         uuid = 'eeeacc17-9e4b-4408-8001-894bbae9c9e9'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
-        result = notarize._get_result_notarytool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
 
         self.assertEqual(notarize.Status.SUCCESS, result.status)
         self.assertEqual('Accepted', result.status_string)
@@ -531,9 +520,10 @@ class TestGetResultNotarytool(unittest.TestCase):
         uuid = 'eeeacc17-9e4b-4408-8001-894bbae9c9e9'
         os.environ['NOTARIZE_TEST_PASSWORD'] = 'hunter2'
         config = test_config.TestConfig(
-            notary_password='@env:NOTARIZE_TEST_PASSWORD',
-            notarization_tool=NotarizationTool.NOTARYTOOL)
-        result = notarize._get_result_notarytool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notary_password='@env:NOTARIZE_TEST_PASSWORD',
+                notarization_tool=NotarizationTool.NOTARYTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
         del os.environ['NOTARIZE_TEST_PASSWORD']
 
         self.assertEqual(notarize.Status.SUCCESS, result.status)
@@ -547,32 +537,6 @@ class TestGetResultNotarytool(unittest.TestCase):
         ], 'hunter2')
 
     @mock.patch('signing.commands.run_password_command_output')
-    def test_successs_with_tool_path(self, run_password_command_output):
-        plist_output = plistlib.dumps({
-            'status': 'Accepted',
-            'id': 'a3b64713-289d-4c57-902a-7fb8270665ef',
-            'createdDate': '2022-03-10T23:04:21.192Z',
-            'message': 'Successfully received submission info',
-            'name': 'file.zip'
-        })
-        run_password_command_output.return_value = plist_output
-        uuid = 'a3b64713-289d-4c57-902a-7fb8270665ef'
-        config = test_config.TestConfigNotarizationToolOverride(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
-        result = notarize._get_result_notarytool(uuid, config)
-
-        self.assertEqual(notarize.Status.SUCCESS, result.status)
-        self.assertEqual('Accepted', result.status_string)
-        self.assertEqual(plist_output, result.output)
-        self.assertEqual(None, result.log_file)
-
-        run_password_command_output.assert_called_once_with([
-            '/fun/bin/notarytool.custom', 'info', uuid, '--apple-id',
-            '[NOTARY-USER]', '--team-id', '[NOTARY-TEAM]', '--output-format',
-            'plist'
-        ], '[NOTARY-PASSWORD]')
-
-    @mock.patch('signing.commands.run_password_command_output')
     def test_in_progress(self, run_password_command_output):
         plist_output = plistlib.dumps({
             'status': 'In Progress',
@@ -584,8 +548,9 @@ class TestGetResultNotarytool(unittest.TestCase):
         run_password_command_output.return_value = plist_output
         uuid = 'eeeacc17-9e4b-4408-8001-894bbae9c9e9'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
-        result = notarize._get_result_notarytool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
 
         self.assertEqual(notarize.Status.IN_PROGRESS, result.status)
         self.assertEqual('In Progress', result.status_string)
@@ -611,8 +576,9 @@ class TestGetResultNotarytool(unittest.TestCase):
         ]
         uuid = '13d6aa9b-d204-4f0d-9164-4bda5e730258'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
-        result = notarize._get_result_notarytool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
 
         self.assertEqual(notarize.Status.ERROR, result.status)
         self.assertEqual('Invalid', result.status_string)
@@ -646,8 +612,9 @@ class TestGetResultNotarytool(unittest.TestCase):
         ]
         uuid = '13d6aa9b-d204-4f0d-9164-4bda5e730258'
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
-        result = notarize._get_result_notarytool(uuid, config)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
+        result = config.invoker.notarizer.get_result(uuid, config)
 
         self.assertEqual(notarize.Status.ERROR, result.status)
         self.assertEqual('Invalid', result.status_string)
@@ -669,25 +636,27 @@ class TestGetResultNotarytool(unittest.TestCase):
 
 class TestWaitForResults(unittest.TestCase):
 
-    @mock.patch('signing.notarize._get_result_notarytool')
+    @mock.patch('signing.notarize._NotarytoolNotarizer.get_result')
     def test_success(self, get_result):
         get_result.return_value = notarize.NotarizationResult(
             notarize.Status.SUCCESS, 'success', None,
             'https://example.com/log.json')
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
         uuids = [uuid]
         self.assertEqual(uuids, list(notarize.wait_for_results(uuids, config)))
         get_result.assert_called_once_with(uuid, config)
 
-    @mock.patch('signing.notarize._get_result_notarytool')
+    @mock.patch('signing.notarize._NotarytoolNotarizer.get_result')
     def test_failure(self, get_result):
         get_result.return_value = notarize.NotarizationResult(
             notarize.Status.ERROR, 'invalid', 'Package Invalid',
             'https://example.com/log.json')
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         uuid = 'cca0aec2-7c64-4ea4-b895-051ea3a17311'
         uuids = [uuid]
         with self.assertRaises(notarize.NotarizationError) as cm:
@@ -697,7 +666,7 @@ class TestWaitForResults(unittest.TestCase):
             'Notarization request cca0aec2-7c64-4ea4-b895-051ea3a17311 failed '
             'with status: "invalid".', str(cm.exception))
 
-    @mock.patch('signing.notarize._get_result_notarytool')
+    @mock.patch('signing.notarize._NotarytoolNotarizer.get_result')
     def test_subprocess_errors(self, get_result):
         get_result.side_effect = subprocess.CalledProcessError(
             1, 'notarytool', 'A mysterious error occurred.')
@@ -708,17 +677,18 @@ class TestWaitForResults(unittest.TestCase):
                 notarize.wait_for_results(
                     uuids,
                     test_config.TestConfig(
-                        notarization_tool=NotarizationTool.NOTARYTOOL)))
+                        invoker=test_config.TestInvoker.factory_with_args(
+                            notarization_tool=NotarizationTool.NOTARYTOOL))))
 
     @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
-    @mock.patch.multiple('signing.notarize',
-                         **{'_get_result_notarytool': mock.DEFAULT})
+    @mock.patch.multiple('signing.notarize._NotarytoolNotarizer',
+                         **{'get_result': mock.DEFAULT})
     def test_timeout(self, **kwargs):
-        kwargs[
-            '_get_result_notarytool'].return_value = notarize.NotarizationResult(
-                notarize.Status.IN_PROGRESS, None, None, None)
+        kwargs['get_result'].return_value = notarize.NotarizationResult(
+            notarize.Status.IN_PROGRESS, None, None, None)
         config = test_config.TestConfig(
-            notarization_tool=NotarizationTool.NOTARYTOOL)
+            invoker=test_config.TestInvoker.factory_with_args(
+                notarization_tool=NotarizationTool.NOTARYTOOL))
         uuid = '0c652bb4-7d44-4904-8c59-1ee86a376ece'
         uuids = [uuid]
         with self.assertRaises(notarize.NotarizationError) as cm:
@@ -731,11 +701,12 @@ class TestWaitForResults(unittest.TestCase):
                 "Timed out waiting for notarization requests: {'0c652bb4-7d44-4904-8c59-1ee86a376ece'}"
             ])
 
-        for call in kwargs['_get_result_notarytool'].mock_calls:
+        for call in kwargs['get_result'].mock_calls:
             self.assertEqual(call, mock.call(uuid, config))
 
         total_time = sum([call[1][0] for call in kwargs['sleep'].mock_calls])
         self.assertLess(total_time, 61 * 60)
+
 
 class TestStaple(unittest.TestCase):
 

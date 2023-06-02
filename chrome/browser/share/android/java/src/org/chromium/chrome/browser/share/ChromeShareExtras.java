@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -21,7 +22,8 @@ import org.chromium.url.GURL;
 public class ChromeShareExtras {
     @IntDef({DetailedContentType.NOT_SPECIFIED, DetailedContentType.IMAGE, DetailedContentType.GIF,
             DetailedContentType.HIGHLIGHTED_TEXT, DetailedContentType.SCREENSHOT,
-            DetailedContentType.WEB_NOTES, DetailedContentType.LIGHTWEIGHT_REACTION})
+            DetailedContentType.WEB_NOTES, DetailedContentType.LIGHTWEIGHT_REACTION,
+            DetailedContentType.WEB_SHARE})
     public @interface DetailedContentType {
         int NOT_SPECIFIED = 0;
         int IMAGE = 1;
@@ -30,6 +32,7 @@ public class ChromeShareExtras {
         int SCREENSHOT = 4;
         int WEB_NOTES = 5;
         int LIGHTWEIGHT_REACTION = 6;
+        int WEB_SHARE = 7;
     }
 
     /**
@@ -51,9 +54,11 @@ public class ChromeShareExtras {
     /**
      * Source URL of the image.
      */
+    @NonNull
     private final GURL mImageSrcUrl;
 
     /** Url of the content being shared. */
+    @NonNull
     private final GURL mContentUrl;
 
     /** Whether it is sharing a tab group. */
@@ -113,6 +118,7 @@ public class ChromeShareExtras {
     /**
      * @return Source URL of the image.
      */
+    @NonNull
     public GURL getImageSrcUrl() {
         return mImageSrcUrl;
     }
@@ -120,6 +126,7 @@ public class ChromeShareExtras {
     /**
      * @return URL of the content being shared.
      */
+    @NonNull
     public GURL getContentUrl() {
         return mContentUrl;
     }

@@ -42,7 +42,8 @@ PersonalizationAppManagerFactory::GetForBrowserContext(
 // static
 PersonalizationAppManagerFactory*
 PersonalizationAppManagerFactory::GetInstance() {
-  return base::Singleton<PersonalizationAppManagerFactory>::get();
+  static base::NoDestructor<PersonalizationAppManagerFactory> instance;
+  return instance.get();
 }
 
 PersonalizationAppManagerFactory::PersonalizationAppManagerFactory()

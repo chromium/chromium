@@ -9,7 +9,6 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -49,21 +48,9 @@ class LoginLogoutTestHelper {
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
-
-    reporting_user_tracker_ =
-        std::make_unique<policy::ReportingUserTracker>(user_manager_);
   }
 
-  void Shutdown() {
-    reporting_user_tracker_.reset();
-    user_manager_enabler_.reset();
-    session_termination_manager_.reset();
-    chromeos::PowerManagerClient::Shutdown();
-  }
-
-  void CreateRegularUser(const AccountId& account_id, bool is_affiliated) {
-    user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
-  }
+  void Shutdown() { chromeos::PowerManagerClient::Shutdown(); }
 
   std::unique_ptr<TestingProfile> CreateProfile(user_manager::User* user) {
     TestingProfile::Builder profile_builder;
@@ -76,10 +63,9 @@ class LoginLogoutTestHelper {
     return profile;
   }
 
-  std::unique_ptr<TestingProfile> CreateRegularUserProfile(bool is_affiliated) {
+  std::unique_ptr<TestingProfile> CreateRegularUserProfile() {
     AccountId account_id = AccountId::FromUserEmail(user_email);
-    auto* const user =
-        user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    auto* const user = user_manager_->AddUser(account_id);
     return CreateProfile(user);
   }
 
@@ -121,11 +107,10 @@ class LoginLogoutTestHelper {
   }
 
   std::unique_ptr<TestingProfile> CreateProfileByType(
-      user_manager::UserType user_type,
-      bool is_affiliated) {
+      user_manager::UserType user_type) {
     switch (user_type) {
       case user_manager::USER_TYPE_REGULAR:
-        return CreateRegularUserProfile(is_affiliated);
+        return CreateRegularUserProfile();
       case user_manager::USER_TYPE_GUEST:
         return CreateGuestProfile();
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
@@ -144,6 +129,7 @@ class LoginLogoutTestHelper {
 
   std::unique_ptr<::reporting::UserEventReporterHelperTesting>
   GetReporterHelper(bool reporting_enabled,
+                    bool should_report_user,
                     ::reporting::Status status = ::reporting::Status()) {
     record_.Clear();
     report_count_ = 0;
@@ -166,7 +152,8 @@ class LoginLogoutTestHelper {
 
     auto reporter_helper =
         std::make_unique<::reporting::UserEventReporterHelperTesting>(
-            reporting_enabled, /*is_kiosk_user=*/false, std::move(mock_queue));
+            reporting_enabled, should_report_user, /*is_kiosk_user=*/false,
+            std::move(mock_queue));
     return reporter_helper;
   }
 
@@ -174,15 +161,9 @@ class LoginLogoutTestHelper {
 
   int GetReportCount() { return report_count_; }
 
-  policy::ReportingUserTracker* reporting_user_tracker() {
-    return reporting_user_tracker_.get();
-  }
-
  private:
   raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  std::unique_ptr<policy::ReportingUserTracker> reporting_user_tracker_;
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
 
@@ -212,15 +193,16 @@ class LoginLogoutReporterTest
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
   policy::ManagedSessionService managed_session_service;
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+      &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile(/*is_affiliated=*/true);
+  auto profile = test_helper_.CreateRegularUserProfile();
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
   managed_session_service.OnUserProfileLoaded(user->GetAccountId());
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -246,16 +228,16 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
       test_case.user_type == user_manager::USER_TYPE_GUEST;
 
   policy::ManagedSessionService managed_session_service;
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+      &managed_session_service);
 
-  auto profile = test_helper_.CreateProfileByType(test_case.user_type,
-                                                  /*is_affiliated=*/false);
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
   managed_session_service.OnUserProfileLoaded(user->GetAccountId());
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -273,15 +255,16 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
   policy::ManagedSessionService managed_session_service;
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+      &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile(/*is_affiliated=*/true);
+  auto profile = test_helper_.CreateRegularUserProfile();
   managed_session_service.OnSessionWillBeTerminated();
   const LoginLogoutRecord& record = test_helper_.GetRecord();
 
@@ -305,16 +288,16 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
       test_case.user_type == user_manager::USER_TYPE_GUEST;
 
   policy::ManagedSessionService managed_session_service;
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+      &managed_session_service);
 
-  auto profile = test_helper_.CreateProfileByType(test_case.user_type,
-                                                  /*is_affiliated=*/false);
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
   managed_session_service.OnSessionWillBeTerminated();
   const LoginLogoutRecord& record = test_helper_.GetRecord();
 
@@ -331,16 +314,16 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
 TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
   const auto test_case = GetParam();
   policy::ManagedSessionService managed_session_service;
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/false);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/false,
+      /*should_report_user=*/false);
 
   auto reporter = LoginLogoutReporter::CreateForTest(
       std::move(reporter_helper),
       std::make_unique<LoginLogoutReporterTestDelegate>(),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+      &managed_session_service);
 
-  auto profile = test_helper_.CreateProfileByType(test_case.user_type,
-                                                  /*is_affiliated=*/true);
+  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
   managed_session_service.OnUserProfileLoaded(user->GetAccountId());
   managed_session_service.OnSessionWillBeTerminated();
@@ -380,15 +363,16 @@ class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {
 
 TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {
   policy::ManagedSessionService managed_session_service;
-  const AccountId account_id = AccountId::FromUserEmail(user_email);
-  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
-  test_helper_.CreateRegularUser(account_id, /*is_affiliated=*/true);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
+
   managed_session_service.OnAuthFailure(
       AuthFailure(AuthFailure::OWNER_REQUIRED));
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -412,16 +396,16 @@ TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {
 TEST_F(LoginFailureReporterTest,
        ReportAffiliatedLoginFailure_UnrecoverableCryptohome) {
   policy::ManagedSessionService managed_session_service;
-  const AccountId account_id = AccountId::FromUserEmail(user_email);
-  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
+      AccountId::FromUserEmail(user_email));
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
-  test_helper_.CreateRegularUser(account_id, /*is_affiliated=*/true);
   managed_session_service.OnAuthFailure(
       AuthFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME));
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -446,12 +430,13 @@ TEST_F(LoginFailureReporterTest, ReportUnaffiliatedLoginFailure_TpmError) {
   policy::ManagedSessionService managed_session_service;
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
       AccountId::FromUserEmail(user_email));
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(AuthFailure(AuthFailure::TPM_ERROR));
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -477,12 +462,13 @@ TEST_F(LoginFailureReporterTest,
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(
       AuthFailure(AuthFailure::TPM_UPDATE_REQUIRED));
@@ -509,12 +495,13 @@ TEST_F(LoginFailureReporterTest,
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(
       AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
@@ -538,12 +525,13 @@ TEST_F(LoginFailureReporterTest, ReportGuestLoginFailure_MissingCryptohome) {
   policy::ManagedSessionService managed_session_service;
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
       user_manager::GuestAccountId());
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(
       AuthFailure(AuthFailure::MISSING_CRYPTOHOME));
@@ -566,12 +554,13 @@ TEST_F(LoginFailureReporterTest, ReportLoginLogoutDisabled) {
   policy::ManagedSessionService managed_session_service;
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
       AccountId::FromUserEmail(user_email));
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/false);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/false,
+      /*should_report_user=*/true);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(
       AuthFailure(AuthFailure::MISSING_CRYPTOHOME));
@@ -586,14 +575,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure) {
     base::SimpleTestClock test_clock;
     test_clock.SetNow(failure_time);
     policy::ManagedSessionService managed_session_service;
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
 
     managed_session_service.OnKioskProfileLoadFailed();
@@ -607,14 +596,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure) {
     test_clock.SetNow(failure_time + base::Hours(10));
     policy::ManagedSessionService managed_session_service;
     // Only |reporting_enabled| value at the time of kiosk login failure matter.
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/false);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/false,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
     const LoginLogoutRecord& record = test_helper_.GetRecord();
 
@@ -637,14 +626,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure) {
     base::SimpleTestClock test_clock;
     test_clock.SetNow(failure_time + base::Hours(20));
     policy::ManagedSessionService managed_session_service;
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
 
     ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
@@ -658,14 +647,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingError) {
     base::SimpleTestClock test_clock;
     test_clock.SetNow(failure_time);
     policy::ManagedSessionService managed_session_service;
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
 
     managed_session_service.OnKioskProfileLoadFailed();
@@ -682,13 +671,13 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingError) {
     // Only |reporting_enabled| value at the time of kiosk login failure matter.
     auto reporter_helper = test_helper_.GetReporterHelper(
         /*reporting_enabled=*/true,
+        /*should_report_user=*/false,
         ::reporting::Status(::reporting::error::INTERNAL, ""));
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
 
     ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
@@ -700,14 +689,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingError) {
     base::SimpleTestClock test_clock;
     test_clock.SetNow(failure_time + base::Hours(20));
     policy::ManagedSessionService managed_session_service;
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
     const LoginLogoutRecord& record = test_helper_.GetRecord();
 
@@ -733,14 +722,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingDisabled) {
     base::SimpleTestClock test_clock;
     test_clock.SetNow(failure_time);
     policy::ManagedSessionService managed_session_service;
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/false);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/false,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
 
     managed_session_service.OnKioskProfileLoadFailed();
@@ -754,14 +743,14 @@ TEST_F(LoginFailureReporterTest, ReportKioskLoginFailure_ReportingDisabled) {
     test_clock.SetNow(failure_time + base::Hours(10));
     policy::ManagedSessionService managed_session_service;
     // Only |reporting_enabled| value at the time of kiosk login failure matter.
-    auto reporter_helper =
-        test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+    auto reporter_helper = test_helper_.GetReporterHelper(
+        /*reporting_enabled=*/true,
+        /*should_report_user=*/false);
 
     auto reporter = LoginLogoutReporter::CreateForTest(
         std::move(reporter_helper),
         std::make_unique<LoginLogoutReporterTestDelegate>(),
-        test_helper_.reporting_user_tracker(), &managed_session_service,
-        &test_clock);
+        &managed_session_service, &test_clock);
     base::RunLoop().RunUntilIdle();
 
     ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
@@ -773,12 +762,13 @@ TEST_P(LoginFailureReporterTest,
   policy::ManagedSessionService managed_session_service;
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
       AccountId::FromUserEmail(user_email));
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(GetParam());
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -804,12 +794,13 @@ TEST_P(LoginFailureReporterTest,
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           "managed_guest", policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(account_id);
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(GetParam());
   const LoginLogoutRecord& record = test_helper_.GetRecord();
@@ -832,12 +823,13 @@ TEST_P(LoginFailureReporterTest, ReportGuestLoginFailure_InternalLoginFailure) {
   policy::ManagedSessionService managed_session_service;
   auto delegate = std::make_unique<LoginLogoutReporterTestDelegate>(
       user_manager::GuestAccountId());
-  auto reporter_helper =
-      test_helper_.GetReporterHelper(/*reporting_enabled=*/true);
+  auto reporter_helper = test_helper_.GetReporterHelper(
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/false);
 
-  auto reporter = LoginLogoutReporter::CreateForTest(
-      std::move(reporter_helper), std::move(delegate),
-      test_helper_.reporting_user_tracker(), &managed_session_service);
+  auto reporter = LoginLogoutReporter::CreateForTest(std::move(reporter_helper),
+                                                     std::move(delegate),
+                                                     &managed_session_service);
 
   managed_session_service.OnAuthFailure(GetParam());
   const LoginLogoutRecord& record = test_helper_.GetRecord();

@@ -49,10 +49,11 @@ DlpWarnDialog::DlpWarnDialogOptions::~DlpWarnDialogOptions() = default;
 
 DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
                              DlpWarnDialogOptions options)
-    : PolicyDialogBase(std::move(callback)),
-      restriction_(options.restriction),
+    : restriction_(options.restriction),
       application_title_(options.application_title),
       contents_(std::move(options.confidential_contents)) {
+  SetOnDlpRestrictionCheckedCallback(std::move(callback));
+
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());

@@ -114,17 +114,27 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
   }
 
   const MediaRoute::Id& route_id = activity->route.media_route_id();
-  if (activity_manager_->GetActivity(route_id) ||
-      activity_manager_->GetActivityBySinkId(sink_id)) {
+  if (activity_manager_->GetActivity(route_id) != nullptr) {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Failed to create route. Route already exists.", sink_id,
                       media_source, presentation_id);
     std::move(callback).Run(
-        absl::nullopt, nullptr, "Activity already exists",
+        absl::nullopt, nullptr, "Route already exists",
         mojom::RouteRequestResultCode::ROUTE_ALREADY_EXISTS);
     DialMediaRouteProviderMetrics::RecordCreateRouteResult(
         DialCreateRouteResult::kRouteAlreadyExists);
     return;
+  }
+  // Check if there's already a route to sink.
+  if (activity_manager_->GetActivityBySinkId(sink_id) != nullptr) {
+    // Terminate the existing session before creating new one.
+    TerminateRoute(
+        activity_manager_->GetActivityBySinkId(sink_id)->route.media_route_id(),
+        base::DoNothing());
+    logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
+                     "Existing route terminated successfully.", sink_id,
+                      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
+                      MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
   }
 
   activity_manager_->AddActivity(*activity);

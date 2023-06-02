@@ -873,7 +873,8 @@ class AdsPageLoadMetricsObserverTest
   std::unique_ptr<base::SimpleTestTickClock> clock_;
 
   // A pointer to the AdsPageLoadMetricsObserver used by the tests.
-  raw_ptr<AdsPageLoadMetricsObserver> ads_observer_ = nullptr;
+  raw_ptr<AdsPageLoadMetricsObserver, DanglingUntriaged> ads_observer_ =
+      nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AdsPageLoadMetricsObserverTest, testing::Bool());
@@ -2169,12 +2170,6 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
 
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.InterventionType2"), 0);
-  histogram_tester().ExpectTotalCount(
-      SuffixedHistogram("HeavyAds.IgnoredByReload"), 0);
-
-  // There were heavy ads on the page and the page was navigated not reloaded.
-  histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.UserDidReload"), false, 1);
 
   // Histogram is not logged when no frames are unloaded.
   histogram_tester().ExpectTotalCount(
@@ -2675,54 +2670,6 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPolicyProvided) {
   }
 }
 
-TEST_P(AdsPageLoadMetricsObserverTest,
-       HeavyAdPageNavigated_FrameMarkedAsNotRemoved) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      heavy_ad_intervention::features::kHeavyAdIntervention);
-
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-
-  // Add enough data to trigger the intervention.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
-
-  NavigateMainFrame(kNonAdUrl);
-
-  histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.FrameRemovedPriorToPageEnd"), false, 1);
-}
-
-TEST_P(AdsPageLoadMetricsObserverTest,
-       HeavyAdFrameRemoved_FrameMarkedAsRemoved) {
-  // TODO(https://crbug.com/1301880): RenderFrameHostTester::Detach() doesn't
-  // work well with FencedFrames. Find a graceful way to detach it and enable
-  // the test.
-  if (WithFencedFrames())
-    return;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {heavy_ad_intervention::features::kHeavyAdIntervention,
-           heavy_ad_intervention::features::kHeavyAdInterventionWarning});
-
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-
-  // Add enough data to trigger the intervention.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) + 1);
-
-  // Delete the root ad frame.
-  content::RenderFrameHostTester::For(ad_frame)->Detach();
-
-  NavigateMainFrame(kNonAdUrl);
-
-  histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.FrameRemovedPriorToPageEnd"), true, 1);
-}
-
 // Verifies when a user reloads a page with a heavy ad we log it to metrics.
 TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
   base::test::ScopedFeatureList feature_list;
@@ -2742,8 +2689,6 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.ComputedTypeWithThresholdNoise"),
       HeavyAdStatus::kNetwork, 1);
-  histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.UserDidReload"), true, 1);
 }
 
 // Verifies when a user reloads a page we do not trigger the heavy ad
@@ -2766,14 +2711,6 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_InterventionIgnored) {
 
   // Verify we did not trigger the intervention.
   EXPECT_FALSE(HasInterventionReportsAfterFlush(ad_frame));
-  histogram_tester().ExpectUniqueSample(
-      SuffixedHistogram("HeavyAds.IgnoredByReload"), true, 1);
-
-  // Send another data update to the frame to ensure we do not record
-  // IgnoredByReload multiple times for a single frame.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 1);
-  histogram_tester().ExpectTotalCount(
-      SuffixedHistogram("HeavyAds.IgnoredByReload"), 1);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest,
@@ -2801,28 +2738,6 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   // the privacy mitigations flag.
   histogram_tester().ExpectTotalCount(
       SuffixedHistogram("HeavyAds.IgnoredByReload"), 0);
-}
-
-// Verifies when there is no heavy ad on the page, we do not record aggregate
-// heavy ad metrics.
-TEST_P(AdsPageLoadMetricsObserverTest,
-       HeavyAdsNoHeavyAdFrame_AggregateHistogramsNotRecorded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      heavy_ad_intervention::features::kHeavyAdIntervention);
-
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-
-  // Don't load enough to reach the heavy ad threshold.
-  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
-                     (heavy_ad_thresholds::kMaxNetworkBytes / 1024) - 1);
-
-  // Navigate again to trigger histograms.
-  NavigateFrame(kNonAdUrl, main_frame);
-
-  histogram_tester().ExpectTotalCount(
-      SuffixedHistogram("HeavyAds.UserDidReload"), 0);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdBlocklistFull_NotFired) {
@@ -2879,8 +2794,6 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   EXPECT_EQ(rfh_tester->GetHeavyAdIssueCount(
                 RenderFrameHostTester::HeavyAdIssueType::kAll),
             1);
-  histogram_tester().ExpectTotalCount(
-      SuffixedHistogram("HeavyAds.IgnoredByReload"), 0);
 
   // This histogram should not be recorded when the blocklist is disabled.
   histogram_tester().ExpectTotalCount(

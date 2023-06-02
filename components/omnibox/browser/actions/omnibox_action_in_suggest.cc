@@ -78,14 +78,17 @@ constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
 }
 }  // namespace
 
-OmniboxActionInSuggest::OmniboxActionInSuggest(omnibox::ActionInfo action_info)
+OmniboxActionInSuggest::OmniboxActionInSuggest(
+    omnibox::ActionInfo action_info,
+    absl::optional<TemplateURLRef::SearchTermsArgs> search_terms_args)
     : OmniboxAction(OmniboxAction::LabelStrings(
                         ToActionHint(action_info.action_type()),
                         ToActionContents(action_info.action_type()),
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST),
+                        ToActionContents(action_info.action_type())),
                     {}),
-      action_info_{std::move(action_info)} {}
+      action_info{std::move(action_info)},
+      search_terms_args{std::move(search_terms_args)} {}
 
 OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;
 
@@ -94,8 +97,9 @@ base::android::ScopedJavaLocalRef<jobject>
 OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
-        env, strings_.hint, action_info_.action_type(),
-        action_info_.action_uri()));
+        env, reinterpret_cast<intptr_t>(this), strings_.hint,
+        strings_.accessibility_hint, action_info.action_type(),
+        action_info.action_uri()));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
@@ -104,10 +108,10 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
 void OmniboxActionInSuggest::RecordActionShown(size_t position,
                                                bool executed) const {
   base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Shown",
-                                ToUmaActionType(action_info_.action_type()));
+                                ToUmaActionType(action_info.action_type()));
   if (executed) {
     base::UmaHistogramEnumeration("Omnibox.ActionInSuggest.Used",
-                                  ToUmaActionType(action_info_.action_type()));
+                                  ToUmaActionType(action_info.action_type()));
   }
 }
 
@@ -125,12 +129,18 @@ OmniboxActionId OmniboxActionInSuggest::ActionId() const {
 // static
 const OmniboxActionInSuggest* OmniboxActionInSuggest::FromAction(
     const OmniboxAction* action) {
+  return FromAction(const_cast<OmniboxAction*>(action));
+}
+
+// static
+OmniboxActionInSuggest* OmniboxActionInSuggest::FromAction(
+    OmniboxAction* action) {
   if (action && action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST) {
-    return static_cast<const OmniboxActionInSuggest*>(action);
+    return static_cast<OmniboxActionInSuggest*>(action);
   }
   return nullptr;
 }
 
 omnibox::ActionInfo::ActionType OmniboxActionInSuggest::Type() const {
-  return action_info_.action_type();
+  return action_info.action_type();
 }

@@ -166,7 +166,7 @@
 <translation id="3918378745482005425">Некоторые функции могут не работать. При этом связанные сайты по-прежнему смогут использовать сторонние файлы cookie.</translation>
 <translation id="3955193568934677022">Разрешить сайтам воспроизводить защищенный контент (рекомендуется)</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
-<translation id="3987993985790029246">Копировать ссылку</translation>
+<translation id="3987993985790029246">Скопировать ссылку</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> из ?</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="4002066346123236978">Название</translation>
@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Разрешить использование сторонних файлов cookie</translation>
 <translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
-<translation id="4440642537584213025">Развернуть раздел "<ph name="TARGET_DESCRIPTION" />"</translation>
 <translation id="4468959413250150279">Отключить звуки на определенном сайте</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файла cookie}many{# файлов cookie}other{# файла cookie}}</translation>
 <translation id="4478158430052450698">Упростить изменение масштаба пользователем для разных сайтов</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
 <translation id="789180354981963912">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
+<translation id="7895868624847501462">Это действие удалит все локальные данные <ph name="DOMAIN" /> и всех связанных с ним сайтов, включая файлы cookie, а также сбросит все разрешения этих сайтов.</translation>
 <translation id="7940722705963108451">Напомнить</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="FPS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Субтитры</translation>
 <translation id="8300705686683892304">Под управлением приложения</translation>
 <translation id="8324158725704657629">Больше не спрашивать</translation>
+<translation id="8338445138528827481">Это действие удалит все локальные данные сайта <ph name="ORIGIN" />, включая файлы cookie, и сбросит все его разрешения.</translation>
 <translation id="8362795839483915693">Вы можете изменять масштаб на сайтах, которые посещаете.</translation>
 <translation id="8372893542064058268">Разрешить фоновую синхронизацию для конкретного сайта</translation>
 <translation id="8376384591331888629">В том числе сторонние файлы cookie на сайте</translation>

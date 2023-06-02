@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_COMMON_STREAMING_INITIALIZATION_INFO_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_COMMON_STREAMING_INITIALIZATION_INFO_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/cast_streaming/browser/common/demuxer_stream_client.h"
 #include "media/base/audio_decoder_config.h"
@@ -38,9 +38,7 @@ struct StreamingInitializationInfo {
 
     // The Receiver for the audio stream. This pointer will remain valid for the
     // duration of the streaming session.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION openscreen::cast::Receiver* receiver;
+    raw_ptr<openscreen::cast::Receiver> receiver;
 
     // Client with methods to be called when the DemuxerStream requires an
     // action be executed.
@@ -62,9 +60,7 @@ struct StreamingInitializationInfo {
 
     // The Receiver for the video stream. This pointer will remain valid for the
     // duration of the streaming session.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION openscreen::cast::Receiver* receiver;
+    raw_ptr<openscreen::cast::Receiver> receiver;
 
     // Client with methods to be called when the DemuxerStream requires an
     // action be executed.
@@ -82,9 +78,7 @@ struct StreamingInitializationInfo {
 
   // The receiver session for which the remainder of this config is valid. This
   // pointer will remain valid for the duration of the streaming session.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const openscreen::cast::ReceiverSession* session;
+  raw_ptr<const openscreen::cast::ReceiverSession> session;
 
   // Information detailing the audio stream. Will be populated iff the streaming
   // session has audio.

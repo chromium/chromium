@@ -72,6 +72,10 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToSign = 23,
   kFailedToSignBadSignatureLength = 24,
   kFailedToDerEncode = 25,
+  kInputTooLong = 26,
+  kFailedToListKeys = 27,
+  kFailedToRemovePrivateKey = 28,
+  kFailedToRemovePublicKey = 29,
 };
 
 // Handles for tokens on ChromeOS.
@@ -128,6 +132,9 @@ class COMPONENT_EXPORT(KCER) PublicKey {
   PublicKey(PublicKey&&);
   PublicKey& operator=(PublicKey&&);
   ~PublicKey();
+
+  bool operator==(const PublicKey& other) const;
+  bool operator!=(const PublicKey& other) const;
 
   Token GetToken() const { return token_; }
   const Pkcs11Id& GetPkcs11Id() const { return pkcs11_id_; }

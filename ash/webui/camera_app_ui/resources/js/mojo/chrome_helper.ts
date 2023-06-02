@@ -16,7 +16,6 @@ import {
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraIntentAction,
-  CameraUsageOwnershipMonitorCallbackRouter,
   DocumentOutputFormat,
   DocumentScannerReadyState,
   ExternalScreenMonitorCallbackRouter,
@@ -140,29 +139,10 @@ export class ChromeHelper {
   }
 
   /**
-   * Starts camera usage monitor.
+   * Initializes the camera window controller and bootstraps the mojo
+   * communication to get window states.
    */
-  async initCameraUsageMonitor(
-      exploitUsage: () => Promise<void>,
-      releaseUsage: () => Promise<void>): Promise<void> {
-    const usageCallbackRouter =
-        wrapEndpoint(new CameraUsageOwnershipMonitorCallbackRouter());
-
-    usageCallbackRouter.onCameraUsageOwnershipChanged.addListener(
-        async (hasUsage: boolean) => {
-          if (hasUsage) {
-            await exploitUsage();
-          } else {
-            await releaseUsage();
-          }
-        });
-
-    const {isSuccess} = await this.remote.setCameraUsageMonitor(
-        usageCallbackRouter.$.bindNewPipeAndPassRemote());
-    if (!isSuccess) {
-      throw new Error('Failed to set camera usage monitor');
-    }
-
+  async initCameraWindowController(): Promise<void> {
     let {controller} = await this.remote.getWindowStateController();
     controller = wrapEndpoint(controller);
     await windowController.bind(controller);

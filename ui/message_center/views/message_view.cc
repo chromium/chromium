@@ -460,6 +460,13 @@ MessageView::Mode MessageView::GetMode() const {
 }
 
 float MessageView::GetSlideAmount() const {
+  if (slide_out_controller_.mode() ==
+      views::SlideOutController::SlideMode::kNone) {
+    // The return value of this method is used by NotificationSwipeControlView
+    // to determine visibility of the setting button. Returning 0 not to show
+    // the setting button with SlideMode::kNone.
+    return 0.f;
+  }
   return slide_out_controller_.gesture_amount();
 }
 

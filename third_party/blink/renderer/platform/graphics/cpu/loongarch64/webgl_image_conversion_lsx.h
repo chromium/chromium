@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_LOONG_FAMILY)
+#if defined(ARCH_CPU_LOONGARCH_FAMILY)
 #include <lsxintrin.h>
 
 namespace blink {
@@ -225,6 +225,6 @@ ALWAYS_INLINE void PackOneRowOfRGBA8LittleToRGBA8(const uint8_t*& source,
 }  // namespace simd
 }  // namespace blink
 
-#endif  // ARCH_CPU_LOONG_FAMILY
+#endif  // ARCH_CPU_LOONGARCH_FAMILY
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CPU_LOONGARCH64_WEBGL_IMAGE_CONVERSION_LSX_H_

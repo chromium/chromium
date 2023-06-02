@@ -1,0 +1,43 @@
+[package]
+name = "qr_code"
+description = "QR code encoder in Rust, support structured append (data in multiple qrcodes)"
+license = "MIT OR Apache-2.0"
+version = "2.0.0"
+edition = "2018"
+authors = ["kennytm <kennytm@gmail.com>", "Riccardo Casatta <riccardo.casatta@gmail.com>"]
+keywords = ["qrcode"]
+repository = "https://github.com/RCasatta/qr_code"
+readme = "README.md"
+documentation = "http://docs.rs/qr_code"
+exclude = [
+    ".github", ".gitignore", ".idea"
+]
+
+[dependencies]
+bmp-monochrome = { version = "1.0.0", default-features = false, optional = true }
+g2p = { version = "0.4", default-features = false, optional = true }
+arbitrary = { version = "0.4.7", default-features = false, optional = true, features = ["derive"]}
+
+[dev-dependencies]
+rand = "0.7.3"
+hex = "0.4.2"
+
+[features]
+bmp = ["bmp-monochrome"]
+decode = ["g2p"]
+fuzz = ["arbitrary"]
+
+[[example]]
+name = "encode_string"
+
+[[example]]
+name = "encode_bmp"
+required-features = ["bmp"]
+
+[[example]]
+name = "decode_bmp"
+required-features = ["bmp", "decode"]
+
+[package.metadata.docs.rs]
+features = ["bmp", "decode"]
+rustdoc-args = ["--cfg", "docsrs"]

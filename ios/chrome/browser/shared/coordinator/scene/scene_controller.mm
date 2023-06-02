@@ -1085,8 +1085,7 @@ void InjectNTP(Browser* browser) {
   }
   return postOpeningAction == NO_ACTION &&
          GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser() &&
-         !HasUserOpenedSettingsFromFirstRunPromo();
+         !IsChromeLikelyDefaultBrowser();
 }
 
 - (void)maybeShowDefaultBrowserPromo:(Browser*)browser {
@@ -1148,13 +1147,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  BOOL isGeneralPromoEligibleUser =
-      !HasUserInteractedWithFullscreenPromoBefore() &&
+  if (!HasUserInteractedWithFullscreenPromoBefore() &&
       (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
        isSignedIn) &&
-      !UserInPromoCooldown();
-  if (isGeneralPromoEligibleUser ||
-      ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
+      !UserInPromoCooldown()) {
     self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
     self.sceneState.appState.defaultBrowserPromoTypeToShow =
         DefaultPromoTypeGeneral;
@@ -2277,9 +2273,13 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf startQRCodeScanner];
       };
-    case START_LENS:
+    case START_LENS_FROM_HOME_SCREEN_WIDGET:
       return ^{
-        [weakSelf startLens];
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::HomeScreenWidget];
+      };
+    case START_LENS_FROM_APP_ICON_LONG_PRESS:
+      return ^{
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::AppIconLongPress];
       };
     case FOCUS_OMNIBOX:
       return ^{
@@ -2317,7 +2317,7 @@ void InjectNTP(Browser* browser) {
   [QRHandler showQRScanner];
 }
 
-- (void)startLens {
+- (void)startLensWithEntryPoint:(LensEntrypoint)entryPoint {
   if (!self.currentInterface.browser) {
     return;
   }
@@ -2325,7 +2325,7 @@ void InjectNTP(Browser* browser) {
       self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
-          initWithEntryPoint:LensEntrypoint::HomeScreenWidget
+          initWithEntryPoint:entryPoint
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
   [lensHandler openLensInputSelection:command];
@@ -2948,19 +2948,28 @@ void InjectNTP(Browser* browser) {
   };
 
   if (self.settingsNavigationController) {
+    __weak SettingsNavigationController* settingsNavigationController =
+        self.settingsNavigationController;
+    self.settingsNavigationController = nil;
     // Store a reference to the presentingViewController in case the user
     // is dismissing the Signin screen and then dismisses Settings before
     // the Signin screen is done animating, which will delay the execution of
     // the `dismissSettings` block stopping the code from accessing
     // the `presentingViewController` property.
     __weak UIViewController* weakPresentingViewController =
-        [self.settingsNavigationController presentingViewController];
+        [settingsNavigationController presentingViewController];
     ProceduralBlock dismissSettings = ^() {
-      [weakSelf.settingsNavigationController cleanUpSettings];
-      DCHECK(weakPresentingViewController);
-      [weakPresentingViewController dismissViewControllerAnimated:animated
-                                                       completion:completion];
-      weakSelf.settingsNavigationController = nil;
+      [settingsNavigationController cleanUpSettings];
+      UIViewController* strongPresentingViewController =
+          weakPresentingViewController;
+      if (strongPresentingViewController) {
+        [strongPresentingViewController
+            dismissViewControllerAnimated:animated
+                               completion:completion];
+      } else {
+        // The view is already dismissed. Completion should still be called.
+        completion();
+      }
     };
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
@@ -2970,7 +2979,7 @@ void InjectNTP(Browser* browser) {
       // happen when it is done animating.
       [self interruptSigninCoordinatorAnimated:animated
                                     completion:dismissSettings];
-    } else if (dismissSettings) {
+    } else {
       dismissSettings();
     }
   } else if (self.signinCoordinator) {

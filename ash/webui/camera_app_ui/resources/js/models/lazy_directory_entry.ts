@@ -33,8 +33,6 @@ export async function getMaybeLazyDirectory(
 class LazyDirectoryEntry implements DirectoryAccessEntry {
   private directory: DirectoryAccessEntry|null = null;
 
-  private creatingDirectory: Promise<DirectoryAccessEntry>|null = null;
-
   /**
    * @param parent The parent of the directory that will be lazily created.
    * @param name The name of the directory that will be lazily created.
@@ -102,16 +100,10 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
    * exist.
    */
   private async getRealDirectory(): Promise<DirectoryAccessEntry> {
-    if (this.creatingDirectory === null) {
-      this.creatingDirectory = (async () => {
-        const directory = await this.parent.getDirectory(
-            {name: this.name, createIfNotExist: true});
-        // createIfNotExist is set so the return value will never be null.
-        assert(directory !== null);
-        return directory;
-      })();
-    }
-    this.directory = await this.creatingDirectory;
+    this.directory = await this.parent.getDirectory(
+        {name: this.name, createIfNotExist: true});
+    // createIfNotExist is set so the return value will never be null.
+    assert(this.directory !== null);
     return this.directory;
   }
 }

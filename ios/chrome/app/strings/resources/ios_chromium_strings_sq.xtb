@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Të dhënat nga "Sinkronizimi i Chromium"</translation>
 <translation id="1722370509450468186">Fjalëkalimi yt do të ruhet në "Llogarinë" tënde (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Të dhënat e Chromium u pastruan</translation>
-<translation id="177102542580335555">Po merr mbrojtjen standarde të sigurisë për këtë profil të Chromium</translation>
 <translation id="1838412507805038478">Chromium verifikoi që <ph name="ISSUER" /> ka lëshuar certifikatën e këtij sajti të uebit.</translation>
 <translation id="1843424232666537147">Chromium ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt mund të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Për të marrë maksimumin nga Chromium, identifikohu në Chromium me "Llogarinë tënde të Google".</translation>
 <translation id="3639997914391704523">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> po përdorte Chromium dhe ka lënë faqeshënues, fjalëkalime dhe cilësime të tjera në këtë pajisje.</translation>
+<translation id="3661862315467204831">Hap "Cilësimet" e Chromium në iOS dhe më pas trokit te "Browser Default APP" dhe zgjidh Chromium.</translation>
 <translation id="372658070733623520">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti.</translation>
 <translation id="3805899903892079518">Chromium nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
+<translation id="3827545470516145620">Po merr mbrojtjen standarde të sigurisë në këtë pajisje</translation>
 <translation id="3955621079070267756">Hap Chromium nga çdo aplikacion</translation>
 <translation id="4043291146360695975">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve" vetëm në këtë pajisje.</translation>
 <translation id="4099085513035183040">Nuk mbështetet në Chromium Beta</translation>

@@ -193,11 +193,6 @@ struct TexSubCoord3D {
   int depth;
 };
 
-bool AlwaysGetSizeFromSourceTexture() {
-  return base::FeatureList::IsEnabled(
-      features::kCmdDecoderAlwaysGetSizeFromSourceTexture);
-}
-
 // Check if all |ref| bits are set in |bits|.
 bool AllBitsSet(GLbitfield bits, GLbitfield ref) {
   DCHECK_NE(0u, ref);
@@ -693,8 +688,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void Destroy(bool have_context) override;
   void SetSurface(const scoped_refptr<gl::GLSurface>& surface) override;
   void ReleaseSurface() override;
-  void TakeFrontBuffer(const Mailbox& mailbox) override;
-  void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
   void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
                                         int samples,
                                         bool preserve,
@@ -2683,13 +2676,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
   GLenum offscreen_target_depth_format_;
   GLenum offscreen_target_stencil_format_;
   GLsizei offscreen_target_samples_;
-  GLboolean offscreen_target_buffer_preserved_;
 
   GLint max_offscreen_framebuffer_size_;
-
-  // Whether or not offscreen color buffers exist in front/back pairs that
-  // can be swapped.
-  GLboolean offscreen_single_buffer_;
 
   // The saved copy of the backbuffer after a call to SwapBuffers.
   std::unique_ptr<BackTexture> offscreen_saved_color_texture_;
@@ -2697,32 +2685,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // For simplicity, |offscreen_saved_color_texture_| is always bound to
   // |offscreen_saved_frame_buffer_|.
   std::unique_ptr<BackFramebuffer> offscreen_saved_frame_buffer_;
-
-  // When a client requests ownership of the swapped front buffer, all
-  // information is saved in this structure, and |in_use| is set to true. When a
-  // client releases ownership, |in_use| is set to false.
-  //
-  // An instance of this struct, with |in_use| = false may be reused instead of
-  // making a new BackTexture.
-  struct SavedBackTexture {
-    std::unique_ptr<BackTexture> back_texture;
-    bool in_use;
-  };
-  std::vector<SavedBackTexture> saved_back_textures_;
-
-  // If there's a SavedBackTexture that's not in use, takes that. Otherwise,
-  // generates a new back texture.
-  void CreateBackTexture();
-  size_t create_back_texture_count_for_test_ = 0;
-
-  // Releases all saved BackTextures that are not in use by a client.
-  void ReleaseNotInUseBackTextures();
-
-  // Releases all saved BackTextures.
-  void ReleaseAllBackTextures(bool have_context);
-
-  size_t GetSavedBackTextureCountForTest() override;
-  size_t GetCreatedBackTextureCountForTest() override;
 
   // The copy that is used as the destination for multi-sample resolves.
   std::unique_ptr<BackFramebuffer> offscreen_resolved_frame_buffer_;
@@ -3523,9 +3485,7 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       offscreen_target_depth_format_(0),
       offscreen_target_stencil_format_(0),
       offscreen_target_samples_(0),
-      offscreen_target_buffer_preserved_(true),
       max_offscreen_framebuffer_size_(0),
-      offscreen_single_buffer_(false),
       offscreen_saved_color_format_(0),
       offscreen_buffer_should_have_alpha_(false),
       back_buffer_color_format_(0),
@@ -3803,8 +3763,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     } else {
       offscreen_target_samples_ = 0;
     }
-    offscreen_target_buffer_preserved_ = attrib_helper.buffer_preserved;
-    offscreen_single_buffer_ = attrib_helper.single_buffer;
 
     if (gl_version_info().is_es) {
       const bool rgb8_supported = features().oes_rgb8_rgba8;
@@ -3922,14 +3880,9 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         api()->glGetIntegervFn(GL_STENCIL_BITS, &stencil_bits);
       }
 
-      // This checks if the user requested RGBA and we have RGBA then RGBA. If
-      // the user requested RGB then RGB. If the user did not specify a
-      // preference than use whatever we were given. Same for DEPTH and STENCIL.
-      back_buffer_color_format_ =
-          (attrib_helper.alpha_size != 0 && alpha_bits > 0) ? GL_RGBA : GL_RGB;
-      back_buffer_has_depth_ = attrib_helper.depth_size != 0 && depth_bits > 0;
-      back_buffer_has_stencil_ =
-          attrib_helper.stencil_size != 0 && stencil_bits > 0;
+      back_buffer_color_format_ = alpha_bits > 0 ? GL_RGBA : GL_RGB;
+      back_buffer_has_depth_ = depth_bits > 0;
+      back_buffer_has_stencil_ = stencil_bits > 0;
       num_stencil_bits_ = stencil_bits;
     } else {
       num_stencil_bits_ = attrib_helper.stencil_size;
@@ -4017,7 +3970,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         std::make_unique<BackRenderbuffer>(this);
     offscreen_target_stencil_render_buffer_->Create();
 
-    if (!offscreen_single_buffer_) {
+    if (!attrib_helper.single_buffer) {
       // Create the saved offscreen texture. The target frame buffer is copied
       // here when SwapBuffers is called.
       offscreen_saved_frame_buffer_ = std::make_unique<BackFramebuffer>(this);
@@ -4034,7 +3987,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
                     "Could not allocate offscreen buffer storage.";
       return gpu::ContextResult::kFatalFailure;
     }
-    if (!offscreen_single_buffer_) {
+    if (!attrib_helper.single_buffer) {
       // Allocate the offscreen saved color texture.
       DCHECK(offscreen_saved_color_format_);
       // Use 64x64 instead of 1x1 to handle minimum framebuffer size
@@ -5371,7 +5324,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
     external_default_framebuffer_.reset();
   }
 
-  ReleaseAllBackTextures(have_context);
   if (have_context) {
     if (copy_tex_image_blit_.get()) {
       copy_tex_image_blit_->Destroy();
@@ -5613,60 +5565,6 @@ void GLES2DecoderImpl::SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
   RestoreCurrentFramebufferBindings();
 }
 
-void GLES2DecoderImpl::TakeFrontBuffer(const Mailbox& mailbox) {
-  if (offscreen_single_buffer_) {
-    mailbox_manager()->ProduceTexture(
-        mailbox, offscreen_target_color_texture_->texture_ref()->texture());
-    return;
-  }
-
-  if (!offscreen_saved_color_texture_.get()) {
-    DLOG(ERROR) << "Called TakeFrontBuffer on a non-offscreen context";
-    return;
-  }
-
-  mailbox_manager()->ProduceTexture(
-      mailbox, offscreen_saved_color_texture_->texture_ref()->texture());
-
-  // Save the BackTexture and TextureRef. There's no need to update
-  // |offscreen_saved_frame_buffer_| since CreateBackTexture() will take care of
-  // that.
-  SavedBackTexture save;
-  save.back_texture.swap(offscreen_saved_color_texture_);
-  save.in_use = true;
-  saved_back_textures_.push_back(std::move(save));
-
-  CreateBackTexture();
-}
-
-void GLES2DecoderImpl::ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {
-  TextureBase* texture = mailbox_manager()->ConsumeTexture(mailbox);
-  mailbox_manager()->TextureDeleted(texture);
-
-  if (offscreen_single_buffer_)
-    return;
-
-  for (auto it = saved_back_textures_.begin(); it != saved_back_textures_.end();
-       ++it) {
-    if (texture != it->back_texture->texture_ref()->texture())
-      continue;
-
-    if (is_lost || it->back_texture->size() != offscreen_size_) {
-      if (is_lost)
-        it->back_texture->Invalidate();
-      else
-        it->back_texture->Destroy();
-      saved_back_textures_.erase(it);
-      return;
-    }
-
-    it->in_use = false;
-    return;
-  }
-
-  DLOG(ERROR) << "Attempting to return a frontbuffer that was not saved.";
-}
-
 error::Error GLES2DecoderImpl::HandleCreateGpuFenceINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -5709,60 +5607,6 @@ error::Error GLES2DecoderImpl::HandleDestroyGpuFenceCHROMIUM(
   if (!GetGpuFenceManager()->RemoveGpuFence(gpu_fence_id))
     return error::kInvalidArguments;
   return error::kNoError;
-}
-
-void GLES2DecoderImpl::CreateBackTexture() {
-  for (auto it = saved_back_textures_.begin(); it != saved_back_textures_.end();
-       ++it) {
-    if (it->in_use)
-      continue;
-
-    if (it->back_texture->size() != offscreen_size_)
-      continue;
-    offscreen_saved_color_texture_ = std::move(it->back_texture);
-    offscreen_saved_frame_buffer_->AttachRenderTexture(
-        offscreen_saved_color_texture_.get());
-    saved_back_textures_.erase(it);
-    return;
-  }
-
-  ++create_back_texture_count_for_test_;
-  offscreen_saved_color_texture_ = std::make_unique<BackTexture>(this);
-  offscreen_saved_color_texture_->Create();
-  offscreen_saved_color_texture_->AllocateStorage(
-      offscreen_size_, offscreen_saved_color_format_, false);
-  offscreen_saved_frame_buffer_->AttachRenderTexture(
-      offscreen_saved_color_texture_.get());
-}
-
-void GLES2DecoderImpl::ReleaseNotInUseBackTextures() {
-  for (auto& saved_back_texture : saved_back_textures_) {
-    if (!saved_back_texture.in_use)
-      saved_back_texture.back_texture->Destroy();
-  }
-
-  base::EraseIf(saved_back_textures_,
-                [](const SavedBackTexture& saved_back_texture) {
-                  return !saved_back_texture.in_use;
-                });
-}
-
-void GLES2DecoderImpl::ReleaseAllBackTextures(bool have_context) {
-  for (auto& saved_back_texture : saved_back_textures_) {
-    if (have_context)
-      saved_back_texture.back_texture->Destroy();
-    else
-      saved_back_texture.back_texture->Invalidate();
-  }
-  saved_back_textures_.clear();
-}
-
-size_t GLES2DecoderImpl::GetSavedBackTextureCountForTest() {
-  return saved_back_textures_.size();
-}
-
-size_t GLES2DecoderImpl::GetCreatedBackTextureCountForTest() {
-  return create_back_texture_count_for_test_;
 }
 
 bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {
@@ -5910,11 +5754,9 @@ error::Error GLES2DecoderImpl::HandleResizeCHROMIUM(
 
   bool is_offscreen = !!offscreen_target_frame_buffer_.get();
   if (is_offscreen) {
-    if (!ResizeOffscreenFramebuffer(gfx::Size(width, height))) {
-      LOG(ERROR) << "GLES2DecoderImpl: Context lost because "
-                 << "ResizeOffscreenFramebuffer failed.";
-      return error::kLostContext;
-    }
+    // We don't support Resize on the offscreen contexts.
+    LOG(ERROR) << "Resize called for the offscreen context";
+    return error::kUnknownCommand;
   } else {
     if (!surface_->Resize(gfx::Size(width, height), scale_factor, color_space,
                           !!has_alpha)) {
@@ -16652,89 +16494,10 @@ void GLES2DecoderImpl::DoSwapBuffers(uint64_t swap_id, GLbitfield flags) {
         is_offscreen ? offscreen_size_ : surface_->GetSize());
   }
 
-  // If offscreen then don't actually SwapBuffers to the display. Just copy
-  // the rendered frame to another frame buffer.
   if (is_offscreen) {
-    TRACE_EVENT2("gpu", "Offscreen",
-        "width", offscreen_size_.width(), "height", offscreen_size_.height());
-
-    if (offscreen_single_buffer_)
-      return;
-
-    if (offscreen_size_ != offscreen_saved_color_texture_->size()) {
-      // Workaround for NVIDIA driver bug on OS X; crbug.com/89557,
-      // crbug.com/94163. TODO(kbr): figure out reproduction so Apple will
-      // fix this.
-      if (workarounds().needs_offscreen_buffer_workaround) {
-        offscreen_saved_frame_buffer_->Create();
-        api()->glFinishFn();
-      }
-
-      // The size has changed, so none of the cached BackTextures are useful
-      // anymore.
-      ReleaseNotInUseBackTextures();
-
-      // Allocate the offscreen saved color texture.
-      DCHECK(offscreen_saved_color_format_);
-      offscreen_saved_color_texture_->AllocateStorage(
-          offscreen_size_, offscreen_saved_color_format_, false);
-
-      offscreen_saved_frame_buffer_->AttachRenderTexture(
-          offscreen_saved_color_texture_.get());
-      if (offscreen_size_.width() != 0 && offscreen_size_.height() != 0) {
-        if (offscreen_saved_frame_buffer_->CheckStatus() !=
-            GL_FRAMEBUFFER_COMPLETE) {
-          LOG(ERROR) << "GLES2DecoderImpl::ResizeOffscreenFramebuffer failed "
-                     << "because offscreen saved FBO was incomplete.";
-          MarkContextLost(error::kUnknown);
-          group_->LoseContexts(error::kUnknown);
-          return;
-        }
-
-        // Clear the offscreen color texture.
-        // TODO(piman): Is this still necessary?
-        {
-          ScopedFramebufferBinder binder(this,
-                                         offscreen_saved_frame_buffer_->id());
-          api()->glClearColorFn(0, 0, 0, BackBufferAlphaClearColor());
-          state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-          state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
-          ClearDeviceWindowRectangles();
-          api()->glClearFn(GL_COLOR_BUFFER_BIT);
-          RestoreClearState();
-        }
-      }
-    }
-
-    if (offscreen_size_.width() == 0 || offscreen_size_.height() == 0)
-      return;
-    ScopedGLErrorSuppressor suppressor("GLES2DecoderImpl::DoSwapBuffers",
-                                       error_state_.get());
-
-    if (IsOffscreenBufferMultisampled()) {
-      // For multisampled buffers, resolve the frame buffer.
-      ScopedResolvedFramebufferBinder binder(this, true, false);
-    } else {
-      ScopedFramebufferBinder binder(this,
-                                     offscreen_target_frame_buffer_->id());
-
-      if (offscreen_target_buffer_preserved_) {
-        // Copy the target frame buffer to the saved offscreen texture.
-        offscreen_saved_color_texture_->Copy();
-      } else {
-        offscreen_saved_color_texture_.swap(offscreen_target_color_texture_);
-        offscreen_target_frame_buffer_->AttachRenderTexture(
-            offscreen_target_color_texture_.get());
-        offscreen_saved_frame_buffer_->AttachRenderTexture(
-            offscreen_saved_color_texture_.get());
-      }
-
-      // Ensure the side effects of the copy are visible to the parent
-      // context. There is no need to do this for ANGLE because it uses a
-      // single underlying device/context for all contexts.
-      if (!gl_version_info().is_angle)
-        api()->glFlushFn();
-    }
+    // We don't support SwapBuffers on the offscreen contexts.
+    LOG(ERROR) << "SwapBuffers called for the offscreen context";
+    return;
   } else if (supports_async_swap_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "gpu", "AsyncSwapBuffers",
@@ -17861,30 +17624,18 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
 
   int source_width = 0;
   int source_height = 0;
-  gl::GLImage* image =
-      source_texture->GetLevelImage(source_target, source_level);
-  if (image && !AlwaysGetSizeFromSourceTexture()) {
-    gfx::Size size = image->GetSize();
-    source_width = size.width();
-    source_height = size.height();
-    if (source_width <= 0 || source_height <= 0) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "invalid image size");
-      return;
-    }
-  } else {
-    if (!source_texture->GetLevelSize(source_target, source_level,
-                                      &source_width, &source_height, nullptr)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName,
-                         "source texture has no data for level");
-      return;
-    }
+  if (!source_texture->GetLevelSize(source_target, source_level, &source_width,
+                                    &source_height, nullptr)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName,
+                       "source texture has no data for level");
+    return;
+  }
 
-    // Check that this type of texture is allowed.
-    if (!texture_manager()->ValidForTextureTarget(
-            source_texture, source_level, source_width, source_height, 1)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "Bad dimensions");
-      return;
-    }
+  // Check that this type of texture is allowed.
+  if (!texture_manager()->ValidForTextureTarget(
+          source_texture, source_level, source_width, source_height, 1)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "Bad dimensions");
+    return;
   }
 
   if (dest_texture->IsImmutable()) {
@@ -18002,54 +17753,26 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
   GLenum dest_binding_target = dest_texture->target();
   int source_width = 0;
   int source_height = 0;
-  gl::GLImage* image =
-      source_texture->GetLevelImage(source_target, source_level);
-  if (image && !AlwaysGetSizeFromSourceTexture()) {
-    gfx::Size size = image->GetSize();
-    source_width = size.width();
-    source_height = size.height();
-    if (source_width <= 0 || source_height <= 0) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name, "invalid image size");
-      return;
-    }
+  if (!source_texture->GetLevelSize(source_target, source_level, &source_width,
+                                    &source_height, nullptr)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
+                       "source texture has no data for level");
+    return;
+  }
 
-    // Ideally we should not need to check that the sub-texture copy rectangle
-    // is valid in two different ways, here and below. However currently there
-    // is no guarantee that a texture backed by a GLImage will have sensible
-    // level info. If this synchronization were to be enforced then this and
-    // other functions in this file could be cleaned up.
-    // See: https://crbug.com/586476
-    int32_t max_x;
-    int32_t max_y;
-    if (!base::CheckAdd(x, width).AssignIfValid(&max_x) ||
-        !base::CheckAdd(y, height).AssignIfValid(&max_y) || x < 0 || y < 0 ||
-        max_x > source_width || max_y > source_height) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture bad dimensions");
-      return;
-    }
-  } else {
-    if (!source_texture->GetLevelSize(source_target, source_level,
-                                      &source_width, &source_height, nullptr)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture has no data for level");
-      return;
-    }
+  // Check that this type of texture is allowed.
+  if (!texture_manager()->ValidForTextureTarget(
+          source_texture, source_level, source_width, source_height, 1)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
+                       "source texture bad dimensions");
+    return;
+  }
 
-    // Check that this type of texture is allowed.
-    if (!texture_manager()->ValidForTextureTarget(
-            source_texture, source_level, source_width, source_height, 1)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture bad dimensions");
-      return;
-    }
-
-    if (!source_texture->ValidForTexture(source_target, source_level, x, y, 0,
-                                         width, height, 1)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture bad dimensions.");
-      return;
-    }
+  if (!source_texture->ValidForTexture(source_target, source_level, x, y, 0,
+                                       width, height, 1)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
+                       "source texture bad dimensions.");
+    return;
   }
 
   GLenum source_type = 0;

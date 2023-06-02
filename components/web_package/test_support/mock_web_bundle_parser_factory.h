@@ -41,12 +41,12 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
 
   void WaitUntilParseIntegrityBlockCalled(base::OnceClosure closure);
   void WaitUntilParseMetadataCalled(
-      base::OnceCallback<void(int64_t offset)> callback);
+      base::OnceCallback<void(absl::optional<uint64_t> offset)> callback);
 
   void RunIntegrityBlockCallback(
       mojom::BundleIntegrityBlockPtr integrity_block,
       mojom::BundleIntegrityBlockParseErrorPtr error = nullptr);
-  void RunMetadataCallback(int64_t expected_metadata_offset,
+  void RunMetadataCallback(absl::optional<uint64_t> expected_metadata_offset,
                            mojom::BundleMetadataPtr metadata,
                            mojom::BundleMetadataParseErrorPtr error = nullptr);
   void RunResponseCallback(mojom::BundleResponseLocationPtr expected_parse_args,
@@ -92,7 +92,8 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
 
   mojo::ReceiverSet<mojom::WebBundleParserFactory> receivers_;
   base::OnceClosure wait_parse_integrity_block_callback_;
-  base::OnceCallback<void(int64_t offset)> wait_parse_metadata_callback_;
+  base::OnceCallback<void(absl::optional<uint64_t> offset)>
+      wait_parse_metadata_callback_;
 
   absl::optional<std::pair<mojom::BundleIntegrityBlockPtr,
                            mojom::BundleIntegrityBlockParseErrorPtr>>

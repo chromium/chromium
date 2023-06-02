@@ -22,8 +22,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_timeouts.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -137,21 +137,6 @@ class TestStartupPreferenceManagerImpl
  private:
   bool enabled_ = false;
 };
-
-// Wait until |condition| returns true.
-void WaitForCondition(base::RepeatingCallback<bool()> condition,
-                      const std::string& description) {
-  const base::TimeDelta kTimeout = base::Seconds(30);
-  const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!condition.Run() && (base::TimeTicks::Now() - start_time < kTimeout)) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
-  ASSERT_TRUE(condition.Run())
-      << "Timeout waiting for condition: " << description;
-}
 
 // An helper class that observes tracing states transition and allows
 // synchronisation with tests. The class adds itself as a tracelog
@@ -1672,8 +1657,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
 namespace {
 
-class ProtoBackgroundTracingTest : public DevToolsProtocolTest {
-};
+class ProtoBackgroundTracingTest : public DevToolsProtocolTest {};
 
 }  // namespace
 
@@ -1720,11 +1704,9 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   EXPECT_TRUE(BackgroundTracingManagerImpl::GetInstance().EmitNamedTrigger(
       "preemptive_test"));
 
-  WaitForCondition(
-      base::BindRepeating([]() {
-        return BackgroundTracingManager::GetInstance().HasTraceToUpload();
-      }),
-      "trace received");
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return BackgroundTracingManager::GetInstance().HasTraceToUpload();
+  })) << "Timeout waiting for trace received";
 
   std::string trace_data =
       BackgroundTracingManager::GetInstance().GetLatestTraceToUpload();

@@ -107,6 +107,9 @@ class CORE_EXPORT QualifiedName {
   QualifiedName(const AtomicString& prefix,
                 const AtomicString& local_name,
                 const AtomicString& namespace_uri);
+  // Creates a QualifiedName instance with null prefix, the specified local
+  // name, and null namespace.
+  explicit QualifiedName(const AtomicString& local_name);
   ~QualifiedName();
 
   QualifiedName(const QualifiedName& other) = default;

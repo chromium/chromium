@@ -135,25 +135,6 @@ __gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
 };
 
 /**
- * Generates a 128-bit cryptographically-strong random number. The properties
- * must match base::UnguessableToken, as these values may be deserialized into
- * that class on the C++ side.
- * @return {string} the generated number as a hex string.
- */
-__gCrWeb.common.generateRandomId = function() {
-    // Generate 128 bit unique identifier.
-    var components = new Uint32Array(4);
-    window.crypto.getRandomValues(components);
-    var id = '';
-    for (var i = 0; i < components.length; i++) {
-      // Convert value to base16 string, add leading zeroes if needed (32 bits
-      // is 8 hex digits), and append to the ID.
-      id += components[i].toString(16).padStart(8, "0");
-    }
-    return id;
-};
-
-/**
  * Posts |message| to the webkit message handler specified by |handlerName|.
  * DEPRECATED: This function will be removed soon. Instead, use the
  * implementation at //ios/web/public/js_messaging/resources/utils.ts
@@ -162,11 +143,15 @@ __gCrWeb.common.generateRandomId = function() {
  * @param {Object} message The message to post to the handler.
  */
 __gCrWeb.common.sendWebKitMessage = function(handlerName, message) {
-  // A web page can override |window.webkit| with any value. Deleting the
-  // object ensures that original and working implementation of
-  // window.webkit is restored.
-  var oldWebkit = window.webkit;
-  delete window['webkit'];
-  window.webkit.messageHandlers[handlerName].postMessage(message);
-  window.webkit = oldWebkit;
+  try {
+    // A web page can override `window.webkit` with any value. Deleting the
+    // object ensures that original and working implementation of
+    // window.webkit is restored.
+    var oldWebkit = window.webkit;
+    delete window['webkit'];
+    window.webkit.messageHandlers[handlerName].postMessage(message);
+    window.webkit = oldWebkit;
+  } catch (err) {
+    // TODO(crbug.com/1449955): Report this fatal error
+  }
 };

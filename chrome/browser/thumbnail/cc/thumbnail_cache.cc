@@ -18,6 +18,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -112,7 +113,8 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
     : etc1_file_sequenced_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       jpeg_file_sequenced_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       etc1_helper_(GetCacheDirectory(), etc1_file_sequenced_task_runner_),
       jpeg_helper_(GetCacheDirectory(), jpeg_file_sequenced_task_runner_),
       compression_queue_max_size_(compression_queue_max_size),
@@ -163,16 +165,20 @@ void ThumbnailCache::RemoveThumbnailCacheObserver(
   }
 }
 
-void ThumbnailCache::Put(TabId tab_id,
-                         const SkBitmap& bitmap,
-                         float thumbnail_scale,
-                         double jpeg_aspect_ratio) {
+void ThumbnailCache::Put(
+    TabId tab_id,
+    std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker,
+    const SkBitmap& bitmap,
+    float thumbnail_scale,
+    double jpeg_aspect_ratio) {
   if (!ui_resource_provider_ || bitmap.empty() || thumbnail_scale <= 0) {
+    tracker->MarkCaptureFailed();
     return;
   }
 
   if (thumbnail_meta_data_.find(tab_id) == thumbnail_meta_data_.end()) {
     DVLOG(1) << "Thumbnail meta data was removed for tab id " << tab_id;
+    tracker->MarkCaptureFailed();
     return;
   }
 
@@ -197,8 +203,8 @@ void ThumbnailCache::Put(TabId tab_id,
     approx_thumbnail->SetBitmap(approximation.first);
     approximation_cache_.Put(tab_id, std::move(approx_thumbnail));
   }
-  CompressThumbnailIfNecessary(tab_id, time_stamp, bitmap, thumbnail_scale,
-                               jpeg_aspect_ratio);
+  CompressThumbnailIfNecessary(tab_id, std::move(tracker), time_stamp, bitmap,
+                               thumbnail_scale, jpeg_aspect_ratio);
 }
 
 void ThumbnailCache::Remove(TabId tab_id) {
@@ -359,12 +365,17 @@ void ThumbnailCache::ForkToSaveAsJpeg(
     bool result,
     const SkBitmap& bitmap) {
   if (result && !bitmap.isNull()) {
-    SaveAsJpeg(tab_id, bitmap, jpeg_aspect_ratio);
+    SaveAsJpeg(
+        tab_id,
+        std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>(
+            nullptr, base::OnTaskRunnerDeleter(
+                         base::SequencedTaskRunner::GetCurrentDefault())),
+        bitmap, jpeg_aspect_ratio);
   }
   std::move(callback).Run(result, bitmap);
 }
 
-void ThumbnailCache::DecompressThumbnailFromFile(
+void ThumbnailCache::DecompressEtc1ThumbnailFromFile(
     TabId tab_id,
     double jpeg_aspect_ratio,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
@@ -427,56 +438,63 @@ void ThumbnailCache::WriteEtc1ThumbnailIfNecessary(
     const gfx::Size& content_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (write_tasks_count_ >= write_queue_max_size_) {
+  if (!compressed_data || write_tasks_count_ >= write_queue_max_size_) {
     return;
   }
 
   write_tasks_count_++;
 
   base::OnceClosure post_write_task = base::BindOnce(
-      &ThumbnailCache::PostWriteTask, weak_factory_.GetWeakPtr());
+      &ThumbnailCache::PostWriteEtc1Task, weak_factory_.GetWeakPtr());
   etc1_helper_.Write(tab_id, compressed_data, scale, content_size,
                      std::move(post_write_task));
 }
 
 void ThumbnailCache::WriteJpegThumbnailIfNecessary(
     TabId tab_id,
+    std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker,
     std::vector<uint8_t> compressed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (compressed_data.empty()) {
-    return;
-  }
-  if (write_tasks_count_ >= write_queue_max_size_) {
+  if (compressed_data.empty() || write_tasks_count_ >= write_queue_max_size_) {
+    if (tracker) {
+      tracker->MarkJpegFailed();
+    }
     return;
   }
 
   write_tasks_count_++;
 
-  base::OnceClosure post_write_task = base::BindOnce(
-      &ThumbnailCache::PostWriteTask, weak_factory_.GetWeakPtr());
+  auto post_write_task =
+      base::BindOnce(&ThumbnailCache::PostWriteJpegTask,
+                     weak_factory_.GetWeakPtr(), std::move(tracker));
   jpeg_helper_.Write(tab_id, std::move(compressed_data),
                      std::move(post_write_task));
 }
 
-void ThumbnailCache::SaveAsJpeg(TabId tab_id,
-                                const SkBitmap& bitmap,
-                                double jpeg_aspect_ratio) {
+void ThumbnailCache::SaveAsJpeg(
+    TabId tab_id,
+    std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker,
+    const SkBitmap& bitmap,
+    double jpeg_aspect_ratio) {
   base::OnceCallback<void(std::vector<uint8_t>)> post_jpeg_compression_task =
       base::BindOnce(&ThumbnailCache::WriteJpegThumbnailIfNecessary,
-                     weak_factory_.GetWeakPtr(), tab_id);
+                     weak_factory_.GetWeakPtr(), tab_id, std::move(tracker));
 
   jpeg_helper_.Compress(jpeg_aspect_ratio, bitmap,
                         std::move(post_jpeg_compression_task));
 }
 
-void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
-                                                  const base::Time& time_stamp,
-                                                  const SkBitmap& bitmap,
-                                                  float scale,
-                                                  double jpeg_aspect_ratio) {
+void ThumbnailCache::CompressThumbnailIfNecessary(
+    TabId tab_id,
+    std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker,
+    const base::Time& time_stamp,
+    const SkBitmap& bitmap,
+    float scale,
+    double jpeg_aspect_ratio) {
   if (compression_tasks_count_ >= compression_queue_max_size_) {
     RemoveOnMatchedTimeStamp(tab_id, time_stamp);
+    tracker->MarkCaptureFailed();
     return;
   }
 
@@ -494,7 +512,7 @@ void ThumbnailCache::CompressThumbnailIfNecessary(TabId tab_id,
   etc1_helper_.Compress(bitmap, encoded_size, std::move(post_compression_task));
 
   if (save_jpeg_thumbnails_) {
-    SaveAsJpeg(tab_id, bitmap, jpeg_aspect_ratio);
+    SaveAsJpeg(tab_id, std::move(tracker), bitmap, jpeg_aspect_ratio);
   }
 }
 
@@ -597,7 +615,23 @@ void ThumbnailCache::InvalidateCachedThumbnail(Thumbnail* thumbnail) {
   }
 }
 
-void ThumbnailCache::PostWriteTask() {
+void ThumbnailCache::PostWriteJpegTask(
+    std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (tracker) {
+    if (success) {
+      tracker->SetWroteJpeg();
+    } else {
+      tracker->MarkJpegFailed();
+    }
+  }
+
+  write_tasks_count_--;
+}
+
+void ThumbnailCache::PostWriteEtc1Task() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   write_tasks_count_--;

@@ -8,8 +8,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/network_service_util.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

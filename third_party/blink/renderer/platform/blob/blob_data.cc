@@ -170,8 +170,10 @@ void BlobData::AppendBlob(scoped_refptr<BlobDataHandle> data_handle,
                           int64_t length) {
   DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";
-  DCHECK(!data_handle->IsSingleUnknownSizeFile())
-      << "It is illegal to append an unknown size file blob.";
+  DCHECK(!data_handle->IsSingleUnknownSizeFile() ||
+         length != BlobData::kToEndOfFile)
+      << "It is illegal to append an unknown size file blob without specifying "
+         "a size.";
   // Skip zero-byte items, as they don't matter for the contents of the blob.
   if (length == 0)
     return;

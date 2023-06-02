@@ -13,8 +13,7 @@ interface FencedFrameConfig {
   // of `blink::FencedFrame::RedactedFencedFrameConfig`.
   // For more information on why this is needed please see:
   // https://github.com/WICG/fenced-frame/issues/48#issuecomment-1245809738
-  constructor(USVString url);
-  readonly attribute FencedFrameConfigURL? url;
+  [RuntimeEnabled=FencedFramesDefaultMode] constructor(USVString url);
   readonly attribute FencedFrameConfigSize? width;
   readonly attribute FencedFrameConfigSize? height;
   void setSharedStorageContext(DOMString contextString);

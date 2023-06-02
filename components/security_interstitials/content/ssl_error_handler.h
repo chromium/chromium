@@ -256,7 +256,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   // The below field is unused if captive portal detection is not enabled,
   // which causes a compiler error.
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  raw_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
+  raw_ptr<captive_portal::CaptivePortalService, DanglingUntriaged>
+      captive_portal_service_;
 #endif
 
   base::CallbackListSubscription subscription_;

@@ -22,7 +22,8 @@ SettingsPrivateDelegate* SettingsPrivateDelegateFactory::GetForBrowserContext(
 
 // static
 SettingsPrivateDelegateFactory* SettingsPrivateDelegateFactory::GetInstance() {
-  return base::Singleton<SettingsPrivateDelegateFactory>::get();
+  static base::NoDestructor<SettingsPrivateDelegateFactory> instance;
+  return instance.get();
 }
 
 SettingsPrivateDelegateFactory::SettingsPrivateDelegateFactory()
@@ -35,8 +36,7 @@ SettingsPrivateDelegateFactory::SettingsPrivateDelegateFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-SettingsPrivateDelegateFactory::~SettingsPrivateDelegateFactory() {
-}
+SettingsPrivateDelegateFactory::~SettingsPrivateDelegateFactory() = default;
 
 KeyedService* SettingsPrivateDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

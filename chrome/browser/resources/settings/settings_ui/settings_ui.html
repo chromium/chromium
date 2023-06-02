@@ -34,6 +34,12 @@
       }
 
       #container {
+        /* CrContainerShadowMixin creates a div inside of #container to
+         * calculate when the div is off-screen, indicating that the user has
+         * scrolled #container. Since this div needs to be at the top of
+         * #container, set align-items to flex-start. Otherwise, the flex layout
+         * will stretch the div across the entire height of #container and never
+         * appear off-screen. */
         align-items: flex-start;
         display: flex;
         flex: 1;
@@ -82,7 +88,7 @@
         clear-label="$i18n{clearSearch}"
         autofocus
         search-prompt="$i18n{searchPrompt}"
-        on-cr-toolbar-menu-tap="onMenuButtonClick_"
+        on-cr-toolbar-menu-click="onMenuButtonClick_"
         spinner-active="[[toolbarSpinnerActive_]]"
         menu-label="$i18n{menuButtonLabel}"
         on-search-changed="onSearchChanged_"

@@ -57,8 +57,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
 
  private:
   // CommandBufferStub overrides:
-  void OnTakeFrontBuffer(const Mailbox& mailbox) override;
-  void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
   void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
                                           int samples_count,
                                           bool preserve,

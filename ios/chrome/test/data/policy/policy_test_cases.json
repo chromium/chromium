@@ -608,6 +608,40 @@
       }
     ]
   },
+  "PolicyTestPageEnabled":{
+    "os":  [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": { "PolicyTestPageEnabled": true},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": { "PolicyTestPageEnabled": false},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "value": false,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
   "PopupsAllowedForUrls": {
     "os": [
       "ios"

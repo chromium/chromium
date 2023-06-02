@@ -12,7 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace auxiliary_search {
-class AuxiliarySearchGroup;
+class AuxiliarySearchBookmarkGroup;
 }
 namespace bookmarks {
 class BookmarkModel;
@@ -29,11 +29,14 @@ class AuxiliarySearchProvider : public KeyedService {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
+  static void EnsureFactoryBuilt();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
 
-  void GetBookmarks(bookmarks::BookmarkModel* model,
-                    auxiliary_search::AuxiliarySearchGroup* group) const;
+  void GetBookmarks(
+      bookmarks::BookmarkModel* model,
+      auxiliary_search::AuxiliarySearchBookmarkGroup* group) const;
 
   raw_ptr<Profile> profile_;
 };

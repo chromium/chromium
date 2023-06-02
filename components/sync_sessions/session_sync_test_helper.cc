@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_sessions {
@@ -22,12 +23,11 @@ static const char* kTitle = "title";
 sync_pb::SessionSpecifics
 SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
     const std::string& tag,
-    sync_pb::SyncEnums_DeviceType device_type) {
+    const syncer::DeviceInfo::FormFactor& device_form_factor) {
   sync_pb::SessionSpecifics specifics;
   specifics.set_session_tag(tag);
   sync_pb::SessionHeader* header = specifics.mutable_header();
-  // TODO(crbug.com/1434959): Set device form factor instead.
-  header->set_device_type(device_type);
+  header->set_device_form_factor(ToDeviceFormFactorProto(device_form_factor));
   header->set_client_name(kClientName);
   return specifics;
 }

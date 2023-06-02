@@ -9,7 +9,12 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
+
 // The horizontal distance required to cause the browser to perform a history
 // navigation.
 const CGFloat kHistorySwipeThreshold = 0.08;
@@ -30,9 +35,11 @@ const CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 // expect NSTouch callbacks. We set this variable to YES and ignore NSTouch
 // callbacks.
 BOOL forceMagicMouse = NO;
+
 }  // namespace
 
 @interface HistorySwiper ()
+
 // Given a touch event, returns the average touch position.
 - (NSPoint)averagePositionInEvent:(NSEvent*)event;
 
@@ -86,9 +93,60 @@ BOOL forceMagicMouse = NO;
 // Returns YES if the event was consumed or NO if it should be passed on to the
 // renderer. Attempts to initiate history swiping for Magic Mouse events.
 - (BOOL)handleMagicMouseWheelEvent:(NSEvent*)theEvent;
+
 @end
 
-@implementation HistorySwiper
+@implementation HistorySwiper {
+  // This controller will exist if and only if the UI is in history swipe mode.
+  HistoryOverlayController* __strong _historyOverlay;
+  // The location of the fingers when the gesture started.
+  NSPoint _gestureStartPoint;
+  // The current location of the fingers in the gesture.
+  NSPoint _gestureCurrentPoint;
+  // The total Y distance moved since the beginning of the gesture.
+  CGFloat _gestureTotalY;
+  // A flag that indicates that there is an ongoing gesture. Only used to
+  // determine whether swipe events are coming from a Magic Mouse.
+  BOOL _inGesture;
+  // A flag that indicates that Chrome is receiving a series of touch events.
+  BOOL _receivingTouches;
+  // Each time a new gesture begins, we must get a new start point.
+  // This ivar determines whether the start point is valid.
+  int _gestureStartPointValid;
+
+  // The user's intended direction with the history swipe. Set during the
+  // transition from kPending -> kPotential.
+  history_swiper::NavigationDirection _historySwipeDirection;
+
+  // Whether the history swipe gesture has its direction inverted. Set during
+  // the transition from kPending -> kPotential.
+  BOOL _historySwipeDirectionInverted;
+
+  // Whether:
+  //  1) When wheel gestures are disabled if the wheel event with phase
+  //     NSEventPhaseBegan was consumed by the renderer.
+  //  2) When wheel gestures are enabled and if the first gesture
+  //     scroll was not consumed by the renderer.
+  // This variables defaults to NO for new gestures.
+  BOOL _firstScrollUnconsumed;
+
+  // Whether the overscroll has been triggered by renderer and is not disabled
+  // by CSSOverscrollBehavior.
+  BOOL _overscrollTriggeredByRenderer;
+
+  // Whether we have received a gesture scroll begin and are awaiting the first
+  // gesture scroll update to determine if the event was consumed by the
+  // renderer.
+  BOOL _waitingForFirstGestureScroll;
+
+  // What state the gesture recognition is in.
+  history_swiper::RecognitionState _recognitionState;
+
+  // Cumulative scroll delta since scroll gesture start. Only valid during
+  // scroll gesture handling. Only used to trigger Magic Mouse history swiping.
+  NSSize _mouseScrollDelta;
+}
+
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithDelegate:(id<HistorySwiperDelegate>)delegate {
@@ -101,20 +159,21 @@ BOOL forceMagicMouse = NO;
 
 - (void)dealloc {
   [self removeHistoryOverlay];
-  [super dealloc];
 }
 
 - (BOOL)handleEvent:(NSEvent*)event {
-  if ([event type] != NSEventTypeScrollWheel)
+  if (event.type != NSEventTypeScrollWheel) {
     return NO;
+  }
 
   return [self handleScrollWheelEvent:event];
 }
 
 - (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
                          consumed:(BOOL)consumed {
-  if (event.phase != blink::WebMouseWheelEvent::kPhaseBegan)
+  if (event.phase != blink::WebMouseWheelEvent::kPhaseBegan) {
     return;
+  }
   _firstScrollUnconsumed = !consumed;
 }
 
@@ -130,8 +189,9 @@ BOOL forceMagicMouse = NO;
       _waitingForFirstGestureScroll = YES;
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
-      if (_waitingForFirstGestureScroll)
+      if (_waitingForFirstGestureScroll) {
         _firstScrollUnconsumed = !consumed;
+      }
       _waitingForFirstGestureScroll = NO;
       break;
     default:
@@ -156,13 +216,13 @@ BOOL forceMagicMouse = NO;
 }
 
 // This method assumes that there is at least 1 touch in the event.
-// The event must correpond to a valid gesture, or else
+// The event must correspond to a valid gesture, or else
 // [NSEvent touchesMatchingPhase:inView:] will fail.
 - (NSPoint)averagePositionInEvent:(NSEvent*)event {
-  NSPoint position = NSMakePoint(0,0);
+  NSPoint position = NSMakePoint(0, 0);
   int pointCount = 0;
-  for (NSTouch* touch in
-       [event touchesMatchingPhase:NSTouchPhaseAny inView:nil]) {
+  for (NSTouch* touch in [event touchesMatchingPhase:NSTouchPhaseAny
+                                              inView:nil]) {
     position.x += touch.normalizedPosition.x;
     position.y += touch.normalizedPosition.y;
     ++pointCount;
@@ -180,8 +240,9 @@ BOOL forceMagicMouse = NO;
   NSPoint averagePosition = [self averagePositionInEvent:event];
 
   // If the start point is valid, then so is the current point.
-  if (_gestureStartPointValid)
+  if (_gestureStartPointValid) {
     _gestureTotalY += fabs(averagePosition.y - _gestureCurrentPoint.y);
+  }
 
   // Update the current point of the gesture.
   _gestureCurrentPoint = averagePosition;
@@ -215,23 +276,26 @@ BOOL forceMagicMouse = NO;
 - (void)touchesCancelledWithEvent:(NSEvent*)event {
   _receivingTouches = NO;
 
-  if (![self processTouchEventForHistorySwiping:event])
+  if (![self processTouchEventForHistorySwiping:event]) {
     return;
+  }
 
   [self cancelHistorySwipe];
 }
 
 - (void)touchesEndedWithEvent:(NSEvent*)event {
   _receivingTouches = NO;
-  if (![self processTouchEventForHistorySwiping:event])
+  if (![self processTouchEventForHistorySwiping:event]) {
     return;
+  }
 
   if (_historyOverlay) {
     BOOL finished = [self updateProgressBar];
 
     // If the gesture was completed, perform a navigation.
-    if (finished)
+    if (finished) {
       [self navigateBrowserInDirection:_historySwipeDirection];
+    }
 
     [self removeHistoryOverlay];
 
@@ -241,7 +305,7 @@ BOOL forceMagicMouse = NO;
 }
 
 - (BOOL)processTouchEventForHistorySwiping:(NSEvent*)event {
-  NSEventType type = [event type];
+  NSEventType type = event.type;
   if (type != NSEventTypeBeginGesture && type != NSEventTypeEndGesture &&
       type != NSEventTypeGesture) {
     return NO;
@@ -267,8 +331,9 @@ BOOL forceMagicMouse = NO;
   }
 
   // Don't do any more processing if the state machine is in the pending state.
-  if (_recognitionState == history_swiper::kPending)
+  if (_recognitionState == history_swiper::kPending) {
     return NO;
+  }
 
   if (_recognitionState == history_swiper::kPotential) {
     // The user is in the process of doing history swiping.  If the history
@@ -285,29 +350,33 @@ BOOL forceMagicMouse = NO;
     }
   }
 
-  if (_historyOverlay)
+  if (_historyOverlay) {
     [self updateProgressBar];
+  }
   return YES;
 }
 
 // Consider cancelling the horizontal swipe if the user was intending a
 // vertical swipe.
 - (BOOL)shouldCancelHorizontalSwipeWithCurrentPoint:(NSPoint)currentPoint
-    startPoint:(NSPoint)startPoint {
+                                         startPoint:(NSPoint)startPoint {
   CGFloat yDelta = _gestureTotalY;
   CGFloat xDelta = fabs(currentPoint.x - startPoint.x);
 
   // The gesture is pretty clearly more vertical than horizontal.
-  if (yDelta > 2 * xDelta)
+  if (yDelta > 2 * xDelta) {
     return YES;
+  }
 
   // There's been more vertical distance than horizontal distance.
-  if (yDelta * 1.3 > xDelta && yDelta > kCancelEventVerticalLowerThreshold)
+  if (yDelta * 1.3 > xDelta && yDelta > kCancelEventVerticalLowerThreshold) {
     return YES;
+  }
 
   // There's been a lot of vertical distance.
-  if (yDelta > kCancelEventVerticalThreshold)
+  if (yDelta > kCancelEventVerticalThreshold) {
     return YES;
+  }
 
   return NO;
 }
@@ -319,7 +388,6 @@ BOOL forceMagicMouse = NO;
 
 - (void)removeHistoryOverlay {
   [_historyOverlay dismiss];
-  [_historyOverlay release];
   _historyOverlay = nil;
 }
 
@@ -333,15 +401,18 @@ BOOL forceMagicMouse = NO;
 
   progress = (currentPoint.x - startPoint.x) / kHistorySwipeThreshold;
   // If the swipe is a backwards gesture, we need to invert progress.
-  if (_historySwipeDirection == history_swiper::kBackwards)
+  if (_historySwipeDirection == history_swiper::kBackwards) {
     progress *= -1;
+  }
 
   // If the user has directions reversed, we need to invert progress.
-  if (_historySwipeDirectionInverted)
+  if (_historySwipeDirectionInverted) {
     progress *= -1;
+  }
 
-  if (progress >= 1.0)
+  if (progress >= 1.0) {
     finished = YES;
+  }
 
   // Progress can't be less than 0 or greater than 1.
   progress = MAX(0.0, progress);
@@ -360,44 +431,47 @@ BOOL forceMagicMouse = NO;
 
   HistoryOverlayController* historyOverlay = [[HistoryOverlayController alloc]
       initForMode:(direction == history_swiper::kForwards)
-                     ? kHistoryOverlayModeForward
-                     : kHistoryOverlayModeBack];
+                      ? kHistoryOverlayModeForward
+                      : kHistoryOverlayModeBack];
   [historyOverlay showPanelForView:[_delegate viewThatWantsHistoryOverlay]];
   _historyOverlay = historyOverlay;
 }
 
 - (void)navigateBrowserInDirection:
-            (history_swiper::NavigationDirection)direction {
+    (history_swiper::NavigationDirection)direction {
   [_delegate navigateInDirection:direction
                         onWindow:_historyOverlay.view.window];
 }
 
 - (BOOL)browserCanNavigateInDirection:
-        (history_swiper::NavigationDirection)direction
+            (history_swiper::NavigationDirection)direction
                                 event:(NSEvent*)event {
   return [_delegate canNavigateInDirection:direction onWindow:[event window]];
 }
 
 - (BOOL)handleMagicMouseWheelEvent:(NSEvent*)theEvent {
   // The 'trackSwipeEventWithOptions:' api doesn't handle momentum events.
-  if ([theEvent phase] == NSEventPhaseNone)
+  if (theEvent.phase == NSEventPhaseNone) {
     return NO;
+  }
 
-  _mouseScrollDelta.width += [theEvent scrollingDeltaX];
-  _mouseScrollDelta.height += [theEvent scrollingDeltaY];
+  _mouseScrollDelta.width += theEvent.scrollingDeltaX;
+  _mouseScrollDelta.height += theEvent.scrollingDeltaY;
 
   BOOL isHorizontalGesture =
-    std::abs(_mouseScrollDelta.width) > std::abs(_mouseScrollDelta.height);
-  if (!isHorizontalGesture)
+      std::abs(_mouseScrollDelta.width) > std::abs(_mouseScrollDelta.height);
+  if (!isHorizontalGesture) {
     return NO;
+  }
 
-  BOOL isRightScroll = [theEvent scrollingDeltaX] < 0;
+  BOOL isRightScroll = theEvent.scrollingDeltaX < 0;
   history_swiper::NavigationDirection direction =
       isRightScroll ? history_swiper::kForwards : history_swiper::kBackwards;
-  BOOL browserCanMove =
-      [self browserCanNavigateInDirection:direction event:theEvent];
-  if (!browserCanMove)
+  BOOL browserCanMove = [self browserCanNavigateInDirection:direction
+                                                      event:theEvent];
+  if (!browserCanMove) {
     return NO;
+  }
 
   [self initiateMagicMouseHistorySwipe:isRightScroll event:theEvent];
   return YES;
@@ -435,51 +509,52 @@ BOOL forceMagicMouse = NO;
   // direction after the initial swipe doesn't cause the shield to move
   // in the wrong direction.
   forceMagicMouse = YES;
-  [event trackSwipeEventWithOptions:NSEventSwipeTrackingLockDirection
-      dampenAmountThresholdMin:-1
-      max:1
-      usingHandler:^(CGFloat gestureAmount,
-                     NSEventPhase phase,
-                     BOOL isComplete,
-                     BOOL* stop) {
-          if (phase == NSEventPhaseBegan) {
-            [historyOverlay
-                showPanelForView:[_delegate viewThatWantsHistoryOverlay]];
-            return;
-          }
+  [event
+      trackSwipeEventWithOptions:NSEventSwipeTrackingLockDirection
+        dampenAmountThresholdMin:-1
+                             max:1
+                    usingHandler:^(CGFloat gestureAmount, NSEventPhase phase,
+                                   BOOL isComplete, BOOL* stop) {
+                      if (phase == NSEventPhaseBegan) {
+                        [historyOverlay
+                            showPanelForView:
+                                [self.delegate viewThatWantsHistoryOverlay]];
+                        return;
+                      }
 
-          BOOL ended = phase == NSEventPhaseEnded;
+                      BOOL ended = phase == NSEventPhaseEnded;
 
-          // Dismiss the panel before navigation for immediate visual feedback.
-          CGFloat progress = std::abs(gestureAmount) / 0.3;
-          BOOL finished = progress >= 1.0;
-          progress = MAX(0.0, progress);
-          progress = MIN(1.0, progress);
-          [historyOverlay setProgress:progress finished:finished];
+                      // Dismiss the panel before navigation for immediate
+                      // visual feedback.
+                      CGFloat progress = std::abs(gestureAmount) / 0.3;
+                      BOOL finished = progress >= 1.0;
+                      progress = MAX(0.0, progress);
+                      progress = MIN(1.0, progress);
+                      [historyOverlay setProgress:progress finished:finished];
 
-          // |gestureAmount| obeys -[NSEvent isDirectionInvertedFromDevice]
-          // automatically.
-          if (ended) {
-            [_delegate
-                navigateInDirection:isRightScroll ? history_swiper::kForwards
-                                                  : history_swiper::kBackwards
-                           onWindow:historyOverlay.view.window];
-          }
+                      // |gestureAmount| obeys -[NSEvent
+                      // isDirectionInvertedFromDevice] automatically.
+                      if (ended) {
+                        [self.delegate
+                            navigateInDirection:isRightScroll
+                                                    ? history_swiper::kForwards
+                                                    : history_swiper::kBackwards
+                                       onWindow:historyOverlay.view.window];
+                      }
 
-          if (ended || isComplete) {
-            [historyOverlay dismiss];
-            [historyOverlay release];
-            historyOverlay = nil;
-          }
-      }];
+                      if (ended || isComplete) {
+                        [historyOverlay dismiss];
+                        historyOverlay = nil;
+                      }
+                    }];
 }
 
 - (BOOL)handleScrollWheelEvent:(NSEvent*)theEvent {
   // The only events that this class consumes have type NSEventPhaseChanged.
   // This simultaneously weeds our regular mouse wheel scroll events, and
   // gesture events with incorrect phase.
-  if ([theEvent phase] != NSEventPhaseChanged &&
-      [theEvent momentumPhase] != NSEventPhaseChanged) {
+  if (theEvent.phase != NSEventPhaseChanged &&
+      theEvent.momentumPhase != NSEventPhaseChanged) {
     return NO;
   }
 
@@ -489,54 +564,64 @@ BOOL forceMagicMouse = NO;
   }
 
   // Don't allow momentum events to start history swiping.
-  if ([theEvent momentumPhase] != NSEventPhaseNone)
+  if (theEvent.momentumPhase != NSEventPhaseNone) {
     return NO;
+  }
 
-  if (!NSEvent.swipeTrackingFromScrollEventsEnabled)
+  if (!NSEvent.swipeTrackingFromScrollEventsEnabled) {
     return NO;
+  }
 
-  if (![_delegate shouldAllowHistorySwiping])
+  if (![_delegate shouldAllowHistorySwiping]) {
     return NO;
+  }
 
   // Don't enable history swiping until the renderer has decided to not consume
   // the event with phase NSEventPhaseBegan.
-  if (!_firstScrollUnconsumed)
+  if (!_firstScrollUnconsumed) {
     return NO;
+  }
 
   // History swiping should be prevented if the renderer hasn't triggered it.
-  if (!_overscrollTriggeredByRenderer)
+  if (!_overscrollTriggeredByRenderer) {
     return NO;
+  }
 
   // Magic mouse and touchpad swipe events are identical except magic mouse
   // events do not generate NSTouch callbacks. Since we rely on NSTouch
   // callbacks to perform history swiping, magic mouse swipe events use an
   // entirely different set of logic.
-  if ((_inGesture && !_receivingTouches) || forceMagicMouse)
+  if ((_inGesture && !_receivingTouches) || forceMagicMouse) {
     return [self handleMagicMouseWheelEvent:theEvent];
+  }
 
   // The scrollWheel: callback is only relevant if it happens while the user is
   // still actively using the touchpad.
-  if (!_receivingTouches)
+  if (!_receivingTouches) {
     return NO;
+  }
 
   // TODO(erikchen): Ideally, the direction of history swiping should not be
   // determined this early in a gesture, when it's unclear what the user is
   // intending to do. Since it is determined this early, make sure that there
   // is at least a minimal amount of horizontal motion.
   CGFloat xDelta = _gestureCurrentPoint.x - _gestureStartPoint.x;
-  if (fabs(xDelta) < 0.001)
+  if (fabs(xDelta) < 0.001) {
     return NO;
+  }
 
   BOOL isRightScroll = xDelta > 0;
-  if (theEvent.directionInvertedFromDevice)
+  if (theEvent.directionInvertedFromDevice) {
     isRightScroll = !isRightScroll;
+  }
 
   history_swiper::NavigationDirection direction =
       isRightScroll ? history_swiper::kForwards : history_swiper::kBackwards;
-  BOOL browserCanMove =
-      [self browserCanNavigateInDirection:direction event:theEvent];
-  if (!browserCanMove)
+  BOOL browserCanMove = [self browserCanNavigateInDirection:direction
+                                                      event:theEvent];
+  if (!browserCanMove) {
     return NO;
+  }
 
   _historySwipeDirection = direction;
   _historySwipeDirectionInverted = theEvent.directionInvertedFromDevice;
@@ -557,7 +642,7 @@ BOOL forceMagicMouse = NO;
       // It is unclear whether the user is attempting to perform history
       // swiping.  If the event has a vertical component, send it on to the
       // renderer.
-      return [event scrollingDeltaY] == 0;
+      return event.scrollingDeltaY == 0;
   }
 }
 

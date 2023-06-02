@@ -82,8 +82,9 @@ class WebBundleParserFuzzer {
       return;
     } else {
       parser_->ParseMetadata(
-          /*offset=*/-1, base::BindOnce(&WebBundleParserFuzzer::OnParseMetadata,
-                                        base::Unretained(this)));
+          /*offset=*/absl::nullopt,
+          base::BindOnce(&WebBundleParserFuzzer::OnParseMetadata,
+                         base::Unretained(this)));
     }
   }
 

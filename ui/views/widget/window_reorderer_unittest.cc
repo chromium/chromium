@@ -50,7 +50,7 @@ class WindowReordererTest : public ViewsTestBase {
   }
 
  private:
-  raw_ptr<aura::Window> parent_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> parent_ = nullptr;
 };
 
 // Test that views with layers and views with associated windows are reordered

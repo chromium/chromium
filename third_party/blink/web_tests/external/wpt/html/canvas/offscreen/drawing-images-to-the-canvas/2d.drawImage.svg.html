@@ -15,21 +15,16 @@ promise_test(async t => {
   var canvas = new OffscreenCanvas(100, 50);
   var ctx = canvas.getContext('2d');
 
-  var promise = new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", '/images/green.svg');
-    xhr.responseType = 'blob';
-    xhr.send();
-    xhr.onload = function() {
-      resolve(xhr.response);
-    };
+  const img = new Image();
+  const imageLoadPromise = new Promise((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = (err) => reject(err);
   });
-  promise.then(function(response) {
-    createImageBitmap(response).then(bitmap => {
-      ctx.drawImage(bitmap, 0, 0);
-      _assertPixelApprox(canvas, 50,25, 0,255,0,255, 2);
-    });
-  });
+  img.src = '/images/green.svg';
+  await imageLoadPromise;
+
+  ctx.drawImage(img, 0, 0);
+  _assertPixelApprox(canvas, 50, 25, 0, 255, 0, 255, 2);
 
 }, "drawImage() of an SVG image");
 </script>

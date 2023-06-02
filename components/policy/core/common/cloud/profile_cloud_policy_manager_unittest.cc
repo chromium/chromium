@@ -77,7 +77,7 @@ class ProfileCloudPolicyManagerTest : public testing::Test {
   // Policy infrastructure.
   SchemaRegistry schema_registry_;
   MockConfigurationPolicyObserver observer_;
-  raw_ptr<MockProfileCloudPolicyStore> store_;  // Not owned.
+  raw_ptr<MockProfileCloudPolicyStore, DanglingUntriaged> store_;  // Not owned.
   std::unique_ptr<ProfileCloudPolicyManager> manager_;
 };
 

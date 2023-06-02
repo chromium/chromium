@@ -148,8 +148,17 @@ TEST(MinidumpCrashpadInfoWriter, AddressMask) {
   ASSERT_TRUE(empty_client_id.InitializeFromString(
       "00000000-0000-0000-0000-000000000000"));
 
+  // Copy address_mask into a local variable because
+  // |MinidumpCrashpadInfo::address_mask| requires 8-byte alignment but the
+  // struct itself is 4-byte aligned.
+  const auto address_mask = [&crashpad_info] {
+    uint64_t data = 0;
+    memcpy(&data, &crashpad_info->address_mask, sizeof(data));
+    return data;
+  }();
+
   EXPECT_EQ(crashpad_info->version, MinidumpCrashpadInfo::kVersion);
-  EXPECT_EQ(crashpad_info->address_mask, mask);
+  EXPECT_EQ(address_mask, mask);
   EXPECT_EQ(crashpad_info->report_id, empty_report_id);
   EXPECT_EQ(crashpad_info->client_id, empty_client_id);
   EXPECT_FALSE(simple_annotations);
@@ -172,7 +181,16 @@ TEST(MinidumpCrashpadInfoWriter, EmptyAddressMask) {
   ASSERT_NO_FATAL_FAILURE(GetCrashpadInfoStream(
       string_file.string(), &crashpad_info, &simple_annotations, &module_list));
 
-  EXPECT_EQ(crashpad_info->address_mask, 0UL);
+  // Copy address_mask into a local variable because
+  // |MinidumpCrashpadInfo::address_mask| requires 8-byte alignment but the
+  // struct itself is 4-byte aligned.
+  const auto address_mask = [&crashpad_info] {
+    uint64_t data = 0;
+    memcpy(&data, &crashpad_info->address_mask, sizeof(data));
+    return data;
+  }();
+
+  EXPECT_EQ(address_mask, 0UL);
 }
 
 TEST(MinidumpCrashpadInfoWriter, SimpleAnnotations) {

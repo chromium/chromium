@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) with Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Opening Linux files...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Apply to all</translation>
 <translation id="1561842594491319104">Chrome devices</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1853795129690976061">This folder is shared with Linux</translation>
 <translation id="1864756863218646478">The file could not be found.</translation>
+<translation id="1877377730633446520">This will use about <ph name="REQUIRED_SPACE" />. You currently have <ph name="FREE_SPACE" /> available.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connect</translation>
 <translation id="1920670151694390848">Malayalam transliteration</translation>
 <translation id="1920798810075583923">Watermelon</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1995337122023280937">Go to file location</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
+<translation id="2004942826429452291">Files will be stored in the cloud and on this Chromebook.</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russian</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Device settings</translation>
 <translation id="2084809735218147718">Signing thank you</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="2089751716171649322">Easily access your Google Drive files when you’re offline</translation>
 <translation id="2111134541987263231">Turn on <ph name="BEGIN_BOLD" />Allow in Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items will be deleted and you won't be able to restore them.</translation>
 <translation id="2122305276694332719">Automatically connecting to a hidden network allows others to see your device and some network settings, and is not recommended.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Install with Linux</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">Person with coffee</translation>
 <translation id="2251368349685848079">Restore from bin</translation>
 <translation id="2278133026967558505">File access by all websites and URLs</translation>
@@ -174,7 +175,7 @@
 <translation id="2417486498593892439">Sign in to network</translation>
 <translation id="2425665904502185219">Total file size</translation>
 <translation id="2428749644083375155">Copying <ph name="NUMBER_OF_ITEMS" /> items to <ph name="FOLDER_NAME" /></translation>
-<translation id="2448312741937722512">Types</translation>
+<translation id="2448312741937722512">Type</translation>
 <translation id="2452444014801043526">Person with megaphone</translation>
 <translation id="2464079411014186876">Ice cream</translation>
 <translation id="2464089476039395325">HTTP Proxy</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
+<translation id="3501954296166022751">Your Google Drive files are available offline</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Preparing to sync <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Changing this setting will affect all shared networks</translation>
 <translation id="3737576078404241332">Remove from sidebar</translation>
 <translation id="3749289110408117711">File name</translation>
-<translation id="3780536599611287598">You don't have permission to move files into '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">You are offline</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3793469551756281394">About <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> remaining</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Custom name servers</translation>
 <translation id="4465725236958772856">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, managed by your administrator, connect</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4472575034687746823">Get started</translation>
 <translation id="4474142134969976028">No matching results</translation>
 <translation id="4477002475007461989">Romanian</translation>
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832">Restoring <ph name="COUNT" /> items</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{To use Incognito, your organisation requires an extension}other{To use Incognito, your organisation requires some extensions}}</translation>
-<translation id="4823651846660089135">Device is read-only</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Type <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> into your browser</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Dots</translation>
+<translation id="5519161320735100193">Google Drive settings</translation>
 <translation id="5522908512596376669">File list has changed to list view.</translation>
 <translation id="5524517123096967210">The file could not be read.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> image</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Removed all entries from selection.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
 <translation id="5845721951356578987">Nurse</translation>
+<translation id="5860491529813859533">Turn on</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP look-up failed</translation>
 <translation id="5896749729057314184">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
 <translation id="6337014272874260727">Unpin from quick files</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
-<translation id="6346310558342052870">Access restricted</translation>
 <translation id="6356685157277930264">Files feedback window</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="636254897931573416">Invalid domain suffix match value</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebrew</translation>
 <translation id="78104721049218340">Thai with Kedmanee keyboard</translation>
+<translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Error configuring network</translation>
 <translation id="7839804798877833423">Fetching these files will use approximately <ph name="FILE_SIZE" /> of mobile data.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatting a partition will erase all data stored on it. This action cannot be undone.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Your files in My Drive will sync to your Chromebook automatically so you can access them without an Internet connection.</translation>
 <translation id="7925247922861151263">AAA check failed</translation>
 <translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
+<translation id="7933875256234974853">Preparing to sync Drive files...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">This device cannot be opened because its file system was not recognised.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">PPP authentication failed due to an incorrect username or password</translation>
 <translation id="7980421588063892270">English (US) with Colemak keyboard</translation>
+<translation id="7985008041109611710">Syncing <ph name="NUMBER_OF_FILES_SYNCING" /> file(s)</translation>
 <translation id="8000066093800657092">No network</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Size</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8949925099261528566">Connected, no Internet</translation>
 <translation id="8965697826696209160">There is not enough space.</translation>
+<translation id="8971742885766657349">Syncing – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="8998871447376656508">There is not enough free space in your Google Drive to complete the upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Installation successfully started.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">[=1]Syncing 1 file</translation>
 <translation id="938470336146445890">Please install a user certificate.</translation>
 <translation id="939736085109172342">New folder</translation>
 <translation id="943972244133411984">Modified by</translation>

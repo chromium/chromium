@@ -10,6 +10,8 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -18,11 +20,14 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.provider.Settings;
+import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,6 +54,11 @@ public class IncognitoReauthSettingTest {
 
     private PrivacySettings mPrivacySettings;
 
+    private void scrollToSetting(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
     private void launchSettingsActivity() {
         mSettingsActivityTestRule.startSettingsActivity();
         mPrivacySettings = mSettingsActivityTestRule.getFragment();
@@ -68,6 +78,7 @@ public class IncognitoReauthSettingTest {
         String summaryText = ApplicationProvider.getApplicationContext().getResources().getString(
                 R.string.settings_incognito_tab_lock_summary_android_setting_off);
         summaryText = summaryText.replaceAll("</?link>", "");
+        scrollToSetting(withText(summaryText));
         onView(withText(summaryText)).perform(click());
         intended(allOf(hasAction(Settings.ACTION_SECURITY_SETTINGS)));
         Intents.release();

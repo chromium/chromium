@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">„Chrome“ nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="2736805085127235148">„Chrome“ pranešimai šiuo metu išjungti įrenginio nustatymuose.</translation>
 <translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
+<translation id="2840432500933227975">Atidarykite „Chrome“ nustatymus sistemoje „iOS“, tada palieskite „Default Browser APP“ ir pasirinkite „Chrome“.</translation>
 <translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
 <translation id="2957447865124070833">Pasirinkite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks svetainės mobiliesiems užklausą.</translation>
 <translation id="3706101708757577809">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="3720541637541300822">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
+<translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="384394811301901750">„Google Chrome“ šiuo metu negali naudoti fotoaparato</translation>
 <translation id="3980220367029651214">Perjungiate sinchronizavimo paskyras iš <ph name="USER_EMAIL1" /> į <ph name="USER_EMAIL2" />. Esamus „Chrome“ duomenis valdo <ph name="DOMAIN" />. Duomenys bus ištrinti iš šio įrenginio, bet liks paskyroje <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Jūsų organizacija reikalauja likti atsijungus nuo „Chrome“.</translation>
@@ -150,7 +152,6 @@
   • Jei „Chrome“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
 
   • Jei įjungsite sinchronizavimą, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Šiame „Chrome“ profilyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="9112744793181547300">Nustatyti „Chrome“ kaip numatytąją?</translation>
 <translation id="9122931302567044771">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
 </translationbundle>

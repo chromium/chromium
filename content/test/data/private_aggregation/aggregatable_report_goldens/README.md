@@ -33,9 +33,10 @@ TODO: Replace past explainer links with draft spec when available.
 | "`0.1`" | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | [link](https://chromium.googlesource.com/chromium/src/+/57a65e032513965829e3ed1c1cd20b39d63d2224/content/browser/aggregation_service/payload_encryption.md) | n/a (initial release).
 
 ## Golden Report Descriptions
-1. Debug report, 1 contribution, FLEDGE API.
-2. Non-debug report, 1 contribution, FLEDGE API.
+
+1. Debug report, 1 contribution, Protected Audience API.
+2. Non-debug report, 1 contribution, Protected Audience API.
 3. Debug report, 2 contributions, Shared Storage API.
 4. Non-debug report, 2 contributions, Shared Storage API.
-5. Debug report, key with extreme value, FLEDGE API.
-6. Non-debug report, key with extreme value, FLEDGE API.
+5. Debug report, key with extreme value, Protected Audience API.
+6. Non-debug report, key with extreme value, Protected Audience API.

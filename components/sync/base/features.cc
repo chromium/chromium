@@ -29,6 +29,10 @@ BASE_FEATURE(kPasswordNotesWithBackup,
 #endif
 );
 
+BASE_FEATURE(kSharingOfferKeyPairBootstrap,
+             "SharingOfferKeyPairBootstrap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              "SyncAndroidLimitNTPPromoImpressions",
@@ -64,16 +68,6 @@ BASE_FEATURE(kChromeOSSyncedSessionSharing,
              "ChromeOSSyncedSessionSharing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-BASE_FEATURE(kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
-             "SyncTrustedVaultDegradedRecoverabilityHandler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Keep this entry in sync with the equivalent name in
-// ChromeFeatureList.java.
-BASE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration,
-             "SyncTrustedVaultVerifyDeviceRegistration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseSyncInvalidations,
              "UseSyncInvalidations",
@@ -163,6 +157,18 @@ BASE_FEATURE(kSyncWebauthnCredentials,
 
 BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
              "SyncIgnoreGetUpdatesRetryDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences,
+             "SyncEnablePersistentStorageForAccountPreferences",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGroupsSaveSyncIntegration,
+             "TabGroupsSaveSyncIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
+             "ReplaceSyncPromosWithSignInPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace syncer

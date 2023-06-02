@@ -11,7 +11,6 @@ for more details about the presubmit API built into depot_tools.
 import sys
 
 FILE_PATTERN = [ r'.+_test.py$' ]
-USE_PYTHON3 = True
 
 
 def _CheckExterns(input_api, output_api):
@@ -28,15 +27,13 @@ def _CheckExterns(input_api, output_api):
 
 def CheckChangeOnUpload(input_api, output_api):
   ret = input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=FILE_PATTERN,
-      run_on_python2=False)
+      input_api, output_api, '.', files_to_check=FILE_PATTERN)
   ret += _CheckExterns(input_api, output_api)
   return ret
 
 
 def CheckChangeOnCommit(input_api, output_api):
   ret = input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=FILE_PATTERN,
-      run_on_python2=False)
+      input_api, output_api, '.', files_to_check=FILE_PATTERN)
   ret += _CheckExterns(input_api, output_api)
   return ret

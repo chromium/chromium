@@ -32,14 +32,6 @@
 namespace updater {
 namespace {
 
-// This task joins a process, hence .WithBaseSyncPrimitives().
-// TODO(crbug.com/1376713) - implement a way to express priority for
-// foreground/background installs.
-static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
-    base::MayBlock(), base::WithBaseSyncPrimitives(),
-    base::TaskPriority::USER_VISIBLE,
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
-
 // Returns the full path to the installation directory for the application
 // identified by the |app_id|.
 absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
@@ -48,7 +40,6 @@ absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
   if (!app_install_dir) {
     return absl::nullopt;
   }
-
   return app_install_dir->AppendASCII(kAppsDir).AppendASCII(app_id);
 }
 
@@ -60,7 +51,6 @@ AppInfo::AppInfo(const UpdaterScope scope,
                  const base::Version& app_version,
                  const base::FilePath& ecp)
     : scope(scope), app_id(app_id), ap(ap), version(app_version), ecp(ecp) {}
-
 AppInfo::AppInfo(const AppInfo&) = default;
 AppInfo& AppInfo::operator=(const AppInfo&) = default;
 AppInfo::~AppInfo() = default;
@@ -89,9 +79,7 @@ Installer::Installer(
       crx_verifier_format_(crx_verifier_format),
       usage_stats_enabled_(persisted_data->GetUsageStatsEnabled()) {}
 
-Installer::~Installer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+Installer::~Installer() = default;
 
 update_client::CrxComponent Installer::MakeCrxComponent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -222,7 +210,10 @@ void Installer::Install(const base::FilePath& unpack_path,
                         ProgressCallback progress_callback,
                         Callback callback) {
   base::ThreadPool::PostTask(
-      FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
+      FROM_HERE,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&Installer::InstallWithSyncPrimitives, this, unpack_path,
                      std::move(install_params), std::move(progress_callback),
                      std::move(callback)));

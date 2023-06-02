@@ -17,10 +17,12 @@
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/ukm/ukm_service.h"
 #include "components/variations/service/variations_service.h"
+#include "metrics_services_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics_services_manager {
@@ -52,6 +54,12 @@ metrics::MetricsService* MetricsServicesManager::GetMetricsService() {
 ukm::UkmService* MetricsServicesManager::GetUkmService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return GetMetricsServiceClient()->GetUkmService();
+}
+
+metrics::structured::StructuredMetricsService*
+MetricsServicesManager::GetStructuredMetricsService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return GetMetricsServiceClient()->GetStructuredMetricsService();
 }
 
 variations::VariationsService* MetricsServicesManager::GetVariationsService() {
@@ -88,14 +96,22 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
                                                bool current_consent_given,
                                                bool current_may_upload) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // If the user has opted out of metrics, delete local UKM state. We only check
-  // consent for UKM.
+  // If the user has opted out of metrics, delete local UKM and SM state.
+  // TODO(crbug.com/1445075): Investigate if UMA needs purging logic.
   if (consent_given_ && !current_consent_given) {
     ukm::UkmService* ukm = GetUkmService();
     if (ukm) {
       ukm->Purge();
       ukm->ResetClientState(ukm::ResetReason::kUpdatePermissions);
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    metrics::structured::StructuredMetricsService* sm_service =
+        GetStructuredMetricsService();
+    if (sm_service) {
+      sm_service->Purge();
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   // If metrics reporting goes from not consented to consented, create and
@@ -156,6 +172,7 @@ void MetricsServicesManager::UpdateRunningServices() {
   }
 
   UpdateUkmService();
+  UpdateStructuredMetricsService();
 }
 
 void MetricsServicesManager::UpdateUkmService() {
@@ -180,6 +197,29 @@ void MetricsServicesManager::UpdateUkmService() {
     ukm->DisableRecording();
     ukm->DisableReporting();
   }
+}
+
+void MetricsServicesManager::UpdateStructuredMetricsService() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  metrics::structured::StructuredMetricsService* service =
+      GetStructuredMetricsService();
+  if (!service) {
+    return;
+  }
+
+  // Maybe write some helper methods for this.
+  if (may_record_) {
+    service->EnableRecording();
+    if (may_upload_) {
+      service->EnableReporting();
+    } else {
+      service->DisableReporting();
+    }
+  } else {
+    service->DisableRecording();
+    service->DisableReporting();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MetricsServicesManager::UpdateUploadPermissions(bool may_upload) {

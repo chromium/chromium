@@ -231,14 +231,12 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 // NSApplication event loop, so final post- MessageLoop::Run() work is done
 // before exiting.
 - (void)terminate:(id)sender {
-  AppController* appController = static_cast<AppController*>([NSApp delegate]);
-  [appController tryToTerminateApplication:self];
+  [AppController.sharedController tryToTerminateApplication:self];
   // Return, don't exit. The application is responsible for exiting on its own.
 }
 
 - (void)cancelTerminate:(id)sender {
-  AppController* appController = static_cast<AppController*>([NSApp delegate]);
-  [appController stopTryingToTerminateApplication:self];
+  [AppController.sharedController stopTryingToTerminateApplication:self];
 }
 
 - (NSEvent*)nextEventMatchingMask:(NSEventMask)mask

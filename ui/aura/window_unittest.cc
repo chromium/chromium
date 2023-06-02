@@ -293,7 +293,7 @@ class DestroyOrphanDelegate : public TestWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> window_;
+  raw_ptr<Window, DanglingUntriaged> window_;
 };
 
 // Used in verifying mouse capture.
@@ -1979,7 +1979,7 @@ class WindowObserverTest : public WindowTest,
 
   struct WindowBoundsInfo {
     int changed_count = 0;
-    raw_ptr<Window> window = nullptr;
+    raw_ptr<Window, DanglingUntriaged> window = nullptr;
     gfx::Rect old_bounds;
     gfx::Rect new_bounds;
     ui::PropertyChangeReason reason =
@@ -1988,27 +1988,27 @@ class WindowObserverTest : public WindowTest,
 
   struct WindowOpacityInfo {
     int changed_count = 0;
-    raw_ptr<Window> window = nullptr;
+    raw_ptr<Window, DanglingUntriaged> window = nullptr;
     ui::PropertyChangeReason reason =
         ui::PropertyChangeReason::NOT_FROM_ANIMATION;
   };
 
   struct WindowTargetTransformChangingInfo {
     int changed_count = 0;
-    raw_ptr<Window> window = nullptr;
+    raw_ptr<Window, DanglingUntriaged> window = nullptr;
     gfx::Transform new_transform;
   };
 
   struct WindowTransformedInfo {
     int changed_count = 0;
-    raw_ptr<Window> window = nullptr;
+    raw_ptr<Window, DanglingUntriaged> window = nullptr;
     ui::PropertyChangeReason reason =
         ui::PropertyChangeReason::NOT_FROM_ANIMATION;
   };
 
   struct CountAndWindow {
     int count = 0;
-    raw_ptr<Window> window = nullptr;
+    raw_ptr<Window, DanglingUntriaged> window = nullptr;
   };
 
   WindowObserverTest() = default;
@@ -3006,8 +3006,8 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
   }
 
  private:
-  raw_ptr<Window> to_observe_;
-  raw_ptr<Window> to_delete_;
+  raw_ptr<Window, DanglingUntriaged> to_observe_;
+  raw_ptr<Window, DanglingUntriaged> to_delete_;
 };
 
 TEST_F(WindowTest, DeleteParentWindowFromOnWindowVisibiltyChanged) {

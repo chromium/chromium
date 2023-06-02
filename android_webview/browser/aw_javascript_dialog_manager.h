@@ -9,6 +9,15 @@
 
 namespace android_webview {
 
+/**
+ * Implements JavaScriptDialogManager for WebView.
+ *
+ * This class is a singleton, but it doesn't store any state, each method just
+ * calls through to the AwContentsClientBridge tied to the Web Contents. If
+ * you add state, please consider how this will work with Multi-profile.
+ *
+ * Lifetime: Singleton
+ */
 class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
  public:
   AwJavaScriptDialogManager();

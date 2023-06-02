@@ -386,13 +386,17 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
 
     case DocumentUpdateReason::kAccessibility:
     case DocumentUpdateReason::kBaseColor:
+    case DocumentUpdateReason::kComputedStyle:
     case DocumentUpdateReason::kDisplayLock:
     case DocumentUpdateReason::kViewTransition:
     case DocumentUpdateReason::kIntersectionObservation:
     case DocumentUpdateReason::kOverlay:
     case DocumentUpdateReason::kPagePopup:
+    case DocumentUpdateReason::kPopover:
     case DocumentUpdateReason::kSizeChange:
     case DocumentUpdateReason::kSpellCheck:
+    case DocumentUpdateReason::kSMILAnimation:
+    case DocumentUpdateReason::kWebAnimation:
       sub_metric = kServiceDocumentUpdate;
       break;
 

@@ -153,7 +153,7 @@ TEST_F(ReadingListSpotlightManagerTest, testClearsAndIndexesItems) {
       refreshItemsWithURL:ignoredURL
                     title:[OCMArg any]];
 
-  [mockManager clearAndReindexReadingListWithCompletionBlock:nil];
+  [mockManager clearAndReindexReadingList];
 
   EXPECT_OCMOCK_VERIFY(mockSpotlightInterface);
   EXPECT_OCMOCK_VERIFY(mockManager);

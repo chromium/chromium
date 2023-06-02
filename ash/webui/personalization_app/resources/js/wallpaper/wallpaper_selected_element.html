@@ -124,7 +124,7 @@
       </dom-repeat>
     </h2>
     <div id="buttonContainer">
-      <template is="dom-if" if="[[shouldShowLayoutOptions_]]">
+      <template is="dom-if" if="[[showLayoutOptions_]]">
         <div id="wallpaperOptions">
           <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
               class="secondary"
@@ -160,9 +160,9 @@
           </cr-button>
         </div>
       </template>
-      <template is="dom-if" if="[[shouldShowDescriptionButton_]]" restamp>
+      <template is="dom-if" if="[[showDescriptionButton_]]" restamp>
         <div id="descriptionOptions">
-          <cr-button on-click="showDescriptionDialog_">
+          <cr-button on-click="onClickShowDescription_">
             <info-svg></info-svg>
             <div class="text">$i18n{descriptionDialogOpen}</div>
           </cr-button>
@@ -171,14 +171,14 @@
     </div>
     <template
         is="dom-if"
-        if="[[shouldShowDailyRefreshConfirmationDialog_]]"
+        if="[[showDailyRefreshConfirmationDialog_]]"
         restamp>
       <google-photos-shared-album-dialog
           on-shared-album-dialog-accept="onAcceptDailyRefreshDialog_"
           on-cancel="closeDailyRefreshConfirmationDialog_">
       </google-photos-shared-album-dialog>
     </template>
-    <template is="dom-if" if="[[shouldShowDescriptionDialog_]]" restamp>
+    <template is="dom-if" if="[[showDescriptionDialog_]]" restamp>
       <cr-dialog id="descriptionDialog" on-close="closeDescriptionDialog_" show-on-attach>
         <h3 slot="title">[[image_.descriptionTitle]]</h3>
         <p slot="body" id="descriptionDialogBody">[[image_.descriptionContent]]</p>

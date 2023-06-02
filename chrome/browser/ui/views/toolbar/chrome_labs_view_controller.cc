@@ -21,11 +21,11 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/common/buildflags.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
@@ -105,8 +105,10 @@ uint32_t GetCurrentDay() {
 }  // namespace
 
 ChromeLabsViewController::ChromeLabsViewController(
-    const ChromeLabsModel* model, ChromeLabsBubbleView* chrome_labs_bubble_view,
-    Browser* browser, flags_ui::FlagsState* flags_state,
+    const ChromeLabsModel* model,
+    ChromeLabsBubbleView* chrome_labs_bubble_view,
+    Browser* browser,
+    flags_ui::FlagsState* flags_state,
     flags_ui::FlagsStorage* flags_storage)
     : model_(model),
       chrome_labs_bubble_view_(chrome_labs_bubble_view),

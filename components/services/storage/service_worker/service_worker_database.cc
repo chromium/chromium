@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -136,6 +135,8 @@ const char kPurgeableResIdKeyPrefix[] = "PRES:";
 
 const int64_t kCurrentSchemaVersion = 2;
 
+const int kRouterRuleVersion = 1;
+
 }  // namespace service_worker_internals
 
 namespace {
@@ -249,11 +250,8 @@ ServiceWorkerDatabase::Status ParseId(const std::string& serialized,
                                       int64_t* out) {
   DCHECK(out);
   int64_t id;
-  if (!base::StringToInt64(serialized, &id) || id < 0) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!base::StringToInt64(serialized, &id) || id < 0)
     return ServiceWorkerDatabase::Status::kErrorCorrupted;
-  }
   *out = id;
   return ServiceWorkerDatabase::Status::kOk;
 }
@@ -266,15 +264,12 @@ ServiceWorkerDatabase::Status LevelDBStatusToServiceWorkerDBStatus(
     return ServiceWorkerDatabase::Status::kErrorNotFound;
   else if (status.IsIOError())
     return ServiceWorkerDatabase::Status::kErrorIOError;
-  else if (status.IsCorruption()) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  else if (status.IsCorruption())
     return ServiceWorkerDatabase::Status::kErrorCorrupted;
-  } else if (status.IsNotSupportedError()) {
+  else if (status.IsNotSupportedError())
     return ServiceWorkerDatabase::Status::kErrorNotSupported;
-  } else {
+  else
     return ServiceWorkerDatabase::Status::kErrorFailed;
-  }
 }
 
 int64_t AccumulateResourceSizeInBytes(
@@ -402,9 +397,6 @@ ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
       absl::optional<blink::StorageKey> key =
           blink::StorageKey::Deserialize(key_str);
       if (!key) {
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         status = Status::kErrorCorrupted;
         keys->clear();
         break;
@@ -638,11 +630,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistration(
     return status;
 
   // ResourceRecord must contain the ServiceWorker's main script.
-  if (resources->empty()) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (resources->empty())
     return Status::kErrorCorrupted;
-  }
 
   return Status::kOk;
 }
@@ -676,8 +665,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
   absl::optional<blink::StorageKey> parsed =
       blink::StorageKey::Deserialize(value);
   if (!parsed) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
     return status;
@@ -929,8 +916,6 @@ ServiceWorkerDatabase::UpdateResourceSha256Checksums(
   std::set<int64_t> updated_resource_ids;
   for (const auto& resource : resources) {
     if (!updated_resource_ids.insert(resource->resource_id).second) {
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       // The database wrongly contains the same resource id.
       return Status::kErrorCorrupted;
     }
@@ -1354,9 +1339,6 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrationsByKeyPrefix(
           std::string(1, service_worker_internals::kKeySeparator),
           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
       if (parts.size() != 2) {
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         status = Status::kErrorCorrupted;
         user_data->clear();
         break;
@@ -1424,11 +1406,8 @@ ServiceWorkerDatabase::DeleteUserDataForAllRegistrationsByKeyPrefix(
         user_data_name_with_id,
         std::string(1, service_worker_internals::kKeySeparator),
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (parts.size() != 2) {
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
+    if (parts.size() != 2)
       return Status::kErrorCorrupted;
-    }
 
     int64_t registration_id;
     status = ParseId(parts[1], &registration_id);
@@ -1739,11 +1718,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerRegistrationData data;
-  if (!data.ParseFromString(serialized)) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!data.ParseFromString(serialized))
     return Status::kErrorCorrupted;
-  }
 
   GURL scope_url(data.scope_url());
   GURL script_url(data.script_url());
@@ -1754,23 +1730,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     DLOG(ERROR) << "Scope URL '" << data.scope_url() << "' and/or script url '"
                 << data.script_url() << "' and/or the storage key's origin '"
                 << key.origin() << "' are invalid or have mismatching origins.";
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    if (scope_url.DeprecatedGetOriginAsURL() !=
-        script_url.DeprecatedGetOriginAsURL()) {
-      GURL scope_origin = scope_url.DeprecatedGetOriginAsURL();
-      GURL script_origin = script_url.DeprecatedGetOriginAsURL();
-      base::debug::Alias(&scope_origin);
-      base::debug::Alias(&script_origin);
-      base::debug::DumpWithoutCrashing();
-    }
-    if (key.origin() != url::Origin::Create(scope_url)) {
-      url::Origin key_origin = key.origin();
-      url::Origin scope_origin = url::Origin::Create(scope_url);
-      base::debug::Alias(&key_origin);
-      base::debug::Alias(&scope_origin);
-      base::debug::DumpWithoutCrashing();
-    }
-    base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
 
@@ -1781,8 +1740,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     DLOG(ERROR) << "Registration id " << data.registration_id()
                 << " and/or version id " << data.version_id()
                 << " is higher than the next available id.";
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
 
@@ -1804,16 +1761,12 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
       DLOG(ERROR)
           << "has_fetch_handler must be true if fetch_handler_skippable_type"
           << " is set.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     if (!ServiceWorkerRegistrationData_FetchHandlerSkippableType_IsValid(
             data.fetch_handler_skippable_type())) {
       DLOG(ERROR) << "Fetch handler type '"
                   << data.fetch_handler_skippable_type() << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     switch (data.fetch_handler_skippable_type()) {
@@ -1866,8 +1819,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     auto value = data.script_type();
     if (!ServiceWorkerRegistrationData_ServiceWorkerScriptType_IsValid(value)) {
       DLOG(ERROR) << "Worker script type '" << value << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     (*out)->script_type = static_cast<blink::mojom::ScriptType>(value);
@@ -1883,8 +1834,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     if (!ServiceWorkerRegistrationData_ServiceWorkerUpdateViaCacheType_IsValid(
             value)) {
       DLOG(ERROR) << "Update via cache mode '" << value << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     (*out)->update_via_cache =
@@ -1901,8 +1850,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
       DLOG(ERROR)
           << "Cross origin embedder policy in policy container policies '"
           << data.cross_origin_embedder_policy_value() << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     switch (data.cross_origin_embedder_policy_value()) {
@@ -1961,8 +1908,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             data.ancestor_frame_type())) {
       DLOG(ERROR) << "Ancestor frame type '" << data.ancestor_frame_type()
                   << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     switch (data.ancestor_frame_type()) {
@@ -1988,9 +1933,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               policies.referrer_policy())) {
         DLOG(ERROR) << "Referrer policy in policy container policies '"
                     << policies.referrer_policy() << "' is not valid.";
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         return Status::kErrorCorrupted;
       }
       (*out)->policy_container_policies->referrer_policy =
@@ -2007,15 +1949,110 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               policies.ip_address_space())) {
         DLOG(ERROR) << "IP address space in policy container policies '"
                     << policies.ip_address_space() << "' is not valid.";
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         return Status::kErrorCorrupted;
       }
       (*out)->policy_container_policies->ip_address_space =
           ConvertIPAddressSpaceFromProtocolBufferToMojom(
               policies.ip_address_space());
     }
+  }
+
+  if (data.has_router_rules()) {
+    if (data.router_rules().version() !=
+        service_worker_internals::kRouterRuleVersion) {
+      // Unknown route version.
+      return Status::kErrorCorrupted;
+    }
+    blink::ServiceWorkerRouterRules router_rules;
+    for (const auto& r : data.router_rules().v1()) {
+      blink::ServiceWorkerRouterRule router_rule;
+      for (const auto& c : r.condition()) {
+        blink::ServiceWorkerRouterCondition condition;
+        switch (c.condition_case()) {
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              CONDITION_NOT_SET:
+            return Status::kErrorCorrupted;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              kUrlPattern: {
+            condition.type =
+                blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+            blink::UrlPattern url_pattern;
+            for (const auto& pathname : c.url_pattern().pathname()) {
+              liburlpattern::Part part;
+              switch (pathname.modifier()) {
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kNone:
+                  part.modifier = liburlpattern::Modifier::kNone;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kOptional:
+                  part.modifier = liburlpattern::Modifier::kOptional;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kZeroOrMore:
+                  part.modifier = liburlpattern::Modifier::kZeroOrMore;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kOneOrMore:
+                  part.modifier = liburlpattern::Modifier::kOneOrMore;
+                  break;
+              }
+              switch (pathname.pattern_case()) {
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::PATTERN_NOT_SET:
+                  // If URLPattern is used, one of the part must be set.
+                  return Status::kErrorCorrupted;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kFixed:
+                  part.type = liburlpattern::PartType::kFixed;
+                  part.value = pathname.fixed().value();
+                  break;
+                // No case statement for "regexp" is intended for the security
+                // concern.
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kSegmentWildcard:
+                  part.type = liburlpattern::PartType::kSegmentWildcard;
+                  part.name = pathname.segment_wildcard().name();
+                  part.prefix = pathname.segment_wildcard().prefix();
+                  part.value = pathname.segment_wildcard().value();
+                  part.suffix = pathname.segment_wildcard().suffix();
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::URLPattern::Part::kFullWildcard:
+                  part.type = liburlpattern::PartType::kFullWildcard;
+                  part.name = pathname.full_wildcard().name();
+                  part.prefix = pathname.full_wildcard().prefix();
+                  part.value = pathname.full_wildcard().value();
+                  part.suffix = pathname.full_wildcard().suffix();
+                  break;
+              }
+              url_pattern.pathname.emplace_back(part);
+            }
+            condition.url_pattern = url_pattern;
+
+            break;
+          }
+        }
+        router_rule.conditions.emplace_back(condition);
+      }
+      for (const auto& s : r.source()) {
+        blink::ServiceWorkerRouterSource source;
+        switch (s.source_case()) {
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              SOURCE_NOT_SET:
+            return Status::kErrorCorrupted;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kNetworkSource:
+            source.type =
+                blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+            source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+            break;
+        }
+        router_rule.sources.emplace_back(source);
+      }
+      router_rules.rules.emplace_back(router_rule);
+    }
+    (*out)->router_rules = std::move(router_rules);
   }
 
   return Status::kOk;
@@ -2193,6 +2230,93 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             registration.policy_container_policies->ip_address_space));
   }
 
+  if (registration.router_rules) {
+    ServiceWorkerRegistrationData::RouterRules* rules =
+        data.mutable_router_rules();
+    rules->set_version(service_worker_internals::kRouterRuleVersion);
+    for (const auto& r : registration.router_rules->rules) {
+      ServiceWorkerRegistrationData::RouterRules::RuleV1* v1 = rules->add_v1();
+      for (const auto& c : r.conditions) {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition*
+            condition = v1->add_condition();
+        switch (c.type) {
+          case blink::ServiceWorkerRouterCondition::ConditionType::
+              kUrlPattern: {
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern* url_pattern = condition->mutable_url_pattern();
+            for (const auto& p : c.url_pattern->pathname) {
+              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                  URLPattern::Part* pathname = url_pattern->add_pathname();
+              switch (p.modifier) {
+                case liburlpattern::Modifier::kNone:
+                  pathname->set_modifier(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::URLPattern::Part::kNone);
+                  break;
+                case liburlpattern::Modifier::kOptional:
+                  pathname->set_modifier(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::URLPattern::Part::kOptional);
+                  break;
+                case liburlpattern::Modifier::kZeroOrMore:
+                  pathname->set_modifier(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::URLPattern::Part::kZeroOrMore);
+                  break;
+                case liburlpattern::Modifier::kOneOrMore:
+                  pathname->set_modifier(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::URLPattern::Part::kOneOrMore);
+                  break;
+              }
+              switch (p.type) {
+                case liburlpattern::PartType::kFixed: {
+                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                      Condition::URLPattern::Part::FixedPattern* part =
+                          pathname->mutable_fixed();
+                  part->set_value(p.value);
+                  break;
+                }
+                case liburlpattern::PartType::kRegex:
+                  NOTREACHED_NORETURN() << "should not see regexp URLPattern";
+                case liburlpattern::PartType::kSegmentWildcard: {
+                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                      Condition::URLPattern::Part::WildcardPattern* part =
+                          pathname->mutable_segment_wildcard();
+                  part->set_name(p.name);
+                  part->set_prefix(p.prefix);
+                  part->set_value(p.value);
+                  part->set_suffix(p.suffix);
+                  break;
+                }
+                case liburlpattern::PartType::kFullWildcard: {
+                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                      Condition::URLPattern::Part::WildcardPattern* part =
+                          pathname->mutable_full_wildcard();
+                  part->set_name(p.name);
+                  part->set_prefix(p.prefix);
+                  part->set_value(p.value);
+                  part->set_suffix(p.suffix);
+                  break;
+                }
+              }
+            }
+            break;
+          }
+        }
+      }
+      for (const auto& s : r.sources) {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Source* source =
+            v1->add_source();
+        switch (s.type) {
+          case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+            source->mutable_network_source();
+            break;
+        }
+      }
+    }
+  }
+
   std::string value;
   bool success = data.SerializeToString(&value);
   DCHECK(success);
@@ -2242,8 +2366,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadResourceRecords(
   // |resources| should contain the main script.
   if (!has_main_resource) {
     resources->clear();
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     status = Status::kErrorCorrupted;
   }
 
@@ -2257,24 +2379,16 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseResourceRecord(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerResourceRecord record;
-  if (!record.ParseFromString(serialized)) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!record.ParseFromString(serialized))
     return Status::kErrorCorrupted;
-  }
 
   GURL url(record.url());
-  if (!url.is_valid()) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!url.is_valid())
     return Status::kErrorCorrupted;
-  }
 
   if (record.resource_id() >= next_avail_resource_id_) {
     // The stored resource should not have a higher resource id than the next
     // available resource id.
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
 
@@ -2499,8 +2613,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadDatabaseVersion(
   if (!base::StringToInt64(value, db_version) ||
       *db_version < kFirstValidVersion ||
       service_worker_internals::kCurrentSchemaVersion < *db_version) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
     return status;

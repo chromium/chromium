@@ -4,7 +4,10 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/public/session/proto/session.pb.h"
+#import "ios/web/session/hash_util.h"
 #import "net/base/hash_value.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
@@ -45,6 +48,7 @@ scoped_refptr<net::X509Certificate> NSDataToCertificate(NSData* data) {
 }  // namespace
 
 namespace web {
+
 // CRWSessionCertificateStorage serialization keys.
 NSString* const kCertificateSerializationKey = @"CertificateSerializationKey";
 NSString* const kHostSerializationKey = @"HostSerializationKey";
@@ -99,6 +103,45 @@ size_t GetCertPolicyBytesEncoded() {
   return self;
 }
 
+- (instancetype)initWithProto:(const web::proto::CertificateStorage&)storage {
+  const std::string& certString = storage.certificate();
+  scoped_refptr<net::X509Certificate> cert =
+      net::X509Certificate::CreateFromBytes(
+          base::make_span(reinterpret_cast<const uint8_t*>(certString.data()),
+                          certString.size()));
+
+  // Return nil if the cert cannot be decoded or the host is empty.
+  if (!cert || storage.host().empty()) {
+    return nil;
+  }
+
+  return [self initWithCertificate:cert
+                              host:storage.host()
+                            status:storage.status()];
+}
+
+- (void)serializeToProto:(web::proto::CertificateStorage&)storage {
+  const base::StringPiece certString =
+      net::x509_util::CryptoBufferAsStringPiece(_certificate->cert_buffer());
+
+  storage.set_certificate(certString.data(), certString.size());
+  storage.set_host(_host);
+  storage.set_status(_status);
+}
+
+#pragma mark NSObject
+
+- (NSUInteger)hash {
+  return web::session::ComputeHash(_certificate, _host, _status);
+}
+
+- (BOOL)isEqual:(NSObject*)object {
+  CRWSessionCertificateStorage* other =
+      base::mac::ObjCCast<CRWSessionCertificateStorage>(object);
+
+  return [other cr_isEqualSameClass:self];
+}
+
 #pragma mark Accessors
 
 - (net::X509Certificate*)certificate {
@@ -149,6 +192,19 @@ size_t GetCertPolicyBytesEncoded() {
                      certStatus:serialization[StatusIndex]];
 }
 
+- (BOOL)cr_isEqualSameClass:(CRWSessionCertificateStorage*)other {
+  if (_host != other.host) {
+    return NO;
+  }
+
+  if (_status != other.status) {
+    return NO;
+  }
+
+  return net::x509_util::CryptoBufferEqual(_certificate->cert_buffer(),
+                                           other.certificate->cert_buffer());
+}
+
 @end
 
 #pragma mark - CRWSessionCertificatePolicyCacheStorage
@@ -156,6 +212,39 @@ size_t GetCertPolicyBytesEncoded() {
 @implementation CRWSessionCertificatePolicyCacheStorage
 
 @synthesize certificateStorages = _certificateStorages;
+
+- (instancetype)initWithProto:
+    (const web::proto::CertificatesCacheStorage&)storage {
+  if ((self = [super init])) {
+    NSMutableSet<CRWSessionCertificateStorage*>* certificates =
+        [[NSMutableSet alloc] initWithCapacity:storage.certs_size()];
+    for (const web::proto::CertificateStorage& certStorage : storage.certs()) {
+      CRWSessionCertificateStorage* cert =
+          [[CRWSessionCertificateStorage alloc] initWithProto:certStorage];
+
+      if (cert) {
+        [certificates addObject:cert];
+      }
+    }
+    _certificateStorages = [certificates copy];
+  }
+  return self;
+}
+
+- (void)serializeToProto:(web::proto::CertificatesCacheStorage&)storage {
+  for (CRWSessionCertificateStorage* cert in _certificateStorages) {
+    [cert serializeToProto:*storage.add_certs()];
+  }
+}
+
+#pragma mark NSObject
+
+- (BOOL)isEqual:(NSObject*)object {
+  CRWSessionCertificatePolicyCacheStorage* other =
+      base::mac::ObjCCast<CRWSessionCertificatePolicyCacheStorage>(object);
+
+  return [other cr_isEqualSameClass:self];
+}
 
 #pragma mark NSCoding
 
@@ -185,6 +274,22 @@ size_t GetCertPolicyBytesEncoded() {
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   [aCoder encodeObject:self.certificateStorages
                 forKey:web::kCertificateStoragesKey];
+}
+
+#pragma mark Private
+
+- (BOOL)cr_isEqualSameClass:(CRWSessionCertificatePolicyCacheStorage*)other {
+  if (_certificateStorages.count != other.certificateStorages.count) {
+    return NO;
+  }
+
+  for (CRWSessionCertificateStorage* cert in other.certificateStorages) {
+    if (![_certificateStorages containsObject:cert]) {
+      return NO;
+    }
+  }
+
+  return YES;
 }
 
 @end

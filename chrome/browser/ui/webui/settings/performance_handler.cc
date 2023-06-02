@@ -6,12 +6,18 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/performance_manager/public/features.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "url/gurl.h"
+
+using content::WebContents;
 
 namespace settings {
 
@@ -38,6 +44,10 @@ void PerformanceHandler::RegisterMessages() {
       base::BindRepeating(
           &PerformanceHandler::HandleValidateTabDiscardExceptionRule,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCurrentOpenSites",
+      base::BindRepeating(&PerformanceHandler::HandleGetCurrentOpenSites,
+                          base::Unretained(this)));
 }
 
 void PerformanceHandler::OnJavascriptAllowed() {
@@ -53,6 +63,49 @@ void PerformanceHandler::OnJavascriptDisallowed() {
 void PerformanceHandler::OnDeviceHasBatteryChanged(bool device_has_battery) {
   DCHECK(IsJavascriptAllowed());
   FireWebUIListener("device-has-battery-changed", device_has_battery);
+}
+
+base::Value PerformanceHandler::GetCurrentOpenSites() {
+  base::Value::List hosts;
+  std::set<std::pair<base::TimeTicks, std::string>, std::greater<>>
+      last_active_time_host_pairs;
+  const Profile* profile = Profile::FromWebUI(web_ui());
+  for (auto* browser : *BrowserList::GetInstance()) {
+    // Exclude browsers not signed into the current profile
+    if (browser->profile() != profile) {
+      continue;
+    }
+
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+
+    for (int tab_index = 0; tab_index < tab_strip_model->count(); ++tab_index) {
+      WebContents* web_contents = tab_strip_model->GetWebContentsAt(tab_index);
+      const GURL url = web_contents->GetLastCommittedURL();
+      if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
+        last_active_time_host_pairs.insert(
+            std::make_pair(web_contents->GetLastActiveTime(), url.host()));
+      }
+    }
+  }
+
+  std::unordered_set<std::string> added_hosts;
+  for (auto& [last_active_time, host] : last_active_time_host_pairs) {
+    if (!base::Contains(added_hosts, host)) {
+      added_hosts.insert(host);
+      hosts.Append(host);
+    }
+  }
+
+  return base::Value(std::move(hosts));
+}
+
+void PerformanceHandler::HandleGetCurrentOpenSites(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, GetCurrentOpenSites());
 }
 
 void PerformanceHandler::HandleGetDeviceHasBattery(

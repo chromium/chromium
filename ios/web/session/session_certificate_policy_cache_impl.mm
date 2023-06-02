@@ -5,86 +5,48 @@
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 
 #import "base/functional/bind.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
-#import "net/cert/x509_util.h"
-#import "net/cert/x509_util_apple.h"
+#import "ios/web/session/session_certificate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// Break if CertStatus values changed, as they are persisted on disk and thus
-// must be consistent.
-static_assert(net::CERT_STATUS_ALL_ERRORS == 0xFF00FFFF,
-              "The value of CERT_STATUS_ALL_ERRORS changed!");
-static_assert(net::CERT_STATUS_COMMON_NAME_INVALID == 1 << 0,
-              "The value of CERT_STATUS_COMMON_NAME_INVALID changed!");
-static_assert(net::CERT_STATUS_DATE_INVALID == 1 << 1,
-              "The value of CERT_STATUS_DATE_INVALID changed!");
-static_assert(net::CERT_STATUS_AUTHORITY_INVALID == 1 << 2,
-              "The value of CERT_STATUS_AUTHORITY_INVALID changed!");
-static_assert(net::CERT_STATUS_NO_REVOCATION_MECHANISM == 1 << 4,
-              "The value of CERT_STATUS_NO_REVOCATION_MECHANISM changed!");
-static_assert(net::CERT_STATUS_UNABLE_TO_CHECK_REVOCATION == 1 << 5,
-              "The value of CERT_STATUS_UNABLE_TO_CHECK_REVOCATION changed!");
-static_assert(net::CERT_STATUS_REVOKED == 1 << 6,
-              "The value of CERT_STATUS_REVOKED changed!");
-static_assert(net::CERT_STATUS_INVALID == 1 << 7,
-              "The value of CERT_STATUS_INVALID changed!");
-static_assert(net::CERT_STATUS_WEAK_SIGNATURE_ALGORITHM == 1 << 8,
-              "The value of CERT_STATUS_WEAK_SIGNATURE_ALGORITHM changed!");
-static_assert(net::CERT_STATUS_NON_UNIQUE_NAME == 1 << 10,
-              "The value of CERT_STATUS_NON_UNIQUE_NAME changed!");
-static_assert(net::CERT_STATUS_WEAK_KEY == 1 << 11,
-              "The value of CERT_STATUS_WEAK_KEY changed!");
-static_assert(net::CERT_STATUS_IS_EV == 1 << 16,
-              "The value of CERT_STATUS_IS_EV changed!");
-static_assert(net::CERT_STATUS_REV_CHECKING_ENABLED == 1 << 17,
-              "The value of CERT_STATUS_REV_CHECKING_ENABLED changed!");
-
 namespace web {
 namespace {
 
-// Returns the leaf certificate in the certificate chain from `certificate`.
-scoped_refptr<net::X509Certificate> ExtractLeafCertificate(
-    const scoped_refptr<net::X509Certificate>& certificate) {
-  // Nothing to do if `certificate` is already a leaf certificate.
-  if (certificate->intermediate_buffers().empty()) {
-    return certificate;
-  }
+// Registers `certificate` with `cache`.
+void RegisterCertificate(scoped_refptr<CertificatePolicyCache> cache,
+                         SessionCertificate certificate) {
+  cache->AllowCertForHost(certificate.certificate().get(), certificate.host(),
+                          certificate.status());
+}
 
-  scoped_refptr<net::X509Certificate> leaf_certificate =
-      net::X509Certificate::CreateFromBuffer(
-          bssl::UpRef(certificate->cert_buffer()), {});
-  DCHECK(leaf_certificate);
-  DCHECK(leaf_certificate->intermediate_buffers().empty());
-  return leaf_certificate;
+// Registers `certificates` with `cache`.
+void RegisterCertificates(scoped_refptr<CertificatePolicyCache> cache,
+                          SessionCertificateSet certificates) {
+  for (const SessionCertificate& certificate : certificates) {
+    cache->AllowCertForHost(certificate.certificate().get(), certificate.host(),
+                            certificate.status());
+  }
 }
 
 }  // anonymous namespace
 
 SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl(
     BrowserState* browser_state)
-    : SessionCertificatePolicyCache(browser_state),
-      allowed_certs_([[NSMutableSet alloc] init]) {}
+    : SessionCertificatePolicyCache(browser_state) {}
 
 SessionCertificatePolicyCacheImpl::~SessionCertificatePolicyCacheImpl() {}
 
 void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache() const {
   DCHECK_CURRENTLY_ON(WebThread::UI);
-  NSSet* allowed_certs = [NSSet setWithSet:allowed_certs_];
-  const scoped_refptr<CertificatePolicyCache> cache =
-      GetCertificatePolicyCache();
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        for (CRWSessionCertificateStorage* cert in allowed_certs) {
-          cache->AllowCertForHost(cert.certificate, cert.host, cert.status);
-        }
-      }));
+      FROM_HERE, base::BindOnce(&RegisterCertificates,
+                                GetCertificatePolicyCache(), allowed_certs_));
 }
 
 void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
@@ -92,34 +54,35 @@ void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
     const std::string& host,
     net::CertStatus status) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
-  // Store user decisions with the leaf cert, ignoring any intermediates.
-  // This is because WKWebView returns the verified certificate chain in
-  // `webView:didReceiveAuthenticationChallenge:completionHandler:`,
-  // but the server-supplied chain in
-  // `webView:didFailProvisionalNavigation:withError:`.
-  scoped_refptr<net::X509Certificate> leaf_certificate =
-      ExtractLeafCertificate(certificate);
-
-  [allowed_certs_ addObject:[[CRWSessionCertificateStorage alloc]
-                                initWithCertificate:leaf_certificate
-                                               host:host
-                                             status:status]];
-  const scoped_refptr<CertificatePolicyCache> cache =
-      GetCertificatePolicyCache();
+  SessionCertificate allowed_cert(certificate, host, status);
+  allowed_certs_.insert(allowed_cert);
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CertificatePolicyCache::AllowCertForHost, cache,
-                     base::RetainedRef(leaf_certificate.get()), host, status));
+      FROM_HERE, base::BindOnce(&RegisterCertificate,
+                                GetCertificatePolicyCache(), allowed_cert));
 }
 
 void SessionCertificatePolicyCacheImpl::SetAllowedCerts(
     NSSet<CRWSessionCertificateStorage*>* allowed_certs) {
-  allowed_certs_ = [allowed_certs mutableCopy];
+  DCHECK(allowed_certs_.empty());
+  for (CRWSessionCertificateStorage* cert_storage in allowed_certs) {
+    allowed_certs_.insert(SessionCertificate(
+        cert_storage.certificate, cert_storage.host, cert_storage.status));
+  }
 }
 
 NSSet<CRWSessionCertificateStorage*>*
 SessionCertificatePolicyCacheImpl::GetAllowedCerts() const {
-  return allowed_certs_;
+  NSMutableSet<CRWSessionCertificateStorage*>* allowed_certs =
+      [[NSMutableSet alloc] initWithCapacity:allowed_certs_.size()];
+
+  for (const SessionCertificate& cert : allowed_certs_) {
+    [allowed_certs addObject:[[CRWSessionCertificateStorage alloc]
+                                 initWithCertificate:cert.certificate()
+                                                host:cert.host()
+                                              status:cert.status()]];
+  }
+
+  return allowed_certs;
 }
 
 }  // namespace web

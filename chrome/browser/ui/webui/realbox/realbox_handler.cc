@@ -141,6 +141,9 @@ constexpr char kMacShareIconResourceName[] =
 #elif BUILDFLAG(IS_WIN)
 constexpr char kWinShareIconResourceName[] =
     "//resources/cr_components/omnibox/icons/win_share.svg";
+#elif BUILDFLAG(IS_LINUX)
+constexpr char kLinuxShareIconResourceName[] =
+    "//resources/cr_components/omnibox/icons/share.svg";
 #else
 constexpr char kShareIconResourceName[] =
     "//resources/cr_components/omnibox/icons/share.svg";
@@ -550,25 +553,34 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
 // static
 std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
-  if (icon.name == omnibox::kAnswerCurrencyIcon.name) {
+  if (icon.name == omnibox::kAnswerCurrencyIcon.name ||
+      icon.name == omnibox::kAnswerCurrencyChromeRefreshIcon.name) {
     return kAnswerCurrencyIconResourceName;
   } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
     return kAnswerDefaultIconResourceName;
-  } else if (icon.name == omnibox::kAnswerDictionaryIcon.name) {
+  } else if (icon.name == omnibox::kAnswerDictionaryIcon.name ||
+             icon.name == omnibox::kAnswerDictionaryChromeRefreshIcon.name) {
     return kAnswerDictionaryIconResourceName;
-  } else if (icon.name == omnibox::kAnswerFinanceIcon.name) {
+  } else if (icon.name == omnibox::kAnswerFinanceIcon.name ||
+             icon.name == omnibox::kAnswerFinanceChromeRefreshIcon.name) {
     return kAnswerFinanceIconResourceName;
-  } else if (icon.name == omnibox::kAnswerSunriseIcon.name) {
+  } else if (icon.name == omnibox::kAnswerSunriseIcon.name ||
+             icon.name == omnibox::kAnswerSunriseChromeRefreshIcon.name) {
     return kAnswerSunriseIconResourceName;
-  } else if (icon.name == omnibox::kAnswerTranslationIcon.name) {
+  } else if (icon.name == omnibox::kAnswerTranslationIcon.name ||
+             icon.name == omnibox::kAnswerTranslationChromeRefreshIcon.name) {
     return kAnswerTranslationIconResourceName;
-  } else if (icon.name == omnibox::kAnswerWhenIsIcon.name) {
+  } else if (icon.name == omnibox::kAnswerWhenIsIcon.name ||
+             icon.name == omnibox::kAnswerWhenIsChromeRefreshIcon.name) {
     return kAnswerWhenIsIconResourceName;
-  } else if (icon.name == omnibox::kBookmarkIcon.name) {
+  } else if (icon.name == omnibox::kBookmarkIcon.name ||
+             icon.name == omnibox::kBookmarkChromeRefreshIcon.name) {
     return kBookmarkIconResourceName;
-  } else if (icon.name == omnibox::kCalculatorIcon.name) {
+  } else if (icon.name == omnibox::kCalculatorIcon.name ||
+             icon.name == omnibox::kCalculatorChromeRefreshIcon.name) {
     return kCalculatorIconResourceName;
-  } else if (icon.name == omnibox::kClockIcon.name) {
+  } else if (icon.name == omnibox::kClockIcon.name ||
+             icon.name == omnibox::kClockChromeRefreshIcon.name) {
     return kClockIconResourceName;
   } else if (icon.name == omnibox::kDriveDocsIcon.name) {
     return kDriveDocsIconResourceName;
@@ -590,17 +602,22 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kDriveVideoIconResourceName;
   } else if (icon.name == omnibox::kExtensionAppIcon.name) {
     return kExtensionAppIconResourceName;
-  } else if (icon.name == omnibox::kJourneysIcon.name) {
+  } else if (icon.name == omnibox::kJourneysIcon.name ||
+             icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
-  } else if (icon.name == omnibox::kPageIcon.name) {
+  } else if (icon.name == omnibox::kPageIcon.name ||
+             icon.name == omnibox::kPageChromeRefreshIcon.name) {
     return kPageIconResourceName;
   } else if (icon.name == omnibox::kPedalIcon.name) {
     return kPedalsIconResourceName;
-  } else if (icon.name == omnibox::kProductIcon.name) {
+  } else if (icon.name == omnibox::kProductIcon.name ||
+             icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kChromeProductIconResourceName;
-  } else if (icon.name == vector_icons::kSearchIcon.name) {
+  } else if (icon.name == vector_icons::kSearchIcon.name ||
+             icon.name == vector_icons::kSearchChromeRefreshIcon.name) {
     return kSearchIconResourceName;
-  } else if (icon.name == omnibox::kTrendingUpIcon.name) {
+  } else if (icon.name == omnibox::kTrendingUpIcon.name ||
+             icon.name == omnibox::kTrendingUpChromeRefreshIcon.name) {
     return kTrendingUpIconResourceName;
   } else if (icon.is_empty()) {
     return "";  // An empty resource name is effectively a blank icon.
@@ -652,22 +669,31 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   if (icon.name == omnibox::kIncognitoIcon.name) {
     return kIncognitoIconResourceName;
   }
-  if (icon.name == omnibox::kJourneysIcon.name) {
+  if (icon.name == omnibox::kJourneysIcon.name ||
+      icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
   }
   if (icon.name == omnibox::kPedalIcon.name) {
     return kPedalsIconResourceName;
   }
 #if BUILDFLAG(IS_MAC)
-  if (icon.name == omnibox::kShareMacIcon.name) {
+  if (icon.name == omnibox::kShareMacIcon.name ||
+      icon.name == omnibox::kShareMacChromeRefreshIcon.name) {
     return kMacShareIconResourceName;
   }
 #elif BUILDFLAG(IS_WIN)
-  if (icon.name == omnibox::kShareWinIcon.name) {
+  if (icon.name == omnibox::kShareWinIcon.name ||
+      icon.name == omnibox::kShareWinChromeRefreshIcon.name) {
     return kWinShareIconResourceName;
   }
+#elif BUILDFLAG(IS_LINUX)
+  if (icon.name == omnibox::kShareIcon.name ||
+      icon.name == omnibox::kShareLinuxChromeRefreshIcon.name) {
+    return kLinuxShareIconResourceName;
+  }
 #else
-  if (icon.name == omnibox::kShareIcon.name) {
+  if (icon.name == omnibox::kShareIcon.name ||
+      icon.name == omnibox::kShareChromeRefreshIcon.name) {
     return kShareIconResourceName;
   }
 #endif
@@ -882,6 +908,7 @@ void RealboxHandler::OnAutocompleteAccept(
     AutocompleteMatchType::Type match_type,
     base::TimeTicks match_selection_timestamp,
     bool destination_url_entered_without_scheme,
+    bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
@@ -893,6 +920,8 @@ void RealboxHandler::OnAutocompleteAccept(
   match_selection_timestamp_ = match_selection_timestamp;
   destination_url_entered_without_scheme_ =
       destination_url_entered_without_scheme;
+  destination_url_entered_with_http_scheme_ =
+      destination_url_entered_with_http_scheme;
 
   web_contents_->OpenURL(content::OpenURLParams(
       destination_url_, content::Referrer(), disposition_, transition_, false));

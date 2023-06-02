@@ -4,13 +4,10 @@
 
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 
-#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
-JavaScriptDialogManager::JavaScriptDialogManager(
-    DevToolsClient* client,
-    const BrowserInfo* browser_info)
+JavaScriptDialogManager::JavaScriptDialogManager(DevToolsClient* client)
     : client_(client) {
   client_->AddListener(this);
 }

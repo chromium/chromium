@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -29,8 +29,7 @@ class FeatureNotificationGuideServiceFactory
   static FeatureNotificationGuideService* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      FeatureNotificationGuideServiceFactory>;
+  friend base::NoDestructor<FeatureNotificationGuideServiceFactory>;
 
   FeatureNotificationGuideServiceFactory();
   ~FeatureNotificationGuideServiceFactory() override = default;

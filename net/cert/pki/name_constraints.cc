@@ -253,7 +253,7 @@ bool Rfc822NameMatches(std::string_view local_part,
   // leading period (as with URIs).  For example, ".example.com" indicates all
   // the Internet mail addresses in the domain "example.com", but not Internet
   // mail addresses on the host "example.com".
-  if (constraint_domain.starts_with('.')) {
+  if (!constraint_domain.empty() && constraint_domain[0] == '.') {
     return string_util::EndsWithNoCase(domain, constraint_domain);
   }
 

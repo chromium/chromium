@@ -4,6 +4,7 @@
 
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
 
+#include <time.h>
 #include <memory>
 
 #include "base/task/bind_post_task.h"
@@ -12,6 +13,7 @@
 #include "device/vr/android/xr_java_coordinator.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "device/vr/util/transform_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
@@ -23,6 +25,29 @@
 #include "ui/gl/init/gl_factory.h"
 
 namespace device {
+namespace {
+// TODO(https://crbug.com/1429096): It's not clear if the display rotation
+// should factor into Cardboard's viewport orientation. Initial attempts to
+// map them together frequently gave wrong results, whereas statically using
+// kLandscapeLeft has the expected effect.
+constexpr CardboardViewportOrientation kViewportOrientation = kLandscapeLeft;
+
+// Default downscale factor for computing the recommended WebXR
+// render_width/render_height from the 1:1 pixel mapped size.
+static constexpr float kRecommendedResolutionScale = 0.7;
+
+constexpr uint64_t kNanosInMs = 1000000;
+constexpr uint64_t kNanosInSeconds = 1000 * kNanosInMs;
+
+// Static prediction value used in the hello_cardboard sample.
+constexpr uint64_t kPredictionTimeWithoutVsyncNanos = 50 * kNanosInMs;
+
+int64_t GetBootTimeNano() {
+  struct timespec res;
+  clock_gettime(CLOCK_BOOTTIME, &res);
+  return (res.tv_sec * kNanosInSeconds) + res.tv_nsec;
+}
+}  // namespace
 
 CardboardRenderLoop::CardboardRenderLoop(
     std::unique_ptr<CardboardImageTransportFactory>
@@ -68,8 +93,9 @@ void CardboardRenderLoop::CreateSession(
   CHECK(!frame_size.IsEmpty());
   DVLOG(1) << __func__;
 
-  cardboard_image_transport_ =
-      cardboard_image_transport_factory_->Create(std::move(mailbox_bridge_));
+  // The initial frame size given here should correspond with the display size.
+  cardboard_image_transport_ = cardboard_image_transport_factory_->Create(
+      std::move(mailbox_bridge_), frame_size);
   cardboard_sdk_ = cardboard_sdk;
   session_request_callback_ = std::move(session_request_callback);
   session_shutdown_callback_ = std::move(session_shutdown_callback);
@@ -82,9 +108,6 @@ void CardboardRenderLoop::CreateSession(
   enabled_features_.insert(options->optional_features.begin(),
                            options->optional_features.end());
 
-  // TODO(https://crbug.com/1429096): `display_rotation` will need to be stored
-  // and translated to a cardboard type to get a head pose.
-
   left_eye_ = mojom::XRView::New();
   left_eye_->eye = mojom::XREye::kLeft;
   left_eye_->viewport =
@@ -96,14 +119,13 @@ void CardboardRenderLoop::CreateSession(
       gfx::Rect(texture_size_.width() / 2, 0, texture_size_.width() / 2,
                 texture_size_.height());
 
-  // TODO(https://crbug.com/1429096): Finalize mojo_from_view.
   left_eye_->mojo_from_view = gfx::Transform();
   left_eye_->field_of_view =
-      cardboard_image_transport_->GetFOV(CardboardEye::kLeft, texture_size_);
+      cardboard_image_transport_->GetFOV(CardboardEye::kLeft);
 
   right_eye_->mojo_from_view = gfx::Transform();
   right_eye_->field_of_view =
-      cardboard_image_transport_->GetFOV(CardboardEye::kRight, texture_size_);
+      cardboard_image_transport_->GetFOV(CardboardEye::kRight);
 
   if (!InitializeGl(drawing_widget)) {
     std::move(session_request_callback_).Run(nullptr);
@@ -124,6 +146,15 @@ void CardboardRenderLoop::CreateSession(
       webxr_.get(),
       base::BindOnce(&CardboardRenderLoop::OnCardboardImageTransportReady,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  head_tracker_ = internal::ScopedCardboardObject<CardboardHeadTracker*>(
+      CardboardHeadTracker_create());
+
+  // If the head tracker isn't explicitly resumed after creation it doesn't
+  // deliver any poses. Not clear if this is intended, as it's not mentioned in
+  // the documentation.
+  CardboardHeadTracker_resume(head_tracker_.get());
+  CardboardHeadTracker_recenter(head_tracker_.get());
 }
 
 bool CardboardRenderLoop::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
@@ -257,6 +288,8 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
   // TODO(https://crbug.com/1429098): Determine if we should support this.
   config->supports_viewport_scaling = false;
 
+  config->default_framebuffer_scale = kRecommendedResolutionScale;
+
   config->views.push_back(left_eye_.Clone());
   config->views.push_back(right_eye_.Clone());
 
@@ -339,11 +372,37 @@ void CardboardRenderLoop::GetFrameData(
         webxr_.get(), texture_size_, /*uv_transform=*/gfx::Transform());
   }
 
+  // Get the head pose
+  int64_t timestamp_ns = GetBootTimeNano() + kPredictionTimeWithoutVsyncNanos;
+  float position[3];
+  float orientation[4];
+  CardboardHeadTracker_getPose(head_tracker_.get(), timestamp_ns,
+                               kViewportOrientation, position, orientation);
+
+  // Translate the head pose into the viewer pose pointer
+  // This needs to be inverted because the Cardboard SDK appears to be giving
+  // back values that are the inverse of what WebXR expects.
+  mojom::VRPosePtr pose = mojom::VRPose::New();
+  pose->position = gfx::Point3F(-position[0], -position[1], -position[2]);
+  pose->orientation = gfx::Quaternion(-orientation[0], -orientation[1],
+                                      -orientation[2], orientation[3]);
+  pose->emulated_position = true;
+
+  gfx::Transform mojo_from_viewer = vr_utils::VrPoseToTransform(pose.get());
+  frame_data->mojo_from_viewer = std::move(pose);
+
+  // Get the view transform for each eye
+  left_eye_->mojo_from_view =
+      cardboard_image_transport_->GetMojoFromView(kLeft, mojo_from_viewer);
+  right_eye_->mojo_from_view =
+      cardboard_image_transport_->GetMojoFromView(kRight, mojo_from_viewer);
+
   frame_data->views.push_back(left_eye_.Clone());
   frame_data->views.push_back(right_eye_.Clone());
 
-  // TODO(https://crbug.com/1429096): Populate this.
-  frame_data->mojo_from_viewer = mojom::VRPose::New();
+  std::vector<mojom::XRInputSourceStatePtr> input_state;
+  input_state.push_back(GetInputSourceState());
+  frame_data->input_state = std::move(input_state);
 
   frame_data->time_delta = now - base::TimeTicks();
 
@@ -499,8 +558,7 @@ void CardboardRenderLoop::RenderFrame(const gfx::Transform& uv_transform) {
 
   TransitionProcessingFrameToRendering();
 
-  cardboard_image_transport_->Render(webxr_.get(), /*framebuffer=*/0,
-                                     texture_size_);
+  cardboard_image_transport_->Render(webxr_.get(), /*framebuffer=*/0);
 
   FinishFrame(frame_index);
 
@@ -639,11 +697,49 @@ void CardboardRenderLoop::SetFrameDataRestricted(bool frame_data_restricted) {
   }
 }
 
+void CardboardRenderLoop::OnTriggerEvent(bool pressed) {
+  DVLOG(2) << __func__ << ": pressed=" << pressed;
+
+  if (pressed) {
+    trigger_pressed_ = true;
+  } else if (trigger_pressed_) {
+    trigger_pressed_ = false;
+    trigger_clicked_ = true;
+  }
+}
+
+device::mojom::XRInputSourceStatePtr
+CardboardRenderLoop::GetInputSourceState() {
+  device::mojom::XRInputSourceStatePtr state =
+      device::mojom::XRInputSourceState::New();
+  // Only one gaze input source to worry about, so it can have a static id.
+  state->source_id = 1;
+
+  // Report any trigger state changes made since the last call and reset the
+  // state here.
+  state->primary_input_pressed = trigger_pressed_;
+  state->primary_input_clicked = trigger_clicked_;
+  trigger_clicked_ = false;
+
+  state->description = device::mojom::XRInputSourceDescription::New();
+
+  // It's a gaze-cursor-based device.
+  state->description->target_ray_mode = device::mojom::XRTargetRayMode::GAZING;
+  state->emulated_position = true;
+
+  // No implicit handedness
+  state->description->handedness = device::mojom::XRHandedness::NONE;
+
+  // Pointer and grip transforms are omitted since this is a gaze-based source.
+
+  return state;
+}
+
 void CardboardRenderLoop::Pause() {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DVLOG(1) << __func__;
 
-  // TODO(https://crbug.com/1429102): Pause the device.
+  CardboardHeadTracker_pause(head_tracker_.get());
   is_paused_ = true;
 }
 
@@ -651,7 +747,7 @@ void CardboardRenderLoop::Resume() {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DVLOG(1) << __func__;
 
-  // TODO(https://crbug.com/1429102): Resume the Device.
+  CardboardHeadTracker_resume(head_tracker_.get());
   is_paused_ = false;
 }
 

@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
@@ -96,7 +97,8 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     public void showSignInInterstitial(int signinAccessPoint,
             BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
         SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
-                mWindowAndroid, mBottomSheetController, mProfile, new CormorantBottomSheetStrings(),
+                mWindowAndroid, DeviceLockActivityLauncherImpl.get(), mBottomSheetController,
+                mProfile, new CormorantBottomSheetStrings(),
                 () -> { showSyncConsentActivity(signinAccessPoint); }, signinAccessPoint);
         signinCoordinator.show();
     }

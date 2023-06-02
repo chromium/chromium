@@ -26,7 +26,6 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEConvolveMatrixElement
 
 [
-    DoNotCheckConstants,
     Exposed=Window
 ] interface SVGFEConvolveMatrixElement : SVGElement {
     // Edge Mode Values

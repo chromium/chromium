@@ -12,6 +12,7 @@ android_library("delegate_java") {
   ]
 
   deps = [
+    ":uma_java",
     "//base:base_java",
     "//components/embedder_support/android:util_java",
     "//components/version_info/android:version_constants_java",
@@ -30,10 +31,19 @@ generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java" ]
 }
 
+android_library("uma_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsUma.java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java" ]
   deps = [
     ":delegate_java",
+    ":uma_java",
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/flags:java",
@@ -83,5 +93,20 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//url:gurl_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerCustomizationsUmaUnitTest.java" ]
+
+  deps = [
+    ":java",
+    ":uma_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/flags:java",
+    "//third_party/junit:junit",
   ]
 }

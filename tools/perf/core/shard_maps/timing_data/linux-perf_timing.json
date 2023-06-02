@@ -1784,6 +1784,10 @@
         "name": "jetstream2/JetStream2"
     },
     {
+        "duration": "135.0",
+        "name": "jetstream2-minormc/JetStream2"
+    },
+    {
         "duration": "15.0",
         "name": "loading.desktop/24h_cold"
     },
@@ -2338,6 +2342,10 @@
     {
         "duration": "41.0",
         "name": "octane/Octane"
+    },
+    {
+        "duration": "45.0",
+        "name": "octane-minormc/Octane"
     },
     {
         "duration": "39.0",

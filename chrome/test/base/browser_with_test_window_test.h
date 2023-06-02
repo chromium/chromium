@@ -240,7 +240,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   std::unique_ptr<ash::KioskAppManager> kiosk_app_manager_;
 #endif
 
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
 
   // test_url_loader_factory_ is declared before profile_manager_
   // to guarantee it outlives any profiles that might use it.

@@ -143,7 +143,7 @@ class TabsUpdateFunction : public ExtensionFunction {
                  std::string* error);
   ResponseValue GetResult();
 
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
  private:
   ResponseAction Run() override;

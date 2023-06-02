@@ -9,7 +9,8 @@
 #endif
 
 @implementation ToolbarUIState
-@synthesize collapsedHeight = _collapsedHeight;
-@synthesize expandedHeight = _expandedHeight;
-@synthesize bottomToolbarHeight = _bottomToolbarHeight;
+@synthesize collapsedTopToolbarHeight = _collapsedTopToolbarHeight;
+@synthesize expandedTopToolbarHeight = _expandedTopToolbarHeight;
+@synthesize expandedBottomToolbarHeight = _expandedBottomToolbarHeight;
+@synthesize collapsedBottomToolbarHeight = _collapsedBottomToolbarHeight;
 @end

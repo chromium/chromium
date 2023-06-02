@@ -88,6 +88,29 @@ message ConfigureVideoEncoder {
     DENY = 1;
     REQUIRE = 2;
   }
+
+  enum ScalabilityMode {
+    L1T1 = 0;
+    L1T2 = 1;
+    L1T3 = 2;
+  }
+
+  enum LatencyMode {
+    QUALITY = 0;
+    REALTIME = 1;
+  }
+
+  enum VideoEncoderBitrateMode {
+    CONSTANT = 0;
+    VARIABLE = 1;
+    QUANTIZER = 2;
+  }
+
+  enum AlphaOption {
+    KEEP = 0;
+    DISCARD = 1;
+  }
+
   optional EncoderAccelerationPreference acceleration = 2;
 
   optional uint64 bitrate = 3;
@@ -97,6 +120,18 @@ message ConfigureVideoEncoder {
   optional uint32 width = 5;
 
   optional uint32 height = 6;
+
+  optional uint32 display_width = 7;
+
+  optional uint32 display_height = 8;
+
+  optional ScalabilityMode scalability_mode = 9;
+
+  optional VideoEncoderBitrateMode bitrate_mode = 10;
+
+  optional LatencyMode latency_mode = 11;
+
+  optional AlphaOption alpha = 12;
 }
 
 message ConfigureAudioDecoder {
@@ -193,7 +228,17 @@ message AudioDataInit {
 
 message EncodeVideo {
   optional VideoFrameBitmapInit frame = 1;
-  message EncodeOptions { optional bool key_frame = 1; }
+  message EncodeOptionsForAv1 {
+    optional uint32 quantizer = 1;
+  };
+  message EncodeOptionsForVp9 {
+    optional uint32 quantizer = 1;
+  };
+  message EncodeOptions {
+    optional bool key_frame = 1;
+    optional EncodeOptionsForAv1 av1 = 2;
+    optional EncodeOptionsForVp9 vp9 = 3;
+  }
   optional EncodeOptions options = 2;
 }
 

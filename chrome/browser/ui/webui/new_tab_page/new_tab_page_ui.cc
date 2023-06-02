@@ -524,6 +524,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                                IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT);
   }
 
+  source->AddBoolean(
+      "modulesOverflowScrollbarEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
+
   source->AddString("photosModuleCustomArtWork",
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,

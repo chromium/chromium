@@ -30,7 +30,7 @@ struct DevToolsCommand {
       : method(in_method) {
     params.reset(in_params);
   }
-  ~DevToolsCommand() {}
+  ~DevToolsCommand() = default;
 
   std::string method;
   std::unique_ptr<base::Value::Dict> params;
@@ -38,9 +38,8 @@ struct DevToolsCommand {
 
 class FakeDevToolsClient : public StubDevToolsClient {
  public:
-  explicit FakeDevToolsClient(const std::string& id)
-      : id_(id), listener_(nullptr), command_index_(0) {}
-  ~FakeDevToolsClient() override {}
+  explicit FakeDevToolsClient(const std::string& id) : id_(id) {}
+  ~FakeDevToolsClient() override = default;
 
   bool PopSentCommand(DevToolsCommand** out_command) {
     if (sent_commands_.size() > command_index_) {
@@ -58,9 +57,6 @@ class FakeDevToolsClient : public StubDevToolsClient {
   Status TriggerEvent(const std::string& method) {
     return TriggerEvent(method, base::Value::Dict());
   }
-
-  // Overridden from DevToolsClient:
-  Status Connect() override { return listener_->OnConnected(this); }
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
@@ -87,9 +83,9 @@ class FakeDevToolsClient : public StubDevToolsClient {
   const std::string id_;  // WebView id.
   std::vector<std::unique_ptr<DevToolsCommand>>
       sent_commands_;                // Commands that were sent.
-  raw_ptr<DevToolsEventListener>
-      listener_;  // The fake allows only one event listener.
-  size_t command_index_;
+  raw_ptr<DevToolsEventListener> listener_ =
+      nullptr;  // The fake allows only one event listener.
+  size_t command_index_ = 0;
 };
 
 struct LogEntry {
@@ -227,7 +223,7 @@ TEST(PerformanceLogger, TwoWebViews) {
   ExpectEnableDomains(&client1);
   ExpectEnableDomains(&client2);
   // OnConnected sends the enable command only to that client, not others.
-  client1.Connect();
+  logger.OnConnected(&client1);
   ExpectEnableDomains(&client1);
   DevToolsCommand* cmd;
   ASSERT_FALSE(client2.PopSentCommand(&cmd));
@@ -267,9 +263,8 @@ namespace {
 class FakeBrowserwideClient : public FakeDevToolsClient {
  public:
   FakeBrowserwideClient()
-      : FakeDevToolsClient(DevToolsClientImpl::kBrowserwideDevToolsClientId),
-        events_handled_(false) {}
-  ~FakeBrowserwideClient() override {}
+      : FakeDevToolsClient(DevToolsClientImpl::kBrowserwideDevToolsClientId) {}
+  ~FakeBrowserwideClient() override = default;
 
   bool events_handled() const {
     return events_handled_;
@@ -284,7 +279,7 @@ class FakeBrowserwideClient : public FakeDevToolsClient {
   }
 
  private:
-  bool events_handled_;
+  bool events_handled_ = false;
 };
 
 }  // namespace

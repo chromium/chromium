@@ -90,10 +90,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
               Eq(ash::kShelfAlignmentRight));
 }
 
-// OS preferences should sync from the new clients as both preferences and OS
-// preferences.
 IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
-                       OSPreferencesSyncAsBothTypes) {
+                       OSPreferencesAreUploaded) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPriorityPreferenceKey),
@@ -105,25 +103,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
   GetPrefs(/*index=*/0)
       ->Set(kOsPriorityPreferenceKey, kOsPriorityPreferenceNewValue);
 
-  // OS preferences are syncing both as OS_PREFERENCES and PREFERENCES to
-  // support sync to the old clients.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
                   syncer::ModelType::OS_PREFERENCES, kOsPreferenceKey,
                   ConvertToSyncedPrefValue(kOsPreferenceNewValue))
                   .Wait());
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES, kOsPreferenceKey,
-                  ConvertToSyncedPrefValue(kOsPreferenceNewValue))
-                  .Wait());
-
-  // Same with OS priority preferences.
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
                   syncer::ModelType::OS_PRIORITY_PREFERENCES,
-                  kOsPriorityPreferenceKey,
-                  ConvertToSyncedPrefValue(kOsPriorityPreferenceNewValue))
-                  .Wait());
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PRIORITY_PREFERENCES,
                   kOsPriorityPreferenceKey,
                   ConvertToSyncedPrefValue(kOsPriorityPreferenceNewValue))
                   .Wait());

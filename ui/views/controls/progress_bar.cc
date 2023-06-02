@@ -200,7 +200,7 @@ SkColor ProgressBar::GetBackgroundColor() const {
   }
 
   return background_color_.value_or(
-      color_utils::BlendTowardMaxContrast(GetForegroundColor(), 0xCC));
+      GetColorProvider()->GetColor(ui::kColorProgressBarBackground));
 }
 
 void ProgressBar::SetBackgroundColor(SkColor color) {

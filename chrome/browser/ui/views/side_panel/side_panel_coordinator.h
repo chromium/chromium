@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view_observer.h"
@@ -46,7 +47,8 @@ class View;
 class SidePanelCoordinator final : public SidePanelRegistryObserver,
                                    public TabStripModelObserver,
                                    public views::ViewObserver,
-                                   public SidePanelUI {
+                                   public SidePanelUI,
+                                   public content::WebContentsObserver {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
@@ -222,6 +224,14 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // content::WebContentsObserver:
+  void DidStopLoading() override;
+
+  content::WebContents* GetActiveWebContents() const;
+
+  // Attempts to show in product help for reading mode.
+  void MaybeShowReadingModeSidePanelIPH();
+
   // When true, prevent loading delays when switching between side panel
   // entries.
   bool no_delays_for_testing_ = false;
@@ -259,6 +269,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       nullptr;
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
+
+  const base::flat_set<std::string> distillable_urls_;
 
   base::ScopedMultiSourceObservation<SidePanelRegistry,
                                      SidePanelRegistryObserver>

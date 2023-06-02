@@ -29,6 +29,7 @@
 #include "components/viz/service/frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -99,12 +100,15 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
 }
 
 CopyOutputRequest::ResultFormat VideoPixelFormatToCopyOutputRequestFormat(
-    media::VideoPixelFormat format) {
+    media::VideoPixelFormat format,
+    bool use_multiplane_for_nv12) {
   switch (format) {
     case media::PIXEL_FORMAT_I420:
       return CopyOutputRequest::ResultFormat::I420_PLANES;
     case media::PIXEL_FORMAT_NV12:
-      return CopyOutputRequest::ResultFormat::NV12_PLANES;
+      return use_multiplane_for_nv12
+                 ? CopyOutputRequest::ResultFormat::NV12_MULTIPLANE
+                 : CopyOutputRequest::ResultFormat::NV12_PLANES;
     case media::PIXEL_FORMAT_ARGB:
       return CopyOutputRequest::ResultFormat::RGBA;
     default:
@@ -1003,9 +1007,20 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   absl::optional<BlitRequest> blit_request;
   if (use_nv12_with_textures) {
     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
-    std::array<gpu::MailboxHolder, 3> mailbox_holders = {
-        request_properties.frame->mailbox_holder(0),
-        request_properties.frame->mailbox_holder(1), gpu::MailboxHolder{}};
+
+    // If this frame is using legacy SharedImages, the first mailbox holds the
+    // first plane and the second mailbox holds the second plane. Otherwise the
+    // first mailbox holds both planes via a multiplanar SharedImage.
+    auto first_mailbox = request_properties.frame->mailbox_holder(0);
+    auto second_mailbox =
+        request_properties.frame->shared_image_format_type() ==
+                media::SharedImageFormatType::kLegacy
+            ? request_properties.frame->mailbox_holder(1)
+            : gpu::MailboxHolder{};
+
+    static_assert(CopyOutputResult::kMaxPlanes == 3u);
+    std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>
+        mailbox_holders{first_mailbox, second_mailbox, gpu::MailboxHolder{}};
 
     // TODO(https://crbug.com/775740): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
@@ -1038,8 +1053,22 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   }
 
   // Request a copy of the next frame from the frame sink.
+
+  // Determine whether CopyOutputRequest should use NV12 multiplane format for
+  // importing mailboxes (rather than one mailbox per plane). This is true if
+  // the SharedImage associated with the video frame is itself in multiplane
+  // format.
+  // TODO(crbug.com/1429004): Also use multiplane format for NV12 when creating
+  // mailboxes and usage of MultiplanarSharedImage for hardware video is
+  // enabled. Dependent on support in CopyOutputNV12() having been added.
+  bool use_multiplane_for_nv12 =
+      (use_nv12_with_textures &&
+       request_properties.frame->shared_image_format_type() ==
+           media::SharedImageFormatType::kSharedImageFormat);
+
   auto request = std::make_unique<CopyOutputRequest>(
-      VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),
+      VideoPixelFormatToCopyOutputRequestFormat(pixel_format_,
+                                                use_multiplane_for_nv12),
       use_nv12_with_textures
           ? CopyOutputRequest::ResultDestination::kNativeTextures
           : CopyOutputRequest::ResultDestination::kSystemMemory,
@@ -1119,7 +1148,10 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                                      frame->stride(VideoFrame::kVPlane));
         break;
       case CopyOutputResult::Format::NV12_PLANES:
-        format = "NV12";
+      case CopyOutputResult::Format::NV12_MULTIPLANE:
+        format = (result->format() == CopyOutputResult::Format::NV12_MULTIPLANE)
+                     ? "NV12_MULTIPLANE"
+                     : "NV12";
         strides = base::StringPrintf("strideY:%d StrideUV:%d",
                                      frame->stride(VideoFrame::kYPlane),
                                      frame->stride(VideoFrame::kUVPlane));

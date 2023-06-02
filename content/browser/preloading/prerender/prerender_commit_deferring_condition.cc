@@ -6,6 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -68,8 +70,16 @@ PrerenderCommitDeferringCondition::WillCommitNavigation(
 
   // If there is no ongoing main frame navigation in prerender frame tree, the
   // prerender activation is allowed to continue.
-  if (!prerender_frame_tree_node->HasNavigation())
+  if (!prerender_frame_tree_node->HasNavigation()) {
+    // Record the defer waiting time for PrerenderCommitDeferringCondition as no
+    // delay.
+    PrerenderHost& prerender_host =
+        PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
+    RecordPrerenderActivationCommitDeferTime(
+        base::TimeDelta(), prerender_host.trigger_type(),
+        prerender_host.embedder_histogram_suffix());
     return Result::kProceed;
+  }
 
   // Defer the prerender activation until the ongoing prerender main frame
   // navigation commits.
@@ -108,8 +118,11 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
 
     // Record the defer waiting time for PrerenderCommitDeferringCondition.
     base::TimeDelta delta = base::TimeTicks::Now() - defer_start_time_;
-    base::UmaHistogramTimes("Navigation.Prerender.ActivationCommitDeferTime",
-                            delta);
+    PrerenderHost& prerender_host =
+        PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
+    RecordPrerenderActivationCommitDeferTime(
+        delta, prerender_host.trigger_type(),
+        prerender_host.embedder_histogram_suffix());
   }
 }
 

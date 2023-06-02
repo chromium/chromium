@@ -22,7 +22,8 @@ ArcUsbHostPermissionManagerFactory::GetForBrowserContext(
 // static
 ArcUsbHostPermissionManagerFactory*
 ArcUsbHostPermissionManagerFactory::GetInstance() {
-  return base::Singleton<ArcUsbHostPermissionManagerFactory>::get();
+  static base::NoDestructor<ArcUsbHostPermissionManagerFactory> instance;
+  return instance.get();
 }
 
 ArcUsbHostPermissionManagerFactory::ArcUsbHostPermissionManagerFactory()
@@ -40,7 +41,8 @@ ArcUsbHostPermissionManagerFactory::ArcUsbHostPermissionManagerFactory()
   DependsOn(ArcUsbHostBridge::GetFactory());
 }
 
-ArcUsbHostPermissionManagerFactory::~ArcUsbHostPermissionManagerFactory() {}
+ArcUsbHostPermissionManagerFactory::~ArcUsbHostPermissionManagerFactory() =
+    default;
 
 KeyedService* ArcUsbHostPermissionManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

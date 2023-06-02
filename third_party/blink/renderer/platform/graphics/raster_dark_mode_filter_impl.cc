@@ -22,7 +22,7 @@ RasterDarkModeFilterImpl::RasterDarkModeFilterImpl(
     const DarkModeSettings& settings)
     : dark_mode_filter_(std::make_unique<DarkModeFilter>(settings)) {}
 
-sk_sp<SkColorFilter> RasterDarkModeFilterImpl::ApplyToImage(
+sk_sp<cc::ColorFilter> RasterDarkModeFilterImpl::ApplyToImage(
     const SkPixmap& pixmap,
     const SkIRect& src) const {
   return dark_mode_filter_->GenerateImageFilter(pixmap, src);

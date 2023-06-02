@@ -5,8 +5,8 @@
 #ifndef SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/public/mojom/webnn_service.mojom.h"
 
 namespace webnn {
 
@@ -17,7 +17,10 @@ class WebNNGraphImpl : public mojom::WebNNGraph {
   WebNNGraphImpl& operator=(const WebNNGraphImpl&) = delete;
   ~WebNNGraphImpl() override;
 
-  static void Create(mojo::PendingReceiver<mojom::WebNNGraph> receiver);
+  // Return false if the graph is invalid.
+  static bool ValidateAndBuildGraph(
+      mojom::WebNNContext::CreateGraphCallback callback,
+      const mojom::GraphInfoPtr& graph_info);
 };
 
 }  // namespace webnn

@@ -107,7 +107,8 @@ def _ReadOriginalResourceIds(out_dir):
   original_resources = {}
   for root, dirnames, filenames in os.walk(out_dir + '/gen'):
     for filename in filenames:
-      if filename.endswith(('_resources.h', '_settings.h', '_strings.h')):
+      if filename.endswith(
+          ('_resources.h', '_settings.h', '_strings.h', '_synonyms.h')):
         with open(os.path.join(root, filename)) as f:
           ReadResourceIdsFromFile(f, original_resources)
   return original_resources

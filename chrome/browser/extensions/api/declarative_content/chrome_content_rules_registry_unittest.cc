@@ -37,7 +37,7 @@ class TestPredicate : public ContentPredicate {
   }
 
  private:
-  raw_ptr<ContentPredicateEvaluator> evaluator_;
+  raw_ptr<ContentPredicateEvaluator, DanglingUntriaged> evaluator_;
 };
 
 class TestPredicateEvaluator : public ContentPredicateEvaluator {

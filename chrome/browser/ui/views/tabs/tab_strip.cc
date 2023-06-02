@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -1161,6 +1162,12 @@ bool TabStrip::ShouldDrawStrokes() const {
   if (features::IsChromeRefresh2023()) {
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::features::IsJellyrollEnabled()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The tabstrip normally avoids strokes and relies on the active tab
   // contrasting sufficiently with the frame background.  When there isn't

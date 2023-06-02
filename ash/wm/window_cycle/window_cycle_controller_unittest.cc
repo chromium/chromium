@@ -120,22 +120,10 @@ bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
 }
 
-int GetOffsetX(int offset) {
-  // The handler code uses the new directions which is the reverse of the old
-  // handler code. Reverse the offset if the ReverseScrollGestures feature is
-  // disabled so that the unit tests test the old behavior.
-  return features::IsReverseScrollGesturesEnabled() ? offset : -offset;
-}
-
 int GetOffsetY(int offset) {
-  // The handler code uses the new directions which is the reverse of the old
-  // handler code. Reverse the offset if the ReverseScrollGestures feature is
-  // disabled so that the unit tests test the old behavior.
-  if (!features::IsReverseScrollGesturesEnabled() ||
-      window_util::IsNaturalScrollOn()) {
-    return -offset;
-  }
-  return offset;
+  // Reverse the offset if natural scroll is enabled so that the unit tests test
+  // the opposite direction.
+  return window_util::IsNaturalScrollOn() ? -offset : offset;
 }
 
 const WindowCycleList* GetCycleList() {
@@ -264,9 +252,9 @@ class WindowCycleControllerTest : public AshTestBase {
   }
 
   void Scroll(float x_offset, float y_offset, int fingers) {
-    GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::Milliseconds(5), GetOffsetX(x_offset),
-        GetOffsetY(y_offset), /*steps=*/100, fingers);
+    GetEventGenerator()->ScrollSequence(gfx::Point(), base::Milliseconds(5),
+                                        x_offset, GetOffsetY(y_offset),
+                                        /*steps=*/100, fingers);
   }
 
   void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
@@ -1055,13 +1043,9 @@ TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
   EXPECT_GT(count, 0);
 }
 
-// Test alt-tab will be shown on the display where the cursor is located
-// when there are 2 displays,
+// Test alt-tab will be shown on the activated display when there are 2
+// displays.
 TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
-  // |features::kWindowsFollowCursor| enables alt-tab based on cursor position
-  // when there's multiple displays.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kWindowsFollowCursor}, {});
   UpdateDisplay("500x400,401+0-800x700");
 
   std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(200, 200));
@@ -1073,18 +1057,21 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   Shell::Get()->cursor_manager()->SetDisplay(
       display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()));
 
-  // Test alt-tab activates on second display where the cursor point at, not
-  // the display for new windows.
+  // Test alt-tab activates on first display, the display for new windows, not
+  // the second display where the cursor is at.
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
   cycle_controller->StartCycling(/*same_app_only=*/false);
   EXPECT_TRUE(cycle_controller->IsCycling());
   auto preview_items = GetWindowCycleItemViews();
   ASSERT_EQ(2u, preview_items.size());
-  // Ensure preview is generated in secondary display where cursor is at.
+  // Ensure preview is generated in first display where the activated window
+  // is at.
   auto preview_display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWindowCycleListWidget()->GetNativeWindow());
-  EXPECT_EQ(Shell::Get()->cursor_manager()->GetDisplay(), preview_display);
+  auto activated_window =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w0.get());
+  EXPECT_EQ(activated_window, preview_display);
   CompleteCycling(cycle_controller);
 }
 
@@ -1409,7 +1396,7 @@ TEST_F(WindowCycleControllerTest,
                                                             float y_offset) {
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
     controller->StartCycling(/*same_app_only=*/false);
-    Scroll(GetOffsetX(x_offset), GetOffsetY(y_offset), kNumFingersForTrackpad);
+    Scroll(x_offset, GetOffsetY(y_offset), kNumFingersForTrackpad);
     CompleteCycling(controller);
   };
 
@@ -1438,7 +1425,7 @@ TEST_F(WindowCycleControllerTest,
   // Current order is [2,4,5,3,1].
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
   cycle_controller->StartCycling(/*same_app_only=*/false);
-  Scroll(GetOffsetX(horizontal_scroll), 0, kNumFingersForTrackpad);
+  Scroll(horizontal_scroll, 0, kNumFingersForTrackpad);
   EXPECT_FALSE(InOverviewSession());
 
   CompleteCycling(cycle_controller);
@@ -1463,8 +1450,7 @@ TEST_F(WindowCycleControllerTest, TwoFingerHorizontalScrollInWindowCycleList) {
     controller->StartCycling(/*same_app_only=*/false);
     // Since two finger swipes are negated, negate in tests to mimic how this
     // actually behaves on devices.
-    Scroll(GetOffsetX(-x_offset), GetOffsetY(y_offset),
-           kNumFingersForMouseWheel);
+    Scroll(-x_offset, GetOffsetY(y_offset), kNumFingersForMouseWheel);
     CompleteCycling(controller);
   };
 
@@ -1845,7 +1831,6 @@ class ReverseGestureWindowCycleControllerTest
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kReverseScrollGestures);
     AshTestBase::SetUp();
 
     // Set natural scroll on.
@@ -1855,9 +1840,6 @@ class ReverseGestureWindowCycleControllerTest
     pref->SetBoolean(prefs::kNaturalScroll, true);
     pref->SetBoolean(prefs::kMouseReverseScroll, true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests mouse wheel scroll gesture to move selection left or right. Mouse

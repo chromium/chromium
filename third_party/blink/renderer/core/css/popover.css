@@ -56,5 +56,4 @@ dialog:popover-open {
   /* Specific to [popover]: */
   pointer-events: none !important;
   background-color: transparent;
-  overlay: auto !important;
 }

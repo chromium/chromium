@@ -21,6 +21,7 @@ message DlpPolicyEventDestination {
     PLUGIN_VM = 3;
     USB = 4;
     DRIVE = 5;
+    ONEDRIVE = 6;
   }
 
   // Either |url| or |component| should be set.

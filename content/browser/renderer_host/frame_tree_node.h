@@ -561,11 +561,18 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     fenced_frame_properties_ = fenced_frame_properties;
   }
 
-  // Return the fenced frame properties for this fenced frame tree (if any).
-  // That is to say, this function returns the `fenced_frame_properties_`
-  // variable attached to the fenced frame root FrameTreeNode, which may be
-  // either this node or an ancestor of it.
-  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties();
+  // By default, this function checks the fenced frame root's properties if one
+  // exists, and then otherwise traverses the frame tree to find urn iframe
+  // roots. This doesn't work correctly for urn iframes nested inside of fenced
+  // frames. Enable `force_tree_traversal` to skip the fenced frame root short
+  // circuit and always traverse the tree.
+  // TODO(crbug.com/1355857): This function has the correct semantics when
+  // `force_tree_traversal` is set to true. It is set to false for urn iframes
+  // nested in fenced frames to work correctly in some cases. For example,
+  // storage partitioning. Once those issues are resolved, remove this parameter
+  // entirely.
+  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties(
+      bool force_tree_traversal = false);
 
   // Called from the currently active document via the
   // `Fence.setReportEventDataForAutomaticBeacons` JS API.
@@ -681,8 +688,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const std::vector<GURL>& redirects,
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-      std::unique_ptr<SubresourceWebBundleNavigationInfo>
-          subresource_web_bundle_navigation_info,
       int http_response_code) override;
   void CancelNavigation() override;
   bool Credentialless() const override;
@@ -728,7 +733,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // user activation state in the widget. Otherwise, this returns false.
   bool VerifyUserActivation();
 
-  absl::optional<FencedFrameProperties>& GetFencedFramePropertiesForEditing();
+  // See comments for `GetFencedFrameProperties()`.
+  absl::optional<FencedFrameProperties>& GetFencedFramePropertiesForEditing(
+      bool force_tree_traversal = false);
 
   // The next available browser-global FrameTreeNode ID.
   static int next_frame_tree_node_id_;

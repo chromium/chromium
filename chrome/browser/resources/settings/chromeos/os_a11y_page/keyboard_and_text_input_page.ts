@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import '/shared/settings/controls/settings_slider.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
@@ -115,6 +116,20 @@ export class SettingsKeyboardAndTextInputPageElement extends
           Setting.kEnableSwitchAccess,
         ]),
       },
+
+      focusHighlightEnabledVirtualPref_: {
+        type: Object,
+        computed: 'computeEnabledWithConflictingFeature_(' +
+            'prefs.settings.a11y.focus_highlight.value, ' +
+            'prefs.settings.accessibility.value)',
+      },
+
+      stickyKeysEnabledVirtualPref_: {
+        type: Object,
+        computed: 'computeEnabledWithConflictingFeature_(' +
+            'prefs.settings.a11y.sticky_keys_enabled.value, ' +
+            'prefs.settings.accessibility.value)',
+      },
     };
   }
 
@@ -124,9 +139,12 @@ export class SettingsKeyboardAndTextInputPageElement extends
   private dictationLocaleSubtitleOverride_: string;
   private dictationLocalesList_: LocaleInfo[];
   private isKioskModeActive_: boolean;
+  private focusHighlightEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   private keyboardAndTextInputBrowserProxy_:
       KeyboardAndTextInputPageBrowserProxy;
   private route_: Route;
+  private stickyKeysEnabledPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private showDictationLocaleMenu_: boolean;
   private useDictationLocaleSubtitleOverride_: boolean;
 
@@ -272,6 +290,44 @@ export class SettingsKeyboardAndTextInputPageElement extends
 
   private onChangeDictationLocalesDialogClosed_(): void {
     this.showDictationLocaleMenu_ = false;
+  }
+
+  private computeEnabledWithConflictingFeature_(
+      prefValue: boolean, conflictingPrefValue: boolean):
+      chrome.settingsPrivate.PrefObject<boolean> {
+    return {
+      value: !conflictingPrefValue && prefValue,
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      key: '',
+    };
+  }
+
+  private updateFocusHighlightEnabledVirtualPref_(): void {
+    // Focus highlight is automatically disabled when ChromeVox is
+    // enabled, although the underlying pref is unchanged (allows
+    // for state restore if ChromeVox is later disabled).)
+    // Reflect the fact focus highlight isn't running by showing
+    // the toggle as off.
+    if (this.getPref<boolean>('settings.accessibility').value) {
+      return;
+    }
+    this.setPrefValue(
+        'settings.a11y.focus_highlight',
+        !this.getPref<boolean>('settings.a11y.focus_highlight').value);
+  }
+
+  private updateStickyKeysEnabledVirtualPref_(): void {
+    // Sticky keys is automatically disabled when ChromeVox is
+    // enabled, although the underlying pref is unchanged (allows
+    // for state restore if ChromeVox is later disabled).)
+    // Reflect the fact sticky keys isn't running by showing
+    // the toggle as off.
+    if (this.getPref<boolean>('settings.accessibility').value) {
+      return;
+    }
+    this.setPrefValue(
+        'settings.a11y.sticky_keys_enabled',
+        !this.getPref<boolean>('settings.a11y.sticky_keys_enabled').value);
   }
 }
 

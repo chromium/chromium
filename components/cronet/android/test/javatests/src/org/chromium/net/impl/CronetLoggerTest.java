@@ -11,7 +11,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP;
@@ -427,7 +426,7 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(200);
         assertNotEquals(Duration.ofSeconds(0), trafficInfo.getHeadersLatency());
         assertNotEquals(Duration.ofSeconds(0), trafficInfo.getTotalLatency());
-        assertNotNull(trafficInfo.getNegotiatedProtocol());
+        assertThat(trafficInfo.getNegotiatedProtocol()).isNotNull();
         assertFalse(trafficInfo.wasConnectionMigrationAttempted());
         assertFalse(trafficInfo.didConnectionMigrationSucceed());
 

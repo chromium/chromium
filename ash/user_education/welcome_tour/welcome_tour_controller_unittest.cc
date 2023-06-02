@@ -5,6 +5,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -17,10 +18,15 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/mock_welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -32,16 +38,19 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::base::test::RunOnceClosure;
 using ::session_manager::SessionState;
 using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Matches;
 using ::testing::Pair;
 using ::testing::StrictMock;
 using ::user_education::TutorialDescription;
 
+using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
 
 // Actions ---------------------------------------------------------------------
@@ -60,18 +69,8 @@ auto MoveArgs(T*... out) {
 
 // Matchers --------------------------------------------------------------------
 
-MATCHER_P4(BubbleStep,
-           help_bubble_id,
-           element_specifier,
-           body_text_id,
-           has_next_button,
-           "") {
-  namespace util = user_education_util;
-  return arg.step_type == ui::InteractionSequence::StepType::kShown &&
-         util::GetHelpBubbleId(arg.extended_properties) == help_bubble_id &&
-         arg.body_text_id == body_text_id &&
-         arg.next_button_callback.is_null() != has_next_button &&
-         absl::visit(base::Overloaded{
+MATCHER_P(ElementSpecifierEq, element_specifier, "") {
+  return absl::visit(base::Overloaded{
                          [&](const ui::ElementIdentifier& element_id) {
                            return arg.element_id == element_id &&
                                   arg.element_name.empty();
@@ -84,20 +83,31 @@ MATCHER_P4(BubbleStep,
                      element_specifier);
 }
 
-MATCHER_P2(EventStep, element_specifier, has_name_elements_callback, "") {
+MATCHER_P5(BubbleStep,
+           element_specifier,
+           context_mode,
+           help_bubble_id,
+           body_text_id,
+           has_next_button,
+           "") {
+  namespace util = user_education_util;
+  return arg.step_type == ui::InteractionSequence::StepType::kShown &&
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode == context_mode &&
+         util::GetHelpBubbleId(arg.extended_properties) == help_bubble_id &&
+         arg.body_text_id == body_text_id &&
+         arg.next_button_callback.is_null() != has_next_button;
+}
+
+MATCHER_P3(EventStep,
+           element_specifier,
+           context_mode,
+           has_name_elements_callback,
+           "") {
   return arg.step_type == ui::InteractionSequence::StepType::kCustomEvent &&
-         arg.name_elements_callback.is_null() != has_name_elements_callback &&
-         absl::visit(base::Overloaded{
-                         [&](const ui::ElementIdentifier& element_id) {
-                           return arg.element_id == element_id &&
-                                  arg.element_name.empty();
-                         },
-                         [&](const std::string& element_name) {
-                           return arg.element_name == element_name &&
-                                  arg.element_id == ui::ElementIdentifier();
-                         },
-                     },
-                     element_specifier);
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode == context_mode &&
+         arg.name_elements_callback.is_null() != has_name_elements_callback;
 }
 
 }  // namespace
@@ -138,33 +148,46 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
           Field(
               &TutorialDescription::steps,
               ElementsAre(
-                  BubbleStep(HelpBubbleId::kWelcomeTourShelf,
-                             ElementSpecifier(kShelfViewElementId),
+                  BubbleStep(ElementSpecifier(kShelfViewElementId),
+                             ContextMode::kInitial,
+                             HelpBubbleId::kWelcomeTourShelf,
                              IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kShelfViewElementId),
+                            ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourStatusArea,
-                             ElementSpecifier(kUnifiedSystemTrayElementName),
+                  BubbleStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourStatusArea,
                              IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                            ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourHomeButton,
-                             ElementSpecifier(kHomeButtonElementName),
+                  BubbleStep(ElementSpecifier(kHomeButtonElementName),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourHomeButton,
                              IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourSearchBox,
-                             ElementSpecifier(kSearchBoxViewElementId),
+                  BubbleStep(ElementSpecifier(kSearchBoxViewElementId),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourSearchBox,
                              IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(
-                      HelpBubbleId::kWelcomeTourSettingsApp,
-                      ElementSpecifier(kSettingsAppListItemViewElementId),
-                      IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
-                      /*has_next_button=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourExploreApp,
-                             ElementSpecifier(kExploreAppListItemViewElementId),
+                  EventStep(ElementSpecifier(kSearchBoxViewElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/false),
+                  BubbleStep(ElementSpecifier(kSettingsAppElementId),
+                             ContextMode::kFromPreviousStep,
+                             HelpBubbleId::kWelcomeTourSettingsApp,
+                             IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                             /*has_next_button=*/true),
+                  EventStep(ElementSpecifier(kSettingsAppElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/false),
+                  BubbleStep(ElementSpecifier(kExploreAppElementId),
+                             ContextMode::kFromPreviousStep,
+                             HelpBubbleId::kWelcomeTourExploreApp,
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/false))))));
 }
@@ -237,6 +260,79 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
     std::move(ended_callback).Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
+}
+
+// WelcomeTourControllerRunTest ------------------------------------------------
+
+// Base class for tests of the `WelcomeTourController` that run the Welcome
+// Tour in order to assert expectations before, during, and/or after run time.
+class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
+ public:
+  // Runs the Welcome Tour, invoking the specified `in_progress_callback` just
+  // after the Welcome Tour has started. Note that this method will not return
+  // until the Welcome Tour has ended.
+  void Run(base::OnceClosure in_progress_callback) {
+    // Ensure `controller` exists.
+    auto* const controller = WelcomeTourController::Get();
+    ASSERT_TRUE(controller);
+
+    // Ensure `delegate` exists.
+    auto* const delegate = user_education_delegate();
+    ASSERT_TRUE(delegate);
+
+    // Observe the `controller` for Welcome Tour start/end events.
+    StrictMock<MockWelcomeTourControllerObserver> observer;
+    base::ScopedObservation<WelcomeTourController,
+                            WelcomeTourControllerObserver>
+        observation{&observer};
+    observation.Observe(controller);
+
+    // When the Welcome Tour starts/ends, signal the appropriate future.
+    base::test::TestFuture<void> started_future;
+    base::test::TestFuture<void> ended_future;
+    EXPECT_CALL(observer, OnWelcomeTourStarted)
+        .WillOnce(RunOnceClosure(started_future.GetCallback()));
+    EXPECT_CALL(observer, OnWelcomeTourEnded)
+        .WillOnce(RunOnceClosure(ended_future.GetCallback()));
+
+    // When the Welcome Tour is started, cache the callback to invoke to
+    // complete the tutorial.
+    base::OnceClosure completed_callback;
+    EXPECT_CALL(
+        *delegate,
+        StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+        .WillOnce(MoveArg<3>(&completed_callback));
+
+    // Simulate login of the primary user. Note that this should trigger the
+    // Welcome Tour to start automatically.
+    SimulateUserLogin("primary@test");
+    EXPECT_TRUE(started_future.Wait());
+
+    // Invoke the `in_progress_callback` so that tests can assert expectations
+    // while the Welcome Tour is in progress.
+    std::move(in_progress_callback).Run();
+
+    // Complete the tutorial by invoking the cached callback.
+    std::move(completed_callback).Run();
+    EXPECT_TRUE(ended_future.Wait());
+  }
+};
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that scrims are added to all root windows only while the Welcome
+// Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, Scrim) {
+  // Case: Before Welcome Tour.
+  ExpectScrimsOnAllRootWindows(false);
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting(
+          [&]() { ExpectScrimsOnAllRootWindows(true); })));
+
+  // Case: After Welcome Tour.
+  ExpectScrimsOnAllRootWindows(false);
 }
 
 }  // namespace ash

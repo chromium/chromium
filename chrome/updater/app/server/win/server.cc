@@ -271,7 +271,7 @@ ComServerApp::~ComServerApp() = default;
 void ComServerApp::Stop() {
   VLOG(2) << __func__ << ": COM server is shutting down.";
   UnregisterClassObjects();
-  main_task_runner_->PostTask(FROM_HERE, base::BindOnce([]() {
+  main_task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
                                 scoped_refptr<ComServerApp> this_server =
                                     AppServerSingletonInstance();
                                 this_server->update_service_ = nullptr;

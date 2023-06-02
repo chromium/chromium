@@ -63,7 +63,7 @@ class AdditionalBrowser {
 
  private:
   std::unique_ptr<Browser> browser_;
-  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
 };
 
 }  // namespace

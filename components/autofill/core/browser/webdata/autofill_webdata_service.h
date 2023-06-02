@@ -212,10 +212,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   void RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
                                        const base::Time& delete_end);
 
-  // Removes the orphan rows in the autofill_profile_names,
-  // autofill_profile_emails and autofill_profile_phones tables.
-  void RemoveOrphanAutofillTableRows();
-
   void AddObserver(AutofillWebDataServiceObserverOnDBSequence* observer);
   void RemoveObserver(AutofillWebDataServiceObserverOnDBSequence* observer);
 

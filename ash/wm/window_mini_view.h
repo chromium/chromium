@@ -14,12 +14,11 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
-class ImageView;
-class Label;
 class View;
 }  // namespace views
 
 namespace ash {
+class WindowMiniViewHeaderView;
 class WindowPreviewView;
 
 // WindowMiniView is a view which contains a header and optionally a mirror of
@@ -38,8 +37,6 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // The size in dp of the window icon shown on the alt-tab/overview window next
   // to the title.
   static constexpr gfx::Size kIconSize = gfx::Size(24, 24);
-  // Padding between header items.
-  static constexpr int kHeaderPaddingDp = 12;
 
   // The corner radius for WindowMiniView. Please notice, instead of setting the
   // corner radius directly on the window mini view, setting the corner radius
@@ -48,6 +45,13 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // 2. The focus ring which is a child view of the WindowMiniView couldn't be
   // drawn correctly if its parent's layer is clipped.
   static constexpr int kWindowMiniViewCornerRadius = 16;
+
+  aura::Window* source_window() { return source_window_; }
+  const aura::Window* source_window() const { return source_window_; }
+  WindowMiniViewHeaderView* header_view() { return header_view_; }
+  views::View* backdrop_view() { return backdrop_view_; }
+  WindowPreviewView* preview_view() { return preview_view_; }
+  const WindowPreviewView* preview_view() const { return preview_view_; }
 
   // Sets the visibility of |backdrop_view_|. Creates it if it is null.
   void SetBackdropVisibility(bool visible);
@@ -61,18 +65,8 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // Shows or hides a focus ring around this view.
   void UpdateFocusState(bool focus);
 
-  views::View* header_view() { return header_view_; }
-  views::Label* title_label() const { return title_label_; }
-  views::ImageView* icon_view() { return icon_view_; }
-  views::View* backdrop_view() { return backdrop_view_; }
-  WindowPreviewView* preview_view() const { return preview_view_; }
-
  protected:
   explicit WindowMiniView(aura::Window* source_window);
-
-  // Updates the icon view by creating it if necessary, and grabbing the correct
-  // image from |source_window_|.
-  void UpdateIconView();
 
   // Returns the bounds where the backdrop and preview should go.
   gfx::Rect GetContentAreaBounds() const;
@@ -85,7 +79,6 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // views::View:
   void Layout() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -94,17 +87,13 @@ class ASH_EXPORT WindowMiniView : public views::View,
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowTitleChanged(aura::Window* window) override;
 
-  aura::Window* source_window() const { return source_window_; }
-
  private:
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.
   raw_ptr<aura::Window, ExperimentalAsh> source_window_;
 
-  // Views for the icon and title.
-  raw_ptr<views::View, ExperimentalAsh> header_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+  // A view that represents the header of `this`.
+  raw_ptr<WindowMiniViewHeaderView, ExperimentalAsh> header_view_ = nullptr;
 
   // A view that covers the area except the header. It is null when the window
   // associated is not pillar or letter boxed.

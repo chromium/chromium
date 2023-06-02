@@ -515,18 +515,21 @@ class BidderWorkletTest : public testing::Test {
 
   // Runs reportWin() on an already loaded worklet,  verifies the return
   // value and invokes `done_closure` when done. Expects something else to
-  // spin the event loop.
+  // spin the event loop. If `expected_reporting_latency_timeout` is true,
+  // the timeout will be (extremely loosely) compared against normal script
+  // timeout.
   void RunReportWinExpectingResultAsync(
       mojom::BidderWorklet* bidder_worklet,
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
       PrivateAggregationRequests expected_pa_requests,
+      bool expected_reporting_latency_timeout,
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
         reporting_id_field_, reporting_id_, auction_signals_,
         per_buyer_signals_, direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, seller_signals_,
+        direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
@@ -540,21 +543,29 @@ class BidderWorkletTest : public testing::Test {
             [](const absl::optional<GURL>& expected_report_url,
                const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
                PrivateAggregationRequests expected_pa_requests,
+               bool expected_reporting_latency_timeout,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
                const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_errors, errors);
               EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
               EXPECT_EQ(expected_pa_requests, pa_requests);
+              if (expected_reporting_latency_timeout) {
+                // We only know that about the time of the timeout should have
+                // elapsed, and there may also be some thread skew.
+                EXPECT_GE(reporting_latency,
+                          AuctionV8Helper::kScriptTimeout * 0.9);
+              }
               std::move(done_closure).Run();
             },
             expected_report_url, expected_ad_beacon_map,
-            std::move(expected_pa_requests), expected_errors,
-            std::move(done_closure)));
+            std::move(expected_pa_requests), expected_reporting_latency_timeout,
+            expected_errors, std::move(done_closure)));
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
@@ -570,10 +581,11 @@ class BidderWorkletTest : public testing::Test {
     ASSERT_TRUE(bidder_worklet);
 
     base::RunLoop run_loop;
-    RunReportWinExpectingResultAsync(bidder_worklet.get(), expected_report_url,
-                                     expected_ad_beacon_map,
-                                     std::move(expected_pa_requests),
-                                     expected_errors, run_loop.QuitClosure());
+    RunReportWinExpectingResultAsync(
+        bidder_worklet.get(), expected_report_url, expected_ad_beacon_map,
+        std::move(expected_pa_requests),
+        /*expected_reporting_latency_timeout=*/false, expected_errors,
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -2145,6 +2157,38 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
   const std::string kGenerateBidBody =
+      R"({ad: "biddingWasmHelperURL" in interestGroup ?
+            interestGroup.biddingWasmHelperURL : "missing",
+        bid:1,
+        render:"https://response.test/"})";
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("missing")", 1, /*bid_currency=*/absl::nullopt,
+          /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt,
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
+
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/absl::nullopt, ToyWasm());
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("https://foo.test/helper.wasm")", 1,
+          /*bid_currency=*/absl::nullopt,
+          /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt,
+          /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
+}
+
+// TODO(crbug.com/1441988): Remove once rename is complete.
+TEST_F(BidderWorkletTest,
+       GenerateBidInterestGroupBiddingWasmHelperUrlDeprecatedName) {
+  const std::string kGenerateBidBody =
       R"({ad: "biddingWasmHelperUrl" in interestGroup ?
             interestGroup.biddingWasmHelperUrl : "missing",
         bid:1,
@@ -3500,7 +3544,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
   bidder_worklet->ReportWin(
       reporting_id_field_, reporting_id_, /*auction_signals_json=*/"0",
       per_buyer_signals_, direct_from_seller_per_buyer_signals_,
-      direct_from_seller_auction_signals_, seller_signals_,
+      direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
@@ -3514,6 +3558,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
           [&run_loop](const absl::optional<GURL>& report_url,
                       const base::flat_map<std::string, GURL>& ad_beacon_map,
                       PrivateAggregationRequests pa_requests,
+                      base::TimeDelta reporting_latency,
                       const std::vector<std::string>& errors) {
             run_loop.Quit();
           }));
@@ -3546,6 +3591,7 @@ TEST_F(BidderWorkletTest, WasmReportWin2) {
       bidder_worklet.get(), GURL("https://foo.test"),
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{},
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
   task_environment_.RunUntilIdle();
@@ -3655,9 +3701,11 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
   base::Time time2 = auction_start_time_ - delta - tiny_delta;
   base::Time future_time = auction_start_time_ + delta;
 
-  auto win1 = mojom::PreviousWin::New(time1, R"("ad1")");
-  auto win2 = mojom::PreviousWin::New(time2, R"(["ad2"])");
-  auto future_win = mojom::PreviousWin::New(future_time, R"("future_ad")");
+  auto win1 = mojom::PreviousWin::New(time1, R"({"renderURL":"ad1"})");
+  auto win2 = mojom::PreviousWin::New(
+      time2, R"({"renderURL":"ad2", "metadata":"{\"key\":\"value\"}"})");
+  auto future_win =
+      mojom::PreviousWin::New(future_time, R"({"renderURL":"future_ad"})");
   struct TestCase {
     std::vector<mojo::StructPtr<mojom::PreviousWin>> prev_wins;
     // Value to output as the ad data.
@@ -3673,37 +3721,43 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
       {
           CreateWinList(win1),
           "browserSignals.prevWins",
-          R"([[200,"ad1"]])",
+          R"([[200,{"renderURL":"ad1","render_url":"ad1"}]])",
       },
       // Make sure it's passed on as an object and not a string.
       {
           CreateWinList(win1),
           "browserSignals.prevWins[0]",
-          R"([200,"ad1"])",
+          R"([200,{"renderURL":"ad1","render_url":"ad1"}])",
       },
       // Test rounding.
       {
           CreateWinList(win2),
           "browserSignals.prevWins",
-          R"([[100,["ad2"]]])",
+          R"([[100,{"renderURL":"ad2",)"
+          R"("metadata":{"key":"value"},"render_url":"ad2"}]])",
       },
       // Multiple previous wins.
       {
           CreateWinList(win1, win2),
           "browserSignals.prevWins",
-          R"([[200,"ad1"],[100,["ad2"]]])",
+          R"([[200,{"renderURL":"ad1","render_url":"ad1"}],)"
+          R"([100,{"renderURL":"ad2",)"
+          R"("metadata":{"key":"value"},"render_url":"ad2"}]])",
       },
       // Times are trimmed at 0.
       {
           CreateWinList(future_win),
           "browserSignals.prevWins",
-          R"([[0,"future_ad"]])",
+          R"([[0,{"renderURL":"future_ad","render_url":"future_ad"}]])",
       },
       // Out of order wins should be sorted.
       {
           CreateWinList(win2, future_win, win1),
           "browserSignals.prevWins",
-          R"([[200,"ad1"],[100,["ad2"]],[0,"future_ad"]])",
+          R"([[200,{"renderURL":"ad1","render_url":"ad1"}],)"
+          R"([100,{"renderURL":"ad2",)"
+          R"("metadata":{"key":"value"},"render_url":"ad2"}],)"
+          R"([0,{"renderURL":"future_ad","render_url":"future_ad"}]])",
       },
   };
 
@@ -4764,7 +4818,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
   bidder_worklet->ReportWin(
       reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
-      direct_from_seller_auction_signals_, seller_signals_,
+      direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
@@ -4777,6 +4831,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
       }));
@@ -4812,7 +4867,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           reporting_id_field_, reporting_id_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           direct_from_seller_per_buyer_signals_,
-          direct_from_seller_auction_signals_, seller_signals_,
+          direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
           browser_signal_render_url_, browser_signal_bid_,
           browser_signal_bid_currency_,
           browser_signal_highest_scoring_other_bid_,
@@ -4829,6 +4884,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
                   const absl::optional<GURL>& report_url,
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   PrivateAggregationRequests pa_requests,
+                  base::TimeDelta reporting_latency,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(GURL(base::StringPrintf("https://foo.test/%zu", i)),
                           report_url);
@@ -4864,7 +4920,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         reporting_id_field_, reporting_id_,
         /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
         direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, seller_signals_,
+        direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
@@ -4878,6 +4934,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
             [](const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               ADD_FAILURE() << "Callback should not be invoked.";
             }));
@@ -4970,9 +5027,10 @@ TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
     mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
     url_loader_factory_.ClearResponses();
     auto run_loop = std::make_unique<base::RunLoop>();
-    RunReportWinExpectingResultAsync(bidder_worklet.get(),
-                                     GURL("https://foo.test/"), {}, {}, {},
-                                     run_loop->QuitClosure());
+    RunReportWinExpectingResultAsync(
+        bidder_worklet.get(), GURL("https://foo.test/"), {}, {},
+        /*expected_reporting_latency_timeout=*/false, {},
+        run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
       SCOPED_TRACE(i);
       const Response& response =
@@ -5177,6 +5235,24 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRecency) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalKAnon) {
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (!browserSignals.enforcedKAnon)
+        sendReportTo("https://noKAnon.test"))",
+      GURL("https://noKAnon.test"));
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kSimulate;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (!browserSignals.enforcedKAnon)
+        sendReportTo("https://simulateKAnon.test"))",
+      GURL("https://simulateKAnon.test"));
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.enforcedKAnon)
+        sendReportTo("https://enforceKAnon.test"))",
+      GURL("https://enforceKAnon.test"));
+}
+
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
 //
@@ -5221,7 +5297,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
     bidder_worklet->ReportWin(
         reporting_id_field_, reporting_id_, auction_signals_,
         per_buyer_signals_, direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, seller_signals_,
+        direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
@@ -5235,6 +5311,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
             [&run_loop](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
               EXPECT_TRUE(errors.empty());
@@ -5667,8 +5744,9 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
 
   // Now ask for reporting. This should hit the other breakpoint.
   base::RunLoop run_loop;
-  RunReportWinExpectingResultAsync(worklet.get(), GURL("https://foo.test/"), {},
-                                   {}, {}, run_loop.QuitClosure());
+  RunReportWinExpectingResultAsync(
+      worklet.get(), GURL("https://foo.test/"), {}, {},
+      /*expected_reporting_latency_timeout=*/false, {}, run_loop.QuitClosure());
 
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug.WaitForMethodNotification("Debugger.paused");
@@ -5981,7 +6059,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
   bidder_worklet->ReportWin(
       reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
-      direct_from_seller_auction_signals_, seller_signals_,
+      direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
@@ -5994,6 +6072,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked.";
       }));
@@ -6565,9 +6644,8 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
 class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletPrivateAggregationEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPrivateAggregationApi);
   }
 
  private:
@@ -6610,7 +6688,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
-  // Only sendHistogramReport() is called.
+  // Only contributeToHistogram() is called.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
@@ -6619,7 +6697,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
@@ -6637,7 +6715,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         std::move(expected_pa_requests));
   }
 
-  // Only reportContributionForEvent() is called.
+  // Only contributeToHistogramOnEvent() is called.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedForEventRequest1.Clone());
@@ -6646,7 +6724,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bid=*/
@@ -6665,7 +6743,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         std::move(expected_pa_requests));
   }
 
-  // Both sendHistogramReport() and reportContributionForEvent() are called.
+  // Both contributeToHistogram() and contributeToHistogramOnEvent() are called.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
@@ -6675,8 +6753,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bid=*/
@@ -6706,7 +6784,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
         /*expected_bid=*/nullptr,
         /*expected_data_version=*/absl::nullopt,
@@ -6735,9 +6813,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport(
+            privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 18446744073709551616n, value: 2});
           )"),
         /*expected_bid=*/
@@ -6768,12 +6846,12 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.sendHistogramReport(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 18446744073709551616n, value: 2});
           )"),
         /*expected_bid=*/
@@ -6792,8 +6870,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         std::move(expected_pa_requests));
   }
 
-  // An unrelated exception after sendHistogramReport and
-  // reportContributionForEvent shouldn't block the reports.
+  // An unrelated exception after contributeToHistogram and
+  // contributeToHistogramOnEvent shouldn't block the reports.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
@@ -6803,8 +6881,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
             error;
           )"),
@@ -6839,9 +6917,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.enableDebugMode({debug_key: 1234n});
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.enableDebugMode({debugKey: 1234n});
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bid=*/
@@ -6881,8 +6959,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.sendHistogramReport(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
           )"),
         /*expected_bid=*/
@@ -6952,15 +7030,15 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
             if (interestGroup.ads.length > 0) {
-              privateAggregation.sendHistogramReport(
+              privateAggregation.contributeToHistogram(
                   {bucket: 18446744073709551616n, value: 1});
-              privateAggregation.reportContributionForEvent(
+              privateAggregation.contributeToHistogramOnEvent(
                   "reserved.win", {bucket: 18446744073709551616n, value: 2});
-              privateAggregation.reportContributionForEvent("reserved.loss", {
+              privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "highest-scoring-other-bid", offset: 0n},
                 value: 1,
               });
-              privateAggregation.reportContributionForEvent("reserved.loss", {
+              privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "winning-bid"},
                 value: {baseValue: "bid-reject-reason"},
               });
@@ -7027,7 +7105,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_report_url =*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
@@ -7043,7 +7121,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_report_url =*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
@@ -7064,8 +7142,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
+          privateAggregation.contributeToHistogram(
+              {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_report_url =*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
@@ -7082,12 +7160,12 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram(
+              {bucket: 18446744073709551616n, value: 1});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 18446744073709551616n, value: 2});
         )",
         /*expected_report_url =*/absl::nullopt,
@@ -7095,14 +7173,15 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_errors=*/{});
   }
 
-  // An unrelated exception after sendHistogramReport shouldn't block the report
+  // An unrelated exception after contributeToHistogram shouldn't block the
+  // report
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           error;
         )",
         /*expected_report_url =*/absl::nullopt,
@@ -7130,9 +7209,9 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-            privateAggregation.enableDebugMode({debug_key: 1234n});
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.enableDebugMode({debugKey: 1234n});
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_report_url=*/absl::nullopt,
@@ -7159,8 +7238,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.sendHistogramReport(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_report_url=*/absl::nullopt,
@@ -7176,8 +7255,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_report_url =*/absl::nullopt,
@@ -7202,7 +7281,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
       CreateGenerateBidScript(
           R"({ad: "ad", bid:1, render:"https://response.test/" })",
           /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
@@ -7218,7 +7297,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
 TEST_F(BidderWorkletPrivateAggregationDisabledTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
@@ -7670,14 +7749,14 @@ TEST_F(BidderWorkletTest, AsyncFinalizeGenerateBid2) {
   EXPECT_THAT(bid_errors_, testing::ElementsAre());
 }
 
-class GenerateBidLatenciesTest : public BidderWorkletTest {
+class BidderWorkletLatenciesTest : public BidderWorkletTest {
  public:
   // We use MockTime to control the reported latencies.
-  GenerateBidLatenciesTest()
+  BidderWorkletLatenciesTest()
       : BidderWorkletTest(TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
-TEST_F(GenerateBidLatenciesTest, GenerateBidLatenciesAreReturned) {
+TEST_F(BidderWorkletLatenciesTest, GenerateBidLatenciesAreReturned) {
   interest_group_trusted_bidding_signals_url_ =
       GURL("https://url.test/trustedsignals");
   interest_group_trusted_bidding_signals_keys_ = {"1"};
@@ -7737,6 +7816,27 @@ TEST_F(GenerateBidLatenciesTest, GenerateBidLatenciesAreReturned) {
   EXPECT_EQ(
       base::Milliseconds(250),
       *generate_bid_dependency_latencies_->trusted_bidding_signals_latency);
+}
+
+TEST_F(BidderWorkletTest, ReportWinLatency) {
+  // We use an infinite loop since we have some notion of how long a timeout
+  // should take.
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript("while (true) {}"));
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(
+      bidder_worklet.get(),
+      /*expected_report_url=*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `reportWin` timed out."},
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // The sequence when GenerateBidClient gets destroyed w/o getting to

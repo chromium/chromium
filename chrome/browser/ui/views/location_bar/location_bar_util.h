@@ -10,7 +10,7 @@
 
 // Sets the highlight color callback and ripple color callback for inkdrop when
 // the chrome refresh flag is on.
-void ConfigureInkdropForRefresh2023(views::View* host,
+void ConfigureInkDropForRefresh2023(views::View* host,
                                     ChromeColorIds hover_color_id,
                                     ChromeColorIds ripple_color_id);
 

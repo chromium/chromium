@@ -1,5 +1,0 @@
-Tests the Timeline API instrumentation of a TimerFired events inside evaluated scripts.
-
-TimerFire fromEval.js:2
-TimerFire fromEval.js:1
-

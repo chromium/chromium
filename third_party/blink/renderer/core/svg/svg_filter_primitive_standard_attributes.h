@@ -70,6 +70,10 @@ class SVGFilterPrimitiveStandardAttributes : public SVGElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
  private:
   bool IsFilterEffect() const final { return true; }
 

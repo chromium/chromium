@@ -64,6 +64,10 @@ class AAudioStreamWrapper {
   // Returns the amount of unplayed audio relative to |delay_timestamp|.
   base::TimeDelta GetOutputDelay(base::TimeTicks delay_timestamp);
 
+  // Returns the time at which the next sample read from `aaudio_stream_` was
+  // recorded.
+  base::TimeTicks GetCaptureTimestamp();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -107,11 +107,6 @@ const char kUserPolicyNotificationWasShown[] =
     "policy.user_policy_notification_was_shown";
 #endif
 
-// A boolean indicating whether the deprecated API Event.path is enabled. It
-// should eventually be disabled and removed.
-// https://chromestatus.com/feature/5726124632965120
-const char kEventPathEnabled[] = "policy.event_path_enabled";
-
 // A boolean indicating whether the newly specified behavior for
 // Element.offsetParent is in effect.
 const char kOffsetParentNewSpecBehaviorEnabled[] =
@@ -138,6 +133,16 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // 1 - Disabled. User cannot browse pages in Incognito mode.
 // 2 - Forced. All pages/sessions are forced into Incognito.
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
+
+// A boolean indicating whether the new behavior for beforeunload show cancel
+// dialog if event.preventDefault() gets called is in effect.
+const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
+    "policy.beforeunload_event_cancel_by_prevent_default_enabled";
+
+// Boolean indicating whether Policy Test Page is Enabled.
+// The value is controlled by the PolicyTestPageEnabled policy.
+// If this is set to True, the page will be accessible.
+const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
 
 }  // namespace policy_prefs
 }  // namespace policy

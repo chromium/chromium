@@ -165,6 +165,10 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
         WrapReader(std::move(compare_reader)),
         WrapReader(std::move(copy_reader)), WrapWriter(std::move(writer)),
         /*writer_resource_id=*/0, script_checksum_update_option,
+        blink::StorageKey::Create(url::Origin::Create(scope),
+                                  net::SchemefulSite(scope),
+                                  blink::mojom::AncestorChainBit::kSameSite,
+                                  /*third_party_partitioning_allowed=*/true),
         base::BindOnce(
             [](absl::optional<CheckResult>* out_check_result_param,
                const GURL& script_url,

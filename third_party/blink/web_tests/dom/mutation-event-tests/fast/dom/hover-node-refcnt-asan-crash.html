@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<div id=div0></div>
+<div id=div1>
+  <div id=overflow style="width:500px; height:150px; padding:10px">
+    <img width=100 height=100>
+  </div>
+  <p id=p0>1</p>
+  <span id=span0></span>
+</div>
+<p>This test should not crash on ASAN</p>
+<script>
+// crbug.com/514755, This test crashes on ASAN builds.
+// The crash happens while updating the old hovered active nodes chain
+// after hovered node changes. Nodes were deref'ed and could be mistakenly freed
+// before use.
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+eventSender.mouseMoveTo(50, 100);
+eventSender.mouseDown(1);
+eventSender.mouseMoveTo(50, 200);
+
+div0.addEventListener("DOMNodeRemoved", function () {
+  // This triggers removing all children in #div1
+  div1.innerHTML = '';
+});
+
+// hovered element (<img>) will disappear.
+div1.attachShadow({mode: 'open'});
+div0.appendChild(p0);
+// This causes synchronous DOMNodeRemoved event
+div0.replaceChild(span0, p0);
+gc();
+</script>

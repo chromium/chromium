@@ -89,6 +89,14 @@ TEST_F(CompanionMetricsLoggerTest, TextSearch) {
   ExpectUkmEntry(ukm::builders::Companion_PageView::kTextSearchCountName, 1);
 }
 
+TEST_F(CompanionMetricsLoggerTest, TextSearchMaxClamp) {
+  for (auto i = 1; i <= 11; i++) {
+    logger_->RecordUiSurfaceClicked(UiSurface::kSearchBox, kInvalidPosition);
+  }
+  logger_.reset();
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kTextSearchCountName, 10);
+}
+
 TEST_F(CompanionMetricsLoggerTest, RegionSearchClicks) {
   base::HistogramTester histogram_tester;
 

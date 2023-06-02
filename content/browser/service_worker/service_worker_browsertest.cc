@@ -54,6 +54,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -4328,7 +4329,7 @@ class ServiceWorkerSpeculativeStartupBrowserTest
       public testing::WithParamInterface<SpeculativeStartupNavigationType> {
  public:
   ServiceWorkerSpeculativeStartupBrowserTest() {
-    feature_list_.InitFromCommandLine("SpeculativeServiceWorkerStartup", "");
+    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
   }
   ~ServiceWorkerSpeculativeStartupBrowserTest() override = default;
 
@@ -4423,7 +4424,7 @@ class ServiceWorkerSpeculativeStartupWithoutParamBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerSpeculativeStartupWithoutParamBrowserTest() {
-    feature_list_.InitFromCommandLine("SpeculativeServiceWorkerStartup", "");
+    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
   }
 
  private:
@@ -4566,9 +4567,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
 
   // Simulate timeout.
   EXPECT_TRUE(version->timeout_timer_.IsRunning());
-  version->start_time_ = base::TimeTicks::Now() -
-                         ServiceWorkerVersion::kWarmUpDuration -
-                         base::Minutes(1);
+  version->start_time_ =
+      base::TimeTicks::Now() -
+      blink::features::kSpeculativeServiceWorkerWarmUpDuration.Get() -
+      base::Minutes(1);
   version->timeout_timer_.user_task().Run();
   while (version->running_status() != EmbeddedWorkerStatus::STOPPED) {
     base::RunLoop().RunUntilIdle();
@@ -4592,6 +4594,259 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
       "ServiceWorker.StartWorker.StatusByPurpose_FETCH_MAIN_FRAME",
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
+
+// This is a test class to verify an optimization to speculatively
+// warm-up a service worker.
+class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
+ public:
+  ServiceWorkerWarmUpBrowserTestBase() = default;
+  ~ServiceWorkerWarmUpBrowserTestBase() override = default;
+
+  void SetUpOnMainThread() override {
+    ServiceWorkerBrowserTest::SetUpOnMainThread();
+    StartServerAndNavigateToSetup();
+  }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  RenderFrameHost* GetPrimaryMainFrame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  scoped_refptr<ServiceWorkerVersion> RegisterServiceWorker(const GURL& url,
+                                                            const GURL& scope) {
+    // Register a service worker.
+    WorkerRunningStatusObserver observer1(public_context());
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    const base::StringPiece script = R"(
+      (async () => {
+        await navigator.serviceWorker.register('fetch_event.js', {scope: $1});
+        await navigator.serviceWorker.ready;
+        return 'DONE';
+      })();
+    )";
+    EXPECT_EQ("DONE", EvalJs(GetPrimaryMainFrame(), JsReplace(script, scope)));
+    observer1.WaitUntilRunning();
+
+    scoped_refptr<ServiceWorkerVersion> version =
+        wrapper()->GetLiveVersion(observer1.version_id());
+    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+    // Stop the current running service worker.
+    StopServiceWorker(version.get());
+    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    return version;
+  }
+
+  void AddAnchor(const std::string& id, const GURL& url) {
+    const base::StringPiece script = R"(
+      const a = document.createElement('a');
+      a.id = $1;
+      a.href = $2;
+      a.text = $1;
+      document.body.appendChild(a);
+    )";
+    EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(), JsReplace(script, id, url)));
+  }
+};
+
+// This is a test class to verify an optimization to speculatively
+// warm-up a service worker by anchor visibility.
+class ServiceWorkerWarmUpByVisibilityBrowserTest
+    : public ServiceWorkerWarmUpBrowserTestBase,
+      public testing::WithParamInterface<int> {
+ public:
+  ServiceWorkerWarmUpByVisibilityBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kSpeculativeServiceWorkerWarmUp,
+          {
+              {blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.name,
+               base::NumberToString(GetServiceWorkerWarmUpMaxCount())},
+              {blink::features::kSpeculativeServiceWorkerWarmUpOnVisible.name,
+               "true"},
+              {blink::features::kSpeculativeServiceWorkerWarmUpOnPointerover
+                   .name,
+               "false"},
+              {blink::features::kSpeculativeServiceWorkerWarmUpOnPointerdown
+                   .name,
+               "false"},
+          }}},
+        {kSpeculativeServiceWorkerStartup});
+  }
+  ~ServiceWorkerWarmUpByVisibilityBrowserTest() override = default;
+
+  int GetServiceWorkerWarmUpMaxCount() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerWarmUpByVisibilityBrowserTest,
+                         testing::Values(/*warm_up_max_count=*/1,
+                                         /*warm_up_max_count=*/2));
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
+                       VisibleAnchorWillWarmUpServiceWorker) {
+  const GURL in_scope_url1(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+  const GURL in_scope_url2(
+      embedded_test_server()->GetURL("/service_worker/empty2.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  base::RunLoop run_loop;
+
+  scoped_refptr<ServiceWorkerVersion> version1 =
+      RegisterServiceWorker(in_scope_url1, in_scope_url1);
+  scoped_refptr<ServiceWorkerVersion> version2 =
+      RegisterServiceWorker(in_scope_url2, in_scope_url2);
+
+  // Navigate away from the service worker's scope.
+  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version1->running_status());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version2->running_status());
+
+  // When an anchor is added to a document, the IntersectionObserver
+  // begins monitoring whether the anchor is visible in the viewport. If
+  // the anchor becomes visible, and if the anchor's href URL registers
+  // a service worker, then the relevant service worker is warmed up.
+  AddAnchor("in_scope_url1", in_scope_url1);
+  AddAnchor("in_scope_url2", in_scope_url2);
+
+  if (GetServiceWorkerWarmUpMaxCount() == 1) {
+    // Wait until version1 or version2 is warmed up.
+    while (!(version1->IsWarmedUp() || version2->IsWarmedUp())) {
+      run_loop.RunUntilIdle();
+    }
+    // Make sure that only one version is warmed up.
+    EXPECT_FALSE(version1->IsWarmedUp() && version2->IsWarmedUp());
+  } else if (GetServiceWorkerWarmUpMaxCount() == 2) {
+    // Wait until version1 and version2 are warmed up.
+    while (!(version1->IsWarmedUp() && version2->IsWarmedUp())) {
+      run_loop.RunUntilIdle();
+    }
+  } else {
+    NOTREACHED();
+  }
+}
+
+// Pointer triggered ServiceWorkerWarmUp is not currently available on Android.
+#if !BUILDFLAG(IS_ANDROID)
+
+struct ServiceWorkerWarmUpByPointerBrowserTestParam {
+  bool enable_warm_up_by_pointerover;
+  bool enable_warm_up_by_pointerdown;
+};
+
+// This is a test class to verify an optimization to speculatively
+// warm-up a service worker by pointer.
+class ServiceWorkerWarmUpByPointerBrowserTest
+    : public ServiceWorkerWarmUpBrowserTestBase,
+      public testing::WithParamInterface<
+          ServiceWorkerWarmUpByPointerBrowserTestParam> {
+ public:
+  ServiceWorkerWarmUpByPointerBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kSpeculativeServiceWorkerWarmUp,
+          {
+              {blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.name,
+               "10"},
+              {blink::features::kSpeculativeServiceWorkerWarmUpOnVisible.name,
+               "false"},
+              {blink::features::kSpeculativeServiceWorkerWarmUpOnPointerover
+                   .name,
+               GetParam().enable_warm_up_by_pointerover ? "true" : "false"},
+              {blink::features::kSpeculativeServiceWorkerWarmUpOnPointerdown
+                   .name,
+               GetParam().enable_warm_up_by_pointerdown ? "true" : "false"},
+          }}},
+        {kSpeculativeServiceWorkerStartup});
+  }
+  ~ServiceWorkerWarmUpByPointerBrowserTest() override = default;
+
+  void SimulateMouseEventAndWait(blink::WebInputEvent::Type type,
+                                 blink::WebMouseEvent::Button button,
+                                 const gfx::Point& point) {
+    InputEventAckWaiter waiter(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(), type);
+    SimulateMouseEvent(web_contents(), type, button, point);
+    waiter.Wait();
+  }
+
+  void SimulateMouseMoveWithElementIdAndWait(const std::string& id) {
+    gfx::Point point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), id));
+    SimulateMouseEventAndWait(blink::WebMouseEvent::Type::kMouseMove,
+                              blink::WebMouseEvent::Button::kNoButton, point);
+  }
+
+  void SimulateMouseDownWithElementIdAndWait(const std::string& id) {
+    gfx::Point point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), id));
+    SimulateMouseEventAndWait(blink::WebMouseEvent::Type::kMouseDown,
+                              blink::WebMouseEvent::Button::kLeft, point);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+const ServiceWorkerWarmUpByPointerBrowserTestParam
+    kServiceWorkerWarmUpByPointerBrowserTestParams[] = {
+        {
+            .enable_warm_up_by_pointerover = true,
+            .enable_warm_up_by_pointerdown = false,
+        },
+        {
+            .enable_warm_up_by_pointerover = false,
+            .enable_warm_up_by_pointerdown = true,
+        },
+        {
+            .enable_warm_up_by_pointerover = true,
+            .enable_warm_up_by_pointerdown = true,
+        },
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerWarmUpByPointerBrowserTest,
+    testing::ValuesIn(kServiceWorkerWarmUpByPointerBrowserTestParams));
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
+                       PointeroverOrPointerdownWillWarmUpServiceWorker) {
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  base::RunLoop run_loop;
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      RegisterServiceWorker(in_scope_url, in_scope_url);
+
+  // Navigate away from the service worker's scope.
+  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  AddAnchor("in_scope_url", in_scope_url);
+
+  run_loop.RunUntilIdle();
+
+  // To ensure that the pointerover event is triggered, move the pointer away
+  // from the anchor area.
+  SimulateMouseEventAndWait(blink::WebMouseEvent::Type::kMouseMove,
+                            blink::WebMouseEvent::Button::kNoButton,
+                            gfx::Point(1000, 1000));
+
+  SimulateMouseMoveWithElementIdAndWait("in_scope_url");
+
+  if (GetParam().enable_warm_up_by_pointerdown) {
+    SimulateMouseDownWithElementIdAndWait("in_scope_url");
+  }
+
+  while (!version->IsWarmedUp()) {
+    run_loop.RunUntilIdle();
+  }
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ServiceWorkerBypassFetchHandlerTest
     : public ServiceWorkerBrowserTest,

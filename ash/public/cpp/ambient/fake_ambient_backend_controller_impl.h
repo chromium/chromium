@@ -45,6 +45,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
       AmbientVideo video) const override;
   const char* GetPromoBannerUrl() const override;
+  const char* GetTimeOfDayProductName() const override;
 
   // Simulate to reply the request of FetchSettingsAndAlbums().
   // If |success| is true, will return fake data.

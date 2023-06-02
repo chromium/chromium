@@ -58,7 +58,7 @@ class TestViewWithInkDrop : public View {
   TestInkDrop* last_created_inkdrop() const { return last_created_inkdrop_; }
 
  private:
-  raw_ptr<TestInkDrop> last_created_inkdrop_ = nullptr;
+  raw_ptr<TestInkDrop, DanglingUntriaged> last_created_inkdrop_ = nullptr;
 };
 
 class InkDropHostTest : public testing::Test {

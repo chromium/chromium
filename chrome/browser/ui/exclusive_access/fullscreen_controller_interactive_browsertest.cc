@@ -453,10 +453,17 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
+#if !defined(MEMORY_SANITIZER)
   // Lock the mouse without a user gesture, expect no response.
   PressKeyAndWaitForMouseLockRequest(ui::VKEY_D);
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
   ASSERT_FALSE(IsMouseLocked());
+#else
+  // MSan builds change the timing of user gestures, which this part of the test
+  // depends upon.  See `fullscreen_mouselock.html` for more details, but the
+  // main idea is that it waits ~5 seconds after the keypress and assumes that
+  // the user gesture has expired.
+#endif
 
   // Lock the mouse with a user gesture.
   PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
@@ -834,10 +841,19 @@ class TestScreenEnvironment {
 #endif  // BUILDFLAG(IS_MAC)
 };
 
-// Tests FullscreenController support of multi-screen features.
+// Tests fullscreen with multi-screen features from the Window Management API.
 // Sites with the Window Management permission can request fullscreen on a
 // specific screen, move fullscreen windows to different displays, and more.
-class MultiScreenFullscreenControllerInteractiveTest
+// Tests must run in series to manage virtual displays on supported platforms.
+// Use 2+ physical displays to run locally with --gtest_also_run_disabled_tests.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#define MAYBE_MultiScreenFullscreenControllerInteractiveTest \
+  MultiScreenFullscreenControllerInteractiveTest
+#else
+#define MAYBE_MultiScreenFullscreenControllerInteractiveTest \
+  DISABLED_MultiScreenFullscreenControllerInteractiveTest
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+class MAYBE_MultiScreenFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest {
  public:
   void SetUp() override {
@@ -977,7 +993,7 @@ class MultiScreenFullscreenControllerInteractiveTest
 #define MAYBE_SeparateDisplay DISABLED_SeparateDisplay
 #endif
 // Test requesting fullscreen on a separate display.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplay) {
   SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -1003,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #define MAYBE_SeparateDisplayMaximized DISABLED_SeparateDisplayMaximized
 #endif
 // Test requesting fullscreen on a separate display from a maximized window.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayMaximized) {
   SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -1039,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #define MAYBE_SameDisplayAndSwap DISABLED_SameDisplayAndSwap
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwap) {
   SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -1070,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #endif
 // Test requesting fullscreen on the current display and then swapping displays
 // from a maximized window.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwapMaximized) {
   SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -1114,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting browser fullscreen on current display, launching
 // tab-fullscreen on a different display, and then closing tab-fullscreen to
 // restore browser-fullscreen on the original display.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_BrowserFullscreenContentFullscreenSwapDisplay) {
   SetUpWindowManagementTab();
 
@@ -1151,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #define MAYBE_SeparateDisplayAndSwap DISABLED_SeparateDisplayAndSwap
 #endif
 // Test requesting fullscreen on a separate display and then swapping displays.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayAndSwap) {
   SetUpWindowManagementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -1180,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #define MAYBE_SwapShowsBubble DISABLED_SwapShowsBubble
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_SwapShowsBubble) {
   SetUpWindowManagementTab();
 
@@ -1219,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #define MAYBE_FullscreenOnPermissionGrant FullscreenOnPermissionGrant
 #endif
 // Test requesting fullscreen using the permission grant's transient activation.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnPermissionGrant) {
   EXPECT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/simple.html"));
@@ -1258,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 #define MAYBE_OpenPopupWhileFullscreen OpenPopupWhileFullscreen
 #endif
 // Test opening a popup on a separate display while fullscreen.
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_OpenPopupWhileFullscreen) {
   content::WebContents* tab = SetUpWindowManagementTab();
   const display::Display original_display = GetCurrentDisplay(browser());
@@ -1319,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 // Test requesting fullscreen on a specific screen and opening a cross-screen
 // popup window from one gesture. Check the expected window activation pattern.
 // https://w3c.github.io/window-placement/#usage-overview-initiate-multi-screen-experiences
-IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenCompanionWindow) {
   content::WebContents* tab = SetUpWindowManagementTab();
 
@@ -1384,11 +1400,20 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 }
 
 // Tests FullscreenController support for fullscreen on screenschange events.
-class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
-    : public MultiScreenFullscreenControllerInteractiveTest,
+// Tests must run in series to manage virtual displays on supported platforms.
+// Use 2+ physical displays to run locally with --gtest_also_run_disabled_tests.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#define MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest \
+  FullscreenOnScreensChangeFullscreenControllerInteractiveTest
+#else
+#define MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest \
+  DISABLED_FullscreenOnScreensChangeFullscreenControllerInteractiveTest
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+class MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest
+    : public MAYBE_MultiScreenFullscreenControllerInteractiveTest,
       public testing::WithParamInterface<bool> {
  public:
-  FullscreenOnScreensChangeFullscreenControllerInteractiveTest() {
+  MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest() {
     feature_list_.InitWithFeatureState(
         blink::features::kWindowPlacementFullscreenOnScreensChange, GetParam());
   }
@@ -1409,7 +1434,7 @@ class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
 #endif
 // Tests async fullscreen requests on screenschange event.
 IN_PROC_BROWSER_TEST_P(
-    FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
+    MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
     MAYBE_FullscreenOnScreensChange) {
   content::WebContents* tab = SetUpWindowManagementTab();
 
@@ -1442,5 +1467,5 @@ IN_PROC_BROWSER_TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
+    MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest,
     ::testing::Bool());

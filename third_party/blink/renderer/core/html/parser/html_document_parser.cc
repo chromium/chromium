@@ -1263,9 +1263,9 @@ void HTMLDocumentParser::DocumentElementAvailable() {
   DCHECK(document);
   DCHECK(document->documentElement());
   Element* documentElement = GetDocument()->documentElement();
-  if (documentElement->hasAttribute(u"\u26A1") ||
-      documentElement->hasAttribute("amp") ||
-      documentElement->hasAttribute("i-amphtml-layout")) {
+  if (documentElement->hasAttribute(AtomicString(u"\u26A1")) ||
+      documentElement->hasAttribute(AtomicString("amp")) ||
+      documentElement->hasAttribute(AtomicString("i-amphtml-layout"))) {
     // The DocumentLoader fetches a main resource and handles the result.
     // But it may not be available if JavaScript appends HTML to the page later
     // in the page's lifetime. This can happen both from in-page JavaScript and

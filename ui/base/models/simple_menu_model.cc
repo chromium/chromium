@@ -19,10 +19,6 @@ namespace ui {
 
 const int kSeparatorId = -1;
 
-// TYPE_TITLE should be rendered as enabled but is non-interactive and cannot be
-// highlighted.
-const int kTitleId = -2;
-
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel::Delegate, public:
 
@@ -138,10 +134,10 @@ void SimpleMenuModel::AddHighlightedItemWithIcon(int command_id,
 }
 
 void SimpleMenuModel::AddTitle(const std::u16string& label) {
-  // Title items are non-interactive and should not be enabled.
-  Item title_item = Item(kTitleId, TYPE_TITLE, label);
-  title_item.enabled = false;
-  AppendItem(std::move(title_item));
+  Item item(kTitleId, TYPE_TITLE, label);
+  // Titles are non-interactive and should not be enabled.
+  item.enabled = false;
+  AppendItem(std::move(item));
 }
 
 void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
@@ -236,18 +232,6 @@ void SimpleMenuModel::InsertItemWithStringIdAt(size_t index,
   InsertItemAt(index, command_id, l10n_util::GetStringUTF16(string_id));
 }
 
-void SimpleMenuModel::InsertSeparatorAt(size_t index,
-                                        MenuSeparatorType separator_type) {
-#if !defined(USE_AURA)
-  if (separator_type != NORMAL_SEPARATOR) {
-    NOTIMPLEMENTED();
-  }
-#endif
-  Item item(kSeparatorId, TYPE_SEPARATOR, std::u16string());
-  item.separator_type = separator_type;
-  InsertItemAtIndex(std::move(item), index);
-}
-
 void SimpleMenuModel::InsertCheckItemAt(size_t index,
                                         int command_id,
                                         const std::u16string& label) {
@@ -275,6 +259,25 @@ void SimpleMenuModel::InsertRadioItemWithStringIdAt(size_t index,
                                                     int group_id) {
   InsertRadioItemAt(
       index, command_id, l10n_util::GetStringUTF16(string_id), group_id);
+}
+
+void SimpleMenuModel::InsertTitleWithStringIdAt(size_t index, int string_id) {
+  Item item(kTitleId, TYPE_TITLE, l10n_util::GetStringUTF16(string_id));
+  // Titles are non-interactive and should not be enabled.
+  item.enabled = false;
+  InsertItemAtIndex(std::move(item), index);
+}
+
+void SimpleMenuModel::InsertSeparatorAt(size_t index,
+                                        MenuSeparatorType separator_type) {
+#if !defined(USE_AURA)
+  if (separator_type != NORMAL_SEPARATOR) {
+    NOTIMPLEMENTED();
+  }
+#endif
+  Item item(kSeparatorId, TYPE_SEPARATOR, std::u16string());
+  item.separator_type = separator_type;
+  InsertItemAtIndex(std::move(item), index);
 }
 
 void SimpleMenuModel::InsertSubMenuAt(size_t index,

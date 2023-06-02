@@ -193,9 +193,21 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    storage_limits_.min_ongoing_log_queue_count = 5;
-    storage_limits_.min_ongoing_log_queue_size = 10000;
-    storage_limits_.max_ongoing_log_size = 0;
+    // Limits to ensure at least some logs will be persisted for the tests.
+    storage_limits_ = {
+        // Log store that can hold up to 5 logs. Set so that logs are not
+        // dropped in the tests.
+        .initial_log_queue_limits =
+            UnsentLogStore::UnsentLogStoreLimits{
+                .min_log_count = 5,
+            },
+        // Log store that can hold up to 5 logs. Set so that logs are not
+        // dropped in the tests.
+        .ongoing_log_queue_limits =
+            UnsentLogStore::UnsentLogStoreLimits{
+                .min_log_count = 5,
+            },
+    };
 
     test_user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
 

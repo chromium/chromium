@@ -28,36 +28,17 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCrosPlatformAuthenticator);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Enable UI options to explicitly invoke hybrid CTAP authentication on
+// Android.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidHybridClientUi);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Feature flag for the Google-internal
 // `WebAuthenticationAllowGoogleCorpRemoteRequestProxying` enterprise policy.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
-
-// Enable some experimental UI changes
-COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
-
-// Set credProtect=3 when rk=required and uv=preferred.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnCredProtectThree);
-
-// Advertise support for the `prf` extension as a hybrid authenticator.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPRFAsAuthenticator);
-
-// Support optional UV for new credentials in the macOS platform authenticator.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnMacPlatformAuthenticatorOptionalUv);
-
-// Show a "Use the passkey from your phone" sheet instead of the mechanism
-// selection screen if we are confident a request can be resolved using an
-// already paired phone.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPhoneConfirmationSheet);
-
-// Use the new implementation of mechanism priorities in
-// AuthenticatorRequestDialogModel.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNewPrioritiesImpl);
 
 // Use the Android 14 Credential Manager API.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -75,6 +56,15 @@ BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
 // Don't allow the old style JSON where values could be `null`.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNoNullInJSON);
+
+// Require the "easy accessor" fields to be provided in JSON attestation
+// responses. Otherwise the fields are only checked if provided.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnRequireEasyAccessorFieldsInJSON);
+
+// Enable support for iCloud Keychain
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);
 
 }  // namespace device
 

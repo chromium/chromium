@@ -16,4 +16,8 @@ blink_core_sources_highlight = [
   "highlight_style_utils.h",
 ]
 
-blink_core_tests_highlight = [ "highlight_style_utils_test.cc" ]
+blink_core_tests_highlight = [
+  "highlight_registry_test.cc",
+  "highlight_style_utils_test.cc",
+  "highlight_test.cc",
+]

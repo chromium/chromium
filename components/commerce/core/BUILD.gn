@@ -206,6 +206,7 @@ static_library("shopping_service") {
     "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/sync/service",
+    "//components/unified_consent",
     "//services/network/public/cpp:cpp",
     "//ui/base",
     "//url:url",

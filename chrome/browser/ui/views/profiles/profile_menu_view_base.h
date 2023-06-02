@@ -24,6 +24,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
 
 class Browser;
@@ -173,6 +174,15 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // exists).
   void FocusFirstProfileButton();
 
+  void BuildIdentityInfoColorCallback(const ui::ColorProvider* color_provider);
+
+  void BuildProfileBackgroundContainer(
+      std::unique_ptr<views::View> heading_label,
+      SkColor background_color,
+      std::unique_ptr<views::View> avatar_image_view,
+      std::unique_ptr<views::View> edit_button,
+      const ui::ThemedVectorIcon& avatar_header_art);
+
   void BuildSyncInfoCallToActionBackground(
       ui::ColorId background_color_id,
       const ui::ColorProvider* color_provider);
@@ -204,6 +214,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   raw_ptr<views::View> profile_mgmt_shortcut_features_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_features_container_ = nullptr;
 
+  // Child components of `identity_info_container_`.
+  raw_ptr<views::FlexLayoutView> profile_background_container_ = nullptr;
+  raw_ptr<views::Label> heading_label_ = nullptr;
+
   // The first profile button that should be focused when the menu is opened
   // using a key accelerator.
   raw_ptr<views::Button> first_profile_button_ = nullptr;
@@ -213,6 +227,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   bool perform_menu_actions_ = true;
 
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
+
+  // Builds the colors for `profile_background_container_` and `heading_label_`
+  // in `identity_info_container_`. This requires ui::ColorProvider, which is
+  // only available once OnThemeChanged() is called, so the class caches this
+  // callback and calls it afterwards.
+  base::RepeatingCallback<void(const ui::ColorProvider*)>
+      identity_info_color_callback_ = base::DoNothing();
 
   // Builds the background for |sync_info_container_|. This requires
   // ui::ColorProvider, which is only available once OnThemeChanged() is called,

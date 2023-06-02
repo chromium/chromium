@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/values.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -93,8 +94,10 @@ class SystemInfoEventRouter : public storage_monitor::RemovableStorageObserver {
   // dispatches on-attached/detached events.
   bool is_dispatching_storage_events_ = false;
 
-  base::flat_set<content::BrowserContext*> contexts_with_display_listeners_;
-  base::flat_set<content::BrowserContext*> contexts_with_storage_listeners_;
+  base::flat_set<raw_ptr<content::BrowserContext>>
+      contexts_with_display_listeners_;
+  base::flat_set<raw_ptr<content::BrowserContext>>
+      contexts_with_storage_listeners_;
 };
 
 static base::LazyInstance<SystemInfoEventRouter>::Leaky

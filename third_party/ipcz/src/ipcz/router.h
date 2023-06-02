@@ -109,16 +109,6 @@ class Router : public RefCounted {
   void SetOutwardLink(const OperationContext& context,
                       const Ref<RouterLink> link);
 
-  // Returns a best-effort estimation of the maximum parcel size (in bytes) that
-  // can be sent outward from this router without the receiving portal exceeding
-  // any of the specified `limits`.
-  size_t GetOutboundCapacityInBytes(const IpczPutLimits& limits);
-
-  // Returns the maximum inbound parcel size (in bytes) that can be accepted by
-  // this router's inbound parcel queue without that queue exceeding any of the
-  // specified `limits`.
-  size_t GetInboundCapacityInBytes(const IpczPutLimits& limits);
-
   // Accepts an inbound parcel from the outward edge of this router, either to
   // queue it for retrieval or forward it further inward. `source` indicates
   // whether the parcel is arriving as a direct result of some local ipcz API

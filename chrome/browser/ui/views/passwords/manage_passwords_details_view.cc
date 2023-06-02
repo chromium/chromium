@@ -111,7 +111,7 @@ std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
 // inside `textfield` is aligned with the icon in the row. In case of a
 // multiline textarea, the first line in the contents is vertically aligned with
 // the icon.
-void AlignTextfieldWithRowIcon(raw_ptr<views::Textfield> textfield) {
+void AlignTextfieldWithRowIcon(views::Textfield* textfield) {
   int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,
                                                 views::style::STYLE_PRIMARY);
   int vertical_padding_inside_textfield =
@@ -128,7 +128,7 @@ void AlignTextfieldWithRowIcon(raw_ptr<views::Textfield> textfield) {
 
 // Aligns `error_label` such that the error message is vertically aligned with
 // the text in the corropsnding textfield/textarea.
-void AlignErrorLabelWithTextFieldContents(raw_ptr<views::Label> error_label) {
+void AlignErrorLabelWithTextFieldContents(views::Label* error_label) {
   // Create a border around the error message that has the left insets matching
   // the inner padding in the textarea above to align the error message with the
   // text in the textarea. The border has zero insets on all other sides.

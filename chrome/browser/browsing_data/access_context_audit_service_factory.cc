@@ -4,7 +4,7 @@
 
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -28,7 +28,8 @@ AccessContextAuditServiceFactory::AccessContextAuditServiceFactory()
 
 AccessContextAuditServiceFactory*
 AccessContextAuditServiceFactory::GetInstance() {
-  return base::Singleton<AccessContextAuditServiceFactory>::get();
+  static base::NoDestructor<AccessContextAuditServiceFactory> instance;
+  return instance.get();
 }
 
 AccessContextAuditService* AccessContextAuditServiceFactory::GetForProfile(

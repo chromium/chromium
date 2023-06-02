@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsDropdownMenuElement, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionEditDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
+import {CrCheckboxElement, CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsDropdownMenuElement, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionEditDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement, TabDiscardExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -266,7 +268,8 @@ suite('TabDiscardExceptionList', function() {
   function assertExceptionListEquals(rules: string[], message?: string) {
     const actual = tabDiscardExceptionsList.$.list.items!
                        .concat(tabDiscardExceptionsList.$.overflowList.items!)
-                       .map(entry => entry.site);
+                       .map(entry => entry.site)
+                       .reverse();
     assertDeepEquals(rules, actual, message);
   }
 
@@ -281,9 +284,10 @@ suite('TabDiscardExceptionList', function() {
   }
 
   function getExceptionListEntry(idx: number): TabDiscardExceptionEntryElement {
-    const entry = [...tabDiscardExceptionsList.shadowRoot!
-                       .querySelectorAll<TabDiscardExceptionEntryElement>(
-                           'tab-discard-exception-entry')][idx];
+    const entries = [...tabDiscardExceptionsList.shadowRoot!
+                         .querySelectorAll<TabDiscardExceptionEntryElement>(
+                             'tab-discard-exception-entry')];
+    const entry = entries[entries.length - 1 - idx];
     assertTrue(!!entry);
     return entry;
   }
@@ -371,74 +375,116 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals([]);
   });
 
-  function getAddDialog(): TabDiscardExceptionAddDialogElement|null {
-    return tabDiscardExceptionsList.shadowRoot!.querySelector(
+  async function getAddDialog():
+      Promise<TabDiscardExceptionAddDialogElement|
+              TabDiscardExceptionTabbedAddDialogElement> {
+    if (loadTimeData.getBoolean('isDiscardExceptionsImprovementsEnabled')) {
+      return await getTabbedAddDialog();
+    }
+    const dialog = tabDiscardExceptionsList.shadowRoot!.querySelector(
         'tab-discard-exception-add-dialog');
+    assertTrue(!!dialog);
+    return dialog;
   }
 
-  function getEditDialog(): TabDiscardExceptionEditDialogElement|null {
-    return tabDiscardExceptionsList.shadowRoot!.querySelector(
+  async function getTabbedAddDialog():
+      Promise<TabDiscardExceptionTabbedAddDialogElement> {
+    await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    const dialog = tabDiscardExceptionsList.shadowRoot!.querySelector(
+        'tab-discard-exception-tabbed-add-dialog');
+    assertTrue(!!dialog);
+    return dialog;
+  }
+
+  function getEditDialog(): TabDiscardExceptionEditDialogElement {
+    const dialog = tabDiscardExceptionsList.shadowRoot!.querySelector(
         'tab-discard-exception-edit-dialog');
+    assertTrue(!!dialog);
+    return dialog;
+  }
+
+  function assertAddDialogDoesNotExist() {
+    if (loadTimeData.getBoolean('isDiscardExceptionsImprovementsEnabled')) {
+      assertTabbedAddDialogDoesNotExist();
+    }
+    const dialog = tabDiscardExceptionsList.shadowRoot!.querySelector(
+        'tab-discard-exception-add-dialog');
+    assertFalse(!!dialog);
+  }
+
+  function assertTabbedAddDialogDoesNotExist() {
+    assertEquals(
+        0, performanceBrowserProxy.getCallCount('getCurrentOpenSites'));
+    const dialog = tabDiscardExceptionsList.shadowRoot!.querySelector(
+        'tab-discard-exception-tabbed-add-dialog');
+    assertFalse(!!dialog);
+  }
+
+  function assertEditDialogDoesNotExist() {
+    const dialog = tabDiscardExceptionsList.shadowRoot!.querySelector(
+        'tab-discard-exception-edit-dialog');
+    assertFalse(!!dialog);
   }
 
   async function inputDialog(
       dialog: TabDiscardExceptionAddDialogElement|
+      TabDiscardExceptionTabbedAddDialogElement|
       TabDiscardExceptionEditDialogElement,
       input: string) {
-    const inputEvent = eventToPromise('input', dialog.$.input);
-    dialog.$.input.value = input;
-    dialog.$.input.dispatchEvent(new CustomEvent('input'));
+    const inputEvent = eventToPromise('input', dialog.$.input.$.input);
+    dialog.$.input.$.input.value = input;
+    dialog.$.input.$.input.dispatchEvent(new CustomEvent('input'));
     await inputEvent;
     dialog.$.actionButton.click();
-    await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
   }
 
   test('testTabDiscardExceptionsListAdd', async function() {
     setupExceptionListEntries(['foo']);
-    let addDialog = getAddDialog();
-    assertFalse(!!addDialog);
+    assertAddDialogDoesNotExist();
 
     tabDiscardExceptionsList.$.addButton.click();
     flush();
 
-    addDialog = getAddDialog();
-    assertTrue(!!addDialog);
+    const addDialog = await getAddDialog();
     assertTrue(addDialog.$.dialog.open);
-    assertEquals('', addDialog.$.input.value);
+    assertEquals('', addDialog.$.input.$.input.value);
     await inputDialog(addDialog, 'bar');
+    assertEquals(
+        HighEfficiencyModeExceptionListAction.ADD,
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
     assertExceptionListEquals(['foo', 'bar']);
   });
 
   test('testTabDiscardExceptionsListEdit', async function() {
     setupExceptionListEntries(['foo', 'bar']);
     const entry = getExceptionListEntry(1);
-    let editDialog = getEditDialog();
-    assertFalse(!!editDialog);
+    assertEditDialogDoesNotExist();
 
     clickMoreActionsButton(entry);
     clickEditMenuItem();
     flush();
 
-    editDialog = getEditDialog();
-    assertTrue(!!editDialog);
+    const editDialog = getEditDialog();
     assertTrue(editDialog.$.dialog.open);
-    assertEquals(entry.entry.site, editDialog.$.input.value);
+    assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'baz');
+    assertEquals(
+        HighEfficiencyModeExceptionListAction.EDIT,
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
     assertExceptionListEquals(['foo', 'baz']);
   });
 
-  test('testTabDiscardExceptionsListAddAfterMenuClick', function() {
+  test('testTabDiscardExceptionsListAddAfterMenuClick', async function() {
     setupExceptionListEntries(['foo']);
     clickMoreActionsButton(getExceptionListEntry(0));
     tabDiscardExceptionsList.$.addButton.click();
     flush();
 
-    const dialog = getAddDialog();
-    assertTrue(!!dialog);
-    assertEquals('', dialog.$.input.value);
+    const addDialog = await getAddDialog();
+    assertEquals('', addDialog.$.input.$.input.value);
   });
 
-  test('testTabDiscardExceptionsListOverflow', async function() {
+  test('testTabDiscardExceptionsListAddExceptionOverflow', async function() {
     assertTrue(tabDiscardExceptionsList.$.expandButton.hidden);
 
     const entries = [
@@ -458,11 +504,40 @@ suite('TabDiscardExceptionList', function() {
     flush();
 
     const newRule = `rule${TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1}`;
-    const addDialog = getAddDialog();
-    assertTrue(!!addDialog);
+    const addDialog = await getAddDialog();
     await inputDialog(addDialog, newRule);
-    assertTrue(tabDiscardExceptionsList.$.collapse.opened);
+    assertFalse(tabDiscardExceptionsList.$.collapse.opened);
     assertExceptionListEquals([...entries, newRule]);
+  });
+
+  test('testTabDiscardExceptionsListAddExceptionsOverflow', async function() {
+    if (!loadTimeData.getBoolean('isDiscardExceptionsImprovementsEnabled')) {
+      return;
+    }
+    const existingEntry = 'www.foo.com';
+    setupExceptionListEntries([existingEntry]);
+    const entries = [
+      ...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE).keys(),
+    ].map(index => `rule${index}`);
+    performanceBrowserProxy.setCurrentOpenSites(entries);
+    tabDiscardExceptionsList.$.addButton.click();
+    flush();
+
+    const addDialog = await getTabbedAddDialog();
+    await eventToPromise('iron-resize', addDialog);
+    flush();
+
+    addDialog.$.list.$.list
+        .querySelectorAll<CrCheckboxElement>('cr-checkbox:not([hidden])')
+        .forEach(checkboxElement => {
+          checkboxElement.click();
+        });
+    assertFalse(addDialog.$.actionButton.disabled);
+    addDialog.$.actionButton.click();
+    flush();
+
+    assertEquals(false, tabDiscardExceptionsList.$.collapse.opened);
+    assertExceptionListEquals([existingEntry, ...entries]);
   });
 
   test('testTabDiscardExceptionsListOverflowEdit', async function() {
@@ -476,15 +551,13 @@ suite('TabDiscardExceptionList', function() {
     clickEditMenuItem();
     flush();
     const editDialog = getEditDialog();
-    assertTrue(!!editDialog);
-    assertEquals(entry.entry.site, editDialog.$.input.value);
+    assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'foo');
     assertExceptionListEquals([...entries.slice(0, -1), 'foo']);
 
     clickMoreActionsButton(entry);
     clickEditMenuItem();
     flush();
-    assertTrue(!!editDialog);
     await inputDialog(editDialog, getExceptionListEntry(0).entry.site);
     assertExceptionListEquals(entries.slice(0, -1));
   });

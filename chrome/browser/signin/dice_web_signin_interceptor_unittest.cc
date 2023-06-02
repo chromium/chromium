@@ -1251,8 +1251,6 @@ TEST_P(DiceWebSigninInterceptorWithManagedDisclaimerForSyncPromoTest,
                   testing::_));
   MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountInfoFetchDuration",
-                                    1);
 }
 
 TEST_P(DiceWebSigninInterceptorWithManagedDisclaimerForSyncPromoTest,
@@ -1277,8 +1275,6 @@ TEST_P(DiceWebSigninInterceptorWithManagedDisclaimerForSyncPromoTest,
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
   MaybeIntercept(account_info.account_id);
-  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountInfoFetchDuration",
-                                    1);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kInterceptEnterprise, 1);

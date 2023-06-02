@@ -34,13 +34,10 @@
 #include <unicode/locid.h>
 #include <unicode/uscript.h>
 
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/skia/include/core/SkFontStyle.h"
 
 class SkFontMgr;
 
@@ -57,19 +54,6 @@ PLATFORM_EXPORT const UChar* GetFallbackFamily(
     UScriptCode* script_checked,
     FontFallbackPriority,
     SkFontMgr* font_manager);
-
-// Return a font family that can render |character| based on what script
-// that characters belong to by performing an out of process lookup and using
-// system fallback API based on IDWriteTextLayout. This method is only to be
-// used on pre Windows 8.1, as otherwise IDWriteFontFallback API is available.
-PLATFORM_EXPORT bool GetOutOfProcessFallbackFamily(
-    UChar32 character,
-    FontDescription::GenericFamilyType,
-    String bcp47_language_tag,
-    FontFallbackPriority,
-    const mojo::Remote<mojom::blink::DWriteFontProxy>& font_proxy,
-    String* fallback_family,
-    SkFontStyle* fallback_style);
 
 }  // namespace blink
 

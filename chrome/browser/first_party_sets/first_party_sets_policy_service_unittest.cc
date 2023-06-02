@@ -219,9 +219,9 @@ class FirstPartySetsPolicyServiceTest
  private:
   ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   base::test::ScopedFeatureList features_;
-  raw_ptr<FirstPartySetsPolicyService> service_;
+  raw_ptr<FirstPartySetsPolicyService, DanglingUntriaged> service_;
 };
 
 TEST_F(FirstPartySetsPolicyServiceTest, IsSiteInManagedSet_WithoutConfig) {

@@ -113,6 +113,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SimulateUnloadACK() override;
   void SimulateUserActivation() override;
   const std::vector<std::string>& GetConsoleMessages() override;
+  void ClearConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
   void SimulateManifestURLUpdate(const GURL& manifest_url) override;
   TestRenderFrameHost* AppendFencedFrame() override;

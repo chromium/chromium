@@ -164,8 +164,9 @@ ProjectorControllerImpl::ProjectorControllerImpl()
 }
 
 ProjectorControllerImpl::~ProjectorControllerImpl() {
-  projector_session_->RemoveObserver(this);
+  CaptureModeController::Get()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  projector_session_->RemoveObserver(this);
 }
 
 // static

@@ -138,7 +138,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   aura::Window* root_window() { return root_window_; }
 
  private:
-  const raw_ptr<aura::Window> root_window_;
+  const raw_ptr<aura::Window, DanglingUntriaged> root_window_;
 
   const raw_ptr<ui::WmDragHandler> drag_handler_;
 

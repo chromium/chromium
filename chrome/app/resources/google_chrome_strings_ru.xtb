@@ -29,6 +29,7 @@
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
+<translation id="1555506416658437797">изменить способы оплаты.</translation>
 <translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
 <translation id="1587325591171447154">Chrome заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
@@ -78,6 +79,7 @@
 <translation id="234869673307233423">Не удается запустить проверку паролей в Chrome. Повторите попытку позже.</translation>
 <translation id="235650106824528204">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chrome при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продолжить</translation>
+<translation id="2399868464369312507">Google Chrome пытается изменить способы оплаты.</translation>
 <translation id="2401189691232800402">Chrome OS</translation>
 <translation id="2467438592969358367">Чтобы экспортировать пароли из Google Chrome, введите пароль своего аккаунта Windows.</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -383,6 +385,7 @@
 <translation id="8418845734693287262">Не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
 <translation id="8433638294851456451">Чтобы отправить номер на телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8451192282033883849">Вашим аккаунтом управляет <ph name="MANAGER_NAME" />. Администратор может просматривать и изменять этот профиль Chrome и данные в нем, включая закладки, историю и пароли.</translation>
+<translation id="8496177819998570653">Google Менеджер &amp;паролей</translation>
 <translation id="8498858610309223613">Установлено специальное обновление системы безопасности. Перезапустите Google Chrome (все вкладки будут восстановлены).</translation>
 <translation id="8504220326736535258">Браузер Chrome заблокировал файл, так как он содержит вредоносное ПО.</translation>
 <translation id="8516431725144212809">Ваши интересы по данным Chrome</translation>
@@ -399,6 +402,7 @@
 <translation id="8649026945479135076">Обычно сайты, которые вы посещаете, запоминают ваши интересы, чтобы показывать персонализированную рекламу. В том числе они могут хранить об этом информацию в Chrome.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Кроме того, расширение изменило стартовую страницу Chrome.</translation>
+<translation id="8684875378076460854">Chrome рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="8686817260976772516">Профили Chrome нужны для раздельного использования браузера, например разными людьми или в разных целях.</translation>
 <translation id="8712767363896337380">Почти готово! Чтобы завершить обновление, перезапустите Chrome.</translation>
 <translation id="873133009373065397">Google Chrome не удалось определить или задать браузер по умолчанию</translation>

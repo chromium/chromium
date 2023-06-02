@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -38,13 +40,29 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error "Unsupported platform"
 #endif
 
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+
+using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
+const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
+                              "#acceptSignInButton"};
+const DeepQuery kDontSignInButton{"intro-app", "sign-in-promo",
+                                  "#declineSignInButton"};
+const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
+const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
 
 void FillNonCoreInfo(AccountInfo& account_info, const std::string& given_name) {
   account_info.given_name = given_name;
@@ -57,7 +75,7 @@ void FillNonCoreInfo(AccountInfo& account_info, const std::string& given_name) {
 }  // namespace
 
 class FirstRunInteractiveUiTest
-    : public FirstRunServiceBrowserTestBase,
+    : public InteractiveBrowserTestT<FirstRunServiceBrowserTestBase>,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
   FirstRunInteractiveUiTest() = default;
@@ -73,29 +91,62 @@ class FirstRunInteractiveUiTest
     url_loader_factory_helper_.SetUp();
   }
 
-  content::EvalJsResult EvalJsInPickerContents(const std::string& script) {
-    CHECK(view());
-    CHECK(view()->GetPickerContents());
-    return content::EvalJs(view()->GetPickerContents(), script);
-  }
-
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return url_loader_factory_helper_.test_url_loader_factory();
   }
 
-  void SimulateSignInAndWaitForSyncOptInPage(
-      const std::string& account_email,
-      const std::string& account_given_name) {
+  void SimulateSignIn(const std::string& account_email,
+                      const std::string& account_given_name) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+
+    // Kombucha note: This function waits on a `base::RunLoop`.
     AccountInfo account_info = signin::MakeAccountAvailableWithCookies(
         identity_manager, test_url_loader_factory(), account_email,
         signin::GetTestGaiaIdForEmail(account_email));
+
     FillNonCoreInfo(account_info, account_given_name);
     ASSERT_TRUE(account_info.IsValid());
 
+    // Kombucha note: This function waits on a `base::RunLoop`.
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-    WaitForLoadStop(AppendSyncConfirmationQueryParams(
-        GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
+  }
+
+  void OpenFirstRun(base::OnceCallback<void(bool)> first_run_exited_callback =
+                        base::OnceCallback<void(bool)>()) {
+    ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+    fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                        std::move(first_run_exited_callback));
+
+    WaitForPickerWidgetCreated();
+    view()->SetProperty(views::kElementIdentifierKey, kProfilePickerViewId);
+  }
+
+  StateChange IsVisible(const DeepQuery& where) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
+    StateChange state_change;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
+    state_change.where = where;
+    state_change.event = kElementExistsEvent;
+    // Also enforce that none of the parents have "display: none" (which is
+    // the case for some intro containers during the initial animation):
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent
+    state_change.test_function = "(el) => el.offsetParent !== null";
+    return state_change;
+  }
+
+  auto WaitForPickerDeletion() {
+    return Steps(
+        WaitForHide(kProfilePickerViewId, /*transition_only_on_event=*/true),
+
+        // Note: The widget/view is destroyed asynchronously, we need to flush
+        // the message loops to be able to reliably check the global state.
+        FlushEvents(), CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
+  }
+
+  auto PressJsButton(const ui::ElementIdentifier web_contents_id,
+                     const DeepQuery& button_query) {
+    return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()");
   }
 
  private:
@@ -106,15 +157,19 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
 
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
-  WaitForPickerWidgetCreated();
-  WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
 
-  SendCloseWindowKeyboardCommand();
-  WaitForPickerClosed();
+      // Send "Close window" keyboard shortcut and wait for view to close.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_CLOSE_WINDOW))
+          .SetMustRemainVisible(false));
+
   EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -133,15 +188,21 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest,
                        CloseChromeWithKeyboardShortcut) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
-  base::MockCallback<ProfilePicker::FirstRunExitedCallback>
-      first_run_exited_callback;
 
-  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
-  WaitForPickerWidgetCreated();
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
 
-  SendQuitAppKeyboardCommand();
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+
+      // Send "Close app" keyboard shortcut. Note that this may synchronously
+      // close the dialog so we need to let the step know that this is ok.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_EXIT))
+          .SetMustRemainVisible(false));
+
   WaitForPickerClosed();
 
   EXPECT_FALSE(proceed_future.Get());
@@ -156,39 +217,66 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(IsProfileNameDefault());
-  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
 
-  WaitForPickerWidgetCreated();
-  EXPECT_FALSE(GetFirstRunFinishedPrefValue());
+  OpenFirstRun(proceed_future.GetCallback());
 
-  WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
-  histogram_tester.ExpectUniqueSample(
-      "Signin.SignIn.Offered",
-      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
 
-  // TODO(crbug.com/1431517): Use a way of activating the button more relevant
-  // for an interactive test.
-  web_contents()->GetWebUI()->ProcessWebUIMessage(
-      web_contents()->GetURL(), "continueWithAccount", base::Value::List());
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
 
-  WaitForLoadStop(GetSigninChromeSyncDiceUrl());
-  histogram_tester.ExpectUniqueSample(
-      "Signin.SignIn.Started",
-      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+      // Waiting for the animation to complete so we can start interacting with
+      // the button.
+      WaitForStateChange(kWebContentsId, IsVisible(kSignInButton)),
 
-  SimulateSignInAndWaitForSyncOptInPage(kTestEmail, kTestGivenName);
+      Do([&] {
+        EXPECT_FALSE(GetFirstRunFinishedPrefValue());
+        histogram_tester.ExpectUniqueSample(
+            "Signin.SignIn.Offered",
+            signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+      }),
 
+      // Advance to the sign-in page.
+      // Note: the button should be disabled after this, but there is no good
+      // way to verify it in this sequence. It is verified by unit tests in
+      // chrome/test/data/webui/intro/sign_in_promo_test.ts
+      PressJsButton(kWebContentsId, kSignInButton),
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's WebContents.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()),
+
+      Do([&] {
+        histogram_tester.ExpectUniqueSample(
+            "Signin.SignIn.Started",
+            signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+      }));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  GURL sync_page_url = AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Signin.SyncOptIn.Started",
-      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
-  LoginUIServiceFactory::GetForProfile(profile())->SyncConfirmationUIClosed(
-      LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // Web Contents already instrumented in the previous sequence.
+      WaitForWebContentsNavigation(kWebContentsId, sync_page_url),
+
+      Do([&] {
+        histogram_tester.ExpectUniqueSample(
+            "Signin.SyncOptIn.Started",
+            signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+      }),
+
+      EnsurePresent(kWebContentsId, kOptInSyncButton),
+      PressJsButton(kWebContentsId, kOptInSyncButton));
 
   WaitForPickerClosed();
 
@@ -229,20 +317,45 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(IsProfileNameDefault());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
 
-  WaitForPickerWidgetCreated();
-  WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
 
-  web_contents()->GetWebUI()->ProcessWebUIMessage(
-      web_contents()->GetURL(), "continueWithAccount", base::Value::List());
-  WaitForLoadStop(GetSigninChromeSyncDiceUrl());
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
 
-  SimulateSignInAndWaitForSyncOptInPage(kTestEmail, kTestGivenName);
+      // Waiting for the animation to complete so we can start interacting with
+      // the button.
+      WaitForStateChange(kWebContentsId, IsVisible(kSignInButton)),
 
-  LoginUIServiceFactory::GetForProfile(profile())->SyncConfirmationUIClosed(
-      LoginUIService::ABORT_SYNC);
+      // Advance to the sign-in page.
+      // Note: the button should be disabled after this, but there is no good
+      // way to verify it in this sequence. It is verified by unit tests in
+      // chrome/test/data/webui/intro/sign_in_promo_test.ts
+      PressJsButton(kWebContentsId, kSignInButton),
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's WebContents.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Pulled out of the test sequence because it waits using `RunLoop`s.
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
+                                            SyncConfirmationStyle::kWindow)),
+
+      // Click "Don't sign in" to proceed to the browser.
+      EnsurePresent(kWebContentsId, kDontSyncButton),
+      PressJsButton(kWebContentsId, kDontSyncButton));
+
+  // Wait for the picker to be closed and deleted.
   WaitForPickerClosed();
 
   EXPECT_TRUE(proceed_future.Get());
@@ -268,88 +381,48 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
-// TODO(crbug.com/1433000): Flaky on win-asan
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_PeekAndDeclineSignIn DISABLED_PeekAndDeclineSignIn
-#else
-#define MAYBE_PeekAndDeclineSignIn PeekAndDeclineSignIn
-#endif
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_PeekAndDeclineSignIn) {
-  const char kAreButtonsDisabledScript[] =
-      "(() => {"
-      "  const introApp = document.querySelector('intro-app');"
-      "  const signInPromo = "
-      "      introApp.shadowRoot.querySelector('sign-in-promo');"
-      "  return signInPromo.shadowRoot"
-      "      .querySelector('#acceptSignInButton').disabled;"
-      "})();";
-
-  const char kClickIntroButtonScriptTemplate[] =
-      "(() => {"
-      "  const introApp = document.querySelector('intro-app');"
-      "  const signInPromo = "
-      "      introApp.shadowRoot.querySelector('sign-in-promo');"
-      "  signInPromo.shadowRoot.querySelector('%s').click();"
-      "  return true;"
-      "})();";
-
-  const std::string kClickSignInScript = base::StringPrintf(
-      kClickIntroButtonScriptTemplate, "#acceptSignInButton");
-
-  const std::string kClickDontSignInScript = base::StringPrintf(
-      kClickIntroButtonScriptTemplate, "#declineSignInButton");
-
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, PeekAndDeclineSignIn) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
 
-  WaitForPickerWidgetCreated();
-  WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
 
-  // Advance to the sign-in page. We actually click the button instead
-  // of sending a WebUI message to exercise disabling the buttons.
-  EXPECT_EQ(true, EvalJsInPickerContents(kClickSignInScript));
-  WaitForLoadStop(GetSigninChromeSyncDiceUrl());
+      // Wait for the profile picker to show the intro.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
 
-  // The buttons on the intro page should be disabled.
-  // We deliberately target the picker's own web contents to run
-  // the script, not the currently active web contents from the webview, to
-  // get the intro instead of the sign-in page.
-  EXPECT_EQ(true, EvalJsInPickerContents(kAreButtonsDisabledScript));
+      // Waiting for the animation to complete so we can start interacting
+      // with the button.
+      WaitForStateChange(kWebContentsId, IsVisible(kSignInButton)),
 
-  SendBackKeyboardCommand();
+      // Advance to the sign-in page.
+      // Note: the button should be disabled after this, but there is no
+      // good way to verify it in this sequence. It is verified by unit
+      // tests in chrome/test/data/webui/intro/sign_in_promo_test.ts
+      PressJsButton(kWebContentsId, kSignInButton),
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's
+      // WebContents.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()),
 
-  // There is no event easily observable from the native side indicating that
-  // we switched to the previous web contents and that the button status
-  // changed. We instead just observe the change from the JS side since Polymer
-  // can fire a relevant event.
-  const char kEnsureButtonEnabledScript[] =
-      "(async () => {"
-      "  const introApp = document.querySelector('intro-app');"
-      "  const promo = introApp.shadowRoot.querySelector('sign-in-promo');"
-      "  const btn = promo.shadowRoot.querySelector('#acceptSignInButton');"
-      ""
-      "  if (btn.disabled === false) {"
-      "    return true;"
-      "  }"
-      ""
-      "  var promiseResolve;"
-      "  const promise = new Promise(function(resolve, _){"
-      "    promiseResolve = resolve;"
-      "  });"
-      "  btn._createPropertyObserver('disabled', promiseResolve);"
-      "  return await promise.then((newDisabledValue) => {"
-      "    return newDisabledValue === false;"
-      "  });"
-      "})()";
-  EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
-                                  kEnsureButtonEnabledScript));
+      // Navigate back.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GURL(chrome::kChromeUIIntroURL)),
 
-  EXPECT_EQ(true, EvalJsInPickerContents(kClickDontSignInScript));
+      // The buttons should be enabled so we can interact with them.
+      EnsurePresent(kWebContentsId, kDontSignInButton),
+      CheckJsResultAt(kWebContentsId, kSignInButton, "(e) => !e.disabled"),
+      CheckJsResultAt(kWebContentsId, kDontSignInButton, "(e) => !e.disabled"),
+      PressJsButton(kWebContentsId, kDontSignInButton));
+
   WaitForPickerClosed();
   EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
 

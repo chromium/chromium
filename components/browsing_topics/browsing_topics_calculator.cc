@@ -214,7 +214,6 @@ uint64_t BrowsingTopicsCalculator::GenerateRandUint64() {
 void BrowsingTopicsCalculator::DeriveTopTopics(
     const std::map<HashedHost, size_t>& history_hosts_count,
     const std::map<HashedHost, std::set<Topic>>& host_topics_map,
-    size_t taxonomy_size,
     std::vector<Topic>& top_topics,
     size_t& padded_top_topics_start_index,
     size_t& history_topics_count) {
@@ -240,11 +239,6 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 
   history_topics_count = topics_count.size();
 
-  DCHECK_LE(
-      static_cast<size_t>(
-          blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get()),
-      taxonomy_size);
-
   // Get the top up to `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics,
   // sorted by decreasing count.
   using TopicsCountValue = std::pair<Topic, size_t>;
@@ -265,15 +259,18 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 
   // Pad the top topics with distinct random topics until we have
   // `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics.
+  SemanticTree semantic_tree;
   while (top_topics.size() <
          static_cast<size_t>(
              blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get())) {
     Topic padded_topic(0);
 
     do {
-      int padded_topic_index =
-          base::checked_cast<int>(GenerateRandUint64() % taxonomy_size);
-      padded_topic = Topic(padded_topic_index + 1);
+      int taxonomy_version =
+          blink::features::kBrowsingTopicsTaxonomyVersion.Get();
+      int padded_topic_index_decision = GenerateRandUint64();
+      padded_topic = semantic_tree.GetRandomTopic(taxonomy_version,
+                                                  padded_topic_index_decision);
     } while (base::Contains(top_topics, padded_topic));
 
     top_topics.emplace_back(std::move(padded_topic));
@@ -393,8 +390,9 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
     return;
   }
 
-  absl::optional<size_t> taxonomy_size = GetTaxonomySize();
-  if (!taxonomy_size) {
+  SemanticTree semantic_tree;
+  if (!semantic_tree.IsTaxonomySupported(
+          blink::features::kBrowsingTopicsTaxonomyVersion.Get())) {
     OnCalculateCompleted(
         CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary,
         EpochTopics(calculation_time_));
@@ -412,9 +410,8 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   std::vector<Topic> top_topics;
   size_t padded_top_topics_start_index = 0u;
   size_t history_topics_count = 0u;
-  DeriveTopTopics(history_hosts_count_, host_topics_map, *taxonomy_size,
-                  top_topics, padded_top_topics_start_index,
-                  history_topics_count);
+  DeriveTopTopics(history_hosts_count_, host_topics_map, top_topics,
+                  padded_top_topics_start_index, history_topics_count);
 
   base::UmaHistogramCounts1000(
       "BrowsingTopics.EpochTopicsCalculation.HistoryTopicsCount",
@@ -426,8 +423,6 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 
   // For each top topic, derive the context domains that observed it
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
-
-  SemanticTree semantic_tree;
 
   for (const Topic& topic : top_topics) {
     if (!privacy_sandbox_settings_->IsTopicAllowed(
@@ -466,7 +461,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   OnCalculateCompleted(
       CalculatorResultStatus::kSuccess,
       EpochTopics(std::move(top_topics_and_observing_domains),
-                  padded_top_topics_start_index, *taxonomy_size,
+                  padded_top_topics_start_index,
                   blink::features::kBrowsingTopicsTaxonomyVersion.Get(),
                   model_version, calculation_time_));
 }

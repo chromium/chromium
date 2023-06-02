@@ -521,7 +521,7 @@ void MapLoweredLocalNameToName(PrefixedNameToQualifiedNameMap* map,
 }
 
 void AddManualLocalName(PrefixedNameToQualifiedNameMap* map, const char* name) {
-  const QualifiedName item(g_null_atom, name, g_null_atom);
+  const QualifiedName item{AtomicString(name)};
   const blink::QualifiedName* const names = &item;
   MapLoweredLocalNameToName<QualifiedName>(map, &names, 1);
 }
@@ -613,8 +613,9 @@ void AdjustForeignAttributes(AtomicHTMLToken* token) {
                        xml_names::kAttrsCount);
 
     map->insert(WTF::g_xmlns_atom, xmlns_names::kXmlnsAttr);
-    map->insert("xmlns:xlink", QualifiedName(g_xmlns_atom, g_xlink_atom,
-                                             xmlns_names::kNamespaceURI));
+    map->insert(
+        AtomicString("xmlns:xlink"),
+        QualifiedName(g_xmlns_atom, g_xlink_atom, xmlns_names::kNamespaceURI));
   }
 
   for (unsigned i = 0; i < token->Attributes().size(); ++i) {

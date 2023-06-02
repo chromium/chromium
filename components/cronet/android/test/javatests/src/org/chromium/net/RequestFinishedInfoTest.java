@@ -5,9 +5,8 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -230,31 +229,35 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
+        assertWithMessage("RequestFinishedInfo.Listener must be called")
+                .that(requestInfo)
+                .isNotNull();
         assertThat(requestInfo.getUrl()).isEqualTo(connectionRefusedUrl);
-        assertTrue(requestInfo.getAnnotations().isEmpty());
+        assertThat(requestInfo.getAnnotations()).isEmpty();
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
-        assertNotNull(requestInfo.getException());
+        assertThat(requestInfo.getException()).isNotNull();
         assertThat(((NetworkException) requestInfo.getException()).getErrorCode())
                 .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
-        assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
+        assertWithMessage("RequestFinishedInfo.getMetrics() must not be null")
+                .that(metrics)
+                .isNotNull();
         // The failure is occasionally fast enough that time reported is 0, so just check for null
-        assertNotNull(metrics.getTotalTimeMs());
-        assertNull(metrics.getTtfbMs());
+        assertThat(metrics.getTotalTimeMs()).isNotNull();
+        assertThat(metrics.getTtfbMs()).isNull();
 
         // Check the timing metrics
-        assertNotNull(metrics.getRequestStart());
+        assertThat(metrics.getRequestStart()).isNotNull();
         MetricsTestUtil.assertAfter(metrics.getRequestStart(), startTime);
         MetricsTestUtil.checkNoConnectTiming(metrics);
-        assertNull(metrics.getSendingStart());
-        assertNull(metrics.getSendingEnd());
-        assertNull(metrics.getResponseStart());
-        assertNotNull(metrics.getRequestEnd());
+        assertThat(metrics.getSendingStart()).isNull();
+        assertThat(metrics.getSendingEnd()).isNull();
+        assertThat(metrics.getResponseStart()).isNull();
+        assertThat(metrics.getRequestEnd()).isNotNull();
         MetricsTestUtil.assertAfter(endTime, metrics.getRequestEnd());
         MetricsTestUtil.assertAfter(metrics.getRequestEnd(), metrics.getRequestStart());
-        assertTrue(metrics.getSentByteCount() == 0);
-        assertTrue(metrics.getReceivedByteCount() == 0);
+        assertThat(metrics.getSentByteCount()).isEqualTo(0);
+        assertThat(metrics.getReceivedByteCount()).isEqualTo(0);
     }
 
     @Test
@@ -323,8 +326,9 @@ public class RequestFinishedInfoTest {
         callback.blockForDone();
         testExecutor.runAllTasks();
 
-        assertNull("RequestFinishedInfo.Listener must not be called",
-                requestFinishedListener.getRequestInfo());
+        assertWithMessage("RequestFinishedInfo.Listener must not be called")
+                .that(requestFinishedListener.getRequestInfo())
+                .isNull();
     }
 
     @Test
@@ -417,7 +421,7 @@ public class RequestFinishedInfoTest {
                 pushEnd, responseStart, requestEnd, socketReused, sentByteCount, receivedByteCount);
         assertThat(metrics.getRequestStart()).isEqualTo(new Date(requestStart));
         // -1 timestamp should translate to null
-        assertNull(metrics.getDnsEnd());
+        assertThat(metrics.getDnsEnd()).isNull();
         assertThat(metrics.getDnsStart()).isEqualTo(new Date(dnsStart));
         assertThat(metrics.getConnectStart()).isEqualTo(new Date(connectStart));
         assertThat(metrics.getConnectEnd()).isEqualTo(new Date(connectEnd));
@@ -518,15 +522,19 @@ public class RequestFinishedInfoTest {
         assertTrue(callback.mOnErrorCalled);
         requestFinishedListener.blockUntilDone();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
+        assertWithMessage("RequestFinishedInfo.Listener must be called")
+                .that(requestInfo)
+                .isNotNull();
         assertThat(requestInfo.getUrl()).isEqualTo(mUrl);
-        assertTrue(requestInfo.getAnnotations().isEmpty());
+        assertThat(requestInfo.getAnnotations()).isEmpty();
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
         assertThat(requestInfo.getException())
                 .hasMessageThat()
                 .isEqualTo("Exception received from UrlRequest.Callback");
         RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
-        assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
+        assertWithMessage("RequestFinishedInfo.getMetrics() must not be null")
+                .that(metrics)
+                .isNotNull();
     }
 
     @Test
@@ -546,15 +554,19 @@ public class RequestFinishedInfoTest {
         assertTrue(callback.mOnErrorCalled);
         requestFinishedListener.blockUntilDone();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
-        assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
+        assertWithMessage("RequestFinishedInfo.Listener must be called")
+                .that(requestInfo)
+                .isNotNull();
         assertThat(requestInfo.getUrl()).isEqualTo(connectionRefusedUrl);
-        assertTrue(requestInfo.getAnnotations().isEmpty());
+        assertThat(requestInfo.getAnnotations()).isEmpty();
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
-        assertNotNull(requestInfo.getException());
+        assertThat(requestInfo.getException()).isNotNull();
         assertThat(((NetworkException) requestInfo.getException()).getErrorCode())
                 .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
-        assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
+        assertWithMessage("RequestFinishedInfo.getMetrics() must not be null")
+                .that(metrics)
+                .isNotNull();
     }
 
     @Test

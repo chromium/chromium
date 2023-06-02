@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
+<translation id="2840432500933227975">Ouvrez les paramètres Chrome dans iOS, appuyez sur "Navigateur par défaut", puis sélectionnez Chrome.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2957447865124070833">Sélectionnez <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Cela signifie que Chrome demandera la version pour mobile à chaque fois.</translation>
 <translation id="3706101708757577809">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chrome.</translation>
 <translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
+<translation id="3827545470516145620">Vous disposez de la protection standard sur cet appareil</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="3980220367029651214">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chrome actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Votre organisation vous demande de rester déconnecté de Chrome.</translation>
@@ -150,7 +152,6 @@
   • Si Chrome plante, les détails sur ce plantage peuvent contenir des infos personnelles.
 
   • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Vous disposez sous ce profil Chrome de la protection standard</translation>
 <translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>
 <translation id="9122931302567044771">Cela signifie que Chrome demandera la version pour ordinateur à chaque fois.</translation>
 </translationbundle>

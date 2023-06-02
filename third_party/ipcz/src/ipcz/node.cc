@@ -91,12 +91,8 @@ class Node::PendingIntroduction {
 
 Node::Node(Type type,
            const IpczDriver& driver,
-           IpczDriverHandle driver_node,
            const IpczCreateNodeOptions* options)
-    : type_(type),
-      driver_(driver),
-      driver_node_(driver_node),
-      options_(CopyOrUseDefaultOptions(options)) {
+    : type_(type), driver_(driver), options_(CopyOrUseDefaultOptions(options)) {
   if (type_ == Type::kBroker) {
     // Only brokers assign their own names.
     assigned_name_ = GenerateRandomName();

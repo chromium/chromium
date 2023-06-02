@@ -425,6 +425,7 @@ mojom("url_loader_base") {
     "network_interface_change_listener.mojom",
     "network_types.mojom",
     "no_vary_search.mojom",
+    "optional_bool.mojom",
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",
@@ -535,10 +536,6 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.WebBundleTokenParams"
           cpp = "::network::ResourceRequest::WebBundleTokenParams"
-        },
-        {
-          mojom = "network.mojom.NetLogSource"
-          cpp = "::net::NetLogSource"
         },
         {
           mojom = "network.mojom.URLRequest"
@@ -844,6 +841,10 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.HostPortPair"
           cpp = "::net::HostPortPair"
+        },
+        {
+          mojom = "network.mojom.NetLogSource"
+          cpp = "::net::NetLogSource"
         },
       ]
       traits_headers =
@@ -1311,7 +1312,6 @@ mojom("mojom") {
     "network_service.mojom",
     "network_service_test.mojom",
     "oblivious_http_request.mojom",
-    "optional_bool.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
     "reporting_service.mojom",

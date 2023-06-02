@@ -4,6 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.prefeditor;
 
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -14,9 +23,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.InputFilter;
-import android.text.Spanned;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -26,8 +32,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -41,14 +45,12 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.settings.CreditCardNumberFormattingTextWatcher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldView;
+import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.EditorTextField;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.autofill.prefeditor.EditorFieldView;
-import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
-import org.chromium.components.autofill.prefeditor.EditorTextField;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
@@ -59,14 +61,14 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * The editor dialog. Can be used for editing contact information, shipping address,
- * billing address, and credit cards.
+ * billing address.
  *
  * TODO(https://crbug.com/799905): Move payment specific functionality to separate class.
  */
@@ -85,65 +87,45 @@ public class EditorDialog
     private static EditorObserverForTest sObserverForTest;
 
     private final Activity mActivity;
+    private final HelpAndFeedbackLauncher mHelpLauncher;
     private final Handler mHandler;
     private final TextView.OnEditorActionListener mEditorActionListener;
     private final int mHalfRowMargin;
     private final List<EditorFieldView> mFieldViews;
     private final List<EditText> mEditableTextFields;
     private final List<Spinner> mDropdownFields;
-    private final InputFilter mCardNumberInputFilter;
-    private final TextWatcher mCardNumberFormatter;
-    private final boolean mHasRequiredIndicator;
 
-    @Nullable
-    private TextWatcher mPhoneFormatter;
     private View mLayout;
-    private EditorModel mEditorModel;
+    private PropertyModel mEditorModel;
     private Button mDoneButton;
     private boolean mFormWasValid;
     private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
     private ViewGroup mDataView;
     private View mFooter;
-    @Nullable
-    private TextView mCardInput;
-    @Nullable
-    private TextView mPhoneInput;
 
     private Animator mDialogInOutAnimator;
     @Nullable
     private Runnable mDeleteRunnable;
     private boolean mIsDismissed;
-    private Profile mProfile;
     @Nullable
     private UiConfig mUiConfig;
     @Nullable
     private AlertDialog mConfirmationDialog;
 
     /**
-     * Builds the editor dialog with the required indicator enabled.
-     *
-     * @param activity          The activity on top of which the UI should be displayed.
-     * @param deleteRunnable    The runnable that when called will delete the profile.
-     * @param profile           The current profile that creates EditorDialog.
-     */
-    public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile) {
-        this(activity, deleteRunnable, profile, true);
-    }
-
-    /**
      * Builds the editor dialog.
      *
      * @param activity             The activity on top of which the UI should be displayed.
      * @param deleteRunnable       The runnable that when called will delete the profile.
-     * @param profile              The current profile that creates EditorDialog.
-     * @param hasRequiredIndicator Whether the required (*) indicator is visible.
+     * @param helpLauncher         The launcher of user help activity.
      */
-    public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile,
-            boolean requiredIndicator) {
+    public EditorDialog(
+            Activity activity, Runnable deleteRunnable, HelpAndFeedbackLauncher helpLauncher) {
         super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity = activity;
+        mHelpLauncher = helpLauncher;
         mHandler = new Handler();
         mIsDismissed = false;
         mEditorActionListener = new TextView.OnEditorActionListener() {
@@ -170,28 +152,7 @@ public class EditorDialog
         mEditableTextFields = new ArrayList<>();
         mDropdownFields = new ArrayList<>();
 
-        final Pattern cardNumberPattern = Pattern.compile("^[\\d- ]*$");
-        mCardNumberInputFilter = new InputFilter() {
-            @Override
-            public CharSequence filter(
-                    CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                // Accept deletions.
-                if (start == end) return null;
-
-                // Accept digits, "-", and spaces.
-                if (cardNumberPattern.matcher(source.subSequence(start, end)).matches()) {
-                    return null;
-                }
-
-                // Reject everything else.
-                return "";
-            }
-        };
-
-        mCardNumberFormatter = new CreditCardNumberFormattingTextWatcher();
         mDeleteRunnable = deleteRunnable;
-        mProfile = profile;
-        mHasRequiredIndicator = requiredIndicator;
     }
 
     /** Prevents screenshots of this editor. */
@@ -221,7 +182,7 @@ public class EditorDialog
         toolbar.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(toolbar.getContext()));
         toolbar.setTitleTextAppearance(
                 toolbar.getContext(), R.style.TextAppearance_Headline_Primary);
-        toolbar.setTitle(mEditorModel.getTitle());
+        toolbar.setTitle(mEditorModel.get(EDITOR_TITLE));
         toolbar.setShowDeleteMenuItem(mDeleteRunnable != null);
 
         // Show the help article when the help icon is clicked on, or delete
@@ -230,15 +191,15 @@ public class EditorDialog
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.delete_menu_id) {
-                    if (mEditorModel.getDeleteConfirmationTitle() != null
-                            || mEditorModel.getDeleteConfirmationText() != null) {
-                        handleDeleteWithConfirmation(mEditorModel.getDeleteConfirmationTitle(),
-                                mEditorModel.getDeleteConfirmationText());
+                    if (mEditorModel.get(DELETE_CONFIRMATION_TITLE) != null
+                            || mEditorModel.get(DELETE_CONFIRMATION_TEXT) != null) {
+                        handleDeleteWithConfirmation(mEditorModel.get(DELETE_CONFIRMATION_TITLE),
+                                mEditorModel.get(DELETE_CONFIRMATION_TEXT));
                     } else {
                         handleDelete();
                     }
                 } else if (item.getItemId() == R.id.help_menu_id) {
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
+                    mHelpLauncher.show(
                             mActivity, mActivity.getString(R.string.help_context_autofill), null);
                 }
                 return true;
@@ -325,7 +286,7 @@ public class EditorDialog
         if (view.getId() == R.id.editor_dialog_done_button) {
             if (validateForm()) {
                 if (mShouldTriggerDoneCallbackBeforeCloseAnimation && mEditorModel != null) {
-                    mEditorModel.done();
+                    mEditorModel.get(DONE_RUNNABLE).run();
                     mEditorModel = null;
                 }
                 mFormWasValid = true;
@@ -377,22 +338,22 @@ public class EditorDialog
         mIsDismissed = true;
         if (mEditorModel != null) {
             if (mFormWasValid) {
-                mEditorModel.done();
+                mEditorModel.get(DONE_RUNNABLE).run();
                 mFormWasValid = false;
             } else {
-                mEditorModel.cancel();
+                mEditorModel.get(CANCEL_RUNNABLE).run();
             }
             mEditorModel = null;
         }
-        removeTextChangedListenersAndInputFilters();
+        removeTextChangedListeners();
     }
 
     private void prepareButtons() {
         mDoneButton = (Button) mLayout.findViewById(R.id.button_primary);
         mDoneButton.setId(R.id.editor_dialog_done_button);
         mDoneButton.setOnClickListener(this);
-        if (mEditorModel.getCustomDoneButtonText() != null) {
-            mDoneButton.setText(mEditorModel.getCustomDoneButtonText());
+        if (mEditorModel.get(CUSTOM_DONE_BUTTON_TEXT) != null) {
+            mDoneButton.setText(mEditorModel.get(CUSTOM_DONE_BUTTON_TEXT));
         }
 
         Button cancelButton = (Button) mLayout.findViewById(R.id.button_secondary);
@@ -405,7 +366,7 @@ public class EditorDialog
 
         TextView requiredFieldsNotice = mLayout.findViewById(R.id.required_fields_notice);
         int requiredFieldsNoticeVisibility = View.GONE;
-        if (mHasRequiredIndicator) {
+        if (mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR)) {
             for (int i = 0; i < mFieldViews.size(); i++) {
                 if (mFieldViews.get(i).isRequired()) {
                     requiredFieldsNoticeVisibility = View.VISIBLE;
@@ -416,7 +377,7 @@ public class EditorDialog
         requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
 
         TextView footerMessage = mLayout.findViewById(R.id.footer_message);
-        String footerMessageText = mEditorModel.getFooterMessageText();
+        String footerMessageText = mEditorModel.get(FOOTER_MESSAGE);
         if (footerMessageText != null) {
             footerMessage.setText(footerMessageText);
             footerMessage.setVisibility(View.VISIBLE);
@@ -426,7 +387,7 @@ public class EditorDialog
     }
 
     /**
-     * Create the visual representation of the EditorModel.
+     * Create the visual representation of the PropertyModel defined by {@link EditorProperties}.
      *
      * This would be more optimal as a RelativeLayout, but because it's dynamically generated, it's
      * much more human-parsable with inefficient LinearLayouts for half-width controls sharing rows.
@@ -435,7 +396,7 @@ public class EditorDialog
         assert mEditorModel != null;
 
         // Ensure the layout is empty.
-        removeTextChangedListenersAndInputFilters();
+        removeTextChangedListeners();
         mDataView = (ViewGroup) mLayout.findViewById(R.id.contents);
         mDataView.removeAllViews();
         mFieldViews.clear();
@@ -443,15 +404,16 @@ public class EditorDialog
         mDropdownFields.clear();
 
         // Add Views for each of the {@link EditorFields}.
-        for (int i = 0; i < mEditorModel.getFields().size(); i++) {
-            EditorFieldModel fieldModel = mEditorModel.getFields().get(i);
+        List<EditorFieldModel> fields = mEditorModel.get(EDITOR_FIELDS);
+        for (int i = 0; i < fields.size(); i++) {
+            EditorFieldModel fieldModel = fields.get(i);
             EditorFieldModel nextFieldModel = null;
 
-            boolean isLastField = i == mEditorModel.getFields().size() - 1;
+            boolean isLastField = i == fields.size() - 1;
             boolean useFullLine = fieldModel.isFullLine();
             if (!isLastField && !useFullLine) {
                 // If the next field isn't full, stretch it out.
-                nextFieldModel = mEditorModel.getFields().get(i + 1);
+                nextFieldModel = fields.get(i + 1);
                 if (nextFieldModel.isFullLine()) useFullLine = true;
             }
 
@@ -510,27 +472,19 @@ public class EditorDialog
         }
     }
 
-    private void removeTextChangedListenersAndInputFilters() {
-        if (mCardInput != null) {
-            mCardInput.removeTextChangedListener(mCardNumberFormatter);
-            mCardInput.setFilters(new InputFilter[0]); // Null is not allowed.
-            mCardInput = null;
-        }
-
-        if (mPhoneInput != null) {
-            mPhoneInput.removeTextChangedListener(mPhoneFormatter);
-            mPhoneInput = null;
+    private void removeTextChangedListeners() {
+        for (EditorFieldView view : mFieldViews) {
+            if (view instanceof EditorTextField) {
+                EditorTextField textView = (EditorTextField) view;
+                textView.removeTextChangedListeners();
+            }
         }
     }
 
     private View addFieldViewToEditor(ViewGroup parent, final EditorFieldModel fieldModel) {
         View childView = null;
 
-        if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_ICONS) {
-            childView = new EditorIconsField(mActivity, parent, fieldModel).getLayout();
-        } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_LABEL) {
-            childView = new EditorLabelField(mActivity, parent, fieldModel).getLayout();
-        } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN) {
+        if (fieldModel.isDropdownField()) {
             Runnable prepareEditorRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -543,56 +497,21 @@ public class EditorDialog
                     if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
                 }
             };
-            EditorDropdownField dropdownView = new EditorDropdownField(
-                    mActivity, parent, fieldModel, prepareEditorRunnable, mHasRequiredIndicator);
+            EditorDropdownField dropdownView =
+                    new EditorDropdownField(mActivity, parent, fieldModel, prepareEditorRunnable,
+                            mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
             mFieldViews.add(dropdownView);
             mDropdownFields.add(dropdownView.getDropdown());
 
             childView = dropdownView.getLayout();
-        } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_CHECKBOX) {
-            final CheckBox checkbox = new CheckBox(mLayout.getContext());
-            checkbox.setId(R.id.payments_edit_checkbox);
-            checkbox.setText(fieldModel.getLabel());
-            checkbox.setChecked(fieldModel.isChecked());
-            checkbox.setMinimumHeight(mActivity.getResources().getDimensionPixelSize(
-                    R.dimen.editor_dialog_checkbox_min_height));
-            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    fieldModel.setIsChecked(isChecked);
-                    if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
-                }
-            });
-
-            childView = checkbox;
         } else {
-            InputFilter filter = null;
-            TextWatcher formatter = null;
-            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_CREDIT_CARD) {
-                filter = mCardNumberInputFilter;
-                formatter = mCardNumberFormatter;
-            } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
-                mPhoneFormatter = fieldModel.getFormatter();
-                assert mPhoneFormatter != null;
-                formatter = mPhoneFormatter;
-            }
-
             EditorTextField inputLayout =
-                    new EditorTextField(mActivity, fieldModel, mEditorActionListener, filter,
-                            formatter, /* focusAndShowKeyboard= */ false, mHasRequiredIndicator);
+                    new EditorTextField(mActivity, fieldModel, mEditorActionListener,
+                            fieldModel.getFormatter(), /* focusAndShowKeyboard= */ false,
+                            mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
             mFieldViews.add(inputLayout);
 
-            EditText input = inputLayout.getEditText();
-            mEditableTextFields.add(input);
-
-            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_CREDIT_CARD) {
-                assert mCardInput == null;
-                mCardInput = input;
-            } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
-                assert mPhoneInput == null;
-                mPhoneInput = input;
-            }
-
+            mEditableTextFields.add(inputLayout.getEditText());
             childView = inputLayout;
         }
 
@@ -605,7 +524,7 @@ public class EditorDialog
      *
      * @param editorModel The description of the editor user interface to display.
      */
-    public void show(EditorModel editorModel) {
+    public void show(PropertyModel editorModel) {
         // If an asynchronous task calls show, while the activity is already finishing, return.
         if (mActivity.isFinishing()) return;
 

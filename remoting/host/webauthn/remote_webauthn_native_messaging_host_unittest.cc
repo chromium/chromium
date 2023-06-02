@@ -131,7 +131,7 @@ class RemoteWebAuthnNativeMessagingHostTest
   void ResetReceiver();
 
   MockWebAuthnProxy webauthn_proxy_;
-  raw_ptr<MockChromotingHostServicesProvider> api_provider_;
+  raw_ptr<MockChromotingHostServicesProvider, DanglingUntriaged> api_provider_;
   MockChromotingSessionServices api_;
 
  private:

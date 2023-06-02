@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {PerformanceTestRunner} from 'performance_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a SendRequest, ReceiveResponse etc.\n`);
-  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()

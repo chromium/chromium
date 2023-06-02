@@ -135,7 +135,7 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXTextStateChangeIntent final {
                           AXTextSelection selection);
 
   // Constructs an editing intent.
-  AXTextStateChangeIntent(AXTextEditType edit);
+  explicit AXTextStateChangeIntent(AXTextEditType edit);
 
   AXTextStateChangeIntent(const AXTextStateChangeIntent& intent);
 

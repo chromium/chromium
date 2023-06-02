@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_CONVERTERS_H_
 
+#include <type_traits>
+#include <vector>
+
+#include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
 namespace ash::converters {
 
@@ -19,6 +24,12 @@ namespace unchecked {
 
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioJackEventInfoPtr input);
+
+crosapi::mojom::TelemetryKeyboardInfoPtr UncheckedConvertPtr(
+    diagnostics::mojom::KeyboardInfoPtr input);
+
+crosapi::mojom::TelemetryKeyboardDiagnosticEventInfoPtr UncheckedConvertPtr(
+    diagnostics::mojom::KeyboardDiagnosticEventInfoPtr input);
 
 crosapi::mojom::TelemetryLidEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::LidEventInfoPtr input);
@@ -58,6 +69,24 @@ crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
 crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
     cros_healthd::mojom::AudioJackEventInfo::DeviceType input);
 
+crosapi::mojom::TelemetryKeyboardConnectionType Convert(
+    diagnostics::mojom::ConnectionType input);
+
+crosapi::mojom::TelemetryKeyboardPhysicalLayout Convert(
+    diagnostics::mojom::PhysicalLayout input);
+
+crosapi::mojom::TelemetryKeyboardMechanicalLayout Convert(
+    diagnostics::mojom::MechanicalLayout input);
+
+crosapi::mojom::TelemetryKeyboardNumberPadPresence Convert(
+    diagnostics::mojom::NumberPadPresence input);
+
+crosapi::mojom::TelemetryKeyboardTopRowKey Convert(
+    diagnostics::mojom::TopRowKey input);
+
+crosapi::mojom::TelemetryKeyboardTopRightKey Convert(
+    diagnostics::mojom::TopRightKey input);
+
 crosapi::mojom::TelemetryLidEventInfo::State Convert(
     cros_healthd::mojom::LidEventInfo::State input);
 
@@ -75,6 +104,17 @@ crosapi::mojom::TelemetryExtensionException::Reason Convert(
 
 cros_healthd::mojom::EventCategoryEnum Convert(
     crosapi::mojom::TelemetryEventCategoryEnum input);
+
+template <class OutputT,
+          class InputT,
+          std::enable_if_t<std::is_enum_v<InputT>, bool> = true>
+std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
+  std::vector<OutputT> result;
+  for (auto elem : input) {
+    result.push_back(Convert(elem));
+  }
+  return result;
+}
 
 template <class InputT>
 auto ConvertStructPtr(InputT input) {

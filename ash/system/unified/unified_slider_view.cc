@@ -8,14 +8,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "base/check_op.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -33,8 +29,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
@@ -70,9 +64,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      int accessible_name_id,
                                      bool read_only,
                                      QuickSettingsSlider::Style slider_style)
-    : icon_(&icon),
-      accessible_name_id_(accessible_name_id),
-      callback_(callback) {
+    : icon_(&icon), callback_(callback) {
   if (!features::IsQsRevampEnabled()) {
     button_ = AddChildView(std::make_unique<IconButton>(
         std::move(callback), IconButton::Type::kMedium, &icon,
@@ -127,7 +119,8 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
       /*is_togglable=*/true,
       /*has_border=*/true));
   slider_button_->SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  slider_button_->SetFocusBehavior(FocusBehavior::NEVER);
+  // The `slider_button_` should be focusable by the ChromeVox.
+  slider_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   // Prevent an accessibility event while initiallizing this view.
   // Typically the first update of the slider value is conducted by the
@@ -166,34 +159,6 @@ void UnifiedSliderView::SetSliderValue(float value, bool by_user) {
 }
 
 UnifiedSliderView::~UnifiedSliderView() = default;
-
-void UnifiedSliderView::CreateToastLabel() {
-  if (features::IsQsRevampEnabled()) {
-    button_ = AddChildView(std::make_unique<IconButton>(
-        std::move(callback_), IconButton::Type::kMedium, icon_,
-        accessible_name_id_,
-        /*is_togglable=*/true,
-        /*has_border=*/true));
-    slider_->SetVisible(false);
-  }
-  toast_label_ = AddChildView(std::make_unique<views::Label>());
-  if (chromeos::features::IsJellyEnabled()) {
-    toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
-                                          *toast_label_);
-    return;
-  }
-  TrayPopupUtils::SetLabelFontList(toast_label_,
-                                   TrayPopupUtils::FontStyle::kPodMenuHeader);
-}
-
-void UnifiedSliderView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (toast_label_ && !chromeos::features::IsJellyEnabled()) {
-    toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-  }
-}
 
 void UnifiedSliderView::OnEvent(ui::Event* event) {
   if (!event->IsKeyEvent()) {

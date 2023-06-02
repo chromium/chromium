@@ -4,6 +4,7 @@
 
 #import "ui/base/cocoa/menu_controller.h"
 
+#include "base/apple/owned_objc.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
@@ -326,8 +327,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     ui::ElementTrackerMac::GetInstance()->NotifyMenuItemActivated([sender menu],
                                                                   identifier);
   }
-  model->ActivatedAt(modelIndex,
-                     ui::EventFlagsFromNative([NSApp currentEvent]));
+  model->ActivatedAt(
+      modelIndex,
+      ui::EventFlagsFromNative(base::apple::OwnedNSEvent(NSApp.currentEvent)));
   // Note: |self| may be destroyed by the call to ActivatedAt().
 }
 

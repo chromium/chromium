@@ -102,7 +102,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
+#include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "components/password_manager/core/browser/password_check_referrer_android.h"
@@ -1030,8 +1030,9 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
         "PasswordProtection.SavedPassword.ChangePasswordButtonClicked"));
 #if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
-    PasswordCheckupLauncherHelper::LaunchLocalCheckup(
-        env, web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
+    PasswordCheckupLauncherHelperImpl checkup_launcher;
+    checkup_launcher.LaunchLocalCheckup(
+        env, web_contents->GetTopLevelNativeWindow(),
         password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog);
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)

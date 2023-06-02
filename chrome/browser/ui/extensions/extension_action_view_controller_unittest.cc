@@ -165,10 +165,11 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 
  private:
   // The ExtensionService associated with the primary profile.
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
 
   // ToolbarActionsModel associated with the main profile.
-  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel, DanglingUntriaged> toolbar_model_ = nullptr;
 
   std::unique_ptr<ExtensionActionTestHelper> test_util_;
 

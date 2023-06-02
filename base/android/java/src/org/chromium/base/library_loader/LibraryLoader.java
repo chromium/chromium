@@ -580,9 +580,13 @@ public class LibraryLoader {
      *
      * @deprecated: please avoid using in new code:
      * https://crsrc.org/c/base/android/jni_generator/README.md#testing-for-readiness-use-get
+     *
+     * TODO(crbug.com/1406012): adding back {@link VisibleForTesting} after crbug.com/1442347 is
+     * fixed. This method is exposed in order to unblock the test failures because of isInitialized
+     * loading .so file before native flags are ready. Ideally, it should be fixed by migrating
+     * the feature flag to CachedFlag.
      */
     @Deprecated
-    @VisibleForTesting
     public boolean isLoaded() {
         return mLoadState == LoadState.LOADED
                 && (!sEnableStateForTesting || mLoadStateForTesting == LoadState.LOADED);

@@ -5,10 +5,12 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,34 +26,19 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#endif
-
 namespace supervised_user {
-namespace {
-
-// TODO(b/250924204): Implement shared logic to get the user's given name.
-std::u16string GetActiveUserFirstName() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return user_manager::UserManager::Get()->GetActiveUser()->GetGivenName();
-#else
-  // TODO(b/243656773): Implement for LaCrOS.
-  return std::u16string();
-#endif
-}
-}  // namespace
 
 // static
 std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
     std::unique_ptr<WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
     const GURL& url,
+    const std::u16string& supervised_user_name,
     FilteringBehaviorReason reason) {
-  std::unique_ptr<SupervisedUserInterstitial> interstitial = base::WrapUnique(
-      new SupervisedUserInterstitial(std::move(web_content_handler),
-                                     supervised_user_service, url, reason));
+  std::unique_ptr<SupervisedUserInterstitial> interstitial =
+      base::WrapUnique(new SupervisedUserInterstitial(
+          std::move(web_content_handler), supervised_user_service, url,
+          supervised_user_name, reason));
 
   interstitial->web_content_handler()->CleanUpInfoBarOnMainFrame();
   // Caller is responsible for deleting the interstitial.
@@ -62,10 +49,12 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
     std::unique_ptr<WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
     const GURL& url,
+    const std::u16string& supervised_user_name,
     FilteringBehaviorReason reason)
     : supervised_user_service_(supervised_user_service),
       web_content_handler_(std::move(web_content_handler)),
       url_(url),
+      supervised_user_name_(supervised_user_name),
       reason_(reason) {}
 SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 
@@ -93,10 +82,13 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
       supervised_user_service->remote_web_approvals_manager()
           .AreApprovalRequestsEnabled();
 
+  bool show_banner =
+      supervised_user_service->ShouldShowFirstTimeInterstitialBanner();
+
   return BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
-      application_locale, already_sent_request, is_main_frame);
+      application_locale, already_sent_request, is_main_frame, show_banner);
 }
 
 void SupervisedUserInterstitial::GoBack() {
@@ -123,7 +115,10 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
                             Commands::HISTOGRAM_BOUNDING_VALUE);
   OutputRequestPermissionSourceMetric();
 
-  web_content_handler_->RequestLocalApproval(url_, GetActiveUserFirstName(),
+  DLOG_IF(WARNING, supervised_user_name_.empty())
+      << "Supervised user name for local web approval request should not be "
+         "empty";
+  web_content_handler_->RequestLocalApproval(url_, supervised_user_name_,
                                              std::move(callback));
 }
 

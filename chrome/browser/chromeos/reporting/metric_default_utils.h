@@ -43,6 +43,14 @@ constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
     base::Minutes(5);
 
+// Initial metric reporting collection delay.
+constexpr base::TimeDelta kInitialCollectionDelay = base::Minutes(1);
+
+// Peripheral collection delay to mitigate the race
+// condition where CrosHealthD may query fwupd before it has a chance to read
+// all of the USB devices that are plugged into the machine.
+constexpr base::TimeDelta kPeripheralCollectionDelay = base::Seconds(5);
+
 // Initial metric reporting upload delay.
 constexpr base::TimeDelta kInitialUploadDelay = base::Minutes(3);
 
@@ -84,44 +92,6 @@ const base::TimeDelta GetDefaultCollectionRate(base::TimeDelta default_rate);
 // Returns the default event checking rate for the current environment.
 const base::TimeDelta GetDefaultEventCheckingRate(base::TimeDelta default_rate);
 
-}  // namespace reporting::metrics
-
-// Forward declaration for the friend class below.
-namespace ash::reporting {
-class CrosHealthdInfoMetricsHelper;
-}  // namespace ash::reporting
-
-// Forward declaration for the friend class below.
-namespace reporting {
-class UsbBrowserTestHelper;
-}  // namespace reporting
-
-namespace reporting::metrics {
-// Metric reporting manager initialization delay. This is for rate limiting
-// in case a device frequently reboots.
-class InitDelayParam {
- public:
-  static const base::TimeDelta Get();
-
- private:
-  friend class ::ash::reporting::CrosHealthdInfoMetricsHelper;
-
-  static base::TimeDelta init_delay;
-  static void SetForTesting(const base::TimeDelta& delay);
-};
-
-// Peripheral collection delay to mitigate the race
-// condition where CrosHealthD may query fwupd before it has a chance to read
-// all of the USB devices that are plugged into the machine.
-class PeripheralCollectionDelayParam {
- public:
-  static const base::TimeDelta Get();
-
- private:
-  friend class ::reporting::UsbBrowserTestHelper;
-  static void SetForTesting(const base::TimeDelta& delay);
-  static base::TimeDelta collection_delay_;
-};
 }  // namespace reporting::metrics
 
 #endif  // CHROME_BROWSER_CHROMEOS_REPORTING_METRIC_DEFAULT_UTILS_H_

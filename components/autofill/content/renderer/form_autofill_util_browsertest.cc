@@ -105,17 +105,6 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class FormAutofillUtilsTestWithIframesEnabled : public FormAutofillUtilsTest {
- public:
-  FormAutofillUtilsTestWithIframesEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
-  }
-  ~FormAutofillUtilsTestWithIframesEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that large option values/contents are truncated while building the
 // FormData.
 TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
@@ -795,7 +784,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
 }
 
 // Tests IsOwnedByFrame().
-TEST_F(FormAutofillUtilsTestWithIframesEnabled, IsOwnedByFrame) {
+TEST_F(FormAutofillUtilsTest, IsOwnedByFrame) {
   LoadHTML(R"(
     <body>
       <div id="div"></div>
@@ -1313,7 +1302,7 @@ struct FieldFramesTestParam {
 };
 
 class FieldFramesTest
-    : public FormAutofillUtilsTestWithIframesEnabled,
+    : public FormAutofillUtilsTest,
       public testing::WithParamInterface<FieldFramesTestParam> {
  public:
   FieldFramesTest() = default;
@@ -1597,10 +1586,9 @@ TEST_P(SelectMenuAutofillParamTest, WebFormElementToFormData) {
   }
 }
 
-// Tests that if the number of iframes exceeds kMaxParseableChildFrames,
+// Tests that if the number of iframes exceeds kMaxExtractableChildFrames,
 // child frames of that form are not extracted.
-TEST_F(FormAutofillUtilsTestWithIframesEnabled,
-       ExtractNoFramesIfTooManyIframes) {
+TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
@@ -1608,10 +1596,12 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled,
   };
 
   LoadHTML(R"(<html><body><form id='f'></form>)");
-  for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
+  for (size_t i = 0; i < kMaxExtractableFields - 1; ++i) {
     CreateFormElement("input");
-  for (size_t i = 0; i < kMaxParseableChildFrames; ++i)
+  }
+  for (size_t i = 0; i < kMaxExtractableChildFrames; ++i) {
     CreateFormElement("iframe");
+  }
 
   // Ensure that Android runs at default page scale.
   web_view_->SetPageScaleFactor(1.0);
@@ -1622,27 +1612,26 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled,
     FormData form_data;
     ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
                                          EXTRACT_NONE, &form_data, nullptr));
-    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
-    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableChildFrames);
+    EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
+    EXPECT_EQ(form_data.child_frames.size(), kMaxExtractableChildFrames);
   }
 
-  // There may be multiple checks (e.g., == kMaxParseableChildFrames, <=
-  // kMaxParseableChildFrames, < kMaxParseableChildFrames), so we test different
-  // numbers of <iframe> elements.
+  // There may be multiple checks (e.g., == kMaxExtractableChildFrames, <=
+  // kMaxExtractableChildFrames, < kMaxExtractableChildFrames), so we test
+  // different numbers of <iframe> elements.
   for (int i = 0; i < 3; ++i) {
     CreateFormElement("iframe");
     FormData form_data;
     ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
                                          EXTRACT_NONE, &form_data, nullptr));
-    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
+    EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
     EXPECT_TRUE(form_data.child_frames.empty());
   }
 }
 
-// Tests that if the number of fields exceeds |kMaxParseableFields|, neither
+// Tests that if the number of fields exceeds |kMaxExtractableFields|, neither
 // fields nor child frames of that form are extracted.
-TEST_F(FormAutofillUtilsTestWithIframesEnabled,
-       ExtractNoFieldsOrFramesIfTooManyFields) {
+TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
@@ -1650,10 +1639,12 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled,
   };
 
   LoadHTML(R"(<html><body><form id='f'></form>)");
-  for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
+  for (size_t i = 0; i < kMaxExtractableFields - 1; ++i) {
     CreateFormElement("input");
-  for (size_t i = 0; i < kMaxParseableChildFrames; ++i)
+  }
+  for (size_t i = 0; i < kMaxExtractableChildFrames; ++i) {
     CreateFormElement("iframe");
+  }
 
   // Ensure that Android runs at default page scale.
   web_view_->SetPageScaleFactor(1.0);
@@ -1664,13 +1655,13 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled,
     FormData form_data;
     ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
                                          EXTRACT_NONE, &form_data, nullptr));
-    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
-    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableChildFrames);
+    EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
+    EXPECT_EQ(form_data.child_frames.size(), kMaxExtractableChildFrames);
   }
 
-  // There may be multiple checks (e.g., == kMaxParseableFields, <=
-  // kMaxParseableFields, < kMaxParseableFields), so we test different numbers
-  // of <input> elements.
+  // There may be multiple checks (e.g., == kMaxExtractableFields, <=
+  // kMaxExtractableFields, < kMaxExtractableFields), so we test different
+  // numbers of <input> elements.
   for (int i = 0; i < 3; ++i) {
     SCOPED_TRACE(base::NumberToString(i));
     CreateFormElement("input");

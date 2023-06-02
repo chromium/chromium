@@ -225,8 +225,9 @@ class UserSessionManager
   // Show various notifications if applicable.
   void ShowNotificationsIfNeeded(Profile* profile);
 
-  // Launch various setting pages (or dialogs) if applicable.
-  void MaybeLaunchSettings(Profile* profile);
+  // Perform actions that were deferred from OOBE or onboarding flow once the
+  // browser is launched if applicable.
+  void PerformPostBrowserLaunchOOBEActions(Profile* profile);
 
   // Invoked when the user is logging in for the first time, or is logging in to
   // an ephemeral session type, such as guest or a public session.
@@ -483,10 +484,6 @@ class UserSessionManager
       base::OnceClosure callback,
       InputEventsBlocker* input_events_blocker,
       const locale_util::LanguageSwitchResult& result);
-
-  // Returns `true` if policy mandates that all mounts on device should
-  // be ephemeral.
-  bool IsEphemeralMountForced();
 
   // Callback invoked when `token_handle_util_` has finished.
   void OnTokenHandleObtained(const AccountId& account_id, bool success);

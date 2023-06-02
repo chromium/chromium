@@ -34,7 +34,7 @@ class TestZwpTextInputManagerV1 : public GlobalObject {
   MockZwpTextInput* text_input() const { return text_input_; }
 
  private:
-  raw_ptr<MockZwpTextInput> text_input_ = nullptr;
+  raw_ptr<MockZwpTextInput, DanglingUntriaged> text_input_ = nullptr;
 };
 
 }  // namespace wl

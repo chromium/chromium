@@ -42,8 +42,8 @@ class SavedTabGroupController {
   virtual void DisconnectLocalTabGroup(
       const tab_groups::TabGroupId& group_id) = 0;
 
-  // Begins listening to the Tab Group in the TabStrip. Adds the local tab group
-  // id and web content tokens.
+  // Begins listening to the Tab Group in the TabStrip if a local to saved group
+  // connection can be made. Adds the local tab group id and web content tokens.
   virtual void ConnectLocalTabGroup(
       const tab_groups::TabGroupId& local_group_id,
       const base::Uuid& saved_group_guid) = 0;

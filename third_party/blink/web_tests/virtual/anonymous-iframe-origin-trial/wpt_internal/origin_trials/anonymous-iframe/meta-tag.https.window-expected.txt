@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Credentialless iframe is enabled using meta tag
-Harness: the test ran to completion.
-

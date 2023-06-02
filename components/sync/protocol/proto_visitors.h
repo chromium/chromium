@@ -227,6 +227,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(address_home_country);
   VISIT(address_home_landmark);
   VISIT(address_home_between_streets);
+  VISIT(address_home_admin_level_2);
   VISIT(address_home_street_address);
   VISIT(address_home_sorting_code);
   VISIT(address_home_dependent_locality);
@@ -242,6 +243,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_ENUM(address_home_country_status);
   VISIT_ENUM(address_home_landmark_status);
   VISIT_ENUM(address_home_between_streets_status);
+  VISIT_ENUM(address_home_admin_level_2_status);
   VISIT_ENUM(address_home_street_address_status);
   VISIT_ENUM(address_home_sorting_code_status);
   VISIT_ENUM(address_home_dependent_locality_status);
@@ -254,7 +256,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(address_home_language_code);
   VISIT_REP(phone_home_whole_number);
   VISIT(validity_state_bitfield);
-  VISIT(disallow_settings_visible_updates);
 
   VISIT(birthdate_day);
   VISIT(birthdate_month);
@@ -346,6 +347,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_floor);
   VISIT(address_landmark);
   VISIT(address_between_streets);
+  VISIT(address_admin_level_2);
   VISIT(phone_home_whole_number);
   VISIT(birthdate_day);
   VISIT(birthdate_month);
@@ -1464,6 +1466,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebApkSpecifics& proto) {
   VISIT(theme_color);
   VISIT(scope);
   VISIT_REP(icon_infos);
+  VISIT(last_used_time_windows_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WebAppIconInfo& proto) {

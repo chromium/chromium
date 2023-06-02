@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   bool DeleteKey(base::StringPiece key);
 
  private:
-  raw_ptr<Database> db_ = nullptr;
+  raw_ptr<Database, DanglingUntriaged> db_ = nullptr;
 };
 
 }  // namespace sql

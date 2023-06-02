@@ -16,6 +16,8 @@
 namespace password_manager {
 class ContentPasswordManagerDriver;
 }  // namespace password_manager
+class TouchToFillPasswordGenerationController;
+class TouchToFillPasswordGenerationBridge;
 
 // Interface for the controller responsible for overseeing the UI flow for
 // password generation.
@@ -115,6 +117,10 @@ class PasswordGenerationController {
   // is removed.
   virtual void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) = 0;
+
+  virtual std::unique_ptr<TouchToFillPasswordGenerationController>
+  CreateTouchToFillGenerationControllerForTesting(
+      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) = 0;
 
   // -----------------
   // Member accessors:

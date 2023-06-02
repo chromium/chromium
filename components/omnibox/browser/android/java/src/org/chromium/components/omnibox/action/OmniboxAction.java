@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.omnibox.R;
 
 /**
@@ -37,18 +39,38 @@ public abstract class OmniboxAction {
     public static final ChipIcon DEFAULT_ICON =
             new ChipIcon(R.drawable.action_default, /*tintWithTextColor=*/false);
     /** The type of an underlying action. */
-    public final @OmniboxActionType int actionId;
+    public final @OmniboxActionId int actionId;
     /** The string to present/announce to the user when the action is shown. */
     public final @NonNull String hint;
+    /** The text to announce when the action chip is focused. */
+    public final @NonNull String accessibilityHint;
     /** The icon to use to decorate the Action chip. */
     public final @NonNull ChipIcon icon;
+    /** The corresponding native instance, or 0 if the native instance is not available. */
+    private long mNativeInstance;
 
-    public OmniboxAction(
-            @OmniboxActionType int type, @NonNull String hint, @Nullable ChipIcon icon) {
+    public OmniboxAction(@OmniboxActionId int actionId, long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint, @Nullable ChipIcon icon) {
         assert !TextUtils.isEmpty(hint);
-        this.actionId = type;
+        this.actionId = actionId;
         this.hint = hint;
+        this.accessibilityHint = accessibilityHint;
         this.icon = icon != null ? icon : DEFAULT_ICON;
+        mNativeInstance = nativeInstance;
+    }
+
+    @CalledByNative
+    private void destroy() {
+        mNativeInstance = 0;
+    }
+
+    /**
+     * Report information about pedal being shown.
+     */
+    public void recordActionShown(int position, boolean executed) {
+        if (mNativeInstance != 0L) {
+            OmniboxActionJni.get().recordActionShown(mNativeInstance, position, executed);
+        }
     }
 
     /**
@@ -57,4 +79,10 @@ public abstract class OmniboxAction {
      * @param delegate delegate capable of routing and executing variety of action-specific tasks
      */
     public abstract void execute(@NonNull OmniboxActionDelegate delegate);
+
+    @NativeMethods
+    public interface Natives {
+        /** Emit histograms related to the action. */
+        void recordActionShown(long nativeOmniboxAction, int position, boolean executed);
+    }
 }

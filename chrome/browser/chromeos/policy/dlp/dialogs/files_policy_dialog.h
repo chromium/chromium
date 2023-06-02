@@ -7,11 +7,14 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace policy {
 
@@ -22,6 +25,12 @@ enum class FilesDialogType {
   kError,    // Error dialog - overview of blocked files.
 };
 
+// Type of policy. Used for warning type dialogs.
+enum class Policy {
+  kDlp,                   // Data Leak Prevention policy.
+  kEnterpriseConnectors,  // Enterprise Connectors policy.
+};
+
 // FilesPolicyDialog is a window modal dialog used to show detailed overview of
 // warnings and files blocked by data protection policies.
 class FilesPolicyDialog : public PolicyDialogBase {
@@ -29,27 +38,30 @@ class FilesPolicyDialog : public PolicyDialogBase {
   METADATA_HEADER(FilesPolicyDialog);
 
   FilesPolicyDialog() = delete;
-  FilesPolicyDialog(OnDlpRestrictionCheckedCallback callback,
-                    const std::vector<DlpConfidentialFile>& files,
+  FilesPolicyDialog(size_t file_count,
                     DlpFileDestination destination,
-                    DlpFilesController::FileAction action,
+                    dlp::FileAction action,
                     gfx::NativeWindow modal_parent);
   FilesPolicyDialog(const FilesPolicyDialog& other) = delete;
   FilesPolicyDialog& operator=(const FilesPolicyDialog& other) = delete;
   ~FilesPolicyDialog() override;
 
+ protected:
+  DlpFileDestination destination_;
+  dlp::FileAction action_;
+
  private:
   // PolicyDialogBase overrides:
   void AddGeneralInformation() override;
-  void MaybeAddConfidentialRows() override;
   std::u16string GetOkButton() override;
   std::u16string GetCancelButton() override;
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
 
-  std::vector<DlpConfidentialFile> files_;
-  DlpFileDestination destination_;
-  DlpFilesController::FileAction action_;
+  // Number of files listed in the dialog.
+  size_t file_count_;
+
+  base::WeakPtrFactory<FilesPolicyDialog> weak_factory_{this};
 };
 
 }  // namespace policy

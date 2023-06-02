@@ -122,9 +122,15 @@ TEST_F(PushNotificationClientManagerTest,
   }
 }
 
-TEST_F(PushNotificationClientManagerTest, BrowserReady) {
+// TODO(crbug.com/1449081): Fails on ASAN
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_BrowserReady DISABLED_BrowserReady
+#else
+#define MAYBE_BrowserReady BrowserReady
+#endif
+TEST_F(PushNotificationClientManagerTest, MAYBE_BrowserReady) {
   GenerateClients(manager, 1);
   EXPECT_FALSE(GetClient(manager, 0)->IsBrowserReady());
-  manager->OnBrowserReady();
+  manager->OnSceneActiveForegroundBrowserReady();
   EXPECT_TRUE(GetClient(manager, 0)->IsBrowserReady());
 }

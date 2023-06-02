@@ -106,7 +106,6 @@ extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 
 BASE_DECLARE_FEATURE(kTabGroupsSave);
-BASE_DECLARE_FEATURE(kTabGroupsSaveSyncIntegration);
 
 BASE_DECLARE_FEATURE(kTabHoverCardImages);
 

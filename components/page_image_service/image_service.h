@@ -14,11 +14,16 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/consent_throttle.h"
+
+class AutocompleteSchemeClassifier;
+class RemoteSuggestionsService;
+class SearchTermsData;
+class TemplateURL;
+class TemplateURLService;
 
 namespace optimization_guide {
 class NewOptimizationGuideDecider;
@@ -37,10 +42,12 @@ class ImageService : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 
-  ImageService(
-      std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
-      optimization_guide::NewOptimizationGuideDecider* opt_guide,
-      syncer::SyncService* sync_service);
+  ImageService(TemplateURLService* template_url_service,
+               RemoteSuggestionsService* remote_suggestions_service,
+               optimization_guide::NewOptimizationGuideDecider* opt_guide,
+               syncer::SyncService* sync_service,
+               std::unique_ptr<AutocompleteSchemeClassifier>
+                   autocomplete_scheme_classifier);
   ImageService(const ImageService&) = delete;
   ImageService& operator=(const ImageService&) = delete;
 
@@ -84,7 +91,10 @@ class ImageService : public KeyedService {
 
   // Fetches an image from Suggest appropriate for `search_query` and
   // `entity_id`, returning the result asynchronously to `callback`.
-  void FetchSuggestImage(const std::u16string& search_query,
+  void FetchSuggestImage(const TemplateURL* template_url,
+                         const SearchTermsData& search_terms_data,
+                         mojom::ClientId client_id,
+                         const std::u16string& search_query,
                          const std::string& entity_id,
                          ResultCallback callback);
 
@@ -115,11 +125,9 @@ class ImageService : public KeyedService {
           optimization_guide::OptimizationGuideDecisionWithMetadata>&
           decisions);
 
-  // Autocomplete provider client used to make Suggest image requests.
-  std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
-
-  // Non-owning pointer to the Optimization Guide source of images.
-  // Will be left as nullptr if the OptimizationGuide feature is disabled.
+  // Non-owning pointers to service dependencies. They may be nullptr.
+  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
+  raw_ptr<RemoteSuggestionsService> remote_suggestions_service_ = nullptr;
   raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_ = nullptr;
 
   // The History consent throttle, used for most clients.
@@ -127,6 +135,9 @@ class ImageService : public KeyedService {
 
   // The Bookmarks consent throttle.
   unified_consent::ConsentThrottle bookmarks_consent_throttle_;
+
+  // Used to make proper suggest requests.
+  std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier_;
 
   // Stores all the Optimization Guide requests that are still waiting to be
   // aggregated into a batch and sent. When sent in a batch, the requests are

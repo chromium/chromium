@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -206,6 +207,9 @@ void CloudExternalDataManagerBase::Backend::Disconnect() {
 void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
     std::unique_ptr<Metadata> metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/282186756): temporary log
+  LOG(WARNING) << "External data references updated";
+
   metadata_set_ = true;
   Metadata old_metadata;
   metadata_.swap(old_metadata);
@@ -260,6 +264,8 @@ void CloudExternalDataManagerBase::Backend::Fetch(
     const MetadataKey& key,
     ExternalDataFetcher::FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/282186756): temporary log
+  LOG(WARNING) << "Start fetching external data for policy " << key.policy;
 
   Metadata::const_iterator metadata = metadata_.find(key);
   if (metadata == metadata_.end()) {
@@ -348,6 +354,8 @@ void CloudExternalDataManagerBase::Backend::RunCallback(
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/282186756): temporary log
+  LOG(WARNING) << "Posting a task to run the callback with external data";
   callback_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(data), file_path));
@@ -503,6 +511,9 @@ void CloudExternalDataManagerBase::Fetch(
     const std::string& field_name,
     ExternalDataFetcher::FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/282186756): temporary log
+  LOG(WARNING) << "Posting a task to start fetching external data for policy "
+               << policy;
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Backend::Fetch, base::Unretained(backend_.get()),

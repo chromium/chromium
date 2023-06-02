@@ -25,7 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.test.R;
 
 /**
- * Tests for {@link BaseSuggestionViewProcessor}.
+ * Tests for {@link SuggestionSpannable}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)

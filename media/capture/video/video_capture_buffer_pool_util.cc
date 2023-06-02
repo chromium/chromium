@@ -46,8 +46,13 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // On Windows, for GMB backed zero-copy more buffers are needed because it's
   // routinely observed that it runs out of default buffer count when just
   // displaying 60 FPS media in a video element
+
+  // It's confirmed that MFCaptureEngine may terminate the capture with
+  // MF_E_SAMPLEALLOCATOR_EMPTY error if more than 10 buffers are held by the
+  // client. Usually there are 3-5 frames in flight, unless there's some
+  // micro-freeze in the renderer or the gpu service.
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-    max_buffer_count = 30;
+    max_buffer_count = 10;
   }
 #endif
 

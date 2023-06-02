@@ -163,8 +163,8 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   // Protects use of gl_ so LoseContext and
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
   base::Lock gl_lock_;
-  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
-  raw_ptr<viz::TestSharedImageInterface> sii_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface, DanglingUntriaged> gl_ = nullptr;
+  raw_ptr<viz::TestSharedImageInterface, DanglingUntriaged> sii_ = nullptr;
 
   int times_to_fail_create_;
   int times_to_lose_during_commit_;
@@ -698,7 +698,7 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
  protected:
   bool lose_after_evict_;
   FakeContentLayerClient client_;
-  raw_ptr<LayerTreeHostImpl> impl_host_;
+  raw_ptr<LayerTreeHostImpl, DanglingUntriaged> impl_host_;
   int num_commits_;
   bool lost_context_;
 };

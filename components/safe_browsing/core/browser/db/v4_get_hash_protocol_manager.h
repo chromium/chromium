@@ -42,11 +42,6 @@ namespace safe_browsing {
 
 class V4GetHashProtocolManagerFuzzer;
 
-// The matching hash prefixes and corresponding stores, for each full hash
-// generated for a given URL.
-typedef std::unordered_map<FullHashStr, StoreAndHashPrefixes>
-    FullHashToStoreAndHashPrefixesMap;
-
 // ----------------------------------------------------------------
 
 // All information about a particular full hash i.e. negative TTL, store for

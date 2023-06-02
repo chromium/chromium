@@ -54,6 +54,7 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   int embed_count = 0;
 
   AggregatedRenderPassId remapped_id;
+  CompositorRenderPassId render_pass_id;
   bool is_root = false;
   std::vector<ResolvedQuadData> draw_quads;
 };
@@ -109,6 +110,27 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   bool will_draw = false;
 };
 
+struct ParentClipData {
+  ParentClipData();
+  ParentClipData(ParentClipData&& other);
+  ParentClipData& operator=(ParentClipData& other);
+  ParentClipData& operator=(const ParentClipData& other);
+  ParentClipData& operator=(ParentClipData&& other);
+  ~ParentClipData();
+
+  enum MergeState { kInitState, kNotMerged, kAlwaysMerged, kSomeTimesMerged };
+
+  // The intersection of all render pass output rects, RenderPassDrawQuad rect,
+  // SurfaceDrawQuad rect, and clip rects from its ancestor render passes and
+  // surface. This is the max size this render pass can be rendered into the
+  // root surface. |parent_clip_rect| is in the dest root target space.
+  gfx::Rect parent_clip_rect;
+
+  // Whether the render passes is merged with its parent render pass. The render
+  // mighe be embedded multiple times and has different status each time.
+  MergeState merge_state = kInitState;
+};
+
 // Data associated with a CompositorRenderPass in a resolved frame. Has fixed
 // portion that does not change and an aggregation portion that does change.
 class VIZ_SERVICE_EXPORT ResolvedPassData {
@@ -122,6 +144,9 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
     return *fixed_.render_pass;
   }
   AggregatedRenderPassId remapped_id() const { return fixed_.remapped_id; }
+  CompositorRenderPassId render_pass_id() const {
+    return fixed_.render_pass_id;
+  }
   bool is_root() const { return fixed_.is_root; }
   const std::vector<ResolvedQuadData>& draw_quads() const {
     return fixed_.draw_quads;
@@ -139,6 +164,20 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   AggregationPassData& aggregation() { return aggregation_; }
   const AggregationPassData& aggregation() const { return aggregation_; }
 
+  ParentClipData& current_parent_clip_data() {
+    return current_parent_clip_data_;
+  }
+
+  ParentClipData& previous_parent_clip_data() {
+    return previous_parent_clip_data_;
+  }
+
+  const ParentClipData& previous_parent_clip_data() const {
+    return previous_parent_clip_data_;
+  }
+
+  void CopyAndResetParentClipData();
+
  private:
   friend class ResolvedFrameData;
 
@@ -147,6 +186,9 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
 
   // Data that will change each aggregation.
   AggregationPassData aggregation_;
+
+  ParentClipData current_parent_clip_data_;
+  ParentClipData previous_parent_clip_data_;
 };
 
 enum FrameDamageType {
@@ -168,7 +210,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
  public:
   ResolvedFrameData(DisplayResourceProvider* resource_provider,
                     Surface* surface,
-                    uint64_t prev_frame_index);
+                    uint64_t prev_frame_index,
+                    AggregatedRenderPassId prev_root_pass_id);
   ~ResolvedFrameData();
   ResolvedFrameData(ResolvedFrameData&& other) = delete;
   ResolvedFrameData& operator=(ResolvedFrameData&& other) = delete;
@@ -251,6 +294,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
  private:
   void RegisterWithResourceProvider();
+  void MoveParentClipDataFromPreviousFrame(
+      const std::vector<ResolvedPassData>& previoius_resolved_passes);
 
   const raw_ptr<DisplayResourceProvider> resource_provider_;
   const SurfaceId surface_id_;
@@ -268,6 +313,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
       aggregated_id_map_;
 
   uint64_t previous_frame_index_ = kInvalidFrameIndex;
+
+  const AggregatedRenderPassId prev_root_pass_id_;
 
   // Track if the this resolved frame was used this aggregation.
   bool used_in_aggregation_ = false;

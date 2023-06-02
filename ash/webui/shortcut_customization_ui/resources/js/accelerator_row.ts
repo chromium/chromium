@@ -15,7 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorInfo, AcceleratorSource, AcceleratorState, LayoutStyle, ShortcutProviderInterface, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
 import {isCustomizationDisabled} from './shortcut_utils.js';
 import {TextAcceleratorElement} from './text_accelerator.js';
 
@@ -138,14 +138,8 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
     return TextAcceleratorElement.getTextAcceleratorParts(infos);
   }
 
-  protected getFilteredAccelerators(accelerators: AcceleratorInfo[]):
-      AcceleratorInfo[] {
-    return accelerators.filter(
-        accel => accel.state !== AcceleratorState.kDisabledByUser);
-  }
-
   protected isEmptyList(infos: AcceleratorInfo[]): boolean {
-    return this.getFilteredAccelerators(infos).length === 0;
+    return infos.length === 0;
   }
 
   static get template(): HTMLTemplateElement {

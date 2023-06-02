@@ -82,7 +82,8 @@ class TestHelper {
 
     auto reporter_helper =
         std::make_unique<::reporting::UserEventReporterHelperTesting>(
-            reporting_enabled, /*is_kiosk_user=*/false, std::move(mock_queue));
+            reporting_enabled, /*should_report_user=*/true,
+            /*is_kiosk_user=*/false, std::move(mock_queue));
     return reporter_helper;
   }
 
@@ -278,9 +279,7 @@ TEST_P(PowerwashTest, PolicyEnabled) {
 
   // Fake a powerwash.
   if (remote_requested_) {
-    session_manager->StartRemoteDeviceWipe(
-        enterprise_management::SignedData(),
-        enterprise_management::PolicyFetchRequest::NONE);
+    session_manager->StartRemoteDeviceWipe(enterprise_management::SignedData());
   } else {
     session_manager->StartDeviceWipe();
   }
@@ -312,9 +311,7 @@ TEST_P(PowerwashTest, PolicyDisabled) {
 
   // Fake a powerwash.
   if (remote_requested_) {
-    session_manager->StartRemoteDeviceWipe(
-        enterprise_management::SignedData(),
-        enterprise_management::PolicyFetchRequest::NONE);
+    session_manager->StartRemoteDeviceWipe(enterprise_management::SignedData());
   } else {
     session_manager->StartDeviceWipe();
   }

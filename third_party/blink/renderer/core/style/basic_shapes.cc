@@ -29,13 +29,20 @@
 
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 
-#include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
+
+gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
+                                     const BasicShapeCenterCoordinate& center_y,
+                                     gfx::SizeF box_size) {
+  float x = FloatValueForLength(center_x.ComputedLength(), box_size.width());
+  float y = FloatValueForLength(center_y.ComputedLength(), box_size.height());
+  return gfx::PointF(x, y);
+}
 
 bool BasicShapeCircle::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapeCircle& other = To<BasicShapeCircle>(o);

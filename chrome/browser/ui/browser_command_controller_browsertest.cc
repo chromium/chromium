@@ -85,6 +85,40 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, DisableFind) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FIND));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       DisableCommandsInSingleTab) {
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(browser(), IDC_WINDOW_CLOSE_TABS_TO_RIGHT));
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(browser(), IDC_WINDOW_CLOSE_OTHER_TABS));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
+
+  // Add a new tab.
+  auto* tab_strip_model = browser()->tab_strip_model();
+  AddBlankTabAndShow(browser());
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(1, tab_strip_model->active_index());
+  // Active previous tab.
+  tab_strip_model->ActivateTabAt(0);
+  ASSERT_EQ(2, tab_strip_model->count());
+  ASSERT_EQ(0, tab_strip_model->active_index());
+
+  EXPECT_TRUE(
+      chrome::IsCommandEnabled(browser(), IDC_WINDOW_CLOSE_TABS_TO_RIGHT));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_WINDOW_CLOSE_OTHER_TABS));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
+
+  // Close the newly added tab.
+  tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  ASSERT_EQ(1, tab_strip_model->count());
+
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(browser(), IDC_WINDOW_CLOSE_TABS_TO_RIGHT));
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(browser(), IDC_WINDOW_CLOSE_OTHER_TABS));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        NewAvatarMenuEnabledInGuestMode) {

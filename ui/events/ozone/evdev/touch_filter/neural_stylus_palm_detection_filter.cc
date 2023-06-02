@@ -193,14 +193,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
   slots_to_suppress->reset();
   std::unordered_set<int> slots_to_decide;
   std::vector<int> ended_tracking_ids;
-  uint32_t total_finger_touching = 0;
   for (const auto& touch : touches) {
-    if (touch.touching && touch.tool_code != BTN_TOOL_PEN) {
-      total_finger_touching++;
-      if (!touch.was_touching) {
-        shared_palm_state_->latest_finger_touch_time = time;
-      }
-    }
     // Ignore touch events that are not touches.
     if (!touch.touching && !touch.was_touching) {
       continue;
@@ -302,9 +295,6 @@ void NeuralStylusPalmDetectionFilter::Filter(
     }
     is_palm_.set(slot, DetectSpuriousStroke(ExtractFeatures(tracking_id),
                                             model_->config().output_threshold));
-    if (is_palm_.test(slot)) {
-      shared_palm_state_->latest_palm_touch_time = time;
-    }
   }
 
   for (const int tracking_id : ended_tracking_ids) {
@@ -313,10 +303,6 @@ void NeuralStylusPalmDetectionFilter::Filter(
 
   *slots_to_suppress |= is_palm_;
   *slots_to_hold |= is_delay_;
-
-  shared_palm_state_->active_palm_touches = is_palm_.count();
-  shared_palm_state_->active_finger_touches =
-      total_finger_touching - is_palm_.count();
 }
 
 bool NeuralStylusPalmDetectionFilter::ShouldDecideStroke(

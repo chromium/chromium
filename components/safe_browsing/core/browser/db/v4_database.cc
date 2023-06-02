@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -56,6 +57,23 @@ std::vector<ListIdentifier> VerifyChecksums(
     }
   }
   return stores_to_reset;
+}
+
+// Returns hash prefixes matching the collection of stores.
+FullHashToStoreAndHashPrefixesMap CheckStores(
+    const std::vector<FullHashStr>& full_hashes,
+    std::vector<std::pair<ListIdentifier, V4Store*>> stores) {
+  FullHashToStoreAndHashPrefixesMap results;
+  for (const auto& store : stores) {
+    for (const auto& full_hash : full_hashes) {
+      HashPrefixStr hash_prefix =
+          store.second->GetMatchingHashPrefix(full_hash);
+      if (!hash_prefix.empty()) {
+        results[full_hash].emplace_back(store.first, hash_prefix);
+      }
+    }
+  }
+  return results;
 }
 
 }  // namespace
@@ -274,21 +292,33 @@ bool V4Database::AreAllStoresAvailable(
 }
 
 void V4Database::GetStoresMatchingFullHash(
-    const FullHashStr& full_hash,
+    const std::vector<FullHashStr>& full_hashes,
     const StoresToCheck& stores_to_check,
-    StoreAndHashPrefixes* matched_store_and_hash_prefixes) {
+    base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
+  FullHashToStoreAndHashPrefixesMap results;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
-  matched_store_and_hash_prefixes->clear();
+
+  std::vector<std::pair<ListIdentifier, V4Store*>> stores;
   for (const ListIdentifier& identifier : stores_to_check) {
-    if (!IsStoreAvailable(identifier))
+    if (!IsStoreAvailable(identifier)) {
       continue;
+    }
     const auto& store_pair = store_map_->find(identifier);
     DCHECK(store_pair != store_map_->end());
-    const std::unique_ptr<V4Store>& store = store_pair->second;
-    HashPrefixStr hash_prefix = store->GetMatchingHashPrefix(full_hash);
-    if (!hash_prefix.empty()) {
-      matched_store_and_hash_prefixes->emplace_back(identifier, hash_prefix);
-    }
+    stores.emplace_back(identifier, store_pair->second.get());
+  }
+
+  auto check_stores =
+      base::BindOnce(CheckStores, full_hashes, std::move(stores));
+
+  if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
+      kMmapSafeBrowsingDatabaseAsync.Get()) {
+    // The V4Stores ptrs are guaranteed to be valid because their deletion would
+    // be sequenced on the DB thread, after this posted task is serviced.
+    db_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, std::move(check_stores), std::move(callback));
+  } else {
+    std::move(callback).Run(std::move(check_stores).Run());
   }
 }
 

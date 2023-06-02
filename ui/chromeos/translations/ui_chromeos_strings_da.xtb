@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Engelsk (USA) med Dvorak-tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Åbner Linux-filer...</translation>
 <translation id="1547964879613821194">Canadisk (engelsk)</translation>
 <translation id="1556189134700913550">Anvend på alle</translation>
 <translation id="1561842594491319104">Chrome-enheder</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google-website</translation>
 <translation id="1853795129690976061">Denne mappe deles med Linux</translation>
 <translation id="1864756863218646478">Filen blev ikke fundet.</translation>
+<translation id="1877377730633446520">Dette kræver ca. <ph name="REQUIRED_SPACE" /> ledig plads. Du har i øjeblikket <ph name="FREE_SPACE" /> ledig plads.</translation>
 <translation id="1884013283844450420">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, opret forbindelse</translation>
 <translation id="1920670151694390848">Malayalam translitteration</translation>
 <translation id="1920798810075583923">Vandmelon</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Udvid paneler med feedback til filer</translation>
 <translation id="1995337122023280937">Gå til filplacering</translation>
 <translation id="2001796770603320721">Administrer i Drev</translation>
+<translation id="2004942826429452291">Filerne gemmes i skyen og på denne Chromebook.</translation>
 <translation id="2009067268969781306">Formatering af et drev sletter alle de data, der er gemt på det. Denne handling kan ikke fortrydes.</translation>
 <translation id="2025955442973426285">Tigrinsk</translation>
 <translation id="2037845485764049925">Russisk</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Enhedsindstillinger</translation>
 <translation id="2084809735218147718">Siger tak på tegnsprog</translation>
 <translation id="2088690981887365033">VPN-netværk</translation>
+<translation id="2089751716171649322">Få nem adgang til dine Google Drev-filer, når du er offline</translation>
 <translation id="2111134541987263231">Aktivér <ph name="BEGIN_BOLD" />Tillad i inkognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementer slettes, og du kan ikke gendanne dem.</translation>
 <translation id="2122305276694332719">Vi anbefaler, at du ikke tillader automatisk forbindelse til skjulte netværk, da det gør det muligt for andre at se din enhed og visse netværksindstillinger.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Installer med Linux</translation>
 <translation id="2225536596944493418">Er du sikker på, at du vil slette <ph name="NUMBER_OF_ITEMS" /> elementer?</translation>
 <translation id="2230062665678605299">Mappen "<ph name="FOLDER_NAME" />" kunne ikke oprettes. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Din Google Drev-cache blev ryddet.</translation>
 <translation id="2239068707900391003">Person med kaffe</translation>
 <translation id="2251368349685848079">Gendan fra papirkurven</translation>
 <translation id="2278133026967558505">Filadgang for alle websites og webadresser</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fejl.</translation>
+<translation id="3501954296166022751">Dine Google Drev-filer er tilgængelige offline</translation>
 <translation id="3509680540198371098">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="3511705761158917664">Gør klar til synkronisere <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Hvis denne indstilling ændres, påvirker det alle delte netværk</translation>
 <translation id="3737576078404241332">Fjern fra sidebjælke</translation>
 <translation id="3749289110408117711">Filnavn</translation>
-<translation id="3780536599611287598">Du har ikke tilladelse til at flytte filer til "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Du er offline</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3793469551756281394">Cirka <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> tilbage</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Tilpassede navneservere</translation>
 <translation id="4465725236958772856">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, administreret af din administrator, opret forbindelse</translation>
 <translation id="4470564870223067757">Hangul 2-sæt</translation>
+<translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4474142134969976028">Der er ingen matchende resultater</translation>
 <translation id="4477002475007461989">Rumænsk</translation>
 <translation id="4477219268485577442">Bulgarsk (fonetisk)</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elementer gendannes</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Din organisation kræver en udvidelse, før du kan bruge inkognito}one{Din organisation kræver en udvidelse, før du kan bruge inkognito}other{Din organisation kræver nogle udvidelser, før du kan bruge inkognito}}</translation>
-<translation id="4823651846660089135">Enheden er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Indtast <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> i din browser</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5500122897333236901">Islandsk</translation>
 <translation id="5508696409934741614">Prikker</translation>
+<translation id="5519161320735100193">Google Drev-indstillinger</translation>
 <translation id="5522908512596376669">Der blev skiftet til listevisning for listen med filer.</translation>
 <translation id="5524517123096967210">Filen kunne ikke læses.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-billede</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Markeringen af alle elementer blev fjernet.</translation>
 <translation id="5838825566232597749">Internationalt amerikansk Workman</translation>
 <translation id="5845721951356578987">Sygeplejerske</translation>
+<translation id="5860491529813859533">Aktivér</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-opslag mislykkedes</translation>
 <translation id="5896749729057314184">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Automatisk registrering af webproxy</translation>
 <translation id="6337014272874260727">Frigør fra Genvej til foretrukne filer</translation>
 <translation id="6339145975392024142">Amerikansk internationalt (pc)</translation>
-<translation id="6346310558342052870">Begrænset adgang</translation>
 <translation id="6356685157277930264">Feedback i vinduet Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="636254897931573416">Ugyldig værdi for match af domænesuffiks</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebræisk</translation>
 <translation id="78104721049218340">Thai med kedmanee-tastatur</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Der opstod en fejl under konfigurationen af netværket</translation>
 <translation id="7839804798877833423">Hvis du henter disse filer, bruge du ca. <ph name="FILE_SIZE" /> mobildata.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Dine filer i Mit drev synkroniseres automatisk med din Chromebook, så du kan få adgang til dem uden en internetforbindelse.</translation>
 <translation id="7925247922861151263">AAA-kontrol mislykkedes</translation>
 <translation id="7925686952655276919">Brug ikke mobildata til synkronisering</translation>
 <translation id="7928710562641958568">Skub enheden ud</translation>
+<translation id="7933875256234974853">Forbereder synkronisering af Drev-filer...</translation>
 <translation id="7943385054491506837">Amerikansk (Colemak)</translation>
 <translation id="7953739707111622108">Denne enhed kan ikke åbnes, fordi dens filsystem ikke blev genkendt.</translation>
 <translation id="7969525169268594403">Slovensk</translation>
 <translation id="7972920761225148017">Fransk (Schweiz)</translation>
 <translation id="7973962044839454485">PPP-godkendelsen mislykkedes på grund af forkert brugernavn eller adgangskode</translation>
 <translation id="7980421588063892270">Engelsk (USA) med Colemak-tastatur</translation>
+<translation id="7985008041109611710">Synkroniserer <ph name="NUMBER_OF_FILES_SYNCING" /> filer</translation>
 <translation id="8000066093800657092">Intet netværk</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Størrelse</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Dansk</translation>
 <translation id="8949925099261528566">Forbundet – intet internet</translation>
 <translation id="8965697826696209160">Der er ikke nok plads.</translation>
+<translation id="8971742885766657349">Synkroniserer – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Kinesisk (traditionelt) pinyin</translation>
 <translation id="8998871447376656508">Der er ikke nok ledig plads i Google Drev til at gennemføre uploaden.</translation>
 <translation id="9003940392834790328">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, oplysninger</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Installationen er startet.</translation>
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="9219908252191632183">Måne</translation>
+<translation id="937795003075802289">Synkroniserer 1 fil</translation>
 <translation id="938470336146445890">Installer et brugercertifikat.</translation>
 <translation id="939736085109172342">Ny mappe</translation>
 <translation id="943972244133411984">Ændret af</translation>

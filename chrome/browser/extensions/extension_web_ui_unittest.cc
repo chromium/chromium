@@ -71,7 +71,7 @@ class ExtensionWebUITest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService> extension_service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

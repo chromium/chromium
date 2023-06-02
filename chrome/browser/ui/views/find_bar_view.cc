@@ -35,6 +35,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -156,6 +158,11 @@ FindBarView::FindBarView(FindBarHost* host) {
   const auto image_button_margins =
       toast_control_vertical_margin + vector_button_horizontal_margin;
 
+  // Align separator with textbox.
+  const auto chrome_refresh_separator_vertical_margin =
+      gfx::Insets::VH(views::LayoutProvider::Get()->GetDistanceMetric(
+                          views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+                      0);
   views::Builder<FindBarView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetInsideBorderInsets(gfx::Insets(
@@ -184,10 +191,13 @@ FindBarView::FindBarView(FindBarHost* host) {
           views::Builder<views::Separator>()
               .CopyAddressTo(&separator_)
               .SetCanProcessEventsWithinSubtree(false)
-              .SetColorId(kColorFindBarSeparator)
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets(toast_control_vertical_margin +
-                                       horizontal_margin)),
+              .SetColorId(ui::kColorSeparator)
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets(horizontal_margin +
+                              (features::IsChromeRefresh2023()
+                                   ? chrome_refresh_separator_vertical_margin
+                                   : toast_control_vertical_margin))),
           views::Builder<views::ImageButton>()
               .CopyAddressTo(&find_previous_button_)
               .SetAccessibleName(
@@ -447,7 +457,7 @@ void FindBarView::OnThemeChanged() {
       kColorFindBarBackground);
 
   border->SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium));
+      views::ShapeContextTokens::kFindBarViewRadius));
 
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
@@ -462,13 +472,19 @@ void FindBarView::OnThemeChanged() {
   const SkColor fg_disabled_color =
       color_provider->GetColor(kColorFindBarButtonIconDisabled);
   views::SetImageFromVectorIconWithColor(find_previous_button_,
-                                         vector_icons::kCaretUpIcon, fg_color,
-                                         fg_disabled_color);
-  views::SetImageFromVectorIconWithColor(find_next_button_,
-                                         vector_icons::kCaretDownIcon, fg_color,
-                                         fg_disabled_color);
+                                         features::IsChromeRefresh2023()
+                                             ? kKeyboardArrowUpChromeRefreshIcon
+                                             : vector_icons::kCaretUpIcon,
+                                         fg_color, fg_disabled_color);
+  views::SetImageFromVectorIconWithColor(
+      find_next_button_,
+      features::IsChromeRefresh2023() ? kKeyboardArrowDownChromeRefreshIcon
+                                      : vector_icons::kCaretDownIcon,
+      fg_color, fg_disabled_color);
   views::SetImageFromVectorIconWithColor(close_button_,
-                                         vector_icons::kCloseRoundedIcon,
+                                         features::IsChromeRefresh2023()
+                                             ? kCloseChromeRefreshIcon
+                                             : vector_icons::kCloseRoundedIcon,
                                          fg_color, fg_disabled_color);
 }
 

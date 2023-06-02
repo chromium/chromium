@@ -22,6 +22,8 @@ class PromiseAppUpdate {
   PromiseAppUpdate(const PromiseAppUpdate&) = delete;
   PromiseAppUpdate& operator=(const PromiseAppUpdate&) = delete;
 
+  bool operator==(const PromiseAppUpdate&) const;
+
   const PackageId& PackageId() const;
 
   // Indicates the app name for the package. If app name is not known or still
@@ -51,6 +53,8 @@ class PromiseAppUpdate {
   raw_ptr<const PromiseApp> state_ = nullptr;
   raw_ptr<const PromiseApp> delta_ = nullptr;
 };
+
+std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update);
 
 }  // namespace apps
 

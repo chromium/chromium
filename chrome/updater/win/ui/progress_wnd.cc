@@ -152,7 +152,7 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
                                   WPARAM w_param,
                                   LPARAM l_param,
                                   BOOL& handled) {
-  // TODO(sorin): remove this when https://crbug.com/1010653 is fixed.
+  // TODO(crbug.com/1010653): remove this when the bug is fixed.
   HideWindowChildren(*this);
 
   InitializeDialog();
@@ -358,7 +358,7 @@ void ProgressWnd::OnDownloading(const std::u16string& app_id,
 
   std::wstring s;
 
-  // TODO(sorin): should use base::TimeDelta, https://crbug.com/1016921
+  // TODO(crbug.com/1016921): use base::TimeDelta.
   int time_remaining_sec = CeilingDivide(time_remaining_ms, kMsPerSec);
   if (is_canceled_) {
     s = GetLocalizedString(IDS_CANCELING_BASE);
@@ -417,7 +417,7 @@ void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
   }
 }
 
-// TODO(crbug.com/1014591): handle the install cancellation.
+// TODO(crbug.com/1290331): handle the install cancellation.
 void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
                                      const std::u16string& app_name,
                                      bool* /*can_start_install*/) {
@@ -520,11 +520,6 @@ std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
     completion_texts.push_back(info.completion_text);
   }
 
-  // TODO(crbug.com/1353148): Legacy updater allows simple HTML elements in the
-  // completion message for better presentation of the installation result.
-  // Review if feature parity is needed, which also enables a better message
-  // layout.
-  //
   return base::JoinString(completion_texts, L"\n");
 }
 

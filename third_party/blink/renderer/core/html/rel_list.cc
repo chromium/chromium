@@ -24,21 +24,21 @@ static HashSet<AtomicString>& SupportedTokensLink() {
   // clang-format off
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
-                          "preload",
-                          "preconnect",
-                          "dns-prefetch",
-                          "stylesheet",
-                          "icon",
-                          "alternate",
-                          "prefetch",
-                          "prerender",
-                          "next",
-                          "manifest",
-                          "apple-touch-icon",
-                          "apple-touch-icon-precomposed",
-                          "canonical",
-                          "modulepreload",
-                          "allowed-alt-sxg",
+                          AtomicString("preload"),
+                          AtomicString("preconnect"),
+                          AtomicString("dns-prefetch"),
+                          AtomicString("stylesheet"),
+                          AtomicString("icon"),
+                          AtomicString("alternate"),
+                          AtomicString("prefetch"),
+                          AtomicString("prerender"),
+                          AtomicString("next"),
+                          AtomicString("manifest"),
+                          AtomicString("apple-touch-icon"),
+                          AtomicString("apple-touch-icon-precomposed"),
+                          AtomicString("canonical"),
+                          AtomicString("modulepreload"),
+                          AtomicString("allowed-alt-sxg"),
                       }));
   // clang-format on
 
@@ -48,9 +48,9 @@ static HashSet<AtomicString>& SupportedTokensLink() {
 static HashSet<AtomicString>& SupportedTokensAnchorAndAreaAndForm() {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
-                          "noreferrer",
-                          "noopener",
-                          "opener",
+                          AtomicString("noreferrer"),
+                          AtomicString("noopener"),
+                          AtomicString("opener"),
                       }));
 
   return tokens;

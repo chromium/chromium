@@ -296,14 +296,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("run_uninstall_cmd_line");
   }
 
-  void SetUpTestService() const override {
-    updater::test::RunTestServiceCommand("setup");
-  }
-
-  void TearDownTestService() const override {
-    updater::test::RunTestServiceCommand("teardown");
-  }
-
   void RunHandoff(const std::string& app_id) const override {
     RunCommand("run_handoff", {Param("app_id", app_id)});
   }

@@ -163,7 +163,7 @@
   }
 </style>
 
-<div id="root" on-click="onRootTap_">
+<div id="root" on-click="onRootClick_">
   <div id="pinInputDiv">
     <cr-input id="pinInput" type="password" value="{{value}}"
         is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
@@ -178,51 +178,51 @@
   </div>
   <div id="rowsContainer">
     <div class="row">
-      <cr-button class="digit-button" on-click="onNumberTap_" value="1"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="1"
           id="digitButton1" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard1')]]</inner-text>
       </cr-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="2"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="2"
           id="digitButton2" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard2')]]</inner-text>
       </cr-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="3"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="3"
           id="digitButton3" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard3')]]</inner-text>
       </cr-button>
     </div>
     <div class="row">
-      <cr-button class="digit-button" on-click="onNumberTap_" value="4"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="4"
           id="digitButton4" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard4')]]</inner-text>
       </cr-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="5"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="5"
           id="digitButton5" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard5')]]</inner-text>
       </cr-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="6"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="6"
           id="digitButton6" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard6')]]</inner-text>
       </cr-button>
     </div>
     <div class="row">
-      <cr-button class="digit-button" on-click="onNumberTap_" value="7"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="7"
           id="digitButton7" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard7')]]</inner-text>
       </cr-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="8"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="8"
           id="digitButton8" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard8')]]</inner-text>
       </cr-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="9"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="9"
           id="digitButton9" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard9')]]</inner-text>
@@ -232,7 +232,7 @@
       <cr-icon-button id="backspaceButton"
           disabled$="[[!hasInput_(value)]]"
           iron-icon="pin-keyboard:backspace"
-          on-click="onBackspaceTap_"
+          on-click="onBackspaceClick_"
           on-pointerdown="onBackspacePointerDown_"
           on-pointerout="clearAndReset_"
           on-pointerup="onBackspacePointerUp_"
@@ -240,7 +240,7 @@
           title="[[i18n('pinKeyboardDeleteAccessibleName')]]"
           custom-tab-index="-1">
       </cr-icon-button>
-      <cr-button class="digit-button" on-click="onNumberTap_" value="0"
+      <cr-button class="digit-button" on-click="onNumberClick_" value="0"
           id="digitButton0" disabled="[[disabled]]" circle-ripple
           custom-tab-index="-1">
         <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>

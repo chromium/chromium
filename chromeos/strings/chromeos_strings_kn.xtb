@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="1018219910092211213">DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="1022433422498218992">ಸಾಮಾನ್ಯ ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
+<translation id="1020274983236703756">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ <ph name="PRODUCT_NAME" /> ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿವೆ</translation>
 <translation id="1022628058306505708">ಅರ್ಥ್ ಫ್ಲೋ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">ಪ್ರಮಾಣೀಕರಣದ ಪ್ರಕಾರ</translation>
 <translation id="1776228893584526149">ವಾಲ್‌ಪೇಪರ್ ಟೋನ್</translation>
 <translation id="1782199038061388045">ಅನುವಾದ</translation>
-<translation id="1790209694022261219">ವಿಂಡೋಗಳು ಮತ್ತು ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="1792647875738159689">ಸ್ಕ್ಯಾನಿಂಗ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1801418420130173017">ಡಾರ್ಕ್‌ ಥೀಮ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
 <translation id="1827738518074806965">ಆರ್ಟ್ ಗ್ಯಾಲರಿ</translation>
+<translation id="1836553715834333258">ಸಿಸ್ಟಮ್ ಬಣ್ಣ</translation>
 <translation id="1838374766361614909">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ</translation>
+<translation id="1840474674287087346">ಡೆಸ್ಕ್‌ಟಾಪ್ ಬಣ್ಣ</translation>
 <translation id="1851218745569890714">ವೀಡಿಯೊ ಕಾನ್ಫರೆನ್ಸಿಂಗ್</translation>
 <translation id="1852934301711881861">ChromeOS Flex ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="1856388568474281774">ಡೌನ್ ಆ್ಯರೋ</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">ಬ್ರೌಸರ್ ನ್ಯಾವಿಗೇಷನ್</translation>
 <translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
-<translation id="2902312830803030883">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="2940811910881150316">ಸಾಧನವನ್ನು ಪರೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪರೀಕ್ಷಿಸಲು ಮುಚ್ಚಳವನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</translation>
-<translation id="2981143481017883351">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ Chromebook ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿದೆ</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3017079585324758401">ಹಿನ್ನೆಲೆ</translation>
-<translation id="3020183492814296499">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3027578600144895987">ಕ್ಯಾಮರಾವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3031560714565892478">ಸಾಧನವು ವೀಡಿಯೊ ಕ್ಯಾಮರಾ ಆಗಿದೆ.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3226657629376379887">ಲೇಔಟ್ ಕ್ರಿಯೆಗಳ ಮೆನು</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
 <translation id="3268178239013324452">ವಿಫಲವಾಗಿದೆ - ಡೋರ್ ತೆರೆದಿದೆ</translation>
 <translation id="3275729367986477355">ಅವತಾರ್ ಚಿತ್ರ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ಫೈಲ್ ಎಡಿಟ್ ಮಾಡಿ}one{ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ}other{ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">ಕೀ ನಿರ್ದೇಶನ</translation>
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
 <translation id="3303855915957856445">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
 <translation id="3310640316857623290">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಗಮನಾರ್ಹವಾಗಿ ಮೇಲಿದೆ</translation>
 <translation id="3328783797891415197">ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3340011300870565703">ಸಾಧನದ ಬಲ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369013195428705271">ಎಲ್ಲಾ ಪ್ರಿಂಟ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? ಪ್ರಸ್ತುತ ಚಾಲನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ ಪ್ರಿಂಟ್ ಕಾರ್ಯವನ್ನು ತೆರವುಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
-<translation id="3386675685417744672">Chromebook ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
 <translation id="3404249063913988450">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3413935475507503304">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು, ಮುಂದಿನದು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್</translation>
 <translation id="3639846061339007994">ಮೇಲೆ</translation>
 <translation id="3651050199673793219">ತಾಪಮಾನ ಘಟಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ ಆರ್ಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ</translation>
 <translation id="370665806235115550">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="3708186454126126312">ಮುಂಚೆ ಕನೆಕ್ಟ್ ಮಾಡಿದವು</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="4054683689023980771">ಚಿತ್ರವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4060260348856573701">ಹೊಸ APN</translation>
-<translation id="4079743696465895866">Chromebook ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ ಆರ್ಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4093865285251893588">ಪ್ರೊಫೈಲ್ ಚಿತ್ರ</translation>
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ಟಚ್‌ಪ್ಯಾಡ್</translation>
+<translation id="4113067922640381334">ನೀವೀಗ ಹೊಸ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ವಾಲ್‌ಪೇಪರ್‌ಗಳಿಗೆ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="4117637339509843559">ಕತ್ತಲೆ ಮೋಡ್</translation>
 <translation id="4130035430755296270">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಹೋವರ್ ಮಾಡುತ್ತಿರಿ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">ಇದರಲ್ಲಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4500966230243561393">ಇಂಟರ್‌ಫೇಸ್ ಬಣ್ಣ</translation>
 <translation id="4503223151711056411">ಲೆಫ್ಟ್ ಆ್ಯರೋ</translation>
 <translation id="4507392511610824664">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="4511264077854731334">ಪೋರ್ಟಲ್</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">ಪರೀಕ್ಷೆ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ತಟಸ್ಥವಾಗಿದ್ದಾಗ, ಫೋಟೋಗಳು, ಸಮಯ, ತಾಪಮಾನ ಮತ್ತು ಮೀಡಿಯಾ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ.</translation>
+<translation id="5035083460461104704">ಥೀಮ್ ಬಣ್ಣ</translation>
 <translation id="5038292761217083259">ಕೀಬೋರ್ಡ್ ಮಲ್ಟಿಕಲರ್</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5049856988445523908">ಸಿಮ್ ಲಾಕ್ ಆಗಿದೆ (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">ಎಂಜಿನ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5984145644188835034">ಡೀಫಾಲ್ಟ್ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="6017514345406065928">ಹಸಿರು</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ಸ್ವಯಂಚಾಲಿತ ಮಾಸಿಕ ರೀಸೆಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6037291330010597344">ಸ್ಕ್ಯಾನರ್‌ನ ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ ಖಾಲಿಯಾಗಿದೆ. ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳನ್ನು ಸೇರಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">ತಟಸ್ಥ</translation>
 <translation id="7620771111601174153">ಸಹಾಯ ಕೇಂದ್ರದಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="763165478673169849">ಕೊನೆಯದಾಗಿ ರೀಸೆಟ್ ಮಾಡಿದ ಸಮಯ</translation>
+<translation id="7633068090678117093">ಹಿನ್ನೆಲೆಯ ಚಿತ್ರ</translation>
 <translation id="7648838807254605802">ಅಧಿಕ HTTPS ವಿಳಂಬ</translation>
 <translation id="765159867434478292">ಸ್ಪ್ಲಿಟ್</translation>
 <translation id="7656388927906093505">ಸಾಧನವು ಮೌಸ್ ಆಗಿದೆ.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8593058461203131755">ಮಾಧ್ಯಮವನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="8620617069779373398">ರೋಮಿಂಗ್ ಸ್ಥಿತಿ</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="86356131183441916">ತಿಳಿ ನೇರಳೆ</translation>
 <translation id="8651481478098336970">ವಾಲ್ಯೂಮ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">ಪೀಯರ್</translation>
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
 <translation id="8936793075252196307">ಕ್ಲೈಂಟ್ IP ವಿಳಾಸ</translation>
+<translation id="8944651180182756621">ಲಾಂಚರ್ ಬಣ್ಣ</translation>
 <translation id="894617464444543719">ಸಾಧನವು ಫೋನ್ ಆಗಿದೆ.</translation>
 <translation id="8957423540740801332">ಬಲಕ್ಕೆ</translation>
 <translation id="8968751544471797276">ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">ಮೆಮೊರಿ ಪರೀಕ್ಷೆ ರನ್ ಮಾಡಿ</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
+<translation id="9174334653006917325">UI ಬಣ್ಣ</translation>
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>
 <translation id="9188992814426075118">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಾಣಿಕೆಯಾಗಬಹುದು</translation>
 <translation id="9189000703457422362">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಯಾದ APN ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>

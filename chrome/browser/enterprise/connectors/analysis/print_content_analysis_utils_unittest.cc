@@ -131,9 +131,7 @@ class PrintTestContentAnalysisDelegate : public ContentAnalysisDelegate {
   void UploadPageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override {
-    // TODO(b/278784312): Add assertions on this like the expected printer name
-    // here.
-
+    ASSERT_EQ(request->printer_name(), kPrinterName);
     PageRequestCallback(safe_browsing::BinaryUploadService::Result::SUCCESS,
                         CreateResponse(action_));
   }
@@ -176,7 +174,7 @@ class PrintContentAnalysisUtilsTest
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_.MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+    RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
 
@@ -241,8 +239,7 @@ TEST_P(PrintContentAnalysisUtilsTest, ReportOnly) {
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*source*/ "",
-      // TODO(b/278784312): Add the expected printer name here.
-      /*destination*/ "",
+      /*destination*/ kPrinterName,
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
@@ -284,8 +281,7 @@ TEST_P(PrintContentAnalysisUtilsTest, WarnThenCancel) {
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*source*/ "",
-      // TODO(b/278784312): Add the expected printer name here.
-      /*destination*/ "",
+      /*destination*/ kPrinterName,
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
@@ -329,8 +325,7 @@ TEST_P(PrintContentAnalysisUtilsTest, WarnedThenBypass) {
       validator.ExpectSensitiveDataEvent(
           /*url*/ "",
           /*source*/ "",
-          // TODO(b/278784312): Add the expected printer name here.
-          /*destination*/ "",
+          /*destination*/ kPrinterName,
           /*filename*/ "New Tab",
           /*sha*/ "",
           /*trigger*/
@@ -355,8 +350,7 @@ TEST_P(PrintContentAnalysisUtilsTest, WarnedThenBypass) {
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*source*/ "",
-      // TODO(b/278784312): Add the expected printer name here.
-      /*destination*/ "",
+      /*destination*/ kPrinterName,
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
@@ -392,8 +386,7 @@ TEST_P(PrintContentAnalysisUtilsTest, Blocked) {
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*source*/ "",
-      // TODO(b/278784312): Add the expected printer name here.
-      /*destination*/ "",
+      /*destination*/ kPrinterName,
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/

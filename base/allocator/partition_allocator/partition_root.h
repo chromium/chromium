@@ -180,6 +180,11 @@ struct PartitionOptions {
     kIfAvailable,
   };
 
+  enum class MemoryTagging : uint8_t {
+    kEnabled,
+    kDisabled,
+  };
+
   AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
   ThreadCache thread_cache = ThreadCache::kDisabled;
   Quarantine quarantine = Quarantine::kDisallowed;
@@ -187,6 +192,7 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size;
+  MemoryTagging memory_tagging = MemoryTagging::kDisabled;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif
@@ -250,7 +256,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
-
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    bool memory_tagging_enabled_ = false;
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+    size_t ref_count_size;
+#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
 #endif
@@ -415,13 +426,13 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE void RecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
-      PageAccessibilityDisposition accessibility_disposition)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PageAccessibilityDisposition accessibility_disposition,
+      bool request_tagging) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   PA_ALWAYS_INLINE bool TryRecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
-      PageAccessibilityDisposition accessibility_disposition)
-      PA_LOCKS_EXCLUDED(lock_);
+      PageAccessibilityDisposition accessibility_disposition,
+      bool request_tagging) PA_LOCKS_EXCLUDED(lock_);
 
   [[noreturn]] PA_NOINLINE void OutOfMemory(size_t size);
 
@@ -501,7 +512,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE static size_t GetUsableSizeWithMac11MallocSizeHack(
       void* ptr);
 
-  PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
+  PA_ALWAYS_INLINE PageAccessibilityConfiguration
+  GetPageAccessibility(bool request_tagging) const;
   PA_ALWAYS_INLINE PageAccessibilityConfiguration
       PageAccessibilityWithThreadIsolationIfEnabled(
           PageAccessibilityConfiguration::Permissions) const;
@@ -1149,16 +1161,11 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeWithFlags(
   FreeNoHooks(object);
 }
 
-// Returns whether MTE is supported for this partition root. Because MTE stores
-// tagging information in the high bits of the pointer, it causes issues with
-// components like V8's ArrayBuffers which use custom pointer representations.
-// All custom representations encountered so far rely on an "is in configurable
-// pool?" check, so we use that as a proxy.
 template <bool thread_safe>
 PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsMemoryTaggingEnabled()
     const {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return !flags.use_configurable_pool;
+  return flags.memory_tagging_enabled_;
 #else
   return false;
 #endif
@@ -1213,11 +1220,18 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
     if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
       // slot_span is untagged at this point, so we have to recover its tag
       // again to increment and provide use-after-free mitigations.
-      internal::TagMemoryRangeIncrement(internal::TagAddr(slot_start),
-                                        slot_size);
+      uintptr_t slot_start_to_object_delta = object_addr - slot_start;
+      size_t tag_size = slot_size;
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      tag_size -= root->flags.ref_count_size;
+#endif
+      void* retagged_slot_start = internal::TagMemoryRangeIncrement(
+          internal::TagAddr(slot_start), tag_size);
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
-      object = internal::TagPtr(object);
+      object = reinterpret_cast<void*>(
+          reinterpret_cast<uintptr_t>(retagged_slot_start) +
+          slot_start_to_object_delta);
     }
   }
 #else
@@ -1615,15 +1629,17 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
-    PageAccessibilityDisposition accessibility_disposition) {
+    PageAccessibilityDisposition accessibility_disposition,
+    bool request_tagging) {
   internal::ScopedSyscallTimer timer{this};
 
-  bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+  auto page_accessibility = GetPageAccessibility(request_tagging);
+  bool ok = TryRecommitSystemPages(address, length, page_accessibility,
                                    accessibility_disposition);
   if (PA_UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
     DecommitEmptySlotSpans();
-    RecommitSystemPages(address, length, GetPageAccessibility(),
+    RecommitSystemPages(address, length, page_accessibility,
                         accessibility_disposition);
   }
 
@@ -1634,9 +1650,12 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
-    PageAccessibilityDisposition accessibility_disposition) {
+    PageAccessibilityDisposition accessibility_disposition,
+    bool request_tagging) {
   internal::ScopedSyscallTimer timer{this};
-  bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+
+  auto page_accessibility = GetPageAccessibility(request_tagging);
+  bool ok = TryRecommitSystemPages(address, length, page_accessibility,
                                    accessibility_disposition);
   if (PA_UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
@@ -1644,7 +1663,7 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
       ::partition_alloc::internal::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
     }
-    ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+    ok = TryRecommitSystemPages(address, length, page_accessibility,
                                 accessibility_disposition);
   }
 
@@ -1710,11 +1729,11 @@ PartitionRoot<thread_safe>::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
 // PartitionRoots supporting it.
 template <bool thread_safe>
 PA_ALWAYS_INLINE PageAccessibilityConfiguration
-PartitionRoot<thread_safe>::GetPageAccessibility() const {
+PartitionRoot<thread_safe>::GetPageAccessibility(bool request_tagging) const {
   PageAccessibilityConfiguration::Permissions permissions =
       PageAccessibilityConfiguration::kReadWrite;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  if (IsMemoryTaggingEnabled()) {
+  if (IsMemoryTaggingEnabled() && request_tagging) {
     permissions = PageAccessibilityConfiguration::kReadWriteTagged;
   }
 #endif

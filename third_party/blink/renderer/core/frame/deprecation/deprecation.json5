@@ -125,7 +125,7 @@
       web_features: [
         "kCrossOriginAccessBasedOnDocumentDomain",
       ],
-      milestone: 109,
+      milestone: 115,
     },
     {
       name: "CrossOriginWindowAlert",
@@ -159,7 +159,7 @@
       web_features: [
         "kDocumentDomainSettingWithoutOriginAgentClusterHeader",
       ],
-      milestone: 109,
+      milestone: 115,
     },
     {
       name: "DOMMutationEvents",
@@ -175,16 +175,6 @@
       ],
       chrome_status_feature: 5083947249172480,
       milestone: 127,
-    },
-    {
-      name: "EventPath",
-      message: "`Event.path` is deprecated and will be removed. Please use `Event.composedPath()` instead.",
-      translation_note: "Warning displayed to developers when the non-standard `Event.path` API is used to notify them that this API is deprecated.",
-      web_features: [
-        "kEventPath",
-      ],
-      chrome_status_feature: 5726124632965120,
-      milestone: 109,
     },
     {
       name: "ExpectCTHeader",

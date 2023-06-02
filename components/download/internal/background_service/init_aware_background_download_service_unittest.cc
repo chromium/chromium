@@ -45,7 +45,7 @@ class InitAwareBackgroundDownloadServiceTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<test::MockController> controller_;
+  raw_ptr<test::MockController, DanglingUntriaged> controller_;
   std::unique_ptr<InitAwareBackgroundDownloadService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;

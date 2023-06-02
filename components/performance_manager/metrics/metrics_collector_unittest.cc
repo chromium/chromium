@@ -55,7 +55,7 @@ class MetricsCollectorTest : public GraphTestHarness {
   base::HistogramTester histogram_tester_;
 
  private:
-  raw_ptr<MetricsCollector> metrics_collector_ = nullptr;
+  raw_ptr<MetricsCollector, DanglingUntriaged> metrics_collector_ = nullptr;
 };
 
 TEST_F(MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {

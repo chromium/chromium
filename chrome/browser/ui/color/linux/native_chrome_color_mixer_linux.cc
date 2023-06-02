@@ -111,10 +111,4 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                            high_contrast);
   mixer[kColorToolbarTopSeparatorFrameInactive] = {
       kColorToolbarTopSeparatorFrameActive};
-
-  // Explicitly override certain colors for the NTP to those corresponding to
-  // the light theme. See crbug.com/998903. This logic will be removed once the
-  // NewTabPage comprehensive theming experiment has completed.
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpComprehensiveTheming))
-    AddWebThemeNewTabPageColors(mixer, false);
 }

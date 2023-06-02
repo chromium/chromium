@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dot_indicator.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
@@ -164,7 +165,8 @@ class ShelfAppButton::AppStatusIndicatorView
  public:
   METADATA_HEADER(AppStatusIndicatorView);
 
-  AppStatusIndicatorView() {
+  AppStatusIndicatorView()
+      : jelly_enabled_(chromeos::features::IsJellyEnabled()) {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
     status_change_animation_ = std::make_unique<gfx::SlideAnimation>(this);
@@ -186,17 +188,25 @@ class ShelfAppButton::AppStatusIndicatorView
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
+    if (!GetColorProvider()) {
+      return;
+    }
+
     gfx::ScopedCanvas scoped(canvas);
-    canvas->SaveLayerAlpha(GetAlpha());
+    if (!jelly_enabled_) {
+      canvas->SaveLayerAlpha(GetAlpha());
+    }
 
     const float dsf = canvas->UndoDeviceScaleFactor();
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
+    if (jelly_enabled_) {
+      flags.setColor(GetJellyColor());
+    } else {
+      flags.setColor(
+          GetColorProvider()->GetColor(kColorAshAppStateIndicatorColor));
+    }
     // Active and running indicators look a little different in the new UI.
-    flags.setColor(GetColorProvider()->GetColor(
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshAppStateIndicatorColor));
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
     flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);
@@ -236,6 +246,27 @@ class ShelfAppButton::AppStatusIndicatorView
 
     return active_ ? status_indicator_active_size
                    : status_indicator_running_size;
+  }
+
+  SkColor GetJellyColor() {
+    const SkColor active_color =
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface);
+    const SkColor inactive_color =
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSecondary);
+    if (show_attention_) {
+      if (!ShelfAppButtonAnimation::GetInstance()->HasObserver(this)) {
+        return active_color;
+      }
+      return SkColorSetA(active_color,
+                         ShelfAppButtonAnimation::GetInstance()->GetAlpha());
+    }
+
+    if (status_change_animation_->is_animating()) {
+      return gfx::Tween::ColorValueBetween(
+          status_change_animation_->GetCurrentValue(), inactive_color,
+          active_color);
+    }
+    return active_ ? active_color : inactive_color;
   }
 
   SkAlpha GetAlpha() {
@@ -306,6 +337,7 @@ class ShelfAppButton::AppStatusIndicatorView
       ShelfAppButtonAnimation::GetInstance()->RemoveObserver(this);
   }
 
+  const bool jelly_enabled_;
   bool show_attention_ = false;
   bool active_ = false;
   bool horizontal_shelf_ = true;
@@ -356,14 +388,15 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
         const gfx::Rect small_ripple_area = host->CalculateSmallRippleArea();
         const int ripple_size = host->shelf_view_->GetShelfItemRippleSize();
 
+        auto* const ink_drop = views::InkDrop::Get(host);
+        const SkColor base_color = ink_drop->GetBaseColor();
+        const float base_alpha = SkColorGetA(base_color);
         return std::make_unique<views::SquareInkDropRipple>(
-            views::InkDrop::Get(host), gfx::Size(ripple_size, ripple_size),
-            views::InkDrop::Get(host)->GetLargeCornerRadius(),
-            small_ripple_area.size(),
-            views::InkDrop::Get(host)->GetSmallCornerRadius(),
-            small_ripple_area.CenterPoint(),
-            views::InkDrop::Get(host)->GetBaseColor(),
-            views::InkDrop::Get(host)->GetVisibleOpacity());
+            ink_drop, gfx::Size(ripple_size, ripple_size),
+            ink_drop->GetLargeCornerRadius(), small_ripple_area.size(),
+            ink_drop->GetSmallCornerRadius(), small_ripple_area.CenterPoint(),
+            SkColorSetA(base_color, SK_AlphaOPAQUE),
+            (base_alpha / SK_AlphaOPAQUE) * ink_drop->GetVisibleOpacity());
       },
       this));
 
@@ -391,7 +424,11 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::InstallEmptyHighlightPathGenerator(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  if (chromeos::features::IsJellyEnabled()) {
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+  } else {
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  }
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(

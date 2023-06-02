@@ -46,10 +46,9 @@ void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
 
   if (!try_to_quit_application) {
     // A keyboard menu invocation.
-    AppController* app_controller =
-        base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-    if (![app_controller runConfirmQuitPanel])
+    if (![AppController.sharedController runConfirmQuitPanel]) {
       return;
+    }
   }
 
   chrome_browser_application_mac::Terminate();
@@ -75,8 +74,8 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
 
-  if (!g_browser_process->geolocation_manager()) {
-    g_browser_process->SetGeolocationManager(
+  if (!device::GeolocationManager::GetInstance()) {
+    device::GeolocationManager::SetInstance(
         device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac());
   }
 }

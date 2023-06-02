@@ -407,6 +407,7 @@ class WindowsSystemProxyResolverImplTest : public testing::Test {
   // WindowsSystemProxyResolverImpl.
   void DoFailedGetProxyForUrlTest(net::WinHttpStatus winhttp_status,
                                   int windows_error) {
+    ::SetLastError(windows_error);
     PerformGetProxyForUrlAndValidateResult(net::ProxyList(), winhttp_status,
                                            windows_error);
   }

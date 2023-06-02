@@ -405,8 +405,8 @@ class FidoBleConnectionTest : public ::testing::Test {
   raw_ptr<MockBluetoothGattCharacteristic> fido_service_revision_;
   raw_ptr<MockBluetoothGattCharacteristic> fido_service_revision_bitfield_;
 
-  raw_ptr<MockBluetoothGattConnection> connection_;
-  raw_ptr<MockBluetoothGattNotifySession> notify_session_;
+  raw_ptr<MockBluetoothGattConnection, DanglingUntriaged> connection_;
+  raw_ptr<MockBluetoothGattNotifySession, DanglingUntriaged> notify_session_;
 };
 
 TEST_F(FidoBleConnectionTest, Address) {

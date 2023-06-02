@@ -7,7 +7,9 @@
 
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
+import '../../components/buttons/oobe_text_button.js';
 import '../../components/oobe_icons.html.js';
+import '../../components/oobe_illo_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
@@ -48,6 +50,7 @@ const TouchpadScrollStep = {
 const UserAction = {
   NEXT: 'next',
   REVERSE: 'update-scroll',
+  RETURN: 'return',
 };
 
 /**
@@ -69,7 +72,21 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
         value: false,
         observer: 'onCheckChanged_',
       },
+
+      /**
+       * Whether the button to return to CHOOBE screen should be shown.
+       * @private
+       */
+      shouldShowReturn_: {
+        type: Boolean,
+        value: false,
+      },
     };
+  }
+
+  constructor() {
+    super();
+    this.resizeobserver_ = new ResizeObserver(() => this.onresize());
   }
 
   get EXTERNAL_API() {
@@ -88,6 +105,20 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
   ready() {
     super.ready();
     this.initializeLoginScreen('TouchpadScrollScreen');
+    const scrollArea = this.shadowRoot.querySelector('#scrollArea');
+    if (scrollArea !== null) {
+      this.resizeobserver_.observe(scrollArea);
+    }
+  }
+
+  onresize() {
+    const scrollArea = this.shadowRoot.querySelector('#scrollArea');
+    // Removing the margin to set it
+    scrollArea.scrollTop = scrollArea.scrollHeight / 2 - 150;
+  }
+
+  onBeforeShow(data) {
+    this.shouldShowReturn_ = data['shouldShowReturn'];
   }
 
   /**
@@ -112,6 +143,10 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
 
   onNextClicked_() {
     this.userActed(UserAction.NEXT);
+  }
+
+  onReturnClicked_() {
+    this.userActed(UserAction.RETURN);
   }
 }
 

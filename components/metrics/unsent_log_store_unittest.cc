@@ -93,9 +93,10 @@ class TestUnsentLogStore : public UnsentLogStore {
                        service,
                        kTestPrefName,
                        /*metadata_pref_name=*/nullptr,
-                       kLogCountLimit,
-                       min_log_bytes,
-                       /*max_log_size=*/0,
+                       UnsentLogStore::UnsentLogStoreLimits{
+                           .min_log_count = kLogCountLimit,
+                           .min_queue_size_bytes = min_log_bytes,
+                       },
                        /*signing_key=*/std::string(),
                        /*logs_event_manager=*/nullptr) {}
   TestUnsentLogStore(PrefService* service,
@@ -105,9 +106,10 @@ class TestUnsentLogStore : public UnsentLogStore {
                        service,
                        kTestPrefName,
                        /*metadata_pref_name=*/nullptr,
-                       kLogCountLimit,
-                       min_log_bytes,
-                       /*max_log_size=*/0,
+                       UnsentLogStore::UnsentLogStoreLimits{
+                           .min_log_count = kLogCountLimit,
+                           .min_queue_size_bytes = min_log_bytes,
+                       },
                        signing_key,
                        /*logs_event_manager=*/nullptr) {}
   TestUnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
@@ -117,9 +119,11 @@ class TestUnsentLogStore : public UnsentLogStore {
                        service,
                        kTestPrefName,
                        kTestMetaDataPrefName,
-                       kLogCountLimit,
-                       /*min_log_bytes=*/1,
-                       max_log_size,
+                       UnsentLogStore::UnsentLogStoreLimits{
+                           .min_log_count = kLogCountLimit,
+                           .min_queue_size_bytes = 1,
+                           .max_log_size_bytes = max_log_size,
+                       },
                        /*signing_key=*/std::string(),
                        /*logs_event_manager=*/nullptr) {}
 

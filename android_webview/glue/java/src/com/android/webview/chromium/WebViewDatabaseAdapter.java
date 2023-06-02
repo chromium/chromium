@@ -9,7 +9,7 @@ import android.webkit.WebViewDatabase;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
-import org.chromium.android_webview.AwFormDatabase;
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.base.ThreadUtils;
 
@@ -23,11 +23,13 @@ import java.util.concurrent.Callable;
 final class WebViewDatabaseAdapter extends WebViewDatabase {
     private final WebViewChromiumFactoryProvider mFactory;
     private final HttpAuthDatabase mHttpAuthDatabase;
+    private final AwBrowserContext mBrowserContext;
 
-    public WebViewDatabaseAdapter(
-            WebViewChromiumFactoryProvider factory, HttpAuthDatabase httpAuthDatabase) {
+    public WebViewDatabaseAdapter(WebViewChromiumFactoryProvider factory,
+            HttpAuthDatabase httpAuthDatabase, AwBrowserContext browserContext) {
         mFactory = factory;
         mHttpAuthDatabase = httpAuthDatabase;
+        mBrowserContext = browserContext;
     }
 
     @Override
@@ -126,14 +128,14 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
                 @Override
                 public Boolean call() {
                     WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA);
-                    return AwFormDatabase.hasFormData();
+                    return mBrowserContext.hasFormData();
                 }
 
             });
         }
 
         WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA);
-        return AwFormDatabase.hasFormData();
+        return mBrowserContext.hasFormData();
     }
 
     @Override
@@ -145,7 +147,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
                 @Override
                 public void run() {
                     WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA);
-                    AwFormDatabase.clearFormData();
+                    mBrowserContext.clearFormData();
                 }
 
             });
@@ -153,7 +155,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
         }
 
         WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA);
-        AwFormDatabase.clearFormData();
+        mBrowserContext.clearFormData();
     }
 
     private static boolean checkNeedsPost() {

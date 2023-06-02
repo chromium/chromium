@@ -27,6 +27,7 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -509,21 +510,9 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
     return;
   }
 
-  // Send PA requests of `pa_event_type`.
-  for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
-       it->second) {
-    DCHECK(request);
-    // All for-event contributions have already been converted to histogram
-    // contributions by filling in post auction signals before reaching here.
-    DCHECK(request->contribution->is_histogram_contribution());
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-        contributions;
-    contributions.push_back(
-        std::move(request->contribution->get_histogram_contribution()));
-    private_aggregation_host_->SendHistogramReport(
-        std::move(contributions), request->aggregation_mode,
-        std::move(request->debug_mode_details));
-  }
+  SplitContributionsIntoBatchesThenSendToHost(
+      /*requests=*/std::move(it->second),
+      /*remote_host=*/private_aggregation_host_);
 
   // Remove the entry of key `pa_event_type` from
   // `private_aggregation_event_map_` to avoid possibly sending the same
@@ -543,7 +532,7 @@ void FencedFrameReporter::MaybeBindPrivateAggregationHost() {
          main_frame_origin_.value().scheme() == url::kHttpsScheme);
   bool bound = private_aggregation_manager_->BindNewReceiver(
       winner_origin_.value(), main_frame_origin_.value(),
-      PrivateAggregationBudgetKey::Api::kFledge,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
       /*context_id=*/absl::nullopt,
       private_aggregation_host_.BindNewPipeAndPassReceiver());
   // FLEDGE's worklets should all be trustworthy, including `winner_origin_`, so

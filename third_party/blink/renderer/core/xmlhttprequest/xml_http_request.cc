@@ -825,10 +825,13 @@ void XMLHttpRequest::send(Document* document, ExceptionState& exception_state) {
   scoped_refptr<EncodedFormData> http_body;
 
   if (AreMethodAndURLValidForSend()) {
-    if (IsA<HTMLDocument>(document))
-      UpdateContentTypeAndCharset("text/html;charset=UTF-8", "UTF-8");
-    else if (IsA<XMLDocument>(document))
-      UpdateContentTypeAndCharset("application/xml;charset=UTF-8", "UTF-8");
+    if (IsA<HTMLDocument>(document)) {
+      UpdateContentTypeAndCharset(AtomicString("text/html;charset=UTF-8"),
+                                  "UTF-8");
+    } else if (IsA<XMLDocument>(document)) {
+      UpdateContentTypeAndCharset(AtomicString("application/xml;charset=UTF-8"),
+                                  "UTF-8");
+    }
 
     String body = CreateMarkup(document);
 
@@ -850,7 +853,8 @@ void XMLHttpRequest::send(const String& body, ExceptionState& exception_state) {
   if (!body.IsNull() && AreMethodAndURLValidForSend()) {
     http_body = EncodedFormData::Create(
         UTF8Encoding().Encode(body, WTF::kNoUnencodables));
-    UpdateContentTypeAndCharset("text/plain;charset=UTF-8", "UTF-8");
+    UpdateContentTypeAndCharset(AtomicString("text/plain;charset=UTF-8"),
+                                "UTF-8");
   }
 
   CreateRequest(std::move(http_body), exception_state);
@@ -925,7 +929,8 @@ void XMLHttpRequest::send(URLSearchParams* body,
   if (AreMethodAndURLValidForSend()) {
     http_body = body->ToEncodedFormData();
     UpdateContentTypeAndCharset(
-        "application/x-www-form-urlencoded;charset=UTF-8", "UTF-8");
+        AtomicString("application/x-www-form-urlencoded;charset=UTF-8"),
+        "UTF-8");
   }
 
   CreateRequest(std::move(http_body), exception_state);
@@ -1369,7 +1374,7 @@ void XMLHttpRequest::overrideMimeType(const AtomicString& mime_type,
     return;
   }
 
-  mime_type_override_ = "application/octet-stream";
+  mime_type_override_ = AtomicString("application/octet-stream");
   if (!ParsedContentType(mime_type).IsValid()) {
     return;
   }

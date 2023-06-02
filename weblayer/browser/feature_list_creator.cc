@@ -72,17 +72,18 @@ void FeatureListCreator::PerformPreMainMessageLoopStartup() {
 #endif
 }
 
-void FeatureListCreator::OnBrowserFragmentStarted() {
-  if (has_browser_fragment_started_)
+void FeatureListCreator::OnBrowserCreated() {
+  if (has_browser_created_) {
     return;
+  }
 
-  has_browser_fragment_started_ = true;
+  has_browser_created_ = true;
   // It is expected this is called after SetUpFieldTrials().
   DCHECK(variations_service_);
 
-  // This function is called any time a BrowserFragment is started.
+  // This function is called any time a Browser is started.
   // OnAppEnterForeground() really need only be called once, and because our
-  // notion of a fragment doesn't really map to the Application as a whole,
+  // notion of a browser doesn't really map to the Application as a whole,
   // call this function once.
   variations_service_->OnAppEnterForeground();
 }

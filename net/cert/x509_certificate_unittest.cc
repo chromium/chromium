@@ -33,6 +33,8 @@ using base::Time;
 
 namespace net {
 
+namespace {
+
 // Certificates for test data. They're obtained with:
 //
 // $ openssl s_client -connect [host]:443 -showcerts > /tmp/host.pem < /dev/null
@@ -81,22 +83,18 @@ void CheckGoogleCert(const scoped_refptr<X509Certificate>& google_cert,
   EXPECT_EQ("Mountain View", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Google Inc", subject.organization_names[0]);
   EXPECT_EQ(0U, subject.organization_unit_names.size());
-  EXPECT_EQ(0U, subject.domain_components.size());
 
   const CertPrincipal& issuer = google_cert->issuer();
   EXPECT_EQ("Thawte SGC CA", issuer.common_name);
   EXPECT_EQ("", issuer.locality_name);
   EXPECT_EQ("", issuer.state_or_province_name);
   EXPECT_EQ("ZA", issuer.country_name);
-  EXPECT_EQ(0U, issuer.street_addresses.size());
   ASSERT_EQ(1U, issuer.organization_names.size());
   EXPECT_EQ("Thawte Consulting (Pty) Ltd.", issuer.organization_names[0]);
   EXPECT_EQ(0U, issuer.organization_unit_names.size());
-  EXPECT_EQ(0U, issuer.domain_components.size());
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = google_cert->valid_start();
@@ -109,6 +107,18 @@ void CheckGoogleCert(const scoped_refptr<X509Certificate>& google_cert,
                                       google_cert->cert_buffer()));
 
 }
+
+void ExpectX509CertificateMembersEqual(
+    const scoped_refptr<X509Certificate>& a,
+    const scoped_refptr<X509Certificate>& b) {
+  EXPECT_TRUE(a->subject().EqualsForTesting(b->subject()));
+  EXPECT_TRUE(a->issuer().EqualsForTesting(b->issuer()));
+  EXPECT_EQ(a->valid_start(), b->valid_start());
+  EXPECT_EQ(a->valid_expiry(), b->valid_expiry());
+  EXPECT_EQ(a->serial_number(), b->serial_number());
+}
+
+}  // namespace
 
 TEST(X509CertificateTest, GoogleCertParsing) {
   scoped_refptr<X509Certificate> google_cert(
@@ -129,25 +139,21 @@ TEST(X509CertificateTest, WebkitCertParsing) {
   EXPECT_EQ("Cupertino", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Apple Inc.", subject.organization_names[0]);
   ASSERT_EQ(1U, subject.organization_unit_names.size());
   EXPECT_EQ("Mac OS Forge", subject.organization_unit_names[0]);
-  EXPECT_EQ(0U, subject.domain_components.size());
 
   const CertPrincipal& issuer = webkit_cert->issuer();
   EXPECT_EQ("Go Daddy Secure Certification Authority", issuer.common_name);
   EXPECT_EQ("Scottsdale", issuer.locality_name);
   EXPECT_EQ("Arizona", issuer.state_or_province_name);
   EXPECT_EQ("US", issuer.country_name);
-  EXPECT_EQ(0U, issuer.street_addresses.size());
   ASSERT_EQ(1U, issuer.organization_names.size());
   EXPECT_EQ("GoDaddy.com, Inc.", issuer.organization_names[0]);
   ASSERT_EQ(1U, issuer.organization_unit_names.size());
   EXPECT_EQ("http://certificates.godaddy.com/repository",
-      issuer.organization_unit_names[0]);
-  EXPECT_EQ(0U, issuer.domain_components.size());
+            issuer.organization_unit_names[0]);
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = webkit_cert->valid_start();
@@ -181,24 +187,20 @@ TEST(X509CertificateTest, ThawteCertParsing) {
   EXPECT_EQ("Mountain View", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Thawte Inc", subject.organization_names[0]);
   EXPECT_EQ(0U, subject.organization_unit_names.size());
-  EXPECT_EQ(0U, subject.domain_components.size());
 
   const CertPrincipal& issuer = thawte_cert->issuer();
   EXPECT_EQ("thawte Extended Validation SSL CA", issuer.common_name);
   EXPECT_EQ("", issuer.locality_name);
   EXPECT_EQ("", issuer.state_or_province_name);
   EXPECT_EQ("US", issuer.country_name);
-  EXPECT_EQ(0U, issuer.street_addresses.size());
   ASSERT_EQ(1U, issuer.organization_names.size());
   EXPECT_EQ("thawte, Inc.", issuer.organization_names[0]);
   ASSERT_EQ(1U, issuer.organization_unit_names.size());
   EXPECT_EQ("Terms of use at https://www.thawte.com/cps (c)06",
             issuer.organization_unit_names[0]);
-  EXPECT_EQ(0U, issuer.domain_components.size());
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = thawte_cert->valid_start();
@@ -224,13 +226,10 @@ TEST(X509CertificateTest, MultivalueRDN) {
   EXPECT_EQ("", subject.locality_name);
   EXPECT_EQ("", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Chromium", subject.organization_names[0]);
   ASSERT_EQ(1U, subject.organization_unit_names.size());
   EXPECT_EQ("Chromium net_unittests", subject.organization_unit_names[0]);
-  ASSERT_EQ(1U, subject.domain_components.size());
-  EXPECT_EQ("Chromium", subject.domain_components[0]);
 }
 
 // Test that characters which would normally be escaped in the string form,
@@ -248,14 +247,11 @@ TEST(X509CertificateTest, UnescapedSpecialCharacters) {
   EXPECT_EQ("Mountain View", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  ASSERT_EQ(1U, subject.street_addresses.size());
-  EXPECT_EQ("1600 Amphitheatre Parkway", subject.street_addresses[0]);
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Chromium = \"net_unittests\"", subject.organization_names[0]);
   ASSERT_EQ(2U, subject.organization_unit_names.size());
   EXPECT_EQ("net_unittests", subject.organization_unit_names[0]);
   EXPECT_EQ("Chromium", subject.organization_unit_names[1]);
-  EXPECT_EQ(0U, subject.domain_components.size());
 }
 
 TEST(X509CertificateTest, InvalidPrintableStringIsUtf8) {
@@ -693,6 +689,79 @@ TEST(X509CertificateTest, Cache) {
   // Though they use the same OS handle, the intermediates should be different.
   EXPECT_NE(cert1->intermediate_buffers().size(),
             cert3->intermediate_buffers().size());
+}
+
+TEST(X509CertificateTest, CloneWithDifferentIntermediates) {
+  CertificateList certs = CreateCertificateListFromFile(
+      GetTestCertsDirectory(), "multi-root-chain1.pem",
+      X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+  ASSERT_EQ(4u, certs.size());
+
+  auto leaf_with_no_intermediates = certs[0];
+
+  {
+    auto cloned =
+        leaf_with_no_intermediates->CloneWithDifferentIntermediates({});
+    // Intermediates are equal, so should return a reference to the same object.
+    EXPECT_EQ(leaf_with_no_intermediates.get(), cloned.get());
+  }
+  {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+    auto cloned = leaf_with_no_intermediates->CloneWithDifferentIntermediates(
+        std::move(intermediates));
+    ASSERT_TRUE(cloned);
+    EXPECT_NE(leaf_with_no_intermediates.get(), cloned.get());
+    EXPECT_EQ(leaf_with_no_intermediates->cert_buffer(), cloned->cert_buffer());
+    ExpectX509CertificateMembersEqual(leaf_with_no_intermediates, cloned);
+    ASSERT_EQ(2u, cloned->intermediate_buffers().size());
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[1]->cert_buffer(), cloned->intermediate_buffers()[0].get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[2]->cert_buffer(), cloned->intermediate_buffers()[1].get()));
+  }
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> leaf_intermediates;
+  leaf_intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+  leaf_intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+  auto leaf_with_intermediates = X509Certificate::CreateFromBuffer(
+      bssl::UpRef(certs[0]->cert_buffer()), std::move(leaf_intermediates));
+  ASSERT_TRUE(leaf_with_intermediates);
+
+  {
+    auto cloned = leaf_with_intermediates->CloneWithDifferentIntermediates({});
+    EXPECT_NE(leaf_with_intermediates.get(), cloned.get());
+    EXPECT_EQ(leaf_with_intermediates->cert_buffer(), cloned->cert_buffer());
+    ExpectX509CertificateMembersEqual(leaf_with_intermediates, cloned);
+    ASSERT_EQ(0u, cloned->intermediate_buffers().size());
+  }
+  {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+    auto cloned = leaf_with_intermediates->CloneWithDifferentIntermediates(
+        std::move(intermediates));
+    // Intermediates are equal, so should return a reference to the same object.
+    EXPECT_EQ(leaf_with_intermediates.get(), cloned.get());
+  }
+  {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+    intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    auto cloned = leaf_with_intermediates->CloneWithDifferentIntermediates(
+        std::move(intermediates));
+    // Intermediates are different (same buffers but in different order).
+    ASSERT_TRUE(cloned);
+    EXPECT_NE(leaf_with_intermediates.get(), cloned.get());
+    EXPECT_EQ(leaf_with_intermediates->cert_buffer(), cloned->cert_buffer());
+    ExpectX509CertificateMembersEqual(leaf_with_intermediates, cloned);
+    ASSERT_EQ(2u, cloned->intermediate_buffers().size());
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[2]->cert_buffer(), cloned->intermediate_buffers()[0].get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[1]->cert_buffer(), cloned->intermediate_buffers()[1].get()));
+  }
 }
 
 TEST(X509CertificateTest, Pickle) {

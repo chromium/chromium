@@ -12,6 +12,9 @@
 // Feature flag to enable default browser blue dot promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
 
+// Feature flag to enable the Payments Bottom Sheet.
+BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
+
 // Enum for blue dot promo user groups (control/experiment) and its param. The
 // reason why we need a custom control group is to disable other independent
 // default browser promos, which are already shipped.
@@ -40,9 +43,6 @@ BASE_DECLARE_FEATURE(kModernTabStrip);
 
 // Feature flag to enable revamped Incognito NTP page.
 BASE_DECLARE_FEATURE(kIncognitoNtpRevamp);
-
-// Feature flag that experiments with the default browser fullscreen promo UI.
-BASE_DECLARE_FEATURE(kDefaultBrowserFullscreenPromoExperiment);
 
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);

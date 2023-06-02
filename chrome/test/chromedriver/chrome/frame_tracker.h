@@ -14,16 +14,13 @@
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
-struct BrowserInfo;
 class DevToolsClient;
 class Status;
 
 // Tracks execution context creation.
 class FrameTracker : public DevToolsEventListener {
  public:
-  explicit FrameTracker(DevToolsClient* client,
-                        WebView* web_view = nullptr,
-                        const BrowserInfo* browser_info = nullptr);
+  explicit FrameTracker(DevToolsClient* client, WebView* web_view = nullptr);
 
   FrameTracker(const FrameTracker&) = delete;
   FrameTracker& operator=(const FrameTracker&) = delete;

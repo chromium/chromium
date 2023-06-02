@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<style>
+div:first-child {
+  -webkit-column-count:65540;
+}
+div:first-letter {
+  color: green;
+}
+</style>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+document.addEventListener("readystatechange", function() {
+  document.execCommand("SelectAll")
+  window.getSelection().deleteFromDocument();
+});
+
+document.addEventListener("DOMCharacterDataModified", modifiedListener);
+function modifiedListener(evt) {
+  document.removeEventListener("DOMCharacterDataModified", modifiedListener);
+  window.getSelection().getRangeAt(0).insertNode(document.getElementById('dfn'));
+}
+</script>
+<body>
+<!-- Passes if no CRASH in debug. -->
+
+<dfn id='dfn'></dfn>
+
+<span>
+<div id='node'>
+c B
+</div>
+</span>
+</body>

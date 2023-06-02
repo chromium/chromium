@@ -177,11 +177,11 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   void SetBadge(blink::mojom::BadgeValuePtr value) override;
   void ClearBadge() override;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   raw_ptr<const base::Clock> clock_;
 
-  raw_ptr<web_app::WebAppSyncBridge> sync_bridge_;
+  raw_ptr<web_app::WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
 
   // All the mojo receivers for the BadgeManager. Keeps track of the
   // render_frame the binding is associated with, so as to not have to rely

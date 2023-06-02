@@ -1086,8 +1086,10 @@ protocol::Response InspectorDOMAgent::setOuterHTML(int node_id,
   if (!response.IsSuccess())
     return response;
 
-  Document* document =
-      IsA<Document>(node) ? To<Document>(node) : node->ownerDocument();
+  Document* document = DynamicTo<Document>(node);
+  if (!document) {
+    document = node->ownerDocument();
+  }
   if (!document ||
       (!IsA<HTMLDocument>(document) && !IsA<XMLDocument>(document)))
     return protocol::Response::ServerError("Not an HTML/XML document");
@@ -1679,7 +1681,8 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     }
   }
 
-  element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
+  element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      element, DocumentUpdateReason::kInspector);
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
   // Container rule origin no longer known at this point, match name from all
   // scopes.
@@ -1716,7 +1719,8 @@ const HeapVector<Member<Element>>
 InspectorDOMAgent::GetContainerQueryingDescendants(Element* container) {
   // This won't work for edge cases with display locking
   // (https://crbug.com/1235306).
-  container->GetDocument().UpdateStyleAndLayoutTreeForSubtree(container);
+  container->GetDocument().UpdateStyleAndLayoutTreeForSubtree(
+      container, DocumentUpdateReason::kInspector);
 
   HeapVector<Member<Element>> querying_descendants;
   for (Element& element : ElementTraversal::DescendantsOf(*container)) {

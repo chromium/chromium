@@ -22,6 +22,7 @@
 #include "remoting/base/session_options.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/action_message_handler.h"
+#include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -187,7 +188,10 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     for (const auto& [_, video_stream] : video_streams_) {
       video_stream->SetTargetFramerate(target_framerate_);
     }
-    mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
+    if (mouse_shape_pump_) {
+      mouse_shape_pump_->SetCursorCaptureInterval(
+          base::Hertz(target_framerate_));
+    }
   }
 
   if (video_control.has_framerate_boost()) {
@@ -323,6 +327,10 @@ void ClientSession::SetCapabilities(
       // handled instead by DesktopSessionAgent.
       monitor->Start();
     }
+
+    active_display_monitor_ =
+        desktop_environment_->CreateActiveDisplayMonitor(base::BindRepeating(
+            &ClientSession::OnActiveDisplayChanged, base::Unretained(this)));
 
     // Re-send the extended layout information so the client has information
     // needed to identify each stream.
@@ -667,6 +675,7 @@ void ClientSession::OnConnectionChannelsConnected() {
       desktop_environment_->CreateMouseCursorMonitor(),
       connection_->client_stub());
   mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+  mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
 
   // Create KeyboardLayoutMonitor to send keyboard layout.
   // Unretained is sound because callback will never be called after
@@ -1295,6 +1304,12 @@ void ClientSession::BoostFramerateOnInput(
     // instead of all desktops in multi-stream mode.
     video_stream->BoostFramerate(capture_interval, boost_duration);
   }
+}
+
+void ClientSession::OnActiveDisplayChanged(webrtc::ScreenId display) {
+  protocol::ActiveDisplay active_display;
+  active_display.set_screen_id(display);
+  connection_->client_stub()->SetActiveDisplay(active_display);
 }
 
 }  // namespace remoting

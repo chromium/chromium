@@ -33,6 +33,7 @@
   X("accessibility")                                                     \
   X("AccountFetcherService")                                             \
   X("android_webview")                                                   \
+  X("android_webview.timeline")                                          \
   /* Actions on Google Hardware, used in Google-internal code. */        \
   X("aogh")                                                              \
   X("audio")                                                             \
@@ -258,6 +259,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("skia.gpu"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("skia.shaders"))                           \
+  X(TRACE_DISABLED_BY_DEFAULT("skottie"))                                \
   X(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("system_power"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("system_stats"))                           \

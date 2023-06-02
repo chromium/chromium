@@ -18,13 +18,11 @@
 
   /* These cr-button styles are added here instead of cros-button-style because
   the specs for these buttons are different from others in the app. */
-  cr-button[aria-checked=true] .text,
-  cr-button[aria-selected=true] .text {
+  cr-button[aria-checked=true] .text {
     color: var(--cros-button-label-color-primary) !important;
   }
 
-  cr-button[aria-checked=true] iron-icon,
-  cr-button[aria-selected=true] iron-icon {
+  cr-button[aria-checked=true] iron-icon {
     --iron-icon-fill-color: var(--cros-button-label-color-primary) !important;
   }
 
@@ -45,9 +43,18 @@
         var(--cros-button-primary-ripple-opacity));
   }
 
-  cr-button[aria-checked=true],
-  cr-button[aria-selected=true] {
-    background-color: var(--cros-button-background-color-primary) !important;
+  :host-context(body.jelly-enabled) cr-button:hover {
+    --hover-bg-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  :host-context(body.jelly-enabled) #selector > cr-button[aria-checked=true]:hover::part(hoverBackground) {
+    --hover-bg-color: var(--cros-sys-hover_on_prominent);
+    background-color: var(--hover-bg-color);
+    display: block;
+  }
+
+  #selector > cr-button[aria-checked=true] {
+    background-color: var(--cros-button-background-color-primary);
   }
 
   #selector {

@@ -80,6 +80,8 @@ swift_source_set("widget_kit_extension_swift") {
     "resources:widget_separator_color",
     "resources:widget_text_color",
     "//ios/chrome/common/app_group:helper",
+    "//ios/chrome/common/ntp_tile",
+    "//ui/base:base",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

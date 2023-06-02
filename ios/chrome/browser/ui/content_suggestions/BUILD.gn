@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("start_suggest") {
   sources = [
     "start_suggest_service_factory.h",
@@ -121,6 +123,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice",
+    "//ios/chrome/browser/widget_kit:features",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/favicon",
@@ -129,6 +132,9 @@ source_set("content_suggestions") {
     "//ui/base",
     "//ui/strings",
   ]
+  if (ios_enable_widget_kit_extension) {
+    deps += [ "//ios/chrome/browser/widget_kit:widget_kit_swift" ]
+  }
   configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
@@ -148,6 +154,8 @@ source_set("metrics") {
     "//components/favicon_base",
     "//components/ntp_tiles",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/ntp:set_up_list_item_type",
+    "//ios/chrome/browser/ntp:set_up_list_metrics",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/favicon",
@@ -276,11 +284,17 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/ntp:set_up_list_item_type",
+    "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/reading_list:test_support",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

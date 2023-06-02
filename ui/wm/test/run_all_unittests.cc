@@ -36,7 +36,7 @@ class WMTestSuite : public base::TestSuite {
     ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
     ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
 
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
+    if (ui::IsScaleFactorSupported(ui::k200Percent)) {
       base::FilePath ui_test_resources_200 = ui_test_pak_path.DirName().Append(
           FILE_PATH_LITERAL("ui_test_200_percent.pak"));
       ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

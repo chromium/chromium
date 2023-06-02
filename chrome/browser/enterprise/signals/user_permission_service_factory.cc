@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/consent_policy_observer.h"
@@ -31,7 +31,8 @@ namespace enterprise_signals {
 
 // static
 UserPermissionServiceFactory* UserPermissionServiceFactory::GetInstance() {
-  return base::Singleton<UserPermissionServiceFactory>::get();
+  static base::NoDestructor<UserPermissionServiceFactory> instance;
+  return instance.get();
 }
 
 // static

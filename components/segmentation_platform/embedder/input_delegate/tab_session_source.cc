@@ -18,20 +18,6 @@
 #include "ui/base/page_transition_types.h"
 
 namespace segmentation_platform::processing {
-namespace {
-
-absl::optional<ProcessedValue> GetMetadataArgument(
-    const FeatureProcessorState& feature_processor_state,
-    base::StringPiece arg_name) {
-  const auto& args = feature_processor_state.input_context()->metadata_args;
-  auto it = args.find(arg_name);
-  if (it == args.end()) {
-    return absl::nullopt;
-  }
-  return it->second;
-}
-
-}  // namespace
 
 TabSessionSource::TabSessionSource(
     sync_sessions::SessionSyncService* session_sync_service,
@@ -44,9 +30,11 @@ void TabSessionSource::Process(
     const proto::CustomInput& input,
     const FeatureProcessorState& feature_processor_state,
     ProcessedCallback callback) {
-  auto tab_id_val = GetMetadataArgument(feature_processor_state, "tab_id");
+  auto tab_id_val =
+      feature_processor_state.input_context()->GetMetadataArgument("tab_id");
   auto session_tag_val =
-      GetMetadataArgument(feature_processor_state, "session_tag");
+      feature_processor_state.input_context()->GetMetadataArgument(
+          "session_tag");
   if (!session_tag_val || !tab_id_val) {
     std::move(callback).Run(/*error=*/true, {});
     return;

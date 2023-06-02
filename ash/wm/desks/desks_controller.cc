@@ -747,6 +747,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
           is_user_switch ? OverviewEnterExitType::kImmediateExit
                          : OverviewEnterExitType::kNormal);
     }
+    // Selecting the active desk in desk button desk bar is allowed, and
+    // should just close all desk bars.
+    if (desk_bar_controller_) {
+      desk_bar_controller_->DestroyAllDeskBars();
+    }
     return;
   }
 
@@ -1942,6 +1947,10 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     ReportClosedWindowsCountPerSourceHistogram(
         removed_desk_data->desk_removal_source(),
         removed_desk->windows().size());
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnDeskRemovalFinalized(removed_desk->uuid());
   }
 
   ReportDesksCountHistogram();

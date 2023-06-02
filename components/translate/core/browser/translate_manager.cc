@@ -1190,26 +1190,6 @@ void TranslateManager::RecordDecisionMetrics(
           TranslateBrowserMetrics::HrefTranslateStatus::
               kNoUiShownNotAutoTranslated);
     }
-
-    if (decision.is_in_language_blocklist()) {
-      if (decision.is_in_site_blocklist()) {
-        TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
-            TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                kBothLanguageAndSiteInBlocklist);
-      } else {
-        TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
-            TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                kLanguageInBlocklist);
-      }
-    } else if (decision.is_in_site_blocklist()) {
-      TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
-          TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-              kSiteInBlocklist);
-    } else {
-      TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
-          TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-              kNotInBlocklists);
-    }
   }
 
   if (!decision.can_auto_translate() && !decision.can_auto_href_translate() &&

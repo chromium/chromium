@@ -127,6 +127,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest, E2E_ENABLED(Add)) {
+  ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameExtensions());
 

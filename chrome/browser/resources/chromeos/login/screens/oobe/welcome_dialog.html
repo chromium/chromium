@@ -52,6 +52,14 @@ found in the LICENSE file.
     grid-template-columns: auto;
   }
 
+  #getStarted[disabled] {
+    opacity: 0;
+  }
+
+  #getStarted {
+    transition: opacity 250ms linear 0ms;
+  }
+
   #buttons {
     grid-column: 1 / span 1;
     grid-row: 1 / span 1;
@@ -125,6 +133,7 @@ found in the LICENSE file.
   :host-context(.simon-enabled) #title {
     font-size: 52px;
     line-height: 60px;
+    margin-bottom: 48px;
     margin-top: auto;
   }
 
@@ -135,20 +144,12 @@ found in the LICENSE file.
     line-height: 32px;
     margin-top: 16px;
   }
-  :host-context(.simon-enabled) #subtitle {
-    font-size: 22px;
-    line-height: 28px;
-    margin-top: 24px;
-  }
 
   :host-context([orientation='horizontal']) #subtitle {
     margin-bottom: 64px;
   }
   :host-context([orientation='vertical']) #subtitle {
     margin-bottom: 40px;
-  }
-  :host-context(.simon-enabled) #subtitle {
-    margin-bottom: 56px;
   }
 
   .welcome-header-text {
@@ -170,9 +171,11 @@ found in the LICENSE file.
   <h1 id="title" class="welcome-header-text">
     [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
   </h1>
-  <div id="subtitle" class="welcome-header-text">
-    [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
-  </div>
+  <template is="dom-if" if="[[!isSimon_]]">
+    <div id="subtitle" class="welcome-header-text">
+      [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
+    </div>
+  </template>
   <div id="content">
     <div id="buttons" class="layout vertical">
       <oobe-icon-button
@@ -212,14 +215,16 @@ found in the LICENSE file.
       >
       </oobe-icon-button>
     </div>
-    <div id="bottomButtons">
-      <oobe-text-button
+    <div id="bottomButtons" class="layout horizontal">
+      <oobe-icon-button
         id="quickStart"
         on-click="onQuickStartClicked_"
         hidden="[[!isQuickStartEnabled]]"
         text-key="welcomeScreenQuickStart"
+        icon1x="oobe-20:quick-start-android-device"
+        icon2x="oobe-20:quick-start-android-device"
       >
-      </oobe-text-button>
+      </oobe-icon-button>
       <oobe-text-button
         id="getStarted"
         inverse

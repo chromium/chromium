@@ -143,9 +143,10 @@ class ReadingListSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  std::unique_ptr<ReadingListModelImpl> model_;
+
   // ModelTypeStore is owned by |model_|.
   raw_ptr<syncer::ModelTypeStore> underlying_in_memory_store_ = nullptr;
-  std::unique_ptr<ReadingListModelImpl> model_;
 };
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {

@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -84,6 +85,11 @@
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
+#include "components/device_signals/core/browser/user_permission_service.h"  // nogncheck
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -176,6 +182,11 @@ enum class ReportingType {
 const char kManagementScreenCaptureEvent[] = "managementScreenCaptureEvent";
 const char kManagementScreenCaptureData[] = "managementScreenCaptureData";
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kManagementDeviceSignalsDisclosure[] =
+    "managementDeviceSignalsDisclosure";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
@@ -360,7 +371,13 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
     AddDeviceReportingElement(report_sources, kManagementReportCrashReports,
                               DeviceReportingType::kCrashReport);
   }
-  if (collector->IsReportingAppInfoAndActivity() || device_report_xdr_events) {
+
+  const auto& app_inventory_app_types =
+      profile->GetPrefs()->GetList(::ash::reporting::kReportAppInventory);
+  const auto& app_usage_app_types =
+      profile->GetPrefs()->GetList(::ash::reporting::kReportAppUsage);
+  if (collector->IsReportingAppInfoAndActivity() || device_report_xdr_events ||
+      !app_inventory_app_types.empty() || !app_usage_app_types.empty()) {
     AddDeviceReportingElement(report_sources,
                               kManagementReportAppInfoAndActivity,
                               DeviceReportingType::kAppInfoAndActivity);
@@ -721,6 +738,18 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
              GetReportingTypeValue(report_definition.reporting_type));
     report_sources->Append(std::move(data));
   }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Insert the device signals consent disclosure at the end of browser
+  // reporting section.
+  auto* user_permission_service = GetUserPermissionService();
+  if (user_permission_service && user_permission_service->CanCollectSignals() ==
+                                     device_signals::UserPermission::kGranted) {
+    base::Value::Dict data;
+    data.Set("messageId", kManagementDeviceSignalsDisclosure);
+    data.Set("reportingType", GetReportingTypeValue(ReportingType::kDevice));
+    report_sources->Append(std::move(data));
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1017,6 +1046,14 @@ policy::PolicyService* ManagementUIHandler::GetPolicyService() {
       ->GetProfilePolicyConnector()
       ->policy_service();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+device_signals::UserPermissionService*
+ManagementUIHandler::GetUserPermissionService() {
+  return enterprise_signals::UserPermissionServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void ManagementUIHandler::AsyncUpdateLogo() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

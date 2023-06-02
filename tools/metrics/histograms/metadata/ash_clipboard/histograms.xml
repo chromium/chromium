@@ -232,6 +232,7 @@ chromium-metrics-reviews@google.com.
     to engage with the feature.
   </summary>
   <token key="NudgeType">
+    <variant name="DuplicateCopyNudge" summary="duplicate copy nudge"/>
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
     <variant name="ScreenshotNotificationNudge"
         summary="screenshot notification nudge"/>
@@ -279,6 +280,7 @@ chromium-metrics-reviews@google.com.
     actually led to.
   </summary>
   <token key="NudgeType">
+    <variant name="DuplicateCopyNudge" summary="duplicate copy nudge"/>
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
     <variant name="ScreenshotNotificationNudge"
         summary="screenshot notification nudge"/>

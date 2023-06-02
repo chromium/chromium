@@ -92,8 +92,8 @@ class WebAppFileHandlerManager {
 
   static bool disable_automatic_file_handler_cleanup_for_testing_;
 
-  [[maybe_unused]] const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppSyncBridge> sync_bridge_;
+  [[maybe_unused]] const raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
 
   base::WeakPtrFactory<WebAppFileHandlerManager> weak_ptr_factory_{this};
 };

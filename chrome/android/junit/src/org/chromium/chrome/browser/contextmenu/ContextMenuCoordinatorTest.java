@@ -35,6 +35,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
@@ -153,7 +154,7 @@ public class ContextMenuCoordinatorTest {
     public void testGetItemListWithImageLink() {
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false);
+                null, false, 0, 0, 0, false, /*impression=*/null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
@@ -193,7 +194,7 @@ public class ContextMenuCoordinatorTest {
         // initialized. mediaType here doesn't have any effect on what we're testing.
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false);
+                null, false, 0, 0, 0, false, /*impression=*/null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
@@ -219,7 +220,7 @@ public class ContextMenuCoordinatorTest {
     public void testGetItemListWithVideo() {
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.VIDEO,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, 0, 0, 0, false);
+                null, false, 0, 0, 0, false, /*impression=*/null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
         ModelList groupOne = new ModelList();
@@ -245,6 +246,7 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/1444964")
     @Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
             ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
     @Config(shadows = {ShadowContextMenuDialog.class}, qualifiers = "mdpi")
@@ -307,6 +309,7 @@ public class ContextMenuCoordinatorTest {
 
     // clang-format off
     @Test
+    @DisabledTest(message = "crbug.com/1444964")
     @Features.DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
     @Config(shadows = {ShadowContextMenuDialog.class, ShadowContextMenuHeaderCoordinator.class,
                     ShadowProfile.class},
@@ -336,6 +339,7 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/1444964")
     @Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
             ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
     @Config(shadows = {ShadowContextMenuDialog.class, ShadowContextMenuHeaderCoordinator.class,
@@ -404,7 +408,7 @@ public class ContextMenuCoordinatorTest {
             int triggeringTouchXDp, int triggeringTouchYDp) {
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
-                null, false, triggeringTouchXDp, triggeringTouchYDp, 0, false);
+                null, false, triggeringTouchXDp, triggeringTouchYDp, 0, false, /*impression=*/null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         doReturn(new WeakReference<Activity>(mActivity)).when(windowAndroid).getActivity();

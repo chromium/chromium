@@ -10,7 +10,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_
 
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
-#include "third_party/apple_apsl/malloc.h"
+#include "base/allocator/partition_allocator/third_party/apple_apsl/malloc.h"
 
 namespace allocator_shim {
 

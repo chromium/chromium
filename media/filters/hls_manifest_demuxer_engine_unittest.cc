@@ -35,6 +35,13 @@ const std::string kSimpleMediaPlaylist =
     "http://media.example.com/third.ts\n"
     "#EXT-X-ENDLIST\n";
 
+const std::string kSingleInfoMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/only.ts\n";
+
 const std::string kUnsupportedCodecs =
     "#EXTM3U\n"
     "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"vvc1.00.00\"\n"
@@ -90,11 +97,41 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
  public:
   MOCK_METHOD(bool,
               AddRole,
-              (std::string, std::string, std::string),
+              (base::StringPiece, std::string, std::string),
               (override));
-  MOCK_METHOD(void, RemoveRole, (std::string), (override));
-  MOCK_METHOD(void, SetSequenceMode, (std::string, bool), (override));
+  MOCK_METHOD(void, RemoveRole, (base::StringPiece), (override));
+  MOCK_METHOD(void, SetSequenceMode, (base::StringPiece, bool), (override));
   MOCK_METHOD(void, SetDuration, (double), (override));
+  MOCK_METHOD(Ranges<base::TimeDelta>,
+              GetBufferedRanges,
+              (base::StringPiece),
+              (override));
+  MOCK_METHOD(void,
+              Remove,
+              (base::StringPiece, base::TimeDelta, base::TimeDelta),
+              (override));
+  MOCK_METHOD(
+      void,
+      RemoveAndReset,
+      (base::StringPiece, base::TimeDelta, base::TimeDelta, base::TimeDelta*),
+      (override));
+  MOCK_METHOD(void,
+              SetGroupStartIfParsingAndSequenceMode,
+              (base::StringPiece, base::TimeDelta),
+              (override));
+  MOCK_METHOD(void,
+              EvictCodedFrames,
+              (base::StringPiece, base::TimeDelta, size_t),
+              (override));
+  MOCK_METHOD(bool,
+              AppendAndParseData,
+              (base::StringPiece,
+               base::TimeDelta,
+               base::TimeDelta,
+               base::TimeDelta*,
+               const uint8_t*,
+               size_t),
+              (override));
   MOCK_METHOD(void, OnError, (PipelineStatus), (override));
 };
 
@@ -145,6 +182,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
         mock_mdeh_(std::make_unique<MockManifestDemuxerEngineHost>()),
         mock_dsp_(std::make_unique<MockHlsDataSourceProvider>()) {
     ON_CALL(*mock_mdeh_, AddRole(_, _, _)).WillByDefault(Return(true));
+    ON_CALL(*mock_mdeh_, GetBufferedRanges(_))
+        .WillByDefault(Return(Ranges<base::TimeDelta>()));
 
     base::SequenceBound<FakeHlsDataSourceProvider> dsp(
         task_environment_.GetMainThreadTaskRunner(), mock_dsp_.get());
@@ -165,64 +204,62 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 };
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
-  EXPECT_CALL(*mock_mdeh_,
-              AddRole("primary", "video/mp2t", "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
+                                   "avc1.420000, mp4a.40.05"));
   BindUrlToDataSource<StringHlsDataSource>(
       "http://media.example.com/manifest.m3u8", kSimpleMediaPlaylist);
   BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
                                          "bear-1280x720-hls.ts");
-
-  // TODO(crbug/1266991): This currently expects an error because there are no
-  // rendition implementations.
-  EXPECT_CALL(*this,
-              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
-  EXPECT_CALL(*mock_mdeh_,
-              AddRole("primary", "video/mp2t", "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
+                                   "avc1.420000, mp4a.40.05"));
   BindUrlToDataSource<StringHlsDataSource>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSource>("http://example.com/hi.m3u8",
                                            kSimpleMediaPlaylist);
   BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
                                          "bear-1280x720-hls.ts");
-
-  // TODO(crbug/1266991): This currently expects an error because there are no
-  // rendition implementations.
-  EXPECT_CALL(*this,
-              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
-  // TODO(crbug/1266991): This test currently expects an error because there are
-  // no rendition implementations, so creating one will fail. It currently fails
-  // when creating the audio-override rendition, so that's all that will be
-  // expected, until a rendition is implemented. Add these expectations then:
-  // EXPECT_CALL(*mock_mdeh_, AddRole("primary", _, _));
-  // EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
-  // BindUrlToDataSource<StringHlsDataSource>(
-  //    "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
-  // BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
-  //                                        "bear-1280x720-hls.ts");
-  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("audio-override", true));
   EXPECT_CALL(*mock_mdeh_,
-              AddRole("audio-override", "video/mp2t", "avc1.420000"));
+              SetSequenceMode(base::StringPiece("audio-override"), true));
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("audio-override"),
+                                   "video/mp2t", "avc1.420000"));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
+                                   "avc1.420000"));
+
+  // URL queries in order:
+  //  - manifest.m3u8: root manifest
+  //  - eng-audio.m3u8: audio override rendition playlist
+  //  - only.ts: check the container/codecs for the audio override rendition
+  //  - video-only.m3u8: primary rendition
+  //  - first.ts: check container/codecs for the primary rendition
   BindUrlToDataSource<StringHlsDataSource>(
       "http://media.example.com/manifest.m3u8", kMultivariantPlaylistWithAlts);
   BindUrlToDataSource<StringHlsDataSource>(
-      "http://media.example.com/eng-audio.m3u8", kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
+      "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
+  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/only.ts",
                                          "bear-1280x720-aac_he.ts");
-
-  EXPECT_CALL(*this,
-              MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  BindUrlToDataSource<StringHlsDataSource>(
+      "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
+  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
+                                         "bear-1280x720-hls.ts");
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }

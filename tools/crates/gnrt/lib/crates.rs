@@ -18,6 +18,7 @@ use std::str::FromStr;
 
 use log::{error, warn};
 use semver::Version;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Visibility {
@@ -43,7 +44,10 @@ impl std::default::Default for Visibility {
 /// A crate version is identified by the major version, if it's >= 1, or the
 /// minor version, if the major version is 0. There is a many-to-one
 /// relationship between crate versions and epochs.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+///
+/// `Epoch` is serialized as a version string: e.g. "1" or "0.2".
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(from = "EpochString", into = "EpochString")]
 pub enum Epoch {
     /// Epoch with major version == 0. The field is the minor version. It is an
     /// error to use 0: methods may panic in this case.
@@ -69,6 +73,24 @@ impl Epoch {
                 assert_ne!(major, 0);
                 format!("{major}")
             }
+        }
+    }
+
+    /// A `semver::VersionReq` that matches any version of this epoch.
+    pub fn to_version_req(&self) -> semver::VersionReq {
+        let (major, minor) = match self {
+            Self::Minor(x) => (0, Some(*x)),
+            Self::Major(x) => (*x, None),
+        };
+        semver::VersionReq {
+            comparators: vec![semver::Comparator {
+                // "^1" is the same as "1" in Cargo.toml.
+                op: semver::Op::Caret,
+                major,
+                minor,
+                patch: None,
+                pre: semver::Prerelease::EMPTY,
+            }],
         }
     }
 
@@ -446,4 +468,64 @@ fn into_io_result<T, E: Into<Box<dyn std::error::Error + Send + Sync>>>(
     result: Result<T, E>,
 ) -> io::Result<T> {
     result.map_err(|e| io::Error::new(io::ErrorKind::Other, e))
+}
+
+/// Proxy for [de]serializing epochs to/from strings. This uses the "1" or "0.1"
+/// format rather than the `Display` format for `Epoch`.
+#[derive(Debug, Deserialize, Serialize)]
+struct EpochString(String);
+
+impl From<Epoch> for EpochString {
+    fn from(epoch: Epoch) -> Self {
+        Self(epoch.to_version_string())
+    }
+}
+
+impl From<EpochString> for Epoch {
+    fn from(epoch: EpochString) -> Self {
+        Epoch::from_version_req_str(&epoch.0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Epoch::*;
+    use super::*;
+
+    #[test]
+    fn epoch_from_str() {
+        use EpochParseError::*;
+        assert_eq!(Epoch::from_str("v1"), Ok(Major(1)));
+        assert_eq!(Epoch::from_str("v2"), Ok(Major(2)));
+        assert_eq!(Epoch::from_str("v0_3"), Ok(Minor(3)));
+        assert_eq!(Epoch::from_str("0_1"), Err(BadFormat));
+        assert_eq!(Epoch::from_str("v1_9"), Err(BadVersion));
+        assert_eq!(Epoch::from_str("v0_0"), Err(BadVersion));
+        assert_eq!(Epoch::from_str("v0_1_2"), Err(BadFormat));
+        assert_eq!(Epoch::from_str("v1_0"), Err(BadVersion));
+        assert!(matches!(Epoch::from_str("v1_0foo"), Err(InvalidInt(_))));
+        assert!(matches!(Epoch::from_str("vx_1"), Err(InvalidInt(_))));
+    }
+
+    #[test]
+    fn epoch_to_string() {
+        assert_eq!(Major(1).to_string(), "v1");
+        assert_eq!(Major(2).to_string(), "v2");
+        assert_eq!(Minor(3).to_string(), "v0_3");
+    }
+
+    #[test]
+    fn epoch_from_version() {
+        use semver::Version;
+
+        assert_eq!(Epoch::from_version(&Version::new(0, 1, 0)), Minor(1));
+        assert_eq!(Epoch::from_version(&Version::new(1, 2, 0)), Major(1));
+    }
+
+    #[test]
+    fn epoch_from_version_req_string() {
+        assert_eq!(Epoch::from_version_req_str("0.1.0"), Minor(1));
+        assert_eq!(Epoch::from_version_req_str("1.0.0"), Major(1));
+        assert_eq!(Epoch::from_version_req_str("2.3.0"), Major(2));
+    }
 }

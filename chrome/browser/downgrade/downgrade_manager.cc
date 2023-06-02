@@ -195,7 +195,6 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
 
     type_ = GetDowngradeType(user_data_dir, current_version, *last_version);
     DCHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kUnsupported);
-    base::UmaHistogramEnumeration("Downgrade.Type", type_);
     return type_ == Type::kAdministrativeWipe;
   }
 
@@ -205,8 +204,6 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
   if (current_version < *last_version) {
     type_ = GetDowngradeTypeWithSnapshot(user_data_dir, current_version,
                                          *last_version);
-    if (type_ != Type::kNone)
-      base::UmaHistogramEnumeration("Downgrade.Type", type_);
 
     return type_ == Type::kAdministrativeWipe ||
            type_ == Type::kSnapshotRestore;

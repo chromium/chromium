@@ -8,6 +8,7 @@ import './prefs/pref_toggle_button.js';
 import './user_utils_mixin.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -36,8 +37,13 @@ export interface SettingsSectionElement {
   };
 }
 
-const SettingsSectionElementBase = RouteObserverMixin(
-    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID =
+    'PasswordManagerUI::kAddShortcutElementId';
+const PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID =
+    'PasswordManagerUI::kAddShortcutCustomEventId';
+
+const SettingsSectionElementBase = HelpBubbleMixin(RouteObserverMixin(
+    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
@@ -174,9 +180,19 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       const params = new URLSearchParams();
       Router.getInstance().updateRouterParams(params);
     }
+
+    const addShortcutBanner = this.root!.querySelector('#addShortcutBanner');
+    if (addShortcutBanner) {
+      this.registerHelpBubble(
+          PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID, addShortcutBanner);
+    }
   }
 
   private onAddShortcutClick_() {
+    this.notifyHelpBubbleAnchorCustomEvent(
+        PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID,
+        PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID,
+    );
     // TODO(crbug.com/1358448): Record metrics on all entry points usage.
     // TODO(crbug.com/1358448): Hide the button for users after the shortcut is
     // installed.

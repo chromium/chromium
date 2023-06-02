@@ -7,7 +7,6 @@
 
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
-#include "ui/views/controls/button/toggle_button.h"
 
 // An interface that provides callbacks to the extensions menu pages.
 class ExtensionsMenuHandler {
@@ -25,6 +24,9 @@ class ExtensionsMenuHandler {
   // Closes the currently-showing extensions menu, if it exists.
   virtual void CloseBubble() = 0;
 
+  // Updates the user site setting whether toggle `is_on`.
+  virtual void OnSiteSettingsToggleButtonPressed(bool is_on) = 0;
+
   // Updates the user site access for `extension_id` to `site_access`.
   virtual void OnSiteAccessSelected(
       extensions::ExtensionId extension_id,
@@ -35,8 +37,16 @@ class ExtensionsMenuHandler {
   virtual void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
                                          bool is_on) = 0;
 
+  // Reload the current web contents.
+  virtual void OnReloadPageButtonClicked() = 0;
+
   // Grants one time site access to `extension_id` on the current web contents.
   virtual void OnAllowExtensionClicked(
+      const extensions::ExtensionId& extension_id) = 0;
+
+  // Dismiss the `extension_id` requests access in the menu and toolbar one time
+  // on the current web contents.
+  virtual void OnDismissExtensionClicked(
       const extensions::ExtensionId& extension_id) = 0;
 };
 

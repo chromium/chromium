@@ -183,11 +183,12 @@ generate_grd("build_grdp") {
   deps = [ "//mojo/public/js:bindings_module" ]
   if (optimize_webui) {
     deps += [ ":build_min_js" ]
-    manifest_files = [ "$target_gen_dir/minify_js_manifest.json" ]
+    manifest_files = filter_include(get_target_outputs(":build_min_js"),
+                                    [ "*_manifest.json" ])
   } else {
     deps += [ ":build_ts" ]
     manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+        filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   }
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "mojo"

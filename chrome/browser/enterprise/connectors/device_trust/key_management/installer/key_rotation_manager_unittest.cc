@@ -207,11 +207,13 @@ class KeyRotationManagerTest : public testing::Test {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider_;
 
-  raw_ptr<StrictMock<MockKeyNetworkDelegate>> mock_network_delegate_;
-  raw_ptr<StrictMock<MockKeyPersistenceDelegate>> mock_persistence_delegate_;
+  raw_ptr<StrictMock<MockKeyNetworkDelegate>, DanglingUntriaged>
+      mock_network_delegate_;
+  raw_ptr<StrictMock<MockKeyPersistenceDelegate>, DanglingUntriaged>
+      mock_persistence_delegate_;
 
-  raw_ptr<SigningKeyPair> old_key_pair_;
-  raw_ptr<SigningKeyPair> new_key_pair_;
+  raw_ptr<SigningKeyPair, DanglingUntriaged> old_key_pair_;
+  raw_ptr<SigningKeyPair, DanglingUntriaged> new_key_pair_;
   absl::optional<std::string> captured_upload_body_;
 
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;

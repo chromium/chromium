@@ -41,19 +41,12 @@ config("skia_config") {
     "SK_UNTIL_CRBUG_1187654_IS_FIXED",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
-    "SK_DISABLE_LEGACY_IMAGE_FACTORIES",
-    "SK_DISABLE_LEGACY_MAKE_TEXTURE_IMAGE",
-    "SK_DISABLE_LEGACY_IMAGE_FLUSH",
-    "SK_DISABLE_LEGACY_GET_BACKEND_TEXTURE",
-    "SK_DISABLE_LEGACY_IMAGE_ENCODE_METHODS",
-    "SK_DISABLE_LEGACY_IMAGE_ENCODER",
     "SK_DISABLE_LEGACY_SKSURFACE_METHODS",
     "SK_DISABLE_LEGACY_GRAPHITE_IMAGE_FACTORIES",
     "SK_DISABLE_LEGACY_GRAPHITE_IMAGE_METHODS",
-
-    # Cannot turn this on until PDFium rolls into Chrome
-    # https://pdfium-review.googlesource.com/c/pdfium/+/107410
-    #"SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
+    "SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
+    "SK_DISABLE_LEGACY_SKSURFACE_FLUSH",
+    "SK_DISABLE_LEGACY_SKSURFACE_AS_IMAGE",
   ]
 
   include_dirs = [ "//third_party/skia" ]
@@ -517,7 +510,7 @@ component("skia") {
 
   if (is_android) {
     deps += [
-      "//third_party/android_ndk:cpu_features",
+      "//third_party/cpu_features:ndk_compat",
       "//third_party/expat",
     ]
   }
@@ -553,7 +546,7 @@ component("skia") {
   if (skia_support_gpu) {
     public += skia_gpu_public
     public += skia_gpu_chromium_public
-    sources += skia_gpu_private
+    sources += skia_ganesh_private
     sources += skia_null_gpu_sources
     sources += skia_sksl_gpu_sources
     sources += skia_shared_gpu_sources
@@ -594,6 +587,12 @@ component("skia") {
     ]
     public += skia_pdf_public
     sources += skia_pdf_sources
+    if (use_blink) {
+      # Blink includes Skia's JPEG decoder
+      sources += skia_pdf_jpeginfo_lib
+    } else {
+      sources += skia_pdf_jpeginfo_none
+    }
   } else {
     sources += [ "//third_party/skia/src/pdf/SkDocument_PDF_None.cpp" ]
   }
@@ -655,6 +654,8 @@ template("skia_source_set") {
 skia_source_set("skia_core_and_effects") {
   defines = []
   sources = skia_core_sources
+  sources += skia_colorfilters_sources
+  sources += skia_colorfilters_sksl_sources
   sources += skia_effects_sources
   sources += skia_effects_imagefilter_sources
   if (skia_support_gpu) {
@@ -673,13 +674,6 @@ skia_source_set("skia_core_and_effects") {
 }
 
 # Bits that involve special vector-y hardware.
-if (current_cpu == "arm64") {
-  skia_source_set("skia_opts_crc32") {
-    sources = skia_opts.crc32_sources
-    cflags = [ "-march=armv8-a+crc" ]
-    visibility = [ ":skia_opts" ]
-  }
-}
 if (current_cpu == "x86" || current_cpu == "x64") {
   skia_source_set("skia_opts_sse3") {
     sources = skia_opts.ssse3_sources
@@ -688,16 +682,6 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     if (is_win) {
       defines = [ "SK_CPU_SSE_LEVEL=31" ]
-    }
-    visibility = [ ":skia_opts" ]
-  }
-  skia_source_set("skia_opts_sse42") {
-    sources = skia_opts.sse42_sources
-    if (!is_win || is_clang) {
-      cflags = [ "-msse4.2" ]
-    }
-    if (is_win) {
-      defines = [ "SK_CPU_SSE_LEVEL=42" ]
     }
     visibility = [ ":skia_opts" ]
   }
@@ -751,7 +735,6 @@ skia_source_set("skia_opts") {
       ":skia_opts_hsw",
       ":skia_opts_skx",
       ":skia_opts_sse3",
-      ":skia_opts_sse42",
     ]
   } else if (current_cpu == "arm") {
     # The assembly uses the frame pointer register (r7 in Thumb/r11 in
@@ -771,7 +754,7 @@ skia_source_set("skia_opts") {
       }
     }
   } else if (current_cpu == "arm64") {
-    deps += [ ":skia_opts_crc32" ]
+    # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "mipsel") {
     cflags += [ "-fomit-frame-pointer" ]
   } else if (current_cpu == "mips64el") {
@@ -842,6 +825,10 @@ if (skia_support_gpu) {
         "-fobjc-arc",
       ]
       deps = [ "//gpu/config:workaround_list" ]
+      if (skia_use_dawn) {
+        # Needed due to include chain containing webgpu_cpp.h via GrDawnTypes.h.
+        public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
+      }
       visibility = [ ":skia" ]
     }
   }

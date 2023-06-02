@@ -84,6 +84,7 @@ RelocRvaReaderWin32::RelocRvaReaderWin32(
   if (lo > cur_reloc_units_offset) {
     offset_t delta =
         AlignCeil<offset_t>(lo - cur_reloc_units_offset, kRelocUnitSize);
+    // Okay if this empties |cur_reloc_units_|.
     cur_reloc_units_.Skip(delta);
   }
 }
@@ -107,7 +108,9 @@ absl::optional<RelocUnitWin32> RelocRvaReaderWin32::GetNext() {
   uint16_t entry = cur_reloc_units_.read<uint16_t>(0);
   uint8_t type = static_cast<uint8_t>(entry >> 12);
   rva_t rva = rva_hi_bits_ + (entry & 0xFFF);
-  cur_reloc_units_.Skip(kRelocUnitSize);
+  if (!cur_reloc_units_.Skip(kRelocUnitSize)) {
+    return absl::nullopt;
+  }
   return RelocUnitWin32{type, location, rva};
 }
 
@@ -126,7 +129,7 @@ bool RelocRvaReaderWin32::LoadRelocBlock(
   if ((block_size - sizeof(pe::RelocHeader)) % kRelocUnitSize != 0)
     return false;
   cur_reloc_units_ = BufferSource(block_begin, block_size);
-  cur_reloc_units_.Skip(sizeof(pe::RelocHeader));
+  cur_reloc_units_.Skip(sizeof(pe::RelocHeader));  // Always succeeds.
   return true;
 }
 

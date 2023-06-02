@@ -26,6 +26,7 @@
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/log/log.h"
 #include "absl/strings/internal/str_format/bind.h"
 #include "absl/strings/match.h"
 #include "absl/types/optional.h"
@@ -264,7 +265,7 @@ MATCHER_P(MatchesPointerString, ptr, "") {
   }
   void* parsed = nullptr;
   if (sscanf(arg.c_str(), "%p", &parsed) != 1) {
-    ABSL_RAW_LOG(FATAL, "Could not parse %s", arg.c_str());
+    LOG(FATAL) << "Could not parse " << arg;
   }
   return ptr == parsed;
 }

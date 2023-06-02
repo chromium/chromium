@@ -71,11 +71,11 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
     return quick_answers_ui_controller_.get();
   }
 
-  raw_ptr<quick_answers::QuickAnswer> quick_answer() {
+  quick_answers::QuickAnswer* quick_answer() {
     return quick_answers_session_ ? quick_answers_session_->quick_answer.get()
                                   : nullptr;
   }
-  raw_ptr<quick_answers::StructuredResult> structured_result() {
+  quick_answers::StructuredResult* structured_result() {
     return quick_answers_session_
                ? quick_answers_session_->structured_result.get()
                : nullptr;

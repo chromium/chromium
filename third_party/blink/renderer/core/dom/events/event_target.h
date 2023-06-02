@@ -280,36 +280,14 @@ class CORE_EXPORT EventTargetWithInlineData : public EventTarget {
                                           listener);                     \
   }
 
-#define DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name) \
-  EventListener* on##lower_name() {                                     \
-    return GetDocument().GetWindowAttributeEventListener(               \
-        event_type_names::symbol_name);                                 \
-  }                                                                     \
-  void setOn##lower_name(EventListener* listener) {                     \
-    GetDocument().SetWindowAttributeEventListener(                      \
-        event_type_names::symbol_name, listener);                       \
-  }
-
-#define DEFINE_STATIC_WINDOW_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name) \
-  static EventListener* on##lower_name(EventTarget& eventTarget) {             \
-    if (Node* node = eventTarget.ToNode()) {                                   \
-      return node->GetDocument().GetWindowAttributeEventListener(              \
-          event_type_names::symbol_name);                                      \
-    }                                                                          \
-    DCHECK(eventTarget.ToLocalDOMWindow());                                    \
-    return eventTarget.GetAttributeEventListener(                              \
+#define DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)        \
+  EventListener* on##lower_name() {                                            \
+    return GetDocumentForWindowEventHandler().GetWindowAttributeEventListener( \
         event_type_names::symbol_name);                                        \
   }                                                                            \
-  static void setOn##lower_name(EventTarget& eventTarget,                      \
-                                EventListener* listener) {                     \
-    if (Node* node = eventTarget.ToNode()) {                                   \
-      node->GetDocument().SetWindowAttributeEventListener(                     \
-          event_type_names::symbol_name, listener);                            \
-    } else {                                                                   \
-      DCHECK(eventTarget.ToLocalDOMWindow());                                  \
-      eventTarget.SetAttributeEventListener(event_type_names::symbol_name,     \
-                                            listener);                         \
-    }                                                                          \
+  void setOn##lower_name(EventListener* listener) {                            \
+    GetDocumentForWindowEventHandler().SetWindowAttributeEventListener(        \
+        event_type_names::symbol_name, listener);                              \
   }
 
 DISABLE_CFI_PERF

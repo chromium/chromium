@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import os
 from datetime import datetime
 
@@ -40,7 +41,8 @@ class RealTimeBCEReportingPipelineTest(ChromeReportingConnectorTestCase):
     testStartTime = datetime.utcnow()
 
     # trigger malware event & get device id from browser
-    deviceId = self.TriggerUnsafeBrowsingEvent()
+    deviceId, histogram = self.TriggerUnsafeBrowsingEvent()
+    logging.info('histogram: %s', histogram)
 
     # read service account private key from gs-bucket & write into local
     self.getServiceAccountKey()

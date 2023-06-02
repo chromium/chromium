@@ -961,6 +961,47 @@ TEST_F(BrowserDataBackMigratorTest,
   ASSERT_EQ(other_lacros_preference->GetInt(), kLacrosPrefValue);
 }
 
+TEST_F(BrowserDataBackMigratorTest, MergesDictWithKeysContainingDot) {
+  // AshPrefs
+  // {}
+  //
+  // LacrosPrefs
+  //   "foo": {
+  //     "bar": {
+  //       "baz": {
+  //         "https://www.google.com/": kLacrosPrefValue
+  //       }
+  //     }
+  //   }
+  base::Value::Dict ash_prefs;
+
+  base::Value::Dict lacros_prefs;
+  base::Value::Dict nested_dict;
+  nested_dict.Set("http://www.google.com", kLacrosPrefValue);
+  lacros_prefs.SetByDottedPath("foo.bar.baz", std::move(nested_dict));
+
+  CreateTemporaryDirectory();
+
+  CreateAshAndLacrosPrefs(ash_prefs, lacros_prefs);
+
+  ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
+      ash_prefs_path_, lacros_prefs_path_, tmp_prefs_path_));
+
+  // Expected
+  //   "foo": {
+  //     "bar": {
+  //       "baz": {
+  //         "https://www.google.com/": kLacrosPrefValue
+  //       }
+  //     }
+  //   }
+  base::Value merged_prefs;
+  ASSERT_TRUE(ReadJSON(tmp_prefs_path_, &merged_prefs));
+
+  ASSERT_TRUE(merged_prefs.is_dict());
+  EXPECT_EQ(merged_prefs.GetDict(), lacros_prefs);
+}
+
 // Checks that upon canceling migration, the temporary directory Lacros user
 //  directory and the are deleted.
 TEST_F(BrowserDataBackMigratorTest, CancelMigration) {

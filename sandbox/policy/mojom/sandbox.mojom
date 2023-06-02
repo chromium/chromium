@@ -72,10 +72,6 @@ enum Sandbox {
   [EnableIf=is_fuchsia]
   kVideoCapture,
 
-  // Used to preload the appropriate DLLs for archive analysis within a sandbox.
-  [EnableIf=is_win]
-  kFileUtil,
-
   // Allows access to file contents and Windows APIs for parsing icons from PE
   // files.
   [EnableIf=is_win]

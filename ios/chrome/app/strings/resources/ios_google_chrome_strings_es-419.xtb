@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
+<translation id="2840432500933227975">Abre la Configuración de Chrome en iOS, presiona "Navegador predeterminado" y selecciona Chrome.</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chrome se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Esto significa que Chrome solicitará el sitio móvil cada vez.</translation>
 <translation id="3706101708757577809">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="3720541637541300822">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>
+<translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
 <translation id="3980220367029651214">Estás cambiando la cuenta de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> administra tus datos de Chrome existentes. Esta acción borrará tus datos del dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tu organización requiere que no accedas a tu cuenta en Chrome.</translation>
@@ -150,7 +152,6 @@ Aspectos para tener en cuenta:
   • Si Chrome falla, los detalles sobre lo ocurrido pueden incluir información personal.
 
   • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Tienes seguridad estándar para este perfil de Chrome</translation>
 <translation id="9112744793181547300">¿Deseas establecer Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome solicitará la versión de escritorio del sitio cada vez.</translation>
 </translationbundle>

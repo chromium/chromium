@@ -461,7 +461,7 @@ FilePath FilePath::AddExtension(StringPieceType extension) const {
       *(str.end() - 1) != kExtensionSeparator) {
     str.append(1, kExtensionSeparator);
   }
-  str.append(extension.data(), extension.size());
+  str.append(extension);
   return FilePath(str);
 }
 
@@ -487,7 +487,7 @@ FilePath FilePath::ReplaceExtension(StringPieceType extension) const {
   StringType str = no_ext.value();
   if (extension[0] != kExtensionSeparator)
     str.append(1, kExtensionSeparator);
-  str.append(extension.data(), extension.size());
+  str.append(extension);
   return FilePath(str);
 }
 
@@ -553,7 +553,7 @@ FilePath FilePath::Append(StringPieceType component) const {
     }
   }
 
-  new_path.path_.append(appended.data(), appended.size());
+  new_path.path_.append(appended);
   return new_path;
 }
 

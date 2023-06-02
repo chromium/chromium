@@ -13,7 +13,7 @@ video::-webkit-media-controls {
   writing-mode: horizontal-tb;
   width: inherit;
   height: inherit;
-  contain: paint;
+  contain: paint !important;
   direction: ltr;
   display: flex;
   flex-direction: column;
@@ -1241,10 +1241,11 @@ video::-webkit-media-controls.audio-only [pseudo="-internal-media-controls-anima
  * Text Tracks
  */
 video::-webkit-media-text-track-container {
-    position: relative;
+    position: relative !important;
     width: inherit;
     height: inherit;
     overflow: hidden;
+    contain: paint !important;
 
     font: 22px sans-serif;
     text-align: center;

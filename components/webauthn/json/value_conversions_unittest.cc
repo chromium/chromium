@@ -319,6 +319,101 @@ TEST(WebAuthenticationJSONConversionTest,
 }
 
 TEST(WebAuthenticationJSONConversionTest,
+     AuthenticatorAttestationResponseEasyAccessorFields) {
+  constexpr char kJson[] = R"({
+    "rawId":"Lnc6JGTv2WBS05AsZB6xdg",
+    "authenticatorAttachment":"platform",
+    "type":"public-key",
+    "id":"Lnc6JGTv2WBS05AsZB6xdg",
+    "response":{
+      "clientDataJSON":"PGludmFsaWQ-",
+      "attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YViUdKbqkhPJnC90siSSsyDPQCYqlMGpUKA5fyklC2CEHvBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAEC53OiRk79lgUtOQLGQesXalAQIDJiABIVggGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsYiWCA8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg",
+      "transports":["internal", "hybrid"],
+      "authenticatorData":"dKbqkhPJnC90siSSsyDPQCYqlMGpUKA5fyklC2CEHvBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAEC53OiRk79lgUtOQLGQesXalAQIDJiABIVggGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsYiWCA8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg",
+      "publicKeyAlgorithm":-7,
+      "publicKey":"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEGzGid-lRsaFEuVdvIQ6BNDZVvRa7fwPcZIWjSD9LfsY8-TGiZ5izq8-c17pwPrYVq9kC0M9vzkO2TrZnMyUQyg"},
+      "clientExtensionResults":{"credProps":{"rk":true}}})";
+
+  JSONStringValueDeserializer deserializer(kJson);
+  std::string deserialize_error;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
+  ASSERT_TRUE(value) << deserialize_error;
+
+  {
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    EXPECT_TRUE(response) << error;
+  }
+
+  {
+    // Still valid even when these fields are required.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {device::kWebAuthnRequireEasyAccessorFieldsInJSON}, {});
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    EXPECT_TRUE(response) << error;
+  }
+
+  // The fields are all optional.
+  for (const std::string key :
+       {"publicKeyAlgorithm", "publicKey", "authenticatorData"}) {
+    base::Value corrupted = value->Clone();
+    EXPECT_TRUE(corrupted.GetIfDict()->FindDict("response")->Remove(key));
+    auto [response, error] = MakeCredentialResponseFromValue(corrupted);
+    EXPECT_TRUE(response) << error;
+  }
+
+  // But it's an error if they are present with the wrong value.
+  for (const bool flag_set : {true, false}) {
+    SCOPED_TRACE(flag_set);
+
+    base::test::ScopedFeatureList feature_list;
+    if (flag_set) {
+      feature_list.InitWithFeatures(
+          {device::kWebAuthnRequireEasyAccessorFieldsInJSON}, {});
+    }
+
+    {
+      base::Value corrupted = value->Clone();
+      corrupted.GetIfDict()
+          ->FindDict("response")
+          ->Set("publicKeyAlgorithm", -8);
+      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
+      EXPECT_FALSE(response);
+    }
+
+    {
+      base::Value corrupted = value->Clone();
+      corrupted.GetIfDict()->FindDict("response")->Set("publicKey", "MTIzNA");
+      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
+      EXPECT_FALSE(response);
+    }
+
+    {
+      base::Value corrupted = value->Clone();
+      corrupted.GetIfDict()
+          ->FindDict("response")
+          ->Set("authenticatorData", "MTIzNA");
+      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
+      EXPECT_FALSE(response);
+    }
+  }
+
+  // In the future, two of the fields are required.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {device::kWebAuthnRequireEasyAccessorFieldsInJSON}, {});
+    for (const std::string key : {"publicKeyAlgorithm", "authenticatorData"}) {
+      base::Value corrupted = value->Clone();
+      EXPECT_TRUE(corrupted.GetIfDict()->FindDict("response")->Remove(key));
+      auto [response, error] = MakeCredentialResponseFromValue(corrupted);
+      EXPECT_FALSE(response);
+    }
+  }
+}
+
+TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAssertionResponseFromValue) {
   // The following values appear Base64URL-encoded in `json`.
   static const std::vector<uint8_t> kAuthenticatorData =

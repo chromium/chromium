@@ -15,8 +15,8 @@
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/network_service_util.h"
 #include "sql/database.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -294,6 +294,21 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
                                       &*params->http_cache_directory)) {
         PLOG(ERROR) << "Failed to grant sandbox access to cache directory "
                     << params->http_cache_directory->path();
+      }
+    }
+  }
+
+  if (params->shared_dictionary_directory &&
+      params->shared_dictionary_enabled) {
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "NetworkService.TimeToGrantSharedDictionaryAccess");
+    // The path must exist for the cache ACL to be set. Create if needed.
+    if (base::CreateDirectory(params->shared_dictionary_directory->path())) {
+      if (!MaybeGrantAccessToDataPath(sandbox_params,
+                                      &*params->shared_dictionary_directory)) {
+        PLOG(ERROR)
+            << "Failed to grant sandbox access to shared dictionary directory "
+            << params->shared_dictionary_directory->path();
       }
     }
   }

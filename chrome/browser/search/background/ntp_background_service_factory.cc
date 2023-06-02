@@ -25,7 +25,8 @@ NtpBackgroundService* NtpBackgroundServiceFactory::GetForProfile(
 
 // static
 NtpBackgroundServiceFactory* NtpBackgroundServiceFactory::GetInstance() {
-  return base::Singleton<NtpBackgroundServiceFactory>::get();
+  static base::NoDestructor<NtpBackgroundServiceFactory> instance;
+  return instance.get();
 }
 
 NtpBackgroundServiceFactory::NtpBackgroundServiceFactory()

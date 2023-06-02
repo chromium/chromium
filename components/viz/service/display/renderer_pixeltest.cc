@@ -38,8 +38,8 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display/delegated_ink_point_pixel_test_helper.h"
 #include "components/viz/service/display/software_renderer.h"
@@ -1727,8 +1727,8 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
 
   std::unique_ptr<AggregatedRenderPass> render_pass_;
   gfx::Rect viewport_rect_;
-  raw_ptr<SharedQuadState> front_quad_state_;
-  raw_ptr<SharedQuadState> back_quad_state_;
+  raw_ptr<SharedQuadState, DanglingUntriaged> front_quad_state_;
+  raw_ptr<SharedQuadState, DanglingUntriaged> back_quad_state_;
   gfx::Rect quad_rect_;
   AggregatedRenderPassList pass_list_;
 };
@@ -2556,8 +2556,8 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
   matrix[18] = 1;
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateReferenceFilter(
-      sk_make_sp<cc::ColorFilterPaintFilter>(SkColorFilters::Matrix(matrix),
-                                             nullptr)));
+      sk_make_sp<cc::ColorFilterPaintFilter>(
+          cc::ColorFilter::MakeMatrix(matrix), nullptr)));
 
   auto child_pass =
       CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
@@ -2762,8 +2762,8 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   matrix[18] = 1;
   cc::FilterOperations filters;
   filters.Append(cc::FilterOperation::CreateReferenceFilter(
-      sk_make_sp<cc::ColorFilterPaintFilter>(SkColorFilters::Matrix(matrix),
-                                             nullptr)));
+      sk_make_sp<cc::ColorFilterPaintFilter>(
+          cc::ColorFilter::MakeMatrix(matrix), nullptr)));
 
   auto child_pass =
       CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);

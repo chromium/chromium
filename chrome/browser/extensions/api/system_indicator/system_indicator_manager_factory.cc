@@ -21,7 +21,8 @@ SystemIndicatorManager* SystemIndicatorManagerFactory::GetForContext(
 
 // static
 SystemIndicatorManagerFactory* SystemIndicatorManagerFactory::GetInstance() {
-  return base::Singleton<SystemIndicatorManagerFactory>::get();
+  static base::NoDestructor<SystemIndicatorManagerFactory> instance;
+  return instance.get();
 }
 
 SystemIndicatorManagerFactory::SystemIndicatorManagerFactory()
@@ -36,7 +37,7 @@ SystemIndicatorManagerFactory::SystemIndicatorManagerFactory()
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-SystemIndicatorManagerFactory::~SystemIndicatorManagerFactory() {}
+SystemIndicatorManagerFactory::~SystemIndicatorManagerFactory() = default;
 
 KeyedService* SystemIndicatorManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

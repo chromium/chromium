@@ -101,7 +101,8 @@ class WeakLearningTaskController : public LearningTaskController {
   }
 
   base::WeakPtr<LearningSessionImpl> weak_session_;
-  raw_ptr<base::SequenceBound<LearningTaskController>> controller_;
+  raw_ptr<base::SequenceBound<LearningTaskController>, DanglingUntriaged>
+      controller_;
   LearningTask task_;
 
   // Set of ids that have been started but not completed / cancelled yet, and

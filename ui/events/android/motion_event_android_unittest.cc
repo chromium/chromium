@@ -113,37 +113,6 @@ TEST(MotionEventAndroidTest, Constructor) {
   EXPECT_EQ(static_cast<size_t>(history_size), event.GetHistorySize());
 }
 
-TEST(MotionEventAndroidTest, ConstructorNanosecodsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kUseNanosecondsForMotionEvent);
-
-  constexpr int kEventTimeNS = 5'123'456;
-  base::TimeTicks event_time_ns =
-      base::TimeTicks() + base::Nanoseconds(kEventTimeNS);
-  base::TimeTicks event_time_ms = base::TimeTicks() + base::Milliseconds(5);
-  ui::test::ScopedEventTestTickClock clock;
-  clock.SetNowTicks(event_time_ns);
-
-  MotionEventAndroid::Pointer p0(1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f,
-                                 kAndroidToolTypeFinger);
-  MotionEventAndroid::Pointer p1(2, -13.7f, 7.13f, 3.5f, 12.1f, -0.1f, 0.4f,
-                                 kAndroidToolTypeFinger);
-  float raw_offset = -3.f;
-  int pointer_count = 2;
-  int history_size = 0;
-  int action_index = -1;
-  MotionEventAndroid event(
-      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
-      base::TimeTicks() + base::Nanoseconds(kEventTimeNS), kAndroidActionDown,
-      pointer_count, history_size, action_index, kAndroidActionButton, 0,
-      kAndroidButtonPrimary, kAndroidAltKeyDown, raw_offset, -raw_offset, false,
-      &p0, &p1);
-
-  EXPECT_EQ(MotionEvent::Action::DOWN, event.GetAction());
-  EXPECT_EQ(event_time_ms, event.GetEventTime());
-}
-
 TEST(MotionEventAndroidTest, Clone) {
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(base::TimeTicks());

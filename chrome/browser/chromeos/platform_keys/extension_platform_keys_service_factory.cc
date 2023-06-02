@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
@@ -81,7 +81,8 @@ ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
 // static
 ExtensionPlatformKeysServiceFactory*
 ExtensionPlatformKeysServiceFactory::GetInstance() {
-  return base::Singleton<ExtensionPlatformKeysServiceFactory>::get();
+  static base::NoDestructor<ExtensionPlatformKeysServiceFactory> instance;
+  return instance.get();
 }
 
 ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
@@ -98,7 +99,8 @@ ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
 #endif
 }
 
-ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() {}
+ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() =
+    default;
 
 KeyedService* ExtensionPlatformKeysServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -248,7 +248,8 @@ class ActivationStateComputingNavigationThrottleTest
   absl::optional<mojom::ActivationState> parent_activation_state_;
 
   // Needed for potential cross process navigations which swap hosts.
-  raw_ptr<content::RenderFrameHost> last_committed_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged>
+      last_committed_frame_host_ = nullptr;
 
   bool dryrun_speculation_;
 };

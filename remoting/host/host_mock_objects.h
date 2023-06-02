@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -82,6 +83,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
   MOCK_METHOD(std::unique_ptr<KeyboardLayoutMonitor>,
               CreateKeyboardLayoutMonitor,
               (base::RepeatingCallback<void(const protocol::KeyboardLayout&)>),
+              (override));
+  MOCK_METHOD(std::unique_ptr<ActiveDisplayMonitor>,
+              CreateActiveDisplayMonitor,
+              (base::RepeatingCallback<void(webrtc::ScreenId)>),
               (override));
   MOCK_METHOD(std::unique_ptr<FileOperations>,
               CreateFileOperations,

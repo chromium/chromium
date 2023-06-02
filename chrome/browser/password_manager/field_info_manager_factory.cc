@@ -4,7 +4,7 @@
 
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,7 +17,8 @@ using password_manager::FieldInfoManagerImpl;
 
 // static
 FieldInfoManagerFactory* FieldInfoManagerFactory::GetInstance() {
-  return base::Singleton<FieldInfoManagerFactory>::get();
+  static base::NoDestructor<FieldInfoManagerFactory> instance;
+  return instance.get();
 }
 
 // static

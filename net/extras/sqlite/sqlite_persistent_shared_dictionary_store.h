@@ -6,6 +6,7 @@
 #define NET_EXTRAS_SQLITE_SQLITE_PERSISTENT_SHARED_DICTIONARY_STORE_H_
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "base/component_export.h"
@@ -15,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "url/origin.h"
 
@@ -43,9 +45,9 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     kFailedToSetTotalDictSize,
   };
   struct RegisterDictionaryResult {
-    absl::optional<int64_t> primary_key_in_database;
+    int64_t primary_key_in_database;
     absl::optional<base::UnguessableToken> disk_cache_key_token_to_be_removed;
-    absl::optional<uint64_t> total_dictionary_size;
+    uint64_t total_dictionary_size;
   };
 
   using RegisterDictionaryResultOrError =
@@ -56,6 +58,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       base::expected<std::map<SharedDictionaryStorageIsolationKey,
                               std::vector<SharedDictionaryInfo>>,
                      Error>;
+  using UnguessableTokenSetOrError =
+      base::expected<std::set<base::UnguessableToken>, Error>;
 
   SQLitePersistentSharedDictionaryStore(
       const base::FilePath& path,
@@ -81,14 +85,28 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetAllDictionaries(
       base::OnceCallback<void(DictionaryMapOrError)> callback);
   void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
-
-  // TODO(crbug.com/1413922): Add a method to update `last_used_time`.
-  // TODO(crbug.com/1413922): Add a method for the garbage collection logic of
-  // SharedDictionaryDiskCache by using `disk_cache_key_token`.
-  // TODO(crbug.com/1413922): Add a method for the clearing expired dictionary
-  // logic using expiration time.
-  // TODO(crbug.com/1413922): Add a method for the clearing dictionary logic
-  // which will be called from BrowsingDataRemover.
+  void ClearDictionaries(
+      const base::Time start_time,
+      const base::Time end_time,
+      base::RepeatingCallback<bool(const GURL&)> url_matcher,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void DeleteExpiredDictionaries(
+      const base::Time now,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  // Deletes dictionaries in order of `last_used_time` if the total size of all
+  // dictionaries exceeds `cache_max_size` until the total size reaches
+  // `low_watermark`.
+  void ProcessEviction(
+      const uint64_t cache_max_size,
+      const uint64_t low_watermark,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void GetAllDiskCacheKeyTokens(
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void DeleteDictionariesByDiskCacheKeyTokens(
+      std::set<base::UnguessableToken> disk_cache_key_tokens,
+      base::OnceCallback<void(Error)> callback);
+  void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
+                                    base::Time last_used_time);
 
   base::WeakPtr<SQLitePersistentSharedDictionaryStore> GetWeakPtr();
 

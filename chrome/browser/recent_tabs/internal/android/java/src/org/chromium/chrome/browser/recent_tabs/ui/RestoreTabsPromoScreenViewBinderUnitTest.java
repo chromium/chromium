@@ -100,6 +100,11 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
                         "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE));
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
 
+        TextView sheetSubtitleView =
+                mRestoreTabsPromoView.findViewById(R.id.restore_tabs_promo_sheet_subtitle);
+        Assert.assertEquals(
+                "Choose the device you’d like to get tabs from", sheetSubtitleView.getText());
+
         TextView deviceNameView =
                 mRestoreTabsPromoView.findViewById(R.id.restore_tabs_promo_sheet_device_name);
         TextView deviceInfoView =
@@ -204,6 +209,11 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
         ImageView expandSelectorView2 =
                 mRestoreTabsPromoView.findViewById(R.id.restore_tabs_expand_icon_device_selection);
         Assert.assertEquals(View.GONE, expandSelectorView2.getVisibility());
+
+        TextView sheetSubtitleView =
+                mRestoreTabsPromoView.findViewById(R.id.restore_tabs_promo_sheet_subtitle);
+        Assert.assertEquals(
+                "You can get tabs from the device listed below", sheetSubtitleView.getText());
 
         View sessionInfoLayout =
                 mRestoreTabsPromoView.findViewById(R.id.restore_tabs_selected_device_view);

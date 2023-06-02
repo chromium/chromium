@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -153,10 +154,8 @@ IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyAndValue, direction);
-  BackendDB()->OpenCursor(transaction_->Id(), object_store_->Id(), Id(),
-                          key_range, direction, false,
-                          mojom::IDBTaskType::Normal,
-                          request->CreateWebCallbacks().release());
+  BackendDB()->OpenCursor(object_store_->Id(), Id(), key_range, direction,
+                          false, mojom::IDBTaskType::Normal, request);
   return request;
 }
 
@@ -229,9 +228,8 @@ IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyOnly, direction);
-  BackendDB()->OpenCursor(
-      transaction_->Id(), object_store_->Id(), Id(), key_range, direction, true,
-      mojom::IDBTaskType::Normal, request->CreateWebCallbacks().release());
+  BackendDB()->OpenCursor(object_store_->Id(), Id(), key_range, direction, true,
+                          mojom::IDBTaskType::Normal, request);
   return request;
 }
 
@@ -344,7 +342,8 @@ IDBRequest* IDBIndex::GetInternal(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   BackendDB()->Get(transaction_->Id(), object_store_->Id(), Id(), key_range,
-                   key_only, request->CreateWebCallbacks().release());
+                   key_only,
+                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 

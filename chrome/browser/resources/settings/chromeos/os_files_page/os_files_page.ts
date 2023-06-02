@@ -9,12 +9,14 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './office_page.js';
 import './smb_shares_page.js';
+import '/shared/settings/controls/settings_toggle_button.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,12 +26,25 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
 import {getTemplate} from './os_files_page.html.js';
 
 const OsSettingsFilesPageElementBase =
-    PrefsMixin(DeepLinkingMixin(RouteObserverMixin(PolymerElement)));
+    PrefsMixin(DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
+  /**
+   * Resolved once the async calls initiated by the constructor have resolved.
+   */
+  initPromise: Promise<void>;
+
+  constructor() {
+    super();
+    if (this.showOfficeSettings_) {
+      this.oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
+      this.initPromise = this.updateOneDriveEmail_();
+    }
+  }
   static get is() {
     return 'os-settings-files-page';
   }
@@ -74,6 +89,16 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
           return loadTimeData.getBoolean('enableDriveFsBulkPinning');
         },
       },
+
+      /**
+         @private Indicates whether the user is connected to OneDrive or not.
+       */
+      isOneDriveConnected_: {
+        type: Boolean,
+        value() {
+          return false;
+        },
+      },
     };
   }
 
@@ -88,7 +113,11 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   }
 
   private driveDisabled_: boolean;
+  private showOfficeSettings_: boolean;
   private focusConfig_: Map<string, string>;
+  private isOneDriveConnected_: boolean;
+  private oneDriveEmailAddress_: string|null;
+  private oneDriveProxy_: OneDriveBrowserProxy;
 
   override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
@@ -99,12 +128,39 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     this.attemptDeepLink();
   }
 
+  /**
+   * Returns the browser proxy page handler for operations related to OneDrive
+   * (to invoke functions).
+   */
+  get oneDrivePageHandler() {
+    return this.oneDriveProxy_.handler;
+  }
+
+  /**
+   * Returns the browser proxy callback router (to receive async messages).
+   */
+  get oneDriveCallbackRouter() {
+    return this.oneDriveProxy_.observer;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.showOfficeSettings_) {
+      this.oneDriveCallbackRouter.onODFSMountOrUnmount.addListener(
+          this.updateOneDriveEmail_.bind(this));
+    }
+  }
+
   private onTapSmbShares_() {
     Router.getInstance().navigateTo(routes.SMB_SHARES);
   }
 
   private onGoogleDrive_() {
     Router.getInstance().navigateTo(routes.GOOGLE_DRIVE);
+  }
+
+  private onTapOneDrive_() {
+    Router.getInstance().navigateTo(routes.ONE_DRIVE);
   }
 
   private onTapOffice_() {
@@ -120,6 +176,24 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     return this.driveDisabled_ ?
         loadTimeData.getString('googleDriveDisabledLabel') :
         loadTimeData.getString('googleDriveEnabledLabel');
+  }
+
+  private async updateOneDriveEmail_() {
+    const {email} = await this.oneDrivePageHandler.getUserEmailAddress();
+    this.oneDriveEmailAddress_ = email;
+    if (email == null) {
+      this.isOneDriveConnected_ = false;
+    } else {
+      this.isOneDriveConnected_ = true;
+    }
+  }
+
+  private signedInAsLabel_(connected: boolean) {
+    if (connected) {
+      assert(this.oneDriveEmailAddress_);
+      return this.i18n('oneDriveSignedInAs', this.oneDriveEmailAddress_);
+    }
+    return this.i18n('oneDriveDisconnected');
   }
 }
 

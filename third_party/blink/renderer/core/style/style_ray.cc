@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/style/style_ray.h"
 
+#include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -11,19 +12,36 @@
 
 namespace blink {
 
-scoped_refptr<StyleRay> StyleRay::Create(float angle,
-                                         RaySize size,
-                                         bool contain) {
-  return base::AdoptRef(new StyleRay(angle, size, contain));
+scoped_refptr<StyleRay> StyleRay::Create(
+    float angle,
+    RaySize size,
+    bool contain,
+    const BasicShapeCenterCoordinate& center_x,
+    const BasicShapeCenterCoordinate& center_y,
+    bool has_explicit_center) {
+  return base::AdoptRef(new StyleRay(angle, size, contain, center_x, center_y,
+                                     has_explicit_center));
 }
 
-StyleRay::StyleRay(float angle, RaySize size, bool contain)
-    : angle_(angle), size_(size), contain_(contain) {}
+StyleRay::StyleRay(float angle,
+                   RaySize size,
+                   bool contain,
+                   const BasicShapeCenterCoordinate& center_x,
+                   const BasicShapeCenterCoordinate& center_y,
+                   bool has_explicit_center)
+    : angle_(angle),
+      size_(size),
+      contain_(contain),
+      center_x_(center_x),
+      center_y_(center_y),
+      has_explicit_center_(has_explicit_center) {}
 
 bool StyleRay::IsEqualAssumingSameType(const BasicShape& o) const {
   const StyleRay& other = To<StyleRay>(o);
   return angle_ == other.angle_ && size_ == other.size_ &&
-         contain_ == other.contain_;
+         contain_ == other.contain_ && center_x_ == other.center_x_ &&
+         center_y_ == other.center_y_ &&
+         has_explicit_center_ == other.has_explicit_center_;
 }
 
 void StyleRay::GetPath(Path&, const gfx::RectF&, float) const {
@@ -118,11 +136,13 @@ float StyleRay::CalculateRayPathLength(
   }
 }
 
-PointAndTangent StyleRay::PointAndNormalAtLength(float length) const {
+PointAndTangent StyleRay::PointAndNormalAtLength(
+    const gfx::PointF& starting_point,
+    float length) const {
   const float angle = Angle() - 90;
   const float rad = Deg2rad(angle);
-  const float x = length * std::cos(rad);
-  const float y = length * std::sin(rad);
+  const float x = starting_point.x() + length * std::cos(rad);
+  const float y = starting_point.y() + length * std::sin(rad);
   return {{x, y}, angle};
 }
 

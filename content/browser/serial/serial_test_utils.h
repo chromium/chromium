@@ -26,6 +26,7 @@ class MockSerialDelegate : public SerialDelegate {
   std::unique_ptr<SerialChooser> RunChooser(
       RenderFrameHost* frame,
       std::vector<blink::mojom::SerialPortFilterPtr> filters,
+      std::vector<device::BluetoothUUID> allowed_bluetooth_service_class_ids,
       SerialChooser::Callback callback) override;
 
   MOCK_METHOD0(RunChooserInternal, device::mojom::SerialPortInfoPtr());

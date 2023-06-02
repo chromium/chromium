@@ -12,25 +12,17 @@ include_rules = [
     "+base/allocator/partition_alloc_features.h",
     "+base/allocator/partition_allocator/partition_alloc_base",
     "+base/base_export.h",
-    "+base/functional/bind.h",
     "+base/logging.h",
     "+base/mac/mach_logging.h",
     "+base/memory/nonscannable_memory.h",
-    "+base/memory/page_size.h",
-    "+base/process/memory.h",
     "+base/synchronization/lock.h",
-    "+base/task/sequenced_task_runner.h",
-    "+base/threading/platform_thread.h",
-    "+base/time/time.h",
-    "+base/types/strong_alias.h",
     "+build/chromecast_buildflags.h",
-    "+third_party/apple_apsl/CFBase.h",
-    "+third_party/apple_apsl/malloc.h",
 ]
 
 specific_include_rules = {
   "allocator_shim_unittest\.cc$": [
     "+base/synchronization/waitable_event.h",
+    "+base/threading/platform_thread.h",
     "+base/threading/thread_local.h",
   ],
   "allocator_interception_mac_unittest\.mm$": [

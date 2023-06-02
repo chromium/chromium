@@ -33,9 +33,18 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/navigation_entry.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/metrics/structured/event_logging_features.h"
+#include "components/metrics/structured/structured_events.h"
+#endif
+
 namespace web_app {
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
+#endif
 
 void OnWebAppInstallShowInstallDialog(
     WebAppInstallFlow flow,
@@ -49,6 +58,17 @@ void OnWebAppInstallShowInstallDialog(
   switch (flow) {
     case WebAppInstallFlow::kInstallSite:
       web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+#if BUILDFLAG(IS_CHROMEOS)
+      if (base::FeatureList::IsEnabled(
+              metrics::structured::kAppDiscoveryLogging) &&
+          install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
+        web_app::AppId app_id =
+            web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+        cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
+            .SetAppId(app_id)
+            .Record();
+      }
+#endif
       if (base::FeatureList::IsEnabled(
               webapps::features::kDesktopPWAsDetailedInstallDialog) &&
           webapps::AppBannerManager::FromWebContents(initiator_web_contents)
@@ -68,6 +88,17 @@ void OnWebAppInstallShowInstallDialog(
         return;
       }
     case WebAppInstallFlow::kCreateShortcut:
+#if BUILDFLAG(IS_CHROMEOS)
+      if (base::FeatureList::IsEnabled(
+              metrics::structured::kAppDiscoveryLogging)) {
+        web_app::AppId app_id =
+            web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+        cros_events::AppDiscovery_Browser_CreateShortcut()
+            .SetAppId(app_id)
+            .Record();
+      }
+#endif
+
       chrome::ShowWebAppInstallDialog(initiator_web_contents,
                                       std::move(web_app_info),
                                       std::move(web_app_acceptance_callback));

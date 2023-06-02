@@ -142,7 +142,6 @@
 <translation id="1870148520156231997">પાસવર્ડ જણાવો</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
 <translation id="1883255238294161206">સૂચિ સંકુચિત કરો</translation>
-<translation id="1891796056033961979">તમારા સાચવેલા બુકમાર્ક, પાસવર્ડ, સેટિંગ અને બીજી ઘણી વસ્તુઓ આ સ્ક્રીન પર ઉપલબ્ધ છે.</translation>
 <translation id="1894023287452300670">અહીં કિંમત ટ્રૅક કરો</translation>
 <translation id="1910975740091000991">iOS માટે Chrome</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
@@ -316,6 +315,9 @@
 <translation id="2975121486251958312">ફક્ત છૂપો મોડ ઉપલબ્ધ છે</translation>
 <translation id="2982481275546140226">ડેટા સાફ કરો</translation>
 <translation id="298306318844797842">ચુકવણીની પદ્ધતિ ઉમેરો…</translation>
+<translation id="2988274366244053197">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
+
+તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં અથવા તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ છો અથવા આ સેટિંગ બદલવા માંગો છો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">નવા ટૅબમાં ખોલો</translation>
 <translation id="3020183492814296499">શૉર્ટકટ</translation>
 <translation id="3037605927509011580">અરર કંઇક ભુલ થઇ!</translation>
@@ -379,8 +381,10 @@
 <translation id="3464194322481586217">કિંમત ટ્રૅક કરી શક્યા નથી.</translation>
 <translation id="3469166899695866866">ડાઉનલોડ રોકીએ?</translation>
 <translation id="3470502288861289375">કૉપિ કરી રહ્યું છે...</translation>
+<translation id="3471148582064653480">તમારા પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું સિંક કરો.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} સાઇટ અથવા ઍપ માટે}one{{COUNT} સાઇટ અથવા ઍપ માટે}other{{COUNT} સાઇટ અથવા ઍપ માટે}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> તરીકે ચાલુ રાખો</translation>
+<translation id="3476450923187944815">અન્ય ઍપમાંથી પણ તમારા પાસવર્ડ ઍક્સેસ કરો.</translation>
 <translation id="3478058380795961209">સમય સમાપ્તિ મહિનો</translation>
 <translation id="3482959374254649722">તમારા ટેબ્સને સમન્વયિત કરી રહ્યું છે...</translation>
 <translation id="3484946776651937681">ડાઉનલોડ ફોલ્ડરમાં ખોલો</translation>
@@ -399,6 +403,7 @@
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
 <translation id="3565207542107370586">બ્રાઉઝિંગ ડેટા સાફ કરો…</translation>
 <translation id="3575234738189584619">Lens વડે શોધો</translation>
+<translation id="3577555362230509265">અન્ય ઍપમાં Chromeનો ઉપયોગ કરો.</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
 <translation id="3595252146048399851">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
@@ -442,7 +447,6 @@
 <translation id="3891414008432200754">કિંમત</translation>
 <translation id="3892144330757387737">તમને તમારો ઇતિહાસ અહીં મળશે</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
-<translation id="3899568514738536144">બ્રાઉઝિંગ ઇતિહાસ જુઓ</translation>
 <translation id="3904829425754749514">તમારી સંસ્થાએ સિંક બંધ કર્યું છે. તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તે તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
 <translation id="3913386780052199712">Chromeમાં સાઇન ઇન કર્યું</translation>
 <translation id="3915450441834151894">સાઇટ માહિતી</translation>
@@ -499,7 +503,6 @@
 <translation id="430793432425771671">બધાને સમન્વયિત કરો</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="430967081421617822">હંમેશાં</translation>
-<translation id="4324952538601951430">તમારા સાચવેલા બુકમાર્ક, પાસવર્ડ, સેટિંગ અને બીજી ઘણી વસ્તુઓ હવે અહીં છે</translation>
 <translation id="4334428914252001502">1 વાંચ્યા વગરનો લેખ.</translation>
 <translation id="4338650699862464074">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે.</translation>
 <translation id="4342054591427973606">{count,plural, =1{આ સરનામું આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}one{આ સરનામું આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}other{આ સરનામા આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}}</translation>
@@ -653,6 +656,7 @@
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
+<translation id="5325595483440111327">બ્રાઉઝિંગ ઇતિહાસ જુઓ.</translation>
 <translation id="5339316356165661760">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="536067926684072644">બુકમાર્ક બતાવો</translation>
 <translation id="5360976571138293719">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> જુઓ.</translation>
@@ -751,6 +755,7 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
 <translation id="5963939892571022323">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકાતી નથી.</translation>
 <translation id="5965679971710331625">તમે સાઇન ઇન છો</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{count} બુકમાર્ક ડિલીટ કર્યું}other{{count} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="5979837087407522202">પાસવર્ડ શોધો</translation>
 <translation id="5981230843984570095">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
 <translation id="5982717868370722439">અસ્તિત્વમાંના ડેટાને <ph name="USER_EMAIL" /> માં ઉમેરો.</translation>
@@ -920,6 +925,7 @@
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6822587385560699678">જ્યારે આ ચાલુ હોય, ત્યારે પાસવર્ડ <ph name="ACCOUNT" />માં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે પાસવર્ડ માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="6839843088069935119">{count,plural, =1{બુકમાર્ક "{title}" પર સાચવવામાં આવ્યું છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}one{બુકમાર્ક "{title}" પર સાચવવામાં આવ્યું છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}other{બુકમાર્ક "{title}" પર સાચવવામાં આવ્યા છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}}</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6851516051005285358">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
 <translation id="6852222216891664518">પિન કરેલ ટૅબ બંધ કરો</translation>
@@ -998,6 +1004,7 @@
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7438481509621345350">જ્યારે તમે કોઈ નવી ટૅબ ખોલશો, ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી હવે સ્ટોરી દેખાશે.</translation>
 <translation id="7446583256109515732">ટૅબ અનપિન કર્યું</translation>
+<translation id="7451023311965289370">{count,plural, =1{બુકમાર્ક "{title}" પર સાચવ્યું}one{બુકમાર્ક "{title}" પર સાચવ્યું}other{બુકમાર્ક "{title}" પર સાચવ્યા}}</translation>
 <translation id="7454057999980797137">રાજ્ય / કાઉન્ટી</translation>
 <translation id="7459628154744868585">વધારેલું સંરક્ષણ ચાલુ છે</translation>
 <translation id="746684838091935575">3. Chrome પસંદ કરો</translation>
@@ -1055,7 +1062,6 @@
 <translation id="7840771868269352570">તમે પસંદ કરેલી આઇટમ કાઢી નાખવામાં આવશે.</translation>
 <translation id="7845466610722898">વાંચન સૂચિ બતાવો</translation>
 <translation id="784551991304901159">કન્ટેન્ટ જોવા માટે, મેનૂમાંથી 'ચાલુ કરો' પસંદ કરો</translation>
-<translation id="7846158885638438868">{count,plural, =1{"{title}"માં બુકમાર્ક કર્યું}one{"{title}"માં બુકમાર્ક કર્યું}other{"{title}"માં બુકમાર્ક કર્યા}}</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="785938070103630874">પાસવર્ડ, ચુકવણી પદ્ધતિઓ અથવા સરનામું વગેરે ખોલો</translation>
@@ -1135,9 +1141,6 @@
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8299613349954694191">ખાનગી રૂપે વેબ બ્રાઉઝ કરવા છૂપી ટૅબ ખોલો.</translation>
 <translation id="8316944564970119719">સાઇટ અને પાસવર્ડ દાખલ કરો, પછી સાચવો</translation>
-<translation id="8317835149433843300">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે નહીં.
-
-ફક્ત કોઈક જ તમારા પાસફ્રેઝથી તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Google દ્વારા પાસફ્રેઝ મોકલવામાં અથવા સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ છો અથવા આ સેટિંગ બદલવા માંગો છો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>

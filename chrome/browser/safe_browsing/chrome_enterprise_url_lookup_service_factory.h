@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -40,8 +40,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceFactory
       const ChromeEnterpriseRealTimeUrlLookupServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      ChromeEnterpriseRealTimeUrlLookupServiceFactory>;
+  friend base::NoDestructor<ChromeEnterpriseRealTimeUrlLookupServiceFactory>;
 
   ChromeEnterpriseRealTimeUrlLookupServiceFactory();
   ~ChromeEnterpriseRealTimeUrlLookupServiceFactory() override = default;

@@ -50,6 +50,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
     bool disable_nv12_dynamic_textures = false;
     bool disable_vp_scaling = false;
     bool disable_vp_super_resolution = false;
+    bool force_dcomp_triple_buffer_video_swap_chain = false;
     size_t max_pending_frames = 2;
     bool use_angle_texture_offset = false;
     bool no_downscaled_overlay_promotion = false;

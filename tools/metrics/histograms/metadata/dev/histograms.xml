@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ManifestSectionSelected"
-    enum="DevToolsManifestSection" expires_after="2022-12-01">
+    enum="DevToolsManifestSection" expires_after="2023-12-31">
   <owner>yangguo@chromium.org</owner>
   <owner>edgedevtools@microsoft.com</owner>
   <summary>
@@ -490,6 +490,14 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when certain style text is copied in DevTools.</summary>
 </histogram>
 
+<histogram name="DevTools.SwatchActivated" enum="DevToolsSwatchActivated"
+    expires_after="2023-12-01">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Records the swatch usages in the Styles pane.</summary>
+</histogram>
+
 <histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
     expires_after="2023-12-01">
   <owner>bmeurer@chromium.org</owner>
@@ -509,6 +517,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the inline script types for which we show the VM script instead of
     the HTML resource.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Workspaces.PopulateWallClockTime" units="ms"
+    expires_after="M120">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>hablich@chromium.org</owner>
+  <summary>
+    Wall clock time elapsed to initially populate a Workspaces folder. Recorded
+    in the FileSystem#populate() method of FileSystemWorkspaceBinding.ts.
   </summary>
 </histogram>
 

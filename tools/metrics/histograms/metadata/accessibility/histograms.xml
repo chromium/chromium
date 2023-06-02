@@ -1814,6 +1814,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ScrollEvent"
+    enum="ReadAnythingScrollEvent" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when a scroll happens.</summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.SettingsChange"
     enum="ReadAnythingSettingsChange" expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>
@@ -1853,6 +1860,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Component.{Action}"
+    enum="BooleanSuccess" expires_after="2024-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records success or failure of Screen AI component {Action}.</summary>
+  <token key="Action">
+    <variant name="Install" summary="install"/>
+    <variant name="Uninstall" summary="uninstall"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
     enum="WinGetLastError" expires_after="2023-11-30">
   <owner>rhalavati@chromium.org</owner>
@@ -1865,6 +1883,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.ScreenAI.LoadLibraryResult"
     enum="ScreenAILoadLibraryResult" expires_after="2023-11-30">
+  <obsolete>
+    Deprecated in May 2023 and replaced with several boolean histograms for
+    different functionality initialization of the library. See
+    Accessibility.ScreenAI.*.Initialized
+  </obsolete>
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1917,6 +1940,22 @@ chromium-metrics-reviews@google.com.
     It's being emitted whenever getting annotations from ScreenAI visual
     annotator.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.{Step}.Initialized"
+    enum="BooleanSuccess" expires_after="2024-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if initialization of {Step} in Screen AI service was successful or
+    not.
+  </summary>
+  <token key="Step">
+    <variant name="Library" summary="library general functionalities"/>
+    <variant name="MainContentExtraction"
+        summary="Main Content Extraction functionality"/>
+    <variant name="OCR" summary="OCR functionality"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
@@ -2283,7 +2322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationFailureTime" units="ms"
-    expires_after="2023-06-01">
+    expires_after="2024-05-01">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2296,7 +2335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
-    expires_after="2023-09-17">
+    expires_after="2024-05-01">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2309,7 +2348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationSuccessTime" units="ms"
-    expires_after="2023-06-01">
+    expires_after="2024-05-01">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2323,7 +2362,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SodaInstaller.Language.{SodaLanguageCode}.InstallationFailureTime"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-05-01">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2337,7 +2376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.Language.{SodaLanguageCode}.InstallationResult"
-    enum="BooleanSuccess" expires_after="2023-06-01">
+    enum="BooleanSuccess" expires_after="2024-05-01">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>
@@ -2353,7 +2392,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SodaInstaller.Language.{SodaLanguageCode}.InstallationSuccessTime"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2024-05-01">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>

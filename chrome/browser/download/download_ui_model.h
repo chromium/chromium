@@ -150,11 +150,9 @@ class DownloadUIModel {
     raw_ptr<const gfx::VectorIcon> icon_model_override = nullptr;
 
     // Subpage summary of the download warning
-    bool has_subpage = false;
     std::u16string warning_summary;
 
     // Label for the checkbox, empty if no checkbox is needed
-    bool has_checkbox = false;
     std::u16string checkbox_label;
 
     // The command for the primary button
@@ -189,6 +187,8 @@ class DownloadUIModel {
                                  const std::u16string& label,
                                  const gfx::VectorIcon* icon);
     ui::ColorId GetColorForSecondaryText() const;
+    bool HasSubpage() const;
+    bool HasCheckbox() const;
   };
 #endif
 

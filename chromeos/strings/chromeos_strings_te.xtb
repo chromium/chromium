@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">డెస్క్‌లు</translation>
 <translation id="1018219910092211213">DNSను పరిష్కరించడం సాధ్యం కాదు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
-<translation id="1022433422498218992">జనరల్ కంట్రోల్స్</translation>
+<translation id="1020274983236703756">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
@@ -113,7 +113,6 @@
 <translation id="1768959921651994223">ప్రామాణీకరణ రకం</translation>
 <translation id="1776228893584526149">వాల్‌పేపర్ రంగు</translation>
 <translation id="1782199038061388045">అనువాదం</translation>
-<translation id="1790209694022261219">విండోలు, డెస్క్‌లు</translation>
 <translation id="1792647875738159689">స్కానింగ్ రద్దు అవుతోంది</translation>
 <translation id="1801418420130173017">ముదురు రంగు రూపాన్ని డిజేబుల్ చేయండి</translation>
 <translation id="1807246157184219062">లేత</translation>
@@ -239,14 +238,11 @@
 <translation id="2873483161362553159">బ్రౌజర్ నావిగేషన్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
-<translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="2940811910881150316">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి మూతను మళ్లీ తెరవండి.</translation>
-<translation id="2981143481017883351">ప్రత్యేకించి Chromebookలో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయండి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3017079585324758401">నేపథ్యం</translation>
-<translation id="3020183492814296499">షార్ట్‌కట్‌లు</translation>
 <translation id="3027578600144895987">కెమెరాను మూసివేయండి</translation>
 <translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -273,6 +269,7 @@
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
+<translation id="3248223063252096240">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
 <translation id="3275729367986477355">అవతార్ ఇమేజ్</translation>
 <translation id="3283504360622356314">{0,plural, =1{ఫైల్‌ను ఎడిట్ చేయండి}other{ఫైల్‌లను ఎడిట్ చేయండి}}</translation>
@@ -280,6 +277,7 @@
 <translation id="3291996639387199448">కీ దశ</translation>
 <translation id="3294437725009624529">అతిథి</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
+<translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
@@ -288,7 +286,6 @@
 <translation id="3360306038446926262">విండోలు</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ హిస్టరీ మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
-<translation id="3386675685417744672">ప్రత్యేకించి Chromebookలో మాత్రమే</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3413935475507503304">అప్‌డేట్ చేయడాన్ని కొనసాగించడానికి, 'తర్వాత'ను క్లిక్ చేయండి.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -325,6 +322,7 @@
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
 <translation id="3639846061339007994">ఎగువున</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" />‌కు మాత్రమే అందుబాటులో ఉండే పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> పరీక్ష</translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
@@ -369,12 +367,12 @@
 <translation id="404928562651467259">హెచ్చరిక</translation>
 <translation id="4054683689023980771">ఇమేజ్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4060260348856573701">కొత్త APN</translation>
-<translation id="4079743696465895866">ప్రత్యేకించి Chromebookలో మాత్రమే ఉండే పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="4093865285251893588">ప్రొఫైల్ ఇమేజ్</translation>
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్‌ను ఎంచుకోండి</translation>
 <translation id="4111761024568264522">USB టచ్‌ప్యాడ్</translation>
+<translation id="4113067922640381334">మీకు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌ల<ph name="END_LINK_WALLPAPER_SUBPAGE" />కు యాక్సెస్ ఉంది</translation>
 <translation id="4117637339509843559">డార్క్ మోడ్</translation>
 <translation id="4130035430755296270">మరిన్ని లేఅవుట్ ఆప్షన్‌ల కోసం మౌస్ కర్సర్‌ని ఉంచడం కొనసాగించండి</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
@@ -614,6 +612,7 @@
 <translation id="5972388717451707488">ఇంజిన్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5984145644188835034">ఆటోమేటిక్ వాల్‌పేపర్</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
+<translation id="6019566113895157499">కీ షార్ట్‌కట్‌లు</translation>
 <translation id="6034694447310538551">ఆటోమేటిక్ నెలవారీ రీసెట్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="6037291330010597344">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఖాలీగా ఉంది. డాక్యుమెంట్‌లను జోడించి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
@@ -937,6 +936,7 @@
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>
 <translation id="8593058461203131755">మీడియాను పాజ్ చేస్తుంది</translation>
 <translation id="8620617069779373398">రోమింగ్ స్థితి</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="86356131183441916">లేత ఊదా రంగు</translation>
 <translation id="8651481478098336970">వాల్యూమ్‌ను మ్యూట్ చేస్తుంది</translation>
 <translation id="8655295600908251630">ఛానల్</translation>

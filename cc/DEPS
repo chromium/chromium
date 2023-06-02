@@ -24,6 +24,7 @@ include_rules = [
   "+gpu/config/gpu_feature_info.h",
   "+gpu/config/gpu_finch_features.h",
   "+gpu/config/gpu_info.h",
+  "+gpu/ipc/client/client_shared_image_interface.h",
   "+gpu/vulkan",
   "+media",
   "+mojo/public/cpp/system/buffer.h",

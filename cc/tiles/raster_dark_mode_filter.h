@@ -6,10 +6,11 @@
 #define CC_TILES_RASTER_DARK_MODE_FILTER_H_
 
 #include "cc/cc_export.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 
 namespace cc {
+
+class ColorFilter;
 
 // This class provides an interface/wrapper over blink::DarkModeFilter. The APIs
 // in this interface are thread-safe and can be used concurrently from any
@@ -20,8 +21,8 @@ class CC_EXPORT RasterDarkModeFilter {
   virtual ~RasterDarkModeFilter() = default;
 
   // Ensure pixmap has decoded data before calling this API.
-  virtual sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                            const SkIRect& src) const = 0;
+  virtual sk_sp<ColorFilter> ApplyToImage(const SkPixmap& pixmap,
+                                          const SkIRect& src) const = 0;
 };
 
 }  // namespace cc

@@ -7,10 +7,10 @@
   #sidebar {
     border-inline-end: 1px solid var(--cr-separator-color);
     box-sizing: border-box;
+    min-width: 256px;
     overflow: auto;
     padding-block-end: 12px;
     padding-inline-end: 12px;
-    width: 256px;
   }
 
   h1 {
@@ -28,12 +28,14 @@
 
   #main {
     flex: 1;
+    overflow: auto;
+    padding: 16px;
   }
 </style>
 <div id="sidebar">
   <h1>WebUI Gallery</h1>
   <cr-menu-selector id="selector" selectable="a" selected-attribute="selected">
-    <template is="dom-repeat" items="[[demos]]">
+    <template is="dom-repeat" items="[[demos_]]">
       <a role="menuitem" href="[[item.path]]"
           class="cr-nav-menu-item">[[item.name]]</a>
     </template>
@@ -42,6 +44,4 @@
 
 <iron-location path="{{path_}}"></iron-location>
 
-<div id="main">
-  <iframe id="iframe"></iframe>
-</div>
+<div id="main"></div>

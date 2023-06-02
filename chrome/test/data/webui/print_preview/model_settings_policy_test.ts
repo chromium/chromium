@@ -21,7 +21,8 @@ suite('ModelSettingsPolicyTest', function() {
     document.body.appendChild(model);
 
     model.documentSettings = {
-      hasCssMediaStyles: false,
+      allPagesHaveCustomSize: false,
+      allPagesHaveCustomOrientation: false,
       hasSelection: false,
       isModifiable: true,
       isScalingDisabled: false,

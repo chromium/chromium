@@ -9,10 +9,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
-namespace device_reauth {
-class DeviceAuthenticator;
-}
-
 namespace extensions {
 class AutofillPrivateGetAccountInfoFunction : public ExtensionFunction {
  public:
@@ -344,7 +340,7 @@ class AutofillPrivateRemoveVirtualCardFunction : public ExtensionFunction {
 class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
     : public ExtensionFunction {
  public:
-  AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction();
+  AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() = default;
   AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction(
       const AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction&) =
       delete;
@@ -356,22 +352,35 @@ class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
       AUTOFILLPRIVATE_AUTHENTICATEUSERANDFLIPMANDATORYAUTHTOGGLE)
 
  protected:
-  ~AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() override;
+  ~AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction()
+      override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
  private:
   void UpdateMandatoryAuthTogglePref(bool reauth_succeeded);
+};
 
-  // Callback to reset `device_authenticator_` after auth is completed.
-  void OnReauthCompleted();
+class AutofillPrivateAuthenticateUserToEditLocalCardFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateAuthenticateUserToEditLocalCardFunction() = default;
+  AutofillPrivateAuthenticateUserToEditLocalCardFunction(
+      const AutofillPrivateAuthenticateUserToEditLocalCardFunction&) = delete;
+  AutofillPrivateAuthenticateUserToEditLocalCardFunction& operator=(
+      const AutofillPrivateAuthenticateUserToEditLocalCardFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.authenticateUserToEditLocalCard",
+                             AUTOFILLPRIVATE_AUTHENTICATEUSERTOEDITLOCALCARD)
 
-  // Reference pointer to prevent `device_authenticator` from getting
-  // dereferenced before the auth is completed.
-  // `device_authenticator_` is used to access the OS level biometric auth. If
-  // not available, it uses device password/pin auth as the fallback.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+ protected:
+  ~AutofillPrivateAuthenticateUserToEditLocalCardFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void CanShowEditDialogForLocalCard(bool can_show);
 };
 
 }  // namespace extensions

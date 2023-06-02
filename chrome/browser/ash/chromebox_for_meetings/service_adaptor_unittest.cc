@@ -49,8 +49,7 @@ class FakeDelegate : public ServiceAdaptor::Delegate {
     disconnect_callback_.Run();
   }
 
-  void OnBindService(mojo::ScopedMessagePipeHandle,
-                     const absl::optional<std::string>&) override {
+  void OnBindService(mojo::ScopedMessagePipeHandle) override {
     bind_request_count++;
     bind_service_callback_.Run();
   }

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_HISTORY_CLUSTERS_MODULE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_HISTORY_CLUSTERS_HISTORY_CLUSTERS_MODULE_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class HistoryClustersModuleService;
@@ -19,8 +19,7 @@ class HistoryClustersModuleServiceFactory : public ProfileKeyedServiceFactory {
       const HistoryClustersModuleServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      HistoryClustersModuleServiceFactory>;
+  friend base::NoDestructor<HistoryClustersModuleServiceFactory>;
   HistoryClustersModuleServiceFactory();
   ~HistoryClustersModuleServiceFactory() override;
 

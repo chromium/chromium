@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.components.content_relationship_verification.VerificationResultStore;
 
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.Set;
 /**
  * AwVerificationResultStore stores relationships in a local variable.
  */
+@Lifetime.Singleton
 public class AwVerificationResultStore extends VerificationResultStore {
     private static final AwVerificationResultStore sInstance = new AwVerificationResultStore();
 

@@ -168,30 +168,6 @@ Config::Config() {
             "omnibox_history_cluster_provider_score",
             omnibox_history_cluster_provider_score);
 
-    omnibox_history_cluster_provider_inherit_search_match_score =
-        base::GetFieldTrialParamByFeatureAsBool(
-            internal::kOmniboxHistoryClusterProvider,
-            "omnibox_history_cluster_provider_inherit_search_match_score",
-            omnibox_history_cluster_provider_inherit_search_match_score);
-
-    omnibox_history_cluster_provider_rank_above_searches =
-        base::GetFieldTrialParamByFeatureAsBool(
-            internal::kOmniboxHistoryClusterProvider,
-            "omnibox_history_cluster_provider_rank_above_searches",
-            omnibox_history_cluster_provider_rank_above_searches);
-
-    omnibox_history_cluster_provider_shortcuts =
-        base::GetFieldTrialParamByFeatureAsBool(
-            internal::kOmniboxHistoryClusterProvider,
-            "omnibox_history_cluster_provider_shortcuts",
-            omnibox_history_cluster_provider_shortcuts);
-
-    omnibox_history_cluster_provider_allow_default =
-        base::GetFieldTrialParamByFeatureAsBool(
-            internal::kOmniboxHistoryClusterProvider,
-            "omnibox_history_cluster_provider_allow_default",
-            omnibox_history_cluster_provider_allow_default);
-
     omnibox_history_cluster_provider_navigation_intent_score_threshold =
         base::GetFieldTrialParamByFeatureAsInt(
             internal::kOmniboxHistoryClusterProvider,
@@ -372,11 +348,6 @@ Config::Config() {
 
   // WebUI features and params.
   {
-    hide_visits = base::FeatureList::IsEnabled(internal::kHideVisits);
-
-    hide_visits_icon = GetFieldTrialParamByFeatureAsBool(
-        internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
-
     named_new_tab_groups =
         base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
   }

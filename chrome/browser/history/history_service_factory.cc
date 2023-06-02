@@ -71,7 +71,8 @@ history::HistoryService* HistoryServiceFactory::GetForProfileWithoutCreating(
 
 // static
 HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
-  return base::Singleton<HistoryServiceFactory>::get();
+  static base::NoDestructor<HistoryServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -98,8 +99,7 @@ HistoryServiceFactory::HistoryServiceFactory()
   DependsOn(BookmarkModelFactory::GetInstance());
 }
 
-HistoryServiceFactory::~HistoryServiceFactory() {
-}
+HistoryServiceFactory::~HistoryServiceFactory() = default;
 
 KeyedService* HistoryServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

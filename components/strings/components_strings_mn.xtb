@@ -211,6 +211,7 @@
 <translation id="1442987760062738829">Нүх цоолбор</translation>
 <translation id="1446396933673057385">Нарийвчлалын шалгалт</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Таны эцэг эхийн сонгосон тохиргоо таныг одоо онлайн орчинд илүү аюулгүй байлгаж байна</translation>
 <translation id="1453974140256777690">Таны буулгах эсвэл хавсаргах текстийг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч тал руу илгээдэг. Жишээ нь үүнээс эмзэг өгөгдлийг скан хийж болно.</translation>
 <translation id="1455413310270022028">Баллуур</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
@@ -268,6 +269,7 @@
 <translation id="1569487616857761740">Дуусах огноог оруулна уу</translation>
 <translation id="1569694109004336106">Google Chrome нууц үгийг бөглөхөд Windows Hello-г асаахаар оролдож байна.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> инч</translation>
+<translation id="1576277203042721907">Shopping insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Энэхүү веб хуудсыг харуулахад ямар нэгэн алдаа гарлаа.</translation>
 <translation id="1584492003828271317">Таны үзэх явцдаа хардаг зарыг хувийн болгох эсэх нь энэ тохиргоо, сайтын санал болгосон зар, таны күүкиний тохиргоо болон таны үзэж буй сайт зарыг хувийн болгодог эсэхээс хамаарна</translation>
@@ -980,6 +982,7 @@
 <translation id="3380864720620200369">Хэрэглэгчийн ID:</translation>
 <translation id="3381668585148405088">Худалдан авалтаа баталгаажуулах</translation>
 <translation id="3383566085871012386">Одоогийн давуу эрхтэй дараалал</translation>
+<translation id="3384522979010096022">Танай байгууллага танд энэ сайтыг харахыг зөвшөөрдөггүй</translation>
 <translation id="3387261909427947069">Төлбөрийн хэрэгсэл</translation>
 <translation id="3391030046425686457">Хүргэлтийн хаяг</translation>
 <translation id="3391482648489541560">файл засах</translation>
@@ -1103,7 +1106,6 @@
 <translation id="3676592649209844519">Төхөөрөмжийн ID:</translation>
 <translation id="3677008721441257057">Та &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; руу очихыг хүссэн үү?</translation>
 <translation id="3678029195006412963">Хүсэлт тавих боломжгүй байна</translation>
-<translation id="3678342917559046352">Буруу өргөтгөл: Утгыг дараах маягтуудын аль нэг нь байна гэж тооцоолсон: &lt;extension_id&gt; эсвэл &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Хуудсыг шинэ Нууцлалтай цонхонд нээх (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Гэрчилгээний мэдээлэл</translation>
 <translation id="3681421644246505351">Chrome таны саяхны хөтчийн түүхэд тулгуурлан сонирхсон сэдвүүдийг тэмдэглэдэг.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="3740319564441798148">Холын зайн автобус болон төмөр зам</translation>
 <translation id="3743765582345153106">Автоматаар бөглөх хэсгийг ашиглаж байх үед үргэлж баталгаажуулах</translation>
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
+<translation id="3744212718085287312">Үүнийг дараагийн удаа виртуал картаар илүү аюулгүй болгох уу?</translation>
 <translation id="3744286742364977428">Таны татсан файлуудыг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч тал руу илгээдэг. Жишээ нь тэдгээрийг эмзэг өгөгдөл эсвэл хортой программтай эсэхийг скан хийж магадгүй бөгөөд компанийн бодлогод тулгуурлан хадгалж магадгүй.</translation>
 <translation id="3744899669254331632">Сайтаас эргэлзээтэй мэдээлэл илгээсэн учраас та <ph name="SITE" /> руу орж болохгүй. Үүнээс болж Chromium нь  сүлжээний алдааг боловсруулж чадахгүй байна.  Иймэрхүү дайралтууд түр зуурын шинжтэй байдаг учраас энэ хуудас хэсэг хугацааны дараа хэвийн ажиллаж магадгүй.</translation>
 <translation id="3748148204939282805">Танаар аюултай программ суулгуулах эсвэл таны нууц үг, утасны дугаар эсвэл кредит карт зэрэг хувийн мэдээллийг задруулах зорилготой халдагчид <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-д байна. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1241,6 +1244,7 @@
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4040350669425716613">Коллеж, их сургууль</translation>
 <translation id="4047351652147966654">18 x 24 инч</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID-тай өргөтгөлийн шинэчлэлтийн URL буруу эсвэл дэмжигдээгүй схем ашиглаж байна. Дэмжигдсэн схемүүд нь: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> болон <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Та үүнийг Google-н бүтээгдэхүүнүүдэд ашиглах боломжтой болно</translation>
 <translation id="405399507749852140">Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай</translation>
 <translation id="4056223980640387499">Сепиа</translation>
@@ -1268,6 +1272,7 @@
 <translation id="410148943680000050">Компьютероор нийтлэх</translation>
 <translation id="4103249731201008433">Төхөөрөмжийн сериал дугаар буруу байна</translation>
 <translation id="4106133539597032659">Сайт үүсгэх товчлуур, Google Сайтад шинэ сайт шуурхай үүсгэхийн тулд Enter дээр дарна уу</translation>
+<translation id="4106887816571530227">Оруулсан контентыг зөвшөөрдөггүй</translation>
 <translation id="4110652170750985508">Төлбөрөө хянах</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
 <translation id="4112140312785995938">Ухраах</translation>
@@ -1347,7 +1352,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Тайлбар</translation>
 <translation id="425582637250725228">Таны хийсэн өөрчлөлтийг хадгалаагүй байж болзошгүй.</translation>
-<translation id="425869179292622354">Үүнийг виртуал картаар илүү аюулгүй болгох уу?</translation>
 <translation id="4258748452823770588">Хангалтгүй гарын үсэг</translation>
 <translation id="4261046003697461417">Хамгаалагдсан документ дээр тэмдэглэгээ хийх боломжгүй</translation>
 <translation id="4265872034478892965">Таны администратор зөвшөөрсөн</translation>
@@ -1606,6 +1610,7 @@
 <translation id="4876305945144899064">Хэрэглэгчийн нэр алга</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Байхгүй}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" />-н хайлт</translation>
+<translation id="4877521229462766300">Оруулсан контентыг зөвшөөрөх үү?</translation>
 <translation id="4879491255372875719">Автомат (өгөгдмөл)</translation>
 <translation id="4880827082731008257">Түүхийг хайх</translation>
 <translation id="4881695831933465202">Нээх</translation>
@@ -1803,6 +1808,7 @@
 <translation id="5314967030527622926">Товхимол бэлдэгч</translation>
 <translation id="5316812925700871227">Цагийн зүүний эсрэг эргүүлэх</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
+<translation id="5323043727018853753">Оруулсан контентыг зөвшөөрдөг</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />-с <ph name="MATCH_POSITION" /></translation>
 <translation id="5329858041417644019">Таны хөтчийг удирдаагүй байна</translation>
 <translation id="5332219387342487447">Хүргэлтийн арга</translation>
@@ -2179,6 +2185,7 @@
 <translation id="6306713302480826305">Энэ хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана</translation>
 <translation id="6312113039770857350">Веб хуудас боломжгүй байна</translation>
 <translation id="6316226860534107313">Скүтэр, мопед</translation>
+<translation id="6316723751983724988">Шинэ: Family Link-н Chrome-н сонголт энд хэрэгжинэ</translation>
 <translation id="63172326633386613">Хандалтын тохиргоог удирдах</translation>
 <translation id="6319249456820053699">Камер, видео камер</translation>
 <translation id="6321917430147971392">DNS тохиргоогоо шалгана уу</translation>
@@ -2286,6 +2293,8 @@
 <translation id="6569060085658103619">Та өргөтгөлийн хуудсыг харж байна.</translation>
 <translation id="6569366777234823130">Драмын кино</translation>
 <translation id="6573200754375280815">Баруун ирмэг дагуу хоёр нүх цоолох</translation>
+<translation id="6576181918031900030">Дамжуулж эхлэх</translation>
+<translation id="6578434528542148658">Буруу өргөтгөлийн ID.</translation>
 <translation id="657902945730878902">Зурах, будах</translation>
 <translation id="6579630537141957243">MIDI төхөөрөмжийг холбох уу?</translation>
 <translation id="6579990219486187401">Бүдэг ягаан</translation>
@@ -2730,6 +2739,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" />-с бага</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> нь одоогоор энэ хүсэлтийг зохицуулах боломжгүй байна.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />-ийг хэзээ ч бүү хөрвүүл</translation>
+<translation id="7601297359530599375">Та энэ сайтад ихэвчлэн аюулгүй холбогддог ч Chrome энэ удаад аюулгүй холболт ашиглаж чадсангүй. Халдагч таны сүлжээний холболтыг чагнахаар эсвэл өөрчлөхөөр оролдож байж магадгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Утга нь <ph name="VALUE" /> хамрах хүрээнээс гарсан байна.</translation>
 <translation id="7613889955535752492">Дуусах: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд нууц үгээ харах болон удирдахын тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
@@ -2830,6 +2840,7 @@
 <translation id="7822320754433038727">Агнуур, буудлага</translation>
 <translation id="782886543891417279">Таны ашиглаж буй Wi-Fi (<ph name="WIFI_NAME" />) сүлжээ таныг нэвтрэх хуудаст орохыг шаардах магадлалтай.</translation>
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Дараа нь таны зочилдог сайт таны харж буй зарыг хувийн болгохын тулд Chrome-с сэдвийг асууж болно. Chrome нь таны хөтчийн түүх болон хувийн мэдээллийг хамгаалахын зэрэгцээ 3 хүртэлх сэдвийг хуваалцдаг.</translation>
@@ -2963,7 +2974,6 @@
 <translation id="8190193880870196235">Өргөтгөлөөр удирддаг</translation>
 <translation id="8194797478851900357">&amp; Зөөвөрлөх үйлдлийг буцаах</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
-<translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ID-тай өргөтгөлийн шинэчлэх хүчингүй URL.</translation>
 <translation id="8202097416529803614">Захиалгын хураангуй</translation>
 <translation id="8202370299023114387">Зөрчил</translation>
 <translation id="8208363704094329105">300 x 400 мм</translation>
@@ -2975,6 +2985,7 @@
 <translation id="8217748145574471584">Хүний нөөц</translation>
 <translation id="8218327578424803826">Заасан байршил:</translation>
 <translation id="8228419419708659934">Хоёр хуудсаар харах</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> таны сүлжээний төхөөрөмжид хандахыг хүсэж байна:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> х <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спортын тоглоом</translation>
@@ -3023,7 +3034,6 @@
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>
-<translation id="8307888238279532626">Суулгасан аппууд болон тэдгээрийг ашигладаг давтамж</translation>
 <translation id="831997045666694187">Үдэш</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
 <translation id="8329068931308448247">Дугтуй #14</translation>

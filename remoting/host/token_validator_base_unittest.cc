@@ -71,8 +71,10 @@ class TestTokenValidator : TokenValidatorBase {
  private:
   void StartValidateRequest(const std::string& token) override {}
 
-  raw_ptr<net::X509Certificate> expected_client_cert_ = nullptr;
-  raw_ptr<net::SSLPrivateKey> expected_private_key_ = nullptr;
+  raw_ptr<net::X509Certificate, DanglingUntriaged> expected_client_cert_ =
+      nullptr;
+  raw_ptr<net::SSLPrivateKey, DanglingUntriaged> expected_private_key_ =
+      nullptr;
 };
 
 TestTokenValidator::TestTokenValidator(const ThirdPartyAuthConfig& config)

@@ -14,6 +14,7 @@
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "components/origin_trials/test/test_persistence_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
@@ -22,12 +23,10 @@
 namespace origin_trials {
 namespace {
 
+using blink::OriginTrialFeature;
+
 const char kPersistentTrialName[] = "FrobulatePersistent";
 const char kNonPersistentTrialName[] = "Frobulate";
-const char kPersistentExpiryPeriodTrialName[] =
-    "FrobulatePersistentExpiryGracePeriod";
-const char kPersistentThirdPartyDeprecationTrialName[] =
-    "FrobulatePersistentThirdPartyDeprecation";
 const char kInvalidTrialName[] = "InvalidTrial";
 const char kTrialEnabledOriginA[] = "https://enabled.example.com";
 const char kTrialEnabledOriginB[] = "https://enabled.alternate.com";
@@ -119,6 +118,13 @@ const char kFrobulatePersistentThirdPartyDeprecationToken[] =
     "RlbnRUaGlyZFBhcnR5RGVwcmVjYXRpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhp"
     "cmRQYXJ0eSI6IHRydWV9";
 
+const char kFrobulatePersistentInvalidOsToken[] =
+    "Az7+hGm6XhszDNmzi9/cLyLCjiciNqCrtlIilym1+wg6c/owVYMJtjSx7Xjf8MHHLs3gzB/"
+    "5D9/0PSSUOI/"
+    "ujwoAAABueyJvcmlnaW4iOiAiaHR0cHM6Ly9lbmFibGVkLmV4YW1wbGUuY29tOjQ0MyIsICJmZ"
+    "WF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3RlbnRJbnZhbGlkT1MiLCAiZXhwaXJ5IjogMjAwMDA"
+    "wMDAwMH0=";
+
 class OpenScopedTestOriginTrialPolicy
     : public blink::ScopedTestOriginTrialPolicy {
  public:
@@ -189,12 +195,12 @@ class OriginTrialsTest : public testing::Test {
         trial_origin, /* partition_origin */ trial_origin, lookup_time);
   }
 
-  // IsTrialPersistedForOrigin using |origin| as partition origin.
-  bool IsTrialPersistedForOrigin(const url::Origin& origin,
-                                 const std::string& trial_name,
-                                 base::Time lookup_time) {
-    return origin_trials_.IsTrialPersistedForOrigin(
-        origin, /* partition_origin */ origin, trial_name, lookup_time);
+  // IsFeaturePersistedForOrigin using |origin| as partition origin.
+  bool IsFeaturePersistedForOrigin(const url::Origin& origin,
+                                   blink::OriginTrialFeature feature,
+                                   base::Time lookup_time) {
+    return origin_trials_.IsFeaturePersistedForOrigin(
+        origin, /* partition_origin */ origin, feature, lookup_time);
   }
 
   std::string GetTokenPartitionSite(const url::Origin& origin) {
@@ -255,34 +261,54 @@ TEST_F(OriginTrialsTest, ResetClearsPersistedTrials) {
 }
 
 TEST_F(OriginTrialsTest, TrialNotEnabledByDefault) {
-  EXPECT_FALSE(IsTrialPersistedForOrigin(trial_enabled_origin_,
-                                         kPersistentTrialName, kValidTime));
+  EXPECT_FALSE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 }
 
 TEST_F(OriginTrialsTest, TrialEnablesFeature) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
   PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
 
-  EXPECT_TRUE(IsTrialPersistedForOrigin(trial_enabled_origin_,
-                                        kPersistentTrialName, kValidTime));
+  EXPECT_TRUE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 }
 
 TEST_F(OriginTrialsTest, TrialDoesNotEnableOtherFeatures) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
   PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
 
-  EXPECT_FALSE(IsTrialPersistedForOrigin(trial_enabled_origin_,
-                                         kNonPersistentTrialName, kValidTime));
+  EXPECT_FALSE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_, OriginTrialFeature::kOriginTrialsSampleAPI,
+      kValidTime));
+}
+
+TEST_F(OriginTrialsTest, TrialIsNotEnabledOrPersistedOnInvalidOs) {
+  std::vector<std::string> tokens = {kFrobulatePersistentInvalidOsToken};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  EXPECT_FALSE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentInvalidOS,
+      kValidTime));
+
+  base::flat_set<std::string> enabled_trials =
+      GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+  ASSERT_TRUE(enabled_trials.empty());
 }
 
 TEST_F(OriginTrialsTest, TokensCanBeAppended) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
   PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
 
-  EXPECT_TRUE(IsTrialPersistedForOrigin(trial_enabled_origin_,
-                                        kPersistentTrialName, kValidTime));
-  EXPECT_FALSE(IsTrialPersistedForOrigin(
-      trial_enabled_origin_, kPersistentExpiryPeriodTrialName, kValidTime));
+  EXPECT_TRUE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
+  EXPECT_FALSE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentExpiryGracePeriod,
+      kValidTime));
 
   // Append an additional token for the same origin
   std::vector<std::string> additional_tokens = {
@@ -291,10 +317,13 @@ TEST_F(OriginTrialsTest, TokensCanBeAppended) {
       trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
       /*script_origins=*/{}, additional_tokens, kValidTime);
   // Check that both trials are now enabled
-  EXPECT_TRUE(IsTrialPersistedForOrigin(trial_enabled_origin_,
-                                        kPersistentTrialName, kValidTime));
-  EXPECT_TRUE(IsTrialPersistedForOrigin(
-      trial_enabled_origin_, kPersistentExpiryPeriodTrialName, kValidTime));
+  EXPECT_TRUE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
+  EXPECT_TRUE(IsFeaturePersistedForOrigin(
+      trial_enabled_origin_,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentExpiryGracePeriod,
+      kValidTime));
 }
 
 TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
@@ -313,15 +342,17 @@ TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
 
   // The FrobulatePersistent should not be persisted, as it is not a deprecation
   // token.
-  EXPECT_FALSE(origin_trials_.IsTrialPersistedForOrigin(
+  EXPECT_FALSE(origin_trials_.IsFeaturePersistedForOrigin(
       script_origin, /*partition_origin=*/trial_enabled_origin_,
-      kPersistentTrialName, kValidTime));
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
   // FrobulatePersistentThirdPartyDeprecation is a deprecation trial, and should
   // be enabled.
-  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
+  EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
       script_origin, /*partition_origin=*/trial_enabled_origin_,
-      kPersistentThirdPartyDeprecationTrialName, kValidTime));
+      OriginTrialFeature::
+          kOriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature,
+      kValidTime));
 }
 
 // Check that a stored trial name is not returned if that trial is no longer
@@ -486,9 +517,10 @@ TEST_F(OriginTrialsTest, PersistTokensInOpaquePartition) {
                                          /*partition_origin=*/opaque_origin,
                                          tokens, kValidTime);
 
-  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
+  EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
       trial_enabled_origin_, /*partition_origin=*/opaque_origin,
-      kPersistentTrialName, kValidTime));
+      blink::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature,
+      kValidTime));
 }
 
 TEST_F(OriginTrialsTest, TokensArePartitionedByTopLevelSite) {
@@ -508,27 +540,33 @@ TEST_F(OriginTrialsTest, TokensArePartitionedByTopLevelSite) {
                                          kValidTime);
 
   // Only expect trials to be enabled for partitions where they have been set
-  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
-      origin_a, partition_site_a, kPersistentTrialName, kValidTime));
+  EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
+      origin_a, partition_site_a,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
-  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
-      origin_a, partition_site_b, kPersistentTrialName, kValidTime));
+  EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
+      origin_a, partition_site_b,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
-  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
-      origin_b, partition_site_b, kPersistentTrialName, kValidTime));
+  EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
+      origin_b, partition_site_b,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
-  EXPECT_FALSE(origin_trials_.IsTrialPersistedForOrigin(
-      origin_b, partition_site_a, kPersistentTrialName, kValidTime));
+  EXPECT_FALSE(origin_trials_.IsFeaturePersistedForOrigin(
+      origin_b, partition_site_a,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
   // Removing a token should only be from one partition
   origin_trials_.PersistTrialsFromTokens(origin_a, partition_site_b, {},
                                          kValidTime);
 
-  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
-      origin_a, partition_site_a, kPersistentTrialName, kValidTime));
+  EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
+      origin_a, partition_site_a,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
-  EXPECT_FALSE(origin_trials_.IsTrialPersistedForOrigin(
-      origin_a, partition_site_b, kPersistentTrialName, kValidTime));
+  EXPECT_FALSE(origin_trials_.IsFeaturePersistedForOrigin(
+      origin_a, partition_site_b,
+      OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 }
 
 TEST_F(OriginTrialsTest, PartitionSiteIsETLDPlusOne) {

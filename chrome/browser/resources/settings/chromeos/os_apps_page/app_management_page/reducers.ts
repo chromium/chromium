@@ -75,6 +75,21 @@ function updateSelectedAppId(
   }
 }
 
+function updateSubAppToParentAppId(
+    subAppToParentAppId: Record<string, string>,
+    action: AppManagementActions): Record<string, string> {
+  switch (action.name) {
+    case 'update-sub-app-to-parent-app-id':
+      if (action.parent) {
+        return {...subAppToParentAppId, [action.subApp]: action.parent};
+      }
+      delete subAppToParentAppId[action.subApp];
+      return {...subAppToParentAppId};
+    default:
+      return subAppToParentAppId;
+  }
+}
+
 /**
  * Root reducer for the App Management page. This is called by the store in
  * response to an action, and the return value is used to update the UI.
@@ -85,5 +100,7 @@ export function reduceAction(
   return {
     apps: updateApps(state.apps, action),
     selectedAppId: updateSelectedAppId(state.selectedAppId, action),
+    subAppToParentAppId:
+        updateSubAppToParentAppId(state.subAppToParentAppId, action),
   };
 }

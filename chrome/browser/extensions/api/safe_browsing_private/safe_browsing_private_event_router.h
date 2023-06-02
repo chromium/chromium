@@ -31,10 +31,6 @@ namespace extensions {
 class EventRouter;
 }
 
-namespace signin {
-class IdentityManager;
-}
-
 class GURL;
 
 namespace safe_browsing {
@@ -252,8 +248,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& threat_type,
       const safe_browsing::RTLookupResponse& response);
 
-  void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
-
  private:
   // Removes any path information and returns just the basename.
   static std::string GetBaseName(const std::string& filename);
@@ -294,7 +288,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       safe_browsing::EventResult event_result);
 
   raw_ptr<content::BrowserContext> context_;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<EventRouter> event_router_ = nullptr;
   raw_ptr<enterprise_connectors::RealtimeReportingClient> reporting_client_ =
       nullptr;

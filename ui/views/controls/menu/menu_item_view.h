@@ -78,14 +78,6 @@ class VIEWS_EXPORT MenuItemView : public View {
  public:
   METADATA_HEADER(MenuItemView);
 
-  friend class MenuController;
-
-  // ID used to identify menu items.
-  static const int kMenuItemViewID;
-
-  // ID used to identify empty menu items.
-  static const int kEmptyMenuItemViewID;
-
   // Different types of menu items.
   enum class Type {
     kNormal,             // Performs an action when selected.
@@ -190,6 +182,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   MenuItemView* AppendMenuItem(int item_id,
                                const std::u16string& label = std::u16string(),
                                const ui::ImageModel& icon = ui::ImageModel());
+
+  MenuItemView* AppendTitle(const std::u16string& label);
 
   // Append a submenu to this menu.
   // The returned pointer is owned by this menu.
@@ -405,6 +399,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   int GetBottomMargin() const;
 
  private:
+  friend class MenuController;
   friend class internal::MenuRunnerImpl;        // For access to ~MenuItemView.
   friend class test::TestMenuItemViewShown;     // for access to |submenu_|;
   friend class test::TestMenuItemViewNotShown;  // for access to |submenu_|;
@@ -500,6 +495,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   //    ApplyMinimumDimensions(x).minor_text_width == x.minor_text_width
   //    ApplyMinimumDimensions(x).height >= x.height
   void ApplyMinimumDimensions(MenuItemDimensions* dims) const;
+
+  // Returns the earliest horizontal position where content may appear.
+  int GetContentStart() const;
 
   // Get the horizontal position at which to draw the menu item's label.
   int GetLabelStartForThisItem() const;
@@ -694,6 +692,20 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   absl::optional<ui::ColorId> foreground_color_id_;
   absl::optional<ui::ColorId> selected_color_id_;
+};
+
+// EmptyMenuMenuItem ----------------------------------------------------------
+
+// EmptyMenuMenuItem is used when a menu has no menu items.
+
+class VIEWS_EXPORT EmptyMenuMenuItem : public MenuItemView {
+ public:
+  METADATA_HEADER(EmptyMenuMenuItem);
+
+  explicit EmptyMenuMenuItem(MenuItemView* parent);
+  EmptyMenuMenuItem(const EmptyMenuMenuItem&) = delete;
+  EmptyMenuMenuItem& operator=(const EmptyMenuMenuItem&) = delete;
+  ~EmptyMenuMenuItem() override = default;
 };
 
 }  // namespace views

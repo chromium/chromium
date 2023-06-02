@@ -27,7 +27,7 @@ class WebContents;
 //  - the next item in the menu should be a separator
 //  - a maximum of 200 items to add a tab to an existing model
 class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
-                                 ui::SimpleMenuModel::Delegate {
+                                 public ui::SimpleMenuModel::Delegate {
  public:
   ExistingBaseSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
                            TabStripModel* model,
@@ -35,10 +35,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
                            int min_command_id,
                            int parent_new_command_id_);
 
-  // ui::SimpleMenuModel
-  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
-
-  // ui::SimpleMenuModel::Delegate
+  // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdAlerted(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) final;
 
@@ -109,8 +106,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
  private:
   const raw_ptr<ui::SimpleMenuModel::Delegate> parent_delegate_;
-  const raw_ptr<TabStripModel> model_;
-  const raw_ptr<const content::WebContents> context_contents_;
+  const raw_ptr<TabStripModel, DanglingUntriaged> model_;
+  const raw_ptr<const content::WebContents, DanglingUntriaged>
+      context_contents_;
   const int min_command_id_;
   const int parent_new_command_id_;
 

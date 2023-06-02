@@ -5,12 +5,13 @@
 import 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -21,12 +22,10 @@ suite('acceleratorSubsectionTest', function() {
   let manager: AcceleratorLookupManager|null = null;
 
   setup(() => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     manager = AcceleratorLookupManager.getInstance();
     manager!.setAcceleratorLookup(fakeAcceleratorConfig);
     manager!.setAcceleratorLayoutLookup(fakeLayoutInfo);
-
-    sectionElement = document.createElement('accelerator-subsection');
-    document.body.appendChild(sectionElement);
   });
 
   teardown(() => {
@@ -37,9 +36,19 @@ suite('acceleratorSubsectionTest', function() {
     sectionElement = null;
   });
 
+  async function initAcceleratorSubsectionElement(
+      category: AcceleratorCategory) {
+    sectionElement = document.createElement('accelerator-subsection');
+    sectionElement.category = category;
+    document.body.appendChild(sectionElement);
+    return flushTasks();
+  }
+
   // TODO(jimmyxgong): Update this test after retrieving accelerators is
   // implemented for a subsection.
   test('LoadsBasicSection', async () => {
+    await initAcceleratorSubsectionElement(
+        AcceleratorCategory.kWindowsAndDesks);
     const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
@@ -76,9 +85,10 @@ suite('acceleratorSubsectionTest', function() {
   });
 
   test('LoadCategoryAndConfirmDescriptions', async () => {
+    await initAcceleratorSubsectionElement(
+        AcceleratorCategory.kWindowsAndDesks);
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = AcceleratorCategory.kWindowsAndDesks;
     sectionElement!.subcategory = AcceleratorSubcategory.kWindows;
 
     await flushTasks();
@@ -104,10 +114,10 @@ suite('acceleratorSubsectionTest', function() {
         AcceleratorCategory.kWindowsAndDesks);
   });
 
-  test('SkipAddingRowWhenCertainKeysAreUnavailable', async () => {
+  test('ShowEmptyRowWhenCertainKeysAreUnavailable', async () => {
+    await initAcceleratorSubsectionElement(AcceleratorCategory.kGeneral);
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = AcceleratorCategory.kGeneral;
     sectionElement!.subcategory = AcceleratorSubcategory.kApps;
 
     await flushTasks();
@@ -116,26 +126,39 @@ suite('acceleratorSubsectionTest', function() {
         sectionElement!.shadowRoot!.querySelectorAll('accelerator-row');
 
     // There are two accelerators in General -> Apps category: 'Open
-    // Calculator app' and 'Open Diagnostic app', However, 'Open Calculator app'
-    // is disabled due to unavailable keys. As a result, we will only
-    // display one row for 'Open Diagnostic app'.
-    assertEquals(1, rowListElement.length);
+    // Calculator app' and 'Open Diagnostic app'.
+    assertEquals(2, rowListElement.length);
 
-    // First and the only accelerator row in General -> Apps category
+    // First accelerator row in General -> Apps category
     // corresponds to 'Open Diagnostic app'. And its category is kGeneral.
     assertEquals(
         manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 5)!,
-        rowListElement[0]!.description);
+        rowListElement[1]!.description);
     assertEquals(
         manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 5)!,
         AcceleratorCategory.kGeneral);
+    let shortcutsAssignedElement = rowListElement[1]!.shadowRoot!.querySelector(
+                                       '#noShortcutAssigned') as HTMLDivElement;
+    assertTrue(shortcutsAssignedElement.hidden);
 
+    // Second accelerator row in General -> Apps category corresponds to
+    // 'Open calculator app'. It should have an empty row.
+    assertEquals(
+        manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 4)!,
+        rowListElement[0]!.description);
+    assertEquals(
+        manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 4)!,
+        AcceleratorCategory.kGeneral);
+    // Expect the `noShortcutsAssigned` view to be available.
+    shortcutsAssignedElement = rowListElement[0]!.shadowRoot!.querySelector(
+                                   '#noShortcutAssigned') as HTMLDivElement;
+    assertFalse(shortcutsAssignedElement.hidden);
   });
 
   test('RemoveAcceleratorWhenCertainKeysAreUnavailable', async () => {
+    await initAcceleratorSubsectionElement(AcceleratorCategory.kGeneral);
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = AcceleratorCategory.kGeneral;
     sectionElement!.subcategory = AcceleratorSubcategory.kGeneralControls;
 
     await flushTasks();

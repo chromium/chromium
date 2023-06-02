@@ -16,6 +16,7 @@
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/desktop_environment.h"
+#include "remoting/host/fake_active_display_monitor.h"
 #include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
@@ -115,6 +116,8 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
+  std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
+      ActiveDisplayMonitor::Callback callback) override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
   std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
       override;
@@ -128,6 +131,10 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
     return last_input_injector_;
   }
 
+  base::WeakPtr<FakeActiveDisplayMonitor> last_active_display_monitor() {
+    return last_active_display_monitor_;
+  }
+
  private:
   friend class FakeDesktopEnvironmentFactory;
 
@@ -136,8 +143,11 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   uint32_t desktop_session_id_ = UINT32_MAX;
 
   base::WeakPtr<FakeInputInjector> last_input_injector_;
+  base::WeakPtr<FakeActiveDisplayMonitor> last_active_display_monitor_;
 
   const DesktopEnvironmentOptions options_;
+
+  std::string capabilities_;
 
   base::WeakPtrFactory<FakeDesktopEnvironment> weak_factory_{this};
 };
@@ -164,6 +174,13 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
     desktop_session_id_ = desktop_session_id;
   }
 
+  // Sets the capabilities that the FakeDesktopEnvironment will claim to
+  // support. Useful for testing functionality that is triggered after
+  // negotiating a capability with a client.
+  void set_capabilities(const std::string& capabilities) {
+    capabilities_ = capabilities;
+  }
+
   // DesktopEnvironmentFactory implementation.
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
@@ -179,6 +196,7 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
   scoped_refptr<base::SingleThreadTaskRunner> capture_thread_;
   protocol::FakeDesktopCapturer::FrameGenerator frame_generator_;
   uint32_t desktop_session_id_ = UINT32_MAX;
+  std::string capabilities_;
 
   base::WeakPtr<FakeDesktopEnvironment> last_desktop_environment_;
 };

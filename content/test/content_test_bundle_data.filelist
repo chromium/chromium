@@ -1495,8 +1495,6 @@ data/accessibility/aria/aria-tooltip-expected-mac-before-11.txt
 data/accessibility/aria/aria-tooltip-expected-mac.txt
 data/accessibility/aria/aria-tooltip-expected-win.txt
 data/accessibility/aria/aria-tooltip.html
-data/accessibility/aria/aria-touchpassthrough-expected-blink.txt
-data/accessibility/aria/aria-touchpassthrough.html
 data/accessibility/aria/aria-tree-discontinuous-expected-android-external.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-android.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-auralinux.txt
@@ -1667,6 +1665,8 @@ data/accessibility/css/content-visibility-to-hidden-expected-blink.txt
 data/accessibility/css/content-visibility-to-hidden.html
 data/accessibility/css/counter-text-expected-blink.txt
 data/accessibility/css/counter-text.html
+data/accessibility/css/display-contents-expected-blink.txt
+data/accessibility/css/display-contents.html
 data/accessibility/css/display-list-item-expected-blink.txt
 data/accessibility/css/display-list-item.html
 data/accessibility/css/display-none-expected-blink.txt
@@ -2450,7 +2450,6 @@ data/accessibility/form-controls/role-group-expected-blink.txt
 data/accessibility/form-controls/role-group.html
 data/accessibility/fullscreen/iframe.html
 data/accessibility/fullscreen/links.html
-data/accessibility/hit_testing/aria_touchpassthrough_key.html
 data/accessibility/hit_testing/input-color-with-popup-open.html
 data/accessibility/hit_testing/simple_rectangles.html
 data/accessibility/hit_testing/simple_rectangles_iframe.html
@@ -5142,6 +5141,7 @@ data/attribution_reporting/interop/most_recent_source.json
 data/attribution_reporting/interop/multiple_destinations.json
 data/attribution_reporting/interop/rate_limit_max_attribution_reporting_endpoints.json
 data/attribution_reporting/interop/rate_limit_max_attributions.json
+data/attribution_reporting/interop/rate_limit_max_reporting_origins_per_source_reporting_site.json
 data/attribution_reporting/interop/rate_limit_max_source_registration_reporting_origin_endpoints.json
 data/attribution_reporting/interop/same_destination_site.json
 data/attribution_reporting/interop/same_reporting_origin.json
@@ -5151,6 +5151,7 @@ data/attribution_reporting/interop/source_storage_limit.json
 data/attribution_reporting/interop/success_debug_aggregatable.json
 data/attribution_reporting/interop/success_debug_event_level.json
 data/attribution_reporting/interop/top_level_filter_data.json
+data/attribution_reporting/interop/verbose_debug_report_multiple_data.json
 data/attribution_reporting/page_with_ads_apis_ot.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html.mock-http-headers
@@ -5449,6 +5450,8 @@ data/download/test.mht
 data/dynamic1.html
 data/dynamic2.html
 data/echo-referrer.html
+data/empty-script.js
+data/empty-style.css
 data/empty-treat-as-public-address.html
 data/empty-treat-as-public-address.html.mock-http-headers
 data/empty.html
@@ -5471,6 +5474,8 @@ data/fenced_frames/basic.html
 data/fenced_frames/basic.html.mock-http-headers
 data/fenced_frames/basic_fenced_frame_src.html
 data/fenced_frames/basic_fenced_frame_src_navigate_on_click.html
+data/fenced_frames/basic_iframe.html
+data/fenced_frames/basic_iframe.html.mock-http-headers
 data/fenced_frames/empty.html
 data/fenced_frames/empty.html.mock-http-headers
 data/fenced_frames/empty404.html
@@ -5901,6 +5906,7 @@ data/https_upgrade_same_site.html
 data/icon-with-two-entries.ico
 data/iframe_clipped.html
 data/iframe_out_of_view.html
+data/image-inline.png
 data/image.jpg
 data/indexeddb/blobs_use_quota.html
 data/indexeddb/blocked_explicit_commit.html
@@ -6042,6 +6048,18 @@ data/interest_group/auction_only.json
 data/interest_group/auction_only.json.mock-http-headers
 data/interest_group/auction_only.wbn
 data/interest_group/auction_only.wbn.mock-http-headers
+data/interest_group/auction_only_both_new_and_old_names.har
+data/interest_group/auction_only_both_new_and_old_names.html
+data/interest_group/auction_only_both_new_and_old_names.json
+data/interest_group/auction_only_both_new_and_old_names.json.mock-http-headers
+data/interest_group/auction_only_both_new_and_old_names.wbn
+data/interest_group/auction_only_both_new_and_old_names.wbn.mock-http-headers
+data/interest_group/auction_only_new_name.har
+data/interest_group/auction_only_new_name.html
+data/interest_group/auction_only_new_name.json
+data/interest_group/auction_only_new_name.json.mock-http-headers
+data/interest_group/auction_only_new_name.wbn
+data/interest_group/auction_only_new_name.wbn.mock-http-headers
 data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js
@@ -6095,6 +6113,7 @@ data/interest_group/decision_no_direct_from_seller_signals_validator.js.mock-htt
 data/interest_group/decision_simple_direct_from_seller_signals_validator.js
 data/interest_group/decision_simple_direct_from_seller_signals_validator.js.mock-http-headers
 data/interest_group/empty.html
+data/interest_group/empty.html.mock-http-headers
 data/interest_group/generate-test-wbns.sh
 data/interest_group/multiply.wasm
 data/interest_group/multiply.wasm.mock-http-headers
@@ -6104,6 +6123,10 @@ data/interest_group/page-with-fledge-permissions-policy-disabled.html
 data/interest_group/page-with-fledge-permissions-policy-disabled.html.mock-http-headers
 data/interest_group/page_with_ads_apis_ot.html
 data/interest_group/page_with_ba_server_ot.html
+data/interest_group/page_with_custom_ad_auction_result_header.html
+data/interest_group/page_with_custom_ad_auction_result_header.html.mock-http-headers
+data/interest_group/page_with_custom_ad_auction_result_header2.html
+data/interest_group/page_with_custom_ad_auction_result_header2.html.mock-http-headers
 data/interest_group/schemaV6.sql
 data/interest_group/trusted_bidding_signals.json
 data/interest_group/trusted_bidding_signals.json.mock-http-headers
@@ -6117,6 +6140,7 @@ data/invalid.ico
 data/isolated_base_origin_with_subframe.html
 data/isolated_base_origin_with_subframe.html.mock-http-headers
 data/large-cursor.html
+data/launch_navigation_frame.html
 data/linearized.pdf
 data/linearized.pdf.README
 data/link_rel_prefetch.html
@@ -6548,6 +6572,7 @@ data/service_worker/echo_request_headers.js
 data/service_worker/echo_request_headers.js.mock-http-headers
 data/service_worker/empty.html
 data/service_worker/empty.js
+data/service_worker/empty2.html
 data/service_worker/empty_fetch_event.js
 data/service_worker/empty_isolated.js
 data/service_worker/empty_isolated.js.mock-http-headers
@@ -6869,7 +6894,6 @@ data/web_bundle/empty_page.html
 data/web_bundle/foo_base_url_bundle_b2.wbn
 data/web_bundle/foo_primary_url_bundle_b2.wbn
 data/web_bundle/foo_url.har
-data/web_bundle/frame_parent.html
 data/web_bundle/generate-test-wbns.sh
 data/web_bundle/invalid_web_bundle.html
 data/web_bundle/invalid_web_bundle.wbn

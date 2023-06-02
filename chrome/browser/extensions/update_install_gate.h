@@ -25,7 +25,7 @@ class UpdateInstallGate : public InstallGate {
 
  private:
   // Not owned.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace extensions

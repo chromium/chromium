@@ -667,6 +667,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     // if the url isn't allowed to access secure cookies so this isn't a
     // problem.
     source_scheme = CookieSourceScheme::kSecure;
+
+    if (!url.SchemeIsCryptographic()) {
+      status->AddWarningReason(
+          CookieInclusionStatus::
+              WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
+    }
   } else {
     source_scheme = CookieSourceScheme::kNonSecure;
   }
@@ -827,6 +833,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     source_scheme = (secure || url.SchemeIsCryptographic())
                         ? CookieSourceScheme::kSecure
                         : CookieSourceScheme::kNonSecure;
+
+    if (source_scheme == CookieSourceScheme::kSecure &&
+        !url.SchemeIsCryptographic()) {
+      status->AddWarningReason(
+          CookieInclusionStatus::
+              WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
+    }
   }
 
   // Get the port, this will get a default value if a port isn't explicitly
@@ -1043,9 +1056,8 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       break;
     case CookieAccessScheme::kTrustworthy:
       is_allowed_to_access_secure_cookies = true;
-      if (IsSecure()) {
-        // TODO(crbug.com/1170548): Should this also apply when scheme binding
-        // is enabled?
+      if (IsSecure() || (cookie_util::IsSchemeBoundCookiesEnabled() &&
+                         source_scheme_ == CookieSourceScheme::kSecure)) {
         status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
@@ -1055,9 +1067,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       is_allowed_to_access_secure_cookies = true;
       break;
   }
-
-  // todo(bingler) add warning if we're allowing access to secure cookie in a
-  // trustworthy context
 
   // For the following two sections we're checking to see if a cookie's
   // `source_scheme_` and `source_port_` match that of the url's. In most cases
@@ -1323,6 +1332,11 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       access_result.is_allowed_to_access_secure_cookies = true;
       if (IsSecure()) {
         // OK, but want people aware of this.
+        // Note, we also want to apply this warning to cookies whose source
+        // scheme is kSecure but are set by non-cryptographic (but trustworthy)
+        // urls. Helpfully, since those cookies only get a kSecure source scheme
+        // when they also specify "Secure" this if statement will already apply
+        // to them.
         access_result.status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
@@ -1619,6 +1633,10 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
     cookie_line += "; secure";
   if (cookie.IsHttpOnly())
     cookie_line += "; httponly";
+  if (cookie.IsPartitioned() &&
+      !CookiePartitionKey::HasNonce(cookie.PartitionKey())) {
+    cookie_line += "; partitioned";
+  }
   switch (cookie.SameSite()) {
     case CookieSameSite::NO_RESTRICTION:
       cookie_line += "; samesite=none";

@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIAndMojoBindings) {
 }
 
 // Verify that reloading a WebUI document or navigating between documents on
-// the same WebUI will result in using the same SiteInstance and will not
-// create a new WebUI instance.
+// the same WebUI will result in using the same SiteInstance, and will reuse
+// the same WebUI instance if the RenderFrameHost is reused.
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuse) {
   GURL test_url(GetWebUIURL("web-ui/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
@@ -138,9 +138,11 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuse) {
   // with the ones used after the reload.
   scoped_refptr<SiteInstance> initial_site_instance =
       root->current_frame_host()->GetSiteInstance();
+  RenderFrameHostImplWrapper initial_rfh(root->current_frame_host());
   WebUI* initial_web_ui = root->current_frame_host()->web_ui();
 
-  // Reload the document and check that SiteInstance and WebUI are reused.
+  // Reload the document and check that SiteInstance is reused, and the WebUI is
+  // reused if the RenderFrameHost is reused.
   TestFrameNavigationObserver observer(root);
   shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   observer.Wait();
@@ -149,16 +151,40 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuse) {
 
   EXPECT_EQ(initial_site_instance,
             root->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(initial_web_ui, root->current_frame_host()->web_ui());
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_NE(initial_rfh.get(), root->current_frame_host());
+    // We can't check for WebUI inequality as the same address might be reused
+    // for the new WebUI object, but we can check that the new WebUI points to
+    // the new RFH.
+    EXPECT_EQ(root->current_frame_host(),
+              root->current_frame_host()->web_ui()->GetRenderFrameHost());
+    EXPECT_NE(initial_rfh.get(),
+              root->current_frame_host()->web_ui()->GetRenderFrameHost());
+  } else {
+    EXPECT_EQ(initial_rfh.get(), root->current_frame_host());
+    EXPECT_EQ(initial_web_ui, root->current_frame_host()->web_ui());
+  }
 
   // Navigate to another document on the same WebUI and check that SiteInstance
-  // and WebUI are reused.
+  // is reused, and the WebUI is reused if the RenderFrameHost is reused.
   GURL next_url(GetWebUIURL("web-ui/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), next_url));
 
   EXPECT_EQ(initial_site_instance,
             root->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(initial_web_ui, root->current_frame_host()->web_ui());
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_NE(initial_rfh.get(), root->current_frame_host());
+    // We can't check for WebUI inequality as the same address might be reused
+    // for the new WebUI object, but we can check that the new WebUI points to
+    // the new RFH.
+    EXPECT_EQ(root->current_frame_host(),
+              root->current_frame_host()->web_ui()->GetRenderFrameHost());
+    EXPECT_NE(initial_rfh.get(),
+              root->current_frame_host()->web_ui()->GetRenderFrameHost());
+  } else {
+    EXPECT_EQ(initial_rfh.get(), root->current_frame_host());
+    EXPECT_EQ(initial_web_ui, root->current_frame_host()->web_ui());
+  }
 }
 
 // Verify that a WebUI can add a subframe for its own WebUI.

@@ -98,20 +98,23 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
 
   if (!PrefetchURLLoaderServiceContext::IsPrefetchRequest(
           resource_request_in) &&
-      !resource_request_in.browsing_topics) {
+      !resource_request_in.browsing_topics &&
+      !resource_request_in.ad_auction_headers) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): it's not "
-        "a prefetch or browsing_topics request.");
+        "a prefetch or browsing_topics or ad_auction_headers request.");
     return;
   }
 
   if (PrefetchURLLoaderServiceContext::IsPrefetchRequest(resource_request_in) &&
-      resource_request_in.browsing_topics) {
+      (resource_request_in.browsing_topics ||
+       resource_request_in.ad_auction_headers)) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): prefetch "
-        "and browsing_topics cannot be both set.");
+        "cannot be set at the same time with browsing_topics or "
+        "ad_auction_headers.");
     return;
   }
 
@@ -121,6 +124,18 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
         "browsing_topics is set when Topics API is disabled.");
+    return;
+  }
+
+  if (resource_request_in.ad_auction_headers &&
+      (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage) ||
+       !base::FeatureList::IsEnabled(
+           blink::features::kFledgeBiddingAndAuctionServer))) {
+    loader_factory_receivers_.ReportBadMessage(
+        "Unexpected `resource_request_in` in "
+        "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
+        "ad_auction_headers is set when FledgeBiddingAndAuctionServer is "
+        "disabled.");
     return;
   }
 
@@ -145,8 +160,6 @@ void SubresourceProxyingURLLoaderService::
         const network::ResourceRequest& resource_request_in,
         mojo::PendingRemote<network::mojom::URLLoaderClient> client,
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  CHECK(resource_request_in.browsing_topics);
-
   const std::unique_ptr<BindContext>& current_context =
       loader_factory_receivers_.current_context();
 

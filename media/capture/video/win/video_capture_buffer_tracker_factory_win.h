@@ -24,7 +24,7 @@ class CAPTURE_EXPORT VideoCaptureBufferTrackerFactoryWin
       VideoCaptureBufferType buffer_type) override;
   std::unique_ptr<VideoCaptureBufferTracker>
   CreateTrackerForExternalGpuMemoryBuffer(
-      const gfx::GpuMemoryBufferHandle& handle) override;
+      gfx::GpuMemoryBufferHandle handle) override;
 
  private:
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;

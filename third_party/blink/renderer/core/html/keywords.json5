@@ -76,11 +76,15 @@
     // popover attribute (experimental)
     // https://github.com/openui/open-ui/blob/main/research/src/pages/popup/popup.research.explainer.mdx
     "auto",
+    "manual",
     "hint",
-    "async",
+
+    // popovertargetaction attribute
+    // https://html.spec.whatwg.org/C/#attr-popovertargetaction
+    "toggle",
     "show",
     "hide",
-    "toggle",
+    "hover",
 
     // referrerpolicy attribute
     // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
@@ -127,5 +131,34 @@
     // https://www.w3.org/TR/wai-aria-1.1/#valuetype_true-false
     "false",
     "true",
+
+    // ol[type] https://html.spec.whatwg.org/C/#attr-ol-type and
+    // symbolic predefined counter style
+    // https://drafts.csswg.org/css-counter-styles-3/#simple-symbolic
+    "decimal",
+    "lower-roman",
+    "upper-roman",
+    "lower-alpha",
+    "upper-alpha",
+    "disc",
+    "circle",
+    "square",
+    "disclosure-open",
+    "disclosure-closed",
+
+    // contenteditable content/IDL attribute
+    // https://html.spec.whatwg.org/C/#attr-contenteditable
+    // https://html.spec.whatwg.org/C/#dom-contenteditable
+    "true",
+    "plaintext-only",
+    "false",
+    "inherit",
+
+    // controlslist attribute
+    // https://wicg.github.io/controls-list/html-output/multipage/embedded-content.html#attr-media-controlslist
+    "nodownload",
+    "nofullscreen",
+    "noplaybackrate",
+    "noremoteplayback",
   ],
 }

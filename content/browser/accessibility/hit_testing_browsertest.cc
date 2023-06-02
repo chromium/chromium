@@ -14,7 +14,6 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/touch_passthrough_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/web_contents.h"
@@ -56,8 +55,6 @@ void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceDeviceScaleFactor,
       base::StringPrintf("%.2f", device_scale_factor));
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "AccessibilityAriaTouchPassthrough");
 }
 
 std::string AccessibilityHitTestingBrowserTest::TestPassToString::operator()(
@@ -839,68 +836,5 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 #endif
-
-IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
-                       AriaTouchPassthroughKeypadTap) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
-                                         ax::mojom::Event::kLoadComplete);
-
-  GURL url(embedded_test_server()->GetURL(
-      "/accessibility/hit_testing/aria_touchpassthrough_key.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  SynchronizeThreads();
-  // TODO(https://crbug.com/1332468): Investigate why this does not return true.
-  ASSERT_TRUE(waiter.WaitForNotification());
-
-  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
-                                                "Dial");
-
-  BrowserAccessibility* field = FindNode(ax::mojom::Role::kTextField, "");
-  ASSERT_TRUE(field);
-
-  BrowserAccessibility* key5 = FindNode(ax::mojom::Role::kButton, "5");
-  ASSERT_TRUE(key5);
-
-  // Press on the '5' key
-  {
-    // Hit test a point within the '5' key and ensure we hit the right node.
-    gfx::Point key5_ctr = key5->GetClippedRootFrameBoundsRect().CenterPoint();
-    LOG(ERROR) << "AXAX key5 before: " << key5_ctr.x() << ", " << key5_ctr.y();
-    key5_ctr = FrameToCSSPoint(key5_ctr);
-    LOG(ERROR) << "AXAX key5 after: " << key5_ctr.x() << ", " << key5_ctr.y();
-    BrowserAccessibility* hit_node = HitTestAndWaitForResult(key5_ctr);
-    ASSERT_TRUE(hit_node);
-
-    while (hit_node && hit_node->GetRole() != ax::mojom::Role::kButton)
-      hit_node = hit_node->PlatformGetParent();
-    ASSERT_TRUE(hit_node);
-
-    EXPECT_ACCESSIBILITY_HIT_TEST_RESULT(key5_ctr, key5, hit_node);
-
-    // Ensure that element has touch-passthrough set.
-    EXPECT_TRUE(
-        key5->GetBoolAttribute(ax::mojom::BoolAttribute::kTouchPassthrough));
-
-    AccessibilityNotificationWaiter event_waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED);
-
-    // Simulate a tap at that point using TouchPassthroughManager.
-    TouchPassthroughManager touch_passthrough_manager(
-        static_cast<WebContentsImpl*>(shell()->web_contents())
-            ->GetPrimaryMainFrame());
-    touch_passthrough_manager.OnTouchStart(CSSToFramePoint(key5_ctr));
-    touch_passthrough_manager.OnTouchEnd();
-    ASSERT_TRUE(event_waiter.WaitForNotification());
-
-    EXPECT_EQ("5",
-              field->GetStringAttribute(ax::mojom::StringAttribute::kValue));
-  }
-}
 
 }  // namespace content

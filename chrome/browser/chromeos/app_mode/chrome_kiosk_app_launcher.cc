@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -65,6 +66,12 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
     return;
   }
 
+  if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
+    SYSLOG(WARNING) << "Kiosk app not kiosk enabled";
+    ReportLaunchFailure(LaunchResult::kUnableToLaunch);
+    return;
+  }
+
   if (!AreSecondaryAppsInstalled()) {
     ReportLaunchFailure(LaunchResult::kUnableToLaunch);
     RecordKioskSecondaryAppsInstallResult(false);
@@ -91,8 +98,6 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
 
   const extensions::Extension* extension = GetPrimaryAppExtension();
   CHECK(extension);
-
-  DCHECK(extensions::KioskModeInfo::IsKioskEnabled(extension));
 
   SYSLOG(INFO) << "Attempt to launch app.";
 
@@ -177,11 +182,11 @@ const extensions::Extension* ChromeKioskAppLauncher::GetPrimaryAppExtension()
 }
 
 bool ChromeKioskAppLauncher::AreSecondaryAppsInstalled() const {
-  const extensions::Extension* extension = GetPrimaryAppExtension();
-  DCHECK(extension);
-  const extensions::KioskModeInfo* info =
-      extensions::KioskModeInfo::Get(extension);
-  for (const auto& app : info->secondary_apps) {
+  const extensions::Extension& extension =
+      CHECK_DEREF(GetPrimaryAppExtension());
+  const auto& info = CHECK_DEREF(extensions::KioskModeInfo::Get(&extension));
+
+  for (const auto& app : info.secondary_apps) {
     if (!extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
             app.id)) {
       return false;

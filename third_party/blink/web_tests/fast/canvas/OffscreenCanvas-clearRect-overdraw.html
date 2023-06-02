@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<canvas id="c1" witdth="100" height="100"></canvas>
-<canvas id="c2" witdth="100" height="100"></canvas>
+<canvas id="c" witdth="100" height="100"></canvas>
 <script>
 
 // This is a regression test for crbug.com/1054666
@@ -10,7 +9,7 @@
 // in order to be a valid repro case for bug 1054666
 
 async_test(t =>{
-  const c = document.getElementById("c1");
+  const c = document.getElementById("c");
   const offscreen_canvas = c.transferControlToOffscreen();
   const ctx_o = offscreen_canvas.getContext('2d');
   // Since it checks if content retaining |mode_| changes from frame to frame,
@@ -34,30 +33,6 @@ async_test(t =>{
     });
   });
 }, "First frame overdrawn.");
-
-async_test(t =>{
-  const c = document.getElementById("c2");
-  const offscreen_canvas = c.transferControlToOffscreen();
-  const ctx_o = offscreen_canvas.getContext('2d');
-  // Since it checks if content retaining |mode_| changes from frame to frame,
-  // multiple calls to rAF are used to assure the creation of new frame.
-  ctx_o.fillRect(50, 50, 50, 50);
-  ctx_o.clearRect(0, 0, 100, 90);
-  window.requestAnimationFrame(dt => {
-    ctx_o.fillRect(0, 0, 15, 15);
-    window.requestAnimationFrame(dt => {
-      const reference_ctx = document.createElement("canvas").getContext("2d");
-      reference_ctx.fillRect(0, 0, 15, 15);
-      reference_ctx.fillRect(50, 90, 50, 10);
-      const image_data = ctx_o.getImageData(0, 0, 100, 100);
-      const expected_image_data = reference_ctx.getImageData(0, 0, 100, 100);
-      t.step(() => {
-        assert_array_equals(image_data.data, expected_image_data.data);
-      });
-      t.done();
-    });
-  });  
-}, "First frame not fully overdrawn.");  
 
 </script>
 

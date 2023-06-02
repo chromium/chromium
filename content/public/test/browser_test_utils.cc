@@ -645,7 +645,7 @@ bool BeginNavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
 }
 
 bool NavigateIframeToURL(WebContents* web_contents,
-                         const std::string& iframe_id,
+                         base::StringPiece iframe_id,
                          const GURL& url) {
   TestNavigationObserver load_observer(web_contents);
   bool result = BeginNavigateIframeToURL(web_contents, iframe_id, url);
@@ -654,13 +654,11 @@ bool NavigateIframeToURL(WebContents* web_contents,
 }
 
 bool BeginNavigateIframeToURL(WebContents* web_contents,
-                              const std::string& iframe_id,
+                              base::StringPiece iframe_id,
                               const GURL& url) {
-  std::string script = base::StringPrintf(
-      "setTimeout(\""
-      "var iframes = document.getElementById('%s');iframes.src='%s';"
-      "\",0)",
-      iframe_id.c_str(), url.spec().c_str());
+  std::string script =
+      base::StrCat({"setTimeout(\"var iframes = document.getElementById('",
+                    iframe_id, "');iframes.src='", url.spec(), "';\",0)"});
   return ExecJs(web_contents, script, EXECUTE_SCRIPT_NO_USER_GESTURE);
 }
 
@@ -701,7 +699,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
 }
 
 GURL GetFileUrlWithQuery(const base::FilePath& path,
-                         const std::string& query_string) {
+                         base::StringPiece query_string) {
   GURL url = net::FilePathToFileURL(path);
   if (!query_string.empty()) {
     GURL::Replacements replacements;
@@ -935,7 +933,7 @@ void SimulateMouseClickAt(WebContents* web_contents,
 
 gfx::PointF GetCenterCoordinatesOfElementWithId(
     content::WebContents* web_contents,
-    const std::string& id) {
+    base::StringPiece id) {
   float x = EvalJs(web_contents,
                    JsReplace("const bounds = "
                              "document.getElementById($1)."
@@ -954,7 +952,7 @@ gfx::PointF GetCenterCoordinatesOfElementWithId(
 }
 
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
-                                          const std::string& id) {
+                                          base::StringPiece id) {
   gfx::Point point = gfx::ToFlooredPoint(
       GetCenterCoordinatesOfElementWithId(web_contents, id));
 
@@ -1358,7 +1356,7 @@ RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_frame_host) {
 }
 
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
-                        const std::string& script) {
+                        base::StringPiece script) {
   // Prerendering pages will never have user gesture.
   if (adapter.render_frame_host()->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPrerendering) {
@@ -1370,13 +1368,13 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 }
 
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                          const std::string& script) {
+                                          base::StringPiece script) {
   adapter.render_frame_host()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
 // EvalJsResult methods.
-EvalJsResult::EvalJsResult(base::Value value, const std::string& error)
+EvalJsResult::EvalJsResult(base::Value value, base::StringPiece error)
     : value(error.empty() ? std::move(value) : base::Value()), error(error) {}
 
 EvalJsResult::EvalJsResult(const EvalJsResult& other)
@@ -1450,9 +1448,9 @@ namespace {
 //
 // TODO(nick): Elide snippets to 80 chars, since it is common for sources to not
 // include newlines.
-std::string AnnotateAndAdjustJsStackTraces(const std::string& js_error,
+std::string AnnotateAndAdjustJsStackTraces(base::StringPiece js_error,
                                            std::string source_name,
-                                           const std::string& source,
+                                           base::StringPiece source,
                                            int column_adjustment_for_line_one) {
   // Escape wildcards in |source_name| for use in MatchPattern.
   base::ReplaceChars(source_name, "\\", "\\\\", &source_name);
@@ -1610,8 +1608,8 @@ class ExecuteJavaScriptForTestsWaiter : public WebContentsObserver {
 };
 
 EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
-                          const std::string& script,
-                          const std::string& source_url,
+                          base::StringPiece script,
+                          base::StringPiece source_url,
                           int options,
                           int32_t world_id) {
   RenderFrameHostImpl* rfh =
@@ -1627,7 +1625,6 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
                       !(options & EXECUTE_SCRIPT_NO_USER_GESTURE) &&
                       world_id == ISOLATED_WORLD_ID_GLOBAL;
 
-  DOMMessageQueue dom_message_queue(rfh);
   ExecuteJavaScriptForTestsWaiter waiter(rfh);
   rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script), user_gesture,
                                  resolve_promises, world_id,
@@ -1649,32 +1646,9 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
     CHECK(result_value.is_string() && !result_value.GetString().empty());
     std::string error_text =
         "a JavaScript error: \"" + result_value.GetString() + "\"";
-    return EvalJsResult(base::Value(), AnnotateAndAdjustJsStackTraces(
-                                           error_text, source_url, script, 0));
-  } else if (options & EXECUTE_SCRIPT_USE_MANUAL_REPLY) {
-    // Callers that set EXECUTE_SCRIPT_USE_MANUAL_REPLY expect this function to
-    // block until their JS calls `window.domAutomationController.send`. To
-    // support this, wait for a message from DOMMessageQueue and parse it as
-    // JSON.
-    std::string json;
-    if (!dom_message_queue.WaitForMessage(&json)) {
-      return EvalJsResult(base::Value(),
-                          "Cannot communicate with DOMMessageQueue.");
-    }
-
-    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-        json, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!parsed_json.has_value())
-      return EvalJsResult(base::Value(), parsed_json.error().message);
-    result_type = JavaScriptExecutionResultType::kSuccess;
-    return EvalJsResult(parsed_json->Clone(), std::string());
-  } else if (dom_message_queue.HasMessages()) {
     return EvalJsResult(base::Value(),
-                        "Calling domAutomationController.send is only allowed "
-                        "when using EXECUTE_SCRIPT_USE_MANUAL_REPLY. When "
-                        "using EvalJs(), the completion value is the value of "
-                        "the last executed statement. When using ExecJs(), "
-                        "there is no result value.");
+                        AnnotateAndAdjustJsStackTraces(
+                            error_text, std::string(source_url), script, 0));
   }
 
   return EvalJsResult(result_value.Clone(), std::string());
@@ -1683,12 +1657,9 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
 }  // namespace
 
 ::testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
-                                  const std::string& script,
+                                  base::StringPiece script,
                                   int options,
                                   int32_t world_id) {
-  CHECK(!(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY))
-      << "USE_MANUAL_REPLY does not make sense with ExecJs.";
-
   // TODO(nick): Do we care enough about folks shooting themselves in the foot
   // here with e.g. ASSERT_TRUE(ExecJs("window == window.top")) -- when they
   // mean EvalJs -- to fail a CHECK() when eval_result.value.is_bool()?
@@ -1702,7 +1673,7 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
 }
 
 EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
-                    const std::string& script,
+                    base::StringPiece script,
                     int options,
                     int32_t world_id) {
   TRACE_EVENT1("test", "EvalJs", "script", script);
@@ -1715,8 +1686,8 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
   // let/const don't leak outside the code being run, but vars will float to
   // the outer scope.
   const char* kSourceURL = "__const_std::string&_script__";
-  std::string modified_script = base::StringPrintf("{%s\n}\n//# sourceURL=%s",
-                                                   script.c_str(), kSourceURL);
+  std::string modified_script =
+      base::StrCat({"{", script, "\n}\n//# sourceURL=", kSourceURL});
 
   return EvalJsRunner(execution_target, modified_script, kSourceURL, options,
                       world_id);
@@ -1724,8 +1695,8 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
 
 EvalJsResult EvalJsAfterLifecycleUpdate(
     const ToRenderFrameHost& execution_target,
-    const std::string& raf_script,
-    const std::string& script,
+    base::StringPiece raf_script,
+    base::StringPiece script,
     int options,
     int32_t world_id) {
   TRACE_EVENT2("test", "EvalJsAfterLifecycleUpdate", "raf_script", raf_script,
@@ -1735,11 +1706,11 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
   const char* kWrapperURL = "__const_std::string&_EvalJsAfterLifecycleUpdate__";
   std::string modified_raf_script;
   if (raf_script.length()) {
-    modified_raf_script = base::StringPrintf("%s;\n//# sourceURL=%s",
-                                             raf_script.c_str(), kSourceURL);
+    modified_raf_script =
+        base::StrCat({raf_script, ";\n//# sourceURL=", kSourceURL});
   }
   std::string modified_script =
-      base::StringPrintf("%s;\n//# sourceURL=%s", script.c_str(), kSourceURL);
+      base::StrCat({script, ";\n//# sourceURL=", kSourceURL});
 
   // This runner_script delays running the argument scripts until just before
   // (|raf_script|) and after (|script|) a rendering update.
@@ -1793,7 +1764,7 @@ RenderFrameHost* FrameMatchingPredicate(
   return rfh;
 }
 
-bool FrameMatchesName(const std::string& name, RenderFrameHost* frame) {
+bool FrameMatchesName(base::StringPiece name, RenderFrameHost* frame) {
   return frame->GetFrameName() == name;
 }
 
@@ -2067,7 +2038,7 @@ ui::AXNodeData GetFocusedAccessibilityNodeInfo(WebContents* web_contents) {
 }
 
 bool AccessibilityTreeContainsNodeWithName(BrowserAccessibility* node,
-                                           const std::string& name) {
+                                           base::StringPiece name) {
   // If an image annotation is set, it plays the same role as a name, so it
   // makes sense to check both in the same test helper.
   if (node->GetStringAttribute(ax::mojom::StringAttribute::kName) == name ||
@@ -2088,7 +2059,7 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
 }
 
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
-                                                   const std::string& name) {
+                                                   base::StringPiece name) {
   WebContentsImpl* web_contents_impl = static_cast<WebContentsImpl*>(
       web_contents);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
@@ -2384,7 +2355,7 @@ void RenderProcessHostWatcher::RenderProcessHostDestroyed(
 
 RenderProcessHostKillWaiter::RenderProcessHostKillWaiter(
     RenderProcessHost* render_process_host,
-    const std::string& uma_name)
+    base::StringPiece uma_name)
     : exit_watcher_(render_process_host,
                     RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT),
       uma_name_(uma_name) {}

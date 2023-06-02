@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {PerformanceTestRunner} from 'performance_test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for WebAssembly resources using Service Workers.\n`);
   await TestRunner.loadLegacyModule('timeline');
-  await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadTestModule('application_test_runner');
 
   await ApplicationTestRunner.resetState();
   SDK.multitargetNetworkManager.clearBrowserCache();

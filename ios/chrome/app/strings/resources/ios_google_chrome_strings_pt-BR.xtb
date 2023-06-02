@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã.</translation>
 <translation id="2736805085127235148">As notificações do Chrome estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
+<translation id="2840432500933227975">Abra as configurações do Chrome no iOS, toque em "App de navegação padrão" e selecione o Chrome.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
 <translation id="3706101708757577809">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="3720541637541300822">Bloquear guias anônimas ao fechar o Chrome</translation>
+<translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
 <translation id="3980220367029651214">Você está trocando de contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Seus dados já existentes do Chrome são gerenciados por <ph name="DOMAIN" />. Seus dados serão excluídos desse dispositivo, mas permanecerão em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Sua organização exige que a conta permaneça desconectada do Chrome.</translation>
@@ -150,7 +152,6 @@ Considerações:
   • Se o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
 
   • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Você está usando a proteção padrão neste perfil do Chrome</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 </translationbundle>

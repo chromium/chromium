@@ -141,11 +141,7 @@ void GetSepiaMatrix(float amount, float matrix[20]) {
 
 sk_sp<PaintFilter> CreateMatrixImageFilter(const float matrix[20],
                                            sk_sp<PaintFilter> input) {
-  auto color_filter = SkColorFilters::Matrix(matrix);
-  if (!color_filter)
-    return nullptr;
-
-  return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
+  return sk_make_sp<ColorFilterPaintFilter>(ColorFilter::MakeMatrix(matrix),
                                             std::move(input));
 }
 
@@ -247,7 +243,7 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         if (!op.image_filter())
           break;
 
-        sk_sp<SkColorFilter> cf;
+        sk_sp<ColorFilter> cf;
         bool has_input = false;
         if (op.image_filter()->type() == PaintFilter::Type::kColorFilter &&
             !op.image_filter()->GetCropRect()) {
@@ -257,9 +253,9 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
           has_input = !!color_paint_filter->input();
         }
 
-        if (cf && cf->asAColorMatrix(matrix) && !has_input) {
-          image_filter =
-              CreateMatrixImageFilter(matrix, std::move(image_filter));
+        if (cf && !has_input) {
+          image_filter = sk_make_sp<ColorFilterPaintFilter>(
+              std::move(cf), std::move(image_filter));
         } else if (image_filter) {
           image_filter = sk_make_sp<ComposePaintFilter>(
               op.image_filter(), std::move(image_filter));

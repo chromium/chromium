@@ -29,7 +29,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -328,7 +329,8 @@ void HTMLElement::CollectStyleForPresentationAttribute(
                                               value);
     }
   } else if (name == html_names::kContenteditableAttr) {
-    if (value.empty() || EqualIgnoringASCIICase(value, "true")) {
+    AtomicString lower_value = value.LowerASCII();
+    if (lower_value.empty() || lower_value == keywords::kTrue) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadWrite);
       AddPropertyToPresentationAttributeStyle(
@@ -340,7 +342,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
         UseCounter::Count(GetDocument(),
                           WebFeature::kContentEditableTrueOnHTML);
       }
-    } else if (EqualIgnoringASCIICase(value, "plaintext-only")) {
+    } else if (lower_value == keywords::kPlaintextOnly) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify,
           CSSValueID::kReadWritePlaintextOnly);
@@ -350,7 +352,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitLineBreak, CSSValueID::kAfterWhiteSpace);
       UseCounter::Count(GetDocument(),
                         WebFeature::kContentEditablePlainTextOnly);
-    } else if (EqualIgnoringASCIICase(value, "false")) {
+    } else if (lower_value == keywords::kFalse) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
     }
@@ -368,12 +370,12 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kDraggableAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kDraggableAttribute);
-    if (EqualIgnoringASCIICase(value, "true")) {
+    if (EqualIgnoringASCIICase(value, keywords::kTrue)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kElement);
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kUserSelect,
                                               CSSValueID::kNone);
-    } else if (EqualIgnoringASCIICase(value, "false")) {
+    } else if (EqualIgnoringASCIICase(value, keywords::kFalse)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kNone);
     }
@@ -729,8 +731,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        kNoEvent, nullptr},
       {html_names::kAriaSortAttr, WebFeature::kARIASortAttribute, kNoEvent,
        nullptr},
-      {html_names::kAriaTouchpassthroughAttr,
-       WebFeature::kARIATouchpassthroughAttribute, kNoEvent, nullptr},
       {html_names::kAriaValuemaxAttr, WebFeature::kARIAValueMaxAttribute,
        kNoEvent, nullptr},
       {html_names::kAriaValueminAttr, WebFeature::kARIAValueMinAttribute,
@@ -824,7 +824,8 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     //
     // TODO(tkent): We should avoid updating style.  We'd like to check only
     // DOM-level focusability here.
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                  DocumentUpdateReason::kFocus);
     if (!SupportsFocus())
       blur();
   }
@@ -896,23 +897,23 @@ DocumentFragment* HTMLElement::TextToFragment(const String& text,
   return fragment;
 }
 
-V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
 HTMLElement::innerTextForBinding() {
   return MakeGarbageCollected<
-      V8UnionStringTreatNullAsEmptyStringOrTrustedScript>(innerText());
+      V8UnionStringLegacyNullToEmptyStringOrTrustedScript>(innerText());
 }
 
 void HTMLElement::setInnerTextForBinding(
-    const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
         string_or_trusted_script,
     ExceptionState& exception_state) {
   String value;
   switch (string_or_trusted_script->GetContentType()) {
-    case V8UnionStringTreatNullAsEmptyStringOrTrustedScript::ContentType::
-        kStringTreatNullAsEmptyString:
-      value = string_or_trusted_script->GetAsStringTreatNullAsEmptyString();
+    case V8UnionStringLegacyNullToEmptyStringOrTrustedScript::ContentType::
+        kStringLegacyNullToEmptyString:
+      value = string_or_trusted_script->GetAsStringLegacyNullToEmptyString();
       break;
-    case V8UnionStringTreatNullAsEmptyStringOrTrustedScript::ContentType::
+    case V8UnionStringLegacyNullToEmptyStringOrTrustedScript::ContentType::
         kTrustedScript:
       value = string_or_trusted_script->GetAsTrustedScript()->toString();
       break;
@@ -1070,17 +1071,20 @@ bool HTMLElement::HasCustomFocusLogic() const {
 }
 
 ContentEditableType HTMLElement::contentEditableNormalized() const {
-  const AtomicString& value =
-      FastGetAttribute(html_names::kContenteditableAttr);
+  AtomicString value =
+      FastGetAttribute(html_names::kContenteditableAttr).LowerASCII();
 
   if (value.IsNull())
     return ContentEditableType::kInherit;
-  if (value.empty() || EqualIgnoringASCIICase(value, "true"))
+  if (value.empty() || value == keywords::kTrue) {
     return ContentEditableType::kContentEditable;
-  if (EqualIgnoringASCIICase(value, "false"))
+  }
+  if (value == keywords::kFalse) {
     return ContentEditableType::kNotContentEditable;
-  if (EqualIgnoringASCIICase(value, "plaintext-only"))
+  }
+  if (value == keywords::kPlaintextOnly) {
     return ContentEditableType::kPlaintextOnly;
+  }
 
   return ContentEditableType::kInherit;
 }
@@ -1088,31 +1092,33 @@ ContentEditableType HTMLElement::contentEditableNormalized() const {
 String HTMLElement::contentEditable() const {
   switch (contentEditableNormalized()) {
     case ContentEditableType::kInherit:
-      return "inherit";
+      return keywords::kInherit;
     case ContentEditableType::kContentEditable:
-      return "true";
+      return keywords::kTrue;
     case ContentEditableType::kNotContentEditable:
-      return "false";
+      return keywords::kFalse;
     case ContentEditableType::kPlaintextOnly:
-      return "plaintext-only";
+      return keywords::kPlaintextOnly;
   }
 }
 
 void HTMLElement::setContentEditable(const String& enabled,
                                      ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(enabled, "true"))
-    setAttribute(html_names::kContenteditableAttr, "true");
-  else if (EqualIgnoringASCIICase(enabled, "false"))
-    setAttribute(html_names::kContenteditableAttr, "false");
-  else if (EqualIgnoringASCIICase(enabled, "plaintext-only"))
-    setAttribute(html_names::kContenteditableAttr, "plaintext-only");
-  else if (EqualIgnoringASCIICase(enabled, "inherit"))
+  String lower_value = enabled.LowerASCII();
+  if (lower_value == keywords::kTrue) {
+    setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
+  } else if (lower_value == keywords::kFalse) {
+    setAttribute(html_names::kContenteditableAttr, keywords::kFalse);
+  } else if (lower_value == keywords::kPlaintextOnly) {
+    setAttribute(html_names::kContenteditableAttr, keywords::kPlaintextOnly);
+  } else if (lower_value == keywords::kInherit) {
     removeAttribute(html_names::kContenteditableAttr);
-  else
+  } else {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The value provided ('" + enabled +
                                           "') is not one of 'true', 'false', "
                                           "'plaintext-only', or 'inherit'.");
+  }
 }
 
 V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
@@ -1143,7 +1149,7 @@ void HTMLElement::setHidden(
   switch (value->GetContentType()) {
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kBoolean:
       if (value->GetAsBoolean()) {
-        setAttribute(html_names::kHiddenAttr, "");
+        setAttribute(html_names::kHiddenAttr, g_empty_atom);
       } else {
         removeAttribute(html_names::kHiddenAttr);
       }
@@ -1152,18 +1158,18 @@ void HTMLElement::setHidden(
       if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
               GetExecutionContext()) &&
           EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
-        setAttribute(html_names::kHiddenAttr, "until-found");
+        setAttribute(html_names::kHiddenAttr, AtomicString("until-found"));
       } else if (value->GetAsString() == "") {
         removeAttribute(html_names::kHiddenAttr);
       } else {
-        setAttribute(html_names::kHiddenAttr, "");
+        setAttribute(html_names::kHiddenAttr, g_empty_atom);
       }
       break;
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::
         kUnrestrictedDouble:
       double double_value = value->GetAsUnrestrictedDouble();
       if (double_value && !std::isnan(double_value)) {
-        setAttribute(html_names::kHiddenAttr, "");
+        setAttribute(html_names::kHiddenAttr, g_empty_atom);
       } else {
         removeAttribute(html_names::kHiddenAttr);
       }
@@ -1172,14 +1178,15 @@ void HTMLElement::setHidden(
 }
 
 namespace {
-PopoverValueType GetPopoverTypeFromAttributeValue(String value) {
-  if (EqualIgnoringASCIICase(value, kPopoverTypeValueAuto) ||
-      (!value.IsNull() && value.empty())) {
+
+PopoverValueType GetPopoverTypeFromAttributeValue(const AtomicString& value) {
+  AtomicString lower_value = value.LowerASCII();
+  if (lower_value == keywords::kAuto || (!value.IsNull() && value.empty())) {
     return PopoverValueType::kAuto;
-  } else if (EqualIgnoringASCIICase(value, kPopoverTypeValueHint) &&
+  } else if (lower_value == keywords::kHint &&
              RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
     return PopoverValueType::kHint;
-  } else if (EqualIgnoringASCIICase(value, kPopoverTypeValueManual)) {
+  } else if (lower_value == keywords::kManual) {
     return PopoverValueType::kManual;
   } else if (!value.IsNull()) {
     // Invalid values default to popover=manual.
@@ -1189,7 +1196,7 @@ PopoverValueType GetPopoverTypeFromAttributeValue(String value) {
 }
 }  // namespace
 
-void HTMLElement::UpdatePopoverAttribute(String value) {
+void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     // If the feature flag isn't enabled, give a console warning about this
@@ -1214,7 +1221,7 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
 
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
-      !EqualIgnoringASCIICase(value, kPopoverTypeValueManual)) {
+      !EqualIgnoringASCIICase(value, keywords::kManual)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1275,15 +1282,15 @@ AtomicString HTMLElement::popover() const {
   if (attribute_value.IsNull()) {
     return attribute_value;  // Nullable
   } else if (attribute_value.empty()) {
-    return kPopoverTypeValueAuto;  // ReflectEmpty = "auto"
-  } else if (attribute_value == kPopoverTypeValueAuto ||
-             attribute_value == kPopoverTypeValueManual) {
+    return keywords::kAuto;  // ReflectEmpty = "auto"
+  } else if (attribute_value == keywords::kAuto ||
+             attribute_value == keywords::kManual) {
     return attribute_value;  // ReflectOnly
-  } else if (attribute_value == kPopoverTypeValueHint &&
+  } else if (attribute_value == keywords::kHint &&
              RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
     return attribute_value;  // ReflectOnly (with HTMLPopoverHint enabled)
   } else {
-    return kPopoverTypeValueManual;  // ReflectInvalid = "manual"
+    return keywords::kManual;  // ReflectInvalid = "manual"
   }
 }
 void HTMLElement::setPopover(const AtomicString& value) {
@@ -1541,11 +1548,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
 
-  // Force a style update. This ensures that base property values are set prior
-  // to `:popover-open` matching, so that transitions can start on the change to
-  // top layer.
-  original_document.UpdateStyleAndLayoutTreeForNode(this);
-
   // Queue a delayed hide event, if necessary.
   if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
     if (!GetDocument().HoverElement() ||
@@ -1765,7 +1767,12 @@ void HTMLElement::HidePopoverInternal(
     CHECK_EQ(event->newState(), "closed");
     event->SetTarget(this);
     auto result = DispatchEvent(*event);
-    CHECK_EQ(result, DispatchEventResult::kNotCanceled);
+    if (result != DispatchEventResult::kNotCanceled) {
+      // The event can be cancelled before dispatch, if the target or execution
+      // context no longer exists, etc. See crbug.com/1445329.
+      CHECK_EQ(result, DispatchEventResult::kCanceledBeforeDispatch);
+      return;
+    }
 
     // The 'beforetoggle' event handler could have changed this popover, e.g. by
     // changing its type, removing it from the document, or calling
@@ -1852,7 +1859,8 @@ void HTMLElement::SetPopoverFocusOnShow() {
       GetDocument().GetExecutionContext()));
   // The layout must be updated here because we call Element::isFocusable,
   // which requires an up-to-date layout.
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                DocumentUpdateReason::kPopover);
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
     if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
@@ -2300,7 +2308,8 @@ bool HTMLElement::draggable() const {
 }
 
 void HTMLElement::setDraggable(bool value) {
-  setAttribute(html_names::kDraggableAttr, value ? "true" : "false");
+  setAttribute(html_names::kDraggableAttr,
+               value ? keywords::kTrue : keywords::kFalse);
 }
 
 bool HTMLElement::spellcheck() const {
@@ -2308,7 +2317,8 @@ bool HTMLElement::spellcheck() const {
 }
 
 void HTMLElement::setSpellcheck(bool enable) {
-  setAttribute(html_names::kSpellcheckAttr, enable ? "true" : "false");
+  setAttribute(html_names::kSpellcheckAttr,
+               enable ? keywords::kTrue : keywords::kFalse);
 }
 
 void HTMLElement::click() {
@@ -2355,7 +2365,7 @@ bool HTMLElement::translate() const {
 }
 
 void HTMLElement::setTranslate(bool enable) {
-  setAttribute(html_names::kTranslateAttr, enable ? "yes" : "no");
+  setAttribute(html_names::kTranslateAttr, AtomicString(enable ? "yes" : "no"));
 }
 
 // Returns the conforming 'dir' value associated with the state the attribute is

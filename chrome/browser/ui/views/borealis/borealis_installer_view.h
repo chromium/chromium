@@ -17,6 +17,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
+class BorealisBetaBadge;
 class BoxLayout;
 class ImageView;
 class Label;
@@ -105,10 +106,10 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   void StartInstallation();
 
-  std::u16string app_name_;
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> primary_message_label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> secondary_message_label_ = nullptr;
+  raw_ptr<views::BorealisBetaBadge, ExperimentalAsh> beta_badge_ = nullptr;
   raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh>
       installation_progress_percentage_label_ = nullptr;

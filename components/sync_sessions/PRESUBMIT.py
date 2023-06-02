@@ -10,8 +10,6 @@ for more details about the presubmit API built into depot_tools.
 
 import re
 
-USE_PYTHON3 = True
-
 SYNC_SESSIONS_SOURCE_FILES = (r'^components[\\/]sync_sessions[\\/].*\.(cc|h)$',)
 
 def CheckChangeLintsClean(input_api, output_api):

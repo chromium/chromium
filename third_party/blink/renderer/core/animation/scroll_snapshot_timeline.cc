@@ -114,8 +114,18 @@ AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
 
 TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
   absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
-  return scroll_offsets.has_value() ? TimelineRange(scroll_offsets.value())
-                                    : TimelineRange();
+
+  if (!scroll_offsets.has_value()) {
+    return TimelineRange();
+  }
+
+  absl::optional<ScrollOffsets> view_offsets = GetResolvedViewOffsets();
+  // The subject_size is always zero for ScrollTimelines.
+  double subject_size = view_offsets.has_value()
+                            ? (view_offsets->end - view_offsets->start)
+                            : 0.0f;
+
+  return TimelineRange(scroll_offsets.value(), subject_size);
 }
 
 void ScrollSnapshotTimeline::ServiceAnimations(TimingUpdateReason reason) {
@@ -148,12 +158,14 @@ void ScrollSnapshotTimeline::ScheduleNextService() {
 
 void ScrollSnapshotTimeline::UpdateSnapshot() {
   auto state = ComputeTimelineState();
-  bool invalidate_timing =
-      !state.HasConsistentLayout(timeline_state_snapshotted_);
+  bool layout_changed = !state.HasConsistentLayout(timeline_state_snapshotted_);
   timeline_state_snapshotted_ = state;
-  if (invalidate_timing) {
+
+  if (layout_changed) {
+    // Force recalculation of an auto-aligned start time, and invalidate
+    // normalized timing.
     for (Animation* animation : GetAnimations()) {
-      animation->InvalidateNormalizedTiming();
+      animation->OnValidateSnapshot(layout_changed);
     }
   }
   ResolveTimelineOffsets();
@@ -179,39 +191,42 @@ void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {
 
 bool ScrollSnapshotTimeline::ValidateSnapshot() {
   TimelineState new_state = ComputeTimelineState();
-
-  if (timeline_state_snapshotted_.HasConsistentLayout(new_state)) {
-    return true;
-  }
-
+  bool is_valid = timeline_state_snapshotted_ == new_state;
+  bool state_changed =
+      !timeline_state_snapshotted_.HasConsistentLayout(new_state);
   // Note that `timeline_state_snapshotted_` must be updated before
   // ResolveTimelineOffsets is called.
   timeline_state_snapshotted_ = new_state;
-  ResolveTimelineOffsets();
-
-  // Mark an attached animation's target as dirty if the play state is running
-  // or finished. Idle animations are not in effect and the effect of a paused
-  // animation is not impacted by timeline staleness.
-  for (Animation* animation : GetAnimations()) {
-    Animation::AnimationPlayState play_state =
-        animation->CalculateAnimationPlayState();
-    if (play_state != Animation::kRunning &&
-        play_state != Animation::kFinished) {
-      continue;
-    }
-
-    // The animation's effect target requires a style update to ensure that we
-    // pickup the new effect value.
-    animation->InvalidateEffectTargetStyle();
-    // Normalized timing needs to be reevaluated since the intrinsic iteration
-    // duration may be affected.
-    animation->InvalidateNormalizedTiming();
-    // The animation range may be affected, which in turn can affect animation
-    // start time as well as intrinsic iteration duration.
-    animation->OnRangeUpdate();
+  if (state_changed) {
+    ResolveTimelineOffsets();
   }
 
-  return false;
+  for (Animation* animation : GetAnimations()) {
+    // Compute deferred start times and update animation timing if required.
+    is_valid &= animation->OnValidateSnapshot(state_changed);
+  }
+
+  return is_valid;
+}
+
+cc::AnimationTimeline* ScrollSnapshotTimeline::EnsureCompositorTimeline() {
+  if (compositor_timeline_) {
+    return compositor_timeline_.get();
+  }
+
+  compositor_timeline_ = scroll_timeline_util::ToCompositorScrollTimeline(this);
+  return compositor_timeline_.get();
+}
+
+void ScrollSnapshotTimeline::UpdateCompositorTimeline() {
+  if (!compositor_timeline_) {
+    return;
+  }
+
+  ToScrollTimeline(compositor_timeline_.get())
+      ->UpdateScrollerIdAndScrollOffsets(
+          scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
+          GetResolvedScrollOffsets());
 }
 
 }  // namespace blink

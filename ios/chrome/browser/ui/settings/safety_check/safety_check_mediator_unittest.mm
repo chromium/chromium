@@ -13,6 +13,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
@@ -24,6 +25,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safety_check/safety_check.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
@@ -237,6 +239,23 @@ class SafetyCheckMediatorTest : public PlatformTest {
         IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
+  }
+
+  // Tests that only having a leaked password results in an umuted compromised
+  // password row state.
+  void CheckCompromisedRowState() {
+    base::HistogramTester histogram_tester;
+
+    AddSavedInsecureForm(InsecureType::kLeaked);
+    mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
+    [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+
+    histogram_tester.ExpectUniqueSample(
+        kSafetyCheckMetricsPasswords,
+        safety_check::PasswordsStatus::kCompromisedExist, 1);
+
+    EXPECT_EQ(mediator_.passwordCheckRowState,
+              PasswordCheckRowStateUnmutedCompromisedPasswords);
   }
 
  protected:
@@ -488,11 +507,19 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithKIOSPasswordCheckup) {
 // Tests that only having a leaked password results in an umuted compromised
 // password row state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckUnmutedCompromisedPasswordsCheck) {
-  AddSavedInsecureForm(InsecureType::kLeaked);
-  mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
-  [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
-  EXPECT_EQ(mediator_.passwordCheckRowState,
-            PasswordCheckRowStateUnmutedCompromisedPasswords);
+  {
+    base::test::ScopedFeatureList feature_list(
+        password_manager::features::kIOSPasswordCheckup);
+
+    CheckCompromisedRowState();
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        password_manager::features::kIOSPasswordCheckup);
+
+    CheckCompromisedRowState();
+  }
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in
@@ -547,11 +574,18 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsCheck) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
+  base::HistogramTester histogram_tester;
+
   AddSavedInsecureForm(InsecureType::kReused);
   AddSavedInsecureForm(InsecureType::kReused, /*is_muted=*/false,
                        /*signon_realm=*/"http://www.example1.com/");
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
   [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+
+  histogram_tester.ExpectUniqueSample(
+      kSafetyCheckMetricsPasswords,
+      safety_check::PasswordsStatus::kReusedPasswordsExist, 1);
+
   EXPECT_EQ(mediator_.passwordCheckRowState,
             PasswordCheckRowStateReusedPasswords);
 }
@@ -583,9 +617,16 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsCheck) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
+  base::HistogramTester histogram_tester;
+
   AddSavedInsecureForm(InsecureType::kWeak);
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
   [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+
+  histogram_tester.ExpectUniqueSample(
+      kSafetyCheckMetricsPasswords,
+      safety_check::PasswordsStatus::kWeakPasswordsExist, 1);
+
   EXPECT_EQ(mediator_.passwordCheckRowState,
             PasswordCheckRowStateWeakPasswords);
 }
@@ -616,9 +657,16 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsCheck) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
+  base::HistogramTester histogram_tester;
+
   AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
   mediator_.currentPasswordCheckState = PasswordCheckState::kRunning;
   [mediator_ passwordCheckStateDidChange:PasswordCheckState::kIdle];
+
+  histogram_tester.ExpectUniqueSample(
+      kSafetyCheckMetricsPasswords,
+      safety_check::PasswordsStatus::kMutedCompromisedExist, 1);
+
   EXPECT_EQ(mediator_.passwordCheckRowState,
             PasswordCheckRowStateDismissedWarnings);
 }

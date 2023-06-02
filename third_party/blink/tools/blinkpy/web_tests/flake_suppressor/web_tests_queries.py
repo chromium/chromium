@@ -100,6 +100,7 @@ WITH
   SELECT
     exported.id,
     test_metadata.name,
+    status,
     ARRAY(
           SELECT value
           FROM tr.tags
@@ -116,7 +117,7 @@ WITH
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
     sheriff_rotations_ci_builds srcb
   WHERE
-    status = "FAIL" AND
+    status != "PASS" AND status != "SKIP" AND
     exported.realm = "chromium:ci" AND
     builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
@@ -151,6 +152,7 @@ WITH
 SELECT
   ft.name,
   ft.id,
+  ft.status,
   ft.builder,
   ft.step_name,
   ft.typ_expectations,

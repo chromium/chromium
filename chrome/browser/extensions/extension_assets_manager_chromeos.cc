@@ -175,15 +175,16 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
 void ExtensionAssetsManagerChromeOS::UninstallExtension(
     const std::string& id,
     const std::string& profile_user_name,
-    const base::FilePath& local_install_dir,
-    const base::FilePath& extension_root,
+    const base::FilePath& extensions_install_dir,
+    const base::FilePath& extension_dir_to_delete,
     const base::FilePath& profile_dir) {
-  if (local_install_dir.IsParent(extension_root)) {
-    file_util::UninstallExtension(profile_dir, local_install_dir, id);
+  if (extensions_install_dir.IsParent(extension_dir_to_delete)) {
+    file_util::UninstallExtension(profile_dir, extensions_install_dir,
+                                  extension_dir_to_delete);
     return;
   }
 
-  if (GetSharedInstallDir().IsParent(extension_root)) {
+  if (GetSharedInstallDir().IsParent(extension_dir_to_delete)) {
     // In some test extensions installed outside local_install_dir emulate
     // previous behavior that just do nothing in this case.
     content::GetUIThreadTaskRunner({})->PostTask(

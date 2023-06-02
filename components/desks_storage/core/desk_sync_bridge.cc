@@ -664,13 +664,9 @@ bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
 bool DeskSyncBridge::HasUuid(const base::Uuid& uuid) const {
   return uuid.is_valid() && base::Contains(desk_template_entries_, uuid);
 }
-absl::optional<base::Uuid> DeskSyncBridge::GetFloatingWorkspaceUuid() {
-  for (const auto& [cache_guid, uuid] : floating_workspace_templates_uuid_) {
-    if (cache_guid == change_processor()->TrackedCacheGuid()) {
-      return uuid;
-    }
-  }
-  return absl::nullopt;
+
+std::string DeskSyncBridge::GetCacheGuid() {
+  return change_processor()->TrackedCacheGuid();
 }
 
 }  // namespace desks_storage

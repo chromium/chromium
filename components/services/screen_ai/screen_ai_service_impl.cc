@@ -31,20 +31,6 @@ namespace screen_ai {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(crbug.com/1278249): Deprecate these enums and add a new set of booleans
-// for each outcome (library load, OCR init, Main Content init).
-enum class ScreenAILoadLibraryResult {
-  kAllOk = 0,
-  kDeprecatedVisualAnnotationFailed = 1,
-  kMainContentExtractionFailed = 2,
-  kLayoutExtractionFailed = 3,
-  kOcrFailed = 4,
-  kFunctionsLoadFailed = 5,
-  kMaxValue = kFunctionsLoadFailed,
-};
-
 // Returns an empty result if load fails.
 std::unique_ptr<ScreenAILibraryWrapper> LoadLibrary(
     const base::FilePath& library_path) {
@@ -52,10 +38,11 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadLibrary(
   std::unique_ptr<ScreenAILibraryWrapper> library =
       std::make_unique<ScreenAILibraryWrapper>();
 
-  if (!library->Load(library_path)) {
-    base::UmaHistogramEnumeration(
-        "Accessibility.ScreenAI.LoadLibraryResult",
-        ScreenAILoadLibraryResult::kFunctionsLoadFailed);
+  bool load_sucessful = library->Load(library_path);
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.Library.Initialized",
+                            load_sucessful);
+
+  if (!load_sucessful) {
     library.reset();
     return library;
   }
@@ -74,8 +61,6 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadLibrary(
     library->EnableDebugMode();
   }
 
-  base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
-                                ScreenAILoadLibraryResult::kAllOk);
   return library;
 }
 
@@ -161,10 +146,11 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
     InitializeMainContentExtractionCallback callback,
     std::unique_ptr<ScreenAILibraryWrapper::MainContentExtractionModelData>
         model_data) {
-  if (!library_->InitMainContentExtraction(*model_data)) {
-    base::UmaHistogramEnumeration(
-        "Accessibility.ScreenAI.LoadLibraryResult",
-        ScreenAILoadLibraryResult::kMainContentExtractionFailed);
+  bool init_successful = library_->InitMainContentExtraction(*model_data);
+  base::UmaHistogramBoolean(
+      "Accessibility.ScreenAI.MainContentExtraction.Initialized",
+      init_successful);
+  if (!init_successful) {
     std::move(callback).Run(false);
     return;
   }
@@ -191,9 +177,10 @@ void ScreenAIService::InitializeOCR(
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
 
-  if (!library_->InitOCR(library_path.DirName())) {
-    base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
-                                  ScreenAILoadLibraryResult::kOcrFailed);
+  bool init_successful = library_->InitOCR(library_path.DirName());
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initalized",
+                            init_successful);
+  if (!init_successful) {
     std::move(callback).Run(false);
     return;
   }

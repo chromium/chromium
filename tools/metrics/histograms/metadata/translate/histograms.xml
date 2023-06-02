@@ -146,61 +146,6 @@ chromium-metrics-reviews@google.com.
   <summary>Various user actions performed in the translate infobar.</summary>
 </histogram>
 
-<histogram name="Translate.DeclineTranslate" units="units"
-    expires_after="2023-10-08">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the &quot;Nope&quot; (don't translate) or the infobar's
-    X button was clicked in the translate infobar.
-  </summary>
-</histogram>
-
-<histogram name="Translate.ExplicitLanguageAsk.Event"
-    enum="TranslateExplicitAskPromptEventType" expires_after="2023-06-04">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The events (shown, saved, cancelled) happening in the Explicit Language Ask
-    prompt.
-  </summary>
-</histogram>
-
-<histogram name="Translate.ExplicitLanguageAsk.LanguageAdded"
-    enum="LocaleCodeISO639" expires_after="2023-06-04">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The languages that were added to the Accept Languages list from the Explicit
-    Language Ask prompt.
-  </summary>
-</histogram>
-
-<histogram name="Translate.ExplicitLanguageAsk.LanguageRemoved"
-    enum="LocaleCodeISO639" expires_after="2023-06-04">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The languages that were removed from the Accept Languages list from the
-    Explicit Language Ask prompt.
-  </summary>
-</histogram>
-
-<histogram name="Translate.HrefHint.PrefsFilterStatus"
-    enum="HrefTranslatePrefsFilterStatus" expires_after="2023-10-08">
-  <owner>sclittle@google.com</owner>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    For Google navigations, the hrefTranslate hint may trigger a translation
-    automatically. If the hint is present on a Google navigation, record which
-    blocklists came into play when filtering the translation decision according
-    to user prefs. Note that this doesn't necessarily mean that translation
-    didn't happen - it's possible that the hrefTranslate translation overrode
-    one or more of these blocklists depending on which features are active.
-  </summary>
-</histogram>
-
 <histogram name="Translate.HrefHint.Status" enum="HrefTranslateStatus"
     expires_after="2023-10-01">
   <owner>sclittle@google.com</owner>
@@ -267,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.TFLiteModelEvaluationDuration"
-    units="ms" expires_after="2023-09-17">
+    units="ms" expires_after="2023-11-19">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -324,16 +269,6 @@ chromium-metrics-reviews@google.com.
     the menu is shown. More than one bucket may be logged per menu open. This
     allows us to investigate the primary reasons the user isn't seeing the menu
     item and make the manual translate UI more visible to users.
-  </summary>
-</histogram>
-
-<histogram name="Translate.ModifyOriginalLang" units="units"
-    expires_after="2023-10-15">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the source language in the translate infobar has been
-    changed.
   </summary>
 </histogram>
 
@@ -639,21 +574,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
-    expires_after="M109">
-  <obsolete>
-    Logged on profile open, including for system and ash-internal profiles that
-    don't use the Translate feature. Replaced in M-110 by the histogram
-    Translate.Ranker.Model.Status2, which is similar but only emitted on regular
-    and guest profiles.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Tracks the outcome of attempts to download a Translate Ranker Model.
-  </summary>
-</histogram>
-
 <histogram name="Translate.Ranker.Model.Status2" enum="RankerModelStatus"
     expires_after="2023-11-12">
   <owner>megjablon@google.com</owner>
@@ -665,16 +585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.Ranker.QueryResult" enum="BooleanAccepted"
-    expires_after="2023-08-31">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Whether the TranslateRanker accepts or denies to show the translation
-    prompt.
-  </summary>
-</histogram>
-
 <histogram name="Translate.ShowErrorUI" enum="TranslateError"
     expires_after="2023-10-01">
   <owner>megjablon@google.com</owner>
@@ -683,27 +593,6 @@ chromium-metrics-reviews@google.com.
     Chrome Translate shows an error UI (infobar or bubble) when an error happens
     on translation and the UI message depends on what kind of error happens.
     This metric counts how often each error message is shown.
-  </summary>
-</histogram>
-
-<histogram name="Translate.Translate" enum="BooleanTranslate"
-    expires_after="2023-10-01">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the translate button was clicked in the translate
-    infobar.
-  </summary>
-</histogram>
-
-<histogram name="Translate.Translate.AMPCacheURL" enum="BooleanTranslate"
-    expires_after="2023-11-12">
-  <owner>sclittle@google.com</owner>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the translate button was clicked in the translate
-    infobar for a page that is likely an AMP Cache URL.
   </summary>
 </histogram>
 
@@ -903,16 +792,6 @@ chromium-metrics-reviews@google.com.
     detects the language of the webpage, but the language is not supported by
     the translation server because it is too minor. This metric allows us to
     assess how important the unsupported language is for Google translate.
-  </summary>
-</histogram>
-
-<histogram name="Translate.UserActionDuration" units="ms"
-    expires_after="2023-10-22">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The time from a page content language being determined to user requesting
-    Chrome Translate.
   </summary>
 </histogram>
 

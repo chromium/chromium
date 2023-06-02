@@ -215,16 +215,15 @@ bool PaintFilter::EqualsForTesting(const PaintFilter& other) const {
   return true;
 }
 
-ColorFilterPaintFilter::ColorFilterPaintFilter(
-    sk_sp<SkColorFilter> color_filter,
-    sk_sp<PaintFilter> input,
-    const CropRect* crop_rect)
+ColorFilterPaintFilter::ColorFilterPaintFilter(sk_sp<ColorFilter> color_filter,
+                                               sk_sp<PaintFilter> input,
+                                               const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, HasDiscardableImages(input)),
       color_filter_(std::move(color_filter)),
       input_(std::move(input)) {
-  DCHECK(color_filter_);
   cached_sk_filter_ = SkImageFilters::ColorFilter(
-      color_filter_, GetSkFilter(input_.get()), crop_rect);
+      color_filter_ ? color_filter_->GetSkColorFilter() : nullptr,
+      GetSkFilter(input_.get()), crop_rect);
 }
 
 ColorFilterPaintFilter::~ColorFilterPaintFilter() = default;
@@ -232,8 +231,7 @@ ColorFilterPaintFilter::~ColorFilterPaintFilter() = default;
 size_t ColorFilterPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size = 0u;
   total_size += BaseSerializedSize();
-  total_size += PaintOpWriter::SerializedSize(
-      static_cast<const SkFlattenable*>(color_filter_.get()));
+  total_size += PaintOpWriter::SerializedSize(color_filter_.get());
   total_size += PaintOpWriter::SerializedSize(input_.get());
   return total_size.ValueOrDefault(0u);
 }
@@ -246,11 +244,8 @@ sk_sp<PaintFilter> ColorFilterPaintFilter::SnapshotWithImagesInternal(
 
 bool ColorFilterPaintFilter::EqualsForTesting(
     const ColorFilterPaintFilter& other) const {
-  return base::ValuesEquivalent(
-             color_filter_, other.color_filter_,
-             [](const auto& a, const auto& b) {
-               return a.serialize()->equals(b.serialize().get());
-             }) &&
+  return AreValuesEqualForTesting(color_filter_,  // IN-TEST
+                                  other.color_filter_) &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
 }
 

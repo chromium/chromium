@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">已取消固定擴充功能</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{還剩 1 個月}other{還剩 # 個月}}</translation>
 <translation id="4888938634149558681">撥打電話</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="4971687151119236543">上一首媒體曲目</translation>
 <translation id="5046499563572181734">輕觸這裡</translation>

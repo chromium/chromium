@@ -32,11 +32,9 @@ class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model,
       OtherMechanismButtonVisibility other_mechanism_button_visibility)
       : AuthenticatorSheetModelBase(dialog_model,
-                                    other_mechanism_button_visibility) {}
-
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override {
-    return kPasskeyHeaderDarkIcon;
+                                    other_mechanism_button_visibility) {
+    vector_illustrations_.emplace(kPasskeyHeaderDarkIcon,
+                                  kPasskeyHeaderDarkIcon);
   }
 
   std::u16string GetStepTitle() const override { return u"Step title"; }
@@ -70,10 +68,10 @@ TEST_F(AuthenticatorSheetBaseTest, IsOtherMechanismButtonVisible) {
                                             MechanismVisibility::kVisible);
     std::vector<Mechanism> mechanisms;
     mechanisms.emplace_back(Mechanism::Phone("phone"), u"phone", u"ph",
-                            kPasskeyAoaIcon, base::DoNothing(), false);
+                            kPasskeyAoaIcon, base::DoNothing());
     mechanisms.emplace_back(
         Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
-        u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing(), false);
+        u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
     EXPECT_CALL(dialog_model, mechanisms)
         .WillOnce(testing::Return(base::make_span(mechanisms)));
     EXPECT_TRUE(sheet_model.IsOtherMechanismButtonVisible());

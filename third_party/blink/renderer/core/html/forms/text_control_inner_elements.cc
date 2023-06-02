@@ -153,6 +153,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
+    style_builder.SetScrollbarColor(absl::nullopt);
     style_builder.SetWhiteSpace(EWhiteSpace::kPre);
     style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
     style_builder.SetTextOverflow(ToTextControl(host)->ValueForTextOverflow());
@@ -189,8 +190,6 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
         1 << (kPseudoIdScrollbar - kFirstPublicPseudoId));
 
     style_builder.SetDisplay(EDisplay::kFlowRoot);
-    if (parentNode()->IsShadowRoot())
-      style_builder.SetAlignSelfBlockCenter(true);
   }
 
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like

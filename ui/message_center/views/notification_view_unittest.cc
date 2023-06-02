@@ -294,7 +294,7 @@ class NotificationViewTest : public views::ViewObserver,
     ink_drop_stopped_ = true;
   }
 
-  raw_ptr<NotificationView> notification_view_ = nullptr;
+  raw_ptr<NotificationView, DanglingUntriaged> notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

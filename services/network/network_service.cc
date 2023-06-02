@@ -358,6 +358,11 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   initialized_ = true;
 
+#if BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramTimes("NetworkService.InitializedTime",
+                          base::Time::Now().since_origin());
+#endif
+
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   // Make sure OpenSSL is initialized before using it to histogram data.
   crypto::EnsureOpenSSLInit();
@@ -769,8 +774,11 @@ void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {
 #if BUILDFLAG(IS_ANDROID)
 void NetworkService::OnApplicationStateChange(
     base::android::ApplicationState state) {
-  for (auto* network_context : network_contexts_)
-    network_context->app_status_listener()->Notify(state);
+  for (auto* network_context : network_contexts_) {
+    for (auto const& listener : network_context->app_status_listeners()) {
+      listener->Notify(state);
+    }
+  }
 }
 #endif
 

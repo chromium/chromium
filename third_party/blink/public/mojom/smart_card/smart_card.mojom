@@ -84,4 +84,7 @@ interface SmartCardService {
   Connect(string reader, device.mojom.SmartCardShareMode share_mode,
           device.mojom.SmartCardProtocols preferred_protocols) =>
     (device.mojom.SmartCardConnectResult result);
+
+  // Creates an Application Context to the PC/SC Resource Manager.
+  CreateContext() => (device.mojom.SmartCardCreateContextResult result);
 };

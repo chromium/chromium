@@ -92,6 +92,7 @@
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -199,6 +200,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -266,7 +268,9 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     MultiDeviceSetupScreenView::kScreenId,
     ConsolidatedConsentScreenView::kScreenId,
     ThemeSelectionScreenView::kScreenId,
-};
+    ChoobeScreenView::kScreenId,
+    DisplaySizeScreenView::kScreenId,
+    TouchpadScrollScreenView::kScreenId};
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     EnableAdbSideloadingScreenView::kScreenId,
@@ -278,6 +282,10 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     WrongHWIDScreenView::kScreenId,
     LocalStateErrorScreenView::kScreenId,
 };
+
+std::string GetApplicationLocale() {
+  return g_browser_process->GetApplicationLocale();
+}
 
 bool IsResumableOobeScreen(OobeScreenId screen_id) {
   for (const auto& resumable_screen : kResumableOobeScreens) {
@@ -370,6 +378,11 @@ bool IsGaiaPageDefaultsToSAML() {
   bool authentication_behavior_set = CrosSettings::Get()->GetInteger(
       kLoginAuthenticationBehavior, &authentication_behavior);
   return authentication_behavior_set && authentication_behavior;
+}
+
+bool IsContextNeededForScreen(OobeScreenId screen_id) {
+  return screen_id == SamlConfirmPasswordView::kScreenId ||
+         screen_id == CryptohomeRecoveryScreenView::kScreenId;
 }
 
 }  // namespace
@@ -913,12 +926,12 @@ void WizardController::ShowSignInFatalErrorScreen(
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
   if (base::Contains(previous_screens_, current_screen_) &&
-      previous_screens_[current_screen_]->screen_id() ==
-          SamlConfirmPasswordView::kScreenId) {
+      IsContextNeededForScreen(
+          previous_screens_[current_screen_]->screen_id())) {
     // If the last screen user have visited before reaching SignInFatalError
-    // screen was SamlConfirmPassword screen we should not go back there because
-    // the context is lost at this point. We should go to the Gaia screen
-    // instead.
+    // screen was a screen that needs user context, we should not go back there
+    // because the context is lost at this point. We should go to the Gaia
+    // screen instead.
     previous_screens_[current_screen_] = GetScreen(GaiaView::kScreenId);
     GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
   }
@@ -1190,6 +1203,12 @@ void WizardController::OnUserCreationScreenExit(
       } else {
         AdvanceToSigninScreen();
       }
+      break;
+    case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
+      CHECK(wizard_context_->quick_start_enabled &&
+            wizard_context_->quick_start_setup_ongoing);
+      GetScreen<QuickStartScreen>()->AttemptGoogleAccountTransfer();
+      AdvanceToScreen(QuickStartView::kScreenId);
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
       GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
@@ -1545,6 +1564,7 @@ void WizardController::OnChoobeScreenExit(ChoobeScreen::Result result) {
       ShowTouchpadScrollScreen();
       break;
     case ChoobeScreen::Result::SKIPPED:
+      choobe_flow_controller_->OnChoobeFlowExit();
       choobe_flow_controller_.reset();
       ShowMarketingOptInScreen();
       break;
@@ -1575,9 +1595,17 @@ void WizardController::OnDisplaySizeScreenExit(
   switch (result) {
     case DisplaySizeScreen::Result::kNotApplicable:
     case DisplaySizeScreen::Result::kNext:
-      choobe_flow_controller_.reset();
-      ShowMarketingOptInScreen();
-      break;
+      if (wizard_context_->return_to_choobe_screen) {
+        wizard_context_->return_to_choobe_screen = false;
+        ShowChoobeScreen();
+      } else {
+        if (choobe_flow_controller_) {
+          choobe_flow_controller_->OnChoobeFlowExit();
+          choobe_flow_controller_.reset();
+        }
+        ShowMarketingOptInScreen();
+        break;
+      }
   }
 }
 
@@ -1655,6 +1683,16 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
 }
 
 void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
+  OnScreenExit(QuickStartView::kScreenId,
+               QuickStartScreen::GetResultString(result));
+  switch (result) {
+    case QuickStartScreen::Result::CANCEL:
+      ShowWelcomeScreen();
+      return;
+    case QuickStartScreen::Result::WIFI_CONNECTED:
+      ShowNetworkScreen();
+      return;
+  }
 }
 
 // The network screen is part of 3 different flows:
@@ -1734,6 +1772,13 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 }
 
 void WizardController::OnUpdateCompleted() {
+  // Install language packs based on the user selected language.
+  if (ash::features::IsLanguagePacksInOobeEnabled()) {
+    const std::string locale = GetApplicationLocale();
+    language_packs::LanguagePackManager::GetInstance()->UpdatePacksForOobe(
+        locale);
+  }
+
   if (demo_setup_controller_) {
     ShowConsolidatedConsentScreen();
     return;
@@ -2450,6 +2495,10 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowGaiaInfoScreen();
   } else if (screen_id == DrivePinningScreenView::kScreenId) {
     ShowDrivePinningScreen();
+  } else if (screen_id == DisplaySizeScreenView::kScreenId) {
+    ShowDisplaySizeScreen();
+  } else if (screen_id == ChoobeScreenView::kScreenId) {
+    ShowChoobeScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
@@ -2466,7 +2515,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == SmartPrivacyProtectionView::kScreenId ||
              screen_id == ThemeSelectionScreenView::kScreenId ||
              screen_id == SamlConfirmPasswordView::kScreenId ||
-             screen_id == LocalStateErrorScreenView::kScreenId) {
+             screen_id == LocalStateErrorScreenView::kScreenId ||
+             screen_id == QuickStartView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

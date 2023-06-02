@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+    html body { }
+
+</style>
+<script>
+
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    function runTest()
+    {
+        document.body.addEventListener("DOMNodeInserted", function() { }, false);
+        var foo = document.getElementById("foo");
+        var bar = document.getElementById("bar");
+        bar.className = " ";
+        bar.appendChild(foo);
+        // Test complete. If didn't crash at this point, clean up.
+        bar.removeChild(foo);
+    }
+
+</script>
+</head>
+<body onload="runTest()">
+    <p>Tests to see if registering an empty DOMNodeInserted event handler and dirtying the tree just right can cause attach re-entrancy with textarea.
+    <p>Passes if doesn't crash.
+    <div id="foo">
+        <textarea> </textarea>
+        <ul><li><li></ul>
+        <iframe></iframe>
+    </div>
+    <div id="bar"></div>
+</body>
+</html>

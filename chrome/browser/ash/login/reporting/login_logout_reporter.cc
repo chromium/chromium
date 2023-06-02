@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -120,12 +119,10 @@ void LoginLogoutReporter::RegisterPrefs(PrefRegistrySimple* registry) {
 LoginLogoutReporter::LoginLogoutReporter(
     std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
     std::unique_ptr<Delegate> delegate,
-    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service,
     base::Clock* clock)
     : reporter_helper_(std::move(reporter_helper)),
       delegate_(std::move(delegate)),
-      reporting_user_tracker_(reporting_user_tracker),
       clock_(clock) {
   if (managed_session_service) {
     managed_session_observation_.Observe(managed_session_service);
@@ -137,26 +134,24 @@ LoginLogoutReporter::~LoginLogoutReporter() = default;
 
 // static
 std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::Create(
-    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service) {
   auto reporter_helper = std::make_unique<::reporting::UserEventReporterHelper>(
       ::reporting::Destination::LOGIN_LOGOUT_EVENTS);
   auto delegate = std::make_unique<LoginLogoutReporter::Delegate>();
-  return base::WrapUnique(
-      new LoginLogoutReporter(std::move(reporter_helper), std::move(delegate),
-                              reporting_user_tracker, managed_session_service));
+  return base::WrapUnique(new LoginLogoutReporter(std::move(reporter_helper),
+                                                  std::move(delegate),
+                                                  managed_session_service));
 }
 
 // static
 std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::CreateForTest(
     std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
     std::unique_ptr<LoginLogoutReporter::Delegate> delegate,
-    policy::ReportingUserTracker* reporting_user_tracker,
     policy::ManagedSessionService* managed_session_service,
     base::Clock* clock) {
-  return base::WrapUnique(new LoginLogoutReporter(
-      std::move(reporter_helper), std::move(delegate), reporting_user_tracker,
-      managed_session_service, clock));
+  return base::WrapUnique(
+      new LoginLogoutReporter(std::move(reporter_helper), std::move(delegate),
+                              managed_session_service, clock));
 }
 
 void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
@@ -173,7 +168,7 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
       session_type == LoginLogoutSessionType::GUEST_SESSION) {
     record.set_is_guest_session(true);
   } else if (session_type == LoginLogoutSessionType::REGULAR_USER_SESSION &&
-             reporting_user_tracker_->ShouldReportUser(user_email)) {
+             reporter_helper_->ShouldReportUser(user_email)) {
     record.mutable_affiliated_user()->set_user_email(user_email);
   }
   reporter_helper_->ReportEvent(

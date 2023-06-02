@@ -30,6 +30,8 @@ struct PromiseApp {
   explicit PromiseApp(const apps::PackageId& package_id);
   ~PromiseApp();
 
+  bool operator==(const PromiseApp&) const;
+
   PackageId package_id;
 
   absl::optional<std::string> name;
@@ -47,6 +49,20 @@ struct PromiseApp {
 std::ostream& operator<<(std::ostream& out, const PromiseApp& promise_app);
 
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
+
+class PromiseAppIcon {
+ public:
+  PromiseAppIcon();
+  ~PromiseAppIcon();
+  PromiseAppIcon(const PromiseAppIcon&) = delete;
+  PromiseAppIcon& operator=(const PromiseAppIcon&) = delete;
+
+  gfx::ImageSkia icon;
+  absl::optional<int> width_in_pixels;
+  bool is_masking_allowed;
+};
+
+using PromiseAppIconPtr = std::unique_ptr<PromiseAppIcon>;
 
 }  // namespace apps
 

@@ -40,8 +40,6 @@ class WebauthnDialogModel : public AuthenticatorRequestSheetModel {
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   // Event handling is handed over to the controller.
@@ -50,6 +48,8 @@ class WebauthnDialogModel : public AuthenticatorRequestSheetModel {
   void OnCancel() override {}
 
  private:
+  void SetIllustrationsFromState();
+
   WebauthnDialogState state_;
 
   base::ObserverList<WebauthnDialogModelObserver> observers_;

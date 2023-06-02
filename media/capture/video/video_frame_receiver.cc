@@ -8,6 +8,8 @@
 
 namespace media {
 
+ReadyFrameInBuffer::ReadyFrameInBuffer() = default;
+
 ReadyFrameInBuffer::ReadyFrameInBuffer(
     int buffer_id,
     int frame_feedback_id,

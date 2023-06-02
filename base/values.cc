@@ -909,6 +909,30 @@ Value::List::const_iterator Value::List::cend() const {
                         base::to_address(storage_.cend()));
 }
 
+// TODO(crbug.com/1446739): Implement reverse iterators in
+// CheckedContiguousIterator and use them here.
+std::vector<Value>::reverse_iterator Value::List::rend() {
+  return storage_.rend();
+}
+
+// TODO(crbug.com/1446739): Implement reverse iterators in
+// CheckedContiguousIterator and use them here.
+std::vector<Value>::const_reverse_iterator Value::List::rend() const {
+  return storage_.rend();
+}
+
+// TODO(crbug.com/1446739): Implement reverse iterators in
+// CheckedContiguousIterator and use them here.
+std::vector<Value>::reverse_iterator Value::List::rbegin() {
+  return storage_.rbegin();
+}
+
+// TODO(crbug.com/1446739): Implement reverse iterators in
+// CheckedContiguousIterator and use them here.
+std::vector<Value>::const_reverse_iterator Value::List::rbegin() const {
+  return storage_.rbegin();
+}
+
 const Value& Value::List::front() const {
   CHECK(!storage_.empty());
   return storage_.front();
@@ -931,6 +955,10 @@ Value& Value::List::back() {
 
 void Value::List::reserve(size_t capacity) {
   storage_.reserve(capacity);
+}
+
+void Value::List::resize(size_t new_size) {
+  storage_.resize(new_size);
 }
 
 const Value& Value::List::operator[](size_t index) const {

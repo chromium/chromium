@@ -734,8 +734,8 @@ class VisitedLinkRenderProcessHostFactory
   void DeleteRenderProcessHosts() { processes_.clear(); }
 
  private:
-  raw_ptr<content::RenderProcessHostCreationObserver> creation_observer_ =
-      nullptr;
+  raw_ptr<content::RenderProcessHostCreationObserver, DanglingUntriaged>
+      creation_observer_ = nullptr;
 
   std::list<std::unique_ptr<VisitRelayingRenderProcessHost>> processes_;
   std::unique_ptr<VisitCountingContext> context_;

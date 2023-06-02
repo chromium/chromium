@@ -25,6 +25,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
@@ -38,7 +39,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -467,9 +468,14 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(size_), color_type_,
                           kPremul_SkAlphaType, sk_color_space_);
+    // Surfaceless output devices allocate shared image behind the scenes. On
+    // the GPU thread this is treated same as regular IOSurfaces for the
+    // purpose of creating Graphite TextureInfo i.e. it will have CopySrc and
+    // CopyDst usage. So don't treat it like a root surface which generally
+    // won't have or support those usages.
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
         dependency_->gr_context_type(), format_, /*plane_index=*/0,
-        /*mipmapped=*/false, /*root_surface=*/true);
+        /*mipmapped=*/false);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {

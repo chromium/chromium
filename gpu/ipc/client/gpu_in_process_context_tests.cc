@@ -25,14 +25,6 @@ class ContextTestBase : public testing::Test {
  public:
   std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext() {
     gpu::ContextCreationAttribs attributes;
-    attributes.alpha_size = 8;
-    attributes.depth_size = 24;
-    attributes.red_size = 8;
-    attributes.green_size = 8;
-    attributes.blue_size = 8;
-    attributes.stencil_size = 8;
-    attributes.samples = 4;
-    attributes.sample_buffers = 1;
     attributes.bind_generates_resource = false;
 
     auto context = std::make_unique<gpu::GLInProcessContext>();
@@ -51,8 +43,8 @@ class ContextTestBase : public testing::Test {
   void TearDown() override { context_.reset(); }
 
  protected:
-  raw_ptr<gpu::gles2::GLES2Interface> gl_;
-  raw_ptr<gpu::ContextSupport> context_support_;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_;
+  raw_ptr<gpu::ContextSupport, DanglingUntriaged> context_support_;
 
  private:
   gpu::InProcessGpuThreadHolder gpu_thread_holder_;

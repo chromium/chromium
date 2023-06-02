@@ -930,8 +930,8 @@ TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {
   // Post the function call on a different thread to ensure that the
   // production DCHECK in GetOrCreateBucketSync passes.
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::WithBaseSyncPrimitives()},
-      base::BindLambdaForTesting([&]() {
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         BucketInitParams params(ToStorageKey("http://b.com"), "bucket_b");
         // Ensure that the synchronous function returns a bucket.
         auto bucket =

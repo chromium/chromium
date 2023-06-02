@@ -40,13 +40,8 @@ constexpr char kRp2[] = "two.com";
 const std::vector<uint8_t> kUserId1{1, 2, 3, 4};
 const std::vector<uint8_t> kUserId2{5, 6, 7, 8};
 
-class TouchIdAuthenticatorTest : public testing::Test,
-                                 public base::test::WithFeatureOverride {
+class TouchIdAuthenticatorTest : public testing::Test {
  protected:
-  TouchIdAuthenticatorTest()
-      : base::test::WithFeatureOverride(
-            kWebAuthnMacPlatformAuthenticatorOptionalUv) {}
-
   base::test::SingleThreadTaskEnvironment task_environment_;
   fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
@@ -58,7 +53,7 @@ class TouchIdAuthenticatorTest : public testing::Test,
       fido::mac::TouchIdAuthenticator::Create(config_);
 };
 
-TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
+TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
   // Inject a resident credential for RP 1.
   PublicKeyCredentialUserEntity user(kUserId1);
   fido::mac::Credential credential =
@@ -103,7 +98,7 @@ TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
   }
 }
 
-TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
+TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
   // Inject a non resident credential for RP 1.
   PublicKeyCredentialUserEntity user(kUserId1);
   fido::mac::Credential credential =
@@ -125,12 +120,8 @@ TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
     authenticator_->GetPlatformCredentialInfoForRequest(
         std::move(request), CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
-    if (IsParamFeatureEnabled()) {
-      EXPECT_THAT(std::get<0>(*callback.result()),
-                  testing::ElementsAre(credential_metadata));
-    } else {
-      EXPECT_TRUE(std::get<0>(*callback.result()).empty());
-    }
+    EXPECT_THAT(std::get<0>(*callback.result()),
+                testing::ElementsAre(credential_metadata));
     EXPECT_EQ(
         std::get<1>(*callback.result()),
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
@@ -165,7 +156,7 @@ TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
   }
 }
 
-TEST_P(TouchIdAuthenticatorTest, GetAssertionEmpty) {
+TEST_F(TouchIdAuthenticatorTest, GetAssertionEmpty) {
   GetAssertionCallback callback;
   CtapGetAssertionRequest request(kRp1, "{json: true}");
   authenticator_->GetAssertion(std::move(request), CtapGetAssertionOptions(),
@@ -173,8 +164,6 @@ TEST_P(TouchIdAuthenticatorTest, GetAssertionEmpty) {
   callback.WaitForCallback();
   EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kCtap2ErrNoCredentials);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TouchIdAuthenticatorTest);
 
 }  // namespace
 

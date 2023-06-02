@@ -58,6 +58,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -184,9 +185,9 @@ bool IsStorageKeySessionOnly(
 
 void RecordStoreSourceStatus(StoreSourceResult result) {
   static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kSuccessNoised,
-                "Bump version of Conversions.SourceStoredStatus2 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus2",
+                    StorableSource::Result::kDestinationBothLimitsReached,
+                "Bump version of Conversions.SourceStoredStatus3 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus3",
                                 result.status);
 }
 
@@ -216,7 +217,8 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
       return ConversionReportSendOutcome::kFailed;
     case SendResult::Status::kDropped:
       return ConversionReportSendOutcome::kDropped;
-    case SendResult::Status::kFailedToAssemble:
+    case SendResult::Status::kAssemblyFailure:
+    case SendResult::Status::kTransientAssemblyFailure:
       return ConversionReportSendOutcome::kFailedToAssemble;
   }
 }
@@ -360,6 +362,20 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
 
   return std::make_unique<AttributionStorageDelegateImpl>(
       AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault);
+}
+
+StorableSource::Result ThrottleResultToStorableSourceResult(
+    DestinationThrottler::Result r) {
+  switch (r) {
+    case DestinationThrottler::Result::kAllowed:
+      return StorableSource::Result::kSuccess;
+    case DestinationThrottler::Result::kHitGlobalLimit:
+      return StorableSource::Result::kDestinationGlobalLimitReached;
+    case DestinationThrottler::Result::kHitReportingLimit:
+      return StorableSource::Result::kDestinationReportingLimitReached;
+    case DestinationThrottler::Result::kHitBothLimits:
+      return StorableSource::Result::kDestinationBothLimitsReached;
+  }
 }
 
 bool IsOperationAllowed(
@@ -576,30 +592,7 @@ void AttributionManagerImpl::HandleSource(
     return;
   }
 
-  // TODO(csharrison): Consider enforcing this limit after checking metrics.
-  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
-      source.registration().destination_set,
-      net::SchemefulSite(source.common_info().source_origin()),
-      net::SchemefulSite(source.common_info().reporting_origin()));
-  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
-                                throttle_result);
-
   MaybeEnqueueEvent(std::move(source));
-}
-
-void AttributionManagerImpl::StoreSource(StorableSource source,
-                                         bool is_debug_cookie_set) {
-  absl::optional<uint64_t> cleared_debug_key;
-  if (!is_debug_cookie_set) {
-    cleared_debug_key =
-        std::exchange(source.registration().debug_key, absl::nullopt);
-  }
-
-  attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-      .WithArgs(source)
-      .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
-                           weak_factory_.GetWeakPtr(), std::move(source),
-                           cleared_debug_key, is_debug_cookie_set));
 }
 
 void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
@@ -742,7 +735,8 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 
   absl::visit(base::Overloaded{
                   [&](StorableSource& source) {
-                    StoreSource(std::move(source), is_debug_cookie_set);
+                    CheckDestinationThrottlerAndStoreSource(
+                        std::move(source), is_debug_cookie_set);
                   },
                   [&](AttributionTrigger& trigger) {
                     StoreTrigger(std::move(trigger), is_debug_cookie_set);
@@ -751,6 +745,39 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
               pending_events_.front());
 
   pending_events_.pop_front();
+}
+
+void AttributionManagerImpl::CheckDestinationThrottlerAndStoreSource(
+    StorableSource source,
+    bool is_debug_cookie_set) {
+  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
+      source.registration().destination_set,
+      net::SchemefulSite(source.common_info().source_origin()),
+      net::SchemefulSite(source.common_info().reporting_origin()));
+  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
+                                throttle_result);
+
+  absl::optional<uint64_t> cleared_debug_key;
+  if (!is_debug_cookie_set) {
+    cleared_debug_key =
+        std::exchange(source.registration().debug_key, absl::nullopt);
+  }
+
+  if (StorableSource::Result result =
+          ThrottleResultToStorableSourceResult(throttle_result);
+      result == StorableSource::Result::kSuccess) {
+    attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
+        .WithArgs(source)
+        .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
+                             weak_factory_.GetWeakPtr(), std::move(source),
+                             cleared_debug_key, is_debug_cookie_set));
+  } else {
+    StoreSourceResult store_result(result);
+    store_result.max_destinations_per_rate_limit_window_reporting_origin =
+        throttler_.GetMaxPerReportingSite();
+    OnSourceStored(source, cleared_debug_key, is_debug_cookie_set,
+                   StoreSourceResult(result));
+  }
 }
 
 void AttributionManagerImpl::AddPendingAggregatableReportTiming(
@@ -843,6 +870,8 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
                                      /*is_debug_report=*/true));
 }
 
+// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
+// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
     base::OnceCallback<void(std::vector<StoredSource>)> callback) {
   const int kMaxSources = 1000;
@@ -851,6 +880,8 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
       .Then(std::move(callback));
 }
 
+// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
+// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
     int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
@@ -859,6 +890,8 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
       .Then(std::move(callback));
 }
 
+// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
+// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::SendReportsForWebUI(
     const std::vector<AttributionReport::Id>& ids,
     base::OnceClosure done) {
@@ -896,9 +929,11 @@ void AttributionManagerImpl::ClearData(
                                  delete_rate_limit_data, std::move(barrier));
   }
 
-  // When a clear data task is queued or running, we use a higher priority.
-  ++num_pending_clear_data_tasks_;
-  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+  // TODO(apaseltiner): It's not necessarily true that this deletion is user
+  // visible, as a site can initiate deletion via the Clear-Site-Data header. We
+  // could inspect `delete_rate_limit_data` to determine this, as its value is
+  // true only for user-initiated deletions, not site-initiated ones.
+  OnUserVisibleTaskStarted();
 
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter),
@@ -908,31 +943,56 @@ void AttributionManagerImpl::ClearData(
                          weak_factory_.GetWeakPtr())));
 }
 
-void AttributionManagerImpl::OnClearDataComplete() {
-  DCHECK_GT(num_pending_clear_data_tasks_, 0);
-  --num_pending_clear_data_tasks_;
+void AttributionManagerImpl::OnUserVisibleTaskStarted() {
+  // When a user-visible task is queued or running, we use a higher priority.
+  ++num_pending_user_visible_tasks_;
+  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+}
 
-  // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0) {
+void AttributionManagerImpl::OnUserVisibleTaskComplete() {
+  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  --num_pending_user_visible_tasks_;
+
+  // No more user-visible tasks, so we can reset the priority.
+  if (num_pending_user_visible_tasks_ == 0) {
     storage_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
   }
+}
 
+void AttributionManagerImpl::OnClearDataComplete() {
+  OnUserVisibleTaskComplete();
   NotifySourcesChanged();
   NotifyReportsChanged();
 }
 
 void AttributionManagerImpl::GetAllDataKeys(
     base::OnceCallback<void(std::set<DataKey>)> callback) {
+  OnUserVisibleTaskStarted();
   attribution_storage_.AsyncCall(&AttributionStorage::GetAllDataKeys)
-      .Then(std::move(callback));
+      .Then(std::move(callback).Then(
+          base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void AttributionManagerImpl::RemoveAttributionDataByDataKey(
     const DataKey& data_key,
     base::OnceClosure callback) {
+  auto barrier = base::BarrierClosure(2, std::move(callback));
+  callback = barrier;
+
+  os_level_manager_->ClearData(
+      /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+      /*origins=*/{data_key.reporting_origin()},
+      /*domains=*/{}, BrowsingDataFilterBuilder::Mode::kDelete,
+      /*delete_rate_limit_data=*/true, std::move(barrier));
+
+  OnUserVisibleTaskStarted();
+
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
       .WithArgs(data_key)
-      .Then(std::move(callback));
+      .Then(std::move(callback).Then(
+          base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void AttributionManagerImpl::GetReportsToSend() {
@@ -1045,7 +1105,10 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // from storage.
 
   absl::optional<base::Time> new_report_time;
-  if (info.status == SendResult::Status::kTransientFailure) {
+  // TODO(linnan): Retry on transient assembly failure isn't privacy sensitive,
+  // therefore we could consider subjecting these failures to a different limit.
+  if (info.status == SendResult::Status::kTransientFailure ||
+      info.status == SendResult::Status::kTransientAssemblyFailure) {
     if (absl::optional<base::TimeDelta> delay =
             GetFailedReportDelay(report.failed_send_attempts() + 1)) {
       new_report_time = base::Time::Now() + *delay;
@@ -1127,7 +1190,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAggregationServiceUnavailable);
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
+                            SendResult(SendResult::Status::kAssemblyFailure));
     return;
   }
 
@@ -1137,7 +1200,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kCreateRequestFailed);
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
+                            SendResult(SendResult::Status::kAssemblyFailure));
     return;
   }
 
@@ -1158,8 +1221,9 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
   if (!assembled_report.has_value()) {
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAssembleReportFailed);
-    std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
+    std::move(callback).Run(
+        std::move(report),
+        SendResult(SendResult::Status::kTransientAssemblyFailure));
     return;
   }
 
@@ -1346,11 +1410,11 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
             DCHECK(!manager->pending_os_events_.empty());
 
             {
-              const auto& event = manager->pending_os_events_.front();
+              auto& event = manager->pending_os_events_.front();
               manager->os_level_manager_->Register(
-                  event, is_debug_key_allowed,
+                  std::move(event), is_debug_key_allowed,
                   base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
-                                 manager, event, is_debug_key_allowed));
+                                 manager, is_debug_key_allowed));
             }
 
             manager->pending_os_events_.pop_front();
@@ -1372,8 +1436,8 @@ void AttributionManagerImpl::NotifyOsRegistration(
 }
 
 void AttributionManagerImpl::OnOsRegistration(
-    const OsRegistration& registration,
     bool is_debug_key_allowed,
+    const OsRegistration& registration,
     bool success) {
   base::UmaHistogramBoolean("Conversions.AttributionOsRegistrationResult",
                             success);

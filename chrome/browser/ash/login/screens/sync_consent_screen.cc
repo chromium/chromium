@@ -266,25 +266,6 @@ void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
   UpdateScreen(*context());
 }
 
-void SyncConsentScreen::OnContinue(const bool opted_in,
-                                   const bool review_sync,
-                                   const std::vector<int>& consent_description,
-                                   const int consent_confirmation) {
-  if (is_hidden())
-    return;
-  RecordUmaReviewFollowingSetup(review_sync);
-  RecordConsent(opted_in ? CONSENT_GIVEN : CONSENT_NOT_GIVEN,
-                consent_description, consent_confirmation);
-  base::UmaHistogramEnumeration(
-      "OOBE.SyncConsentScreen.UserChoice",
-      opted_in ? SyncConsentScreenHandler::UserChoice::kAccepted
-               : SyncConsentScreenHandler::UserChoice::kDeclined);
-  profile_->GetPrefs()->SetBoolean(::prefs::kShowSyncSettingsOnSessionStart,
-                                   review_sync);
-  SetSyncEverythingEnabled(opted_in);
-  Finish(Result::NEXT);
-}
-
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
   // "sync everything" toggle is disabled during SyncService creation. We need
   // to turn it on if sync service needs to be enabled.
@@ -489,9 +470,30 @@ void SyncConsentScreen::SetProfileSyncEngineInitializedForTesting(bool value) {
   sync_engine_initialized_for_test = value;
 }
 
-void SyncConsentScreen::HandleContinue(
+// todo(b/283119955) align with browser record sync
+void SyncConsentScreen::OnAshContinue(
     const bool opted_in,
     const bool review_sync,
+    const base::Value::List& consent_description_list,
+    const std::string& consent_confirmation) {
+  if (!view_ || is_hidden()) {
+    return;
+  }
+
+  RecordUmaReviewFollowingSetup(review_sync);
+  base::UmaHistogramEnumeration(
+      "OOBE.SyncConsentScreen.UserChoice",
+      opted_in ? SyncConsentScreenHandler::UserChoice::kAccepted
+               : SyncConsentScreenHandler::UserChoice::kDeclined);
+  profile_->GetPrefs()->SetBoolean(::prefs::kShowSyncSettingsOnSessionStart,
+                                   review_sync);
+  SetSyncEverythingEnabled(opted_in);
+  RecordAllConsents(opted_in, consent_description_list, consent_confirmation);
+  Finish(Result::NEXT);
+}
+
+void SyncConsentScreen::RecordAllConsents(
+    const bool opted_in,
     const base::Value::List& consent_description_list,
     const std::string& consent_confirmation) {
   auto consent_description =
@@ -501,8 +503,8 @@ void SyncConsentScreen::HandleContinue(
   if (view_) {
     view_->RetrieveConsentIDs(consent_description, consent_confirmation,
                               consent_description_ids, consent_confirmation_id);
-    OnContinue(opted_in, review_sync, consent_description_ids,
-               consent_confirmation_id);
+    RecordConsent(opted_in ? CONSENT_GIVEN : CONSENT_NOT_GIVEN,
+                  consent_description_ids, consent_confirmation_id);
   }
   // IN-TEST
   SyncConsentScreen::SyncConsentScreenTestDelegate* test_delegate =
@@ -514,6 +516,13 @@ void SyncConsentScreen::HandleContinue(
   }
 }
 
+void SyncConsentScreen::OnLacrosContinue(
+    const base::Value::List& consent_description_list,
+    const std::string& consent_confirmation) {
+  RecordAllConsents(/*opted_in=*/true, consent_description_list,
+                    consent_confirmation);
+}
+
 void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
@@ -522,16 +531,23 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     const bool review_sync = args[2].GetBool();
     const base::Value::List& consent_description_list = args[3].GetList();
     const std::string& consent_confirmation = args[4].GetString();
-    HandleContinue(opted_in, review_sync, consent_description_list,
-                   consent_confirmation);
+    OnAshContinue(opted_in, review_sync, consent_description_list,
+                  consent_confirmation);
     return;
   }
   if (action_id == kUserActionLacrosSync) {
-    // will be updated to recordConsent TODO(b/274093410).
-    CHECK_EQ(args.size(), 1u);
+    CHECK_EQ(args.size(), 3u);
+
+    const base::Value::List& consent_description_list = args[1].GetList();
+    const std::string& consent_confirmation = args[2].GetString();
+
+    OnLacrosContinue(consent_description_list, consent_confirmation);
 
     syncer::SyncService* sync_service = GetSyncService(profile_);
     syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", true);
 
     syncer::UserSelectableOsTypeSet os_empty_set;
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
@@ -546,15 +562,22 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   if (action_id == kUserActionLacrosCustom) {
-    // will be updated to recordConsent TODO(b/274093410).
-    CHECK_EQ(args.size(), 2u);
+    CHECK_EQ(args.size(), 4u);
     const base::Value::Dict& osSyncItemsStatus = args[1].GetDict();
     syncer::UserSelectableOsTypeSet os_sync_set;
+
+    const base::Value::List& consent_description_list = args[2].GetList();
+    const std::string& consent_confirmation = args[3].GetString();
+
+    OnLacrosContinue(consent_description_list, consent_confirmation);
 
     GetUserSelectedSyncOsType(osSyncItemsStatus, os_sync_set);
 
     syncer::SyncService* sync_service = GetSyncService(profile_);
     syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false);
 
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, os_sync_set);
 
@@ -563,6 +586,19 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     if (wallpaper_synced) {
       DCHECK(osSyncItemsStatus.FindBool(kOsPreferences).value());
     }
+
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWallpaper",
+        wallpaper_synced);
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncApps",
+        osSyncItemsStatus.FindBool(kOsApps).value());
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncSettings",
+        osSyncItemsStatus.FindBool(kOsPreferences).value());
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWifi",
+        osSyncItemsStatus.FindBool(kOsWifiConfigurations).value());
     profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                      wallpaper_synced);
 

@@ -234,9 +234,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser promotion modal. [iOS only]">
         To make Chromium your default browser, open Settings. Tap Default Browser App, and then select Chromium.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE" desc="Message when the user taps the addition information button in the default browser promotion modal. [iOS only]">
-          You can now use Chromium any time you tap links in messages, documents, and other apps.
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         To make Chromium your default:
 1. Open Settings
@@ -491,11 +488,11 @@ Things to consider:
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chromium Everywhere
       </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
+        You're getting standard security protection on this device
+      </message>
       <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
         You have Chromium's strongest security against harmful websites
-      </message>
-      <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
-        You're getting standard security protection for this Chromium profile
       </message>
       <message name="IDS_IOS_TAILORED_SECURITY_UNCONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
         Get Enhanced Safe Browsing for this Chromium profile, too

@@ -32,6 +32,9 @@ class ReadAnythingAppModel {
   bool requires_post_process_selection() {
     return requires_post_process_selection_;
   }
+  void set_requires_post_process_selection(bool value) {
+    requires_post_process_selection_ = value;
+  }
 
   // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
@@ -83,6 +86,7 @@ class ReadAnythingAppModel {
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
+  void OnScroll(bool on_selection, bool from_reading_mode) const;
 
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
   bool PostProcessSelection();

@@ -516,32 +516,35 @@ class ClientManager {
     }
 
     /**
-     * See {@link PostMessageHandler#initializeWithPostMessageUri(Uri)}.
+     * See {@link PostMessageHandler#initializeWithPostMessageUri(Uri, Uri)}.
      */
     public void initializeWithPostMessageOriginForSession(
-            CustomTabsSessionToken session, Uri origin) {
-        callOnSession(
-                session, params -> params.postMessageHandler.initializeWithPostMessageUri(origin));
+            CustomTabsSessionToken session, Uri origin, Uri targetOrigin) {
+        callOnSession(session,
+                params
+                -> params.postMessageHandler.initializeWithPostMessageUri(origin, targetOrigin));
     }
 
     public synchronized boolean validateRelationship(
             CustomTabsSessionToken session, int relation, Origin origin, Bundle extras) {
-        return validateRelationshipInternal(session, relation, origin, false);
+        return validateRelationshipInternal(session, relation, origin, null, false);
     }
 
     /**
      * Validates the link between the client and the origin.
      */
     public synchronized void verifyAndInitializeWithPostMessageOriginForSession(
-            CustomTabsSessionToken session, Origin origin, @Relation int relation) {
-        validateRelationshipInternal(session, relation, origin, true);
+            CustomTabsSessionToken session, Origin origin, Origin targetOrigin,
+            @Relation int relation) {
+        validateRelationshipInternal(session, relation, origin, targetOrigin, true);
     }
 
     /**
      * Can't be called on UI Thread.
      */
     private synchronized boolean validateRelationshipInternal(CustomTabsSessionToken session,
-            int relation, Origin origin, boolean initializePostMessageChannel) {
+            int relation, Origin origin, @Nullable Origin targetOrigin,
+            boolean initializePostMessageChannel) {
         SessionParams params = mSessionParams.get(session);
         if (params == null || TextUtils.isEmpty(params.getPackageName())) return false;
 
@@ -558,8 +561,11 @@ class ClientManager {
                 callback.onRelationshipValidationResult(relation, origin.uri(), verified, extras);
             }
             if (initializePostMessageChannel) {
-                params.postMessageHandler
-                        .onOriginVerified(packageName, verifiedOrigin, verified, online);
+                if (targetOrigin != null) {
+                    params.postMessageHandler.setPostMessageTargetUri(targetOrigin.uri());
+                }
+                params.postMessageHandler.onOriginVerified(
+                        packageName, verifiedOrigin, verified, online);
             }
         };
 
@@ -583,6 +589,16 @@ class ClientManager {
     Uri getPostMessageOriginForSessionForTesting(CustomTabsSessionToken session) {
         return callOnSession(session, null,
                 params -> params.postMessageHandler.getPostMessageUriForTesting() // IN-TEST
+        );
+    }
+
+    /**
+     * @return The postMessage target origin for the given session.
+     */
+    @VisibleForTesting
+    Uri getPostMessageTargetOriginForSessionForTesting(CustomTabsSessionToken session) {
+        return callOnSession(session, null,
+                params -> params.postMessageHandler.getPostMessageTargetUriForTesting() // IN-TEST
         );
     }
 

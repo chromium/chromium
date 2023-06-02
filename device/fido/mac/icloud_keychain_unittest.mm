@@ -4,6 +4,7 @@
 
 #include "device/fido/mac/icloud_keychain.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -172,7 +173,7 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
   API_AVAILABLE(macos(13.3))
   scoped_refptr<FakeSystemInterface> fake_;
   std::unique_ptr<FidoDiscoveryBase> discovery_;
-  FidoAuthenticator* authenticator_ = nullptr;
+  raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

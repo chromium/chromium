@@ -17,6 +17,7 @@
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/fake_touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -171,8 +172,7 @@ class PasswordGenerationControllerTest
         std::make_unique<NiceMock<MockPasswordGenerationDialogView>>();
 
     ON_CALL(create_ttf_generation_controller_, Run).WillByDefault([this]() {
-      return std::make_unique<TouchToFillPasswordGenerationController>(
-          active_driver(), web_contents(),
+      return controller()->CreateTouchToFillGenerationControllerForTesting(
           std::make_unique<MockTouchToFillPasswordGenerationBridge>());
     });
 
@@ -490,8 +490,7 @@ TEST_F(PasswordGenerationControllerTest,
       ttf_password_generation_bridge.get();
   EXPECT_CALL(create_ttf_generation_controller_, Run)
       .WillOnce(Return(
-          ByMove(std::make_unique<TouchToFillPasswordGenerationController>(
-              active_driver(), web_contents(),
+          ByMove(controller()->CreateTouchToFillGenerationControllerForTesting(
               std::move(ttf_password_generation_bridge)))));
 
   // Keyboard accessory shouldn't show up.
@@ -542,8 +541,7 @@ TEST_F(PasswordGenerationControllerTest,
   EXPECT_CALL(*ttf_password_generation_bridge, Show).WillOnce(Return(false));
   EXPECT_CALL(create_ttf_generation_controller_, Run)
       .WillOnce(Return(
-          ByMove(std::make_unique<TouchToFillPasswordGenerationController>(
-              active_driver(), web_contents(),
+          ByMove(controller()->CreateTouchToFillGenerationControllerForTesting(
               std::move(ttf_password_generation_bridge)))));
 
   // Keyboard accessory should show up.
@@ -553,4 +551,40 @@ TEST_F(PasswordGenerationControllerTest,
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+}
+
+TEST_F(PasswordGenerationControllerTest,
+       CallsKeyboardAccessoryAfterBottomSheetDismissed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordGenerationBottomSheet);
+  auto ttf_password_generation_bridge =
+      std::make_unique<FakeTouchToFillPasswordGenerationBridge>();
+  FakeTouchToFillPasswordGenerationBridge* ttf_password_generation_bridge_ptr =
+      ttf_password_generation_bridge.get();
+  EXPECT_CALL(create_ttf_generation_controller_, Run)
+      .WillOnce(Return(
+          ByMove(controller()->CreateTouchToFillGenerationControllerForTesting(
+              std::move(ttf_password_generation_bridge)))));
+
+  // Keyboard accessory shouldn't be called.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  _, autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
+      .Times(0);
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+
+  ttf_password_generation_bridge_ptr->OnDismissed(nullptr);
+
+  // Keyboard accessory should be displayed.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  _, autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+  // Removes the keyboard suppression callback from the render widget host. It
+  // needs to be done before the `PasswordGenerationController` destructor is
+  // called.
+  controller()->HideBottomSheetIfNeeded();
 }

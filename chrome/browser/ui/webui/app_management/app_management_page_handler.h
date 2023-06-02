@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -62,6 +63,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   // app_management::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
   void GetApp(const std::string& app_id, GetAppCallback callback) override;
+  void GetSubAppToParentMap(GetSubAppToParentMapCallback callback) override;
   void GetExtensionAppPermissionMessages(
       const std::string& app_id,
       GetExtensionAppPermissionMessagesCallback callback) override;

@@ -25,12 +25,20 @@ BASE_DECLARE_FEATURE(kLauncherFuzzyMatchForOmnibox);
 // Enables image search in the launcher.
 BASE_DECLARE_FEATURE(kLauncherImageSearch);
 
+// Enable Image Content-based Annotation
+BASE_DECLARE_FEATURE(kLauncherImageSearchIca);
+
+// Enable Optical Character Recognition
+BASE_DECLARE_FEATURE(kLauncherImageSearchOcr);
+
 BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
 bool IsLauncherImageSearchEnabled();
+bool IsLauncherImageSearchIcaEnabled();
+bool IsLauncherImageSearchOcrEnabled();
 bool isLauncherFuzzyMatchForOmniboxEnabled();
 bool isLauncherSystemInfoAnswerCardsEnabled();
 

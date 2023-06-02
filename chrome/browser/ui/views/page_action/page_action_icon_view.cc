@@ -19,7 +19,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -81,51 +80,10 @@ PageActionIconView::PageActionIconView(
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
-    // you do not need to hardcode color values.
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
-    views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-        [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
-          const auto* color_provider = host->GetColorProvider();
-          const SkColor pressed_color =
-              color_provider
-                  ? color_provider->GetColor(kColorPageActionIconPressed)
-                  : gfx::kPlaceholderColor;
-          const float pressed_alpha = SkColorGetA(pressed_color);
-          return std::make_unique<views::FloodFillInkDropRipple>(
-              views::InkDrop::Get(host), host->size(),
-              host->GetLocalBounds().CenterPoint(),
-              SkColorSetA(pressed_color, SK_AlphaOPAQUE),
-              pressed_alpha / SK_AlphaOPAQUE);
-        },
-        this));
-
-    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-        [](views::View* host) {
-          const auto* color_provider = host->GetColorProvider();
-          const SkColor hover_color =
-              color_provider
-                  ? color_provider->GetColor(kColorPageActionIconHover)
-                  : gfx::kPlaceholderColor;
-          const float hover_alpha = SkColorGetA(hover_color);
-          auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
-              host->size(), host->height() / 2,
-              gfx::PointF(host->GetLocalBounds().CenterPoint()),
-              SkColorSetA(hover_color, SK_AlphaOPAQUE));
-          ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
-          return ink_drop_highlight;
-        },
-        this));
-    if (auto* focus_ring = views::FocusRing::Get(this); focus_ring) {
-      focus_ring->SetOutsetFocusRingDisabled(true);
-    }
-  }
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
-  UpdatePageActionIconBorder();
+  UpdateBorder();
 }
 
 PageActionIconView::~PageActionIconView() = default;
@@ -179,7 +137,7 @@ void PageActionIconView::ViewHierarchyChanged(
   View::ViewHierarchyChanged(details);
   if (details.is_add && details.child == this) {
     UpdateIconImage();
-    UpdatePageActionIconBorder();
+    UpdateBorder();
   }
 }
 
@@ -289,6 +247,7 @@ void PageActionIconView::Update() {
   } else {
     UpdateImpl();
   }
+  UpdateBorder();
 }
 
 void PageActionIconView::UpdateIconImage() {
@@ -327,8 +286,14 @@ content::WebContents* PageActionIconView::GetWebContents() const {
   return delegate_->GetWebContentsForPageActionIconView();
 }
 
-void PageActionIconView::UpdatePageActionIconBorder() {
-  const gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
+void PageActionIconView::UpdateBorder() {
+  gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
+  if (ShouldShowLabel() && OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    // TODO(crbug.com/1447066): Figure out what these values should be. For
+    // bonus point also try to move parts of this into the parent class. This is
+    // too bespoke.
+    new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
+  }
   if (new_insets != GetInsets())
     SetBorder(views::CreateEmptyBorder(new_insets));
 }

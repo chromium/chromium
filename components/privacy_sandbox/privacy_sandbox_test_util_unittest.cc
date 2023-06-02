@@ -82,7 +82,8 @@ class PrivacySandboxTestUtilTest : public testing::Test {
     privacy_sandbox_test_util::ApplyTestState(
         key, value, task_environment(), prefs(), host_content_settings_map(),
         mock_delegate(), mock_privacy_sandbox_service(),
-        mock_browsing_topics_service(), user_provider_, managed_provider_);
+        mock_browsing_topics_service(), mock_privacy_sandbox_settings(),
+        user_provider_, managed_provider_);
   }
 
   void ProvideInput(InputKey key, TestCaseItemValue value) {

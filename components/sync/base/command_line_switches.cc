@@ -10,26 +10,8 @@
 
 namespace syncer {
 
-namespace {
-
-constexpr char kDefaultTrustedVaultServiceURL[] =
-    "https://securitydomain-pa.googleapis.com/v1/";
-
-}  // namespace
-
 bool IsSyncAllowedByFlag() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSync);
-}
-
-GURL ExtractTrustedVaultServiceURLFromCommandLine() {
-  std::string string_url =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          syncer::kTrustedVaultServiceURL);
-  if (string_url.empty()) {
-    // Command line switch is not specified or is not a valid ASCII string.
-    return GURL(kDefaultTrustedVaultServiceURL);
-  }
-  return GURL(string_url);
 }
 
 }  // namespace syncer

@@ -227,7 +227,8 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
 
   void GetPlatformCredentialStatus(
       FidoAuthenticator* platform_authenticator) override {
-    OnHavePlatformCredentialStatus(/*user_entities=*/{},
+    OnHavePlatformCredentialStatus(AuthenticatorType::kOther,
+                                   /*user_entities=*/{},
                                    has_platform_credential_);
   }
 
@@ -314,7 +315,7 @@ class FidoRequestHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::FakeFidoDiscoveryFactory fake_discovery_factory_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
-  raw_ptr<test::FakeFidoDiscovery> discovery_;
+  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> discovery_;
   FakeHandlerCallbackReceiver cb_;
 };
 
@@ -661,8 +662,6 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
               test_case.api_available);
     EXPECT_EQ(transport_availability_info.has_win_native_api_authenticator,
               test_case.api_available);
-    EXPECT_EQ(transport_availability_info.win_native_api_authenticator_id,
-              test_case.api_available ? "WinWebAuthnApiAuthenticator" : "");
     EXPECT_EQ(transport_availability_info.win_is_uvpaa, test_case.is_uvpaa);
   }
 }

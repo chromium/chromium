@@ -21,7 +21,8 @@ SafeBrowsingMetricsCollectorFactory::GetForProfile(Profile* profile) {
 // static
 SafeBrowsingMetricsCollectorFactory*
 SafeBrowsingMetricsCollectorFactory::GetInstance() {
-  return base::Singleton<SafeBrowsingMetricsCollectorFactory>::get();
+  static base::NoDestructor<SafeBrowsingMetricsCollectorFactory> instance;
+  return instance.get();
 }
 
 SafeBrowsingMetricsCollectorFactory::SafeBrowsingMetricsCollectorFactory()

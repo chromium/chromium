@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
 <translation id="1722370509450468186">Parola va fi salvată în contul tău (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Datele Chromium au fost șterse</translation>
-<translation id="177102542580335555">Beneficiezi de protecție de securitate standard pentru acest profil Chromium</translation>
 <translation id="1838412507805038478">Chromium s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Pentru a profita din plin de Chromium, conectează-te la Chromium folosind Contul Google.</translation>
 <translation id="3639997914391704523">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> folosea Chromium și marcajele, parolele și alte setări ale sale au rămas pe acest dispozitiv.</translation>
+<translation id="3661862315467204831">Deschide setările Chromium în iOS, apoi atinge Aplicația browser prestabilită și selectează Chromium.</translation>
 <translation id="372658070733623520">Pentru a folosi și a salva datele Chromium în Contul Google, confirmă-ți identitatea.</translation>
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
+<translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="3955621079070267756">Deschide Chromium din orice aplicație</translation>
 <translation id="4043291146360695975">Parolele sunt salvate în Managerul de parole numai pe acest dispozitiv.</translation>
 <translation id="4099085513035183040">Nu se acceptă în Chromium Beta</translation>

@@ -75,7 +75,7 @@ class CC_EXPORT PictureLayer : public Layer {
     PictureLayerInputs();
     ~PictureLayerInputs();
 
-    raw_ptr<ContentLayerClient> client = nullptr;
+    raw_ptr<ContentLayerClient, DanglingUntriaged> client = nullptr;
     bool nearest_neighbor = false;
     bool is_backdrop_filter_mask = false;
     scoped_refptr<DisplayItemList> display_list;

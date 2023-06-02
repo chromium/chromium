@@ -7,17 +7,43 @@
 #include <memory>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
 
-class ShortcutRegistryCacheTest : public testing::Test {
+class ShortcutRegistryCacheTest : public testing::Test,
+                                  public ShortcutRegistryCache::Observer {
  public:
   ShortcutRegistryCache& cache() { return cache_; }
 
+ protected:
+  void ExpectShortcutUpdate(std::unique_ptr<ShortcutUpdate> update) {
+    expected_update_ = std::move(update);
+    if (!obs_.IsObserving()) {
+      obs_.Observe(&cache());
+    }
+    on_shortcut_updated_called_ = false;
+  }
+  bool OnShortcutUpdatedCalled() { return on_shortcut_updated_called_; }
+
  private:
+  void OnShortcutUpdated(const ShortcutUpdate& update) override {
+    on_shortcut_updated_called_ = true;
+    EXPECT_EQ(update, *expected_update_);
+  }
+
+  void OnShortcutRegistryCacheWillBeDestroyed(
+      ShortcutRegistryCache* cache) override {
+    obs_.Reset();
+  }
   ShortcutRegistryCache cache_;
+  std::unique_ptr<ShortcutUpdate> expected_update_;
+  bool on_shortcut_updated_called_ = false;
+  base::ScopedObservation<ShortcutRegistryCache,
+                          ShortcutRegistryCache::Observer>
+      obs_{this};
 };
 
 TEST_F(ShortcutRegistryCacheTest, AddShortcut) {
@@ -44,4 +70,65 @@ TEST_F(ShortcutRegistryCacheTest, AddShortcut) {
   EXPECT_EQ(cache().GetAllShortcuts().size(), 1u);
 }
 
+TEST_F(ShortcutRegistryCacheTest, UpdateShortcut) {
+  std::string host_app_id = "host_app_id";
+  std::string local_id = "local_id";
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "name";
+  shortcut->shortcut_source = ShortcutSource::kUser;
+
+  EXPECT_FALSE(cache().HasShortcut(shortcut_id));
+  cache().UpdateShortcut(std::move(shortcut));
+  ASSERT_TRUE(cache().HasShortcut(shortcut_id));
+
+  EXPECT_EQ(cache().GetAllShortcuts().size(), 1u);
+
+  auto shortcut_delta = std::make_unique<Shortcut>(host_app_id, local_id);
+  shortcut_delta->name = "new name";
+  shortcut_delta->shortcut_source = ShortcutSource::kDeveloper;
+
+  cache().UpdateShortcut(std::move(shortcut_delta));
+
+  EXPECT_EQ(cache().GetAllShortcuts().size(), 1u);
+
+  ShortcutView stored_shortcut = cache().GetShortcut(shortcut_id);
+
+  ASSERT_TRUE(stored_shortcut);
+  EXPECT_EQ(stored_shortcut->shortcut_id, shortcut_id);
+  EXPECT_EQ(stored_shortcut->name, "new name");
+  EXPECT_EQ(stored_shortcut->shortcut_source, ShortcutSource::kDeveloper);
+  EXPECT_EQ(stored_shortcut->host_app_id, host_app_id);
+  EXPECT_EQ(stored_shortcut->local_id, local_id);
+}
+
+TEST_F(ShortcutRegistryCacheTest, Observer) {
+  std::string host_app_id = "host_app_id";
+  std::string local_id = "local_id";
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "name";
+  shortcut->shortcut_source = ShortcutSource::kUser;
+  ExpectShortcutUpdate(
+      std::make_unique<ShortcutUpdate>(nullptr, shortcut.get()));
+  cache().UpdateShortcut(std::move(shortcut));
+  EXPECT_TRUE(OnShortcutUpdatedCalled());
+
+  auto shortcut_delta = std::make_unique<Shortcut>(host_app_id, local_id);
+  shortcut_delta->name = "new name";
+  shortcut_delta->shortcut_source = ShortcutSource::kDeveloper;
+  std::unique_ptr<Shortcut> current_state =
+      cache().GetShortcut(shortcut_id)->Clone();
+  ExpectShortcutUpdate(std::make_unique<ShortcutUpdate>(current_state.get(),
+                                                        shortcut_delta.get()));
+  cache().UpdateShortcut(std::move(shortcut_delta));
+  EXPECT_TRUE(OnShortcutUpdatedCalled());
+
+  auto shortcut_nochange = std::make_unique<Shortcut>(host_app_id, local_id);
+  current_state = cache().GetShortcut(shortcut_id)->Clone();
+  ExpectShortcutUpdate(std::make_unique<ShortcutUpdate>(
+      current_state.get(), shortcut_nochange.get()));
+  cache().UpdateShortcut(std::move(shortcut_nochange));
+  EXPECT_TRUE(OnShortcutUpdatedCalled());
+}
 }  // namespace apps

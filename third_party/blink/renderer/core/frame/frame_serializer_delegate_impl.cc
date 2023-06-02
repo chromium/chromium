@@ -295,12 +295,11 @@ std::pair<Node*, Element*> FrameSerializerDelegateImpl::GetAuxiliaryDOMTree(
   auto* template_element = MakeGarbageCollected<Element>(
       html_names::kTemplateTag, &(element.GetDocument()));
   template_element->setAttribute(
-      QualifiedName(g_null_atom, kShadowModeAttributeName, g_null_atom),
+      QualifiedName(AtomicString(kShadowModeAttributeName)),
       AtomicString(shadow_mode));
   if (shadow_root->delegatesFocus()) {
     template_element->setAttribute(
-        QualifiedName(g_null_atom, kShadowDelegatesFocusAttributeName,
-                      g_null_atom),
+        QualifiedName(AtomicString(kShadowDelegatesFocusAttributeName)),
         g_empty_atom);
   }
   shadow_template_elements_.insert(template_element);

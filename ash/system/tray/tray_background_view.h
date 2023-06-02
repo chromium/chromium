@@ -70,8 +70,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   TrayBackgroundView& operator=(const TrayBackgroundView&) = delete;
   ~TrayBackgroundView() override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddTrayBackgroundViewObserver(Observer* observer);
+  void RemoveTrayBackgroundViewObserver(Observer* observer);
 
   // Overrides default button press handling in `PerformAction()`.
   void SetPressedCallback(
@@ -213,7 +213,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Callbacks for Animations
   void OnAnimationAborted();
-  void OnAnimationEnded();
+  virtual void OnAnimationEnded();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }

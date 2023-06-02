@@ -187,6 +187,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::ERROR_DOCUMENT;
     case Reason::kFencedFramesEmbedder:
       return ProtoEnum::FENCED_FRAMES_EMBEDDER;
+    case Reason::kCookieDisabled:
+      return ProtoEnum::COOKIE_DISABLED;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -444,6 +446,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Error documents cannot be stored in bfcache";
     case Reason::kFencedFramesEmbedder:
       return "Pages using FencedFrames cannot be stored in bfcache.";
+    case Reason::kCookieDisabled:
+      return "Cookie is disabled for the page.";
   }
 }
 
@@ -526,6 +530,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
       return "Cache-control:no-store";
+    case Reason::kCookieDisabled:
+      return "Cookie is disabled";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);

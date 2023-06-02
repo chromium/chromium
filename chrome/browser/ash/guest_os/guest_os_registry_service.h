@@ -105,6 +105,7 @@ class GuestOsRegistryService : public KeyedService {
     std::set<std::string> MimeTypes() const;
     std::set<std::string> Keywords() const;
     bool NoDisplay() const;
+    bool Terminal() const;
 
     std::string PackageId() const;
 

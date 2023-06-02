@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_av_1.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_vp_9.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_buffer_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -109,6 +111,21 @@ VideoEncoderConfig* MakeVideoEncoderConfig(
   config->setFramerate(proto.framerate());
   config->setWidth(proto.width());
   config->setHeight(proto.height());
+  config->setDisplayWidth(proto.display_width());
+  config->setDisplayHeight(proto.display_height());
+
+  if (proto.has_alpha()) {
+    config->setAlpha(ToAlphaOption(proto.alpha()));
+  }
+  if (proto.has_bitrate_mode()) {
+    config->setBitrateMode(ToBitrateMode(proto.bitrate_mode()));
+  }
+  if (proto.has_scalability_mode()) {
+    config->setScalabilityMode(ToScalabilityMode(proto.scalability_mode()));
+  }
+  if (proto.has_latency_mode()) {
+    config->setLatencyMode(ToLatencyMode(proto.latency_mode()));
+  }
 
   // Bitrate is truly optional, so don't just take the proto default value.
   if (proto.has_bitrate())
@@ -145,6 +162,48 @@ String ToAccelerationType(
       return "prefer-software";
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_REQUIRE:
       return "prefer-hardware";
+  }
+}
+
+String ToBitrateMode(
+    wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode mode) {
+  switch (mode) {
+    case wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode_CONSTANT:
+      return "constant";
+    case wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode_VARIABLE:
+      return "variable";
+    case wc_fuzzer::ConfigureVideoEncoder_VideoEncoderBitrateMode_QUANTIZER:
+      return "quantizer";
+  }
+}
+
+String ToScalabilityMode(
+    wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode mode) {
+  switch (mode) {
+    case wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode_L1T1:
+      return "L1T1";
+    case wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode_L1T2:
+      return "L1T2";
+    case wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode_L1T3:
+      return "L1T3";
+  }
+}
+
+String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode) {
+  switch (mode) {
+    case wc_fuzzer::ConfigureVideoEncoder_LatencyMode_QUALITY:
+      return "quality";
+    case wc_fuzzer::ConfigureVideoEncoder_LatencyMode_REALTIME:
+      return "realtime";
+  }
+}
+
+String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option) {
+  switch (option) {
+    case wc_fuzzer::ConfigureVideoEncoder_AlphaOption_KEEP:
+      return "keep";
+    case wc_fuzzer::ConfigureVideoEncoder_AlphaOption_DISCARD:
+      return "discard";
   }
 }
 
@@ -246,6 +305,18 @@ VideoEncoderEncodeOptions* MakeEncodeOptions(
   // Truly optional, so don't set it if its just a proto default value.
   if (proto.has_key_frame())
     options->setKeyFrame(proto.key_frame());
+
+  if (proto.has_av1() && proto.av1().has_quantizer()) {
+    auto* av1 = VideoEncoderEncodeOptionsForAv1::Create();
+    av1->setQuantizer(proto.av1().quantizer());
+    options->setAv1(av1);
+  }
+
+  if (proto.has_vp9() && proto.vp9().has_quantizer()) {
+    auto* vp9 = VideoEncoderEncodeOptionsForVp9::Create();
+    vp9->setQuantizer(proto.vp9().quantizer());
+    options->setVp9(vp9);
+  }
 
   return options;
 }

@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -171,6 +173,11 @@
 #pragma mark - PasswordDetailsHandler
 
 - (void)passwordDetailsTableViewControllerWasDismissed {
+  [self.delegate passwordDetailsCoordinatorDidRemove:self];
+}
+
+- (void)dismissPasswordDetailsTableViewController {
+  [self.delegate passwordDetailsCancelButtonWasTapped];
   [self.delegate passwordDetailsCoordinatorDidRemove:self];
 }
 
@@ -352,7 +359,7 @@
             self.viewController);
   // For password details opened outside of the settings context.
   if (_context == DetailsContext::kOutsideSettings) {
-    [self passwordDetailsTableViewControllerWasDismissed];
+    [self dismissPasswordDetailsTableViewController];
   } else {
     // For password details opened from the Password Manager in the settings.
     [self.baseNavigationController popViewControllerAnimated:YES];
@@ -389,6 +396,16 @@
              preferred:YES
                enabled:YES];
   [self.alertCoordinator start];
+}
+
+- (void)updateFormManagers {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  DCHECK(activeWebState);
+  password_manager::PasswordManagerClient* passwordManagerClient =
+      PasswordTabHelper::FromWebState(activeWebState)
+          ->GetPasswordManagerClient();
+  passwordManagerClient->UpdateFormManagers();
 }
 
 @end

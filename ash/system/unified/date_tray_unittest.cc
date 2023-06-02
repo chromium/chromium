@@ -188,7 +188,7 @@ TEST_P(DateTrayTest, InitialState) {
   EXPECT_FALSE(AreContentsViewShown());
 }
 
-TEST_P(DateTrayTest, ShowTasksComboModel) {
+TEST_P(DateTrayTest, DISABLED_ShowTasksComboModel) {
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsBubbleShown());

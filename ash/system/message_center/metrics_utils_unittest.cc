@@ -261,10 +261,6 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordGoodClicks) {
 }
 
 TEST_F(MessageCenterMetricsUtilsTest, RecordHover) {
-  // TODO(b/281705636): Fix metrics recording when QS revamp is enabled.
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
   base::HistogramTester histograms;
   auto notification = CreateTestNotification();
 

@@ -31,6 +31,7 @@
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -553,8 +554,7 @@ void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
 }
 
 void DemoSession::RegisterDemoModeAAExperiment() {
-  if (g_browser_process->local_state()->GetString(prefs::kDemoModeCountry) ==
-      std::string("US")) {
+  if (demo_mode::Country() == std::string("US")) {
     // The hashing salt for the AA experiment.
     std::string demo_mode_aa_experiment_hashing_salt = "fae448044d545f9c";
 
@@ -563,13 +563,10 @@ void DemoSession::RegisterDemoModeAAExperiment() {
     std::vector<std::string>::iterator it;
 
     it = std::find(best_buy_retailer_names.begin(),
-                   best_buy_retailer_names.end(),
-                   g_browser_process->local_state()->GetString(
-                       prefs::kDemoModeRetailerId));
+                   best_buy_retailer_names.end(), demo_mode::RetailerName());
     if (it != best_buy_retailer_names.end()) {
       std::string store_number_and_hash_salt =
-          g_browser_process->local_state()->GetString(prefs::kDemoModeStoreId) +
-          demo_mode_aa_experiment_hashing_salt;
+          demo_mode::StoreNumber() + demo_mode_aa_experiment_hashing_salt;
       std::string md5_store_number =
           base::MD5String(store_number_and_hash_salt);
 

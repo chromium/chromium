@@ -100,3 +100,13 @@ cr-input.password-input::part(input) {
   font-family: 'Menlo', monospace;
 </if>
 }
+
+.input-field {
+  margin-inline-end: 34px;
+  --cr-input-padding-start: 20px;
+  --cr-input-min-height: 40px;
+  --cr-input-error-display: none;
+  --cr-input-border-radius: 10px;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end: 0;
+}

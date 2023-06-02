@@ -69,7 +69,7 @@ void SelectDeepestEntry(
   }
 }
 
-void SelectWildcardEntry(
+void SelectWildcardEntryAtFront(
     std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
     google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
         selected) {
@@ -81,6 +81,12 @@ void SelectWildcardEntry(
       // leads to a uniform distribution over all executables.
       if (remaining_executables * base::RandDouble() < 1) {
         *selected->Add() = *it;
+        // Move the selected entry to the front. There's no easy way to insert
+        // at a specific location in a RepeatedPtrField, so we do the move as a
+        // series of swaps.
+        for (int i = 0; i < selected->size() - 1; ++i) {
+          selected->SwapElements(i, selected->size() - 1);
+        }
         considering->erase(it);
         return;
       }
@@ -182,13 +188,6 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
     SelectDeepestEntry(&considering, &selected);
   }
 
-  // Only add the wildcard if we otherwise wouldn't be able to fit all the
-  // entries.
-  if (static_cast<size_t>(selected.size()) < limit &&
-      considering.size() + selected.size() > limit) {
-    SelectWildcardEntry(&considering, &selected);
-  }
-
   std::sort(considering.begin(), considering.end(),
             [](const ClientDownloadRequest::ArchivedBinary& lhs,
                const ClientDownloadRequest::ArchivedBinary& rhs) {
@@ -201,14 +200,33 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
               return ArchiveEntryWeight(lhs) > ArchiveEntryWeight(rhs);
             });
 
-  for (const ClientDownloadRequest::ArchivedBinary& binary : considering) {
+  // Only add the wildcard if we otherwise wouldn't be able to fit all the
+  // entries.
+  bool should_choose_wildcard = static_cast<size_t>(selected.size()) < limit &&
+                                considering.size() + selected.size() > limit;
+  if (should_choose_wildcard) {
+    --limit;
+  }
+
+  auto last_taken_it = considering.begin();
+  for (auto binary_it = considering.begin(); binary_it != considering.end();
+       ++binary_it) {
     if (static_cast<size_t>(selected.size()) >= limit) {
       break;
     }
 
-    if (binary.is_executable() || binary.is_archive()) {
-      *selected.Add() = binary;
+    if (binary_it->is_executable() || binary_it->is_archive()) {
+      *selected.Add() = std::move(*binary_it);
+      last_taken_it = binary_it;
     }
+  }
+
+  // By actually choosing the wildcard at the end, we ensure that all the other
+  // entries in the ping are completely deterministic.
+  if (should_choose_wildcard && last_taken_it != considering.end()) {
+    ++last_taken_it;
+    considering.erase(considering.begin(), last_taken_it);
+    SelectWildcardEntryAtFront(&considering, &selected);
   }
 
   return selected;

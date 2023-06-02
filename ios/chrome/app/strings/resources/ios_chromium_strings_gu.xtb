@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium સિંકમાંનો ડેટા</translation>
 <translation id="1722370509450468186">તમારો પાસવર્ડ તમારા એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="1736662517232558588">Chromium ડેટા સાફ કર્યો</translation>
-<translation id="177102542580335555">તમે આ Chromium પ્રોફાઇલ માટે માનક સુરક્ષા સંરક્ષણ મેળવી રહ્યાં છો</translation>
 <translation id="1838412507805038478">Chromium એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર જારી કર્યું છે.</translation>
 <translation id="1843424232666537147">Chromium માં એવી સુવિધાઓ છે જે તમારા ઇન્ટરનેટ ડેટા અને તમે કેટલી ઝડપથી વેબ પૃષ્ઠોને લોડ કરવામાં સમર્થ છો તેનું સંચાલન કરવામાં તમારી સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromiumનો વધુમાં વધુ લાભ લેવા માટે, તમારા Google એકાઉન્ટ વડે Chromiumમાં સાઇન ઇન કરો.</translation>
 <translation id="3639997914391704523">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Chromium તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromiumનો ઉપયોગ કરી રહ્યાં હતા અને તેઓ આ ડિવાઇસ પર બુકમાર્ક, પાસવર્ડ અને અન્ય સેટિંગ છોડી ગયા છે.</translation>
+<translation id="3661862315467204831">iOSમાં Chromium સેટિંગ ખોલો, પછી "બ્રાઉઝર ડિફૉલ્ટ APP" પર ટૅપ કરો અને Chromium પસંદ કરો.</translation>
 <translation id="372658070733623520">તમારા Google એકાઉન્ટમાં Chromium ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો.</translation>
 <translation id="3805899903892079518">Chromiumને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
+<translation id="3827545470516145620">તમે આ ડિવાઇસ માટે સ્ટૅન્ડર્ડ સુરક્ષા સંરક્ષણ મેળવી રહ્યા છો</translation>
 <translation id="3955621079070267756">કોઈપણ ઍપમાંથી Chromium ખોલો</translation>
 <translation id="4043291146360695975">આ ડિવાઇસના પાસવર્ડ માત્ર આ ડિવાઇસના પાસવર્ડ મેનેજરમાં સાચવવામાં આવે છે.</translation>
 <translation id="4099085513035183040">Chromium બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>

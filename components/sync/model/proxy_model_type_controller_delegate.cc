@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
@@ -86,9 +86,10 @@ ProxyModelTypeControllerDelegate::~ProxyModelTypeControllerDelegate() = default;
 void ProxyModelTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
-  PostTask(FROM_HERE,
-           base::BindOnce(&OnSyncStartingHelperOnModelThread, request,
-                          BindToCurrentSequence(std::move(callback))));
+  PostTask(
+      FROM_HERE,
+      base::BindOnce(&OnSyncStartingHelperOnModelThread, request,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void ProxyModelTypeControllerDelegate::OnSyncStopping(
@@ -99,16 +100,18 @@ void ProxyModelTypeControllerDelegate::OnSyncStopping(
 
 void ProxyModelTypeControllerDelegate::GetAllNodesForDebugging(
     AllNodesCallback callback) {
-  PostTask(FROM_HERE,
-           base::BindOnce(&GetAllNodesForDebuggingHelperOnModelThread,
-                          BindToCurrentSequence(std::move(callback))));
+  PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetAllNodesForDebuggingHelperOnModelThread,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void ProxyModelTypeControllerDelegate::GetTypeEntitiesCountForDebugging(
     base::OnceCallback<void(const TypeEntitiesCount&)> callback) const {
-  PostTask(FROM_HERE,
-           base::BindOnce(&GetTypeEntitiesCountForDebuggingHelperOnModelThread,
-                          BindToCurrentSequence(std::move(callback))));
+  PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetTypeEntitiesCountForDebuggingHelperOnModelThread,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void ProxyModelTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {

@@ -235,7 +235,7 @@ class PreconnectManager {
   network::mojom::NetworkContext* GetNetworkContext() const;
 
   base::WeakPtr<Delegate> delegate_;
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   std::list<PreresolveJobId> queued_jobs_;
   PreresolveJobMap preresolve_jobs_;
   std::map<GURL, std::unique_ptr<PreresolveInfo>> preresolve_info_;

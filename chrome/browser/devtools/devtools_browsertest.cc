@@ -188,14 +188,26 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
     script << (i ? "," : "") << '\"' << args_array[i] << '\"';
   }
   script << "])";
-  EXPECT_EQ("[OK]", content::EvalJs(wc, script.str(),
-                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+
+  content::DOMMessageQueue message_queue;
+  EXPECT_TRUE(content::ExecJs(wc, script.str()));
+
+  std::string result;
+  EXPECT_TRUE(message_queue.WaitForMessage(&result));
+
+  EXPECT_EQ("\"[OK]\"", result);
 }
 
 void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
-  ASSERT_EQ("[OK]", content::EvalJs(wc, "uiTests.setupLegacyFilesForTest();",
-                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  content::DOMMessageQueue message_queue;
+  EXPECT_TRUE(content::ExecJs(wc, "uiTests.setupLegacyFilesForTest();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  std::string result;
+  EXPECT_TRUE(message_queue.WaitForMessage(&result));
+
+  ASSERT_EQ("\"[OK]\"", result);
 }
 
 template <typename... T>
@@ -2048,7 +2060,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
 // Also failing on Linux. See https://crbug.com/1187693.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestDispatchKeyEventShowsAutoFill \
   DISABLED_TestDispatchKeyEventShowsAutoFill
 #else
@@ -2683,16 +2695,9 @@ class MockWebUIProvider
 // This tests checks that window is correctly initialized when DevTools is
 // opened while navigation through history with forward and back actions.
 // (crbug.com/627407)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// Flaky on MAC and lacros https://crbug.com/1443360
-#define MAYBE_TestWindowInitializedOnNavigateBack \
-  DISABLED_TestWindowInitializedOnNavigateBack
-#else
-#define MAYBE_TestWindowInitializedOnNavigateBack \
-  TestWindowInitializedOnNavigateBack
-#endif
+// TODO(https://crbug.com/1443360): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       MAYBE_TestWindowInitializedOnNavigateBack) {
+                       DISABLED_TestWindowInitializedOnNavigateBack) {
   TestChromeWebUIControllerFactory test_factory;
   content::ScopedWebUIControllerFactoryRegistration factory_registration(
       &test_factory);

@@ -229,7 +229,7 @@ TEST_F(MetricsServiceObserverTest, TrimLargeLog) {
   // Set the max log size to be 1 byte so that pretty much all logs will be
   // trimmed. We don't set it to 0 bytes because that is a special value that
   // represents no max size.
-  client.set_max_ongoing_log_size(1);
+  client.set_max_ongoing_log_size_bytes(1);
 
   MetricsService service(GetMetricsStateManager(), &client, local_state());
 
@@ -272,11 +272,11 @@ TEST_F(MetricsServiceObserverTest, TrimLargeLog) {
 TEST_F(MetricsServiceObserverTest, TrimLongLogList) {
   TestMetricsServiceClient client;
 
-  // Set the mininimum log count to 1 and minimum log size to 1 byte. This
+  // Set the minimum log count to 1 and minimum log size to 1 byte. This
   // essentially means that the log store, when trimming logs, will only keep
   // the most recent one. I.e., after storing one log, it will trim the rest
   // due to having stored enough logs.
-  client.set_min_ongoing_log_queue_size(1);
+  client.set_min_ongoing_log_queue_size_bytes(1);
   client.set_min_ongoing_log_queue_count(1);
 
   MetricsService service(GetMetricsStateManager(), &client, local_state());
@@ -444,9 +444,7 @@ TEST_F(MetricsServiceObserverTest, UmaLogType) {
     auto alternate_ongoing_log_store = std::make_unique<UnsentLogStore>(
         std::make_unique<UnsentLogStoreMetricsImpl>(), local_state(),
         prefs::kMetricsOngoingLogs, prefs::kMetricsOngoingLogsMetadata,
-        storage_limits.min_ongoing_log_queue_count,
-        storage_limits.min_ongoing_log_queue_size,
-        storage_limits.max_ongoing_log_size, client.GetUploadSigningKey(),
+        storage_limits.ongoing_log_queue_limits, client.GetUploadSigningKey(),
         // |logs_event_manager| will be set by |test_log_store| directly in
         // MetricsLogStore::SetAlternateOngoingLogStore().
         /*logs_event_manager=*/nullptr);

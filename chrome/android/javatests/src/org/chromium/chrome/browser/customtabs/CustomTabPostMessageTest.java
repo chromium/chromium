@@ -146,7 +146,7 @@ public class CustomTabPostMessageTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(connection.newSession(token));
-        Assert.assertTrue(connection.requestPostMessageChannel(token, null));
+        Assert.assertTrue(connection.requestPostMessageChannel(token, null, null));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CriteriaHelper.pollInstrumentationThread(() -> {
             final Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -179,7 +179,7 @@ public class CustomTabPostMessageTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(connection.newSession(token));
-        Assert.assertTrue(connection.requestPostMessageChannel(token, null));
+        Assert.assertTrue(connection.requestPostMessageChannel(token, null, null));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CriteriaHelper.pollInstrumentationThread(() -> {
             final Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -242,7 +242,7 @@ public class CustomTabPostMessageTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(connection.newSession(token));
-        Assert.assertTrue(connection.requestPostMessageChannel(token, null));
+        Assert.assertTrue(connection.requestPostMessageChannel(token, null, null));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CriteriaHelper.pollInstrumentationThread(() -> {
             final Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();

@@ -35,6 +35,14 @@ void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
   host_->OnEngineInitialized(success, is_first_time_sync_configure_);
 }
 
+void FakeSyncEngine::SetPollIntervalElapsed(bool elapsed) {
+  is_next_poll_time_in_the_past_ = elapsed;
+}
+
+void FakeSyncEngine::SetDetailedStatus(const SyncStatus& status) {
+  sync_status_ = status;
+}
+
 void FakeSyncEngine::Initialize(InitParams params) {
   DCHECK(params.host);
 
@@ -112,7 +120,7 @@ void FakeSyncEngine::DisconnectDataType(ModelType type) {}
 void FakeSyncEngine::SetProxyTabsDatatypeEnabled(bool enabled) {}
 
 const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
-  return default_sync_status_;
+  return sync_status_;
 }
 
 void FakeSyncEngine::HasUnsyncedItemsForTest(
@@ -133,6 +141,10 @@ void FakeSyncEngine::OnCookieJarChanged(bool account_mismatch,
 }
 
 void FakeSyncEngine::SetInvalidationsForSessionsEnabled(bool enabled) {}
+
+bool FakeSyncEngine::IsNextPollTimeInThePast() const {
+  return is_next_poll_time_in_the_past_;
+}
 
 void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
 

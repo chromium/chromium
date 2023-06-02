@@ -193,8 +193,12 @@ void TestProperty(
       unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
   TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
                                          RedactedTestType>(
-      config, property, redacted_property, Entity::kContent, false, false,
-      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+      config, property, redacted_property, Entity::kSameOriginContent, false,
+      false, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kCrossOriginContent, false,
+      false, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
 
   // Test when `property` is opaque to embedder and transparent to content.
   (config.*property)
@@ -206,8 +210,12 @@ void TestProperty(
       unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
   TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
                                          RedactedTestType>(
-      config, property, redacted_property, Entity::kContent, true, false,
-      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+      config, property, redacted_property, Entity::kSameOriginContent, true,
+      false, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kCrossOriginContent, true,
+      true, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
 
   // Test when `property` is transparent to embedder and opaque to content.
   (config.*property)
@@ -219,8 +227,12 @@ void TestProperty(
       unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
   TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
                                          RedactedTestType>(
-      config, property, redacted_property, Entity::kContent, true, true,
-      unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+      config, property, redacted_property, Entity::kSameOriginContent, true,
+      true, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
+  TestPropertyForEntityIsDefinedIsOpaque<ClassName, RedactedClassName, TestType,
+                                         RedactedTestType>(
+      config, property, redacted_property, Entity::kCrossOriginContent, true,
+      true, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
 }
 
 TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
@@ -265,7 +277,7 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
   };
   std::vector<FencedFrameEntity> entities = {
       FencedFrameEntity::kEmbedder,
-      FencedFrameEntity::kContent,
+      FencedFrameEntity::kSameOriginContent,
   };
   GURL test_url("test_url");
   GURL test_urn = GenerateUrnUuid();
@@ -448,13 +460,12 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
                  &RedactedFencedFrameConfig::shared_storage_budget_metadata,
                  test_shared_storage_budget_metadata, eq_fn, eq_fn);
 
-    auto pointer_value_eq_fn =
-        [](const raw_ptr<const SharedStorageBudgetMetadata>& a,
-           const SharedStorageBudgetMetadata& b) {
-          return a->origin == b.origin &&
-                 a->budget_to_charge == b.budget_to_charge &&
-                 a->top_navigated == b.top_navigated;
-        };
+    auto pointer_value_eq_fn = [](const SharedStorageBudgetMetadata* a,
+                                  const SharedStorageBudgetMetadata& b) {
+      return a->origin == b.origin &&
+             a->budget_to_charge == b.budget_to_charge &&
+             a->top_navigated == b.top_navigated;
+    };
     TestProperty(&FencedFrameProperties::shared_storage_budget_metadata_,
                  &RedactedFencedFrameProperties::shared_storage_budget_metadata,
                  static_cast<raw_ptr<const SharedStorageBudgetMetadata>>(

@@ -20,6 +20,8 @@ import {NearbyDeviceElement} from '/shared/nearby_device.js';
 import {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {ArraySelector, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -112,6 +114,26 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
       },
 
       /**
+       * A list of all discovered nearby self-share targets.
+       * Used only if isSelfShareEnabled is true, otherwise only |shareTargets_|
+       * is used.
+       */
+      selfShareTargets_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * A list of all discovered nearby non-self-share targets.
+       * Used only if isSelfShareEnabled is true, otherwise only |shareTargets_|
+       * is used.
+       */
+      nonSelfShareTargets_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
        * Header text for error. The error section is not displayed if this is
        * falsey.
        */
@@ -135,6 +157,17 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         type: Boolean,
         value: false,
       },
+      /**
+       * Return true if the Nearby Share Self Share feature flag is enabled.
+       */
+      isSelfShareEnabled: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isSelfShareEnabled') &&
+              loadTimeData.getBoolean('isSelfShareEnabled');
+        },
+      },
     };
   }
 
@@ -142,8 +175,11 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   confirmationManager: ConfirmationManagerInterface|null;
   transferUpdateListener: TransferUpdateListenerPendingReceiver|null;
   selectedShareTarget: ShareTarget|null;
+  isSelfShareEnabled: boolean;
 
   private shareTargets_: ShareTarget[];
+  private selfShareTargets_: ShareTarget[];
+  private nonSelfShareTargets_: ShareTarget[];
   private errorTitle_: string|null;
   private errorDescription_: string|null;
   private isDarkModeActive_: boolean;
@@ -285,6 +321,8 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
       this.shareTargetMap_.clear();
     }
     this.shareTargets_ = [];
+    this.selfShareTargets_ = [];
+    this.nonSelfShareTargets_ = [];
   }
 
   /**
@@ -369,7 +407,18 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     const shareTargetId = tokenToString(shareTarget.id);
     assert(this.shareTargetMap_);
     if (!this.shareTargetMap_.has(shareTargetId)) {
-      this.push('shareTargets_', shareTarget);
+      if (this.isSelfShareEnabled) {
+        if (shareTarget.forSelfShare) {
+          this.push('selfShareTargets_', shareTarget);
+        } else {
+          this.push('nonSelfShareTargets_', shareTarget);
+        }
+        this.shareTargets_ =
+            this.selfShareTargets_.concat(this.nonSelfShareTargets_);
+      } else {
+        this.push('shareTargets_', shareTarget);
+      }
+
     } else {
       const index = this.shareTargets_.findIndex(
           (target) => tokensEqual(target.id, shareTarget.id));
@@ -381,10 +430,28 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   }
 
   private onShareTargetLost_(shareTarget: ShareTarget) {
-    const index = this.shareTargets_.findIndex(
+    // Remove target from `shareTargets_`.
+    const shareTargetsIdx = this.shareTargets_.findIndex(
         (target) => tokensEqual(target.id, shareTarget.id));
-    assert(index !== -1);
-    this.splice('shareTargets_', index, 1);
+    assert(shareTargetsIdx !== -1);
+    this.splice('shareTargets_', shareTargetsIdx, 1);
+
+    if (this.isSelfShareEnabled) {
+      if (shareTarget.forSelfShare) {
+        // Remove target from `selfShareTargets_`.
+        const index = this.selfShareTargets_.findIndex(
+            (target) => tokensEqual(target.id, shareTarget.id));
+        assert(index !== -1);
+        this.splice('selfShareTargets_', index, 1);
+      } else {
+        // Remove target from `nonSelfShareTargets_`.
+        const index = this.nonSelfShareTargets_.findIndex(
+            (target) => tokensEqual(target.id, shareTarget.id));
+        assert(index !== -1);
+        this.splice('nonSelfShareTargets_', index, 1);
+      }
+    }
+
     assert(this.shareTargetMap_);
     this.shareTargetMap_.delete(tokenToString(shareTarget.id));
     this.updateSelectedShareTarget_(shareTarget.id, /*shareTarget=*/ null);
@@ -473,7 +540,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * can't be used directly because this isn't part of settings.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
    */
-  private getAriaLabelledHelpText_(): string {
+  private getAriaLabelledHelpText_(): TrustedHTML {
     const tempEl = document.createElement('div');
     const localizedString = this.i18nAdvanced('nearbyShareDiscoveryPageInfo');
     const linkUrl = this.i18n('nearbyShareLearnMoreLink');
@@ -509,7 +576,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
     if (anchorTags.length === 0) {
-      return localizedString.toString();
+      return localizedString;
     }
 
     assert(
@@ -520,7 +587,8 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     anchorTag.href = linkUrl;
     anchorTag.target = '_blank';
 
-    return tempEl.innerHTML;
+    return sanitizeInnerHtml(
+        tempEl.innerHTML, {attrs: ['id', 'aria-hidden', 'aria-labelledby']});
   }
 
   /**

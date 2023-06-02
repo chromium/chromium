@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_GENERATED_PREFS_FACTORY_H__
 #define CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_GENERATED_PREFS_FACTORY_H__
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace extensions {
@@ -25,7 +25,7 @@ class GeneratedPrefsFactory : public ProfileKeyedServiceFactory {
   static GeneratedPrefsFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<GeneratedPrefsFactory>;
+  friend base::NoDestructor<GeneratedPrefsFactory>;
 
   GeneratedPrefsFactory();
   ~GeneratedPrefsFactory() override;

@@ -372,7 +372,7 @@ struct NativeValueTraits<IDLStringBase<mode>>
       if (value->IsNullOrUndefined())
         return bindings::NativeValueTraitsStringAdapter();
     }
-    if (mode == bindings::IDLStringConvMode::kTreatNullAsEmptyString) {
+    if (mode == bindings::IDLStringConvMode::kLegacyNullToEmptyString) {
       if (value->IsNull())
         return bindings::NativeValueTraitsStringAdapter(g_empty_string);
     }

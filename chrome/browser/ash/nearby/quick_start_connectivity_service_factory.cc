@@ -20,7 +20,8 @@ QuickStartConnectivityServiceFactory::GetForProfile(Profile* profile) {
 // static
 QuickStartConnectivityServiceFactory*
 QuickStartConnectivityServiceFactory::GetInstance() {
-  return base::Singleton<QuickStartConnectivityServiceFactory>::get();
+  static base::NoDestructor<QuickStartConnectivityServiceFactory> instance;
+  return instance.get();
 }
 
 QuickStartConnectivityServiceFactory::QuickStartConnectivityServiceFactory()

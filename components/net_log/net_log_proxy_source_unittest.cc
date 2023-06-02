@@ -28,33 +28,25 @@ class FakeNetLogProxySink : public network::mojom::NetLogProxySink {
 
   struct ProxiedEntry {
     ProxiedEntry(uint32_t type,
-                 uint32_t source_type,
-                 uint32_t source_id,
-                 base::TimeTicks source_start_time,
+                 const net::NetLogSource& net_log_source,
                  net::NetLogEventPhase phase,
                  base::TimeTicks time,
                  base::Value::Dict params)
         : type(type),
-          source_type(source_type),
-          source_id(source_id),
-          source_start_time(source_start_time),
+          net_log_source(net_log_source),
           phase(phase),
           time(time),
           params(std::move(params)) {}
 
     ProxiedEntry(const ProxiedEntry& other)
         : ProxiedEntry(other.type,
-                       other.source_type,
-                       other.source_id,
-                       other.source_start_time,
+                       other.net_log_source,
                        other.phase,
                        other.time,
                        other.params.Clone()) {}
 
     uint32_t type;
-    uint32_t source_type;
-    uint32_t source_id;
-    base::TimeTicks source_start_time;
+    net::NetLogSource net_log_source;
     net::NetLogEventPhase phase;
     base::TimeTicks time;
     base::Value::Dict params;
@@ -69,15 +61,12 @@ class FakeNetLogProxySink : public network::mojom::NetLogProxySink {
 
   // mojom::NetLogProxySink:
   void AddEntry(uint32_t type,
-                uint32_t source_type,
-                uint32_t source_id,
-                base::TimeTicks source_start_time,
+                const net::NetLogSource& net_log_source,
                 net::NetLogEventPhase phase,
                 base::TimeTicks time,
                 base::Value::Dict params) override {
     base::AutoLock lock(lock_);
-    entries_.emplace_back(type, source_type, source_id, source_start_time,
-                          phase, time, std::move(params));
+    entries_.emplace_back(type, net_log_source, phase, time, std::move(params));
     run_loop_quit_after_count_--;
     EXPECT_LE(0, run_loop_quit_after_count_);
     if (run_loop_quit_after_count_ == 0)
@@ -216,20 +205,18 @@ TEST(NetLogProxySource, OnlyProxiesEventsWhenCaptureModeSetIsNonZero) {
 
   EXPECT_EQ(static_cast<uint32_t>(net::NetLogEventType::SOCKET_ALIVE),
             entries[0].type);
-  EXPECT_EQ(static_cast<uint32_t>(net::NetLogSourceType::SOCKET),
-            entries[0].source_type);
-  EXPECT_EQ(source1.source().id, entries[0].source_id);
-  EXPECT_EQ(source1_start_ticks, entries[0].source_start_time);
+  EXPECT_EQ(net::NetLogSourceType::SOCKET, entries[0].net_log_source.type);
+  EXPECT_EQ(source1.source().id, entries[0].net_log_source.id);
+  EXPECT_EQ(source1_start_ticks, entries[0].net_log_source.start_time);
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, entries[0].phase);
   EXPECT_EQ(source1_event0_ticks, entries[0].time);
   EXPECT_TRUE(entries[0].params.empty());
 
   EXPECT_EQ(static_cast<uint32_t>(net::NetLogEventType::SOCKET_ALIVE),
             entries[1].type);
-  EXPECT_EQ(static_cast<uint32_t>(net::NetLogSourceType::SOCKET),
-            entries[1].source_type);
-  EXPECT_EQ(source1.source().id, entries[1].source_id);
-  EXPECT_EQ(source1_start_ticks, entries[1].source_start_time);
+  EXPECT_EQ(net::NetLogSourceType::SOCKET, entries[1].net_log_source.type);
+  EXPECT_EQ(source1.source().id, entries[1].net_log_source.id);
+  EXPECT_EQ(source1_start_ticks, entries[1].net_log_source.start_time);
   EXPECT_EQ(net::NetLogEventPhase::END, entries[1].phase);
   EXPECT_EQ(source1_event1_ticks, entries[1].time);
   EXPECT_TRUE(entries[1].params.empty());
@@ -291,9 +278,8 @@ TEST(NetLogProxySource, ProxiesParamsOfLeastSensitiveCaptureMode) {
 
   EXPECT_EQ(static_cast<uint32_t>(net::NetLogEventType::REQUEST_ALIVE),
             entries[0].type);
-  EXPECT_EQ(static_cast<uint32_t>(net::NetLogSourceType::URL_REQUEST),
-            entries[0].source_type);
-  EXPECT_EQ(source0.source().id, entries[0].source_id);
+  EXPECT_EQ(net::NetLogSourceType::URL_REQUEST, entries[0].net_log_source.type);
+  EXPECT_EQ(source0.source().id, entries[0].net_log_source.id);
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, entries[0].phase);
   EXPECT_EQ(1U, entries[0].params.size());
   const std::string* param = entries[0].params.FindString("capture_mode");
@@ -302,9 +288,8 @@ TEST(NetLogProxySource, ProxiesParamsOfLeastSensitiveCaptureMode) {
 
   EXPECT_EQ(static_cast<uint32_t>(net::NetLogEventType::FAILED),
             entries[1].type);
-  EXPECT_EQ(static_cast<uint32_t>(net::NetLogSourceType::URL_REQUEST),
-            entries[1].source_type);
-  EXPECT_EQ(source0.source().id, entries[1].source_id);
+  EXPECT_EQ(net::NetLogSourceType::URL_REQUEST, entries[1].net_log_source.type);
+  EXPECT_EQ(source0.source().id, entries[1].net_log_source.id);
   EXPECT_EQ(net::NetLogEventPhase::NONE, entries[1].phase);
   EXPECT_EQ(1U, entries[1].params.size());
   param = entries[1].params.FindString("capture_mode");
@@ -313,9 +298,8 @@ TEST(NetLogProxySource, ProxiesParamsOfLeastSensitiveCaptureMode) {
 
   EXPECT_EQ(static_cast<uint32_t>(net::NetLogEventType::REQUEST_ALIVE),
             entries[2].type);
-  EXPECT_EQ(static_cast<uint32_t>(net::NetLogSourceType::URL_REQUEST),
-            entries[2].source_type);
-  EXPECT_EQ(source0.source().id, entries[2].source_id);
+  EXPECT_EQ(net::NetLogSourceType::URL_REQUEST, entries[2].net_log_source.type);
+  EXPECT_EQ(source0.source().id, entries[2].net_log_source.id);
   EXPECT_EQ(net::NetLogEventPhase::END, entries[2].phase);
   EXPECT_EQ(1U, entries[2].params.size());
   param = entries[2].params.FindString("capture_mode");

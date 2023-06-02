@@ -31,9 +31,13 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using content::NavigationHandle;
 
@@ -386,7 +390,25 @@ ukm::SourceId DIPSWebContentsObserver::GetPageUkmSourceId() const {
 void DIPSWebContentsObserver::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
-  dips_service_->HandleRedirectChain(std::move(redirects), std::move(chain));
+  dips_service_->HandleRedirectChain(
+      std::move(redirects), std::move(chain),
+      base::BindRepeating(
+          &DIPSWebContentsObserver::IncrementPageSpecificBounceCount,
+          weak_factory_.GetWeakPtr()));
+}
+
+void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
+    const GURL& final_url) {
+  // Do nothing if the current URL doesn't match the final URL of the chain.
+  // This means that the user has navigated away from the bounce destination, so
+  // we don't want to update settings for the wrong site.
+  if (WebContentsObserver::web_contents()->GetURL() != final_url) {
+    return;
+  }
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      WebContentsObserver::web_contents()->GetPrimaryPage());
+  pscs->IncrementStatefulBounceCount();
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.
@@ -407,6 +429,13 @@ class DIPSNavigationHandleImpl : public DIPSNavigationHandle {
 
   const GURL& GetPreviousPrimaryMainFrameURL() const override {
     return handle_->GetPreviousPrimaryMainFrameURL();
+  }
+
+  const GURL GetInitiator() const override {
+    return (!handle_->GetInitiatorOrigin().has_value() ||
+            handle_->GetInitiatorOrigin().value().opaque())
+               ? GURL("about:blank")
+               : handle_->GetInitiatorOrigin().value().GetURL();
   }
 
   const std::vector<GURL>& GetRedirectChain() const override {
@@ -444,7 +473,9 @@ void DIPSBounceDetector::DidStartNavigation(
   if (navigation_handle->HasUserGesture() || timedout ||
       !client_detection_state_.has_value()) {
     server_bounce_detection_state->navigation_start =
-        delegate_->GetLastCommittedURL();
+        delegate_->GetLastCommittedURL().is_empty()
+            ? navigation_handle->GetInitiator()
+            : delegate_->GetLastCommittedURL();
     return;
   }
 
@@ -486,8 +517,7 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
 
   DCHECK(access_details.render_frame_host);
 
-  // TODO(crbug.com/1434764): handle same-site iframes.
-  if (!access_details.render_frame_host->IsInPrimaryMainFrame() ||
+  if (!IsInPrimaryPage(access_details.render_frame_host) ||
       access_details.blocked_by_policy) {
     return;
   }
@@ -495,6 +525,8 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
   detector_.OnClientSiteDataAccessed(
       access_details.url, ToCookieOperation(access_details.access_type));
 }
+
+void DIPSWebContentsObserver::OnStatefulBounceDetected() {}
 
 void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
                                                   CookieOperation op) {
@@ -523,10 +555,8 @@ void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  // TODO(crbug.com/1434764): handle same-site iframes.
-  if (!render_frame_host->IsInPrimaryMainFrame() || details.blocked_by_policy ||
-      !net::SiteForCookies::FromUrl(details.first_party_url)
-           .IsFirstParty(details.url)) {
+  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy ||
+      !IsSameSiteForDIPS(details.first_party_url, details.url)) {
     return;
   }
 
@@ -556,9 +586,20 @@ void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  if (!navigation_handle->IsInPrimaryMainFrame() || details.blocked_by_policy ||
-      !net::SiteForCookies::FromUrl(details.first_party_url)
-           .IsFirstParty(details.url)) {
+  // Discard all notifications that are:
+  // - From other page types like FencedFrames, and Prerendered.
+  // - Blocked by policies.
+  // - That are not same site (wrt GetSiteForDIPS()) with the first party URL.
+  // TODO(crbug.com/1445739): Treat partitioned 3P cookies as 1P cookies.
+  if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy ||
+      !IsSameSiteForDIPS(details.first_party_url, details.url)) {
+    return;
+  }
+
+  // All access within the primary page iframes are attributed to the URL of the
+  // main frame (ie the first party URL).
+  if (IsInPrimaryPageIFrame(navigation_handle)) {
+    detector_.OnClientSiteDataAccessed(details.url, details.type);
     return;
   }
 

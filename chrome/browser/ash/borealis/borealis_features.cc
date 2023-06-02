@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -152,11 +151,6 @@ AllowStatus BorealisFeatures::PostTokenHardwareChecks() {
     return AllowStatus::kUserPrefBlocked;
   }
 
-  version_info::Channel c = chrome::GetChannel();
-  if (c == version_info::Channel::STABLE) {
-    return AllowStatus::kBlockedOnStable;
-  }
-
   if (!base::FeatureList::IsEnabled(ash::features::kBorealisPermitted)) {
     return AllowStatus::kBlockedByFlag;
   }
@@ -230,9 +224,6 @@ std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
                    "disabled)";
     case AllowStatus::kUserPrefBlocked:
       return os << "Your admin has blocked borealis (for your account)";
-    case AllowStatus::kBlockedOnStable:
-      return os << "Your ChromeOS channel must be set to Beta or Dev to run "
-                   "Borealis";
     case AllowStatus::kBlockedByFlag:
       return os << "Borealis is still being worked on. You must set the "
                    "#borealis-enabled feature flag.";

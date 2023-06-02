@@ -594,7 +594,6 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_TRUE(
       browser_view()->window_management_permission_granted_for_testing());
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
-  ASSERT_FALSE(web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
@@ -644,7 +643,6 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_FALSE(
       browser_view()->window_management_permission_granted_for_testing());
   ASSERT_FALSE(browser_view()->IsBorderlessModeEnabled());
-  ASSERT_TRUE(web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,

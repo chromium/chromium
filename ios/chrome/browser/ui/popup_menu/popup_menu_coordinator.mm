@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
@@ -248,8 +249,11 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.navigationAgent =
           WebNavigationBrowserAgent::FromBrowser(self.browser);
       self.overflowMenuMediator.baseViewController = self.baseViewController;
-      self.overflowMenuMediator.bookmarkModel =
+      self.overflowMenuMediator.localOrSyncableBookmarkModel =
           ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.accountBookmarkModel =
+          ios::AccountBookmarkModelFactory::GetForBrowserState(
               self.browser->GetBrowserState());
       self.overflowMenuMediator.browserStatePrefs =
           self.browser->GetBrowserState()->GetPrefs();
@@ -277,13 +281,20 @@ enum class IOSOverflowMenuActionType {
 
       self.contentBlockerMediator.consumer = self.overflowMenuMediator;
 
+      NSInteger highlightDestination =
+          [self.popupMenuHelpCoordinator highlightDestination] == nil
+              ? -1
+              : [[self.popupMenuHelpCoordinator highlightDestination]
+                    integerValue];
       OverflowMenuUIConfiguration* uiConfiguration =
           [[OverflowMenuUIConfiguration alloc]
               initWithPresentingViewControllerHorizontalSizeClass:
                   self.baseViewController.traitCollection.horizontalSizeClass
                         presentingViewControllerVerticalSizeClass:
                             self.baseViewController.traitCollection
-                                .verticalSizeClass];
+                                .verticalSizeClass
+                                             highlightDestination:
+                                                 highlightDestination];
 
       self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
 
@@ -343,7 +354,7 @@ enum class IOSOverflowMenuActionType {
                        animated:YES
                      completion:^{
                        [weakSelf.popupMenuHelpCoordinator
-                           showOverflowMenuIPHInViewController:menu];
+                           showHistoryOnOverflowMenuIPHInViewController:menu];
                      }];
       return;
     }

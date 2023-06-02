@@ -961,7 +961,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
-  void NotifyVisitUpdated(const VisitRow& visit) override;
+  void NotifyVisitUpdated(const VisitRow& visit,
+                          VisitUpdateReason reason) override;
   void NotifyVisitDeleted(const VisitRow& visit) override;
 
   // Deleting all history ------------------------------------------------------

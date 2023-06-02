@@ -375,7 +375,6 @@ scrollSnapAlign
 scrollSnapStop
 scrollSnapType
 scrollTimeline
-scrollTimelineAttachment
 scrollTimelineAxis
 scrollTimelineName
 scrollbarGutter
@@ -447,7 +446,6 @@ userSelect
 vectorEffect
 verticalAlign
 viewTimeline
-viewTimelineAttachment
 viewTimelineAxis
 viewTimelineInset
 viewTimelineName

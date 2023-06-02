@@ -425,7 +425,8 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
-  raw_ptr<TestDialActivityManager> activity_manager_ = nullptr;
+  raw_ptr<TestDialActivityManager, DanglingUntriaged> activity_manager_ =
+      nullptr;
   std::unique_ptr<DialMediaRouteProvider> provider_;
 
   MediaSinkInternal sink_{CreateDialSink(1)};
@@ -663,6 +664,61 @@ TEST_F(DialMediaRouteProviderTest, TerminateRouteViaStopSessionMessage) {
   TestSendClientConnectMessage();
   TestSendCustomDialLaunchMessage();
   TestTerminateRouteViaStopSessionMessage();
+}
+
+TEST_F(DialMediaRouteProviderTest, CreateRouteTerminatesExistingRoute) {
+  // Create route with `presentation_id_1`.
+  const std::string presentation_id_1 = "presentationId1";
+  const std::string presentation_id_2 = "presentationId2";
+  CreateRoute(presentation_id_1);
+  ASSERT_TRUE(route_);
+  EXPECT_EQ(presentation_id_1, route_->presentation_id());
+
+  // Store route messages in `received_messages`.
+  const MediaRoute::Id& route_id = route_->media_route_id();
+  std::vector<RouteMessagePtr> received_messages;
+  EXPECT_CALL(mock_router_, OnRouteMessagesReceived(route_id, _))
+      .WillRepeatedly([&](const auto& route_id, auto messages) {
+        for (auto& message : messages) {
+          received_messages.emplace_back(std::move(message));
+        }
+      });
+  provider_->StartListeningForRouteMessages(route_->media_route_id());
+  base::RunLoop().RunUntilIdle();
+
+  // Verify received route message.
+  ASSERT_EQ(2u, received_messages.size());
+  ExpectDialInternalMessageType(received_messages[0],
+                                DialInternalMessageType::kReceiverAction);
+  ExpectDialInternalMessageType(received_messages[1],
+                                DialInternalMessageType::kNewSession);
+
+  // Expect route terminated.
+  EXPECT_CALL(
+      mock_router_,
+      OnPresentationConnectionStateChanged(
+          route_id, blink::mojom::PresentationConnectionState::TERMINATED));
+  EXPECT_CALL(mock_router_, OnRoutesUpdated(_, IsEmpty()));
+
+  // Create a new route to the same sink with `presentation_id_2`.
+  const MediaSink::Id& sink_id = sink_.sink().id();
+  MediaSource::Id source_id = "cast-dial:YouTube?clientId=11111";
+  provider_->CreateRoute(
+      source_id, sink_id, presentation_id_2, origin_, kFrameTreeNodeId,
+      base::TimeDelta(),
+      /* off_the_record */ false,
+      base::BindOnce(&DialMediaRouteProviderTest::ExpectRouteResult,
+                     base::Unretained(this),
+                     mojom::RouteRequestResultCode::OK));
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the new route is created with a different presentation_id.
+  EXPECT_EQ(presentation_id_2, route_->presentation_id());
+
+  // Verify that terminate route message is received.
+  ASSERT_EQ(3u, received_messages.size());
+  ExpectDialInternalMessageType(received_messages[2],
+                                DialInternalMessageType::kReceiverAction);
 }
 
 TEST_F(DialMediaRouteProviderTest, CreateRouteFailsCleansUpProperly) {

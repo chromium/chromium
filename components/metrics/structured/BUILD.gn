@@ -16,6 +16,8 @@ static_library("structured") {
     "key_data.h",
     "persistent_proto.cc",
     "persistent_proto.h",
+    "reporting/structured_metrics_log_metrics.cc",
+    "reporting/structured_metrics_log_metrics.h",
     "reporting/structured_metrics_reporting_service.cc",
     "reporting/structured_metrics_reporting_service.h",
     "structured_metrics_prefs.cc",

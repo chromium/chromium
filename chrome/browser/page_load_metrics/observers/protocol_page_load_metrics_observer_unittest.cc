@@ -88,7 +88,7 @@ class ProtocolPageLoadMetricsObserverTest
         prefix + ".DocumentTiming.NavigationToLoadEventFired", 1);
   }
 
-  raw_ptr<ProtocolPageLoadMetricsObserver> observer_;
+  raw_ptr<ProtocolPageLoadMetricsObserver, DanglingUntriaged> observer_;
 };
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H11Navigation) {

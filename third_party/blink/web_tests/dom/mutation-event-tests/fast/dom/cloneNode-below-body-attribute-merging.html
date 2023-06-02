@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+document.addEventListener("DOMSubtreeModified", function() {
+    if (document.body)
+        document.body.cloneNode(false);
+}, false);
+</script>
+<meta charset="utf-8">
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body id="some_random_id_so_body_creates_attribute_data" class="another_random_attribute_to_increase_crash_surface_area">
+<script>
+
+description("Tests that cloning the body node in response to a DOMSubtreeModified event doesn't crash.");
+
+</script>
+</body>
+</html>

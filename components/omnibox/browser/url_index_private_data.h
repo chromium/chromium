@@ -14,6 +14,7 @@
 #include "base/containers/stack.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -206,7 +207,9 @@ class URLIndexPrivateData
     bool operator()(const HistoryID h1, const HistoryID h2);
 
    private:
-    const HistoryInfoMap& history_info_map_;
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const HistoryInfoMap& history_info_map_;
   };
 
   // Information about a URL host aggregated from all URLs of that host. Used to

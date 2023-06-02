@@ -6,7 +6,9 @@
 
 #include <limits>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -86,61 +88,51 @@ void RecordVisibleLoadTimeForImage(
   if (visible_load_delay.is_negative())
     visible_load_delay = base::TimeDelta();
 
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.VisibleLoadTime.LazyLoadImages",
+                             visible_load_delay);
+
+  if (visible_load_time_metrics.is_initially_intersecting) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3",
+        visible_load_delay);
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3",
+        visible_load_delay);
+  }
+
+  const char* network_type;
   switch (GetNetworkStateNotifier().EffectiveType()) {
     case WebEffectiveConnectionType::kTypeSlow2G:
-      if (visible_load_time_metrics.is_initially_intersecting) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.Slow2G",
-            visible_load_delay);
-      } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.Slow2G",
-            visible_load_delay);
-      }
+      network_type = "Slow2G";
       break;
-
     case WebEffectiveConnectionType::kType2G:
-      if (visible_load_time_metrics.is_initially_intersecting) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.2G",
-            visible_load_delay);
-      } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.2G",
-            visible_load_delay);
-      }
+      network_type = "2G";
       break;
-
     case WebEffectiveConnectionType::kType3G:
-      if (visible_load_time_metrics.is_initially_intersecting) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.3G",
-            visible_load_delay);
-      } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.3G",
-            visible_load_delay);
-      }
+      network_type = "3G";
       break;
-
     case WebEffectiveConnectionType::kType4G:
-      if (visible_load_time_metrics.is_initially_intersecting) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G",
-            visible_load_delay);
-      } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G",
-            visible_load_delay);
-      }
+      network_type = "4G";
       break;
-
-    case WebEffectiveConnectionType::kTypeUnknown:
     case WebEffectiveConnectionType::kTypeOffline:
-      // No VisibleLoadTime histograms are recorded for these effective
-      // connection types.
+      network_type = "Offline";
       break;
+    case WebEffectiveConnectionType::kTypeUnknown:
+      network_type = "Unknown";
+      break;
+    default:
+      NOTREACHED();
   }
+
+  std::string uma_name = base::StrCat(
+      {"Blink.VisibleLoadTime.LazyLoadImages.",
+       visible_load_time_metrics.is_initially_intersecting ? "Above" : "Below",
+       "TheFold3.", network_type});
+  // Custom histogram times are used to exactly match the macro parameters of
+  // `UMA_HISTOGRAM_MEDIUM_TIMES` which is used for other metrics the area.
+  UmaHistogramCustomTimes(uma_name, visible_load_delay, base::Milliseconds(10),
+                          base::Minutes(3), 50);
 }
 
 }  // namespace
@@ -306,11 +298,11 @@ void LazyLoadImageObserver::OnVisibilityChanged(
       // WebEffectiveConnectionType.
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
             GetNetworkStateNotifier().EffectiveType());
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
             GetNetworkStateNotifier().EffectiveType());
       }
     } else {

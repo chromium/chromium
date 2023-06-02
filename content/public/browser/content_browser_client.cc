@@ -539,6 +539,10 @@ bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
 
+bool ContentBrowserClient::ShouldUseOsWebSourceAttributionReporting() {
+  return true;
+}
+
 bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
@@ -921,7 +925,8 @@ bool ContentBrowserClient::WillCreateURLLoaderFactory(
         header_client,
     bool* bypass_redirect_checks,
     bool* disable_secure_dns,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   DCHECK(browser_context);
   return false;
 }
@@ -1255,6 +1260,11 @@ bool ContentBrowserClient::HandleTopicsWebApi(
     bool observe,
     std::vector<blink::mojom::EpochTopicPtr>& topics) {
   return true;
+}
+
+int ContentBrowserClient::NumVersionsInTopicsEpochs(
+    content::RenderFrameHost* main_frame) const {
+  return 0;
 }
 
 bool ContentBrowserClient::IsBluetoothScanningBlocked(

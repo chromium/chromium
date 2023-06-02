@@ -844,6 +844,11 @@ void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(
     past_clients_.clear();
 }
 
+void WaylandInputMethodContext::OnConfirmPreedit(bool keep_selection) {
+  surrounding_text_tracker_.OnConfirmCompositionText(keep_selection);
+  ime_delegate_->OnConfirmCompositionText(keep_selection);
+}
+
 void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
   virtual_keyboard_visible_ = (state & 1) != 0;
   // Note: Currently there's no support of VirtualKeyboardControllerObserver.

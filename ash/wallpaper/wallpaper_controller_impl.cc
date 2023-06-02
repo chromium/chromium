@@ -32,6 +32,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
@@ -953,6 +954,8 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DVLOG(1) << __func__ << " params=" << params;
   if (!CanSetUserWallpaper(params.account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kPermissionDenied);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -1088,6 +1091,20 @@ bool WallpaperControllerImpl::GetDailyGooglePhotosWallpaperIdCache(
     DailyGooglePhotosIdCache& ids_out) const {
   return pref_manager_->GetDailyGooglePhotosWallpaperIdCache(account_id,
                                                              ids_out);
+}
+
+void WallpaperControllerImpl::SetTimeOfDayWallpaper(
+    const AccountId& account_id,
+    SetWallpaperCallback callback) {
+  OnlineWallpaperVariantInfoFetcher::FetchParamsCallback on_fetch =
+      base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     WallpaperType::kOnline,
+                     /*start_daily_refresh_timer=*/false, std::move(callback));
+  variant_info_fetcher_->FetchTimeOfDayWallpaper(
+      account_id, wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
+      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
+      std::move(on_fetch));
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(
@@ -1801,10 +1818,28 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
 
     WallpaperInfo local_info;
     WallpaperInfo synced_info;
+    bool has_synced_info =
+        pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info);
+    bool has_local_info =
+        pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
+    session_manager::SessionState session_state =
+        Shell::Get()->session_controller()->GetSessionState();
+    if (session_state == session_manager::SessionState::OOBE &&
+        !has_synced_info && has_local_info &&
+        local_info.type == WallpaperType::kDefault &&
+        features::IsTimeOfDayWallpaperEnabled()) {
+      // Sets the time of day wallpaper as the default wallpaper on active user
+      // pref changed during OOBE flow.
+      SetTimeOfDayWallpaper(
+          account_id,
+          base::BindOnce(
+              &WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe,
+              weak_factory_.GetWeakPtr()));
+      return;
+    }
 
     // Migrate wallpaper info to syncable prefs.
-    if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info) &&
-        pref_manager_->GetLocalWallpaperInfo(account_id, &local_info) &&
+    if (!has_synced_info && has_local_info &&
         WallpaperPrefManager::ShouldSyncOut(local_info)) {
       if (local_info.type == WallpaperType::kCustomized) {
         base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
@@ -2037,7 +2072,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
     const base::FilePath& file_path) {
   bool file_exists = !file_path.empty();
   if (!file_exists) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2053,7 +2088,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
     const OnlineWallpaperParams& params,
     const base::flat_map<std::string, base::FilePath>& url_to_file_path_map) {
   if (url_to_file_path_map.empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2084,7 +2119,7 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
   }
 
   // Report that setting the wallpaper failed.
-  std::move(callback).Run(false);
+  std::move(callback).Run(/*success=*/false);
 
   // Daily wallpaper should schedule retry.
   if (type == WallpaperType::kDaily)
@@ -2097,11 +2132,17 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
-  if (callback)
+  if (callback) {
     std::move(callback).Run(success);
+  }
   if (!success) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kDecodingError);
     LOG(ERROR) << "Failed to decode online wallpaper.";
     return;
+  } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kSuccess);
   }
 
   if (save_file) {
@@ -2871,7 +2912,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     SetWallpaperCallback callback,
     bool success) {
   if (success) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(/*success=*/true);
     return;
   }
 
@@ -2947,12 +2988,18 @@ void WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded(
   gfx::ImageSkia variant_to_use = online_wallpaper_variant_to_use_;
   online_wallpaper_variant_to_use_ = gfx::ImageSkia();
   if (!success) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kNetworkError);
     std::move(callback).Run(success);
     return;
   }
 
   OnOnlineWallpaperDecoded(params, /*save_file=*/false, std::move(callback),
                            variant_to_use);
+}
+
+void WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe(bool success) {
+  wallpaper_metrics_manager_->LogSettingTimeOfDayWallpaperAfterOobe(success);
 }
 
 void WallpaperControllerImpl::SetDailyRefreshCollectionId(

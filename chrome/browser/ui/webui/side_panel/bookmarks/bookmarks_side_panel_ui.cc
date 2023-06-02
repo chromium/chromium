@@ -101,6 +101,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"emptyTitle", IDS_BOOKMARKS_EMPTY_STATE_TITLE},
       {"emptyBody", IDS_BOOKMARKS_EMPTY_STATE_BODY},
+      {"emptyTitleFolder", IDS_BOOKMARKS_EMPTY_STATE_TITLE_FOLDER},
+      {"emptyBodyFolder", IDS_BOOKMARKS_EMPTY_STATE_BODY_FOLDER},
       {"emptyTitleGuest", IDS_BOOKMARKS_EMPTY_STATE_TITLE_GUEST},
       {"emptyBodyGuest", IDS_BOOKMARKS_EMPTY_STATE_BODY_GUEST},
       {"emptyTitleSearch", IDS_BOOKMARKS_EMPTY_STATE_TITLE_SEARCH},
@@ -288,7 +290,8 @@ void BookmarksSidePanelUI::CreateShoppingListHandler(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile);
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
       std::move(page), std::move(receiver), bookmark_model, shopping_service,
-      profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale());
+      profile->GetPrefs(), tracker, g_browser_process->GetApplicationLocale(),
+      nullptr);
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
           bookmark_model, shopping_service, shopping_list_handler_.get());

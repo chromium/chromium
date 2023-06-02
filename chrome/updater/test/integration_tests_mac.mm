@@ -228,7 +228,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
   return WaitFor(
-      base::BindRepeating([]() {
+      base::BindRepeating([] {
         std::string ps_stdout;
         EXPECT_TRUE(
             base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
@@ -239,7 +239,7 @@ bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
         return false;
       }),
       base::BindLambdaForTesting(
-          []() { VLOG(0) << "Still waiting for updater to exit..."; }));
+          [] { VLOG(0) << "Still waiting for updater to exit..."; }));
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
@@ -324,8 +324,6 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_EQ(persisted_data->GetDateLastActive(kPopularApp).value(), 5921);
   EXPECT_EQ(persisted_data->GetDateLastRollcall(kPopularApp).value(), 5922);
 
-  // TODO(crbug.com/1442695): Enable this after updating the `ticketstore` under
-  // chrome/test/data/updater/Keystone.legacy.ticketstore.
   EXPECT_EQ(persisted_data->GetCohort(kPopularApp), "TestCohort");
   EXPECT_EQ(persisted_data->GetCohortName(kPopularApp), "TestCohortName");
   EXPECT_EQ(persisted_data->GetCohortHint(kPopularApp), "TestCohortHint");

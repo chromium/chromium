@@ -3202,6 +3202,16 @@ be describing additional metrics about the same event.
       |SkipStatus|.
     </summary>
   </metric>
+  <metric name="AutofillStatusVector">
+    <summary>
+      A bit vector of autofill statuses for a field, listed in
+      |AutofillMetrics::AutofillStatus|. The first bit represents whether the
+      field is focusable, the second means whether the field was focused....
+      These autofill statuses will not be stored in UKM individually. We create
+      functions to read the individual autofill status from a bit vector in
+      queries.
+    </summary>
+  </metric>
   <metric name="FieldSessionIdentifier">
     <summary>
       A random variable assigned to a specific instance of a form control (e.g.
@@ -3786,7 +3796,15 @@ be describing additional metrics about the same event.
       before this metric is recorded.
     </summary>
   </metric>
-  <metric name="AutoReauthn.ReturningAccounts" enum="FedCmReturningAccounts">
+  <metric name="AutoReauthn.BlockedByPreventSilentAccess" enum="Boolean">
+    <summary>
+      Records whether the FedCM auto re-authn call is blocked because
+      preventSilentAccess() has been called on this site. Records at most one
+      sample per FedCM API with auto re-authn enabled: some failures could occur
+      before this metric is recorded.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.ReturningAccounts" enum="FedCmNumAccounts">
     <summary>
       Records whether there was zero, one, or multiple returning accounts when a
       site calls the FedCM API with autoReauthn: true. Records at most one
@@ -6898,7 +6916,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="TextSearchCount">
     <summary>
-      The number of times text search box was used.
+      The number of times text search box was used, clamped to a max of 10.
     </summary>
   </metric>
   <metric name="VQ.ClickPosition">
@@ -13658,6 +13676,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MediaStream.Device">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Events recorded when a page requests access device media, i.e. by starting
+    screen capture or opening a webcam or microphone, and the result of that
+    request.
+  </summary>
+  <metric name="VideoCaptureGenerateStreamResult"
+      enum="MediaStreamRequestResult2">
+    <summary>
+      The result of a page's request to open a video capture device (e.g.,
+      webcam).
+    </summary>
+  </metric>
+</event>
+
 <event name="Memory.Experimental">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
@@ -15349,7 +15384,7 @@ be describing additional metrics about the same event.
 
 <event name="OpenerHeuristic.PopupInteraction">
   <owner>rtarpine@chromium.org</owner>
-  <owner>dc-komics@chromium.org</owner>
+  <owner>dc-komics@google.com</owner>
   <summary>
     Recorded when the user first interacts in a pop-up with opener access.
   </summary>
@@ -15371,7 +15406,7 @@ be describing additional metrics about the same event.
 
 <event name="OpenerHeuristic.PopupPastInteraction">
   <owner>rtarpine@chromium.org</owner>
-  <owner>dc-komics@chromium.org</owner>
+  <owner>dc-komics@google.com</owner>
   <summary>
     Recorded when a pop-up with opener access is initially opened, and the user
     has previously interacted on the site of the URL passed to window.open().
@@ -15381,6 +15416,23 @@ be describing additional metrics about the same event.
       The number of hours since the user last interacted with the site, until
       the pop-up was opened. Clamped to 720 hours at most, and rounded down to
       the nearest exponential bucket (out of 50 buckets).
+    </summary>
+  </metric>
+</event>
+
+<event name="OpenerHeuristic.TopLevel">
+  <owner>rtarpine@chromium.org</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Recorded by a top-level page that opens a pop-up with opener access, when
+    the user interacts with that pop-up.
+  </summary>
+  <metric name="HasSameSiteIframe" enum="HasSameSiteIframe">
+    <summary>
+      &quot;True&quot; iff the top-level page contains an iframe whose URL
+      belongs to the same site (eTLD+1) as the pop-up. &quot;Unknown&quot; if
+      the top-level page is closed or the user navigates the main frame to
+      another page before interacting with the pop-up.
     </summary>
   </metric>
 </event>
@@ -25683,6 +25735,54 @@ be describing additional metrics about the same event.
   <metric name="Data997"/>
   <metric name="Data998"/>
   <metric name="Data999"/>
+</event>
+
+<event name="VideoConferencingEvent" singular="True">
+  <owner>sanjeetnd@google.com</owner>
+  <owner>charleszhao@google.com</owner>
+  <summary>
+    Records videoconferencing usage on web apps. Only records for apps which
+    have captured camera, microphone, or screen at least once while open.
+  </summary>
+  <metric name="CameraCaptureDuration">
+    <summary>
+      The total time duration (bucketed) the VC app spent capturing camera.
+      Duration in units of ms.
+    </summary>
+  </metric>
+  <metric name="DidCaptureCamera" enum="Boolean">
+    <summary>
+      App captured camera.
+    </summary>
+  </metric>
+  <metric name="DidCaptureMicrophone" enum="Boolean">
+    <summary>
+      App captured microphone.
+    </summary>
+  </metric>
+  <metric name="DidCaptureScreen" enum="Boolean">
+    <summary>
+      App captured screen.
+    </summary>
+  </metric>
+  <metric name="MicrophoneCaptureDuration">
+    <summary>
+      The total time duration (bucketed) the VC app spent capturing microphone.
+      Duration in units of ms.
+    </summary>
+  </metric>
+  <metric name="ScreenCaptureDuration">
+    <summary>
+      The total time duration (bucketed) the VC app spent capturing the screen.
+      Duration in units of ms.
+    </summary>
+  </metric>
+  <metric name="TotalDuration">
+    <summary>
+      Duration (bucketed) for which the VC app was open. Duration in units of
+      ms.
+    </summary>
+  </metric>
 </event>
 
 <event name="VirtualKeyboard.Open">

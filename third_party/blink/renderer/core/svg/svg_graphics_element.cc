@@ -43,9 +43,7 @@ SVGGraphicsElement::SVGGraphicsElement(const QualifiedName& tag_name,
       transform_(MakeGarbageCollected<SVGAnimatedTransformList>(
           this,
           svg_names::kTransformAttr,
-          CSSPropertyID::kTransform)) {
-  AddToPropertyMap(transform_);
-}
+          CSSPropertyID::kTransform)) {}
 
 SVGGraphicsElement::~SVGGraphicsElement() = default;
 
@@ -194,6 +192,40 @@ SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
     }
   }
   return SVGRectTearOff::CreateDetached(bounding_box);
+}
+
+SVGAnimatedPropertyBase* SVGGraphicsElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kTransformAttr) {
+    return transform_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret =
+        SVGTests::PropertyFromAttribute(attribute_name);
+    if (ret) {
+      return ret;
+    }
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGGraphicsElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{transform_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGTests::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  if (transform_->HasPresentationAttributeMapping() &&
+      transform_->IsAnimating()) {
+    CollectStyleForPresentationAttribute(svg_names::kTransformAttr,
+                                         g_empty_atom, style);
+  }
+  SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

@@ -1452,11 +1452,17 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
   WaitForPickerClosed();
 
+// TODO(crbug.com/1447955): This check fails in version skew test. Instead of
+// filtering out tests on version skew bots, just disable the part of test for
+// now. Re-enable this check for Lacros once crrev.com/c/4542121 is in Ash
+// stable.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   histogram_tester.ExpectTotalCount(
       "ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint", 1);
   histogram_tester.ExpectUniqueSample(
       "ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason",
       metrics::StartupProfilingFinishReason::kDone, 1);
+#endif
 }
 
 // TODO(crbug.com/1289326) Test is flaky on Linux CFI, Linux dbg, Mac ASan

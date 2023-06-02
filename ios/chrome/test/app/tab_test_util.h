@@ -67,8 +67,11 @@ void CloseAllTabs();
 // Selects tab with given index in current mode (incognito or normal).
 void SelectTabAtIndexInCurrentMode(NSUInteger index);
 
-// Returns the number of main tabs.
+// Returns the number of main, active, tabs.
 NSUInteger GetMainTabCount();
+
+// Returns the number of inactive tabs.
+NSUInteger GetInactiveTabCount();
 
 // Returns the number of incognito tabs.
 NSUInteger GetIncognitoTabCount();

@@ -162,10 +162,13 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
                                DlpPolicyEventDestination_Component_USB, 3u);
   ReportEventAndCheckComponent(data_controls::Component::kDrive,
                                DlpPolicyEventDestination_Component_DRIVE, 4u);
+  ReportEventAndCheckComponent(data_controls::Component::kOneDrive,
+                               DlpPolicyEventDestination_Component_ONEDRIVE,
+                               5u);
   ReportEventAndCheckComponent(
       data_controls::Component::kUnknownComponent,
-      DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT, 5u);
-  EXPECT_EQ(manager_.events_reported(), 6u);
+      DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT, 6u);
+  EXPECT_EQ(manager_.events_reported(), 7u);
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithoutNameAndRuleId) {

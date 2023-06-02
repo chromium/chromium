@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
+#include "ash/system/status_area_animation_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -173,13 +174,16 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
 
   // Immediately progress to the end of the animation if animation is disabled.
   if (!ShouldVisibilityChangeBeAnimated()) {
-    // Tray items need to stay visible during the notification center tray's
-    // hide animation, so don't do anything here.
+    // Tray items need to stay visible if the notification center tray's hide
+    // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
     // once the hide animation is over to ensure that all tray items are given a
     // chance to properly update their visibilities. Only applicable when the
     // QS revamp is enabled.
-    if (features::IsQsRevampEnabled() && !target_visible_) {
+    if (features::IsQsRevampEnabled() && !target_visible_ &&
+        shelf_->status_area_widget()
+            ->animation_controller()
+            ->is_hide_animation_scheduled()) {
       return;
     }
     animation_->SetSlideDuration(base::TimeDelta());

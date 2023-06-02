@@ -303,6 +303,10 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   }
 }
 
+- (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode {
+  return [self.headerView offsetToBeginFakeOmniboxExpansionForSplitMode];
+}
+
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.
@@ -660,14 +664,6 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 - (void)setLogoVendor:(id<LogoVendor>)logoVendor {
   _logoVendor = logoVendor;
   _logoVendor.doodleObserver = self;
-}
-
-- (void)locationBarBecomesFirstResponder {
-  if (!self.isShowing) {
-    return;
-  }
-
-  [self.commandHandler fakeboxTapped];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {

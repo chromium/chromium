@@ -61,24 +61,3 @@ void ParamTraits<media::BitstreamBuffer>::Log(const param_type& p,
 }
 
 }  // namespace IPC
-
-// Generate param traits write methods.
-#include "ipc/param_traits_write_macros.h"
-namespace IPC {
-#undef MEDIA_GPU_IPC_COMMON_MEDIA_PARAM_TRAITS_MACROS_H_
-#include "media/gpu/ipc/common/media_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits read methods.
-#include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef MEDIA_GPU_IPC_COMMON_MEDIA_PARAM_TRAITS_MACROS_H_
-#include "media/gpu/ipc/common/media_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#undef MEDIA_GPU_IPC_COMMON_MEDIA_PARAM_TRAITS_MACROS_H_
-#include "media/gpu/ipc/common/media_param_traits_macros.h"
-}  // namespace IPC

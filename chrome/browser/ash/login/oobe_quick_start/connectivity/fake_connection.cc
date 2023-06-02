@@ -32,7 +32,6 @@ FakeConnection::FakeConnection(
     : Connection(nearby_connection,
                  session_context,
                  std::move(quick_start_decoder),
-                 std::make_unique<Connection::NonceGenerator>(),
                  std::move(on_connection_closed),
                  std::move(on_connection_authenticated)) {}
 
@@ -76,6 +75,11 @@ void FakeConnection::VerifyUser(
 void FakeConnection::SendAccountTransferAssertionInfo(
     absl::optional<FidoAssertionInfo> assertion_info) {
   std::move(request_account_transfer_assertion_callback_).Run(assertion_info);
+}
+
+void FakeConnection::HandleHandshakeResult(bool success) {
+  CHECK(handshake_success_callback_);
+  std::move(handshake_success_callback_).Run(success);
 }
 
 bool FakeConnection::WasHandshakeInitiated() {

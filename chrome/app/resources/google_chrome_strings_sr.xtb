@@ -32,6 +32,7 @@
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
+<translation id="1555506416658437797">измените начине плаћања</translation>
 <translation id="1583073672411044740">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
 <translation id="1587325591171447154">Датотека <ph name="FILE_NAME" /> је опасна, па ју је Chrome блокирао.</translation>
@@ -83,6 +84,7 @@
 <translation id="234869673307233423">Chrome не може да вам проверава лозинке. Пробајте поново касније.</translation>
 <translation id="235650106824528204">Администратор пословног профила може да уклони све податке Chrome-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Настави</translation>
+<translation id="2399868464369312507">Google Chrome покушава да измени начине плаћања.</translation>
 <translation id="2401189691232800402">Систем Chrome ОС</translation>
 <translation id="2467438592969358367">Google Chrome жели да извезе лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
@@ -392,6 +394,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8418845734693287262">Chrome ОС не може да синхронизује податке зато што су подаци за пријављивање на налог застарели.</translation>
 <translation id="8433638294851456451">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chrome на оба уређаја.</translation>
 <translation id="8451192282033883849">Вашим налогом управља <ph name="MANAGER_NAME" />. Администратор може да види и мења овај профил у Chrome прегледачу и његове податке, попут обележивача, историје и лозинки.</translation>
+<translation id="8496177819998570653">Google менаџер лозинки</translation>
 <translation id="8498858610309223613">Посебно безбедносно ажурирање за Google Chrome је управо примењено. Рестартујте га и вратићемо вам картице.</translation>
 <translation id="8504220326736535258">Chrome је блокирао овај фајл јер садржи малвер</translation>
 <translation id="8516431725144212809">Ваша интересовања према процени Chrome-а</translation>
@@ -408,6 +411,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8649026945479135076">Уобичајено је да сајтови које посећујете памте ствари које вас занимају ради персонализације доживљаја. Сајтови могу и да чувају информације о вашим интересовањима у Chrome-у.</translation>
 <translation id="8669527147644353129">Google Chrome помоћник</translation>
 <translation id="8679801911857917785">Контролише и страницу која се приказује када покренете Chrome.</translation>
+<translation id="8684875378076460854">Chrome препоручује скенирање овог фајла јер може да буде опасан</translation>
 <translation id="8686817260976772516">Помоћу Chrome профила можете да раздвојите све Chrome садржаје. Направите профиле за пријатеље и породицу или раздвојите посао и забаву.</translation>
 <translation id="8712767363896337380">Скоро је ажуриран! Поново покрените Chrome да бисте завршили ажурирање.</translation>
 <translation id="873133009373065397">Google Chrome не може да одреди ни да подеси подразумевани прегледач</translation>

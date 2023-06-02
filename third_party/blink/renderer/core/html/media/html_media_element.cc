@@ -648,16 +648,17 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
 
 bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
                                          Document& new_document) const {
+  // A NULL frame implies a NULL domWindow, so just check one of them
+  if (!old_document.GetFrame() || !new_document.GetFrame()) {
+    return false;
+  }
+
   // Don't reuse player if the Document Picture-in-Picture API is disabled for
   // both documents.
   if (!RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
           old_document.domWindow()->GetExecutionContext()) &&
       !RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
           new_document.domWindow()->GetExecutionContext())) {
-    return false;
-  }
-
-  if (!old_document.GetFrame() || !new_document.GetFrame()) {
     return false;
   }
 
@@ -1497,9 +1498,7 @@ void HTMLMediaElement::StartPlayerLoad() {
   }
 
   LocalFrame* frame = LocalFrameForPlayer();
-  // TODO(srirama.m): Figure out how frame can be null when
-  // coming from executeDeferredLoad()
-  if (!frame) {
+  if (!frame || !GetExecutionContext()) {
     MediaLoadingFailed(
         WebMediaPlayer::kNetworkStateFormatError,
         BuildElementErrorMessage("Player load failure: document has no frame"));

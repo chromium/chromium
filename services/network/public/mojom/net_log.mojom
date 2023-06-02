@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "services/network/public/mojom/network_param.mojom";
 
 enum NetLogCaptureMode {
   // Log all events, but do not include the actual transferred bytes, and
@@ -77,8 +78,8 @@ interface NetLogProxySink {
   // sending the entries can use the net::NetLog::InitializeSourceIdPartition()
   // function to ensure this, see the comments for that function for caveats.
   AddEntry(/*NetLogEventType*/ uint32 type,
-           /*NetLogSourceType*/ uint32 source_type, uint32 source_id,
-           mojo_base.mojom.TimeTicks source_start_time, NetLogEventPhase phase,
+           NetLogSource net_log_source,
+           NetLogEventPhase phase,
            mojo_base.mojom.TimeTicks time,
            mojo_base.mojom.DictionaryValue params);
 };

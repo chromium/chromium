@@ -55,18 +55,21 @@ enum IPConfigType {
   kIPv6,
 };
 
-// The network technology type. NOTE: 'All' and 'Wireless' are only used by
-// FilterType for requesting groups of networks.
+// The network technology type.
 [Stable, Extensible]
 enum NetworkType {
+  // kAll aggregates all variants and is only used in |NetworkFilter| for
+  // requesting groups.
   kAll,
   kCellular,
   kEthernet,
-  // Mobile includes Cellular, and Tether.
+  // Mobile includes Cellular, and Tether. It is only used in |NetworkFilter|
+  // for requesting groups.
   kMobile,
   kTether,
   kVPN,
-  // Wireles includes Cellular, Tether, and WiFi.
+  // Wireles includes Cellular, Tether, and WiFi. It is only used in
+  // |NetworkFilter| for requesting groups.
   kWireless,
   kWiFi,
 };

@@ -69,12 +69,12 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   callbacks_[requestID] = std::move(callback);
 
   WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(requestID));
-  parameters.push_back(base::Value(point.x));
-  parameters.push_back(base::Value(point.y));
-  parameters.push_back(base::Value(web_content_size.width));
-  parameters.push_back(base::Value(web_content_size.height));
+  base::Value::List parameters;
+  parameters.Append(requestID);
+  parameters.Append(point.x);
+  parameters.Append(point.y);
+  parameters.Append(web_content_size.width);
+  parameters.Append(web_content_size.height);
   CallJavaScriptFunction(main_frame, "contextMenu.findElementAtPoint",
                          parameters);
 }

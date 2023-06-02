@@ -14,7 +14,7 @@ import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 
 import java.net.URISyntaxException;
 
@@ -28,9 +28,11 @@ public class OmniboxActionInSuggest extends OmniboxAction {
     public final /* EntityInfoProto.ActionInfo.ActionType */ int actionType;
     private final @NonNull String mActionUri;
 
-    public OmniboxActionInSuggest(@NonNull String hint,
+    public OmniboxActionInSuggest(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint,
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
-        super(OmniboxActionType.ACTION_IN_SUGGEST, hint, ICON_MAP.get(actionType, null));
+        super(OmniboxActionId.ACTION_IN_SUGGEST, nativeInstance, hint, accessibilityHint,
+                ICON_MAP.get(actionType, null));
         this.actionType = actionType;
         mActionUri = actionUri;
     }
@@ -42,7 +44,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
      */
     public static @NonNull OmniboxActionInSuggest from(@NonNull OmniboxAction action) {
         assert action != null;
-        assert action.actionId == OmniboxActionType.ACTION_IN_SUGGEST;
+        assert action.actionId == OmniboxActionId.ACTION_IN_SUGGEST;
         assert action instanceof OmniboxActionInSuggest;
         return (OmniboxActionInSuggest) action;
     }
@@ -61,8 +63,6 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
     /**
      * Execute an Intent associated with OmniboxActionInSuggest.
-     *
-     * TODO(crbug/1418077): pass the dependencies to constructor and define method in the interface.
      *
      * @param loadPageInCurrentTab loads the page in the current tab (if available), else new tab
      * @param startActivity starts the activity described by supplied intent

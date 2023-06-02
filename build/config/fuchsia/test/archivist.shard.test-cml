@@ -5,7 +5,7 @@
   children: [
     {
       name: "isolated_archivist",
-      url: "fuchsia-pkg://fuchsia.com/archivist-without-attribution#meta/archivist-without-attribution.cm",
+      url: "fuchsia-pkg://fuchsia.com/archivist-for-embedding#meta/archivist-for-embedding.cm",
     },
   ],
   use: [
@@ -20,9 +20,24 @@
       from: "#isolated_archivist",
     },
   ],
+  offer: [
+    {
+      event_stream: [
+        "capability_requested",
+        "directory_ready",
+      ],
+      from: "parent",
+      to: "#isolated_archivist",
+    },
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent",
+      to: "#isolated_archivist",
+    },
+  ],
   facets: {
     "fuchsia.test": {
-        "deprecated-allowed-packages": [ "archivist-without-attribution" ],
+        "deprecated-allowed-packages": [ "archivist-for-embedding" ],
     },
   },
 }

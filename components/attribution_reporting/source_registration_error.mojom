@@ -29,4 +29,10 @@ enum SourceRegistrationError {
   kAggregationKeysKeyTooLong = 15,
   kAggregationKeysValueWrongType = 16,
   kAggregationKeysValueWrongFormat = 17,
+
+  kSourceEventIdValueInvalid = 19,
+  kPriorityValueInvalid = 20,
+  kExpiryValueInvalid = 21,
+  kEventReportWindowValueInvalid = 22,
+  kAggregatableReportWindowValueInvalid = 23,
 };

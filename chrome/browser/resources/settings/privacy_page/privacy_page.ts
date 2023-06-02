@@ -182,6 +182,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
       },
 
+      enablePermissionStorageAccessApi_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
+      },
+
       /**
        * Whether the File System Access Persistent Permissions UI should be
        * displayed.
@@ -290,6 +296,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private isPrivacySandboxSettings4_: boolean;
   private privateStateTokensEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
+  private enablePermissionStorageAccessApi_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private browserProxy_: PrivacyPageBrowserProxy =

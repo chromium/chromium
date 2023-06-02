@@ -13,6 +13,7 @@
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/optimization_guide/core/optimization_target_model_observer.h"
+#import "components/optimization_guide/core/prediction_model_store.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/hashing.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "net/base/mock_network_change_notifier.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -104,6 +104,14 @@ class PredictionManagerTestBase : public PlatformTest {
     PlatformTest::SetUp();
 
     InitializeFeatureList();
+    if (optimization_guide::features::IsInstallWideModelStoreEnabled()) {
+      // Reinitialize the store, so that tests do not use state from the
+      // previous test.
+      optimization_guide::PredictionModelStore::GetInstance()
+          ->ResetForTesting();
+      OptimizationGuideServiceFactory::InitializePredictionModelStore();
+    }
+
     download::BackgroundDownloadTaskHelper::SetIgnoreLocalSSLErrorForTesting(
         true);
 
@@ -143,8 +151,11 @@ class PredictionManagerTestBase : public PlatformTest {
     browser_state_ = builder.Build();
 
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
-        ->DoFinalInit();
+        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
+            browser_state_.get()));
+  }
 
+  void CreateOffTheRecordBrowserState() {
     ChromeBrowserState* otr_browser_state =
         browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
             {std::make_pair(
@@ -262,10 +273,7 @@ class PredictionManagerTestBase : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
   IOSChromeScopedTestingLocalState local_state_;
-  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<net::test::MockNetworkChangeNotifier>
-      network_change_notifier_ = net::test::MockNetworkChangeNotifier::Create();
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedCommandLine scoped_command_line_;
@@ -275,23 +283,33 @@ class PredictionManagerTestBase : public PlatformTest {
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile;
 };
 
-class PredictionManagerTest : public PredictionManagerTestBase {
+class PredictionManagerTest : public testing::WithParamInterface<bool>,
+                              public PredictionManagerTestBase {
+ protected:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {optimization_guide::features::kOptimizationHints, {}},
-            {optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {}},
-            {optimization_guide::features::kOptimizationTargetPrediction,
-             {{"fetch_startup_delay_ms", "2000"}}},
-            {optimization_guide::features::kOptimizationGuideModelDownloading,
-             {}},
-        },
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {optimization_guide::features::kOptimizationHints, {}},
+        {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
+        {optimization_guide::features::kOptimizationTargetPrediction,
+         {{"fetch_startup_delay_ms", "2000"}}},
+        {optimization_guide::features::kOptimizationGuideModelDownloading, {}},
+    };
+    if (ShouldEnableInstallWideModelStore()) {
+      enabled_features.emplace_back(
+          optimization_guide::features::kOptimizationGuideInstallWideModelStore,
+          base::FieldTrialParams());
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
+
+  bool ShouldEnableInstallWideModelStore() const { return GetParam(); }
 };
 
-TEST_F(PredictionManagerTest, ComponentUpdatesEnabledPrefDisabled) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PredictionManagerTest,
+                         /*use_install_wide_model_store=*/testing::Bool());
+
+TEST_P(PredictionManagerTest, ComponentUpdatesEnabledPrefDisabled) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   SetComponentUpdatesEnabled(false);
@@ -304,13 +322,11 @@ TEST_F(PredictionManagerTest, ComponentUpdatesEnabledPrefDisabled) {
       "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 0);
 }
 
-TEST_F(PredictionManagerTest, ModelsAndFeaturesStoreInitialized) {
+TEST_P(PredictionManagerTest, ModelsAndFeaturesStoreInitialized) {
   ModelFileObserver model_file_observer;
   SetResponseType(
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
   base::HistogramTester histogram_tester;
-  network_change_notifier_->SetConnectionType(
-      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
 
   RegisterWithKeyedService(&model_file_observer);
   RetryForHistogramUntilCountReached(
@@ -329,7 +345,7 @@ TEST_F(PredictionManagerTest, ModelsAndFeaturesStoreInitialized) {
       kSuccessfulModelVersion, 1);
 }
 
-TEST_F(PredictionManagerTest, PredictionModelFetchFailed) {
+TEST_P(PredictionManagerTest, PredictionModelFetchFailed) {
   ModelFileObserver model_file_observer;
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   base::HistogramTester histogram_tester;
@@ -380,24 +396,31 @@ class PredictionManagerModelDownloadingBrowserTest
 
  private:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {optimization_guide::features::kOptimizationHints, {}},
-            {optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {}},
-            {optimization_guide::features::kOptimizationTargetPrediction,
-             {{"fetch_startup_delay_ms", "2000"}}},
-            {optimization_guide::features::kOptimizationGuideModelDownloading,
-             {{"unrestricted_model_downloading", "true"}}},
-        },
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {optimization_guide::features::kOptimizationHints, {}},
+        {optimization_guide::features::kRemoteOptimizationGuideFetching, {}},
+        {optimization_guide::features::kOptimizationTargetPrediction,
+         {{"fetch_startup_delay_ms", "2000"}}},
+        {optimization_guide::features::kOptimizationGuideModelDownloading,
+         {{"unrestricted_model_downloading", "true"}}},
+    };
+    if (ShouldEnableInstallWideModelStore()) {
+      enabled_features.emplace_back(
+          optimization_guide::features::kOptimizationGuideInstallWideModelStore,
+          base::FieldTrialParams());
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
  protected:
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
 
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         PredictionManagerModelDownloadingBrowserTest,
+                         /*ShouldEnableInstallWideModelStore=*/testing::Bool());
+
+TEST_P(PredictionManagerModelDownloadingBrowserTest,
        TestIncognitoUsesModelFromRegularProfile) {
   SetResponseType(
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
@@ -444,6 +467,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
   // happen, but the OnModelUpdated callback should be triggered.
   {
     base::HistogramTester otr_histogram_tester;
+    CreateOffTheRecordBrowserState();
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
     model_file_observer()->set_model_file_received_callback(base::BindOnce(
         [](base::RunLoop* run_loop,
@@ -465,9 +489,10 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
   }
 }
 
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
+TEST_P(PredictionManagerModelDownloadingBrowserTest,
        TestIncognitoDoesntFetchModels) {
   base::HistogramTester histogram_tester;
+  CreateOffTheRecordBrowserState();
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithInvalidModelFile);
@@ -493,7 +518,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
+TEST_P(PredictionManagerModelDownloadingBrowserTest,
        TestDownloadUrlAcceptedByDownloadServiceButInvalid) {
   base::HistogramTester histogram_tester;
 
@@ -517,7 +542,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
+TEST_P(PredictionManagerModelDownloadingBrowserTest,
        TestSuccessfulModelFileFlow) {
   base::HistogramTester histogram_tester;
 
@@ -563,7 +588,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
       kSuccessfulModelVersion, 1);
 }
 
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
+TEST_P(PredictionManagerModelDownloadingBrowserTest,
        TestSuccessfulModelFileFlowWithAdditionalFile) {
   base::HistogramTester histogram_tester;
 
@@ -613,7 +638,7 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
       kSuccessfulModelVersion, 1);
 }
 
-TEST_F(PredictionManagerModelDownloadingBrowserTest,
+TEST_P(PredictionManagerModelDownloadingBrowserTest,
        TestSuccessfulModelFileFlowWithInvalidAdditionalFile) {
   base::HistogramTester histogram_tester;
 

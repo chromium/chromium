@@ -1126,7 +1126,8 @@ class PasswordStoreGroupsTest : public PasswordStoreTest,
   }
 
   scoped_refptr<PasswordStore> store_;
-  raw_ptr<MockAffiliatedMatchHelper> mock_affiliated_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged>
+      mock_affiliated_match_helper_;
 };
 
 // Retrieve matching passwords for affiliated groups credentials and make sure

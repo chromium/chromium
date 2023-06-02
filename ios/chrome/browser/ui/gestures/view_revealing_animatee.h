@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_GESTURES_VIEW_REVEALING_ANIMATEE_H_
 #define IOS_CHROME_BROWSER_UI_GESTURES_VIEW_REVEALING_ANIMATEE_H_
 
+#import <Foundation/Foundation.h>
+
 // The 3 stages or steps of the transitions handled by the view revealing
 // vertical pan handler class.
 enum class ViewRevealState {

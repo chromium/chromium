@@ -171,6 +171,40 @@ def symbolize_snippets_in_json(cmd, env):
     raise subprocess.CalledProcessError(p.returncode, symbolize_command)
 
 
+def get_escalate_sanitizer_warnings_command(json_path):
+  """Construct the command to invoke sanitizer warnings script."""
+  script_path = os.path.join(
+      ROOT_DIR, 'tools', 'memory', 'sanitizer',
+      'escalate_sanitizer_warnings.py')
+  cmd = [sys.executable, script_path]
+  cmd.append('--test-summary-json-file=%s' % json_path)
+  return cmd
+
+
+def escalate_sanitizer_warnings_in_json(cmd, env):
+  """Escalate sanitizer warnings inside the JSON test summary."""
+  json_path = get_json_path(cmd)
+  if json_path is None:
+    print("Error: Cannot escalate sanitizer warnings without a json summary "
+          "file:\n", file=sys.stderr)
+    raise
+
+  try:
+    escalate_command = get_escalate_sanitizer_warnings_command(json_path)
+    p = subprocess.Popen(escalate_command, stderr=subprocess.PIPE, env=env)
+    (_, stderr) = p.communicate()
+  except OSError as e:
+    print('Exception while escalating sanitizer warnings: %s' % e,
+          file=sys.stderr)
+    raise
+
+  if p.returncode != 0:
+    print("Error: failed to escalate sanitizer warnings status in JSON:\n",
+          file=sys.stderr)
+    print(stderr, file=sys.stderr)
+    raise subprocess.CalledProcessError(p.returncode, escalate_command)
+
+
 def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
   """Run command and stream its stdout/stderr to the console & |stdoutfile|.
 
@@ -315,6 +349,8 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   msan = '--msan=1' in cmd
   tsan = '--tsan=1' in cmd
   cfi_diag = '--cfi-diag=1' in cmd
+  # Treat sanitizer warnings as test case failures.
+  use_sanitizer_warnings_script = '--fail-san=1' in cmd
   if stdoutfile or sys.platform in ['win32', 'cygwin']:
     # Symbolization works in-process on Windows even when sandboxed.
     use_symbolization_script = False
@@ -383,8 +419,14 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
       wait_with_signals(p2)
       # Also feed the out-of-band JSON output to the symbolizer script.
       symbolize_snippets_in_json(cmd, env)
-      return p1.returncode
-    return run_command(cmd, env=env, cwd=cwd, log=False)
+      returncode = p1.returncode
+    else:
+      returncode = run_command(cmd, env=env, cwd=cwd, log=False)
+    # Check if we should post-process sanitizer warnings.
+    if use_sanitizer_warnings_script:
+      escalate_sanitizer_warnings_in_json(cmd, env)
+
+    return returncode
   except OSError:
     print('Failed to start %s' % cmd, file=sys.stderr)
     raise

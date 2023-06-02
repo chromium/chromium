@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- Restore Tabs Icon Colors -->
+    <color name="restore_tabs_icon_color">@color/material_primary_80</color>
+    <color name="restore_tabs_icon_bg_color">@color/material_primary_20</color>
+</resources>

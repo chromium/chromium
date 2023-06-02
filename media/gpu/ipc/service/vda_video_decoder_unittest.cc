@@ -308,12 +308,13 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   testing::StrictMock<base::MockCallback<base::OnceClosure>> reset_cb_;
 
   scoped_refptr<FakeCommandBufferHelper> cbh_;
-  raw_ptr<testing::StrictMock<MockVideoDecodeAccelerator>> vda_;
+  raw_ptr<testing::StrictMock<MockVideoDecodeAccelerator>, DanglingUntriaged>
+      vda_;
   std::unique_ptr<VideoDecodeAccelerator> owned_vda_;
   scoped_refptr<PictureBufferManager> pbm_;
   std::unique_ptr<AsyncDestroyVideoDecoder<VdaVideoDecoder>> vdavd_;
 
-  raw_ptr<VideoDecodeAccelerator::Client> client_;
+  raw_ptr<VideoDecodeAccelerator::Client, DanglingUntriaged> client_;
   uint64_t next_release_count_ = 1;
 };
 

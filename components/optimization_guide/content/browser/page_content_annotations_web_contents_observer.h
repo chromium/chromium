@@ -74,7 +74,8 @@ class PageContentAnnotationsWebContentsObserver
   void DidStopLoading() override;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
+  raw_ptr<PageContentAnnotationsService, DanglingUntriaged>
+      page_content_annotations_service_;
 
   SalientImageRetriever salient_image_retriever_;
 
@@ -84,10 +85,11 @@ class PageContentAnnotationsWebContentsObserver
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
 
   // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
+  raw_ptr<OptimizationGuideDecider, DanglingUntriaged>
+      optimization_guide_decider_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;

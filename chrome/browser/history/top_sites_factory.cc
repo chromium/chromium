@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
@@ -101,7 +101,8 @@ scoped_refptr<history::TopSites> TopSitesFactory::GetForProfile(
 
 // static
 TopSitesFactory* TopSitesFactory::GetInstance() {
-  return base::Singleton<TopSitesFactory>::get();
+  static base::NoDestructor<TopSitesFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -137,8 +138,7 @@ TopSitesFactory::TopSitesFactory()
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
-TopSitesFactory::~TopSitesFactory() {
-}
+TopSitesFactory::~TopSitesFactory() = default;
 
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

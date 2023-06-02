@@ -83,15 +83,16 @@ TEST_F(PrivateAggregationHostTest,
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
   absl::optional<AggregatableReportRequest> validated_request;
-  EXPECT_CALL(mock_callback_,
-              Run(_, Property(&PrivateAggregationBudgetKey::api,
-                              PrivateAggregationBudgetKey::Api::kFledge)))
+  EXPECT_CALL(
+      mock_callback_,
+      Run(_, Property(&PrivateAggregationBudgetKey::api,
+                      PrivateAggregationBudgetKey::Api::kProtectedAudience)))
       .WillOnce(MoveArg<0>(&validated_request));
 
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
@@ -133,8 +134,9 @@ TEST_F(PrivateAggregationHostTest,
               AggregatableReportSharedInfo::DebugMode::kDisabled,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"0.1",
-              /*api_identifier=*/"fledge"),
-          /*reporting_path=*/"/.well-known/private-aggregation/report-fledge");
+              /*api_identifier=*/"protected-audience"),
+          /*reporting_path=*/
+          "/.well-known/private-aggregation/report-protected-audience");
   ASSERT_TRUE(expected_request);
 
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
@@ -154,7 +156,7 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   const PrivateAggregationBudgetKey::Api apis[] = {
-      PrivateAggregationBudgetKey::Api::kFledge,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
       PrivateAggregationBudgetKey::Api::kSharedStorage};
 
   std::vector<mojo::Remote<blink::mojom::PrivateAggregationHost>> remotes{
@@ -187,11 +189,12 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
   }
 
   EXPECT_EQ(validated_requests[0]->reporting_path(),
-            "/.well-known/private-aggregation/report-fledge");
+            "/.well-known/private-aggregation/report-protected-audience");
   EXPECT_EQ(validated_requests[1]->reporting_path(),
             "/.well-known/private-aggregation/report-shared-storage");
 
-  EXPECT_EQ(validated_requests[0]->shared_info().api_identifier, "fledge");
+  EXPECT_EQ(validated_requests[0]->shared_info().api_identifier,
+            "protected-audience");
   EXPECT_EQ(validated_requests[1]->shared_info().api_identifier,
             "shared-storage");
 
@@ -217,10 +220,10 @@ TEST_F(PrivateAggregationHostTest, DebugModeDetails_ReflectedInReport) {
       /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/1234u)));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
   std::vector<absl::optional<AggregatableReportRequest>> validated_requests{
       /*n=*/3};
@@ -277,14 +280,14 @@ TEST_F(PrivateAggregationHostTest,
   std::vector<mojo::Remote<blink::mojom::PrivateAggregationHost>> remotes(
       /*n=*/4);
 
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginA, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remotes[0].BindNewPipeAndPassReceiver()));
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginB, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remotes[1].BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOriginA, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remotes[0].BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOriginB, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remotes[1].BindNewPipeAndPassReceiver()));
   EXPECT_TRUE(host_->BindNewReceiver(
       kExampleOriginA, kMainFrameOrigin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
@@ -295,9 +298,10 @@ TEST_F(PrivateAggregationHostTest,
       /*context_id=*/absl::nullopt, remotes[3].BindNewPipeAndPassReceiver()));
 
   // Use the bucket as a sentinel to ensure that calls were routed correctly.
-  EXPECT_CALL(mock_callback_,
-              Run(_, Property(&PrivateAggregationBudgetKey::api,
-                              PrivateAggregationBudgetKey::Api::kFledge)))
+  EXPECT_CALL(
+      mock_callback_,
+      Run(_, Property(&PrivateAggregationBudgetKey::api,
+                      PrivateAggregationBudgetKey::Api::kProtectedAudience)))
       .WillOnce(
           Invoke([&kExampleOriginB](AggregatableReportRequest request,
                                     PrivateAggregationBudgetKey budget_key) {
@@ -364,16 +368,16 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote_1;
-  EXPECT_FALSE(host_->BindNewReceiver(kInsecureOrigin, kMainFrameOrigin,
-                                      PrivateAggregationBudgetKey::Api::kFledge,
-                                      /*context_id=*/absl::nullopt,
-                                      remote_1.BindNewPipeAndPassReceiver()));
+  EXPECT_FALSE(host_->BindNewReceiver(
+      kInsecureOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote_1.BindNewPipeAndPassReceiver()));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote_2;
-  EXPECT_FALSE(host_->BindNewReceiver(kOpaqueOrigin, kMainFrameOrigin,
-                                      PrivateAggregationBudgetKey::Api::kFledge,
-                                      /*context_id=*/absl::nullopt,
-                                      remote_2.BindNewPipeAndPassReceiver()));
+  EXPECT_FALSE(host_->BindNewReceiver(
+      kOpaqueOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote_2.BindNewPipeAndPassReceiver()));
 
   // Attempt to send a message to an unconnected remote. The request should
   // not be processed.
@@ -409,10 +413,10 @@ TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextid_Fails) {
       "this_is_an_example_of_a_context_id_that_is_too_long_to_be_allowed";
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_FALSE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                      PrivateAggregationBudgetKey::Api::kFledge,
-                                      kTooLongContextId,
-                                      remote.BindNewPipeAndPassReceiver()));
+  EXPECT_FALSE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience, kTooLongContextId,
+      remote.BindNewPipeAndPassReceiver()));
 
   // Attempt to send a message to an unconnected remote. The request should
   // not be processed.
@@ -441,10 +445,10 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
   // Negative values are invalid
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
@@ -497,10 +501,10 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
       too_many_contributions;
   for (int i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
@@ -543,10 +547,10 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
   // If the API is enabled, the call should succeed.
   EXPECT_CALL(browser_client,
@@ -583,10 +587,10 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
   // If the API is enabled, the call should succeed.
   EXPECT_CALL(browser_client,
@@ -621,10 +625,10 @@ TEST_F(PrivateAggregationHostTest, ContextIdSet_ReflectedInSingleReport) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     "example_context_id",
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      "example_context_id", remote.BindNewPipeAndPassReceiver()));
 
   absl::optional<AggregatableReportRequest> validated_request;
   EXPECT_CALL(mock_callback_, Run).WillOnce(MoveArg<0>(&validated_request));
@@ -706,8 +710,8 @@ TEST_F(PrivateAggregationHostTest,
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationBudgetKey::Api::kFledge, "example_context_id",
-        remote.BindNewPipeAndPassReceiver()));
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
+        "example_context_id", remote.BindNewPipeAndPassReceiver()));
 
     remote->SetDebugModeDetailsOnNullReport(std::move(debug_mode_details_arg));
 
@@ -720,8 +724,8 @@ TEST_F(PrivateAggregationHostTest,
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationBudgetKey::Api::kFledge, "example_context_id",
-        remote.BindNewPipeAndPassReceiver()));
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
+        "example_context_id", remote.BindNewPipeAndPassReceiver()));
 
     // While it is expected that SetDebugModeDetailsOnNullReport() be called, a
     // null report should still be sent if it isn't.
@@ -770,7 +774,7 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationBudgetKey::Api::kFledge,
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
         /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
     EXPECT_TRUE(remote.is_connected());
@@ -782,7 +786,7 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     EXPECT_TRUE(host_->BindNewReceiver(
         kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationBudgetKey::Api::kFledge,
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
         /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
     // Setting the debug details has no effect.
@@ -804,10 +808,10 @@ TEST_F(PrivateAggregationHostTest,
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     "example_context_id",
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      "example_context_id", remote.BindNewPipeAndPassReceiver()));
 
   absl::optional<AggregatableReportRequest> validated_request;
   EXPECT_CALL(mock_callback_, Run).WillOnce(MoveArg<0>(&validated_request));
@@ -850,15 +854,16 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
       url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
-                                     PrivateAggregationBudgetKey::Api::kFledge,
-                                     /*context_id=*/absl::nullopt,
-                                     remote.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, remote.BindNewPipeAndPassReceiver()));
 
   absl::optional<AggregatableReportRequest> validated_request;
-  EXPECT_CALL(mock_callback_,
-              Run(_, Property(&PrivateAggregationBudgetKey::api,
-                              PrivateAggregationBudgetKey::Api::kFledge)))
+  EXPECT_CALL(
+      mock_callback_,
+      Run(_, Property(&PrivateAggregationBudgetKey::api,
+                      PrivateAggregationBudgetKey::Api::kProtectedAudience)))
       .WillOnce(MoveArg<0>(&validated_request));
 
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>

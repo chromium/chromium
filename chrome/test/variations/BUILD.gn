@@ -1,3 +1,4 @@
+import("//build/config/android/config.gni")
 import("//build/config/python.gni")
 
 python_library("test_utils") {
@@ -11,10 +12,26 @@ python_library("fixtures") {
 
   data = [
     "//build/skia_gold_common/",
+    "//chrome/test/variations/drivers/",
     "//chrome/test/variations/fixtures/",
+    "//chrome/test/variations/drivers/",
   ]
 
   data_deps = [ "//ui/base:goldctl" ]
+
+  if (is_android && enable_chrome_android_internal) {
+    data += [
+      "//build/android/",
+     "//tools/android/avd/proto/",
+    ]
+
+    data_deps += [
+      "//build/android:devil_chromium_py",
+      "//build/android:test_runner_py",
+      "//third_party/catapult/devil:devil",
+      "//clank/bin:installer_scripts"
+    ]
+  }
 }
 
 python_library("variations_desktop_smoke_tests") {

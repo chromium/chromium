@@ -17,7 +17,7 @@ import re
 import shutil
 import subprocess
 import sys
-import urllib3
+import urllib.request
 
 from build import (CheckoutGitRepo, GetCommitDescription, LLVM_DIR,
                    LLVM_GIT_URL, RunCommand)
@@ -88,11 +88,9 @@ Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
 Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
 Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
 Cq-Include-Trybots: chromium/try:linux-rust-x64-rel
+Cq-Include-Trybots: chromium/try:mac-rust-x64-dbg
 Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
 Cq-Include-Trybots: chromium/try:win-rust-x64-rel'''
-
-# These do not pass yet:
-#Cq-Include-Trybots: chromium/try:mac-rust-x64-rel
 
 is_win = sys.platform.startswith('win32')
 
@@ -141,12 +139,9 @@ class ClangVersion:
 
 
 def GetLatestGitHash(url):
-  http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED")
-  resp = http.request('GET', url)
-  if resp.status != 200:
-    raise RuntimeError(f'Unable to download {url}: status {resp.status}')
-  m = re.search(HEAD_SHA_REGEX, resp.data)
-  return m.group(1).decode('utf-8')
+  with urllib.request.urlopen(url) as response:
+    m = re.search(HEAD_SHA_REGEX, response.read())
+    return m.group(1).decode('utf-8')
 
 
 def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:

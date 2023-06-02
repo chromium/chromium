@@ -15,7 +15,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -190,10 +189,6 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;
   }
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
   auto profile_creation_required_by_policy =
       signin_util::ProfileSeparationEnforcedByPolicy(browser_->profile(),
                                                      signin_restriction);
@@ -202,7 +197,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
           browser_->profile(), signin_restriction);
   browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, profile_creation_required_by_policy, show_link_data_option,
-      GenerateNewProfileColor(entry).color,
+
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
              signin::SigninChoice choice) {
@@ -235,13 +230,9 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
   }
 #endif
   DCHECK(!prompt_for_new_profile);
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
   browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false, GenerateNewProfileColor(entry).color,
+      /*show_link_data_option=*/false,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
              signin::SigninChoice choice) {

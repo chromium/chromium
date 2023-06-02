@@ -11,7 +11,6 @@ import difflib
 import os
 import sys
 
-USE_PYTHON3 = True
 
 # Deprecations in this list have no `WebFeature`s to generate code from as they
 # are not dispatched within the renderer. If this list starts to grow we should

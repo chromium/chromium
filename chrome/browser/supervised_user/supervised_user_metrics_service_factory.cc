@@ -13,10 +13,10 @@
 #include "content/public/browser/browser_context.h"
 
 // static
-SupervisedUserMetricsService*
+supervised_user::SupervisedUserMetricsService*
 SupervisedUserMetricsServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<SupervisedUserMetricsService*>(
+  return static_cast<supervised_user::SupervisedUserMetricsService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
@@ -39,13 +39,13 @@ SupervisedUserMetricsServiceFactory::~SupervisedUserMetricsServiceFactory() =
 
 void SupervisedUserMetricsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  SupervisedUserMetricsService::RegisterProfilePrefs(registry);
+  supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
 }
 
 KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new SupervisedUserMetricsService(
+  return new supervised_user::SupervisedUserMetricsService(
       profile->GetPrefs(),
       SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter());
 }

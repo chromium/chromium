@@ -8,15 +8,10 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+class MockEnrollmentLauncher;
+
 namespace test {
 
 // Result of Demo Mode setup.
@@ -27,17 +22,15 @@ enum class DemoModeSetupResult {
   ERROR_POWERWASH_REQUIRED
 };
 
-// Helper method that mocks EnterpriseEnrollmentHelper to ensure that no
+// Helper method that sets expectations on enrollment launcher to ensure that no
 // enrollment attempt was made.
-void SetupMockDemoModeNoEnrollmentHelper();
+void SetupDemoModeNoEnrollment(MockEnrollmentLauncher* mock);
 
-// Helper method that mocks EnterpriseEnrollmentHelper for online Demo Mode
-// setup. It simulates specified Demo Mode enrollment `result`.
-void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result);
-
-// Helper method that mocks EnterpriseEnrollmentHelper for offline Demo Mode
-// setup. It simulates specified Demo Mode enrollment `result`.
-void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result);
+// Helper method that sets expectations on enrollment launcher for online Demo
+// Mode setup. It simulates specified Demo Mode enrollment `result`.
+void SetupDemoModeOnlineEnrollment(
+    MockEnrollmentLauncher* mock_enrollment_process_launcher,
+    DemoModeSetupResult result);
 
 // Creates fake offline policy directory to be used in tests.
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,

@@ -13,12 +13,11 @@ static_library("core") {
     "constants.h",
     "features.cc",
     "features.h",
-    "msbb_delegate.h",
     "promo_handler.cc",
     "promo_handler.h",
     "signin_delegate.h",
   ]
-
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
     "mojom:mojo_bindings",
     "proto",

@@ -183,6 +183,8 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     throw 'Wrong renderUrl ' + browserSignals.renderUrl;
   if (browserSignals.dataVersion !== 1234)
     throw 'Wrong dataVersion ' + browserSignals.dataVersion;
+  if (browserSignals.bidCurrency !== 'USD')
+    throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
 
   // Fields that vary by method.
   if (isScoreAd) {
@@ -195,18 +197,12 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
       throw 'Wrong adComponents ' + browserSignals.adComponents;
     if (browserSignals.biddingDurationMsec < 0)
       throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
-    if (browserSignals.bidCurrency !== 'USD')
-      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
     if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
-    // Test configures sellerCurrency to EUR, and our scoreAd provides
-    // conversion, so bid should be in euros.
-    if (browserSignals.bidCurrency !== 'EUR')
-      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
-    validateBid(browserSignals.bid / 0.91);
+    validateBid(browserSignals.bid);
 
     if (browserSignals.desirability !== 2)
       throw 'Wrong desireability ' + browserSignals.desirability;

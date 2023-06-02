@@ -81,6 +81,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
+#include "components/trusted_vault/command_line_switches.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -357,7 +358,8 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     // server_type_ == EXTERNAL_LIVE_SERVER.
     // Effectively disables interaction with SecurityDomainService for E2E
     // tests.
-    cl->AppendSwitchASCII(syncer::kTrustedVaultServiceURL, "broken_url");
+    cl->AppendSwitchASCII(trusted_vault::kTrustedVaultServiceURLSwitch,
+                          "broken_url");
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -866,6 +868,7 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   }
 #endif
 
+  DLOG(INFO) << "SyncTest::SetupSync() completed.";
   return true;
 }
 

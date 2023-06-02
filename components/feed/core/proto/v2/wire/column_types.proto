@@ -10,5 +10,6 @@ option optimize_for = LITE_RUNTIME;
 
 enum TypeKind {
   TYPE_UNKNOWN = 0;
+  TYPE_INT64 = 2;
   TYPE_UINT64 = 4;
 }

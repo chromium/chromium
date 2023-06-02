@@ -70,7 +70,7 @@ void SharingHubModel::GetFirstPartyActionList(
     std::vector<SharingHubAction>* list) {
   for (const auto& action : first_party_action_list_) {
     if (action.command_id == IDC_SEND_TAB_TO_SELF) {
-      if (DoShowSendTabToSelfForWebContents(web_contents)) {
+      if (send_tab_to_self::ShouldDisplayEntryPoint(web_contents)) {
         list->push_back(action);
       }
     } else if (action.command_id == IDC_QRCODE_GENERATOR) {
@@ -114,9 +114,8 @@ void SharingHubModel::PopulateFirstPartyActions() {
   }
 
   first_party_action_list_.emplace_back(
-      IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-      &kLaptopAndSmartphoneIcon, "SharingHubDesktop.SendTabToSelfSelected", 0);
+      IDC_SEND_TAB_TO_SELF, l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF),
+      &kDevicesIcon, "SharingHubDesktop.SendTabToSelfSelected", 0);
 
   first_party_action_list_.emplace_back(
       IDC_QRCODE_GENERATOR,
@@ -144,11 +143,6 @@ void SharingHubModel::PopulateFirstPartyActions() {
   first_party_action_list_.emplace_back(
       IDC_SAVE_PAGE, l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
       &kSavePageIcon, "SharingHubDesktop.SavePageSelected", 0);
-}
-
-bool SharingHubModel::DoShowSendTabToSelfForWebContents(
-    content::WebContents* web_contents) {
-  return send_tab_to_self::ShouldDisplayEntryPoint(web_contents);
 }
 
 }  // namespace sharing_hub

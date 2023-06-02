@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">ایکسٹینشن کا پن ہٹایا گیا</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 مہینہ باقی}other{# مہینے باقی}}</translation>
 <translation id="4888938634149558681">کال کریں</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 سیکنڈ}other{# سیکنڈ}}</translation>
 <translation id="4971687151119236543">میڈیا پچھلا ٹریک</translation>
 <translation id="5046499563572181734">یہاں تھپتھپائیں</translation>

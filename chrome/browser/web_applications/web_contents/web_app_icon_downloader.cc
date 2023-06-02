@@ -4,53 +4,59 @@
 
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 
+#include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace web_app {
 
-WebAppIconDownloader::WebAppIconDownloader(
-    content::WebContents* web_contents,
-    base::flat_set<GURL> extra_favicon_urls,
-    WebAppIconDownloaderCallback callback,
-    IconDownloaderOptions options)
-    : content::WebContentsObserver(web_contents),
-      extra_favicon_urls_(std::move(extra_favicon_urls)),
-      options_(options),
-      callback_(std::move(callback)) {
-  DCHECK(web_contents);
-}
-
+WebAppIconDownloader::WebAppIconDownloader() = default;
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
-void WebAppIconDownloader::Start() {
-  CHECK(!web_contents()->IsBeingDestroyed());
-  starting_ = true;
+void WebAppIconDownloader::Start(content::WebContents* web_contents,
+                                 const base::flat_set<GURL>& extra_icon_urls,
+                                 WebAppIconDownloaderCallback callback,
+                                 IconDownloaderOptions options) {
+  // Cannot call start more than once.
+  CHECK_EQ(pending_requests(), 0ul);
+  CHECK(web_contents);
+  CHECK(!web_contents->IsBeingDestroyed());
+  Observe(web_contents);
+  callback_ = std::move(callback);
+  options_ = options;
+
   // Favicons are supported only in HTTP or HTTPS WebContents.
-  const GURL& url = web_contents()->GetLastCommittedURL();
+  const GURL& url = web_contents->GetLastCommittedURL();
   if (!url.is_empty() && !url.inner_url() && !url.SchemeIsHTTPOrHTTPS()) {
     options_.skip_page_favicons = true;
   }
 
-  FetchIcons(extra_favicon_urls_);
+  // The call to `GetFaviconURLsFromWebContents()` is to allow this method to
+  // be mocked by unit tests.
+  const auto& favicon_urls = GetFaviconURLsFromWebContents();
 
-  if (!options_.skip_page_favicons) {
-    // The call to `GetFaviconURLsFromWebContents()` is to allow this method to
-    // be mocked by unit tests.
-    const auto& favicon_urls = GetFaviconURLsFromWebContents();
-    if (!favicon_urls.empty()) {
-      FetchIcons(favicon_urls);
+  if (!options_.skip_page_favicons && !favicon_urls.empty()) {
+    std::vector<GURL> combined_icon_urls(extra_icon_urls.begin(),
+                                         extra_icon_urls.end());
+    combined_icon_urls.reserve(combined_icon_urls.size() + favicon_urls.size());
+    for (const auto& favicon_url : favicon_urls) {
+      if (favicon_url->icon_type != blink::mojom::FaviconIconType::kInvalid) {
+        combined_icon_urls.push_back(favicon_url->icon_url);
+      }
     }
+    FetchIcons(base::flat_set<GURL>(combined_icon_urls));
+  } else {
+    FetchIcons(extra_icon_urls);
   }
-  starting_ = false;
-  MaybeCompleteCallback();
 }
 
 int WebAppIconDownloader::DownloadImage(const GURL& url) {
@@ -71,22 +77,13 @@ WebAppIconDownloader::GetFaviconURLsFromWebContents() {
   return web_contents()->GetFaviconURLs();
 }
 
-void WebAppIconDownloader::FetchIcons(
-    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
-  if (!web_contents()) {
-    return;
-  }
-
-  std::vector<GURL> urls;
-  for (const auto& favicon_url : favicon_urls) {
-    if (favicon_url->icon_type != blink::mojom::FaviconIconType::kInvalid) {
-      urls.push_back(favicon_url->icon_url);
-    }
-  }
-  FetchIcons(urls);
-}
-
 void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
+  CHECK_EQ(pending_requests(), 0ul);
+  CHECK(!populating_pending_requests_);
+
+  // This is required because `DidDownloadFavicon` is triggered synchronously in
+  // some tests.
+  populating_pending_requests_ = true;
   // Download icons; put their download ids into |in_progress_requests_| and
   // their urls into |processed_urls_|.
   for (const GURL& url : urls) {
@@ -95,6 +92,8 @@ void WebAppIconDownloader::FetchIcons(const base::flat_set<GURL>& urls) {
       in_progress_requests_.insert(DownloadImage(url));
     }
   }
+  populating_pending_requests_ = false;
+
   MaybeCompleteCallback();
 }
 
@@ -104,10 +103,8 @@ void WebAppIconDownloader::DidDownloadFavicon(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& original_bitmap_sizes) {
-  // Request may have been canceled by PrimaryPageChanged().
-  if (in_progress_requests_.erase(id) == 0) {
-    return;
-  }
+  size_t num_deleted = in_progress_requests_.erase(id);
+  CHECK_EQ(num_deleted, 1ul);
 
   if (http_status_code != 0) {
     DCHECK_LE(100, http_status_code);
@@ -128,18 +125,23 @@ void WebAppIconDownloader::DidDownloadFavicon(
 }
 
 void WebAppIconDownloader::PrimaryPageChanged(content::Page& page) {
-  CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
-                  DownloadedIconsHttpResults{});
+  if (callback_) {
+    CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                    DownloadedIconsHttpResults{});
+  }
 }
 
 void WebAppIconDownloader::WebContentsDestroyed() {
   Observe(nullptr);
-  CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
-                  DownloadedIconsHttpResults{});
+  if (callback_) {
+    CancelDownloads(IconsDownloadedResult::kPrimaryPageChanged,
+                    DownloadedIconsHttpResults{});
+  }
 }
 
 void WebAppIconDownloader::MaybeCompleteCallback() {
-  if (starting_ || !in_progress_requests_.empty() || callback_.is_null()) {
+  if (populating_pending_requests_ || !in_progress_requests_.empty() ||
+      callback_.is_null()) {
     return;
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -153,6 +155,7 @@ void WebAppIconDownloader::CancelDownloads(
     DownloadedIconsHttpResults icons_http_results) {
   DCHECK_NE(result, IconsDownloadedResult::kCompleted);
 
+  weak_ptr_factory_.InvalidateWeakPtrs();
   in_progress_requests_.clear();
   icons_map_.clear();
   icons_http_results_.clear();

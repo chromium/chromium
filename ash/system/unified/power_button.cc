@@ -346,6 +346,7 @@ PowerButtonContainer::PowerButtonContainer(PressedCallback callback)
       kUnifiedMenuPowerIcon, cros_tokens::kCrosSysOnSurface));
   power_icon_->SetImageSize(kIconSize);
   arrow_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  arrow_icon_->SetID(VIEW_ID_QS_POWER_BUTTON_CHEVRON_ICON);
   arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kChevronDownSmallIcon, cros_tokens::kCrosSysOnSurface));
   arrow_icon_->SetImageSize(kIconSize);
@@ -368,8 +369,8 @@ void PowerButtonContainer::UpdateIconColor(bool is_active) {
                                  : cros_tokens::kCrosSysOnSurface;
   power_icon_->SetImage(
       ui::ImageModel::FromVectorIcon(kUnifiedMenuPowerIcon, icon_color_id));
-  arrow_icon_->SetImage(
-      ui::ImageModel::FromVectorIcon(kChevronDownSmallIcon, icon_color_id));
+  arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      is_active ? kChevronUpSmallIcon : kChevronDownSmallIcon, icon_color_id));
 }
 
 PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)

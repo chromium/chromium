@@ -66,9 +66,13 @@ class TestBookmarkClient : public BookmarkClient {
   // Returns true if there is at least one active favicon loading task.
   bool HasFaviconLoadTasks() const;
 
+  // Sets |storage_state_for_uma_| returned by |GetStorageStateForUma()|.
+  void SetStorageStateForUma(metrics::StorageStateForUma storage_state);
+
   // BookmarkClient:
   bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) override;
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
+  metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;
   bool CanSyncNode(const BookmarkNode* node) override;
   bool CanBeEditedByUser(const BookmarkNode* node) override;
@@ -95,11 +99,15 @@ class TestBookmarkClient : public BookmarkClient {
   // managed_node_ exists only until GetLoadManagedNodeCallback gets called, but
   // unowned_managed_node_ stays around after that.
   std::unique_ptr<BookmarkPermanentNode> managed_node_;
-  raw_ptr<BookmarkPermanentNode> unowned_managed_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> unowned_managed_node_ =
+      nullptr;
 
   base::CancelableTaskTracker::TaskId next_task_id_ = 1;
   std::map<GURL, std::list<favicon_base::FaviconImageCallback>>
       requests_per_page_url_;
+
+  metrics::StorageStateForUma storage_state_for_uma_ =
+      metrics::StorageStateForUma::kLocalOnly;
 };
 
 }  // namespace bookmarks

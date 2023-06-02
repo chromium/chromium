@@ -59,6 +59,7 @@ struct BoxLayoutExtraInput;
 struct NGFragmentGeometry;
 struct NGPhysicalBoxStrut;
 struct PaintInfo;
+struct PhysicalScrollRange;
 
 enum SizeType { kMainOrPreferredSize, kMinSize, kMaxSize };
 enum AvailableLogicalHeightType {
@@ -97,9 +98,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   // For spanners, the spanner placeholder that lays us out within the multicol
   // container.
   Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
-
-  LayoutUnit override_logical_width_;
-  LayoutUnit override_logical_height_;
 
   bool has_override_containing_block_content_logical_width_ : 1;
   bool has_override_containing_block_content_logical_height_ : 1;
@@ -834,9 +832,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   void LayoutSubtreeRoot();
-  void LayoutSubtreeRootOld();
 
-  void UpdateLayout() override;
   void Paint(const PaintInfo&) const override;
 
   virtual bool IsInSelfHitTestingPhase(HitTestPhase phase) const {
@@ -869,11 +865,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool StretchBlockSizeIfAuto() const;
   bool HasOverrideLogicalHeight() const;
   bool HasOverrideLogicalWidth() const;
-  void SetOverrideLogicalHeight(LayoutUnit);
-  void SetOverrideLogicalWidth(LayoutUnit);
-  void ClearOverrideLogicalHeight();
-  void ClearOverrideLogicalWidth();
-  void ClearOverrideSize();
 
   LayoutUnit OverrideContentLogicalWidth() const;
   LayoutUnit OverrideContentLogicalHeight() const;
@@ -1149,13 +1140,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual void ComputeLogicalHeight(LayoutUnit logical_height,
                                     LayoutUnit logical_top,
                                     LogicalExtentComputedValues&) const;
-  // This function will compute the logical border-box height, without laying
-  // out the box. This means that the result is only "correct" when the height
-  // is explicitly specified. This function exists so that intrinsic width
-  // calculations have a way to deal with children that have orthogonal flows.
-  // When there is no explicit height, this function assumes a content height of
-  // zero (and returns just border+padding).
-  LayoutUnit ComputeLogicalHeightWithoutLayout() const;
 
   bool StretchesToViewport() const {
     NOT_DESTROYED();
@@ -1248,8 +1232,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     }
   }
 
-  bool CanBeScrolledAndHasScrollableArea() const;
-  virtual bool CanBeProgrammaticallyScrolled() const;
+  bool IsUserScrollable() const;
   virtual void Autoscroll(const PhysicalOffset&);
   PhysicalOffset CalculateAutoscrollDirection(
       const gfx::PointF& point_in_root_frame) const;
@@ -1293,11 +1276,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return ScrollsOverflowY() &&
            PixelSnappedScrollHeight() != PixelSnappedClientHeight();
   }
-  virtual bool ScrollsOverflowX() const {
+  bool ScrollsOverflowX() const {
     NOT_DESTROYED();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowX();
   }
-  virtual bool ScrollsOverflowY() const {
+  bool ScrollsOverflowY() const {
     NOT_DESTROYED();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowY();
   }
@@ -1350,9 +1333,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
   PositionWithAffinity PositionForPointInFragments(const PhysicalOffset&) const;
 
-  void RemoveFloatingOrPositionedChildFromBlockLists();
-
-  bool ShrinkToAvoidFloats() const;
   virtual bool CreatesNewFormattingContext() const {
     NOT_DESTROYED();
     return true;
@@ -1469,8 +1449,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // See README.md for an explanation of scroll origin.
-  gfx::Vector2d OriginAdjustmentForScrollbars() const;
-  gfx::Point ScrollOrigin() const;
+  PhysicalOffset OriginAdjustmentForScrollbars() const;
+  gfx::Point ScrollOriginInt() const;
   PhysicalOffset ScrolledContentOffset() const;
 
   // Scroll offset as snapped to physical pixels. This value should be used in
@@ -1741,6 +1721,20 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // This should be called when the border-box size of this box is changed.
   void SizeChanged();
+
+  // Finds the target anchor element for the given name in the containing block.
+  // https://drafts.csswg.org/css-anchor-position-1/#target-anchor-element
+  const LayoutObject* FindTargetAnchor(const ScopedCSSName&) const;
+
+  // Returns this element's implicit anchor element if there is one and it is an
+  // acceptable anchor element.
+  // https://drafts.csswg.org/css-anchor-position-1/#ref-for-valdef-anchor-implicit
+  const LayoutObject* AcceptableImplicitAnchor() const;
+
+  // Returns position fallback results for anchor positioned element.
+  absl::optional<wtf_size_t> PositionFallbackIndex() const;
+  const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
+      const;
 
  protected:
   ~LayoutBox() override;

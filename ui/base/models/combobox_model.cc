@@ -67,12 +67,4 @@ ComboboxModel::GetDropdownSelectedBackgroundColorIdAt(size_t index) const {
   return absl::nullopt;
 }
 
-std::vector<std::string> ComboboxModel::GetLabelFontNameAt(size_t index) {
-  return std::vector<std::string>();
-}
-
-absl::optional<int> ComboboxModel::GetLabelFontSize() {
-  return absl::nullopt;
-}
-
 }  // namespace ui

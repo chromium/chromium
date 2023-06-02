@@ -17,7 +17,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
 #include "media/filters/vp9_parser.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/parsers/vp8_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -147,7 +147,7 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
   return success;
 }
 
-EncodedDataHelper::EncodedDataHelper(const std::vector<uint8_t>& stream,
+EncodedDataHelper::EncodedDataHelper(base::span<const uint8_t> stream,
                                      VideoCodec codec)
     : data_(std::string(reinterpret_cast<const char*>(stream.data()),
                         stream.size())),
@@ -284,9 +284,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
 
   // Standard stream case.
   if (ivf_frames.size() == 1) {
-    return DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(ivf_frames[0].data),
-        ivf_frames[0].header.frame_size);
+    return DecoderBuffer::CopyFrom(ivf_frames[0].data.get(),
+                                   ivf_frames[0].header.frame_size);
   }
 
   if (ivf_frames.size() > 3) {
@@ -299,7 +298,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
   std::vector<uint32_t> frame_sizes;
   frame_sizes.reserve(ivf_frames.size());
   for (const IvfFrame& ivf : ivf_frames) {
-    data.append(reinterpret_cast<char*>(ivf.data), ivf.header.frame_size);
+    data.append(reinterpret_cast<const char*>(ivf.data.get()),
+                ivf.header.frame_size);
     frame_sizes.push_back(ivf.header.frame_size);
   }
 
@@ -380,22 +380,22 @@ struct AlignedDataHelper::VideoFrameData {
   gfx::GpuMemoryBufferHandle gmb_handle;
 };
 
-AlignedDataHelper::AlignedDataHelper(const std::vector<uint8_t>& stream,
-                                     uint32_t num_frames,
+AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
                                      uint32_t num_read_frames,
                                      bool reverse,
-                                     VideoPixelFormat pixel_format,
-                                     const gfx::Size& src_coded_size,
-                                     const gfx::Size& dst_coded_size,
-                                     const gfx::Rect& visible_rect,
+                                     const gfx::Size& aligned_coded_size,
                                      const gfx::Size& natural_size,
                                      uint32_t frame_rate,
                                      VideoFrame::StorageType storage_type)
-    : num_frames_(num_frames),
+    : video_(video),
+      num_frames_(video_->NumFrames()),
       num_read_frames_(num_read_frames),
       reverse_(reverse),
+      create_frame_mode_(num_frames_ > RawVideo::kLimitedReadFrames
+                             ? CreateFrameMode::kOnDemand
+                             : CreateFrameMode::kAllAtOnce),
       storage_type_(storage_type),
-      visible_rect_(visible_rect),
+      visible_rect_(video_->VisibleRect()),
       natural_size_(natural_size),
       time_stamp_interval_(base::Seconds(/*secs=*/0u)),
       elapsed_frame_time_(base::Seconds(/*secs=*/0u)) {
@@ -405,13 +405,27 @@ AlignedDataHelper::AlignedDataHelper(const std::vector<uint8_t>& stream,
   UpdateFrameRate(frame_rate);
 
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
-                                    dst_coded_size);
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    layout_ = GetPlatformVideoFrameLayout(
+        video_->PixelFormat(), aligned_coded_size,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
-    LOG_ASSERT(storage_type == VideoFrame::STORAGE_SHMEM);
-    InitializeAlignedMemoryFrames(stream, pixel_format, src_coded_size,
-                                  dst_coded_size);
+    layout_ = CreateVideoFrameLayout(video_->PixelFormat(), aligned_coded_size,
+                                     kPlatformBufferAlignment);
   }
+  LOG_ASSERT(layout_) << "Failed creating VideoFrameLayout";
+
+  if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
+    return;
+  }
+
+  video_frame_data_.resize(num_frames_);
+  for (size_t i = 0; i < num_frames_; i++) {
+    video_frame_data_[i] = CreateVideoFrameData(
+        storage_type_, video->GetFrame(i), video_->FrameLayout(), *layout_);
+  }
+
   LOG_ASSERT(video_frame_data_.size() == num_frames_)
       << "Failed to initialize VideoFrames";
 }
@@ -449,10 +463,25 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 
   elapsed_frame_time_ += time_stamp_interval_;
 
-  uint32_t read_frame_index =
+  const uint32_t read_frame_index =
       GetReadFrameIndex(frame_index_++, reverse_, num_frames_);
+  if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
+    auto frame_data = video_->GetFrame(read_frame_index);
+    VideoFrameData video_frame_data = CreateVideoFrameData(
+        storage_type_, frame_data, video_->FrameLayout(), *layout_);
+    return CreateVideoFrameFromVideoFrameData(video_frame_data,
+                                              frame_timestamp);
+  } else {
+    return CreateVideoFrameFromVideoFrameData(
+        video_frame_data_[read_frame_index], frame_timestamp);
+  }
+}
+
+scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
+    const VideoFrameData& video_frame_data,
+    base::TimeDelta frame_timestamp) const {
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    const auto& gmb_handle = video_frame_data_[read_frame_index].gmb_handle;
+    const auto& gmb_handle = video_frame_data.gmb_handle;
     auto dup_handle = gmb_handle.Clone();
     if (dup_handle.is_null()) {
       LOG(ERROR) << "Failed duplicating GpuMemoryBufferHandle";
@@ -484,7 +513,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
         frame_timestamp);
   } else {
-    const auto& shmem_region = video_frame_data_[read_frame_index].shmem_region;
+    const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();
     if (!dup_region.IsValid()) {
       LOG(ERROR) << "Failed duplicating shmem region";
@@ -505,197 +534,93 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
   }
 }
 
-void AlignedDataHelper::InitializeAlignedMemoryFrames(
-    const std::vector<uint8_t>& stream,
-    const VideoPixelFormat pixel_format,
-    const gfx::Size& src_coded_size,
-    const gfx::Size& dst_coded_size) {
-  ASSERT_NE(pixel_format, PIXEL_FORMAT_UNKNOWN);
-
-  // Calculate padding in bytes to be added after each plane required to keep
-  // starting addresses of all planes at a byte boundary required by the
-  // platform. This padding will be added after each plane when copying to the
-  // temporary file.
-  // At the same time we also need to take into account coded_size requested by
-  // the VEA; each row of |src_strides| bytes in the original file needs to be
-  // copied into a row of |strides_| bytes in the aligned file.
-  size_t video_frame_size;
-  layout_ = GetAlignedVideoFrameLayout(pixel_format, dst_coded_size,
-                                       kPlatformBufferAlignment, nullptr,
-                                       &video_frame_size);
-  LOG_ASSERT(video_frame_size > 0UL);
-
-  std::vector<size_t> src_plane_rows;
-  size_t src_video_frame_size = 0;
-  auto src_layout = GetAlignedVideoFrameLayout(
-      pixel_format, src_coded_size, 1u /* alignment */, &src_plane_rows,
-      &src_video_frame_size);
-  LOG_ASSERT(stream.size() % src_video_frame_size == 0U)
-      << "Stream byte size is not a product of calculated frame byte size";
-
-  LOG_ASSERT(video_frame_size > 0UL);
-  video_frame_data_.resize(num_frames_);
-  const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
-  const uint8_t* src_frame_ptr = &stream[0];
-  for (size_t i = 0; i < num_frames_; i++) {
-    auto mapped_region =
-        base::ReadOnlySharedMemoryRegion::Create(video_frame_size);
-    ASSERT_TRUE(mapped_region.IsValid()) << "Failed allocating a region";
-    base::WritableSharedMemoryMapping& mapping = mapped_region.mapping;
-    ASSERT_TRUE(mapping.IsValid());
-    uint8_t* buffer = mapping.GetMemoryAs<uint8_t>();
-    for (size_t j = 0; j < num_planes; j++) {
-      auto src_plane_layout = src_layout.planes()[j];
-      auto dst_plane_layout = layout_->planes()[j];
-      const uint8_t* src_ptr = src_frame_ptr + src_plane_layout.offset;
-      uint8_t* dst_ptr = &buffer[dst_plane_layout.offset];
-      libyuv::CopyPlane(src_ptr, src_plane_layout.stride, dst_ptr,
-                        dst_plane_layout.stride, src_plane_layout.stride,
-                        src_plane_rows[j]);
-    }
-    src_frame_ptr += src_video_frame_size;
-    video_frame_data_[i] = VideoFrameData(std::move(mapped_region.region));
-  }
-}
-
-void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
-    const std::vector<uint8_t>& stream,
-    const VideoPixelFormat pixel_format,
-    const gfx::Size& src_coded_size,
-    const gfx::Size& dst_coded_size) {
+// static
+AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
+    VideoFrame::StorageType storage_type,
+    const RawVideo::FrameData& src_frame,
+    const VideoFrameLayout& src_layout,
+    const VideoFrameLayout& dst_layout) {
+  LOG_ASSERT(gfx::Rect(dst_layout.coded_size())
+                 .Contains(gfx::Rect(src_layout.coded_size())))
+      << "The destination buffer resolution must not be smaller than the "
+         "source buffer resolution";
+  const VideoPixelFormat pixel_format = src_layout.format();
+  const gfx::Size& resolution = src_layout.coded_size();
+  if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  layout_ = GetPlatformVideoFrameLayout(
-      pixel_format, dst_coded_size,
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-  ASSERT_TRUE(layout_) << "Failed getting platform VideoFrameLayout";
-
-  std::vector<size_t> src_plane_rows;
-  size_t src_video_frame_size = 0;
-  auto src_layout = GetAlignedVideoFrameLayout(
-      pixel_format, src_coded_size, 1u /* alignment */, &src_plane_rows,
-      &src_video_frame_size);
-  LOG_ASSERT(stream.size() % src_video_frame_size == 0U)
-      << "Stream byte size is not a product of calculated frame byte size";
-
-  const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
-  const uint8_t* src_frame_ptr = &stream[0];
-  for (size_t i = 0; i < num_frames_; i++) {
+    // First write into on-memory frame.
     auto memory_frame =
-        VideoFrame::CreateFrame(pixel_format, dst_coded_size, visible_rect_,
-                                natural_size_, base::TimeDelta());
+        VideoFrame::CreateFrame(pixel_format, resolution, gfx::Rect(resolution),
+                                resolution, base::TimeDelta());
     LOG_ASSERT(!!memory_frame) << "Failed creating VideoFrame";
-    for (size_t j = 0; j < num_planes; j++) {
-      libyuv::CopyPlane(src_frame_ptr + src_layout.planes()[j].offset,
-                        src_layout.planes()[j].stride,
-                        memory_frame->writable_data(j), memory_frame->stride(j),
-                        src_layout.planes()[j].stride, src_plane_rows[j]);
+    for (size_t i = 0; i < src_layout.planes().size(); i++) {
+      libyuv::CopyPlane(
+          src_frame.plane_addrs[i], src_frame.strides[i],
+          memory_frame->writable_data(i), memory_frame->stride(i),
+          VideoFrame::RowBytes(i, pixel_format, resolution.width()),
+          VideoFrame::Rows(i, pixel_format, resolution.height()));
     }
-    src_frame_ptr += src_video_frame_size;
+    // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
     auto frame = CloneVideoFrame(
-        memory_frame.get(), *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+        memory_frame.get(), dst_layout, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
+
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
     LOG_ASSERT(!gmb_handle.is_null())
         << "Failed creating GpuMemoryBufferHandle";
-    video_frame_data_.push_back(VideoFrameData(std::move(gmb_handle)));
-  }
+    return VideoFrameData(std::move(gmb_handle));
+#else
+    NOTREACHED();
+    return VideoFrameData();
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  } else {
+    const size_t dst_video_frame_size =
+        dst_layout.planes().back().offset + dst_layout.planes().back().size;
+    auto mapped_region =
+        base::ReadOnlySharedMemoryRegion::Create(dst_video_frame_size);
+    LOG_ASSERT(mapped_region.IsValid()) << "Failed allocating a region";
+    base::WritableSharedMemoryMapping& mapping = mapped_region.mapping;
+    LOG_ASSERT(mapping.IsValid());
+    uint8_t* buffer = mapping.GetMemoryAs<uint8_t>();
+    for (size_t i = 0; i < src_layout.planes().size(); i++) {
+      auto dst_plane_layout = dst_layout.planes()[i];
+      uint8_t* dst_ptr = &buffer[dst_plane_layout.offset];
+      libyuv::CopyPlane(
+          src_frame.plane_addrs[i], src_frame.strides[i], dst_ptr,
+          dst_plane_layout.stride,
+          VideoFrame::RowBytes(i, pixel_format, resolution.width()),
+          VideoFrame::Rows(i, pixel_format, resolution.height()));
+    }
+    return VideoFrameData(std::move(mapped_region.region));
+  }
 }
 
 // static
-VideoFrameLayout AlignedDataHelper::GetAlignedVideoFrameLayout(
-    VideoPixelFormat pixel_format,
-    const gfx::Size& dimension,
-    const uint32_t alignment,
-    std::vector<size_t>* plane_rows,
-    size_t* video_frame_size) {
-  auto layout =
-      CreateVideoFrameLayout(pixel_format, dimension, alignment, plane_rows);
-  LOG_ASSERT(layout) << "Failed creating VideoFrameLayout";
-  if (video_frame_size) {
-    const auto& plane = layout->planes().back();
-    *video_frame_size = plane.offset + plane.size;
-  }
-  return *layout;
-}
-
-// static
-std::unique_ptr<RawDataHelper> RawDataHelper::Create(Video* video,
-                                                     bool reverse) {
-  size_t frame_size = 0;
-  VideoPixelFormat pixel_format = video->PixelFormat();
-  const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
-  size_t strides[VideoFrame::kMaxPlanes] = {};
-  size_t plane_sizes[VideoFrame::kMaxPlanes] = {};
-  const gfx::Size& resolution = video->Resolution();
-  // Calculate size of frames and their planes.
-  for (size_t i = 0; i < num_planes; ++i) {
-    const size_t bytes_per_line =
-        VideoFrame::RowBytes(i, pixel_format, resolution.width());
-    const size_t plane_size =
-        bytes_per_line * VideoFrame::Rows(i, pixel_format, resolution.height());
-    strides[i] = bytes_per_line;
-    plane_sizes[i] = plane_size;
-    frame_size += plane_size;
-  }
-
-  // Verify whether calculated frame size is valid.
-  const size_t data_size = video->Data().size();
-  if (frame_size == 0 || data_size % frame_size != 0 ||
-      data_size / frame_size != video->NumFrames()) {
-    LOG(ERROR) << "Invalid frame_size=" << frame_size
-               << ", file size=" << data_size;
-    return nullptr;
-  }
-
-  std::vector<ColorPlaneLayout> planes(num_planes);
-  size_t offset = 0;
-  for (size_t i = 0; i < num_planes; ++i) {
-    planes[i].stride =
-        VideoFrame::RowBytes(i, pixel_format, resolution.width());
-    planes[i].offset = offset;
-    planes[i].size = plane_sizes[i];
-    offset += plane_sizes[i];
-  }
-  auto layout = VideoFrameLayout::CreateWithPlanes(pixel_format, resolution,
-                                                   std::move(planes));
-  if (!layout) {
-    LOG(ERROR) << "Failed to create VideoFrameLayout";
-    return nullptr;
-  }
-
-  return base::WrapUnique(
-      new RawDataHelper(video, reverse, frame_size, *layout));
-}
-
-RawDataHelper::RawDataHelper(Video* video,
-                             bool reverse,
-                             size_t frame_size,
-                             const VideoFrameLayout& layout)
-    : video_(video),
-      reverse_(reverse),
-      frame_size_(frame_size),
-      layout_(layout) {}
+RawDataHelper::RawDataHelper(const RawVideo* video, bool reverse)
+    : video_(video), reverse_(reverse) {}
 
 RawDataHelper::~RawDataHelper() = default;
 
-scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) {
+scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   uint32_t read_frame_index =
       GetReadFrameIndex(index, reverse_, video_->NumFrames());
-  size_t offset = frame_size_ * read_frame_index;
   uint8_t* frame_data[VideoFrame::kMaxPlanes] = {};
   const size_t num_planes = VideoFrame::NumPlanes(video_->PixelFormat());
+  RawVideo::FrameData src_frame = video_->GetFrame(read_frame_index);
   for (size_t i = 0; i < num_planes; ++i) {
-    frame_data[i] = reinterpret_cast<uint8_t*>(video_->Data().data()) + offset;
-    offset += layout_->planes()[i].size;
+    // The data is never modified but WrapExternalYuvDataWithLayout() only
+    // accepts non-const pointer.
+    frame_data[i] = const_cast<uint8_t*>(src_frame.plane_addrs[i]);
   }
 
-  scoped_refptr<const VideoFrame> video_frame =
+  scoped_refptr<VideoFrame> video_frame =
       VideoFrame::WrapExternalYuvDataWithLayout(
-          *layout_, video_->VisibleRect(), video_->VisibleRect().size(),
-          frame_data[0], frame_data[1], frame_data[2],
-          base::TimeTicks::Now().since_origin());
+          video_->FrameLayout(), video_->VisibleRect(),
+          video_->VisibleRect().size(), frame_data[0], frame_data[1],
+          frame_data[2], base::TimeTicks::Now().since_origin());
+  video_frame->AddDestructionObserver(
+      base::DoNothingWithBoundArgs(std::move(src_frame)));
   return video_frame;
 }
 

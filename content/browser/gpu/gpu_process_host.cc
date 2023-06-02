@@ -47,6 +47,7 @@
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/common/child_process.mojom.h"
+#include "content/common/features.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -262,6 +263,7 @@ static const char* const kSwitchNames[] = {
     switches::kProfilingFlush,
     switches::kRunAllCompositorStagesBeforeDraw,
     switches::kSkiaFontCacheLimitMb,
+    switches::kSkiaGraphiteBackend,
     switches::kSkiaResourceCacheLimitMb,
     switches::kTestGLLib,
     switches::kTraceToConsole,
@@ -1181,7 +1183,12 @@ bool GpuProcessHost::LaunchGpuProcess() {
   BrowserChildProcessHostImpl::CopyTraceStartupFlags(cmd_line.get());
 
 #if BUILDFLAG(IS_WIN)
-  cmd_line->AppendArg(switches::kPrefetchArgumentGpu);
+  if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION &&
+      base::FeatureList::IsEnabled(kGpuInfoCollectionSeparatePrefetch)) {
+    cmd_line->AppendArg(switches::kPrefetchArgumentOther);
+  } else {
+    cmd_line->AppendArg(switches::kPrefetchArgumentGpu);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION) {

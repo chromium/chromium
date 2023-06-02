@@ -16,7 +16,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   var storageKey = 'http://127.0.0.1:8000/';
   var databaseName = 'testDatabase - ' + self.location;
   var objectStoreName = 'testObjectStore';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId(storageKey, databaseName);
+  var databaseId = new Resources.IndexedDBModel.DatabaseId({storageKey}, databaseName);
 
   function onConsoleError(callback) {
     var old = console.error;
@@ -53,7 +53,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
     }
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', fillDatabase, false);
+  fillDatabase();
 
   function fillDatabase() {
     TestRunner.addResult('Preparing database');
@@ -111,8 +111,8 @@ import {ApplicationTestRunner} from 'application_test_runner';
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesByStorageKey.get(storageKey);
-      TestRunner.assertEquals(true, names.has(databaseName), 'Database should exist');
+      var names = indexedDBModel.databaseNamesByStorageKeyAndBucket.get(storageKey).get('');
+      TestRunner.assertEquals(true, !![...names].find(dbId => dbId.name === databaseName), 'Database should exist');
       callback();
     }
   }
@@ -122,8 +122,8 @@ import {ApplicationTestRunner} from 'application_test_runner';
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesByStorageKey.get(storageKey);
-      TestRunner.assertEquals(false, names.has(databaseName), 'Database should not exist');
+      var names = indexedDBModel.databaseNamesByStorageKeyAndBucket.get(storageKey).get('');
+      TestRunner.assertEquals(false, !![...names].find(dbId => dbId.name === databaseName), 'Database should not exist');
       callback();
     }
   }

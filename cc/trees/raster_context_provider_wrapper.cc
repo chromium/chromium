@@ -10,40 +10,6 @@
 
 namespace cc {
 
-namespace {
-
-bool IsGpuRasterizationEnabled(
-    const scoped_refptr<viz::RasterContextProvider>& context) {
-  DCHECK(context);
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      context.get());
-
-  const gpu::Capabilities& caps = context->ContextCapabilities();
-  return caps.gpu_rasterization;
-}
-
-bool IsOopRasterSupported(
-    const scoped_refptr<viz::RasterContextProvider>& context) {
-  DCHECK(context);
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      context.get());
-
-  const gpu::Capabilities& caps = context->ContextCapabilities();
-  return caps.supports_oop_raster;
-}
-
-size_t GetMaxTextureSize(
-    const scoped_refptr<viz::RasterContextProvider>& context) {
-  DCHECK(context);
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      context.get());
-
-  const gpu::Capabilities& caps = context->ContextCapabilities();
-  return caps.max_texture_size;
-}
-
-}  // namespace
-
 RasterContextProviderWrapper::RasterContextProviderWrapper(
     scoped_refptr<viz::RasterContextProvider> context,
     RasterDarkModeFilter* dark_mode_filter,
@@ -51,10 +17,7 @@ RasterContextProviderWrapper::RasterContextProviderWrapper(
     : context_(context),
       context_supports_locking_(!!context_->GetLock()),
       dark_mode_filter_(dark_mode_filter),
-      gpu_rasterization_enabled_(IsGpuRasterizationEnabled(context_)),
-      supports_oop_raster_(IsOopRasterSupported(context_)),
-      max_working_set_bytes_(max_working_set_bytes),
-      max_texture_size_(GetMaxTextureSize(context_)) {
+      max_working_set_bytes_(max_working_set_bytes) {
   CheckValidThreadOrLockSupported();
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
@@ -112,9 +75,9 @@ RasterContextProviderWrapper::GetContext() const {
 }
 
 GpuImageDecodeCache& RasterContextProviderWrapper::GetGpuImageDecodeCache(
-    SkColorType color_type) {
-  DCHECK(gpu_rasterization_enabled_ && supports_oop_raster_);
-
+    SkColorType color_type,
+    const RasterCapabilities& raster_caps) {
+  DCHECK(raster_caps.use_gpu_rasterization);
   base::AutoLock scoped_lock(lock_);
 
   auto cache_iterator = gpu_image_decode_cache_map_.find(color_type);
@@ -122,10 +85,10 @@ GpuImageDecodeCache& RasterContextProviderWrapper::GetGpuImageDecodeCache(
     return *cache_iterator->second.get();
 
   auto insertion_result = gpu_image_decode_cache_map_.emplace(
-      color_type,
-      std::make_unique<GpuImageDecodeCache>(
-          GetContext().get(), /*use_transfer_cache=*/true, color_type,
-          max_working_set_bytes_, max_texture_size_, dark_mode_filter_));
+      color_type, std::make_unique<GpuImageDecodeCache>(
+                      GetContext().get(), /*use_transfer_cache=*/true,
+                      color_type, max_working_set_bytes_,
+                      raster_caps.max_texture_size, dark_mode_filter_));
   DCHECK(insertion_result.second);
   cache_iterator = insertion_result.first;
   return *cache_iterator->second.get();

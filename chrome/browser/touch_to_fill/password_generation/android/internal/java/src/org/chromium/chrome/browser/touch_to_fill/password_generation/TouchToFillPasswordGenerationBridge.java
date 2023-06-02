@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
+import android.content.Context;
+
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -12,20 +15,48 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * JNI wrapper for C++ TouchToFillPasswordGenerationBridge. Delegates calls from native to Java.
  */
-class TouchToFillPasswordGenerationBridge {
+class TouchToFillPasswordGenerationBridge
+        implements TouchToFillPasswordGenerationCoordinator.Delegate {
+    private TouchToFillPasswordGenerationCoordinator mCoordinator;
+    private long mNativeTouchToFillPasswordGenerationBridge;
+
     @CalledByNative
-    private static TouchToFillPasswordGenerationBridge create(WindowAndroid windowAndroid) {
+    private static TouchToFillPasswordGenerationBridge create(
+            WindowAndroid windowAndroid, long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        return new TouchToFillPasswordGenerationBridge(bottomSheetController);
+        Context context = windowAndroid.getContext().get();
+        return new TouchToFillPasswordGenerationBridge(
+                nativeTouchToFillPasswordGenerationBridge, context, bottomSheetController);
     }
 
-    private TouchToFillPasswordGenerationBridge(BottomSheetController bottomSheetController) {
-        // TODO(crbug.com/1421753): create the coordinator.
+    public TouchToFillPasswordGenerationBridge(long nativeTouchToFillPasswordGenerationBridge,
+            Context context, BottomSheetController bottomSheetController) {
+        mNativeTouchToFillPasswordGenerationBridge = nativeTouchToFillPasswordGenerationBridge;
+        mCoordinator =
+                new TouchToFillPasswordGenerationCoordinator(context, bottomSheetController, this);
     }
 
     @CalledByNative
-    private void show() {
-        // TODO(crbug.com/1421753): implement showing the password generation bottom sheet.
+    public boolean show() {
+        return mCoordinator.show();
+    }
+
+    @CalledByNative
+    public void hide() {
+        mCoordinator.hide();
+    }
+
+    @Override
+    public void onDismissed() {
+        if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
+
+        TouchToFillPasswordGenerationBridgeJni.get().onDismissed(
+                mNativeTouchToFillPasswordGenerationBridge);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onDismissed(long nativeTouchToFillPasswordGenerationBridge);
     }
 }

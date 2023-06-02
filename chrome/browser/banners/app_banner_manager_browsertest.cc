@@ -105,6 +105,22 @@ class AppBannerManagerTest : public AppBannerManager {
     wait_for_worker_ = wait_for_worker;
   }
 
+  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override {
+    return false;
+  }
+
+  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override {
+    return false;
+  }
+
+  void SaveInstallationDismissedForMl(const GURL& manifest_id) override {}
+  void SaveInstallationIgnoredForMl(const GURL& manifest_id) override {}
+  void SaveInstallationAcceptedForMl(const GURL& manifest_id) override {}
+  bool IsMlPromotionBlockedByHistoryGuardrail(
+      const GURL& manifest_id) override {
+    return false;
+  }
+
  protected:
   // The overridden RequestAppBanner() can filter out about:blank calls
   // to force Stop() to be called, however, the newly introduced

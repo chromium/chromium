@@ -21,6 +21,8 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWinrtGeolocationImplementation);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kMacCoreLocationBackend);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kCrOSGeolocationReducedWifiPollingInterval);
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kEnableBluetoothSerialPortProfileInSerialApi);
 
 }  // namespace features
 

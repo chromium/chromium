@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Espaços de trabalho</translation>
 <translation id="1018219910092211213">Não é possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
-<translation id="1022433422498218992">Controlos gerais</translation>
+<translation id="1020274983236703756">Já estão disponíveis recursos exclusivos do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nova funcionalidade disponível, utilize a tecla da seta para cima para saber mais.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Tipo de autenticação</translation>
 <translation id="1776228893584526149">Tom da imagem de fundo</translation>
 <translation id="1782199038061388045">tradução</translation>
-<translation id="1790209694022261219">Janelas e espaços de trabalho</translation>
 <translation id="1792647875738159689">A cancelar a digitalização…</translation>
 <translation id="1801418420130173017">Desativar tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1827738518074806965">Galeria de arte</translation>
+<translation id="1836553715834333258">Cor do sistema</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
+<translation id="1840474674287087346">Cor do ambiente de trabalho</translation>
 <translation id="1851218745569890714">Videoconferências</translation>
 <translation id="1852934301711881861">Instalar ChromeOS Flex</translation>
 <translation id="1856388568474281774">Seta para baixo</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Navegação no navegador</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
-<translation id="2902312830803030883">Mais ações</translation>
 <translation id="2926057806159140518">Introduza o seu nome de utilizador e palavra-passe ou leia o código QR</translation>
 <translation id="2940811910881150316">Não é possível testar o dispositivo. Reabra a tampa para testar.</translation>
-<translation id="2981143481017883351">Os recursos exclusivos do Chromebook já estão disponíveis</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3017079585324758401">Fundo</translation>
-<translation id="3020183492814296499">Atalhos</translation>
 <translation id="3027578600144895987">Fechar câmara</translation>
 <translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3226657629376379887">Menu de ações do esquema</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
+<translation id="3248223063252096240">Exclusivos do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
 <translation id="3275729367986477355">Imagem do avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3294437725009624529">Convidado</translation>
 <translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>
+<translation id="3305294846493618482">mais</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
 <translation id="3328783797891415197">A executar teste…</translation>
 <translation id="3340011300870565703">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular direito.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
-<translation id="3386675685417744672">Exclusivo do Chromebook</translation>
 <translation id="3404249063913988450">Ativar proteção de ecrã</translation>
 <translation id="3413935475507503304">Para prosseguir com a atualização, clique em Seguinte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
 <translation id="3639846061339007994">superior</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
+<translation id="3663574643422533538">Selecione ilustrações exclusivas do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
 <translation id="3708186454126126312">Ligados anteriormente</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">AVISO</translation>
 <translation id="4054683689023980771">A transferir imagem</translation>
 <translation id="4060260348856573701">Novo APN</translation>
-<translation id="4079743696465895866">Selecione ilustrações exclusivas do Chromebook</translation>
 <translation id="4093865285251893588">Imagem do perfil</translation>
 <translation id="409427325554347132">Guardar detalhes do teste</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Selecionar o álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
+<translation id="4113067922640381334">Agora, tem acesso a novas <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagens de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Mantenha o cursor do rato sobre o conteúdo para obter mais opções de esquema</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Digitalizar para</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
+<translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Seta para a esquerda</translation>
 <translation id="4507392511610824664">aumentar o brilho</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apresente fotos, as horas, a meteorologia e informações de multimédia quando o ecrã está inativo.</translation>
+<translation id="5035083460461104704">Cor do tema</translation>
 <translation id="5038292761217083259">teclado multicor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueado (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagem de fundo predefinida</translation>
 <translation id="6017514345406065928">Verde</translation>
+<translation id="6019566113895157499">Atalhos de teclas</translation>
 <translation id="6034694447310538551">Ativar reposição mensal automática</translation>
 <translation id="6037291330010597344">O alimentador de documentos do scanner está vazio. Adicione documentos e tente novamente.</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7620771111601174153">Saber mais no Centro de Ajuda</translation>
 <translation id="763165478673169849">Hora da última reposição</translation>
+<translation id="7633068090678117093">Imagem de fundo</translation>
 <translation id="7648838807254605802">Latência elevada de HTTPS</translation>
 <translation id="765159867434478292">Dividir</translation>
 <translation id="7656388927906093505">O dispositivo é um rato.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">Não iniciada</translation>
 <translation id="8593058461203131755">pausar o conteúdo multimédia</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
+<translation id="8626489604350149811">Mais ações para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Par</translation>
 <translation id="8930622219860340959">Sem fios</translation>
 <translation id="8936793075252196307">Endereço IP do cliente</translation>
+<translation id="8944651180182756621">Cor do Launcher</translation>
 <translation id="894617464444543719">O dispositivo é um telemóvel.</translation>
 <translation id="8957423540740801332">direita</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Executar teste de memória</translation>
 <translation id="9161276708550942948">espaço</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
+<translation id="9174334653006917325">Cor da IU</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9188992814426075118">O teclado pode corresponder automaticamente à sua imagem de fundo</translation>
 <translation id="9189000703457422362">Não é possível estabelecer ligação a esta rede através de APNs detetados automaticamente. Contacte o seu operador móvel para obter mais informações.</translation>

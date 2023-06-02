@@ -184,7 +184,7 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
   assertNotNullNorUndefined(capitalStrategySelect);
 
   // Assert initial pref values.
-  assertTrue(SettingsManager.get('usePitchChanges'));
+  assertTrue(SettingsManager.getBoolean('usePitchChanges'));
   assertEquals('increasePitch', SettingsManager.get('capitalStrategy'));
 
   mockFeedback.call(pitchChangesCheckbox.focus.bind(pitchChangesCheckbox))
@@ -198,7 +198,7 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
               'deleted, bolded, parenthesized, or capitalized text.',
           'Check box', 'Not checked')
       .call(() => {
-        assertFalse(SettingsManager.get('usePitchChanges'));
+        assertFalse(SettingsManager.getBoolean('usePitchChanges'));
         // Toggling usePitchChanges affects capitalStrategy. Ensure that
         // the preference has been changed and that the 'Increase pitch'
         // option is hidden.
@@ -222,7 +222,7 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
               'deleted, bolded, parenthesized, or capitalized text.',
           'Check box', 'Checked')
       .call(() => {
-        assertTrue(SettingsManager.get('usePitchChanges'));
+        assertTrue(SettingsManager.getBoolean('usePitchChanges'));
         // Ensure that the capitalStrategy preference is restored to its
         // initial setting and that the 'Increase pitch' option is visible
         // again.

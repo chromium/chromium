@@ -79,7 +79,7 @@ bool WaitForUpdaterExit(UpdaterScope scope) {
           },
           scope),
       base::BindLambdaForTesting(
-          []() { VLOG(0) << "Still waiting for updater to exit..."; }));
+          [] { VLOG(0) << "Still waiting for updater to exit..."; }));
 }
 
 void Uninstall(UpdaterScope scope) {

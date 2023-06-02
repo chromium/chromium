@@ -53,6 +53,8 @@ class GlanceableInfoView : public views::View,
 
   void Show();
 
+  int GetTimeFontDescent();
+
  private:
   void InitLayout();
 

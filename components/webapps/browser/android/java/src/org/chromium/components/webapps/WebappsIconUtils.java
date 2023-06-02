@@ -95,7 +95,6 @@ public class WebappsIconUtils {
      * @param maskable Whether the icon is suitable for creating an adaptive icon.
      * @return Bitmap Either the touch-icon or the newly created favicon.
      */
-    @CalledByNative
     public static Bitmap createHomeScreenIconFromWebIcon(Bitmap webIcon, boolean maskable) {
         // getLauncherLargeIconSize() is just a guess at the launcher icon size, and is often
         // wrong -- the launcher can show icons at any size it pleases. Instead of resizing the

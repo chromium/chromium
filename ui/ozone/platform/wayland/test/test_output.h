@@ -102,8 +102,8 @@ class TestOutput : public GlobalObject {
 
   TestOutputMetrics metrics_;
 
-  raw_ptr<TestZAuraOutput> aura_output_ = nullptr;
-  raw_ptr<TestZXdgOutput> xdg_output_ = nullptr;
+  raw_ptr<TestZAuraOutput, DanglingUntriaged> aura_output_ = nullptr;
+  raw_ptr<TestZXdgOutput, DanglingUntriaged> xdg_output_ = nullptr;
 };
 
 }  // namespace wl

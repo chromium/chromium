@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_HATS_HATS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UI_HATS_HATS_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class HatsService;
@@ -20,7 +20,7 @@ class HatsServiceFactory : public ProfileKeyedServiceFactory {
   static HatsServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<HatsServiceFactory>;
+  friend base::NoDestructor<HatsServiceFactory>;
 
   HatsServiceFactory();
   ~HatsServiceFactory() override;

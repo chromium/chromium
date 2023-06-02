@@ -33,11 +33,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -88,6 +90,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -784,13 +787,6 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
     model_->SetMenuModelDelegate(nullptr);
   }
 
-  const gfx::FontList* GetLabelFontListForCommandId(int command_id) const {
-    ui::MenuModel* model = model_;
-    size_t index = 0;
-    AppMenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
-    return model->GetLabelFontListAt(index);
-  }
-
   // ui::MenuModelDelegate implementation:
 
   void OnIconChanged(int command_id) override {
@@ -870,24 +866,13 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
 // AppMenu ------------------------------------------------------------------
 
-AppMenu::AppMenu(Browser* browser, int run_types)
-    : browser_(browser), run_types_(run_types) {
+AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
+    : browser_(browser), model_(model), run_types_(run_types) {
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
   new_badge_tracker_ =
       std::make_unique<ScopedNewBadgeTracker>(browser_->profile());
-}
 
-AppMenu::~AppMenu() {
-  if (bookmark_menu_delegate_.get()) {
-    BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-    if (model)
-      model->RemoveObserver(this);
-  }
-}
-
-void AppMenu::Init(ui::MenuModel* model) {
   DCHECK(!root_);
   root_ = new MenuItemView(this);
   root_->set_has_icons(true);  // We have checks, radios and icons, set this
@@ -901,10 +886,21 @@ void AppMenu::Init(ui::MenuModel* model) {
     // BrowserActionsContainer view.
     types |= views::MenuRunner::FOR_DROP | views::MenuRunner::NESTED_DRAG;
   }
-  if (run_types_ & views::MenuRunner::SHOULD_SHOW_MNEMONICS)
+  if (run_types_ & views::MenuRunner::SHOULD_SHOW_MNEMONICS) {
     types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
+  }
 
   menu_runner_ = std::make_unique<views::MenuRunner>(root_, types);
+}
+
+AppMenu::~AppMenu() {
+  if (bookmark_menu_delegate_.get()) {
+    BookmarkModel* model =
+        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+    if (model) {
+      model->RemoveObserver(this);
+    }
+  }
 }
 
 void AppMenu::RunMenu(views::MenuButtonController* host) {
@@ -928,17 +924,10 @@ bool AppMenu::IsShowing() const {
 }
 
 const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
-  if (IsRecentTabsCommand(command_id)) {
-    return recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
-        command_id);
-  }
-
-  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
-    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
-        ui::ResourceBundle::BoldFont);
-  }
-
-  return nullptr;
+  ui::MenuModel* model = model_;
+  size_t index = 0;
+  ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
+  return model->GetLabelFontListAt(index);
 }
 
 absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
@@ -1054,18 +1043,17 @@ bool AppMenu::IsItemChecked(int command_id) const {
 }
 
 bool AppMenu::IsCommandEnabled(int command_id) const {
-  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
-    return false;
+  if (command_id <= 0) {
+    return false;  // The root item, a separator, or a title.
   }
 
-  if (IsBookmarkCommand(command_id))
+  if (IsBookmarkCommand(command_id)) {
     return true;
+  }
 
-  if (command_id == 0)
-    return false;  // The root item.
-
-  if (command_id == IDC_MORE_TOOLS_MENU)
+  if (command_id == IDC_MORE_TOOLS_MENU) {
     return true;
+  }
 
   if ((base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
        features::IsChromeRefresh2023()) &&
@@ -1114,11 +1102,12 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
 
 bool AppMenu::GetAccelerator(int command_id,
                              ui::Accelerator* accelerator) const {
-  if (IsBookmarkCommand(command_id))
-    return false;
-
-  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+  if (command_id < 0) {
     // This is a non-interactive title.
+    return false;
+  }
+
+  if (IsBookmarkCommand(command_id)) {
     return false;
   }
 
@@ -1247,6 +1236,16 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
 
     switch (model->GetCommandIdAt(i)) {
+      case IDC_PROFILE_MENU_IN_APP_MENU: {
+        if (features::IsChromeRefresh2023()) {
+          // Profile row margins are different from the menu config item
+          // margins.
+          int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+          item->SetMargins(vertical_margin, vertical_margin);
+        }
+        break;
+      }
       case IDC_EDIT_MENU: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
         DCHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0));
@@ -1305,12 +1304,8 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
                                    MenuModel* model,
                                    size_t model_index,
                                    MenuModel::ItemType menu_type) {
-  int command_id = model->GetCommandIdAt(model_index);
-  DCHECK(command_id > -1 ||
-         (command_id == -1 &&
-          model->GetTypeAt(model_index) == MenuModel::TYPE_SEPARATOR));
-
-  if (command_id > -1) {  // Don't add separators to |command_id_to_entry_|.
+  const int command_id = model->GetCommandIdAt(model_index);
+  if (command_id >= 0) {  // Don't add separators to |command_id_to_entry_|.
     // All command ID's should be unique except for IDC_SHOW_HISTORY which is
     // in both app menu and RecentTabs submenu,
     if (command_id != IDC_SHOW_HISTORY) {

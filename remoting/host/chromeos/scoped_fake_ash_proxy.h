@@ -11,20 +11,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace remoting::test {
-
-struct ScreenshotRequest {
-  ScreenshotRequest(DisplayId display, AshProxy::ScreenshotCallback callback);
-  ScreenshotRequest(ScreenshotRequest&&);
-  ScreenshotRequest& operator=(ScreenshotRequest&&);
-  ~ScreenshotRequest();
-
-  DisplayId display;
-  AshProxy::ScreenshotCallback callback;
-};
 
 // Simple basic implementation of |AshProxy|.
 // Will automatically register itself as the global version in the constructor,
@@ -51,15 +40,10 @@ class ScopedFakeAshProxy : public AshProxy {
   display::Display& AddDisplayFromSpecWithId(const std::string& spec,
                                              DisplayId id);
 
-  ScreenshotRequest WaitForScreenshotRequest();
-  void ReplyWithScreenshot(const absl::optional<SkBitmap>& screenshot);
-
   // AshProxy implementation:
   DisplayId GetPrimaryDisplayId() const override;
   const std::vector<display::Display>& GetActiveDisplays() const override;
   const display::Display* GetDisplayForId(DisplayId display_id) const override;
-  void TakeScreenshotOfDisplay(DisplayId display_id,
-                               ScreenshotCallback callback) override;
   ash::curtain::SecurityCurtainController& GetSecurityCurtainController()
       override;
 
@@ -84,8 +68,6 @@ class ScopedFakeAshProxy : public AshProxy {
   std::vector<display::Display> displays_;
   raw_ptr<mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>> receiver_ =
       nullptr;
-
-  base::test::TestFuture<ScreenshotRequest> screenshot_request_;
 
   raw_ptr<ash::curtain::SecurityCurtainController> security_curtain_controller_;
   int request_sign_out_count_ = 0;

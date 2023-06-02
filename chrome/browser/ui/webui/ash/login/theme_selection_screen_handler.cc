@@ -13,10 +13,6 @@
 
 namespace ash {
 
-namespace {
-constexpr char kSelectedTheme[] = "selectedTheme";
-}
-
 constexpr StaticOobeScreenId ThemeSelectionScreenView::kScreenId;
 
 ThemeSelectionScreenHandler::ThemeSelectionScreenHandler()
@@ -24,9 +20,7 @@ ThemeSelectionScreenHandler::ThemeSelectionScreenHandler()
 
 ThemeSelectionScreenHandler::~ThemeSelectionScreenHandler() = default;
 
-void ThemeSelectionScreenHandler::Show(const std::string& mode) {
-  base::Value::Dict data;
-  data.Set(kSelectedTheme, mode);
+void ThemeSelectionScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
@@ -45,6 +39,10 @@ void ThemeSelectionScreenHandler::DeclareLocalizedValues(
   builder->Add("autoThemeDescription", IDS_THEME_AUTO_DESCRIPTION);
   builder->Add("choobeThemeSelectionTitle",
                IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE);
+
+  if (!features::IsOobeChoobeEnabled()) {
+    builder->Add("choobeReturnButton", IDS_OOBE_CHOOBE_RETURN_BUTTON);
+  }
 }
 
 }  // namespace ash

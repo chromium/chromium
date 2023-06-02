@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -147,6 +148,64 @@ bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
              Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
              manifest().start_url)
       .has_value();
+}
+
+bool AppBannerManagerDesktop::IsAppFullyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return web_app::FindInstalledAppWithUrlInScope(
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+             site_url)
+      .has_value();
+}
+
+bool AppBannerManagerDesktop::IsAppPartiallyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return web_app::IsNonLocallyInstalledAppWithUrlInScope(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+      site_url);
+}
+
+void AppBannerManagerDesktop::SaveInstallationDismissedForMl(
+    const GURL& manifest_id) {
+  CHECK(web_contents());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
+  web_app::RecordMlInstallDismissed(
+      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id),
+      base::Time::Now());
+}
+
+void AppBannerManagerDesktop::SaveInstallationIgnoredForMl(
+    const GURL& manifest_id) {
+  CHECK(web_contents());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
+  web_app::RecordMlInstallIgnored(
+      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id),
+      base::Time::Now());
+}
+
+void AppBannerManagerDesktop::SaveInstallationAcceptedForMl(
+    const GURL& manifest_id) {
+  CHECK(web_contents());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
+  web_app::RecordMlInstallAccepted(
+      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id),
+      base::Time::Now());
+}
+
+bool AppBannerManagerDesktop::IsMlPromotionBlockedByHistoryGuardrail(
+    const GURL& manifest_id) {
+  CHECK(web_contents());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
+  return web_app::IsMlPromotionBlockedByHistoryGuardrail(
+      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id));
 }
 
 web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {

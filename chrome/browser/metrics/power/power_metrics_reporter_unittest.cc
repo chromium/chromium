@@ -200,7 +200,7 @@ class PowerMetricsReporterUnitTestBase : public testing::Test {
 
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 
-  raw_ptr<base::BatteryLevelProvider> battery_provider_;
+  raw_ptr<base::BatteryLevelProvider, DanglingUntriaged> battery_provider_;
 
 #if BUILDFLAG(IS_MAC)
   raw_ptr<TestCoalitionResourceUsageProvider>

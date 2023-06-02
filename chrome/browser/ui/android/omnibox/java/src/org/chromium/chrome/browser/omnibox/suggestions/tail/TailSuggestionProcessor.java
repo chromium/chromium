@@ -62,7 +62,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         setSuggestionDrawableState(model,
                 SuggestionDrawableState.Builder
-                        .forDrawableRes(getContext(), R.drawable.ic_suggestion_magnifier)
+                        .forDrawableRes(mContext, R.drawable.ic_suggestion_magnifier)
                         .setAllowTint(true)
                         .build());
         setTabSwitchOrRefineAction(model, suggestion, position);

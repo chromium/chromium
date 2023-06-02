@@ -92,10 +92,10 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
   // Owned by |loading_predictor_|.
   raw_ptr<StrictMock<MockLoadingDataCollector>> mock_collector_;
   // Owned elsewhere.
-  raw_ptr<NiceMock<MockOptimizationGuideKeyedService>>
+  raw_ptr<NiceMock<MockOptimizationGuideKeyedService>, DanglingUntriaged>
       mock_optimization_guide_keyed_service_;
   // Owned by |web_contents()|.
-  raw_ptr<LoadingPredictorTabHelper> tab_helper_;
+  raw_ptr<LoadingPredictorTabHelper, DanglingUntriaged> tab_helper_;
 };
 
 void LoadingPredictorTabHelperTest::SetUp() {

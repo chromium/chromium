@@ -36,7 +36,7 @@ Decryptor::Handle::~Handle() = default;
 void Decryptor::Handle::AddToRecord(base::StringPiece data,
                                     base::OnceCallback<void(Status)> cb) {
   // Add piece of data to the record.
-  record_.append(data.data(), data.size());
+  record_.append(data);
   std::move(cb).Run(Status::StatusOK());
 }
 

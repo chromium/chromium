@@ -27,6 +27,9 @@ id<GREYMatcher> ElementToDismissAlert(NSString* cancel_text);
 // Matcher for an element whose accessibility label contains `substring`.
 id<GREYMatcher> ElementWithAccessibilityLabelSubstring(NSString* substring);
 
+// Matcher for the back button of a navigation bar.
+id<GREYMatcher> NavigationBarBackButton();
+
 }  // namespace testing
 
 #endif  // IOS_TESTING_EARL_GREY_MATCHERS_H_

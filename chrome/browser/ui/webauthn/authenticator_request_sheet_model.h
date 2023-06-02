@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace gfx {
 struct VectorIcon;
 }
@@ -33,8 +35,14 @@ struct VectorIcon;
 //
 class AuthenticatorRequestSheetModel {
  public:
-  // Indicates what style to pick for the step illustration.
-  enum class ImageColorScheme { kDark, kLight };
+  // IllustrationPair contains a pair of illustrations: one for light mode and
+  // one for dark mode.
+  template <typename T>
+  struct IllustrationPair {
+    IllustrationPair(T in_light, T in_dark) : light(in_light), dark(in_dark) {}
+    T get(bool is_dark) const { return is_dark ? dark : light; }
+    const T light, dark;
+  };
 
   virtual ~AuthenticatorRequestSheetModel() = default;
 
@@ -54,8 +62,6 @@ class AuthenticatorRequestSheetModel {
   virtual bool IsOtherMechanismButtonVisible() const;
   virtual std::u16string GetOtherMechanismButtonLabel() const;
 
-  virtual const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const = 0;
   virtual std::u16string GetStepTitle() const = 0;
   virtual std::u16string GetStepDescription() const = 0;
   virtual std::u16string GetAdditionalDescription() const;
@@ -65,6 +71,21 @@ class AuthenticatorRequestSheetModel {
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
   virtual void OnManageDevices();
+
+  // Lottie illustrations are represented by their resource ID.
+  absl::optional<IllustrationPair<int>> lottie_illustrations() const {
+    return lottie_illustrations_;
+  }
+
+  absl::optional<IllustrationPair<const gfx::VectorIcon&>>
+  vector_illustrations() const {
+    return vector_illustrations_;
+  }
+
+ protected:
+  absl::optional<IllustrationPair<int>> lottie_illustrations_;
+  absl::optional<IllustrationPair<const gfx::VectorIcon&>>
+      vector_illustrations_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_

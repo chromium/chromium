@@ -72,6 +72,15 @@ chrome_public_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
   ]
 }
 
+generate_jni_registration("baseline_profile_test_apk_dummy_jni_registration") {
+  testonly = true
+  java_targets = [ ":baseline_profile_test_apk" ]
+
+  # By not providing any native targets, this becomes a dummy-only registration,
+  # just used to satisfy R8.
+  add_stubs_for_missing_jni = true
+}
+
 android_test_apk("baseline_profile_test_apk") {
   apk_name = "ChromeStartupBenchmark"
   android_manifest =
@@ -98,6 +107,7 @@ android_test_apk("baseline_profile_test_apk") {
     "//third_party/junit",
     "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
+  srcjar_deps = [ ":baseline_profile_test_apk_dummy_jni_registration" ]
 }
 
 instrumentation_test_runner("chrome_public_apk_baseline_profile_generator") {

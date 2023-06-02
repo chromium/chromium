@@ -5,7 +5,6 @@
 #include "quick_start_requests.h"
 #include "base/base64.h"
 #include "base/json/json_writer.h"
-#include "chromeos/ash/components/quick_start/proto/aes_gcm_authentication_message.pb.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "components/cbor/values.h"
@@ -18,8 +17,6 @@
 namespace ash::quick_start::requests {
 
 namespace {
-
-namespace proto = ::quick_start::proto;
 
 // bootstrapOptions key telling the phone how to handle
 // challenge UI in case of fallback.
@@ -66,10 +63,6 @@ constexpr char kSharedSecretKey[] = "shared_secret";
 // Key in WifiCredentialsRequest and NotifySourceOfUpdateMessage for the session
 // ID
 constexpr char kSessionIdKey[] = "SESSION_ID";
-
-// The role that should be used for the target device. See this enum:
-// http://google3/java/com/google/android/gms/smartdevice/d2d/proto/aes_gcm_authentication_message.proto;l=26;rcl=489093041
-constexpr int32_t kAuthPayloadTargetDeviceRole = 1;
 
 // Boolean in NotifySourceOfUpdateMessage indicating target device requires an
 // update.
@@ -171,7 +164,7 @@ std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
   // Encode the CtapGetAssertionRequest into cbor bytes vector.
   absl::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(request);
-  DCHECK(cbor_bytes);
+  CHECK(cbor_bytes);
   std::vector<uint8_t> request_bytes = std::move(*cbor_bytes);
   // Add the command byte to the beginning of this now fully encoded cbor bytes
   // vector.
@@ -180,41 +173,9 @@ std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
   return request_bytes;
 }
 
-std::vector<uint8_t> BuildTargetDeviceHandshakeMessage(
-    const std::string& authentication_token,
-    std::array<uint8_t, 32> secret,
-    std::array<uint8_t, 12> nonce) {
-  proto::V1Message::AuthenticationPayload auth_payload;
-  auth_payload.set_role(kAuthPayloadTargetDeviceRole);
-  auth_payload.set_auth_string(authentication_token);
-
-  std::string unencrypted_payload;
-  auth_payload.SerializeToString(&unencrypted_payload);
-
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(secret);
-  std::vector<uint8_t> encrypted_payload =
-      aead.Seal(std::vector<uint8_t>(unencrypted_payload.begin(),
-                                     unencrypted_payload.end()),
-                nonce, /*additional_data=*/std::vector<uint8_t>());
-
-  proto::AesGcmAuthenticationMessage auth_message;
-  auth_message.set_version(proto::AesGcmAuthenticationMessage::V1);
-  proto::V1Message* v1_message = auth_message.mutable_v1();
-  v1_message->set_nonce(std::string(nonce.begin(), nonce.end()));
-  v1_message->set_payload(
-      std::string(encrypted_payload.begin(), encrypted_payload.end()));
-
-  std::string auth_message_serialized;
-  auth_message.SerializeToString(&auth_message_serialized);
-
-  return std::vector<uint8_t>(auth_message_serialized.begin(),
-                              auth_message_serialized.end());
-}
-
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     int32_t session_id,
-    std::string& shared_secret) {
+    const base::span<uint8_t, 32> shared_secret) {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
           QuickStartMessageType::kQuickStartPayload);

@@ -54,7 +54,7 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
                              base::Value arg1,
                              base::Value arg2);
   bool RunJavascriptFunction(const std::string& function_name,
-                             std::vector<base::Value> function_arguments);
+                             base::Value::List function_arguments);
 
   // Runs a test fixture that may include calls to functions in test_api.js.
   bool RunJavascriptTestF(bool is_async,
@@ -69,7 +69,7 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
                          base::Value arg1,
                          base::Value arg2);
   bool RunJavascriptTest(const std::string& test_name,
-                         std::vector<base::Value> test_arguments);
+                         base::Value::List test_arguments);
 
   // Runs a test that may include calls to functions in test_api.js, and waits
   // for call to testDone().  Takes ownership of Value* arguments.
@@ -83,7 +83,7 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
                               base::Value arg2,
                               base::Value arg3);
   bool RunJavascriptAsyncTest(const std::string& test_name,
-                              std::vector<base::Value> test_arguments);
+                              base::Value::List test_arguments);
 
   // Sends message through |preload_frame| to preload javascript libraries and
   // sets the |libraries_preloaded| flag to prevent re-loading at next
@@ -151,7 +151,7 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   // the renderer frame for evaluation at the appropriate time before the onload
   // call is made. Passes |is_async| along to runTest wrapper.
   bool RunJavascriptUsingHandler(const std::string& function_name,
-                                 std::vector<base::Value> function_arguments,
+                                 base::Value::List function_arguments,
                                  bool is_test,
                                  bool is_async,
                                  content::RenderFrameHost* preload_frame);

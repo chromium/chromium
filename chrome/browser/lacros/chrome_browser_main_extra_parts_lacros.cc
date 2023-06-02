@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -57,6 +58,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -108,8 +110,8 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
         std::make_unique<DeviceLocalAccountExtensionInstallerLacros>();
   }
 
-  DCHECK(!g_browser_process->geolocation_manager());
-  g_browser_process->SetGeolocationManager(
+  DCHECK(!device::GeolocationManager::GetInstance());
+  device::GeolocationManager::SetInstance(
       SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
@@ -269,6 +271,30 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
                 crosapi::ViewsTextServicesContextMenuLacros>(menu_model,
                                                              textfield);
           }));
+
+  // Sets the implementation of clipboard history utility functions.
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
+        base::BindRepeating([]() {
+          return crosapi::ClipboardHistoryLacros::Get()->cached_descriptors();
+        }));
+    chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
+        base::BindRepeating(
+            [](const base::UnguessableToken& id, int event_flags,
+               crosapi::mojom::ClipboardHistoryControllerShowSource source) {
+              if (auto* lacros_service = chromeos::LacrosService::Get();
+                  lacros_service &&
+                  lacros_service
+                      ->IsAvailable<crosapi::mojom::ClipboardHistory>() &&
+                  lacros_service->GetInterfaceVersion<
+                      crosapi::mojom::ClipboardHistory>() >=
+                      int{crosapi::mojom::ClipboardHistory::MethodMinVersions::
+                              kPasteClipboardItemByIdMinVersion}) {
+                lacros_service->GetRemote<crosapi::mojom::ClipboardHistory>()
+                    ->PasteClipboardItemById(id, event_flags, source);
+              }
+            }));
+  }
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
@@ -280,5 +306,5 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   kiosk_session_service_.reset();
 
   // Initialized in PreProfileInit.
-  g_browser_process->SetGeolocationManager(nullptr);
+  device::GeolocationManager::SetInstance(nullptr);
 }

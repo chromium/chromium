@@ -38,8 +38,6 @@ class ArcVmmSwapScheduler : public ash::ConciergeClient::VmObserver {
 
   void SetSwappable(bool swappable);
 
-  bool swappable() const { return swappable_; }
-
   // ash::ConciergeClient::VmObserver override:
   void OnVmSwapping(
       const vm_tools::concierge::VmSwappingSignal& signal) override;
@@ -60,8 +58,6 @@ class ArcVmmSwapScheduler : public ash::ConciergeClient::VmObserver {
   base::TimeDelta swappable_checking_period_;
   base::RepeatingTimer swappable_checking_timer_;
   std::unique_ptr<PeaceDurationProvider> peace_duration_provider_;
-
-  bool swappable_ = false;
 
   // Callback sends swap status to vmm manager.
   base::RepeatingCallback<void(bool)> swap_callback_;

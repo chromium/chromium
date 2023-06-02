@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -31,13 +32,16 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.LocalizationUtils;
@@ -97,17 +101,11 @@ public class StripLayoutHelperManagerTest {
                 mLifecycleDispatcher);
     }
 
-    private void initializeFolioTest() {
-        // Since we check TSR arm and determine model selector button width inside constructor, so
-        // need to set TSR arm before initialize test.
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-        initializeTest();
-    }
-
-    private void initializeDetachedTest() {
-        // Since we check TSR arm and determine model selector button width inside constructor, so
-        // need to set TSR arm before initialize test.
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+    private void initializeTestWithTsrArm(BooleanCachedFieldTrialParameter param) {
+        // Since we check TSR arm and determine model selector button properties(eg. color/bg color,
+        // width, etc) inside constructor, so need to set TSR arm before initialize test each time
+        // we switch arm.
+        param.setForTesting(true);
         initializeTest();
     }
 
@@ -133,7 +131,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonPosition_Folio() {
         // setup
-        initializeFolioTest();
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO);
 
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
@@ -149,7 +147,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonPosition_RTL_Folio() {
         // setup
-        initializeFolioTest();
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO);
 
         // Set model selector button position.
         LocalizationUtils.setRtlForTesting(true);
@@ -165,7 +163,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonPosition_Detached() {
         // setup
-        initializeDetachedTest();
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
 
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
@@ -181,7 +179,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonPosition_RTL_Detached() {
         // setup
-        initializeDetachedTest();
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
 
         // Set model selector button position.
         LocalizationUtils.setRtlForTesting(true);
@@ -293,7 +291,32 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @Feature("Tab Strip Redesign")
+    public void testButtonIconColor() {
+        // Verify TSR button icon color.
+        assertEquals("Unexpected incognito button color.",
+                mContext.getResources().getColor(R.color.model_selector_button_icon_color),
+                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
+                        .getTint());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testButtonIconColor_DisableButtonStyle() {
+        // setup
+        initializeTestWithTsrArm(TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE);
+
+        // Verify TSR button icon color after disabling button style.
+        assertEquals("Unexpected incognito button color.",
+                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_tint_list)
+                        .getDefaultColor(),
+                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
+                        .getTint());
+    }
+
+    @Test
     @Feature("TabStripPerformance")
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testSetTabModelStartupInfo() {
         // Setup
         int expectedStandardCount = 5;

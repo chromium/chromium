@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -32,7 +32,11 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
   TestScreenAIInstallState(const TestScreenAIInstallState&) = delete;
   TestScreenAIInstallState& operator=(const TestScreenAIInstallState&) = delete;
 
-  ~TestScreenAIInstallState() = default;
+  ~TestScreenAIInstallState() override {}
+
+  void SetLastUsageTime() override {}
+
+  void DownloadComponent() override {}
 };
 
 class TestPdfOcrHandler : public PdfOcrHandler {

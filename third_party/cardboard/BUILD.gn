@@ -32,7 +32,13 @@ android_library("cardboard_java") {
     "src/sdk/device_params/android/java/com/google/cardboard/sdk/deviceparams/DeviceParamsUtils.java",
     "src/sdk/java_utils/android/java/com/google/cardboard/sdk/UsedByNative.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/HeadsetDetectionActivity.java",
-    "src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java",
+
+    # TODO(https://crbug.com/1429091): There's a build error because a JNI in
+    # this class isn't used. Once we begin consuming it, it'll likely go away.
+    # If not, or in the mean time we can either comment it out (as done
+    # currently), or pursue a workaround as described in
+    # https://crbug.com/1407278.
+    # "src/sdk/qrcode/android/java/com/google/cardboard/sdk/QrCodeCaptureActivity.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/AsyncTask.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/CardboardParamsUtils.java",
     "src/sdk/qrcode/android/java/com/google/cardboard/sdk/qrcode/InputStreamProvider.java",
@@ -92,6 +98,7 @@ static_library("cardboard") {
     "src/sdk/qrcode/ios/qr_scan_view_controller.h",
     "src/sdk/rendering/android/shaders/distortion_frag.spv.h",
     "src/sdk/rendering/android/shaders/distortion_vert.spv.h",
+    "src/sdk/rendering/opengl_es2_distortion_renderer.cc",
     "src/sdk/screen_params.h",
     "src/sdk/screen_params/android/screen_params.cc",
     "src/sdk/sensors/accelerometer_data.h",
@@ -132,7 +139,6 @@ static_library("cardboard") {
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
-    "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
   ]
 
   deps = [ "//base" ]

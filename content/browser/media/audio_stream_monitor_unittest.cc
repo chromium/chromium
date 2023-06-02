@@ -163,7 +163,7 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   WebContents* web_contents() { return monitor_->web_contents_; }
 
  protected:
-  raw_ptr<AudioStreamMonitor> monitor_;
+  raw_ptr<AudioStreamMonitor, DanglingUntriaged> monitor_;
 
  private:
   void ExpectWasRecentlyAudible() const {

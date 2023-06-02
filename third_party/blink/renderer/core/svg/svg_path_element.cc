@@ -35,9 +35,7 @@ SVGPathElement::SVGPathElement(Document& document)
     : SVGGeometryElement(svg_names::kPathTag, document),
       path_(MakeGarbageCollected<SVGAnimatedPath>(this,
                                                   svg_names::kDAttr,
-                                                  CSSPropertyID::kD)) {
-  AddToPropertyMap(path_);
-}
+                                                  CSSPropertyID::kD)) {}
 
 void SVGPathElement::Trace(Visitor* visitor) const {
   visitor->Trace(path_);
@@ -158,6 +156,32 @@ void SVGPathElement::RemovedFrom(ContainerNode& root_parent) {
 gfx::RectF SVGPathElement::GetBBox() {
   // We want the exact bounds.
   return SVGPathElement::AsPath().TightBoundingRect();
+}
+
+SVGAnimatedPropertyBase* SVGPathElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kDAttr) {
+    return path_.Get();
+  } else {
+    return SVGGeometryElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGPathElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{path_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGeometryElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGPathElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  if (path_->HasPresentationAttributeMapping() && path_->IsAnimating()) {
+    CollectStyleForPresentationAttribute(svg_names::kDAttr, g_empty_atom,
+                                         style);
+  }
+  SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

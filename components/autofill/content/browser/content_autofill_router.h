@@ -349,9 +349,9 @@ class ContentAutofillRouter {
   // Returns the driver of |frame| stored in |form_forest_|.
   ContentAutofillDriver* DriverOfFrame(LocalFrameToken frame);
 
-  // Calls ContentAutofillDriver::TriggerReparse() for all drivers in
+  // Calls ContentAutofillDriver::TriggerFormExtraction() for all drivers in
   // |form_forest_| except for |exception|.
-  void TriggerReparseExcept(ContentAutofillDriver* exception);
+  void TriggerFormExtractionExcept(ContentAutofillDriver* exception);
 
   // Update the last queried and source and do cleanup work.
   void SetLastQueriedSource(ContentAutofillDriver* source);
@@ -371,7 +371,8 @@ class ContentAutofillRouter {
 
   // The driver that triggered the last AskForValuesToFill() call.
   // Update with SetLastQueriedSource().
-  raw_ptr<ContentAutofillDriver> last_queried_source_ = nullptr;
+  raw_ptr<ContentAutofillDriver, DanglingUntriaged> last_queried_source_ =
+      nullptr;
   // The driver to which the last AskForValuesToFill() call was routed.
   // Update with SetLastQueriedTarget().
   raw_ptr<ContentAutofillDriver> last_queried_target_ = nullptr;

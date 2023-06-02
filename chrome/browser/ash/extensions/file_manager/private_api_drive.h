@@ -142,38 +142,6 @@ class FileManagerPrivateGetDriveConnectionStateFunction
   ResponseAction Run() override;
 };
 
-// Implements the chrome.fileManagerPrivate.getDownloadUrl method.
-class FileManagerPrivateInternalGetDownloadUrlFunction
-    : public LoggedExtensionFunction {
- public:
-  FileManagerPrivateInternalGetDownloadUrlFunction();
-
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getDownloadUrl",
-                             FILEMANAGERPRIVATEINTERNAL_GETDOWNLOADURL)
-
- protected:
-  ~FileManagerPrivateInternalGetDownloadUrlFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void OnGotDownloadUrl(GURL download_url);
-
-  // Callback with an |access_token|, called by
-  // drive::DriveReadonlyTokenFetcher.
-  void OnTokenFetched(google_apis::ApiErrorCode code,
-                      const std::string& access_token);
-
-  ResponseAction RunAsyncForDriveFs(
-      const storage::FileSystemURL& file_system_url);
-  void OnGotMetadata(drive::FileError error,
-                     drivefs::mojom::FileMetadataPtr metadata);
-
- private:
-  GURL download_url_;
-};
-
 // Implements the chrome.fileManagerPrivate.notifyDriveDialogResult method.
 class FileManagerPrivateNotifyDriveDialogResultFunction
     : public ExtensionFunction {

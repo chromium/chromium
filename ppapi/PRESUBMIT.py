@@ -19,10 +19,6 @@ import sys
 # TODO: Investigate the incompatibility of `input_api.python3_executable` on
 # Windows, for this particular PRESUBMIT script.
 
-
-USE_PYTHON3 = True
-
-
 def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False):
   results = []
   p = subprocess.Popen(cmd, cwd=cwd,

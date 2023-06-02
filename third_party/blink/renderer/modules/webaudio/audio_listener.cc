@@ -131,38 +131,35 @@ AudioListener::AudioListener(BaseAudioContext& context)
   // Initialize the cached values with the current values.  Thus, we don't need
   // to notify any panners because we haved moved.
   last_position_ = GetPosition();
-  last_forward_ = Orientation();
-  last_up_ = UpVector();
+  last_forward_ = GetOrientation();
+  last_up_ = GetUpVector();
 }
-
-AudioListener::~AudioListener() = default;
 
 void AudioListener::Trace(Visitor* visitor) const {
   visitor->Trace(position_x_);
   visitor->Trace(position_y_);
   visitor->Trace(position_z_);
-
   visitor->Trace(forward_x_);
   visitor->Trace(forward_y_);
   visitor->Trace(forward_z_);
-
   visitor->Trace(up_x_);
   visitor->Trace(up_y_);
   visitor->Trace(up_z_);
-
   InspectorHelperMixin::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 
-void AudioListener::AddPanner(PannerHandler& panner) {
+void AudioListener::AddPannerHandler(PannerHandler& panner_handler) {
   DCHECK(IsMainThread());
-  panners_.insert(&panner);
+
+  panner_handlers_.insert(&panner_handler);
 }
 
-void AudioListener::RemovePanner(PannerHandler& panner) {
+void AudioListener::RemovePannerHandler(PannerHandler& panner_handler) {
   DCHECK(IsMainThread());
-  DCHECK(panners_.Contains(&panner));
-  panners_.erase(&panner);
+
+  DCHECK(panner_handlers_.Contains(&panner_handler));
+  panner_handlers_.erase(&panner_handler);
 }
 
 bool AudioListener::HasSampleAccurateValues() const {
@@ -184,7 +181,8 @@ bool AudioListener::IsAudioRate() const {
          forwardX()->Handler().IsAudioRate() ||
          forwardY()->Handler().IsAudioRate() ||
          forwardZ()->Handler().IsAudioRate() ||
-         upX()->Handler().IsAudioRate() || upY()->Handler().IsAudioRate() ||
+         upX()->Handler().IsAudioRate() ||
+         upY()->Handler().IsAudioRate() ||
          upZ()->Handler().IsAudioRate();
 }
 
@@ -192,7 +190,7 @@ void AudioListener::UpdateValuesIfNeeded(uint32_t frames_to_process) {
   double current_time =
       positionX()->Handler().DestinationHandler().CurrentTime();
   if (last_update_time_ != current_time) {
-    // Time has changed. Update all of the automation values now.
+    // The time has passed. Update all of the automation values.
     last_update_time_ = current_time;
 
     DCHECK_LE(frames_to_process, position_x_values_.size());
@@ -211,20 +209,18 @@ void AudioListener::UpdateValuesIfNeeded(uint32_t frames_to_process) {
         position_y_values_.Data(), frames_to_process);
     positionZ()->Handler().CalculateSampleAccurateValues(
         position_z_values_.Data(), frames_to_process);
-
     forwardX()->Handler().CalculateSampleAccurateValues(
         forward_x_values_.Data(), frames_to_process);
     forwardY()->Handler().CalculateSampleAccurateValues(
         forward_y_values_.Data(), frames_to_process);
     forwardZ()->Handler().CalculateSampleAccurateValues(
         forward_z_values_.Data(), frames_to_process);
-
-    upX()->Handler().CalculateSampleAccurateValues(up_x_values_.Data(),
-                                                   frames_to_process);
-    upY()->Handler().CalculateSampleAccurateValues(up_y_values_.Data(),
-                                                   frames_to_process);
-    upZ()->Handler().CalculateSampleAccurateValues(up_z_values_.Data(),
-                                                   frames_to_process);
+    upX()->Handler().CalculateSampleAccurateValues(
+        up_x_values_.Data(), frames_to_process);
+    upY()->Handler().CalculateSampleAccurateValues(
+        up_y_values_.Data(), frames_to_process);
+    upZ()->Handler().CalculateSampleAccurateValues(
+        up_z_values_.Data(), frames_to_process);
   }
 }
 
@@ -282,8 +278,8 @@ void AudioListener::UpdateState() {
   const base::AutoTryLock try_locker(listener_lock_);
   if (try_locker.is_acquired()) {
     const gfx::Point3F current_position = GetPosition();
-    const gfx::Vector3dF current_forward = Orientation();
-    const gfx::Vector3dF current_up = UpVector();
+    const gfx::Vector3dF current_forward = GetOrientation();
+    const gfx::Vector3dF current_up = GetUpVector();
 
     is_listener_dirty_ = current_position != last_position_ ||
                          current_forward != last_forward_ ||
@@ -295,9 +291,9 @@ void AudioListener::UpdateState() {
       last_up_ = current_up;
     }
   } else {
-    // Main thread must be updating the position, forward, or up vector;
-    // just assume the listener is dirty.  At worst, we'll do a little more
-    // work than necessary for one rendering quantum.
+    // The main thread must be updating the position, the forward, or the up
+    // vector; assume the listener is dirty.  At worst, we'll do a little more
+    // work than necessary for one render quantum.
     is_listener_dirty_ = true;
   }
 }
@@ -311,10 +307,6 @@ void AudioListener::CreateAndLoadHRTFDatabaseLoader(float sample_rate) {
   }
 }
 
-bool AudioListener::IsHRTFDatabaseLoaded() {
-  return hrtf_database_loader_ && hrtf_database_loader_->IsLoaded();
-}
-
 void AudioListener::WaitForHRTFDatabaseLoaderThreadCompletion() {
   if (hrtf_database_loader_) {
     hrtf_database_loader_->WaitForLoaderThreadCompletion();
@@ -323,12 +315,13 @@ void AudioListener::WaitForHRTFDatabaseLoaderThreadCompletion() {
 
 void AudioListener::MarkPannersAsDirty(unsigned type) {
   DCHECK(IsMainThread());
-  for (PannerHandler* panner : panners_) {
-    panner->MarkPannerAsDirty(type);
+
+  for (PannerHandler* panner_handler : panner_handlers_) {
+    panner_handler->MarkPannerAsDirty(type);
   }
 }
 
-void AudioListener::setPosition(const gfx::Point3F& position,
+void AudioListener::SetPosition(const gfx::Point3F& position,
                                 ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 
@@ -345,7 +338,7 @@ void AudioListener::setPosition(const gfx::Point3F& position,
                      PannerHandler::kDistanceConeGainDirty);
 }
 
-void AudioListener::setOrientation(const gfx::Vector3dF& orientation,
+void AudioListener::SetOrientation(const gfx::Vector3dF& orientation,
                                    ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 

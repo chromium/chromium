@@ -14,23 +14,6 @@
 namespace apps {
 
 namespace {
-std::unique_ptr<proto::DuplicatedGroupList> PopulateDuplicatedGroupList(
-    const std::string& binary_pb) {
-  // Parse the proto and do some validation on it.
-  if (binary_pb.empty()) {
-    LOG(ERROR) << "Binary is empty";
-    return nullptr;
-  }
-
-  std::unique_ptr<proto::DuplicatedGroupList> duplicated_group_list =
-      std::make_unique<proto::DuplicatedGroupList>();
-  if (!duplicated_group_list->ParseFromString(binary_pb)) {
-    LOG(ERROR) << "Failed to parse protobuf";
-    return nullptr;
-  }
-  return duplicated_group_list;
-}
-
 std::unique_ptr<proto::AppWithLocaleList> PopulateAppWithLocaleList(
     const std::string& binary_pb) {
   // Parse the proto and do some validation on it.
@@ -66,10 +49,6 @@ void AppProvisioningDataManager::PopulateFromDynamicUpdate(
   // TODO(melzhang) : Add check that version of |app_with_locale_list| is newer.
   app_with_locale_list_ =
       PopulateAppWithLocaleList(component_files.app_with_locale_pb);
-  if (base::FeatureList::IsEnabled(features::kAppDeduplicationService)) {
-    duplicated_group_list_ =
-        PopulateDuplicatedGroupList(component_files.deduplication_pb);
-  }
   data_dir_ = install_dir;
   OnAppDataUpdated();
 }
@@ -79,7 +58,7 @@ const base::FilePath& AppProvisioningDataManager::GetDataFilePath() {
 }
 
 void AppProvisioningDataManager::OnAppDataUpdated() {
-  if (!app_with_locale_list_ && !duplicated_group_list_) {
+  if (!app_with_locale_list_) {
     return;
   }
   for (auto& observer : observers_) {
@@ -89,7 +68,7 @@ void AppProvisioningDataManager::OnAppDataUpdated() {
 
 void AppProvisioningDataManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  if (app_with_locale_list_ || duplicated_group_list_) {
+  if (app_with_locale_list_) {
     NotifyObserver(*observer);
   }
 }
@@ -103,11 +82,6 @@ void AppProvisioningDataManager::NotifyObserver(Observer& observer) {
   // version is available.
   if (app_with_locale_list_) {
     observer.OnAppWithLocaleListUpdated(*app_with_locale_list_.get());
-  }
-  // TODO(b/238394602): Add version check so that only notify observer when new
-  // version is available.
-  if (duplicated_group_list_) {
-    observer.OnDuplicatedGroupListUpdated(*duplicated_group_list_.get());
   }
 }
 

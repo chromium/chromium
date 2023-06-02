@@ -132,6 +132,13 @@ const char kSearchFieldHTML[] =
     "  <INPUT type='submit' value='Chirp'/>"
     "</FORM>";
 
+const char kWebAutnFieldHTML[] =
+    "<FORM id='WebAuthnFieldForm' action='http://www.gewgle.de'>"
+    "  <INPUT type='text' id='username' autocomplete='webauthn'/>"
+    "  <INPUT type='password' id='password' autocomplete='webauthn'/>"
+    "  <INPUT type='submit' value='Login'/>"
+    "</FORM>";
+
 const char kVisibleFormWithNoUsernameHTML[] =
     "<head> <style> form {display: inline;} </style> </head>"
     "<body>"
@@ -3373,11 +3380,39 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableFields) {
             fake_driver_.last_focused_field_type());
 }
 
-TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillablSearchField) {
+TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableSearchField) {
   LoadHTML(kSearchFieldHTML);
   FocusElement(kSearchField);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableSearchField,
+            fake_driver_.last_focused_field_type());
+}
+
+TEST_F(PasswordAutofillAgentTest,
+       DriverInformedAboutWebAuthnIfNotPasswordOrUsername) {
+  LoadHTML(kWebAutnFieldHTML);
+  UpdateUrlForHTML(kWebAutnFieldHTML);
+  UpdateUsernameAndPasswordElements();
+
+  // Classify webauthn-tagged fields as webauthn if they aren't anything else.
+  FocusElement(kUsernameName);
+  fake_driver_.Flush();
+  EXPECT_EQ(FocusedFieldType::kFillableWebauthnTaggedField,
+            fake_driver_.last_focused_field_type());
+
+  // Don't classify password fields as webauthn. Fallbacks are the
+  // same anyway.
+  FocusElement(kPasswordName);
+  fake_driver_.Flush();
+  EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
+            fake_driver_.last_focused_field_type());
+
+  // Once username fields are detectable, prefer username
+  // classification.
+  SimulateOnFillPasswordForm(fill_data_);
+  FocusElement(kUsernameName);
+  fake_driver_.Flush();
+  EXPECT_EQ(FocusedFieldType::kFillableUsernameField,
             fake_driver_.last_focused_field_type());
 }
 

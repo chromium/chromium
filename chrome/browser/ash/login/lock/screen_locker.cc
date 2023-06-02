@@ -507,7 +507,13 @@ void ScreenLocker::ContinueAuthenticate(
 }
 
 void ScreenLocker::AttemptUnlock(std::unique_ptr<UserContext> user_context) {
-  authenticator_->AuthenticateToUnlock(std::move(user_context));
+  DCHECK(user_context);
+  // Retrieve accountId before std::move(user_context).
+  const AccountId accountId = user_context->GetAccountId();
+
+  authenticator_->AuthenticateToUnlock(
+      user_manager::UserManager::Get()->IsEphemeralAccountId(accountId),
+      std::move(user_context));
 }
 
 const user_manager::User* ScreenLocker::FindUnlockUser(

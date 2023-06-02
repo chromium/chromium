@@ -150,8 +150,8 @@ mojom::CrossOriginEmbedderPolicyReporter* URLLoaderFactory::GetCoepReporter()
   return cors_url_loader_factory_->coep_reporter();
 }
 
-bool URLLoaderFactory::ShouldRequireNetworkIsolationKey() const {
-  return context_->require_network_isolation_key();
+bool URLLoaderFactory::ShouldRequireIsolationInfo() const {
+  return context_->require_network_anonymization_key();
 }
 
 scoped_refptr<ResourceSchedulerClient>

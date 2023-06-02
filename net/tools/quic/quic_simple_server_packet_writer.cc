@@ -51,7 +51,8 @@ quic::WriteResult QuicSimpleServerPacketWriter::WritePacket(
     size_t buf_len,
     const quic::QuicIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
-    quic::PerPacketOptions* options) {
+    quic::PerPacketOptions* options,
+    const quic::QuicPacketWriterParams& params) {
   scoped_refptr<StringIOBuffer> buf =
       base::MakeRefCounted<StringIOBuffer>(std::string(buffer, buf_len));
   DCHECK(!IsWriteBlocked());
@@ -87,6 +88,10 @@ bool QuicSimpleServerPacketWriter::SupportsReleaseTime() const {
 }
 
 bool QuicSimpleServerPacketWriter::IsBatchMode() const {
+  return false;
+}
+
+bool QuicSimpleServerPacketWriter::SupportsEcn() const {
   return false;
 }
 

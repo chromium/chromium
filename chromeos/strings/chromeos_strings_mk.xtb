@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Работни површини</translation>
 <translation id="1018219910092211213">Не може да се одреди со DNS</translation>
 <translation id="1018656279737460067">Откажано</translation>
-<translation id="1022433422498218992">Општи контроли</translation>
+<translation id="1020274983236703756">Сега се достапни ексклузивни средства за <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
@@ -12,7 +12,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откриен е заштитен ѕид</translation>
 <translation id="1075811647922107217">Големина на страницата</translation>
-<translation id="1082009148392559545">Се презема заштитникот на екран</translation>
+<translation id="1082009148392559545">Се презема штедачот на екран</translation>
 <translation id="1094693127011229778">IP-адресата не е достапна</translation>
 <translation id="1113892970288677790">Изберете избрани илустрации и слики</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Тип автентикација</translation>
 <translation id="1776228893584526149">Тон на боја на тапет</translation>
 <translation id="1782199038061388045">превод</translation>
-<translation id="1790209694022261219">Прозорци и работни површини</translation>
 <translation id="1792647875738159689">Се откажува скенирањето</translation>
 <translation id="1801418420130173017">Овозможи темна тема</translation>
 <translation id="1807246157184219062">Светла</translation>
 <translation id="1827738518074806965">Уметничка галерија</translation>
+<translation id="1836553715834333258">Системска боја</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
+<translation id="1840474674287087346">Боја на работната површина</translation>
 <translation id="1851218745569890714">Видеоконференција</translation>
 <translation id="1852934301711881861">Инсталирај ChromeOS Flex</translation>
 <translation id="1856388568474281774">Стрелка надолу</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Навигација низ прелистувачот</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
 <translation id="2878387241690264070">Испразнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
-<translation id="2902312830803030883">Повеќе дејства</translation>
 <translation id="2926057806159140518">Внесете корисничко име и лозинка или скенирајте ваш QR-код</translation>
 <translation id="2940811910881150316">Не можете да го тестирате уредот. Отворете го капакот повторно за да тестирате.</translation>
-<translation id="2981143481017883351">Сега се достапни средства ексклузивни за Chromebook</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017079585324758401">Заднина</translation>
-<translation id="3020183492814296499">Кратенки</translation>
 <translation id="3027578600144895987">Затворете ја камерата</translation>
 <translation id="3031560714565892478">Уредот е видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
+<translation id="3248223063252096240">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
 <translation id="3275729367986477355">Слика за аватар</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени датотека}one{Измени датотеки}other{Измени датотеки}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Насока на клучот</translation>
 <translation id="3294437725009624529">Гостин</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>
+<translation id="3305294846493618482">повеќе</translation>
 <translation id="3310640316857623290">Латенцијата на DNS е значително над дозволениот праг</translation>
 <translation id="3328783797891415197">Тестот се извршува</translation>
 <translation id="3340011300870565703">Нивото на батерија на десната слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Прозорци</translation>
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
-<translation id="3386675685417744672">Ексклузивно за Chromebook</translation>
 <translation id="3404249063913988450">Овозможете го штедачот на екранот</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Вклучи/исклучи заштита на приватноста</translation>
 <translation id="3639846061339007994">најгоре</translation>
 <translation id="3651050199673793219">Изберете температурна единица</translation>
+<translation id="3663574643422533538">Изберете ексклузивен постер за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Се вчитува...</translation>
 <translation id="3708186454126126312">Претходно поврзани</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">ПРЕДУПРЕДУВАЊЕ</translation>
 <translation id="4054683689023980771">Сликата се презема</translation>
 <translation id="4060260348856573701">Нов APN</translation>
-<translation id="4079743696465895866">Изберете постер ексклузивен за Chromebook</translation>
 <translation id="4093865285251893588">Профилна слика</translation>
 <translation id="409427325554347132">Зачувај детали од тестот</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Изберете го албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Подлога за допир со USB</translation>
+<translation id="4113067922640381334">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темен режим</translation>
 <translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
 <translation id="4131410914670010031">Црно и бело</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Скенирај во</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
+<translation id="4500966230243561393">Боја на интерфејсот</translation>
 <translation id="4503223151711056411">Стрелка налево</translation>
 <translation id="4507392511610824664">зголемување на осветленоста</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Кога екранот е неактивен, прикажувај фотографии, време, временска прогноза и вести.</translation>
+<translation id="5035083460461104704">Боја на темата</translation>
 <translation id="5038292761217083259">тастатура во повеќе бои</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5049856988445523908">SIM-картичката е заклучена (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
 <translation id="5984145644188835034">Стандарден тапет</translation>
 <translation id="6017514345406065928">Зелена</translation>
+<translation id="6019566113895157499">Кратенки од тастатура</translation>
 <translation id="6034694447310538551">Овозможете автоматско месечно ресетирање</translation>
 <translation id="6037291330010597344">Фиоката за документи на скенерот е празна. Додајте документи и обидете се повторно.</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -662,7 +665,7 @@
 <translation id="636850387210749493">Запишување компанија</translation>
 <translation id="6379086450106841622">Екран на допир</translation>
 <translation id="6381741036071372448">Тестирајте ја тастатурата</translation>
-<translation id="6382182670717268353">Преглед на заштитник на екран</translation>
+<translation id="6382182670717268353">Преглед на штедач на екран</translation>
 <translation id="6388847657025262518">Фиоката за документи на скенерот е заглавена. Проверете ја и обидете се повторно.</translation>
 <translation id="6394634179843537518">Додај датотека</translation>
 <translation id="6401427872449207797">пребарување во прелистувач</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Неутрална</translation>
 <translation id="7620771111601174153">Дознајте повеќе во „Центарот за помош“</translation>
 <translation id="763165478673169849">Време на последно ресетирање</translation>
+<translation id="7633068090678117093">Заднинска слика</translation>
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
 <translation id="765159867434478292">Раздели</translation>
 <translation id="7656388927906093505">Уредот е глувче.</translation>
@@ -925,13 +929,14 @@
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
 <translation id="8508640263392900755">Детали за APN</translation>
-<translation id="8522687886059337719">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />заштитник на екран<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
+<translation id="8522687886059337719">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />штедач на екран<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
 <translation id="8576249514688522074">Неиницијализирана</translation>
 <translation id="8593058461203131755">паузирање аудиовизуелни содржини</translation>
 <translation id="8620617069779373398">Статус на роаминг</translation>
+<translation id="8626489604350149811">Повеќе дејства за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светловиолетов</translation>
 <translation id="8651481478098336970">исклучи звук</translation>
 <translation id="8655295600908251630">Канал</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Споредба</translation>
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8936793075252196307">IP адреса на клиент</translation>
+<translation id="8944651180182756621">Боја на стартерот</translation>
 <translation id="894617464444543719">Уредот е телефон.</translation>
 <translation id="8957423540740801332">десно</translation>
 <translation id="8968751544471797276">Брзина на полнење</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Изврши тест за меморија</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">Преостанува помалку од една минута</translation>
+<translation id="9174334653006917325">Боја на корисничкиот интерфејс</translation>
 <translation id="917720651393141712">Тест</translation>
 <translation id="9188992814426075118">Тастатурата може автоматски да се совпаѓа со тапетот</translation>
 <translation id="9189000703457422362">Не може да се поврзе на мрежава со автоматски откриени APN. Контактирајте со вашиот мобилен оператор за повеќе информации.</translation>

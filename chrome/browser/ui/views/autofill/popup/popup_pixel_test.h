@@ -92,15 +92,9 @@ class PopupPixelTest : public UiBrowserTest,
       return false;
     }
 
-    // VerifyPixelUi works only for these platforms.
-    // TODO(crbug.com/958242): Revise this if supported platforms change.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     return VerifyPixelUi(widget, test_info->test_case_name(),
-                         test_info->name());
-#else
-    return true;
-#endif
+                         test_info->name()) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {}

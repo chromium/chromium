@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
@@ -22,7 +23,7 @@ class DisplayOverlayController;
 //   |  |___________________________|  |
 //   |_________________________________|
 //
-class EditingList : public views::View {
+class EditingList : public views::View, public TouchInjectorObserver {
  public:
   static EditingList* Show(DisplayOverlayController* controller);
 
@@ -46,6 +47,13 @@ class EditingList : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+
+  // TouchInjectorObserver:
+  void OnActionAdded(const Action& action) override;
+  void OnActionRemoved(const Action& action) override;
+  void OnActionTypeChanged(const Action& action,
+                           const Action& new_action) override;
+  void OnActionUpdated(const Action& action) override;
 
   raw_ptr<DisplayOverlayController> controller_;
 };

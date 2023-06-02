@@ -2782,11 +2782,11 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   // Scroll to the end.
   GetDocument().getElementById("s")->setScrollTop(800);
 
-  // Third frame: LTHI::Animate transitions RUNNING -> PAUSED. Then main frame
-  // LayerTreeHost::ApplyMutatorEvents dispatches AnimationEvent::STARTED and
-  // resets KeyframeModel::needs_synchronized_start_time_.
+  // Third frame: LayerTreeHost::ApplyMutatorEvents dispatches
+  // AnimationEvent::STARTED and resets
+  // KeyframeModel::needs_synchronized_start_time_.
   Compositor().BeginFrame();
-  EXPECT_EQ(gfx::KeyframeModel::PAUSED, keyframe_model_impl->run_state());
+  EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
 
   // Verify that KeyframeModel::CalculatePhase returns ACTIVE for the case of
   // local_time == active_after_boundary_time.
@@ -2809,7 +2809,7 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
           ->FirstKeyframeEffectForTesting();
   keyframe_model_impl = keyframe_effect->keyframe_models()[0].get();
 
-  EXPECT_EQ(gfx::KeyframeModel::PAUSED, keyframe_model_impl->run_state());
+  EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
   EXPECT_TRUE(keyframe_model_main->HasActiveTime(base::TimeTicks()));
   EXPECT_TRUE(keyframe_model_impl->HasActiveTime(base::TimeTicks()));
 }

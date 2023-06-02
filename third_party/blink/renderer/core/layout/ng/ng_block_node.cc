@@ -872,10 +872,10 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     input.border_padding_for_replaced =
         physical_fragment.Borders() + physical_fragment.Padding();
     box_->ComputeAndSetBlockDirectionMargins(box_->ContainingBlock());
-    if (box_->NeedsLayout())
-      box_->LayoutIfNeeded();
-    else
-      box_->ForceLayout();
+    if (!box_->NeedsLayout()) {
+      box_->SetSelfNeedsLayoutForAvailableSpace(true);
+    }
+    box_->LayoutIfNeeded();
   }
 
   // If we miss the cache for one result (fragment), we need to clear the

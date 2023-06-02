@@ -13,12 +13,10 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/lock.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/thread_annotations.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -31,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/keep_alive_url_loader_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -39,7 +38,6 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -58,152 +56,6 @@ constexpr char k200TextResponse[] =
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: text/html; charset=utf-8\r\n"
     "\r\n";
-
-// `arg` is a 2-tuple (URLLoaderCompletionStatus, int).
-MATCHER(ErrorCodeEq, "match the same error code") {
-  const auto& expected = std::get<1>(arg);
-  const auto& got = std::get<0>(arg).error_code;
-  if (got != expected) {
-    *result_listener << "expected error code [" << expected << "] got [" << got
-                     << "]";
-    return false;
-  }
-  return true;
-}
-
-// Help to count the total triggering of one of methods observed by
-// `KeepAliveURLLoadersTestObserver`.
-// Use `WaitUntil()` to wait until this counter reaching specific value.
-class AtomicCounter {
- public:
-  AtomicCounter() = default;
-  // Not Copyable.
-  AtomicCounter(const AtomicCounter&) = delete;
-  AtomicCounter& operator=(const AtomicCounter&) = delete;
-
-  // Increments the internal counter, and stops `waiting_run_loop_` if exists.
-  void Increment() {
-    base::AutoLock auto_lock(lock_);
-    count_++;
-    if (waiting_run_loop_) {
-      waiting_run_loop_->Quit();
-    }
-  }
-
-  // If `count_` does not yet reach `value`, a RunLoop will be created and runs
-  // until it is stopped by `Increment()`.
-  void WaitUntil(size_t value) {
-    {
-      base::AutoLock auto_lock(lock_);
-      if (count_ >= value) {
-        return;
-      }
-    }
-
-    {
-      base::AutoLock auto_lock(lock_);
-      waiting_run_loop_ = std::make_unique<base::RunLoop>(
-          base::RunLoop::Type::kNestableTasksAllowed);
-    }
-    waiting_run_loop_->Run();
-
-    {
-      base::AutoLock auto_lock(lock_);
-      waiting_run_loop_.reset();
-    }
-  }
-
- private:
-  base::Lock lock_;
-  size_t count_ GUARDED_BY(lock_) = 0;
-  std::unique_ptr<base::RunLoop> waiting_run_loop_ = nullptr;
-};
-
-// Observes all created KeepAliveURLLoader instances' behaviors.
-// KeepAliveURLLoader itself is running in browser UI thread. But there can be
-// multiple instances.
-class KeepAliveURLLoadersTestObserver
-    : public KeepAliveURLLoader::TestObserver {
- public:
-  KeepAliveURLLoadersTestObserver() = default;
-  // Not Copyable.
-  KeepAliveURLLoadersTestObserver(const KeepAliveURLLoadersTestObserver&) =
-      delete;
-  KeepAliveURLLoadersTestObserver& operator=(
-      const KeepAliveURLLoadersTestObserver&) = delete;
-
-  // Waits for `OnReceiveRedirectForwarded` to be called `total` times.
-  void WaitForTotalOnReceiveRedirectForwarded(size_t total) {
-    on_receive_redirect_forwarded_count_.WaitUntil(total);
-  }
-  // Waits for `OnReceiveRedirectProcessed` to be called `total` times.
-  void WaitForTotalOnReceiveRedirectProcessed(size_t total) {
-    on_receive_redirect_processed_count_.WaitUntil(total);
-  }
-  // Waits for `OnReceiveResponseForwarded` to be called `total` times.
-  void WaitForTotalOnReceiveResponseForwarded(size_t total) {
-    on_receive_response_forwarded_count_.WaitUntil(total);
-  }
-  // Waits for `OnReceiveResponseProcessed` to be called `total` times.
-  void WaitForTotalOnReceiveResponseProcessed(size_t total) {
-    on_receive_response_processed_count_.WaitUntil(total);
-  }
-  // Waits for `OnCompleteForwarded` to be called `error_codes.size()` times,
-  // and the error codes from `on_complete_forwarded_status_` should match
-  // `error_codes`.
-  void WaitForTotalOnCompleteForwarded(const std::vector<int>& error_codes) {
-    on_complete_forwarded_count_.WaitUntil(error_codes.size());
-    EXPECT_THAT(on_complete_forwarded_status_,
-                testing::Pointwise(ErrorCodeEq(), error_codes));
-  }
-  // Waits for `OnCompleteProcessed` to be called `error_codes.size()` times,
-  // and the error codes from `on_complete_processed_status_` should match
-  // `error_codes`.
-  void WaitForTotalOnCompleteProcessed(const std::vector<int>& error_codes) {
-    on_complete_processed_count_.WaitUntil(error_codes.size());
-    EXPECT_THAT(on_complete_processed_status_,
-                testing::Pointwise(ErrorCodeEq(), error_codes));
-  }
-
- protected:
-  ~KeepAliveURLLoadersTestObserver() override = default;
-
- private:
-  // KeepAliveURLLoader::TestObserver overrides:
-  void OnReceiveRedirectForwarded(KeepAliveURLLoader* loader) override {
-    on_receive_redirect_forwarded_count_.Increment();
-  }
-  void OnReceiveRedirectProcessed(KeepAliveURLLoader* loader) override {
-    on_receive_redirect_processed_count_.Increment();
-  }
-  void OnReceiveResponseForwarded(KeepAliveURLLoader* loader) override {
-    on_receive_response_forwarded_count_.Increment();
-  }
-  void OnReceiveResponseProcessed(KeepAliveURLLoader* loader) override {
-    on_receive_response_processed_count_.Increment();
-  }
-  void OnCompleteForwarded(
-      KeepAliveURLLoader* loader,
-      const network::URLLoaderCompletionStatus& completion_status) override {
-    on_complete_forwarded_count_.Increment();
-    on_complete_forwarded_status_.push_back(completion_status);
-  }
-  void OnCompleteProcessed(
-      KeepAliveURLLoader* loader,
-      const network::URLLoaderCompletionStatus& completion_status) override {
-    on_complete_processed_count_.Increment();
-    on_complete_processed_status_.push_back(completion_status);
-  }
-
-  AtomicCounter on_receive_redirect_forwarded_count_;
-  AtomicCounter on_receive_redirect_processed_count_;
-  AtomicCounter on_receive_response_forwarded_count_;
-  AtomicCounter on_receive_response_processed_count_;
-  AtomicCounter on_complete_forwarded_count_;
-  AtomicCounter on_complete_processed_count_;
-  std::vector<network::URLLoaderCompletionStatus> on_complete_forwarded_status_;
-  std::vector<network::URLLoaderCompletionStatus> on_complete_processed_status_;
-};
 
 }  // namespace
 
@@ -225,6 +77,7 @@ class KeepAliveURLBrowserTest
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             {{blink::features::kKeepAliveInBrowserMigration, {}}}),
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    base::test::AllowCheckIsTestForTesting();
   }
   ~KeepAliveURLBrowserTest() override = default;
   // Not Copyable.
@@ -232,11 +85,10 @@ class KeepAliveURLBrowserTest
   KeepAliveURLBrowserTest& operator=(const KeepAliveURLBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
-    base::test::AllowCheckIsTestForTesting();
-    loaders_observer_ = base::MakeRefCounted<KeepAliveURLLoadersTestObserver>();
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
-    loader_service()->SetLoaderObserverForTesting(loaders_observer_);
+    loaders_observer_ = std::make_unique<KeepAliveURLLoadersTestObserver>(
+        web_contents()->GetBrowserContext());
 
     ContentBrowserTest::SetUpOnMainThread();
   }
@@ -248,27 +100,27 @@ class KeepAliveURLBrowserTest
   // fully unloaded (by navigating to another cross-origin page).
   // After that, `response` will be sent back.
   // `keepalive_request_handler` must handle the fetch keepalive request.
-  void LoadPageWithKeepaliveRequestAndSendResponseAfterUnload(
+  void LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
       const GURL& keepalive_page_url,
       net::test_server::ControllableHttpResponse* keepalive_request_handler,
       const std::string& response) {
     ASSERT_TRUE(NavigateToURL(web_contents(), keepalive_page_url));
     RenderFrameHostImplWrapper rfh_1(current_frame_host());
-    // Ensures the current page can be unloaded instead of being cached.
+    // Ensure the current page can be unloaded instead of being cached.
     DisableBackForwardCache(web_contents());
-    // Ensures the keepalive request is sent before leaving the current page.
+    // Ensure the keepalive request is sent before leaving the current page.
     keepalive_request_handler->WaitForRequest();
     ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
 
-    // Navigates to cross-origin page to ensure the 1st page can be unloaded.
+    // Navigate to cross-origin page to ensure the 1st page can be unloaded.
     ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
-    // Ensures the 1st page has been unloaded.
+    // Ensure the 1st page has been unloaded.
     ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
     // The disconnected loader is still pending to receive response.
     ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
     ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 1u);
 
-    // Sends back response to terminate in-browser request handling for the
+    // Send back response to terminate in-browser request handling for the
     // pending request from 1st page.
     keepalive_request_handler->Send(response);
     keepalive_request_handler->Done();
@@ -308,7 +160,7 @@ class KeepAliveURLBrowserTest
     return *loaders_observer_;
   }
 
-  GURL GetKeepalivePageURL(const std::string& method,
+  GURL GetKeepAlivePageURL(const std::string& method,
                            size_t num_requests = 1,
                            bool set_csp = false) const {
     return embedded_test_server()->GetURL(
@@ -327,7 +179,7 @@ class KeepAliveURLBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<KeepAliveURLLoadersTestObserver> loaders_observer_;
+  std::unique_ptr<KeepAliveURLLoadersTestObserver> loaders_observer_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -345,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepAlivePageURL(method)));
   // Ensure the keepalive request is sent, but delay response.
   request_handler->WaitForRequest();
   ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
@@ -377,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(
-      NavigateToURL(web_contents(), GetKeepalivePageURL(method, num_requests)));
+      NavigateToURL(web_contents(), GetKeepAlivePageURL(method, num_requests)));
   // Ensure all keepalive requests are sent, but delay responses.
   request_handlers[0]->WaitForRequest();
   request_handlers[1]->WaitForRequest();
@@ -406,8 +258,8 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  LoadPageWithKeepaliveRequestAndSendResponseAfterUnload(
-      GetKeepalivePageURL(method), request_handler.get(), k200TextResponse);
+  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+      GetKeepAlivePageURL(method), request_handler.get(), k200TextResponse);
 
   // The response should be processed in browser.
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
@@ -425,7 +277,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepalivePageURL(method)));
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepAlivePageURL(method)));
   RenderFrameHostImplWrapper rfh_1(current_frame_host());
   // Ensure the keepalive request is sent before leaving the current page.
   request_handler->WaitForRequest();
@@ -469,8 +321,8 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Sets up redirects according to the following redirect chain:
   // fetch("http://a.com:<port>/beacon", keepalive: true)
   // --> http://a.com:<port>/beacon-redirected
-  LoadPageWithKeepaliveRequestAndSendResponseAfterUnload(
-      GetKeepalivePageURL(method), request_handlers[0].get(),
+  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+      GetKeepAlivePageURL(method), request_handlers[0].get(),
       base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: %s\r\n"
                          "\r\n",
@@ -503,11 +355,11 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Sets up redirects according to the following redirect chain:
+  // Set up redirects according to the following redirect chain:
   // fetch("http://a.com:<port>/beacon", keepalive: true)
   // --> chrome://settings
-  LoadPageWithKeepaliveRequestAndSendResponseAfterUnload(
-      GetKeepalivePageURL(method), request_handler.get(),
+  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+      GetKeepAlivePageURL(method), request_handler.get(),
       base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: %s\r\n"
                          "\r\n",
@@ -530,11 +382,11 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Sets up redirects according to the following redirect chain:
+  // Set up redirects according to the following redirect chain:
   // fetch("http://a.com:<port>/beacon", keepalive: true)
   // --> http://b.com/beacon-redirected
-  LoadPageWithKeepaliveRequestAndSendResponseAfterUnload(
-      GetKeepalivePageURL(method, /*num_requests=*/1, /*set_csp=*/true),
+  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+      GetKeepAlivePageURL(method, /*num_requests=*/1, /*set_csp=*/true),
       request_handler.get(),
       base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
                          "Location: %s\r\n"

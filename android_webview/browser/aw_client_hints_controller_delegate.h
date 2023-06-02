@@ -40,13 +40,17 @@ extern const char kClientHintsCachedPerOriginMap[];
 class AwClientHintsControllerDelegate
     : public content::ClientHintsControllerDelegate {
  public:
-  explicit AwClientHintsControllerDelegate(PrefService* pref_service);
+  // The supplied PrefService should be the PrefService tied to the
+  // AwBrowserContext (profile), not the browser-wide local_state. Note that
+  // this is not comparible to the PrefService used by
+  // client_hints::ClientHints::ClientHints() - these PrefServices are used for
+  // different purposes.
+  explicit AwClientHintsControllerDelegate(PrefService* context_pref_service);
   ~AwClientHintsControllerDelegate() override;
 
   // Add an unique brand to the brand list to allow users distinguish Android
   // and Android WebView using user-agent client hints.
-  static blink::UserAgentMetadata GetUserAgentMetadataOverrideBrand(
-      const PrefService* pref_service);
+  static blink::UserAgentMetadata GetUserAgentMetadataOverrideBrand();
 
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
 
@@ -79,7 +83,7 @@ class AwClientHintsControllerDelegate
 
  private:
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> context_pref_service_;
   gfx::Size viewport_size_;
 };
 

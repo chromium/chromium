@@ -7,6 +7,7 @@
 
 #include <pulse/pulseaudio.h>
 #include <stddef.h>
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"

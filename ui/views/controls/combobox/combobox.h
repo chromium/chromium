@@ -48,21 +48,16 @@ class VIEWS_EXPORT Combobox : public View,
 
   using MenuSelectionAtCallback = base::RepeatingCallback<bool(size_t index)>;
 
-  static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
-  static constexpr int kDefaultComboboxTextStyle = style::STYLE_PRIMARY;
+  static constexpr style::TextContext kContext = style::CONTEXT_BUTTON;
+  static constexpr style::TextStyle kStyle = style::STYLE_PRIMARY;
 
   // A combobox with an empty model.
-  explicit Combobox(int text_context = kDefaultComboboxTextContext,
-                    int text_style = kDefaultComboboxTextStyle);
+  Combobox();
 
   // |model| is owned by the combobox when using this constructor.
-  explicit Combobox(std::unique_ptr<ui::ComboboxModel> model,
-                    int text_context = kDefaultComboboxTextContext,
-                    int text_style = kDefaultComboboxTextStyle);
+  explicit Combobox(std::unique_ptr<ui::ComboboxModel> model);
   // |model| is not owned by the combobox when using this constructor.
-  explicit Combobox(ui::ComboboxModel* model,
-                    int text_context = kDefaultComboboxTextContext,
-                    int text_style = kDefaultComboboxTextStyle);
+  explicit Combobox(ui::ComboboxModel* model);
   Combobox(const Combobox&) = delete;
   Combobox& operator=(const Combobox&) = delete;
   ~Combobox() override;
@@ -153,8 +148,6 @@ class VIEWS_EXPORT Combobox : public View,
   void SetSelectedRow(absl::optional<size_t> row) override;
   std::u16string GetTextForRow(size_t row) override;
 
-  void UpdateFont();
-
  protected:
   // Overridden from ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
@@ -206,14 +199,6 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Reference to our model, which may be owned or not.
   raw_ptr<ui::ComboboxModel> model_ = nullptr;
-
-  // Typography context for the text written in the combobox and the options
-  // shown in the drop-down menu.
-  const int text_context_;
-
-  // Typography style for the text written in the combobox and the options shown
-  // in the drop-down menu.
-  const int text_style_;
 
   // Callback notified when the selected index changes.
   base::RepeatingClosure callback_;
@@ -277,11 +262,6 @@ class VIEWS_EXPORT Combobox : public View,
   // ChildPreferredSizeChanged(). When false, the size of contents is defined by
   // the selected label
   bool size_to_largest_label_ = true;
-
-  // The font list to be used for the main dropdown of the combobox. Individual
-  // menu items on the dropdown may be defined separately by
-  // ComboboxMenuModel::GetLabelFontListAt.
-  gfx::FontList font_list_;
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};

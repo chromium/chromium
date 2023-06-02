@@ -22,7 +22,7 @@ suite('nearby-contact-visibility', () => {
   const fakeContactManager = new FakeContactManager();
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
 
     setContactManagerForTesting(fakeContactManager);
 

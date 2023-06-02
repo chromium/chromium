@@ -245,8 +245,10 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
   sync_pb::PasswordSpecificsData password_data = base_password_data;
   password_data.set_scheme(static_cast<int>(password_form.scheme));
   password_data.set_signon_realm(password_form.signon_realm);
-  password_data.set_origin(password_form.url.spec());
-  password_data.set_action(password_form.action.spec());
+  password_data.set_origin(
+      password_form.url.is_valid() ? password_form.url.spec() : "");
+  password_data.set_action(
+      password_form.action.is_valid() ? password_form.action.spec() : "");
   password_data.set_username_element(
       base::UTF16ToUTF8(password_form.username_element));
   password_data.set_password_element(
@@ -266,7 +268,8 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
   password_data.set_type(static_cast<int>(password_form.type));
   password_data.set_times_used(password_form.times_used_in_html_form);
   password_data.set_display_name(base::UTF16ToUTF8(password_form.display_name));
-  password_data.set_avatar_url(password_form.icon_url.spec());
+  password_data.set_avatar_url(
+      password_form.icon_url.is_valid() ? password_form.icon_url.spec() : "");
   password_data.set_federation_url(
       password_form.federation_origin.opaque()
           ? std::string()

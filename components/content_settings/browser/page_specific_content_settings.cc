@@ -125,6 +125,7 @@ class WebContentsHandler
 
   // Notifies all registered |SiteDataObserver|s.
   void NotifySiteDataObservers(const AccessDetails& access_details);
+  void NotifyStatefulBounceObservers();
 
   // Queues update sent while the navigation is still in progress. The update
   // is run after the navigation completes (DidFinishNavigation).
@@ -408,6 +409,12 @@ void WebContentsHandler::NotifySiteDataObservers(
     const AccessDetails& access_details) {
   for (SiteDataObserver& observer : observer_list_)
     observer.OnSiteDataAccessed(access_details);
+}
+
+void WebContentsHandler::NotifyStatefulBounceObservers() {
+  for (SiteDataObserver& observer : observer_list_) {
+    observer.OnStatefulBounceDetected();
+  }
 }
 
 void WebContentsHandler::AddPendingCommitUpdate(
@@ -1127,6 +1134,12 @@ void PageSpecificContentSettings::ClearPopupsBlocked() {
 
 void PageSpecificContentSettings::OnAudioBlocked() {
   OnContentBlocked(ContentSettingsType::SOUND);
+}
+
+void PageSpecificContentSettings::IncrementStatefulBounceCount() {
+  stateful_bounce_count_++;
+  WebContentsHandler::FromWebContents(GetWebContents())
+      ->NotifyStatefulBounceObservers();
 }
 
 void PageSpecificContentSettings::OnContentSettingChanged(

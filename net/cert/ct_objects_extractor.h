@@ -13,6 +13,11 @@
 
 namespace net::ct {
 
+// The wire form of the OID 1.3.6.1.4.1.11129.2.4.2. See Section 3.3 of
+// RFC6962.
+inline constexpr uint8_t kEmbeddedSCTOid[] = {0x2B, 0x06, 0x01, 0x04, 0x01,
+                                              0xD6, 0x79, 0x02, 0x04, 0x02};
+
 struct SignedEntryData;
 
 // Extracts a SignedCertificateTimestampList that has been embedded within a

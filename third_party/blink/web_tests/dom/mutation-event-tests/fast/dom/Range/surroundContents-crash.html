@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Range.surroundContents() crash</title>
+<script src="../../../../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description('DOM mutation events should not be dispatched during DOM mutations in surroundContents().');
+
+window.jsTestIsAsync = true;
+
+var range;
+var textContainer;
+var textToBeSplit;
+var newTextNode;
+
+function run()
+{
+    textContainer = document.createElement('div');
+    textToBeSplit = document.createTextNode('SPLITME');
+    textContainer.appendChild(textToBeSplit);
+    document.body.appendChild(textContainer);
+
+    var surroundParent = document.createElement('div');
+    var textToBeRemoved = document.createTextNode('I will be removed.');
+    surroundParent.appendChild(textToBeRemoved);
+    document.body.appendChild(surroundParent);
+
+    // Range.surroundContents(newParent) removes newParent's children during its
+    // preprocess phase, however the following event handler is called after
+    // finishing all DOM mutation in surroundContents() method.
+    textToBeRemoved.addEventListener('DOMNodeRemoved', function (event) {
+        // |surroundParent| is moved into |textContainer|, and is selected.
+        shouldEvaluateTo('textContainer.childNodes.length', 2);
+        shouldBeTrue('range.startContainer === textContainer');
+        shouldEvaluateTo('range.startOffset', 1);
+        shouldBeTrue('range.endContainer === textContainer');
+        shouldEvaluateTo('range.endOffset', 2);
+    });
+
+    range = new Range();
+    range.setStart(textToBeSplit, textToBeSplit.length);
+    range.setEnd(textContainer, 1);
+    range.surroundContents(surroundParent);
+
+    testPassed('Did not crash.');
+
+    // Cleanup.
+    document.body.removeChild(textContainer);
+
+    window.finishJSTest();
+}
+
+window.setTimeout(run, 0);
+</script>
+</body>
+</html>

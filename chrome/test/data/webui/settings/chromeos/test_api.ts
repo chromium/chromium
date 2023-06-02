@@ -835,7 +835,7 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
     const privacyPage = querySelectorShadow(document.body, [
       'os-settings-ui',
       'os-settings-main',
-      'os-settings-page',
+      'main-page-container',
       'os-settings-privacy-page',
     ]);
     assertTrue(privacyPage instanceof HTMLElement);
@@ -895,7 +895,7 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
     const googleDriveSubpage = querySelectorShadow(document.body, [
       'os-settings-ui',
       'os-settings-main',
-      'os-settings-page',
+      'main-page-container',
       'os-settings-files-page',
       'settings-google-drive-subpage',
     ]);

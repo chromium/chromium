@@ -41,6 +41,8 @@ class SearchTagRegistry : public EnterprisePolicyDelegate::Observer {
 
   using SearchConceptUpdates = std::map<const SearchConcept*, bool>;
 
+  static std::u16string MessageIdToString(int message_id);
+
   SearchTagRegistry(
       local_search_service::LocalSearchServiceProxy& local_search_service_proxy,
       PrefService* pref_service,

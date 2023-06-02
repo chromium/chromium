@@ -29,6 +29,8 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   ShareThisTabDialogView& operator=(const ShareThisTabDialogView&) = delete;
   ~ShareThisTabDialogView() override;
 
+  void RecordUmaDismissal() const;
+
   // Called by parent (ShareThisTabDialogViews) when it's destroyed.
   void DetachParent();
 
@@ -68,6 +70,9 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   const std::string auto_select_source_;     // Any source by its title.
   const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
   const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
+
+  // For recording dialog-duration UMA histograms.
+  const base::TimeTicks dialog_open_time_;
 
   base::WeakPtrFactory<ShareThisTabDialogView> weak_factory_{this};
 };

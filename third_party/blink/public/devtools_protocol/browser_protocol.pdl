@@ -818,6 +818,7 @@ experimental domain Audits
       Canceled
       RpPageNotVisible
       SilentMediationFailure
+      ThirdPartyCookiesBlocked
 
   # This issue tracks client hints related issues. It's used to deprecate old
   # features, encourage the use of new ones, and provide general guidance.
@@ -1382,6 +1383,20 @@ experimental domain CSS
       string text
       # Value range in the underlying resource (if available).
       optional SourceRange range
+      # Specificity of the selector.
+      experimental optional Specificity specificity
+
+  # Specificity:
+  # https://drafts.csswg.org/selectors/#specificity-rules
+  experimental type Specificity extends object
+    properties
+      # The a component, which represents the number of ID selectors.
+      integer a
+      # The b component, which represents the number of class selectors, attributes selectors, and
+      # pseudo-classes.
+      integer b
+      # The c component, which represents the number of type selectors and pseudo-elements.
+      integer c
 
   # Selector list data.
   type SelectorList extends object
@@ -3969,7 +3984,7 @@ experimental domain HeadlessExperimental
         jpeg
         png
         webp
-      # Compression quality from range [0..100] (jpeg only).
+      # Compression quality from range [0..100] (jpeg and webp only).
       optional integer quality
       # Optimize image encoding for speed, not for resulting size (defaults to false)
       optional boolean optimizeForSpeed
@@ -5107,6 +5122,8 @@ domain Network
       experimental number pushStart
       # Time the server finished pushing request.
       experimental number pushEnd
+      # Started receiving response headers.
+      experimental number receiveHeadersStart
       # Finished receiving response headers.
       number receiveHeadersEnd
 
@@ -8446,6 +8463,7 @@ domain Page
       ActivationNavigationsDisallowedForBug1234857
       ErrorDocument
       FencedFramesEmbedder
+      CookieDisabled
       #Blocklisted features
       WebSocket
       WebTransport
@@ -8614,6 +8632,17 @@ domain Page
       string url
       # Base64-encoded data
       binary data
+
+  # Enable/disable prerendering manually.
+  #
+  # This command is a short-term solution for https://crbug.com/1440085.
+  # See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA
+  # for more details.
+  #
+  # TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
+  experimental command setPrerenderingAllowed
+    parameters
+      boolean isAllowed
 
 domain Performance
 
@@ -11020,6 +11049,7 @@ experimental domain Preload
       SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation
       MemoryPressureOnTrigger
       MemoryPressureAfterTriggered
+      PrerenderingDisabledByDevTools
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

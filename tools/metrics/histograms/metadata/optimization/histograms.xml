@@ -74,6 +74,9 @@ chromium-metrics-reviews@google.com.
       summary="Segmentation: Tablet Productivity user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
+  <variant name="TextEmbedder" summary="Generic Text Embedding"/>
+  <variant name="VisualSearchClassification"
+      summary="Classifies images on the page"/>
   <variant name="WebAppInstallationPromo"
       summary="PWA: Show web app installation promotion"/>
 </variants>
@@ -121,6 +124,8 @@ chromium-metrics-reviews@google.com.
       summary="Provides the entities that are present on the page"/>
   <variant name="PerformanceHints"
       summary="Provides aggregated performance information about the page"/>
+  <variant name="PriceInsights"
+      summary="Returns price insights data for shopping websites"/>
   <variant name="PriceTracking"
       summary="Returns price related data for shopping websites"/>
   <variant name="SalientImage"
@@ -693,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentAnnotations.EntityCollection_50"
-    enum="OptimizationGuidePageEntityCollection" expires_after="2023-09-17">
+    enum="OptimizationGuidePageEntityCollection" expires_after="2023-11-19">
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -816,7 +821,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
     enum="OptimizationGuidePageContentAnnotationsStorageStatus"
-    expires_after="2023-11-12">
+    expires_after="2023-11-19">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1280,7 +1285,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2023-11-12">
+    enum="NetErrorCodes" expires_after="2023-11-19">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1310,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status"
-    enum="HttpResponseCode" expires_after="2023-11-12">
+    enum="HttpResponseCode" expires_after="2023-11-19">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
+#include "net/base/directory_lister.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -34,7 +35,8 @@ class WebContents;
 class ShellFileSelectHelper
     : public base::RefCountedThreadSafe<ShellFileSelectHelper,
                                         BrowserThread::DeleteOnUIThread>,
-      public ui::SelectFileDialog::Listener {
+      public ui::SelectFileDialog::Listener,
+      private net::DirectoryLister::DirectoryListerDelegate {
  public:
   ShellFileSelectHelper(const ShellFileSelectHelper&) = delete;
   ShellFileSelectHelper& operator=(const ShellFileSelectHelper&) = delete;
@@ -74,11 +76,29 @@ class ShellFileSelectHelper
       void* params) override;
   void FileSelectionCanceled(void* params) override;
 
+  // Kicks off a new directory enumeration.
+  void StartNewEnumeration(const base::FilePath& path);
+
+  // net::DirectoryLister::DirectoryListerDelegate overrides.
+  void OnListFile(
+      const net::DirectoryLister::DirectoryListerData& data) override;
+  void OnListDone(int error) override;
+
   // This method is called after the user has chosen the file(s) in the UI in
   // order to process and filter the list before returning the final result to
   // the caller.
   void ConvertToFileChooserFileInfoList(
       const std::vector<ui::SelectedFileInfo>& files);
+
+  // The enumeration root directory for EnumerateDirectory() and
+  // RunFileChooser with kUploadFolder.
+  base::FilePath base_dir_;
+
+  // Maintain an active directory enumeration.  These could come from the file
+  // select dialog or from drag-and-drop of directories.  There could not be
+  // more than one going on at a time.
+  struct ActiveDirectoryEnumeration;
+  std::unique_ptr<ActiveDirectoryEnumeration> directory_enumeration_;
 
   // A weak pointer to the WebContents of the RenderFrameHost, for life checks.
   base::WeakPtr<WebContents> web_contents_;

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS cookies
-Harness: the test ran to completion.
-

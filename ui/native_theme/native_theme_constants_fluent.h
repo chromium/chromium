@@ -48,6 +48,9 @@ constexpr int kFluentScrollbarPressedArrowRectFallbackLength = 7;
 // Offset the arrow icon by this amount off-center, away from the thumb.
 constexpr int kFluentScrollbarArrowOffset = 1;
 
+// The outline width used to paint track and buttons in High Contrast mode.
+constexpr float kFluentScrollbarTrackOutlineWidth = 1.0f;
+
 // The font that supports the drawing of Fluent scrollbar arrow icons.
 // Currently, it's only available on Windows 11 by default.
 constexpr char kFluentScrollbarFont[] = "Segoe Fluent Icons";

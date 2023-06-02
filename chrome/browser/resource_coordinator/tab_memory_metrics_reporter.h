@@ -63,7 +63,7 @@ class TabMemoryMetricsReporter : public TabLoadTracker::Observer {
     base::TimeTicks page_loaded_time;
     base::TimeTicks next_emit_time;
     ReportState state;
-    raw_ptr<content::WebContents> web_contents;
+    raw_ptr<content::WebContents, DanglingUntriaged> web_contents;
   };
 
   struct WebContentsDataComparator {

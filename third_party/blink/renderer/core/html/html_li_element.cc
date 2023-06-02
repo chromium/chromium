@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 
 namespace blink {
 
@@ -44,21 +45,24 @@ bool HTMLLIElement::IsPresentationAttribute(const QualifiedName& name) const {
 
 AtomicString ListTypeAttributeToStyleName(const AtomicString& value) {
   if (value == "a")
-    return "lower-alpha";
+    return keywords::kLowerAlpha;
   if (value == "A")
-    return "upper-alpha";
+    return keywords::kUpperAlpha;
   if (value == "i")
-    return "lower-roman";
+    return keywords::kLowerRoman;
   if (value == "I")
-    return "upper-roman";
+    return keywords::kUpperRoman;
   if (value == "1")
-    return "decimal";
-  if (EqualIgnoringASCIICase(value, "disc"))
-    return "disc";
-  if (EqualIgnoringASCIICase(value, "circle"))
-    return "circle";
-  if (EqualIgnoringASCIICase(value, "square"))
-    return "square";
+    return keywords::kDecimal;
+  if (EqualIgnoringASCIICase(value, keywords::kDisc)) {
+    return keywords::kDisc;
+  }
+  if (EqualIgnoringASCIICase(value, keywords::kCircle)) {
+    return keywords::kCircle;
+  }
+  if (EqualIgnoringASCIICase(value, keywords::kSquare)) {
+    return keywords::kSquare;
+  }
   return g_null_atom;
 }
 

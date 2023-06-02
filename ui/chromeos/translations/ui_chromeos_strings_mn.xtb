@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak гартай англи (АНУ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - хост</translation>
 <translation id="1521655867290435174">Google Хүснэгт</translation>
-<translation id="1538729222189715449">Linux-н файлуудыг нээж байна...</translation>
 <translation id="1547964879613821194">Канадын Англи хэл</translation>
 <translation id="1556189134700913550">Бүгдэд хамааруулах</translation>
 <translation id="1561842594491319104">Chrome төхөөрөмжүүд</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google сайт</translation>
 <translation id="1853795129690976061">Энэ фолдерыг Linux-тай хуваалцсан байна</translation>
 <translation id="1864756863218646478">Файл олдсонгүй.</translation>
+<translation id="1877377730633446520">Энэ нь ойролцоогоор <ph name="REQUIRED_SPACE" />-г ашиглана. Танд одоогоор <ph name="FREE_SPACE" /> боломжтой байна.</translation>
 <translation id="1884013283844450420">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, холбогдох</translation>
 <translation id="1920670151694390848">Малайлам галиг</translation>
 <translation id="1920798810075583923">Тарвас</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
+<translation id="2004942826429452291">Файлуудыг үүлэнд болон энэ Chromebook-д хадгална.</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2037845485764049925">Орос</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Төхөөрөмжийн тохиргоонууд</translation>
 <translation id="2084809735218147718">Баярлалаа гэж дохионы хэлээр хэлж байна</translation>
 <translation id="2088690981887365033">VPN сүлжээ</translation>
+<translation id="2089751716171649322">Та офлайн үедээ Google Драйвын файлууддаа хялбархан хандаарай</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Нууцлалтай горимд зөвшөөрөхийг<ph name="END_BOLD" /> асаана уу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгах бөгөөд та тэдгээрийг сэргээх боломжгүй болно.</translation>
 <translation id="2122305276694332719">Нуусан сүлжээнд автоматаар холбогдсоноор бусдад таны төхөөрөмж болон зарим сүлжээний тохиргоог харахыг зөвшөөрөх бөгөөд үүнийг зөвлөдөггүй.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux-р суулгах</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
-<translation id="2236732657580416950">Таны Google Драйвын завсрын санах ойг арилгасан.</translation>
 <translation id="2239068707900391003">Кофетой хүн</translation>
 <translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
 <translation id="2278133026967558505">Бүх вебсайт болон URL файлд хандах боломжтой</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Одоо биш</translation>
 <translation id="3486821258960016770">Монгол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
+<translation id="3501954296166022751">Таны Google Драйвын файлууд офлайнд боломжтой</translation>
 <translation id="3509680540198371098">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> зүйлийг синк хийхээр бэлтгэж байна...</translation>
 <translation id="3522708245912499433">Португал</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Энэ тохиргоог өөрчилснөөр хуваалцсан бүх сүлжээнд нөлөөлнө</translation>
 <translation id="3737576078404241332">Хажуугийн цэсээс хасах</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
-<translation id="3780536599611287598">Танд '<ph name="FOLDER_NAME" />'-д файл зөөх зөвшөөрөл алга.</translation>
 <translation id="3786301125658655746">Та офлайн байна</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="3793469551756281394">Ойролцоогоор <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> үлдсэн</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
 <translation id="4465725236958772856">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, таны администратор удирддаг, холбогдох</translation>
 <translation id="4470564870223067757">Хангыль 2 Багц</translation>
+<translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4474142134969976028">Таарах ямар ч илэрц байхгүй</translation>
 <translation id="4477002475007461989">Румын</translation>
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> зүйлийг сэргээж байна</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Нууцлалтай горимыг ашиглахын тулд танай байгууллагад өргөтгөл шаардлагатай}other{Нууцлалтай горимыг ашиглахын тулд танай байгууллагад зарим өргөтгөл шаардлагатай}}</translation>
-<translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4826849268470072925">Тамил ITRANS</translation>
 <translation id="482932175346970750">Хөтчидөө <ph name="BEGIN_BOLD" />chrome://extensions-г<ph name="END_BOLD" /> бичнэ үү</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -570,6 +571,7 @@
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5500122897333236901">Исланд</translation>
 <translation id="5508696409934741614">Цэг</translation>
+<translation id="5519161320735100193">Google Драйвын тохиргоо</translation>
 <translation id="5522908512596376669">Файлын жагсаалтыг жагсаалтаар харах горимд шилжүүлэв.</translation>
 <translation id="5524517123096967210">Файлыг уншиж чадсангүй.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> зураг</translation>
@@ -616,6 +618,7 @@
 <translation id="5838451609423551646">Сонголт хийх хэсгээс бүх оролтыг хассан.</translation>
 <translation id="5838825566232597749">Олон улсын US Workman гар</translation>
 <translation id="5845721951356578987">Сувилагч</translation>
+<translation id="5860491529813859533">Асаах</translation>
 <translation id="5861477046012235702">Тоглогч</translation>
 <translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
@@ -673,7 +676,6 @@
 <translation id="6327785803543103246">Веб прокси автоматаар илрүүлэх</translation>
 <translation id="6337014272874260727">Шуурхай файлуудаас бэхэлснийг болиулах</translation>
 <translation id="6339145975392024142">АНУ-н олон улсын (PC)</translation>
-<translation id="6346310558342052870">Хандалтыг хязгаарласан</translation>
 <translation id="6356685157277930264">Файлын мэдээллийн цонх</translation>
 <translation id="6358884629796491903">Луу</translation>
 <translation id="636254897931573416">Домэйн дагаврын тохирлын утга буруу байна</translation>
@@ -861,6 +863,7 @@
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7806708061868529807">Еврей</translation>
 <translation id="78104721049218340">Кедмани гартай тай</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
 <translation id="7839804798877833423">Эдгээр файлуудыг татаж авчрахад гар утасны өгөгдлийн ойролцоогоор <ph name="FILE_SIZE" />-ийг ашиглах болно.</translation>
@@ -873,15 +876,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Хуваарилалтыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Таны Миний драйвын файлуудыг Chromebook-тэй тань автоматаар синк хийх бөгөөд ингэснээр та тэдгээрт интернэт холболтгүйгээр хандах боломжтой.</translation>
 <translation id="7925247922861151263">AAA шалгалт амжилтгүй боллоо</translation>
 <translation id="7925686952655276919">Синхрончилоход үүрэн холбооны датаг бүү ашигла</translation>
 <translation id="7928710562641958568">Төхөөрөмжийг гаргах</translation>
+<translation id="7933875256234974853">Драйвын файлуудыг синк хийхээр бэлтгэж байна...</translation>
 <translation id="7943385054491506837">АНУ-ын Colemak</translation>
 <translation id="7953739707111622108">Энэ төхөөрөмжийн файлын системийг таньж чадаагүй учраас нээж болохгүй  байна.</translation>
 <translation id="7969525169268594403">Словени</translation>
 <translation id="7972920761225148017">Франц (Швейцар)</translation>
 <translation id="7973962044839454485">Хэрэглэгчийн нэр эсвэл нууц үг буруу орсноос PPP баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="7980421588063892270">Colemak гартай англи (АНУ)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> файлыг синк хийж байна</translation>
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
 <translation id="8008366997883261463">Жак Рассел Терриер</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
@@ -1003,6 +1009,7 @@
 <translation id="8919081441417203123">Дани хэл</translation>
 <translation id="8949925099261528566">Холбогдсон хэдий ч интернэт алга</translation>
 <translation id="8965697826696209160">Хангалттай багтаамж байхгүй байна.</translation>
+<translation id="8971742885766657349">Синк хийж байна - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Хятад (уламжлалт) пиньинь</translation>
 <translation id="8998871447376656508">Таны Google Драйвт байршуулалтыг дуусгах хангалттай сул зай байхгүй байна.</translation>
 <translation id="9003940392834790328">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
@@ -1036,6 +1043,7 @@
 <translation id="9213073329713032541">Суулгалтыг амжилттай эхлүүллээ.</translation>
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="9219908252191632183">Сарны гадарга</translation>
+<translation id="937795003075802289">1 файлыг синк хийж байна</translation>
 <translation id="938470336146445890">Хэрэглэгчийн сертификат суулгана уу.</translation>
 <translation id="939736085109172342">Шинэ хавтас</translation>
 <translation id="943972244133411984">Өөрчилсөн</translation>

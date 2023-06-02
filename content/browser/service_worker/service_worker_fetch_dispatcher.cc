@@ -56,6 +56,12 @@ namespace content {
 
 namespace {
 
+// TODO(crbug.com/1446228): When this is enabled, the browser will schedule
+// ServiceWorkerFetchDispatcher::ResponseCallback in a high priority task queue.
+BASE_FEATURE(kServiceWorkerFetchResponseCallbackUseHighPriority,
+             "ServiceWorkerFetchResponseCallbackUseHighPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void NotifyNavigationPreloadRequestSent(const network::ResourceRequest& request,
                                         const std::pair<int, int>& worker_id,
                                         const std::string& request_id) {
@@ -342,7 +348,9 @@ void CreateNetworkFactoryForNavigationPreload(
       ukm::SourceIdObj::FromInt64(
           frame_tree_node.navigation_request()->GetNextPageUkmSourceId()),
       &receiver, &header_client, &bypass_redirect_checks_unused,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+      content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kNavigationNetworkResponse}));
 
   // Make the network factory.
   NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
@@ -362,7 +370,14 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
           receiver,
       base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher,
       ServiceWorkerVersion* version)
-      : receiver_(this, std::move(receiver)),
+      : receiver_(
+            this,
+            std::move(receiver),
+            (base::FeatureList::IsEnabled(
+                 kServiceWorkerFetchResponseCallbackUseHighPriority)
+                 ? GetUIThreadTaskRunner(
+                       {BrowserTaskType::kServiceWorkerStorageControlResponse})
+                 : base::SequencedTaskRunner::GetCurrentDefault())),
         fetch_dispatcher_(fetch_dispatcher),
         version_(version) {
     receiver_.set_disconnect_handler(base::BindOnce(
@@ -650,6 +665,10 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
   params->preload_url_loader_client_receiver =
       std::move(preload_url_loader_client_receiver_);
   params->is_offline_capability_check = is_offline_capability_check_;
+  if (race_network_request_token_) {
+    params->request->service_worker_race_network_request_token =
+        race_network_request_token_;
+  }
 
   // |endpoint()| is owned by |version_|. So it is safe to pass the
   // unretained raw pointer of |version_| to OnFetchEventFinished callback.

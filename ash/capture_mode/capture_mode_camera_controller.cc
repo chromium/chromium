@@ -223,23 +223,33 @@ gfx::Rect GetTargetBoundsForBoundsAnimation(
 gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window) {
   DCHECK(root_window);
 
-  UnifiedSystemTray* tray = RootWindowController::ForWindow(root_window)
-                                ->GetStatusAreaWidget()
-                                ->unified_system_tray();
+  auto* status_area_widget =
+      RootWindowController::ForWindow(root_window)->GetStatusAreaWidget();
+  gfx::Rect collision_avoidance_rect;
 
-  if (!tray->IsBubbleShown())
-    return gfx::Rect();
+  if (UnifiedSystemTray* unified_system_tray =
+          status_area_widget->unified_system_tray();
+      unified_system_tray->IsBubbleShown()) {
+    collision_avoidance_rect = unified_system_tray->GetBubbleBoundsInScreen();
 
-  gfx::Rect collision_avoidance_rect = tray->GetBubbleBoundsInScreen();
+    if (!features::IsQsRevampEnabled()) {
+      auto* message_center_bubble =
+          unified_system_tray->message_center_bubble();
 
-  // TODO(b/282943613): Handle collisions with the new notification center that
-  // QsRevamp view introduced.
-  if (!features::IsQsRevampEnabled()) {
-    auto* message_center_bubble = tray->message_center_bubble();
-
-    if (message_center_bubble->IsMessageCenterVisible()) {
-      collision_avoidance_rect.Union(
-          message_center_bubble->GetBoundsInScreen());
+      if (message_center_bubble->IsMessageCenterVisible()) {
+        collision_avoidance_rect.Union(
+            message_center_bubble->GetBoundsInScreen());
+      }
+    }
+  } else {
+    const std::vector<TrayBackgroundView*> tray_buttons =
+        status_area_widget->tray_buttons();
+    for (auto* tray_button : tray_buttons) {
+      if (views::Widget* tray_bubble_widget = tray_button->GetBubbleWidget();
+          tray_bubble_widget && tray_bubble_widget->IsVisible()) {
+        collision_avoidance_rect.Union(
+            tray_bubble_widget->GetWindowBoundsInScreen());
+      }
     }
   }
 
@@ -730,6 +740,10 @@ void CaptureModeCameraController::OnDevicesChanged(
 }
 
 void CaptureModeCameraController::OnSystemTrayBubbleShown() {
+  MaybeUpdatePreviewWidget(/*animate=*/true);
+}
+
+void CaptureModeCameraController::OnStatusAreaAnchoredBubbleShown() {
   MaybeUpdatePreviewWidget(/*animate=*/true);
 }
 

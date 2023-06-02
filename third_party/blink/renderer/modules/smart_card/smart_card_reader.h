@@ -9,8 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -18,6 +16,8 @@
 
 namespace blink {
 class SmartCardResourceManager;
+class V8SmartCardAccessMode;
+class V8SmartCardProtocol;
 
 class MODULES_EXPORT SmartCardReader
     : public EventTargetWithInlineData,

@@ -16,12 +16,12 @@
 
 #include <memory>
 
-#include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/unordered_map_constructor_test.h"
 #include "absl/container/internal/unordered_map_lookup_test.h"
 #include "absl/container/internal/unordered_map_members_test.h"
 #include "absl/container/internal/unordered_map_modifiers_test.h"
+#include "absl/log/check.h"
 #include "absl/types/any.h"
 
 namespace absl {
@@ -40,10 +40,10 @@ struct BeforeMain {
   BeforeMain() {
     absl::flat_hash_map<int, int> x;
     x.insert({1, 1});
-    ABSL_RAW_CHECK(x.find(0) == x.end(), "x should not contain 0");
+    CHECK(x.find(0) == x.end()) << "x should not contain 0";
     auto it = x.find(1);
-    ABSL_RAW_CHECK(it != x.end(), "x should contain 1");
-    ABSL_RAW_CHECK(it->second, "1 should map to 1");
+    CHECK(it != x.end()) << "x should contain 1";
+    CHECK(it->second) << "1 should map to 1";
   }
 };
 const BeforeMain before_main;

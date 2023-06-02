@@ -257,7 +257,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   // ModelTypeSyncBridge linked to this processor. The bridge owns this
   // processor instance so the pointer should never become invalid.
-  raw_ptr<ModelTypeSyncBridge> bridge_;
+  raw_ptr<ModelTypeSyncBridge, DanglingUntriaged> bridge_;
 
   // Function to capture and upload a stack trace when an error occurs.
   const base::RepeatingClosure dump_stack_;

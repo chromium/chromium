@@ -4,5 +4,4 @@
 
 // https://github.com/WICG/web-codecs
 
-[RuntimeEnabled=WebCodecs]
 callback WebCodecsErrorCallback = void(DOMException error);

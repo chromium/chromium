@@ -23,6 +23,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
@@ -396,6 +397,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             setCurrentItemForPager(position);
         }
         return BackPressResult.SUCCESS;
+    }
+
+    @Override
+    public int getSecondaryActivity() {
+        return SecondaryActivity.FIRST_RUN;
     }
 
     // FirstRunPageDelegate:

@@ -91,28 +91,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `shouldQueryAutofillSuggestion`"
-        errorLine1="        if (mAutofillMenuItemTitle != 0 &amp;&amp; mAutofillProvider.shouldQueryAutofillSuggestion()) {"
-        errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillActionModeCallback.java"
-            line="43"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `queryAutofillSuggestion`"
-        errorLine1="            mAutofillProvider.queryAutofillSuggestion();"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillActionModeCallback.java"
-            line="55"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 26 (current min is 24): `deleteLegacyChannels`"
         errorLine1="            mChannelsInitializer.deleteLegacyChannels();"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~">

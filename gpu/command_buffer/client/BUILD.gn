@@ -68,7 +68,6 @@ source_set("client_sources") {
     "gl_helper_scaling.cc",
     "gl_helper_scaling.h",
     "gpu_control.h",
-    "gpu_memory_buffer_manager.cc",
     "gpu_memory_buffer_manager.h",
     "image_decode_accelerator_interface.h",
     "mapped_memory.cc",
@@ -90,10 +89,13 @@ source_set("client_sources") {
   deps = [
     ":gles2_interface",
     "//gpu/command_buffer/common:common_sources",
-    "//gpu/ipc/common:surface_handle_type",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
+
+  if (!is_nacl) {
+    deps += [ "//gpu/ipc/common:surface_handle_type" ]
+  }
 
   # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
   if (!is_nacl && !is_minimal_toolchain) {

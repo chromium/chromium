@@ -46,7 +46,7 @@ TEST_F(NGParagraphLineBreakerTest, IsDisabledByBlockInInline) {
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
   EXPECT_TRUE(target.IsBisectLineBreakDisabled());
-  EXPECT_TRUE(target.IsScoreLineBreakDisabled());
+  EXPECT_FALSE(target.IsScoreLineBreakDisabled());
   EXPECT_FALSE(AttemptParagraphBalancing(target));
 }
 

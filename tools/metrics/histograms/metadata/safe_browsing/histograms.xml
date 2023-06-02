@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.ReportType"
-    enum="ClientSafeBrowsingReportType" expires_after="2023-09-17">
+    enum="ClientSafeBrowsingReportType" expires_after="2023-11-19">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -581,6 +581,21 @@ chromium-metrics-reviews@google.com.
     Same as SafeBrowsing.DelayedWarnings.TimeOnPage but only recorded when user
     has disabled URL elision via &quot;Always Show Full URLs&quot; context menu
     item, or by installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours"
+    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2024-05-18">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether an ESB user has sent a Protego ping to the Safe Browsing API
+    servers within the last 24 hours. If a ping was sent since the last time
+    this metric was logged, then this metric will report the type of that ping,
+    otherwise it will report that none was sent. If the user has sent a ping of
+    multiple types since the last time this metric was logged, then only the
+    type of the most recent ping will be reported. This metric is logged at most
+    once per day and only for users that have enhanced protection enabled.
   </summary>
 </histogram>
 
@@ -1704,7 +1719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RendererThrottle.TotalDelay" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2023-11-19">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1951,7 +1966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.LocalMatch.Result"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-09-17">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-11-19">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2135,7 +2150,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2023-09-17">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2023-11-19">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2223,7 +2238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenCompletion"
-    enum="BooleanSuccess" expires_after="2023-09-17">
+    enum="BooleanSuccess" expires_after="2023-11-19">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2234,7 +2249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenErrorState"
-    enum="GoogleServiceAuthError" expires_after="2023-09-17">
+    enum="GoogleServiceAuthError" expires_after="2023-11-19">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2245,7 +2260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenResponseCode"
-    units="code" expires_after="2023-09-17">
+    units="code" expires_after="2023-11-19">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2346,7 +2361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2442,20 +2457,6 @@ chromium-metrics-reviews@google.com.
     Safe Browsing servers. This is recorded each time there's a match found in
     the local database and requires sending a full hash request.
   </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.V4GetHash.Network.HttpResponseCode.{NetError}"
-    enum="HttpResponseCode" expires_after="2023-07-12">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    HTTP response code from the SafeBrowsing Pver4 service when the net error is
-    {NetError}. Logged after a GetHash request with that net error finishes.
-  </summary>
-  <token key="NetError">
-    <variant name="InternetDisconnected" summary="ERR_INTERNET_DISCONNECTED"/>
-    <variant name="NetworkChanged" summary="ERR_NETWORK_CHANGED"/>
-  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.Network.Result"

@@ -53,7 +53,7 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
   struct TabFilter {
     // When the last modified time of the tab is higher than the max value, then
     // tab is excluded from the ranking.
-    base::TimeDelta max_tab_age = base::Hours(1);
+    base::TimeDelta max_tab_age;
   };
 
   // Fetches a list of ranked tabs for a given feature or ranking heuristic
@@ -80,6 +80,18 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
                    const AnnotatedNumericResult& result);
 
   const std::unique_ptr<TabFetcher> tab_fetcher_;
+
+  // Subscribes to the sync session changes. SessionSyncService has a repeating
+  // callback to notify of all the session change updates.
+  void SubscribeToForeignSessionsChanged();
+
+  // Called every time when the sync session is updated. Using this to record
+  // few metrics for sync latency and cross device tabs count.
+  void OnForeignSessionUpdated();
+
+  base::Time chrome_startup_timestamp_;
+  int session_updated_counter_{0};
+  base::CallbackListSubscription foreign_session_updated_subscription_;
   const raw_ptr<SegmentationPlatformService> segmentation_service_;
   const raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
 

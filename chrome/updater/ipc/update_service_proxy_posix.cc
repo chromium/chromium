@@ -146,10 +146,8 @@ MakeStateChangeObserver(
 
 absl::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
                                                           int tries) {
-  if (tries == 1) {
-    if (!DialUpdateService(scope)) {
-      return absl::nullopt;
-    }
+  if (tries == 1 && !DialUpdateService(scope)) {
+    return absl::nullopt;
   }
   return named_mojo_ipc_server::ConnectToServer(
       GetUpdateServiceServerName(scope));

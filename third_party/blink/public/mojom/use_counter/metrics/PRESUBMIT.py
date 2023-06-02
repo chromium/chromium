@@ -8,7 +8,6 @@ for more details about the presubmit API built into gcl.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
-USE_PYTHON3 = True
 
 
 def CheckHistograms(input_api, output_api):  # pylint: disable=C0103

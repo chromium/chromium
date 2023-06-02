@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, TestCaptivePortal) {
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, FREExplicitlyRequired) {
   SetFRERequiredKey("1");
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
-  OobeScreenWaiter(AutoEnrollmentCheckScreenView::kScreenId).Wait();
+  WaitForOobeUI();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath({"error-message", "error-guest-signin"});
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys,
                        FREExplicitlyRequiredInvalid) {
   SetFRERequiredKey("anything");
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
-  OobeScreenWaiter(AutoEnrollmentCheckScreenView::kScreenId).Wait();
+  WaitForOobeUI();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath({"error-message", "error-guest-signin"});

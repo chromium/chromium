@@ -7,6 +7,7 @@
 #include <mach/mach.h>
 #include <servers/bootstrap.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -42,10 +43,11 @@ constexpr base::TimeDelta kLockPollingInterval = base::Seconds(3);
 //
 // Returns the receive right if the right was successfully acquired. If the
 // right cannot be acquired for any reason, returns an invalid right instead.
-base::mac::ScopedMachReceiveRight TryAcquireReceive(const char* service_name) {
+base::mac::ScopedMachReceiveRight TryAcquireReceive(
+    const std::string& service_name) {
   base::mac::ScopedMachReceiveRight target_right;
   kern_return_t check_in_result = bootstrap_check_in(
-      bootstrap_port, service_name,
+      bootstrap_port, service_name.c_str(),
       base::mac::ScopedMachReceiveRight::Receiver(target_right).get());
   if (check_in_result != KERN_SUCCESS) {
     // Log error reports for all errors other than BOOTSTRAP_NOT_PRIVILEGED.
@@ -53,7 +55,7 @@ base::mac::ScopedMachReceiveRight TryAcquireReceive(const char* service_name) {
     // process has acquired the receive rights for this service.
     if (check_in_result != BOOTSTRAP_NOT_PRIVILEGED) {
       BOOTSTRAP_LOG(ERROR, check_in_result)
-          << "bootstrap_check_in to acquire lock: " << service_name;
+          << " bootstrap_check_in to acquire lock: " << service_name;
     } else {
       BOOTSTRAP_VLOG(2, check_in_result)
           << " lock already held: " << service_name;
@@ -63,14 +65,10 @@ base::mac::ScopedMachReceiveRight TryAcquireReceive(const char* service_name) {
   return target_right;
 }
 
-// Sleep until the lock should be retried, up to an approximate maximum of
-// max_wait (within the tolerances of timing, scheduling, etc.).
-void WaitToRetryLock(base::TimeDelta max_wait) {
-  // This is a polling implementation of Mach service locking.
-  // TODO(1135787): replace with a non-polling Mach notification approach.
-  const base::TimeDelta wait_time =
-      max_wait < kLockPollingInterval ? max_wait : kLockPollingInterval;
-  base::PlatformThread::Sleep(wait_time);
+// Sleeps `wait_time` until the lock should be retried, but no more than
+// `kLockPollingInterval`.
+void WaitToRetryLock(base::TimeDelta wait_time) {
+  base::PlatformThread::Sleep(std::min(wait_time, kLockPollingInterval));
 }
 
 }  // anonymous namespace
@@ -136,7 +134,7 @@ std::unique_ptr<ScopedLock> ScopedLock::Create(const std::string& name,
        !receive_right.is_valid() && remain > kDeltaZero;
        remain = deadline - base::TimeTicks::Now()) {
     WaitToRetryLock(remain);
-    receive_right = TryAcquireReceive(service_name.c_str());
+    receive_right = TryAcquireReceive(service_name);
   }
 
   if (!receive_right.is_valid()) {

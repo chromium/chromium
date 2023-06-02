@@ -90,9 +90,7 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     return AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
   }
 
-  if (card_art_url ==
-      "https://www.gstatic.com/autofill/virtualcard/icon/"
-      "capitalone_40_24.png") {
+  if (card_art_url == kCapitalOneLargeCardArtUrl) {
     // Render Capital One asset directly. No need to calculate and add grey
     // border to image.
     return card_art_image;

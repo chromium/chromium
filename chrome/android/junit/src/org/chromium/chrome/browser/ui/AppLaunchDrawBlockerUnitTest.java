@@ -47,6 +47,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -102,6 +103,9 @@ public class AppLaunchDrawBlockerUnitTest {
     private Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
     @Mock
     private Supplier<Boolean> mIsInstantStartEnabledSupplier;
+
+    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+
     @Mock
     private IncognitoRestoreAppLaunchDrawBlockerFactory
             mIncognitoRestoreAppLaunchDrawBlockerFactoryMock;
@@ -125,7 +129,10 @@ public class AppLaunchDrawBlockerUnitTest {
         when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        Profile.setLastUsedProfileForTesting(mProfile);
+
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        mProfileSupplier.set(mProfile);
+
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(false);
@@ -136,7 +143,7 @@ public class AppLaunchDrawBlockerUnitTest {
         mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(mActivityLifecycleDispatcher,
                 mViewSupplier, mIntentSupplier, mShouldIgnoreIntentSupplier, mIsTabletSupplier,
                 mShouldShowTabSwitcherOnStartSupplier, mIsInstantStartEnabledSupplier,
-                mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
+                mProfileSupplier, mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
         validateConstructorAndCaptureObservers();
         UmaRecorderHolder.resetForTesting();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
@@ -145,7 +152,6 @@ public class AppLaunchDrawBlockerUnitTest {
     @After
     public void tearDown() {
         TemplateUrlServiceFactory.setInstanceForTesting(null);
-        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

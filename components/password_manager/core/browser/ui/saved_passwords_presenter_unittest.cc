@@ -4,11 +4,13 @@
 
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -24,6 +26,7 @@
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -32,8 +35,16 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// components/webauthn/core is a desktop-only dependency of
+// components/password_manager/core. gn cannot parse the preprocessor directive
+// above when checking includes, so we need nogncheck here.
+#include "components/webauthn/core/browser/test_passkey_model.h"  // nogncheck
+#endif
 
 namespace password_manager {
 
@@ -59,6 +70,33 @@ struct MockSavedPasswordsPresenterObserver : SavedPasswordsPresenter::Observer {
 using StrictMockSavedPasswordsPresenterObserver =
     ::testing::StrictMock<MockSavedPasswordsPresenterObserver>;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+constexpr char kPasskeyCredentialId[] = "abcd";
+constexpr char kPasskeyRPID[] = "passkeys.com";
+constexpr char kPasskeyUserId[] = "1234";
+constexpr char kPasskeyUsername[] = "hmiku";
+constexpr char kPasskeyUserDisplayName[] = "Hatsune Miku";
+constexpr char kPasskeyFacet[] = "https://passkeys.com";
+
+sync_pb::WebauthnCredentialSpecifics CreateTestPasskey() {
+  sync_pb::WebauthnCredentialSpecifics credential;
+  credential.set_sync_id(base::RandBytesAsString(16));
+  credential.set_credential_id(kPasskeyCredentialId);
+  credential.set_rp_id(kPasskeyRPID);
+  credential.set_user_id(kPasskeyUserId);
+  credential.set_user_name(kPasskeyUsername);
+  credential.set_user_display_name(kPasskeyUserDisplayName);
+  return credential;
+}
+
+CredentialUIEntry AsCredentialUIEntry(
+    sync_pb::WebauthnCredentialSpecifics passkey) {
+  return CredentialUIEntry(
+      PasskeyCredential::FromCredentialSpecifics(std::array{std::move(passkey)})
+          .at(0));
+}
+#endif
+
 class SavedPasswordsPresenterTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
@@ -78,6 +116,9 @@ class SavedPasswordsPresenterTest : public testing::TestWithParam<bool> {
   }
 
   TestPasswordStore& store() { return *store_; }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  TestPasskeyModel& passkey_store() { return test_passkey_store_; }
+#endif
   SavedPasswordsPresenter& presenter() { return presenter_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -92,8 +133,15 @@ class SavedPasswordsPresenterTest : public testing::TestWithParam<bool> {
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   FakeAffiliationService affiliation_service_;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  TestPasskeyModel test_passkey_store_;
+  SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
+                                     /*account_store=*/nullptr,
+                                     &test_passkey_store_};
+#else
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
+#endif
 };
 
 password_manager::PasswordForm CreateTestPasswordForm(
@@ -796,6 +844,103 @@ TEST_P(SavedPasswordsPresenterTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(SavedPasswordsPresenterTest, GetSavedCredentialsWithPasskeys) {
+  // Password grouping is required for passkey support.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+
+  PasswordForm blocked_form;
+  blocked_form.signon_realm = form.signon_realm;
+  blocked_form.blocked_by_user = true;
+  blocked_form.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm federated_form;
+  federated_form.url = GURL("https://federated.com");
+  federated_form.signon_realm = "federation://federated.com/idp.com";
+  federated_form.username_value = u"example@gmail.com";
+  federated_form.federation_origin =
+      url::Origin::Create(GURL("federation-origin.com"));
+  federated_form.in_store = PasswordForm::Store::kProfileStore;
+
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateTestPasskey();
+  passkey_store().AddNewPasskeyForTesting(passkey);
+
+  store().AddLogin(form);
+  store().AddLogin(blocked_form);
+  store().AddLogin(federated_form);
+  RunUntilIdle();
+
+  ASSERT_THAT(
+      store().stored_passwords(),
+      UnorderedElementsAre(
+          Pair(form.signon_realm, UnorderedElementsAre(form, blocked_form)),
+          Pair(federated_form.signon_realm, ElementsAre(federated_form))));
+
+  // GetAllSavedCredentials should return all credentials.
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(form),
+                                   CredentialUIEntry(federated_form),
+                                   AsCredentialUIEntry(std::move(passkey))));
+}
+
+TEST_P(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+
+  MockAffiliationService mock_affiliation_service;
+  SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
+                                    nullptr, &passkey_store()};
+  presenter.Init();
+  RunUntilIdle();
+
+  PasswordForm form1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  PasswordForm form2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  PasswordForm form3 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
+
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateTestPasskey();
+  passkey_store().AddNewPasskeyForTesting(passkey);
+
+  store().AddLogin(form1);
+  store().AddLogin(form2);
+  store().AddLogin(form3);
+
+  std::vector<password_manager::GroupedFacets> grouped_facets(2);
+  grouped_facets[0].facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm)),
+      Facet(FacetURI::FromPotentiallyInvalidSpec(kPasskeyFacet))};
+  grouped_facets[0].branding_info.name = "Group 1";
+  grouped_facets[0].branding_info.icon_url =
+      GURL("https://test1.com/favicon.ico");
+  grouped_facets[1].facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form3.signon_realm))};
+  grouped_facets[1].branding_info.name = "Group 2";
+  grouped_facets[1].branding_info.icon_url =
+      GURL("https://test3.com/favicon.ico");
+  EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+  RunUntilIdle();
+
+  CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);
+  EXPECT_THAT(
+      presenter.GetAffiliatedGroups(),
+      UnorderedElementsAre(
+          AffiliatedGroup({credential1, credential2,
+                           AsCredentialUIEntry(std::move(passkey))},
+                          grouped_facets[0].branding_info),
+          AffiliatedGroup({credential3}, grouped_facets[1].branding_info)));
+}
+
+#endif
+
 TEST_P(SavedPasswordsPresenterTest, UndoRemoval) {
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
@@ -1433,7 +1578,7 @@ TEST_P(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   base::HistogramTester histogram_tester;
   MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
-                                    nullptr};
+                                    nullptr, /*passkey_store=*/nullptr};
   presenter.Init();
   RunUntilIdle();
 
@@ -1688,7 +1833,7 @@ TEST_F(SavedPasswordsPresenterInitializationTest, InitWithTwoStores) {
 
 TEST_F(SavedPasswordsPresenterInitializationTest, InitWithOneStore) {
   SavedPasswordsPresenter presenter{&affiliation_service(), profile_store(),
-                                    nullptr};
+                                    /*account_store=*/nullptr};
 
   EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
 

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/structured/reporting/structured_metrics_log_metrics.h"
 #include "components/metrics/structured/structured_metrics_prefs.h"
-#include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -13,18 +14,16 @@ namespace metrics::structured::reporting {
 StructuredMetricsReportingService::StructuredMetricsReportingService(
     MetricsServiceClient* client,
     PrefService* local_state,
-    const StorageLimits& storage_limits)
+    const UnsentLogStore::UnsentLogStoreLimits& storage_limits)
     : ReportingService(client,
                        local_state,
-                       storage_limits.max_log_size,
+                       storage_limits.max_log_size_bytes,
                        /*logs_event_manager=*/nullptr),
-      log_store_(std::make_unique<metrics::UnsentLogStoreMetricsImpl>(),
+      log_store_(std::make_unique<StructuredMetricsLogMetrics>(),
                  local_state,
                  prefs::kLogStoreName,
                  /* metadata_pref_name=*/nullptr,
-                 storage_limits.min_log_queue_count,
-                 storage_limits.min_log_queue_size,
-                 storage_limits.max_log_size,
+                 storage_limits,
                  client->GetUploadSigningKey(),
                  /* logs_event_manager=*/nullptr) {}
 
@@ -57,8 +56,40 @@ base::StringPiece StructuredMetricsReportingService::upload_mime_type() const {
 
 MetricsLogUploader::MetricServiceType
 StructuredMetricsReportingService::service_type() const {
-  // TODO(andrewbregger): change to a structured_metrics service type.
-  return MetricsLogUploader::UMA;
+  return MetricsLogUploader::STRUCTURED_METRICS;
+}
+
+// Methods for recording data to histograms.
+void StructuredMetricsReportingService::LogActualUploadInterval(
+    base::TimeDelta interval) {
+  base::UmaHistogramCustomCounts(
+      "StructuredMetrics.Reporting.ActualUploadInterval", interval.InMinutes(),
+      1, base::Hours(12).InMinutes(), 50);
+}
+
+void StructuredMetricsReportingService::LogResponseOrErrorCode(
+    int response_code,
+    int error_code,
+    bool /*was_http*/) {
+  // TODO(crbug.com/1445155) Do we assume |was_https| is always true? UMA
+  // doesn't but UKM does.
+  if (response_code >= 0) {
+    base::UmaHistogramSparse("StructuredMetrics.Reporting.HTTPResponseCode",
+                             response_code);
+  } else {
+    base::UmaHistogramSparse("StructuredMetrics.Reporting.HTTPErrorCode",
+                             error_code);
+  }
+}
+
+void StructuredMetricsReportingService::LogSuccessLogSize(size_t log_size) {
+  base::UmaHistogramMemoryKB("StructuredMetrics.Reporting.LogSize.OnSuccess",
+                             log_size);
+}
+
+void StructuredMetricsReportingService::LogLargeRejection(size_t log_size) {
+  base::UmaHistogramMemoryKB("StructuredMetrics.Reporting.LogSize.RejectedSize",
+                             log_size);
 }
 
 // static:

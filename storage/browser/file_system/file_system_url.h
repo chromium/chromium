@@ -135,7 +135,8 @@ namespace storage {
 // the same as what FileSystemURL::path() returns. The FileSystemURL::path()
 // often locates a real file on the kernel-level file system but it does not
 // have to and sometimes it's just a string identifier (presented in C++ as a
-// base::FilePath) whose meaning depends on the FileSystemURL::type().
+// base::FilePath) whose meaning depends on the FileSystemURL::type(). See the
+// `TypeImpliesPathIsReal()` method.
 //
 // For example, kFileSystemTypeProvided (which corresponds to the
 // https://developer.chrome.com/docs/extensions/reference/fileSystemProvider/
@@ -181,6 +182,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
                                      const base::FilePath& cracked_path,
                                      const std::string& filesystem_id,
                                      const FileSystemMountOption& mount_option);
+
+  // Whether a `FileSystemURL`'s `path()` refers to a real (kernel visible, can
+  // be passed to https://man7.org/linux/man-pages/man2/open.2.html) file,
+  // instead of being a string identifier in `base::FilePath` clothing.
+  //
+  // Must be called on a `FileSystemURL`'s `type()`. Do not call this method
+  // with a `mount_type()`.
+  static bool TypeImpliesPathIsReal(FileSystemType type);
+  // Instance method is provided for convenience.
+  bool TypeImpliesPathIsReal() const { return TypeImpliesPathIsReal(type()); }
 
   // Returns true if this instance represents a valid FileSystem URL.
   bool is_valid() const { return is_valid_; }

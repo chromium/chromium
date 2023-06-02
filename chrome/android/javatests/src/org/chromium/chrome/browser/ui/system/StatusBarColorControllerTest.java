@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.ui.system;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -48,6 +50,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
@@ -357,6 +360,25 @@ public class StatusBarColorControllerTest {
                 () -> statusBarColorController.updateStatusBarColor());
         assertEquals("Wrong value returned for Tab Strip Redesign Detached.",
                 TabUiThemeUtil.getTabStripBackgroundColor(activity, false),
+                activity.getWindow().getStatusBarColor());
+    }
+
+    /**
+     * Test status bar is always black in Automotive devices.
+     */
+    @Test
+    @SmallTest
+    @Feature({"StatusBar, Automotive Toolbar"})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    public void testStatusBarBlackInAutomotive() {
+        final ChromeActivity activity = sActivityTestRule.getActivity();
+        final StatusBarColorController statusBarColorController =
+                sActivityTestRule.getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getStatusBarColorController();
+
+        assertNull(statusBarColorController);
+        assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
                 activity.getWindow().getStatusBarColor());
     }
 

@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/device/public/mojom/serial.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
@@ -35,6 +36,9 @@ blink::mojom::SerialPortInfoPtr ToBlinkType(
   info->has_usb_product_id = port.has_product_id;
   if (port.has_product_id)
     info->usb_product_id = port.product_id;
+  if (port.bluetooth_service_class_id) {
+    info->bluetooth_service_class_id = port.bluetooth_service_class_id;
+  }
   return info;
 }
 
@@ -96,6 +100,8 @@ void SerialService::GetPorts(GetPortsCallback callback) {
 
 void SerialService::RequestPort(
     std::vector<blink::mojom::SerialPortFilterPtr> filters,
+    const std::vector<::device::BluetoothUUID>&
+        allowed_bluetooth_service_class_ids,
     RequestPortCallback callback) {
   SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
   if (!delegate) {
@@ -110,6 +116,7 @@ void SerialService::RequestPort(
 
   chooser_ = delegate->RunChooser(
       &render_frame_host(), std::move(filters),
+      allowed_bluetooth_service_class_ids,
       base::BindOnce(&SerialService::FinishRequestPort,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

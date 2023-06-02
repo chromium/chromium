@@ -133,15 +133,16 @@ TEST_F(StreamDataSourceFactoryTest, VerifyCreateErrorMessage) {
 
   const char* const error = "A SUPER FATAL ERROR HAPPENED";
 
-  VerifyMessageFromStream(sut.CreateErrorMessage(error), std::string{error});
+  VerifyMessageFromStream(sut.CreateErrorMessage(error), error);
 }
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 TEST_F(StreamDataSourceFactoryTest, VerifyCreateReportStream) {
+  AllocationTraceRecorder& operation_recorder = GetOperationTraceRecorder();
   StreamDataSourceFactory& sut = GetSubjectUnderTest();
 
-  VerifyMessageFromStream(sut.CreateReportStream(),
-                          std::string{"!!REPORT CREATION NOT IMPLEMENTED!!"});
+  VerifyMessageFromStream(sut.CreateReportStream(operation_recorder),
+                          "!!REPORT CREATION NOT IMPLEMENTED!!");
 }
 #endif
 

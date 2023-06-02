@@ -46,7 +46,10 @@ build_webui("build") {
     "dialogs/multi_store_delete_password_dialog.ts",
     "dialogs/move_passwords_dialog.ts",
     "dialogs/password_preview_item.ts",
-    "password_details_card.ts",
+    "credential_details/credential_note.ts",
+    "credential_details/credential_field.ts",
+    "credential_details/passkey_details_card.ts",
+    "credential_details/password_details_card.ts",
     "password_details_section.ts",
     "password_list_item.ts",
     "password_manager_app.ts",
@@ -78,6 +81,7 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "credential_details/credential_details_card.css",
     "shared_vars.css",
     "shared_style.css",
   ]
@@ -99,6 +103,7 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

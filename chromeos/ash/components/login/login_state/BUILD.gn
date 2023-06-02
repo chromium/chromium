@@ -12,6 +12,7 @@ component("login_state") {
     "//ash/constants",
     "//base",
     "//components/device_event_log",
+    "//components/user_manager",
   ]
   sources = [
     "login_state.cc",
@@ -40,7 +41,7 @@ source_set("unit_tests") {
     ":login_state",
     "//ash/constants",
     "//base",
-    "//testing/gmock",
+    "//components/user_manager:test_support",
     "//testing/gtest",
   ]
   sources = [ "login_state_unittest.cc" ]

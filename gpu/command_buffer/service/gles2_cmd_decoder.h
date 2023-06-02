@@ -156,9 +156,6 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   // The decoder should not be used until a new surface is set.
   virtual void ReleaseSurface() = 0;
 
-  virtual void TakeFrontBuffer(const Mailbox& mailbox) = 0;
-  virtual void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) = 0;
-
   // This is intended only for use with NaCL swapchain, replacing
   // TakeFrontBuffer/ReturnFrontBuffer flow.
   virtual void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
@@ -179,8 +176,6 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   virtual void SetIgnoreCachedStateForTest(bool ignore) = 0;
   virtual void SetForceShaderNameHashingForTest(bool force) = 0;
   virtual uint32_t GetAndClearBackbufferClearBitsForTest();
-  virtual size_t GetSavedBackTextureCountForTest() = 0;
-  virtual size_t GetCreatedBackTextureCountForTest() = 0;
 
   // Gets the FramebufferManager for this context.
   virtual FramebufferManager* GetFramebufferManager() = 0;

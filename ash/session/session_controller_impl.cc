@@ -70,6 +70,10 @@ SessionControllerImpl::~SessionControllerImpl() {
 void SessionControllerImpl::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kTimeOfLastSessionActivation, base::Time());
+  registry->RegisterTimePref(ash::prefs::kAshLoginSessionStartedTime,
+                             base::Time());
+  registry->RegisterBooleanPref(
+      ash::prefs::kAshLoginSessionStartedIsFirstSession, false);
 }
 
 int SessionControllerImpl::NumberOfLoggedInUsers() const {

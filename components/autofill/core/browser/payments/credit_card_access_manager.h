@@ -263,6 +263,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
 
   // Determines what type of authentication is required. |fido_auth_enabled|
   // suggests whether the server has offered FIDO auth as an option.
+  // TODO(crbug.com/1449351): Prefix these functions with
+  // "StartAuthenticationFlow" instead of "GetAuthenticationType".
   void GetAuthenticationType(bool fido_auth_enabled);
   void GetAuthenticationTypeForVirtualCard(bool fido_auth_enabled);
   void GetAuthenticationTypeForMaskedServerCard(bool fido_auth_enabled);
@@ -432,7 +434,7 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   bool is_authentication_in_progress_ = false;
 
   // The associated autofill driver. Weak reference.
-  const raw_ptr<AutofillDriver> driver_;
+  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;

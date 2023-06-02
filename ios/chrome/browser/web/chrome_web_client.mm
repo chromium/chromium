@@ -14,7 +14,9 @@
 #import "base/no_destructor.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/autofill_features.cc"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/child_frame_registration_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/dom_distiller/core/url_constants.h"
@@ -26,6 +28,7 @@
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
@@ -229,10 +232,6 @@ bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kChromeUIScheme);
 }
 
-std::u16string ChromeWebClient::GetPluginNotSupportedText() const {
-  return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
-}
-
 std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
   // The user agent should not be requested for app-specific URLs.
   DCHECK_NE(type, web::UserAgentType::NONE);
@@ -304,6 +303,11 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
   features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    features.push_back(
+        autofill::ChildFrameRegistrationJavaScriptFeature::GetInstance());
+  }
   features.push_back(FontSizeJavaScriptFeature::GetInstance());
   features.push_back(ImageFetchJavaScriptFeature::GetInstance());
   features.push_back(
@@ -421,8 +425,10 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     const GURL& url) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
 
-  bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, browser_state);
+  bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   return use_desktop_agent ? web::UserAgentType::DESKTOP
                            : web::UserAgentType::MOBILE;
 }
@@ -431,7 +437,9 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
                                           const GURL& url) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
-  bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, browser_state);
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+  bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
                             !use_desktop_agent);
 }

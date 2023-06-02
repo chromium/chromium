@@ -82,6 +82,12 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
 
   ~AccessibilityWinBrowserTest() override;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AccessibilityBrowserTest::SetUpCommandLine(command_line);
+    // Some of these tests assume a device scale factor of 1.0.
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+  }
+
  protected:
   class AccessibleChecker;
   std::string PrintAXTree() const;

@@ -23,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -32,6 +33,7 @@
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "url/gurl.h"
 
 namespace {
@@ -99,9 +101,11 @@ namespace password_manager {
 SavedPasswordsPresenter::SavedPasswordsPresenter(
     AffiliationService* affiliation_service,
     scoped_refptr<PasswordStoreInterface> profile_store,
-    scoped_refptr<PasswordStoreInterface> account_store)
+    scoped_refptr<PasswordStoreInterface> account_store,
+    PasskeyModel* passkey_store)
     : profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)),
+      passkey_store_(passkey_store),
       undo_helper_(std::make_unique<PasswordUndoHelper>(profile_store_.get(),
                                                         account_store_.get())),
       passwords_grouper_(
@@ -143,6 +147,7 @@ void SavedPasswordsPresenter::RemoveObservers() {
 
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
+  // TODO(crbug.com/1432717): support passkeys.
   std::vector<PasswordForm> forms_to_delete =
       GetCorrespondingPasswordForms(credential);
   undo_helper_->StartGroupingActions();
@@ -289,6 +294,7 @@ SavedPasswordsPresenter::EditSavedCredentials(
     const CredentialUIEntry& updated_credential) {
   std::vector<PasswordForm> forms_to_change =
       GetCorrespondingPasswordForms(original_credential);
+  // TODO(crbug.com/1432717): support passkeys.
   if (forms_to_change.empty())
     return EditResult::kNotFound;
 
@@ -430,7 +436,8 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedPasswords()
     const {
   auto credentials = GetSavedCredentials();
   base::EraseIf(credentials, [](const auto& credential) {
-    return credential.blocked_by_user || !credential.federation_origin.opaque();
+    return credential.is_passkey || credential.blocked_by_user ||
+           !credential.federation_origin.opaque();
   });
   return credentials;
 }
@@ -600,9 +607,16 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms,
     all_forms.push_back(form);
   }
 
+  // Passkeys are collected synchronously.
+  std::vector<PasskeyCredential> passkeys;
+  if (passkey_store_) {
+    passkeys = PasskeyCredential::FromCredentialSpecifics(
+        passkey_store_->GetAllPasskeys());
+  }
+
   // Notify observers after grouping is complete.
   passwords_grouper_->GroupCredentials(
-      std::move(all_forms), /*passkeys=*/{},
+      std::move(all_forms), std::move(passkeys),
       metrics_util::TimeCallback(std::move(completion),
                                  "PasswordManager.PasswordsGrouping.Time"));
 }

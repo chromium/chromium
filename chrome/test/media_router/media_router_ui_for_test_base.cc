@@ -38,41 +38,11 @@ void MediaRouterUiForTestBase::TearDown() {
   torn_down_ = true;
 }
 
-void MediaRouterUiForTestBase::StartCasting(const std::string& sink_name) {
-  StartCasting(GetSinkButton(sink_name));
-}
-
-void MediaRouterUiForTestBase::StopCasting(const std::string& sink_name) {
-  StopCasting(GetSinkButton(sink_name));
-}
-
-void MediaRouterUiForTestBase::StartCasting(views::View* sink_button) {
-  CHECK(sink_button->GetEnabled());
-  sink_button->OnMousePressed(CreateMousePressedEvent());
-  sink_button->OnMouseReleased(CreateMouseReleasedEvent());
-  base::RunLoop().RunUntilIdle();
-}
-
-void MediaRouterUiForTestBase::StopCasting(views::View* sink_button) {
-  sink_button->OnMousePressed(CreateMousePressedEvent());
-  sink_button->OnMouseReleased(CreateMouseReleasedEvent());
-  base::RunLoop().RunUntilIdle();
-}
-
 // static
-CastDialogSinkButton* MediaRouterUiForTestBase::GetSinkButtonWithName(
-    const std::vector<raw_ptr<CastDialogSinkView>>& sink_views,
-    const std::string& sink_name) {
-  auto it = base::ranges::find(sink_views, base::UTF8ToUTF16(sink_name),
-                               [](CastDialogSinkView* sink_view) {
-                                 return sink_view->sink().friendly_name;
-                               });
-  if (it == sink_views.end()) {
-    NOTREACHED() << "Sink view not found for sink: " << sink_name;
-    return nullptr;
-  } else {
-    return it->get()->cast_sink_button_for_test();
-  }
+void MediaRouterUiForTestBase::ClickOnView(views::View* view) {
+  view->OnMousePressed(CreateMousePressedEvent());
+  view->OnMouseReleased(CreateMouseReleasedEvent());
+  base::RunLoop().RunUntilIdle();
 }
 
 void MediaRouterUiForTestBase::OnDialogCreated() {

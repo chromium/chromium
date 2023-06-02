@@ -21,18 +21,34 @@ TouchToFillPasswordGenerationBridgeImpl::
     ~TouchToFillPasswordGenerationBridgeImpl() = default;
 
 bool TouchToFillPasswordGenerationBridgeImpl::Show(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate) {
   if (!web_contents->GetNativeView() ||
       !web_contents->GetNativeView()->GetWindowAndroid()) {
     return false;
   }
+  delegate_ = delegate;
 
   CHECK(!java_object_);
   java_object_.Reset(Java_TouchToFillPasswordGenerationBridge_create(
       base::android::AttachCurrentThread(),
-      web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject()));
+      web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+      reinterpret_cast<intptr_t>(this)));
 
-  Java_TouchToFillPasswordGenerationBridge_show(
+  return Java_TouchToFillPasswordGenerationBridge_show(
       base::android::AttachCurrentThread(), java_object_);
-  return true;
+}
+
+void TouchToFillPasswordGenerationBridgeImpl::Hide() {
+  if (!java_object_) {
+    return;
+  }
+
+  Java_TouchToFillPasswordGenerationBridge_hide(
+      base::android::AttachCurrentThread(), java_object_);
+}
+
+void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(JNIEnv* env) {
+  CHECK(delegate_);
+  delegate_->OnDismissed();
 }

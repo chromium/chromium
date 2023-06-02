@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -164,6 +163,7 @@ bookmarks::StorageType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
+  DCHECK(bookmark_node);
   DCHECK(profile_model);
   if (bookmark_node->HasAncestor(profile_model->root_node())) {
     return bookmarks::StorageType::kLocalOrSyncable;
@@ -193,27 +193,6 @@ bool AreAllAvailableBookmarkModelsLoaded(
   }
   DCHECK(account_model);
   return profile_model->loaded() && account_model->loaded();
-}
-
-bool ShouldDisplayCloudSlashIconForProfileModel(
-    SyncSetupService* sync_setup_service) {
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
-    return false;
-  }
-  if (!sync_setup_service->IsSyncFeatureEnabled()) {
-    // In transport-only mode, any node stored in the profile model needs the
-    // icon. Note that this includes sync-disabled cases like enterprise
-    // policies.
-    return true;
-  }
-  if (sync_setup_service->IsDataTypePreferred(
-          syncer::UserSelectableType::kBookmarks)) {
-    // Sync-the-feature is on and (common case) bookmarks are selected: no icon.
-    return false;
-  }
-  // Sync-the-feature is on and (rare case) bookmarks are excluded: show icon.
-  return true;
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
@@ -361,7 +340,8 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
     int position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state) {
   std::u16string titleString = base::SysNSStringToUTF16(title);
 
@@ -370,9 +350,11 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
   [wrapper startGroupingActions];
 
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-  const bookmarks::BookmarkNode* node = bookmark_model->AddNewURL(
+  bookmarks::BookmarkModel* folder_model =
+      GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
+  const bookmarks::BookmarkNode* node = folder_model->AddNewURL(
       folder, folder->children().size(), titleString, url);
-  bookmark_model->Move(node, folder, position);
+  folder_model->Move(node, folder, position);
 
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
@@ -387,7 +369,8 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     size_t position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state) {
   DCHECK(node);
   DCHECK(folder);
@@ -399,13 +382,20 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     return nil;
   }
 
+  bookmarks::BookmarkModel* node_model =
+      GetBookmarkModelForNode(node, local_or_syncable_model, account_model);
+  bookmarks::BookmarkModel* folder_model =
+      GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
+  CHECK_EQ(node_model, folder_model);
+
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
 
   // Update the bookmark.
   [wrapper startGroupingActions];
-  bookmark_model->Move(node, folder, position);
+
+  folder_model->Move(node, folder, position);
 
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
@@ -442,7 +432,10 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   [wrapper resetUndoManagerChanged];
 
   NSString* text = nil;
-  if (node_count == 1) {
+  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+    text = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+        IDS_IOS_BOOKMARK_DELETED_BOOKMARKS, node_count));
+  } else if (node_count == 1) {
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_DELETE);
   } else {
     text =
@@ -775,6 +768,35 @@ GURL ConvertUserDataToGURL(NSString* urlString) {
   } else {
     return GURL();
   }
+}
+
+bool IsBookmarked(const GURL& url,
+                  bookmarks::BookmarkModel* local_model,
+                  bookmarks::BookmarkModel* account_model) {
+  CHECK(local_model);
+  if (local_model->IsBookmarked(url)) {
+    return true;
+  }
+  return account_model && account_model->IsBookmarked(url);
+}
+
+const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
+    const GURL& url,
+    bookmarks::BookmarkModel* local_model,
+    bookmarks::BookmarkModel* account_model) {
+  CHECK(local_model);
+  const BookmarkNode* local_bookmark =
+      local_model->GetMostRecentlyAddedUserNodeForURL(url);
+  const BookmarkNode* account_bookmark =
+      account_model ? account_model->GetMostRecentlyAddedUserNodeForURL(url)
+                    : nullptr;
+  if (local_bookmark && account_bookmark) {
+    // Found bookmarks in both models, return one that was added more recently.
+    return local_bookmark->date_added() > account_bookmark->date_added()
+               ? local_bookmark
+               : account_bookmark;
+  }
+  return local_bookmark ? local_bookmark : account_bookmark;
 }
 
 }  // namespace bookmark_utils_ios

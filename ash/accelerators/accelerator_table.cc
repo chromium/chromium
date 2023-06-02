@@ -137,6 +137,11 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
      AcceleratorAction::kToggleFullscreen},
     // For testing on Linux desktop where it's hard to rebind the caps lock key.
     {true, ui::VKEY_A, ui::EF_ALT_DOWN, AcceleratorAction::kDevToggleAppList},
+
+    // For testing fingerprint ui.
+    {true, ui::VKEY_1, kDebugModifier, kTouchFingerprintSensor1},
+    {true, ui::VKEY_2, kDebugModifier, kTouchFingerprintSensor2},
+    {true, ui::VKEY_3, kDebugModifier, kTouchFingerprintSensor3},
 };
 
 const size_t kDeveloperAcceleratorDataLength =
@@ -207,6 +212,9 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kToggleSystemTrayBubble,
     AcceleratorAction::kToggleWifi,
     AcceleratorAction::kTouchHudClear,
+    AcceleratorAction::kTouchFingerprintSensor1,
+    AcceleratorAction::kTouchFingerprintSensor2,
+    AcceleratorAction::kTouchFingerprintSensor3,
     AcceleratorAction::kVolumeDown,
     AcceleratorAction::kVolumeMute,
     AcceleratorAction::kVolumeUp,
@@ -287,6 +295,9 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     AcceleratorAction::kToggleMirrorMode,
     AcceleratorAction::kToggleSpokenFeedback,
     AcceleratorAction::kToggleWifi,
+    AcceleratorAction::kTouchFingerprintSensor1,
+    AcceleratorAction::kTouchFingerprintSensor2,
+    AcceleratorAction::kTouchFingerprintSensor3,
     AcceleratorAction::kVolumeDown,
     AcceleratorAction::kVolumeMute,
     AcceleratorAction::kVolumeUp,

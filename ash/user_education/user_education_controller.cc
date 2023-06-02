@@ -65,6 +65,12 @@ UserEducationController* UserEducationController::Get() {
   return g_instance;
 }
 
+absl::optional<ui::ElementIdentifier>
+UserEducationController::GetElementIdentifierForAppId(
+    const std::string& app_id) const {
+  return delegate_->GetElementIdentifierForAppId(app_id);
+}
+
 void UserEducationController::StartTutorial(
     UserEducationPrivateApiKey,
     TutorialId tutorial_id,

@@ -56,7 +56,7 @@ class PasswordRequirementsServiceTest : public testing::Test {
   autofill::FieldSignature test_field_signature_{22};
 
   // Weak pointer.
-  raw_ptr<MockPasswordRequirementsSpecFetcher> fetcher_ptr_;
+  raw_ptr<MockPasswordRequirementsSpecFetcher, DanglingUntriaged> fetcher_ptr_;
   PasswordRequirementsService service_;
 };
 

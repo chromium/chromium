@@ -318,7 +318,8 @@ class CellularESimProfileHandlerImplTest_SmdsSupportEnabled
   CellularESimProfileHandlerImplTest_SmdsSupportEnabled()
       : CellularESimProfileHandlerImplTest(
             /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport},
+                                  ash::features::kSmdsSupport,
+                                  ash::features::kSmdsSupportEuiccUpload},
             /*disabled_features=*/{}) {}
   ~CellularESimProfileHandlerImplTest_SmdsSupportEnabled() override = default;
 };
@@ -338,6 +339,7 @@ class CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled
       : CellularESimProfileHandlerImplTest(
             /*enabled_features=*/{ash::features::kSmdsDbusMigration,
                                   ash::features::kSmdsSupport,
+                                  ash::features::kSmdsSupportEuiccUpload,
                                   ash::features::kUseStorkSmdsServerAddress},
             /*disabled_features=*/{}) {}
   ~CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled() override =

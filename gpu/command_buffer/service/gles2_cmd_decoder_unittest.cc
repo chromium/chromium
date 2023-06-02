@@ -63,9 +63,6 @@ class GLImageStub : public gl::GLImage {
  public:
   GLImageStub() = default;
 
-  // GLImage:
-  gfx::Size GetSize() override { return gfx::Size(1, 1); }
-
  private:
   ~GLImageStub() override = default;
 };

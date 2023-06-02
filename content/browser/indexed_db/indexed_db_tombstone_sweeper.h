@@ -63,7 +63,7 @@ class WrappingIterator {
   bool valid_ = false;
   size_t iterations_done_ = 0;
   typename T::const_iterator inner_;
-  raw_ptr<const T> container_ = nullptr;
+  raw_ptr<const T, DanglingUntriaged> container_ = nullptr;
 };
 
 // Sweeps the IndexedDB leveldb database looking for index tombstones. These

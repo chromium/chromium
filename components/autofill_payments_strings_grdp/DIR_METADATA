@@ -1,4 +1,4 @@
 monorail {
-  component: "UI>Browser>Autofill"
+  component: "UI>Browser>Autofill>Payments"
 }
 team_email: "payments-autofill-team@google.com"

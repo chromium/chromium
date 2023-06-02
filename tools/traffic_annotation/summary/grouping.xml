@@ -25,8 +25,6 @@ after discussions on the right group.
       <annotation id="customtabs_parallel_request"/>
       <annotation id="download_bitmap"/>
       <annotation id="download_manager_service_retry"/>
-      <annotation id="explore_sites"/>
-      <annotation id="kids_chrome_management_client_classify_url"/>
       <annotation id="minidump_uploader_android"/>
       <annotation id="oma_download_handler_android"/>
       <annotation id="partner_bookmarks_reader_get_favicon"/>
@@ -206,7 +204,6 @@ after discussions on the right group.
       <annotation id="reporting"/>
       <annotation id="socket_bio_adapter"/>
       <annotation id="spdy_session_control"/>
-      <annotation id="spdy_push_stream"/>
       <annotation id="websocket_basic_stream"/>
       <annotation id="websocket_stream"/>
       <annotation id="notification_client"/>
@@ -291,6 +288,7 @@ after discussions on the right group.
       <annotation id="unified_state_determination_kill_switch"/>
       <annotation id="crash_file_uploader"/>
       <annotation id="glanceables_classroom_integration"/>
+      <annotation id="promise_app_service_download_icon"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -334,7 +332,9 @@ after discussions on the right group.
   <group name="Child-protection and Safe Browsing Features" hidden="true">
     <sender name="Safe Browsing">
       <annotation id="client_download_request"/>
-      <annotation id="kids_chrome_management_list_family_members"/>
+      <annotation id="kids_chrome_management_client_classify_url"/>
+      <annotation id="supervised_user_classify_url"/>
+      <annotation id="supervised_user_list_family_members"/>
       <annotation id="password_protection_request"/>
       <annotation id="permission_predictions"/>
       <annotation id="safe_browsing_certificate_error_reporting"/>

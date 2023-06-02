@@ -408,8 +408,8 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         blob_data_ = std::make_unique<BlobData>();
         const AtomicString& content_type =
             header_fields.Get(http_names::kContentType);
-        blob_data_->SetContentType(content_type.IsNull() ? "text/plain"
-                                                         : content_type);
+        blob_data_->SetContentType(
+            content_type.IsNull() ? AtomicString("text/plain") : content_type);
       } else {
         if (!string_decoder_) {
           string_decoder_ = std::make_unique<TextResourceDecoder>(

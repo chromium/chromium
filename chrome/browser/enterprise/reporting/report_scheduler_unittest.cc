@@ -331,12 +331,13 @@ class ReportSchedulerTest : public ::testing::Test {
   ReportingDelegateFactoryDesktop report_delegate_factory_;
 #endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ReportScheduler> scheduler_;
-  raw_ptr<policy::MockCloudPolicyClient> client_;
-  raw_ptr<MockReportGenerator> generator_;
-  raw_ptr<MockReportUploader> uploader_;
-  raw_ptr<MockRealTimeReportGenerator> real_time_generator_;
-  raw_ptr<MockRealTimeUploader> extension_request_uploader_;
-  raw_ptr<MockChromeProfileRequestGenerator> profile_request_generator_;
+  raw_ptr<policy::MockCloudPolicyClient, DanglingUntriaged> client_;
+  raw_ptr<MockReportGenerator, DanglingUntriaged> generator_;
+  raw_ptr<MockReportUploader, DanglingUntriaged> uploader_;
+  raw_ptr<MockRealTimeReportGenerator, DanglingUntriaged> real_time_generator_;
+  raw_ptr<MockRealTimeUploader, DanglingUntriaged> extension_request_uploader_;
+  raw_ptr<MockChromeProfileRequestGenerator, DanglingUntriaged>
+      profile_request_generator_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage_;
 #endif

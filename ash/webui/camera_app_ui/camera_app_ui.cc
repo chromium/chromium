@@ -5,6 +5,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 
 #include "ash/public/cpp/window_properties.h"
+#include "ash/system/camera/camera_app_prefs.h"
 #include "ash/webui/camera_app_ui/camera_app_helper_impl.h"
 #include "ash/webui/camera_app_ui/resources.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
@@ -50,30 +51,29 @@ void HandleLocalOverrideRequest(
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](const std::string& url,
-                 content::WebUIDataSource::GotDataCallback callback) {
-                // The url passed in only contain path and query part.
-                auto parsed_url = GURL(kChromeUICameraAppURL + url);
-                // parsed_url.path() includes the leading "/" but
-                // FilePath::Append only allows relative path.
-                base::FilePath file_path =
-                    base::FilePath(kCCALocalOverrideDirectoryPath)
-                        .Append(base::TrimString(
-                            parsed_url.path_piece(), "/",
-                            base::TrimPositions::TRIM_LEADING));
-                std::string result;
-                if (base::ReadFileToString(file_path, &result)) {
-                  std::move(callback).Run(
-                      base::MakeRefCounted<base::RefCountedString>(
-                          std::move(result)));
-                } else {
-                  std::move(callback).Run(nullptr);
-                }
-              },
-              url, std::move(callback)));
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](const std::string& url,
+                        content::WebUIDataSource::GotDataCallback callback) {
+                       // The url passed in only contain path and query part.
+                       auto parsed_url = GURL(kChromeUICameraAppURL + url);
+                       // parsed_url.path() includes the leading "/" but
+                       // FilePath::Append only allows relative path.
+                       base::FilePath file_path =
+                           base::FilePath(kCCALocalOverrideDirectoryPath)
+                               .Append(base::TrimString(
+                                   parsed_url.path_piece(), "/",
+                                   base::TrimPositions::TRIM_LEADING));
+                       std::string result;
+                       if (base::ReadFileToString(file_path, &result)) {
+                         std::move(callback).Run(
+                             base::MakeRefCounted<base::RefCountedString>(
+                                 std::move(result)));
+                       } else {
+                         std::move(callback).Run(nullptr);
+                       }
+                     },
+                     url, std::move(callback)));
 }
 
 void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
@@ -251,7 +251,7 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
-  if (app_window_manager()->IsDevToolsEnabled()) {
+  if (camera_app_prefs::ShouldDevToolsOpen()) {
     delegate_->OpenDevToolsWindow(web_ui->GetWebContents());
   }
 
@@ -292,10 +292,6 @@ aura::Window* CameraAppUI::window() {
   return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
 }
 
-CameraAppWindowManager* CameraAppUI::app_window_manager() {
-  return CameraAppWindowManager::GetInstance();
-}
-
 const GURL& CameraAppUI::url() {
   return web_ui()->GetWebContents()->GetLastCommittedURL();
 }
@@ -308,7 +304,7 @@ void CameraAppUI::DevToolsAgentHostAttached(
           kChromeUICameraAppMainURL)) {
     return;
   }
-  app_window_manager()->SetDevToolsEnabled(true);
+  camera_app_prefs::SetDevToolsOpenState(true);
 }
 
 void CameraAppUI::DevToolsAgentHostDetached(
@@ -319,7 +315,7 @@ void CameraAppUI::DevToolsAgentHostDetached(
           kChromeUICameraAppMainURL)) {
     return;
   }
-  app_window_manager()->SetDevToolsEnabled(false);
+  camera_app_prefs::SetDevToolsOpenState(false);
 }
 
 bool CameraAppUI::IsJavascriptErrorReportingEnabled() {

@@ -325,8 +325,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
       is_detached_(false),
       parent_(parent),
       client_(std::move(client)),
-      frame_tracker_(new FrameTracker(client_.get(), this, browser_info)),
-      dialog_manager_(new JavaScriptDialogManager(client_.get(), browser_info)),
+      frame_tracker_(new FrameTracker(client_.get(), this)),
+      dialog_manager_(new JavaScriptDialogManager(client_.get())),
       mobile_emulation_override_manager_(
           new MobileEmulationOverrideManager(client_.get(),
                                              std::move(mobile_device),
@@ -348,9 +348,9 @@ WebViewImpl::WebViewImpl(const std::string& id,
   // all related calls to their parent. All WebViews must have either parent_
   // or navigation_tracker_
   if (!parent_) {
-    navigation_tracker_ = std::unique_ptr<PageLoadStrategy>(
-        PageLoadStrategy::Create(page_load_strategy, client_.get(), this,
-                                 browser_info, dialog_manager_.get()));
+    navigation_tracker_ =
+        std::unique_ptr<PageLoadStrategy>(PageLoadStrategy::Create(
+            page_load_strategy, client_.get(), this, dialog_manager_.get()));
   }
   client_->SetOwner(this);
 }

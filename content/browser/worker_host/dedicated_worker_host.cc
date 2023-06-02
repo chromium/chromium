@@ -36,10 +36,10 @@
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/network_service_util.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -554,7 +554,8 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,
       bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
+      /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
+      /*navigation_response_task_runner=*/nullptr);
 
   devtools_instrumentation::WillCreateURLLoaderFactory(
       ancestor_render_frame_host, /*is_navigation=*/false,

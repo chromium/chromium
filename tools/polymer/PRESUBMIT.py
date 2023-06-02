@@ -8,8 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
-
 
 def RunPolymerTests(input_api, output_api):
   presubmit_path = input_api.PresubmitLocalPath()
@@ -17,10 +15,7 @@ def RunPolymerTests(input_api, output_api):
       'html_to_js_test.py', 'html_to_wrapper_test.py', 'css_to_wrapper_test.py'
   ]
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
-  return input_api.canned_checks.RunUnitTests(input_api,
-                                              output_api,
-                                              tests,
-                                              run_on_python2=False)
+  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):

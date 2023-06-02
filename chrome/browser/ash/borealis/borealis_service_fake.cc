@@ -74,6 +74,11 @@ BorealisWindowManager& BorealisServiceFake::WindowManager() {
   return *window_manager_;
 }
 
+BorealisSurveyHandler& BorealisServiceFake::SurveyHandler() {
+  CHECK(survey_handler_);
+  return *survey_handler_;
+}
+
 void BorealisServiceFake::SetAppLauncherForTesting(
     BorealisAppLauncher* app_launcher) {
   app_launcher_ = app_launcher;
@@ -115,6 +120,11 @@ void BorealisServiceFake::SetShutdownMonitorForTesting(
 void BorealisServiceFake::SetWindowManagerForTesting(
     BorealisWindowManager* window_manager) {
   window_manager_ = window_manager;
+}
+
+void BorealisServiceFake::SetSurveyHandlerForTesting(
+    BorealisSurveyHandler* survey_handler) {
+  survey_handler_ = survey_handler;
 }
 
 }  // namespace borealis

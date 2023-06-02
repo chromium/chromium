@@ -3,56 +3,56 @@ Tests asynchronous call stacks for async functions.
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) errorCallback (async-callstack-async-await3.js:64)
-    1) doTestPromiseReject (async-callstack-async-await3.js:133)
+    0) errorCallback (async-callstack-async-await3.js:67)
+    1) doTestPromiseReject (async-callstack-async-await3.js:136)
     [await]
-    0) testFunctionTimeout (async-callstack-async-await3.js:54)
+    0) testFunctionTimeout (async-callstack-async-await3.js:57)
     [setTimeout]
-    0) testFunction (async-callstack-async-await3.js:47)
+    0) testFunction (async-callstack-async-await3.js:50)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) errorCallback (async-callstack-async-await3.js:64)
-    1) doTestRejectFromChain (async-callstack-async-await3.js:113)
+    0) errorCallback (async-callstack-async-await3.js:67)
+    1) doTestRejectFromChain (async-callstack-async-await3.js:116)
     [await]
-    0) testFunctionTimeout (async-callstack-async-await3.js:54)
+    0) testFunctionTimeout (async-callstack-async-await3.js:57)
     [setTimeout]
-    0) testFunction (async-callstack-async-await3.js:47)
+    0) testFunction (async-callstack-async-await3.js:50)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) errorCallback (async-callstack-async-await3.js:64)
-    1) doTestThrowFromChain (async-callstack-async-await3.js:93)
+    0) errorCallback (async-callstack-async-await3.js:67)
+    1) doTestThrowFromChain (async-callstack-async-await3.js:96)
     [await]
-    0) testFunctionTimeout (async-callstack-async-await3.js:54)
+    0) testFunctionTimeout (async-callstack-async-await3.js:57)
     [setTimeout]
-    0) testFunction (async-callstack-async-await3.js:47)
+    0) testFunction (async-callstack-async-await3.js:50)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) thenCallback (async-callstack-async-await3.js:59)
-    1) doTestPromiseAll (async-callstack-async-await3.js:71)
+    0) thenCallback (async-callstack-async-await3.js:62)
+    1) doTestPromiseAll (async-callstack-async-await3.js:74)
     [await]
-    0) testFunctionTimeout (async-callstack-async-await3.js:54)
+    0) testFunctionTimeout (async-callstack-async-await3.js:57)
     [setTimeout]
-    0) testFunction (async-callstack-async-await3.js:47)
+    0) testFunction (async-callstack-async-await3.js:50)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) thenCallback (async-callstack-async-await3.js:59)
-    1) doTestPromiseResolve (async-callstack-async-await3.js:121)
+    0) thenCallback (async-callstack-async-await3.js:62)
+    1) doTestPromiseResolve (async-callstack-async-await3.js:124)
     [await]
-    0) testFunctionTimeout (async-callstack-async-await3.js:54)
+    0) testFunctionTimeout (async-callstack-async-await3.js:57)
     [setTimeout]
-    0) testFunction (async-callstack-async-await3.js:47)
+    0) testFunction (async-callstack-async-await3.js:50)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

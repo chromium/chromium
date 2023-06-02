@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, MAYBE_Pinch) {
 }
 
 // FontSizeSlider is only used on Desktop.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #define MAYBE_FontSizeSlider DISABLED_FontSizeSlider
 #else
 #define MAYBE_FontSizeSlider FontSizeSlider

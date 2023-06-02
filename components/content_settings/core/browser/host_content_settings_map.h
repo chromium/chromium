@@ -463,7 +463,8 @@ class HostContentSettingsMap : public content_settings::Observer,
       user_modifiable_providers_;
 
   // content_settings_providers_[PREF_PROVIDER] but specialized.
-  raw_ptr<content_settings::PrefProvider> pref_provider_ = nullptr;
+  raw_ptr<content_settings::PrefProvider, DanglingUntriaged> pref_provider_ =
+      nullptr;
 
   base::ThreadChecker thread_checker_;
 

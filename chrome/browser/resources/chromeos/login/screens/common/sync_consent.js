@@ -126,6 +126,24 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
         type: String,
         computed: 'getOptInButtonTextKey_(isMinorMode_)',
       },
+
+      /**
+       * Array of strings of the consent description elements
+       * @private
+       */
+      consentDescription_: {
+        type: Array,
+      },
+
+      /**
+       * The text of the consent confirmation element.
+       * @private
+       */
+      consentConfirmation_: {
+        type: String,
+      },
+
+
     };
   }
 
@@ -319,13 +337,19 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
                          'syncConsentAcceptAndContinue';
   }
 
-  onSyncEverything_() {
-    // will be updated to recordConsent TODO(b/274093410).
-    this.userActed(UserAction.SYNC_EVERYTHING);
+  onSyncEverything_(e) {
+    this.userActed([
+      UserAction.SYNC_EVERYTHING,
+      this.getConsentDescription_(),
+      this.getConsentConfirmation_(
+          /** @type {!Array<!HTMLElement>} */ (e.composedPath())),
+    ]);
   }
 
-  onManageClicked_() {
-    // will be updated to recordConsent TODO(b/274093410).
+  onManageClicked_(e) {
+    this.consentDescription_ = this.getConsentDescription_();
+    this.consentConfirmation_ = this.getConsentConfirmation_(
+        /** @type {!Array<!HTMLElement>} */ (e.composedPath()));
     this.showLacrosCustomize();
   }
 
@@ -334,8 +358,12 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   }
 
   onNextClicked_() {
-    // will be updated to recordConsent TODO(b/274093410).
-    this.userActed([UserAction.SYNC_CUSTOM, this.osSyncItemsStatus]);
+    this.userActed([
+      UserAction.SYNC_CUSTOM,
+      this.osSyncItemsStatus,
+      this.consentDescription_,
+      this.consentConfirmation_,
+    ]);
   }
 
   getAriaLabeltooltip_(locale) {

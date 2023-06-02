@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult("This tests if the TextPrompt autocomplete works properly.\n");
 

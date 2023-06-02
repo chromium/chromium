@@ -321,12 +321,13 @@ class BluetoothGattBlueZTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
-  raw_ptr<bluez::FakeBluetoothGattServiceClient>
+  raw_ptr<bluez::FakeBluetoothDeviceClient, DanglingUntriaged>
+      fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothGattServiceClient, DanglingUntriaged>
       fake_bluetooth_gatt_service_client_;
-  raw_ptr<bluez::FakeBluetoothGattCharacteristicClient>
+  raw_ptr<bluez::FakeBluetoothGattCharacteristicClient, DanglingUntriaged>
       fake_bluetooth_gatt_characteristic_client_;
-  raw_ptr<bluez::FakeBluetoothGattDescriptorClient>
+  raw_ptr<bluez::FakeBluetoothGattDescriptorClient, DanglingUntriaged>
       fake_bluetooth_gatt_descriptor_client_;
   std::unique_ptr<device::BluetoothGattConnection> gatt_conn_;
   std::vector<std::unique_ptr<BluetoothGattNotifySession>> update_sessions_;

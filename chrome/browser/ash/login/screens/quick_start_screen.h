@@ -21,7 +21,7 @@ class QuickStartScreen
  public:
   using TView = QuickStartView;
 
-  enum class Result { CANCEL };
+  enum class Result { CANCEL, WIFI_CONNECTED };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -35,6 +35,8 @@ class QuickStartScreen
 
   static std::string GetResultString(Result result);
 
+  void AttemptGoogleAccountTransfer();
+
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -46,6 +48,10 @@ class QuickStartScreen
   void OnStatusChanged(
       const quick_start::TargetDeviceBootstrapController::Status& status) final;
 
+  // Sets in the UI the discoverable name that will be used for advertising.
+  // Android devices will see this fast pair notification 'Chromebook (123)'
+  void DetermineDiscoverableName();
+
   void UnbindFromBootstrapController();
   void SendRandomFiguresForTesting() const;
 
@@ -53,6 +59,7 @@ class QuickStartScreen
   // MultideviceSetupScreen.
   void SavePhoneInstanceID();
 
+  std::string discoverable_name_;
   base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;
 

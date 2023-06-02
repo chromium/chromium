@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
@@ -102,6 +103,19 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             browser_context_);
         break;
       }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kKeyboardDiagnosticEventInfo:
+        base::Value::List args;
+        args.Append(converters::ConvertStructPtr<
+                        api::os_events::KeyboardDiagnosticEventInfo>(
+                        std::move(info->get_keyboard_diagnostic_event_info()))
+                        .ToValue());
+
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_KEYBOARD_DIAGNOSTIC_EVENT,
+            api::os_events::OnKeyboardDiagnosticEvent::kEventName,
+            std::move(args), browser_context_);
+        break;
     }
 
     extensions::EventRouter::Get(browser_context_)

@@ -235,7 +235,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             nullptr /* trust_token_params */, absl::nullopt /* impression */,
             base::TimeTicks() /* renderer_before_unload_start */,
             base::TimeTicks() /* renderer_before_unload_end */,
-            absl::nullopt /* web_bundle_token */,
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kDidNotStartWithTransientActivation,
             false /* is_container_initiated */,

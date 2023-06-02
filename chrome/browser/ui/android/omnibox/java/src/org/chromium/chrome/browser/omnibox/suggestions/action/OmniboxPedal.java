@@ -7,14 +7,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 
 /**
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
@@ -24,49 +23,49 @@ public class OmniboxPedal extends OmniboxAction {
     @VisibleForTesting
     static final ChipIcon DINO_GAME_ICON = new ChipIcon(R.drawable.action_dino_game, true);
     /** The type of the underlying pedal. */
-    public final @OmniboxPedalType int pedalId;
+    public final @OmniboxPedalId int pedalId;
 
-    public OmniboxPedal(@NonNull String hint, @OmniboxPedalType int pedalId) {
-        super(OmniboxActionType.PEDAL, hint,
-                pedalId == OmniboxPedalType.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
+    public OmniboxPedal(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint, @OmniboxPedalId int pedalId) {
+        super(OmniboxActionId.PEDAL, nativeInstance, hint, accessibilityHint,
+                pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
         this.pedalId = pedalId;
     }
 
     @Override
     public void execute(@NonNull OmniboxActionDelegate delegate) {
         switch (pedalId) {
-            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
+            case OmniboxPedalId.MANAGE_CHROME_SETTINGS:
                 delegate.openSettingsPage(SettingsFragment.MAIN);
                 break;
-            case OmniboxPedalType.CLEAR_BROWSING_DATA:
+            case OmniboxPedalId.CLEAR_BROWSING_DATA:
                 delegate.openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
                 break;
-            case OmniboxPedalType.UPDATE_CREDIT_CARD:
+            case OmniboxPedalId.UPDATE_CREDIT_CARD:
                 delegate.openSettingsPage(SettingsFragment.PAYMENT_METHODS);
                 break;
-            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
+            case OmniboxPedalId.RUN_CHROME_SAFETY_CHECK:
                 delegate.openSettingsPage(SettingsFragment.SAFETY_CHECK);
                 break;
-            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
+            case OmniboxPedalId.MANAGE_SITE_SETTINGS:
                 delegate.openSettingsPage(SettingsFragment.SITE);
                 break;
-            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
+            case OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY:
                 delegate.openSettingsPage(SettingsFragment.ACCESSIBILITY);
                 break;
-            case OmniboxPedalType.VIEW_CHROME_HISTORY:
+            case OmniboxPedalId.VIEW_CHROME_HISTORY:
                 delegate.loadPageInCurrentTab(UrlConstants.HISTORY_URL);
                 break;
-            case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
+            case OmniboxPedalId.PLAY_CHROME_DINO_GAME:
                 delegate.loadPageInCurrentTab(UrlConstants.CHROME_DINO_URL);
                 break;
-            case OmniboxPedalType.MANAGE_PASSWORDS:
+            case OmniboxPedalId.MANAGE_PASSWORDS:
                 delegate.openPasswordManager();
                 break;
-            case OmniboxPedalType.LAUNCH_INCOGNITO:
+            case OmniboxPedalId.LAUNCH_INCOGNITO:
                 delegate.openIncognitoTab();
                 break;
         }
-        OmniboxMetrics.recordPedalUsed(pedalId);
     }
 
     /**
@@ -76,7 +75,7 @@ public class OmniboxPedal extends OmniboxAction {
      */
     public static @NonNull OmniboxPedal from(@NonNull OmniboxAction action) {
         assert action != null;
-        assert action.actionId == OmniboxActionType.PEDAL;
+        assert action.actionId == OmniboxActionId.PEDAL;
         assert action instanceof OmniboxPedal;
         return (OmniboxPedal) action;
     }

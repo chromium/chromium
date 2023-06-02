@@ -32,6 +32,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
+#include "components/live_caption/caption_util.h"
+#include "components/live_caption/pref_names.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
@@ -341,7 +343,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControls, media::kLiveCaption,
          feature_engagement::kIPHLiveCaptionFeature,
-         media::kLiveCaptionMultiLanguage},
+         media::kLiveCaptionMultiLanguage, media::kLiveTranslate},
         {});
   }
 
@@ -488,6 +490,14 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     ui_test_utils::ClickOnView(live_caption_button);
   }
 
+  void ClickEnableLiveTranslateOnDialog() {
+    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(MediaDialogView::IsShowing());
+    views::Button* live_translate_button = static_cast<views::Button*>(
+        MediaDialogView::GetDialogViewForTesting()->live_translate_button_);
+    ui_test_utils::ClickOnView(live_translate_button);
+  }
+
   void ClickItemByTitle(const std::u16string& title) {
     ASSERT_TRUE(MediaDialogView::IsShowing());
     global_media_controls::MediaItemUIView* item = GetItemByTitle(title);
@@ -535,6 +545,10 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   views::Label* GetLiveCaptionTitleLabel() {
     return MediaDialogView::GetDialogViewForTesting()->live_caption_title_;
+  }
+
+  views::Label* GetLiveTranslateTitleLabel() {
+    return MediaDialogView::GetDialogViewForTesting()->live_translate_title_;
   }
 
   void OnSodaProgress(int progress) {
@@ -1103,6 +1117,47 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
   EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
+  // Live captioning is not currently supported on Win Arm64.
+  if (!captions::IsLiveCaptionFeatureSupported()) {
+    GTEST_SKIP() << "Live caption feature not supported";
+  }
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
+
+  // Open the media dialog.
+  EXPECT_TRUE(ui_.WaitForToolbarIconShown());
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+
+  // Click the Live Caption toggle to toggle it on.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+
+  // The Live Translate title should appear.
+  EXPECT_TRUE(GetLiveTranslateTitleLabel()->GetVisible());
+  EXPECT_EQ("Live Translate",
+            base::UTF16ToUTF8(GetLiveTranslateTitleLabel()->GetText()));
+
+  // Click the Live Translate toggle to toggle it on.
+  ClickEnableLiveTranslateOnDialog();
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveTranslateEnabled));
+
+  // Click the Live Caption toggle to toggle it off, which toggles off Live
+  // Translate as well.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveTranslateEnabled));
 }
 
 class MediaDialogViewWithBackForwardCacheBrowserTest

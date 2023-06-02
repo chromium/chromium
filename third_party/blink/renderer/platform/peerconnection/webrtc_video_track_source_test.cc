@@ -8,7 +8,9 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,6 +114,16 @@ class WebRtcVideoTrackSourceTest
         frame_parameters.pixel_format, base::TimeDelta());
     frame->metadata().capture_counter = capture_counter;
     frame->metadata().capture_update_rect = update_rect;
+    track_source_->OnFrameCaptured(frame, {});
+  }
+
+  void SendTestFrameWithColorSpace(const FrameParameters& frame_parameters,
+                                   const gfx::ColorSpace& color_space) {
+    scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
+        frame_parameters.coded_size, frame_parameters.visible_rect,
+        frame_parameters.natural_size, frame_parameters.storage_type,
+        frame_parameters.pixel_format, base::TimeDelta());
+    frame->set_color_space(color_space);
     track_source_->OnFrameCaptured(frame, {});
   }
 
@@ -224,6 +236,57 @@ TEST_P(WebRtcVideoTrackSourceTest, CropFrameTo640360) {
         EXPECT_EQ(kNaturalSize.height(), frame.height());
       }));
   SendTestFrame(frame_parameters, base::TimeDelta());
+}
+
+TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /* enabled_features*/ {media::kWebRTCColorAccuracy},
+      /* disabled_features*/ {});
+  FrameParameters frame_parameters = {
+      .coded_size = gfx::Size(640, 480),
+      .visible_rect = gfx::Rect(0, 60, 640, 360),
+      .natural_size = gfx::Size(640, 360),
+      .storage_type = std::get<0>(GetParam()),
+      .pixel_format = std::get<1>(GetParam())};
+
+  Sequence s;
+
+  EXPECT_CALL(mock_sink_, OnFrame(_))
+      .InSequence(s)
+      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+        ASSERT_TRUE(frame.color_space().has_value());
+        EXPECT_EQ(frame.color_space().value().matrix(),
+                  webrtc::ColorSpace::MatrixID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().transfer(),
+                  webrtc::ColorSpace::TransferID::kBT709);
+        EXPECT_EQ(frame.color_space().value().primaries(),
+                  webrtc::ColorSpace::PrimaryID::kBT709);
+        EXPECT_EQ(frame.color_space().value().range(),
+                  webrtc::ColorSpace::RangeID::kLimited);
+      }));
+  EXPECT_CALL(mock_sink_, OnFrame(_))
+      .InSequence(s)
+      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+        ASSERT_TRUE(frame.color_space().has_value());
+        EXPECT_EQ(frame.color_space().value().matrix(),
+                  webrtc::ColorSpace::MatrixID::kBT709);
+        EXPECT_EQ(frame.color_space().value().transfer(),
+                  webrtc::ColorSpace::TransferID::kBT709);
+        EXPECT_EQ(frame.color_space().value().primaries(),
+                  webrtc::ColorSpace::PrimaryID::kBT709);
+        EXPECT_EQ(frame.color_space().value().range(),
+                  webrtc::ColorSpace::RangeID::kFull);
+      }));
+
+  gfx::ColorSpace color_range_limited(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
+  SendTestFrameWithColorSpace(frame_parameters, color_range_limited);
+  gfx::ColorSpace color_range_full(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
+  SendTestFrameWithColorSpace(frame_parameters, color_range_full);
 }
 
 TEST_P(WebRtcVideoTrackSourceTest, SetsFeedback) {

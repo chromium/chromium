@@ -30,6 +30,7 @@
 الإقران. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
+<translation id="1555506416658437797">يُرجى تعديل طُرق الدفع.</translation>
 <translation id="1583073672411044740">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">‏يستخدم Google Chrome الكاميرا.</translation>
 <translation id="1587325591171447154">‏ملف <ph name="FILE_NAME" /> ضار، لذلك فقد حظره Chrome.</translation>
@@ -81,6 +82,7 @@
 <translation id="234869673307233423">‏يتعذّر على Chrome التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
 <translation id="235650106824528204">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chrome والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2399868464369312507">‏يحاول Google Chrome تعديل طُرق الدفع.</translation>
 <translation id="2401189691232800402">‏نظام التشغيل Chrome</translation>
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
@@ -386,6 +388,7 @@
 <translation id="8418845734693287262">‏تعذّر على نظام التشغيل Chrome مزامنة البيانات لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="8433638294851456451">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
 <translation id="8451192282033883849">‏تتم إدارة حسابك من خلال <ph name="MANAGER_NAME" />. وبإمكان المشرف الاطّلاع على الملف الشخصي لمتصفّح Chrome وتعديل بياناته، مثل الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
+<translation id="8496177819998570653">‏مدير كلمات المرور في Google</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
 <translation id="8504220326736535258">‏حَظَر Chrome هذا الملف لأنّه يحتوي على برامج ضارة.</translation>
 <translation id="8516431725144212809">‏اهتماماتك حسب تقدير Chrome</translation>
@@ -402,6 +405,7 @@
 <translation id="8649026945479135076">‏غالبًا ما تتذكّر المواقع الإلكترونية التي تزورها المحتوى الذي يهمك، وذلك من أجل تخصيص تجربتك. يمكن أيضًا أن تخزّن المواقع الإلكترونية معلومات عن اهتماماتك في متصفّح Chrome.</translation>
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>
 <translation id="8679801911857917785">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome.</translation>
+<translation id="8684875378076460854">‏ينصح متصفِّح Chrome بفحص هذا الملف لأنّه قد يكون ضارًا.</translation>
 <translation id="8686817260976772516">‏باستخدام الملفات الشخصية على Chrome، يمكنك الفصل بين جميع بيانات Chrome. ويمكنك إنشاء ملفات شخصية للأصدقاء والعائلة أو تقسيمها للعمل وأغراض الترفيه.</translation>
 <translation id="8712767363896337380">‏أوشك التحديث على الانتهاء. أعِد تشغيل Chrome لإتمام التحديث.</translation>
 <translation id="873133009373065397">‏يتعذَّر على Google Chrome تحديد المتصفح التلقائي أو تعيينه</translation>

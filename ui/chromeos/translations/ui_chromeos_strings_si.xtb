@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ධාරකය</translation>
 <translation id="1521655867290435174">Google පත්‍ර</translation>
-<translation id="1538729222189715449">Linux ගොනු විවෘත කරමින්...</translation>
 <translation id="1547964879613821194">කැනේඩියානු ඉංග්‍රීසි</translation>
 <translation id="1556189134700913550">සියල්ලට අදාල කරන්න</translation>
 <translation id="1561842594491319104">Chrome උපාංග</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google අඩවිය</translation>
 <translation id="1853795129690976061">මෙම ෆෝල්ඩරය Linux සමග බෙදා ගෙන ඇත</translation>
 <translation id="1864756863218646478">ගොනුව සොයාගත නොහැකි විය.</translation>
+<translation id="1877377730633446520">මෙය <ph name="REQUIRED_SPACE" /> පමණ භාවිත කරයි. ඔබට දැනට <ph name="FREE_SPACE" /> තිබේ.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, සබඳින්න</translation>
 <translation id="1920670151694390848">මලයාලම් අක්ෂර පරිවර්තනය</translation>
 <translation id="1920798810075583923">දිය කොමඩු</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">ගොනු ප්‍රතිපෝෂණ පැනල් දිග හරින්න</translation>
 <translation id="1995337122023280937">ගොනු ස්ථානයට යන්න</translation>
 <translation id="2001796770603320721">Drive හි කළමනාකරණය කරන්න</translation>
+<translation id="2004942826429452291">ගොනු ක්ලවුඩ්හි සහ මෙම Chromebook මත ගබඩා කෙරේ.</translation>
 <translation id="2009067268969781306">ධාවකයක් ආකෘති කිරීම එහි ගබඩා කර ඇති සියලුම දත්ත මකා දමයි. මෙම ක්‍රියාව අස් කළ නොහැක.</translation>
 <translation id="2025955442973426285">ටිග්රින්යා</translation>
 <translation id="2037845485764049925">රුසියානු</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">උපාංග සැකසීම්</translation>
 <translation id="2084809735218147718">ඔබට ස්තුතියි යැයි සංඥා කරමින්</translation>
 <translation id="2088690981887365033">VPN ජාලය</translation>
+<translation id="2089751716171649322">ඔබ නොබැඳිව සිටින විට ඔබේ Google Drive ගොනු වෙත පහසුවෙන් ප්‍රවේශ වන්න</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />අප්‍රකට තුළ ඉඩ දීම<ph name="END_BOLD" /> ක්‍රියාත්මක කරන්න</translation>
 <translation id="2114191879048183086">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකනු ඇති අතර ඔබට ඒවා ප්‍රතිසාධනය කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="2122305276694332719">සැඟවුණු ජාලයකට ස්වයංක්‍රීයව සම්බන්ධ කිරීම අන් අයට ඔබේ උපාංගය සහ යම් ජාල සැකසීම් බැලීමට ඉඩ සලසන අතර, එය නිර්දේශ නොකෙරේ.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux සමග ස්ථාපනය කරන්න</translation>
 <translation id="2225536596944493418">ඔබට අයිතම <ph name="NUMBER_OF_ITEMS" /> මැකීමට අවශ්‍ය බව ඔබට තහවුරුද?</translation>
 <translation id="2230062665678605299">මෙම ෆෝල්ඩරය සෑදීමට නොහැක "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">ඔබේ Google Drive කෑෂය හිස් කරන ලදි.</translation>
 <translation id="2239068707900391003">කෝපි සමග පුද්ගලයා</translation>
 <translation id="2251368349685848079">කුණු කූඩය වෙතින් ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="2278133026967558505">සියලු වෙබ් අඩවි සහ URLs මගින් ගොනු ප්‍රවේශය</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">දැන් නොවේ</translation>
 <translation id="3486821258960016770">මොන්ගෝලියානු</translation>
 <translation id="3495304270784461826">දෝෂ <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">ඔබේ Google Drive ගොනු නොබැඳිව ඇත</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="3511705761158917664">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් සමමුහුර්ත කිරීමට සූදානම් කරමින්...</translation>
 <translation id="3522708245912499433">පෘතුගීසි</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">මෙම සැකසීම වෙනස් කිරීම සියලු බෙදා ගත් ජාලවලට බලපානු ඇත</translation>
 <translation id="3737576078404241332">පැති තීරුව වෙතින් ඉවත් කරන්න</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
-<translation id="3780536599611287598">'<ph name="FOLDER_NAME" />' වෙත ගොනු මාරු කිරීමට ඔබට අවසර නොමැත.</translation>
 <translation id="3786301125658655746">ඔබ නොබැදි</translation>
 <translation id="3789841737615482174">ස්ථාපනය</translation>
 <translation id="3793469551756281394"><ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> පමණ ඉතිරියි</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">රුචි නාම සේවාදායක</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, සබඳින්න</translation>
 <translation id="4470564870223067757">හැන්ගුල් කට්ටල 2</translation>
+<translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4474142134969976028">ගැළපෙන ප්‍රතිඵල නැත</translation>
 <translation id="4477002475007461989">රුමේනියානු</translation>
 <translation id="4477219268485577442">බල්ගේරියානු ශබ්දානුකූල</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">අලිගැටපේර</translation>
 <translation id="4805966553127040832">අයිතම <ph name="COUNT" />ක් ප්‍රතිසාධනය කරමින්</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට දිගුවක් අවශ්‍ය වේ}one{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට යම් දිගු අවශ්‍ය වේ}other{අප්‍රසිද්ධ භාවිතය සඳහා, ඔබේ සංවිධානයට යම් දිගු අවශ්‍ය වේ}}</translation>
-<translation id="4823651846660089135">උපාංගය කියවීමට පමණි</translation>
 <translation id="4826849268470072925">දෙමළ ITRANS</translation>
 <translation id="482932175346970750">ඔබේ බ්‍රව්සරයට <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ටයිප් කරන්න</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -572,6 +573,7 @@
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5500122897333236901">අයිස්ලාන්තික</translation>
 <translation id="5508696409934741614">තිත්</translation>
+<translation id="5519161320735100193">Google Drive සැකසීම්</translation>
 <translation id="5522908512596376669">ගොනු ලැයිස්තුව ලැයිස්තු දසුනට වෙනස් විය.</translation>
 <translation id="5524517123096967210">ගොනුව කියවිය නොහැක.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> රූපය</translation>
@@ -618,6 +620,7 @@
 <translation id="5838451609423551646">තේරීමෙන් ඇතුළත් කිරීම් සියල්ල ඉවත් කළා.</translation>
 <translation id="5838825566232597749">US Workman අන්තර්ජාතික</translation>
 <translation id="5845721951356578987">හෙදිය</translation>
+<translation id="5860491529813859533">ක්‍රියාත්මක කරන්න</translation>
 <translation id="5861477046012235702">ක්‍රීඩාකරු</translation>
 <translation id="5864471791310927901">DHCP විමසුම අසාර්ථක විය</translation>
 <translation id="5896749729057314184">ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, සක්‍රිය නොකළ සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
@@ -675,7 +678,6 @@
 <translation id="6327785803543103246">වෙබ් ප්‍රොක්සි ස්වයං අනාවරණය</translation>
 <translation id="6337014272874260727">ඉක්මන් ගොනුවලින් ගලවන්න</translation>
 <translation id="6339145975392024142">එක්සත් ජනපද ජාත්‍යන්තර (PC)</translation>
-<translation id="6346310558342052870">පිවිසීම සීමා කර ඇත</translation>
 <translation id="6356685157277930264">ගොනු ප්‍රතිපෝෂණ කවුළුව</translation>
 <translation id="6358884629796491903">මකරා</translation>
 <translation id="636254897931573416">වලංගු නොවන වසම් ප්‍රත්‍ය ගැළපීම් අගය</translation>
@@ -863,6 +865,7 @@
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7806708061868529807">හීබෲ</translation>
 <translation id="78104721049218340">කෙඩ්මනී යතුරු පුවරුව සමඟ තායි</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009">ටෙරාබයිට් <ph name="NUMBER_OF_TB" /></translation>
 <translation id="7831491651892296503">ජාලය වින්‍යාස කිරීමේ දෝෂයකි</translation>
 <translation id="7839804798877833423">මෙම ගොනු සොයා ගැනීමෙන් ආසන්න වශයෙන් ජංගම දත්ත <ph name="FILE_SIZE" /> භාවිතා වේ.</translation>
@@ -875,15 +878,18 @@
 <translation id="7903984238293908205">කටගනා</translation>
 <translation id="7908793776359722643">කොටසක් හැඩ ගැන්වීම එහි ගබඩා කර ඇති සියලු දත්ත මකනු ඇත. මෙම ක්‍රියාව පසුගමනය කළ නොහැකිය.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">මගේ Drive තුළ ඇති ඔබේ ගොනු ඔබේ Chromebook වෙත ස්වයංක්‍රීයව සමමුහූර්ත වේ, එවිට ඔබට අන්තර්ජාල සම්බන්ධතාවකින් තොරව ඒවාට ප්‍රවේශ විය හැක.</translation>
 <translation id="7925247922861151263">AAA පරීක්ෂණ අසමත්</translation>
 <translation id="7925686952655276919">සමමු සඳහා ජංගම දත්ත භාවිතා කරන්න</translation>
 <translation id="7928710562641958568">උපාංගය බැහැර කරන්න</translation>
+<translation id="7933875256234974853">Drive ගොනු සමමුහූර්ත කිරීමට සූදානම් වෙමින්...</translation>
 <translation id="7943385054491506837">US කෝල්මාක්</translation>
 <translation id="7953739707111622108">මෙම උපාංගයේ ගොනු පද්ධතිය හඳුනාගත නොහැකි බැවින් එය විවෘත කළ නොහැක.</translation>
 <translation id="7969525169268594403">ස්ලොවේනියානු</translation>
 <translation id="7972920761225148017">ප්‍රංශ (ස්විට්සර්ලන්තය)</translation>
 <translation id="7973962044839454485">වැරදි පරිශීලක නමක් හෝ මුරපදයක් නිසා PPP අවසරදීම අසාර්ථක විය.</translation>
 <translation id="7980421588063892270">Colemak යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
+<translation id="7985008041109611710">ගොනු <ph name="NUMBER_OF_FILES_SYNCING" />ක් සමමුහූර්ත කරමින්</translation>
 <translation id="8000066093800657092">ජාලයක් නැත</translation>
 <translation id="8008366997883261463">ජැක් රසල් ටෙරියර්</translation>
 <translation id="8028993641010258682">ප්‍රමාණය</translation>
@@ -1005,6 +1011,7 @@
 <translation id="8919081441417203123">ඩෙන්මාර්ක</translation>
 <translation id="8949925099261528566">සම්බන්ධයි, අන්තර්ජාලය නැත</translation>
 <translation id="8965697826696209160">ප්‍රමාණවත් මතකයක් නැත.</translation>
+<translation id="8971742885766657349">සමමුහුර්ත කරමින් - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">චීන (සාම්ප්‍රදායික) පින්යින්</translation>
 <translation id="8998871447376656508">උඩුගත කිරීම සම්පූර්ණ කිරීමට ඔබේ Google Drive තුළ ප්‍රමාණවත් නිදහස් ඉඩ නැත.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
@@ -1038,6 +1045,7 @@
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219908252191632183">චන්ද්‍රයා</translation>
+<translation id="937795003075802289">1 ගොනුවක් සමමුහූර්ත කරමින්</translation>
 <translation id="938470336146445890">කරුණාකර පරිශීලක සහතිකයක් ස්ථාපනය කරන්න.</translation>
 <translation id="939736085109172342">නව ෆෝල්ඩරය</translation>
 <translation id="943972244133411984">වෙනස් කරන ලද්දේ</translation>

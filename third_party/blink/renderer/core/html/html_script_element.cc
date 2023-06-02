@@ -158,7 +158,7 @@ void HTMLScriptElement::setText(const String& string) {
 }
 
 void HTMLScriptElement::setInnerTextForBinding(
-    const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
         string_or_trusted_script,
     ExceptionState& exception_state) {
   const String& value = TrustedTypesCheckForScript(

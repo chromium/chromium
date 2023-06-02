@@ -10,7 +10,12 @@
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
+
 // The behavior of most of these utility functions depends on what they are run
 // on, so there is not much to unittest them. The APIs are run to make sure they
 // don't choke. Additional checks are added for particular APIs when needed.

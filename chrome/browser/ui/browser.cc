@@ -577,6 +577,7 @@ Browser::~Browser() {
   // The tab strip should not have any tabs at this point.
   //
   // TODO(crbug.com/1407055): This DCHECK doesn't always pass.
+  // TODO(crbug.com/1434387): convert this to CHECK.
   DCHECK(tab_strip_model_->empty());
 
   // Destroy the BrowserCommandController before removing the browser, so that
@@ -1309,6 +1310,7 @@ void Browser::TabStripEmpty() {
   // immediately deletes, where was Close() is a hide, and then delete after
   // posting a task.
   window_->Close();
+  is_delete_scheduled_ = true;
 
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.
@@ -2395,6 +2397,14 @@ void Browser::OnTranslateEnabledChanged(content::WebContents* source) {
 // Browser, Command and state updating (private):
 
 void Browser::OnTabInsertedAt(WebContents* contents, int index) {
+  // If this Browser is about to be deleted, then WebContents should not be
+  // added to it. This is because scheduling the delete can not be undone, and
+  // proper cleanup is not done if a WebContents is added once delete it
+  // scheduled (WebContents is leaked, unload handlers aren't checked...).
+  // TODO(crbug.com/1434387): this should check that `is_delete_scheduled_` is
+  // false.
+  DUMP_WILL_BE_CHECK(!is_delete_scheduled_);
+
   SetAsDelegate(contents, true);
 
   sessions::SessionTabHelper::FromWebContents(contents)->SetWindowID(

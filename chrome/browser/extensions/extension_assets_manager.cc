@@ -42,10 +42,11 @@ class ExtensionAssetsManagerImpl :  public ExtensionAssetsManager {
 
   void UninstallExtension(const std::string& id,
                           const std::string& profile_user_name,
-                          const base::FilePath& local_install_dir,
-                          const base::FilePath& extension_root,
+                          const base::FilePath& extensions_install_dir,
+                          const base::FilePath& extension_dir_to_delete,
                           const base::FilePath& profile_dir) override {
-    file_util::UninstallExtension(profile_dir, local_install_dir, id);
+    file_util::UninstallExtension(profile_dir, extensions_install_dir,
+                                  extension_dir_to_delete);
   }
 
  private:

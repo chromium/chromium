@@ -34,7 +34,7 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
           network::TestNetworkConnectionTracker::CreateGetter())) {
   auto mock_client = std::make_unique<::policy::MockCloudPolicyClient>();
   mock_client->SetDMToken(
-      ::policy::DMToken::CreateValidToken("FAKE_DM_TOKEN").value());
+      ::policy::DMToken::CreateValidToken(kFakeDmToken).value());
   auto service = std::make_unique<::policy::MockCloudPolicyService>(
       mock_client.get(), store_.get());
   GetInstance()->core_ = core_.get();

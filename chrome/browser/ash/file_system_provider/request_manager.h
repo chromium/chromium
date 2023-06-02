@@ -25,28 +25,37 @@ namespace ash {
 namespace file_system_provider {
 
 // Request type, passed to RequestManager::CreateRequest. For logging purposes.
-enum RequestType {
-  REQUEST_MOUNT,
-  REQUEST_UNMOUNT,
-  GET_METADATA,
-  GET_ACTIONS,
-  EXECUTE_ACTION,
-  READ_DIRECTORY,
-  OPEN_FILE,
-  CLOSE_FILE,
-  READ_FILE,
-  CREATE_DIRECTORY,
-  DELETE_ENTRY,
-  CREATE_FILE,
-  COPY_ENTRY,
-  MOVE_ENTRY,
-  TRUNCATE,
-  WRITE_FILE,
-  ABORT,
-  ADD_WATCHER,
-  REMOVE_WATCHER,
-  CONFIGURE,
-  TESTING
+enum class RequestType {
+  kAbort,
+  kAddWatcher,
+  kCloseFile,
+  kConfigure,
+  kCopyEntry,
+  kCreateDirectory,
+  kCreateFile,
+  kDeleteEntry,
+  kExecuteAction,
+  kGetActions,
+  kGetMetadata,
+  kMount,
+  kMoveEntry,
+  kOpenFile,
+  kReadDirectory,
+  kReadFile,
+  kRemoveWatcher,
+  kTruncate,
+  kUnmount,
+  kWriteFile,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OperationCompletion {
+  kCompletedNormally = 0,
+  kCompletedAfterWarning = 1,
+  kAbortedFromNotification = 2,
+  kAbortedInternally = 3,
+  kMaxValue = kAbortedInternally,
 };
 
 // Manages requests between the service, async utils and the providing
@@ -91,7 +100,8 @@ class RequestManager {
     virtual void OnRequestCreated(int request_id, RequestType type) = 0;
 
     // Called when the request is destroyed.
-    virtual void OnRequestDestroyed(int request_id) = 0;
+    virtual void OnRequestDestroyed(int request_id,
+                                    OperationCompletion completion) = 0;
 
     // Called when the request is executed.
     virtual void OnRequestExecuted(int request_id) = 0;
@@ -106,8 +116,8 @@ class RequestManager {
                                    const RequestValue& result,
                                    base::File::Error error) = 0;
 
-    // Called when the request is timeouted.
-    virtual void OnRequestTimeouted(int request_id) = 0;
+    // Called when the request is timed out.
+    virtual void OnRequestTimedOut(int request_id) = 0;
   };
 
   RequestManager(Profile* profile,
@@ -152,7 +162,7 @@ class RequestManager {
   void RemoveObserver(Observer* observer);
 
   // Destroys the request with the passed |request_id|.
-  void DestroyRequest(int request_id);
+  void DestroyRequest(int request_id, OperationCompletion completion);
 
  protected:
   struct Request {
@@ -168,6 +178,10 @@ class RequestManager {
 
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
+
+    // Indicates if this operation timed out and a warning has been shown to the
+    // user.
+    bool shown_unresponsive_notification = false;
   };
 
   // Called when a request with |request_id| timeouts.
@@ -181,6 +195,12 @@ class RequestManager {
 
   // Resets the timeout timer for the specified request.
   void ResetTimer(int request_id);
+
+  // Reject a request specifying how it was completed.
+  base::File::Error RejectRequestInternal(int request_id,
+                                          const RequestValue& response,
+                                          base::File::Error error,
+                                          OperationCompletion completion);
 
   raw_ptr<Profile> profile_;  // Not owned.
   std::map<int, std::unique_ptr<Request>> requests_;

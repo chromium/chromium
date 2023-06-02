@@ -7,7 +7,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -27,10 +26,7 @@ def CheckRunTypescriptTests(input_api, output_api):
   presubmit_path = input_api.PresubmitLocalPath()
   sources = ['ts_library_test.py']
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
-  return input_api.canned_checks.RunUnitTests(input_api,
-                                              output_api,
-                                              tests,
-                                              run_on_python2=False)
+  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
 
 def CheckStyleESLint(input_api, output_api):

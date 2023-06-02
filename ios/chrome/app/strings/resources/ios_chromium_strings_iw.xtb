@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
 <translation id="1722370509450468186">הסיסמה שלך תישמר בחשבון (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">‏נתוני Chromium נמחקו</translation>
-<translation id="177102542580335555">‏יש לך אבטחה ברמה רגילה לפרופיל Chromium הזה</translation>
 <translation id="1838412507805038478">‏Chromium אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="1843424232666537147">‏Chromium כולל תכונות שעוזרות לך לנהל את נתוני האינטרנט ואת המהירות שבה אפשר לטעון דפים.
 <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium.</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3650632991272923014">‏במכשיר הזה נעשה שימוש ב‑Chromium על ידי <ph name="USER_EMAIL1" /> ונשארו סימניות, סיסמאות והגדרות נוספות.</translation>
+<translation id="3661862315467204831">‏פותחים את הגדרות Chromium ב-iOS, מקישים על 'אפליקציית ברירת מחדל לדפדפן' ובוחרים ב-Chromium.</translation>
 <translation id="372658070733623520">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
+<translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="3955621079070267756">‏פתיחת Chromium מכל אפליקציה</translation>
 <translation id="4043291146360695975">סיסמאות נשמרות במנהל הסיסמאות במכשיר הזה בלבד.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>

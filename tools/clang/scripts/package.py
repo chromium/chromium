@@ -208,7 +208,7 @@ def main():
         '--no-git',  # Just run locally, don't upload anything.
         '--clang-git-hash=' + args.revision
     ]
-    subprocess.call(cmd)
+    subprocess.run(cmd, check=True)
 
   # This needs to happen after upload_revision.py modifies update.py.
   from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE
@@ -371,9 +371,10 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.builtins-i686-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
 
-        # Builtins for Lacros (and potentially Linux, but not used there atm).
+        # Builtins for Linux and Lacros.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.builtins.a',
+        'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a',
 
         # crtstart/crtend for Linux and Lacros.
@@ -435,31 +436,39 @@ def main():
     ])
   elif sys.platform == 'win32':
     want.extend([
-      # AddressSanitizer C runtime (pure C won't link with *_cxx).
-      'lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib',
+        # pylint: disable=line-too-long
 
-      # AddressSanitizer C++ runtime.
-      'lib/clang/$V/lib/windows/clang_rt.asan_cxx-x86_64.lib',
+        # AddressSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib',
 
-      # Thunk for AddressSanitizer needed for static build of a shared lib.
-      'lib/clang/$V/lib/windows/clang_rt.asan_dll_thunk-x86_64.lib',
+        # AddressSanitizer C++ runtime.
+        'lib/clang/$V/lib/windows/clang_rt.asan_cxx-x86_64.lib',
 
-      # AddressSanitizer runtime for component build.
-      'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll',
-      'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib',
+        # Thunk for AddressSanitizer needed for static build of a shared lib.
+        'lib/clang/$V/lib/windows/clang_rt.asan_dll_thunk-x86_64.lib',
 
-      # Thunk for AddressSanitizer for component build of a shared lib.
-      'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib',
+        # AddressSanitizer runtime for component build.
+        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll',
+        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib',
 
-      # Profile runtime (used by profiler and code coverage).
-      'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
-      'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
+        # Thunk for AddressSanitizer for component build of a shared lib.
+        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib',
 
-      # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
-      'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
+        # Builtins for C/C++.
+        'lib/clang/$V/lib/windows/clang_rt.builtins-i386.lib',
+        'lib/clang/$V/lib/windows/clang_rt.builtins-x86_64.lib',
 
-      # UndefinedBehaviorSanitizer C++ runtime.
-      'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
+        # Profile runtime (used by profiler and code coverage).
+        'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
+        'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
+
+        # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
+
+        # UndefinedBehaviorSanitizer C++ runtime.
+        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
+
+        # pylint: enable=line-too-long
     ])
 
   # reclient is a tool for executing programs remotely. When uploading the

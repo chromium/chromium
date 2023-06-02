@@ -106,13 +106,6 @@ class AutofillSuggestionGenerator {
   // one copy has a nickname, take that.
   std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
-  // Methods for packing and unpacking credit card and profile IDs for sending
-  // and receiving to and from the renderer process.
-  Suggestion::FrontendId MakeFrontendIdFromBackendId(
-      const Suggestion::BackendId& cc_or_address_backend_id);
-  Suggestion::BackendId GetBackendIdFromFrontendId(
-      Suggestion::FrontendId frontend_id);
-
   // Helper function to decide whether to show the virtual card option for
   // `candidate_card`.
   bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
@@ -122,14 +115,6 @@ class AutofillSuggestionGenerator {
   // nullptr is returned.
   const CreditCard* GetServerCardForLocalCard(
       const CreditCard* local_card) const;
-
-  // Used for the testing purposes.
-  std::map<Suggestion::BackendId, int>& backend_to_frontend_map_for_testing() {
-    return backend_to_frontend_map_;
-  }
-  std::map<int, Suggestion::BackendId>& frontend_to_backend_map_for_testing() {
-    return frontend_to_backend_map_;
-  }
 
  protected:
   // Creates a suggestion for the given `credit_card`. `type` denotes the
@@ -179,11 +164,6 @@ class AutofillSuggestionGenerator {
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.
   bool ShouldShowVirtualCardOptionForServerCard(const CreditCard* card) const;
-
-  // Suggestion backend ID to frontend ID mapping. We keep two maps to convert
-  // back and forth.
-  std::map<Suggestion::BackendId, int> backend_to_frontend_map_;
-  std::map<int, Suggestion::BackendId> frontend_to_backend_map_;
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.

@@ -37,7 +37,8 @@ class TestMessageView : public MessageView {
   }
 
  private:
-  raw_ptr<NotificationControlButtonsView> buttons_view_ = nullptr;
+  raw_ptr<NotificationControlButtonsView, DanglingUntriaged> buttons_view_ =
+      nullptr;
 };
 
 }  // namespace

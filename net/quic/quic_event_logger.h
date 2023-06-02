@@ -70,7 +70,6 @@ class NET_EXPORT_PRIVATE QuicEventLogger
       const quic::QuicStreamsBlockedFrame& frame) override;
   void OnMaxStreamsFrame(const quic::QuicMaxStreamsFrame& frame) override;
   void OnStreamFrame(const quic::QuicStreamFrame& frame) override;
-  void OnStopWaitingFrame(const quic::QuicStopWaitingFrame& frame) override;
   void OnRstStreamFrame(const quic::QuicRstStreamFrame& frame) override;
   void OnConnectionCloseFrame(
       const quic::QuicConnectionCloseFrame& frame) override;
@@ -90,7 +89,6 @@ class NET_EXPORT_PRIVATE QuicEventLogger
   void OnHandshakeDoneFrame(const quic::QuicHandshakeDoneFrame& frame) override;
   void OnCoalescedPacketSent(const quic::QuicCoalescedPacket& coalesced_packet,
                              size_t length) override;
-  void OnPublicResetPacket(const quic::QuicPublicResetPacket& packet) override;
   void OnVersionNegotiationPacket(
       const quic::QuicVersionNegotiationPacket& packet) override;
   void OnConnectionClosed(const quic::QuicConnectionCloseFrame& frame,

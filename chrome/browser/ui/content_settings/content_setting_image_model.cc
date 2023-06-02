@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -112,15 +113,9 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
   bool IsGeolocationAllowedOnASystemLevel();
   bool IsGeolocationPermissionDetermined();
 
-  void AppCeasesToUseGeolocation();
-  void AppAttemptsToUseGeolocation();
-
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
-
- private:
-  bool active_ = false;
 };
 
 class ContentSettingRPHImageModel : public ContentSettingSimpleImageModel {
@@ -252,7 +247,9 @@ namespace {
 
 struct ContentSettingsImageDetails {
   ContentSettingsType content_type;
-  const gfx::VectorIcon& icon;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
   int blocked_tooltip_id;
   int blocked_explanatory_text_id;
   int accessed_tooltip_id;
@@ -522,9 +519,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
     : ContentSettingImageModel(ImageType::GEOLOCATION, kNotifyAccessibility) {}
 
-ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() {
-  AppCeasesToUseGeolocation();
-}
+ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() {}
 
 bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -533,7 +528,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
           web_contents->GetPrimaryMainFrame());
   set_should_auto_open_bubble(false);
   if (!content_settings) {
-    AppCeasesToUseGeolocation();
     return false;
   }
 
@@ -543,7 +537,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
       content_settings->IsContentBlocked(ContentSettingsType::GEOLOCATION);
 
   if (!is_allowed && !is_blocked) {
-    AppCeasesToUseGeolocation();
     return false;
   }
 
@@ -595,7 +588,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
         set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
 #endif  // BUILDFLAG(IS_MAC)
       }
-      AppAttemptsToUseGeolocation();
       return true;
     }
   }
@@ -607,7 +599,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   set_tooltip(l10n_util::GetStringUTF16(message_id));
   set_accessibility_string_id(message_id);
 
-  AppAttemptsToUseGeolocation();
   return true;
 }
 
@@ -616,7 +607,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
   return true;
 #else
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->geolocation_manager();
+      device::GeolocationManager::GetInstance();
   CHECK(geolocation_manager);
   device::LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
@@ -631,37 +622,13 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
 #else
 
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->geolocation_manager();
+      device::GeolocationManager::GetInstance();
   CHECK(geolocation_manager);
   device::LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
 
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 #endif
-}
-
-void ContentSettingGeolocationImageModel::AppAttemptsToUseGeolocation() {
-  if (!active_) {
-    active_ = true;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    device::GeolocationManager* geolocation_manager =
-        g_browser_process->geolocation_manager();
-    CHECK(geolocation_manager);
-    geolocation_manager->AppAttemptsToUseGeolocation();
-#endif
-  }
-}
-
-void ContentSettingGeolocationImageModel::AppCeasesToUseGeolocation() {
-  if (active_) {
-    active_ = false;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    device::GeolocationManager* geolocation_manager =
-        g_browser_process->geolocation_manager();
-    CHECK(geolocation_manager);
-    geolocation_manager->AppCeasesToUseGeolocation();
-#endif
-  }
 }
 
 std::unique_ptr<ContentSettingBubbleModel>

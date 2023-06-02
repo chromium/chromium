@@ -146,9 +146,7 @@ class ASH_EXPORT ContentsView : public views::View,
 
   // Returns the pagination model for the ContentsView.
   const PaginationModel& pagination_model() { return pagination_model_; }
-  raw_ptr<PaginationModel> pagination_model_for_testing() {
-    return &pagination_model_;
-  }
+  PaginationModel* pagination_model_for_testing() { return &pagination_model_; }
 
   // Returns the search box bounds to use for a given app list (pagination)
   // state (in the current app list view state).

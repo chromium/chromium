@@ -102,6 +102,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/button_drag_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -192,6 +193,12 @@ OmniboxViewViews::OmniboxViewViews(
     pref_change_registrar_.Add(
         omnibox::kPreventUrlElisionsInOmnibox,
         base::BindRepeating(&OmniboxViewViews::Update, base::Unretained(this)));
+  }
+
+  if (features::IsChromeRefresh2023()) {
+    // Remove the default textfield hover effect. Omnibox has a custom hover
+    // effect over the entire location bar.
+    RemoveHoverEffect();
   }
 
   // Sometimes there are additional ignored views, such as a View representing
@@ -1947,10 +1954,9 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
 
   menu_contents->InsertItemAt(
       index, IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
+      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
 #if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(
-      index, ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));
+  menu_contents->SetIcon(index, ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }

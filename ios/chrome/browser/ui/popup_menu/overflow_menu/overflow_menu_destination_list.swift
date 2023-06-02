@@ -50,6 +50,19 @@ struct OverflowMenuDestinationList: View {
     }
   }
 
+  /// `PreferenceKey` to track the highlighted destination's bounds in its local coordinate space,
+  /// can be transformed to other coordinate space by geometry reader.
+  struct HighlightedDestinationBounds: PreferenceKey {
+    typealias Value = Anchor<CGRect>?
+    static var defaultValue: Value = nil
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+      // AnchorPreference might be nil in the middle of layout.
+      if let next = nextValue() {
+        value = next
+      }
+    }
+  }
+
   /// The current dynamic type size.
   @Environment(\.sizeCategory) var sizeCategory
 
@@ -118,6 +131,7 @@ struct OverflowMenuDestinationList: View {
             ForEach(destinations) { destination in
               OverflowMenuDestinationView(
                 destination: destination, layoutParameters: layoutParameters,
+                highlighted: uiConfiguration.highlightDestination == destination.destination,
                 metricsHandler: metricsHandler
               ).id(destination.destination)
             }
@@ -137,7 +151,9 @@ struct OverflowMenuDestinationList: View {
         }
       }
       .onAppear {
-        if layoutDirection == .rightToLeft {
+        if destinations.map(\.destination).contains(uiConfiguration.highlightDestination) {
+          proxy.scrollTo(uiConfiguration.highlightDestination)
+        } else if layoutDirection == .rightToLeft {
           proxy.scrollTo(destinations.first?.destination)
         }
         uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)

@@ -216,7 +216,8 @@ class SyncEngineInitializerTest : public testing::Test {
   std::unique_ptr<MetadataDatabase> metadata_database_;
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
   std::unique_ptr<SyncEngineContext> sync_context_;
-  raw_ptr<drive::FakeDriveService> fake_drive_service_ = nullptr;
+  raw_ptr<drive::FakeDriveService, DanglingUntriaged> fake_drive_service_ =
+      nullptr;
 };
 
 TEST_F(SyncEngineInitializerTest, EmptyDatabase_NoRemoteSyncRoot) {

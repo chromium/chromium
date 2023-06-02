@@ -130,12 +130,15 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // Returns the allowlist match result previously set by
   // |SetAllowlistResultForUrl|. It crashes if the allowlist match result for
   // the |gurl| is not set in advance.
-  bool CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
-      const std::string& metric_variation) override {
+      const std::string& metric_variation,
+      base::OnceCallback<void(bool)> callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
-    return urls_allowlist_match_[url];
+    sb_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
   }
 
   // Helper functions.
@@ -226,13 +229,16 @@ class HashRealTimeMechanismTest : public PlatformTest {
   std::unique_ptr<MockHashRealTimeService> hash_rt_service_;
 };
 
-MATCHER_P4(Matches,
+MATCHER_P5(Matches,
            url,
            threat_type,
+           matched_high_confidence_allowlist,
            locally_cached_results_threat_type,
            real_time_request_failed,
            "") {
   return arg->url.spec() == url.spec() && arg->threat_type == threat_type &&
+         arg->matched_high_confidence_allowlist ==
+             matched_high_confidence_allowlist &&
          arg->locally_cached_results_threat_type ==
              locally_cached_results_threat_type &&
          arg->real_time_request_failed == real_time_request_failed &&
@@ -251,10 +257,10 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
   auto result = mechanism->StartCheck(callback.Get());
   EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, true);
 
   EXPECT_CALL(callback,
               Run(Matches(url, SB_THREAT_TYPE_SAFE,
+                          /*matched_high_confidence_allowlist*/ true,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
                           /*real_time_request_failed=*/false)))
       .Times(1);
@@ -272,10 +278,10 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
   auto result = mechanism->StartCheck(callback.Get());
   EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, true);
 
   EXPECT_CALL(callback,
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
+                          /*matched_high_confidence_allowlist*/ true,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
                           /*real_time_request_failed=*/false)))
       .Times(1);
@@ -294,11 +300,11 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
   auto result = mechanism->StartCheck(callback.Get());
   EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, false);
 
   EXPECT_CALL(
       callback,
       Run(Matches(url, SB_THREAT_TYPE_SAFE,
+                  /*matched_high_confidence_allowlist*/ false,
                   /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
                   /*real_time_request_failed=*/false)))
       .Times(1);
@@ -317,12 +323,12 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
   auto result = mechanism->StartCheck(callback.Get());
   EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, false);
 
   EXPECT_CALL(
       callback,
       Run(Matches(
           url, SB_THREAT_TYPE_URL_PHISHING,
+          /*matched_high_confidence_allowlist*/ false,
           /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED,
           /*real_time_request_failed=*/false)))
       .Times(1);
@@ -341,10 +347,10 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
   auto result = mechanism->StartCheck(callback.Get());
   EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, false);
 
   EXPECT_CALL(callback,
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
+                          /*matched_high_confidence_allowlist*/ false,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
                           /*real_time_request_failed=*/true)))
       .Times(1);
@@ -365,10 +371,10 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
   auto result = mechanism->StartCheck(callback.Get());
   EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, false);
 
   EXPECT_CALL(callback,
               Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING,
+                          /*matched_high_confidence_allowlist*/ false,
                           /*locally_cached_results_threat_type=*/absl::nullopt,
                           /*real_time_request_failed=*/true)))
       .Times(1);

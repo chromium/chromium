@@ -9,12 +9,6 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 
-namespace web {
-class WebState;
-}
-
-@class CardSideSwipeView;
-@class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabStripHighlighting;

@@ -540,6 +540,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 bool PasswordAutofillManager::GetDeletionConfirmationText(
     const std::u16string& value,
     autofill::Suggestion::FrontendId frontend_id,
+    autofill::Suggestion::BackendId backend_id,
     std::u16string* title,
     std::u16string* body) {
   return false;
@@ -547,7 +548,8 @@ bool PasswordAutofillManager::GetDeletionConfirmationText(
 
 bool PasswordAutofillManager::RemoveSuggestion(
     const std::u16string& value,
-    autofill::Suggestion::FrontendId frontend_id) {
+    autofill::Suggestion::FrontendId frontend_id,
+    autofill::Suggestion::BackendId backend_id) {
   // Password suggestions cannot be deleted this way.
   // See http://crbug.com/329038#c15
   return false;

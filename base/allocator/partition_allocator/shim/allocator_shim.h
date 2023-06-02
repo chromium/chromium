@@ -9,9 +9,9 @@
 #include <stdint.h>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/types/strong_alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_export.h"
-#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
@@ -179,14 +179,19 @@ BASE_EXPORT void InitializeAllocatorShim();
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
-using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
-using EnableBrpPartitionMemoryReclaimer =
-    base::StrongAlias<class EnableBrpPartitionMemoryReclaimerTag, bool>;
-using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
-using UseDedicatedAlignedPartition =
-    base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
-using AlternateBucketDistribution =
-    base::features::AlternateBucketDistributionMode;
+using EnableBrp =
+    partition_alloc::internal::base::StrongAlias<class EnableBrpTag, bool>;
+using EnableBrpPartitionMemoryReclaimer = partition_alloc::internal::base::
+    StrongAlias<class EnableBrpPartitionMemoryReclaimerTag, bool>;
+using EnableMemoryTagging =
+    partition_alloc::internal::base::StrongAlias<class EnableMemoryTaggingTag,
+                                                 bool>;
+using SplitMainPartition =
+    partition_alloc::internal::base::StrongAlias<class SplitMainPartitionTag,
+                                                 bool>;
+using UseDedicatedAlignedPartition = partition_alloc::internal::base::
+    StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
+using AlternateBucketDistribution = base::features::BucketDistributionMode;
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
@@ -194,10 +199,13 @@ using AlternateBucketDistribution =
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
+    EnableMemoryTagging enable_memory_tagging,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     AlternateBucketDistribution use_alternate_bucket_distribution);
+
+BASE_EXPORT uint32_t GetMainPartitionRootExtrasSize();
 
 #if BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);

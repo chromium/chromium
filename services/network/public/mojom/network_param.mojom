@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/scheme_host_port.mojom";
 
 // Information related to an authentication challenge in an HTTP response.
@@ -74,12 +75,6 @@ struct ResolveErrorInfo {
   bool is_secure_network_error = false;
 };
 
-// Mirror of net::SSLClientCertType.
-enum SSLClientCertType {
-  kRsaSign = 1,
-  kEcdsaSign = 64,
-};
-
 // Mirror of net::SSLCertRequestInfo.
 struct SSLCertRequestInfo {
   // The host and port of the SSL server that requested client authentication.
@@ -92,7 +87,10 @@ struct SSLCertRequestInfo {
   // List of DER-encoded X.509 DistinguishedName of certificate authorities
   // allowed by the server.
   array<string> cert_authorities;
-  array<SSLClientCertType> cert_key_types;
+
+  // List of signature algorithms (using TLS 1.3 SignatureScheme constants)
+  // advertised as supported by the server.
+  array<uint16> signature_algorithms;
 };
 
 [Native]
@@ -100,3 +98,10 @@ struct SSLInfo;
 
 [Native]
 struct X509Certificate;
+
+// Typemapped to net::NetLogSource.
+struct NetLogSource {
+  uint32 source_type;
+  uint32 source_id;
+  mojo_base.mojom.TimeTicks start_time;
+};

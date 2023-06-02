@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.services;
 
-import org.chromium.android_webview.common.crash.CrashInfo;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.base.Log;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 

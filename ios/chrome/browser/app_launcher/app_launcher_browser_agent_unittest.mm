@@ -129,7 +129,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppStoreUrlShowsAlert) {
   // expecting that the application will open the URL.
   OCMExpect([application_ openURL:net::NSURLWithGURL(kAppStoreUrl)
                           options:@{}
-                completionHandler:nil]);
+                completionHandler:[OCMArg isNotNil]]);
   queue->CancelAllRequests();
 
   // Verify that the application attempts to open the URL.
@@ -168,7 +168,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppUrlLaunchesApp) {
   // the application will open the URL.
   OCMExpect([application_ openURL:net::NSURLWithGURL(kAppUrl)
                           options:@{}
-                completionHandler:nil]);
+                completionHandler:[OCMArg isNotNil]]);
   AppLauncherTabHelper::FromWebState(web_state)->RequestToLaunchApp(
       kAppUrl, kSourcePageUrl, /*link_transition=*/true);
 
@@ -204,7 +204,7 @@ TEST_F(AppLauncherBrowserAgentTest, RepeatedRequestShowsAlert) {
   // expecting that the application will open the URL.
   OCMExpect([application_ openURL:net::NSURLWithGURL(kAppUrl)
                           options:@{}
-                completionHandler:nil]);
+                completionHandler:[OCMArg isNotNil]]);
   queue->CancelAllRequests();
 
   // Verify that the application attempts to open the URL.
@@ -236,7 +236,7 @@ TEST_F(AppLauncherBrowserAgentTest, AppUrlWithoutLinkShowsAlert) {
   // expecting that the application will open the URL.
   OCMExpect([application_ openURL:net::NSURLWithGURL(kAppUrl)
                           options:@{}
-                completionHandler:nil]);
+                completionHandler:[OCMArg isNotNil]]);
   queue->CancelAllRequests();
 
   // Verify that the application attempts to open the URL.

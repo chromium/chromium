@@ -1,0 +1,42 @@
+<style include="demo">
+  :host-context([chrome-refresh-2023]) .row:has(cr-toggle[dark]) {
+    display: none;
+  }
+</style>
+<h1>cr-toggle</h1>
+<div class="demos">
+  <div class="row">
+    <cr-toggle
+        aria-label="Label for toggle"
+        checked="{{checked_}}">
+    </cr-toggle>
+    <span aria-hidden="true">Label for toggle</span>
+    <span>
+      Checked? [[checked_]]
+    </span>
+  </div>
+
+  <div class="row">
+    <cr-toggle aria-label="Disabled checked toggle" disabled checked>
+    </cr-toggle>
+    <span aria-hidden="true">Disabled checked toggle</span>
+  </div>
+
+  <div class="row">
+    <cr-toggle aria-label="Disabled unchecked toggle" disabled>
+    </cr-toggle>
+    <span aria-hidden="true">Disabled unchecked toggle</span>
+  </div>
+
+  <div class="row">
+    <cr-toggle
+        aria-label="Dark mode toggle"
+        aria-describedby="description"
+        dark>
+    </cr-toggle>
+    <div>
+      <div aria-hidden="true">Dark mode toggle</div>
+      <div id="description"> This toggle has dark mode forced on.</div>
+    </div>
+  </div>
+</div>

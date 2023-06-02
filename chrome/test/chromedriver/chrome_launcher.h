@@ -22,11 +22,9 @@ class FilePath;
 enum TerminationStatus;
 }  // namespace base
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class URLLoaderFactory;
-}
-}  // namespace network
+}  // namespace network::mojom
 
 class Chrome;
 class DeviceManager;

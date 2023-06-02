@@ -4,12 +4,12 @@
 
 package org.chromium.net.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.assertContains;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.os.ConditionVariable;
@@ -310,7 +310,7 @@ public class FakeUrlRequestTest {
         request.cancel();
         callback.waitForNextStep();
         assertEquals(ResponseStep.ON_CANCELED, callback.mResponseStep);
-        assertTrue(callback.mResponseAsString.isEmpty());
+        assertThat(callback.mResponseAsString).isEmpty();
     }
 
     @Test
@@ -367,7 +367,7 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
 
         // Verify response from redirected URL is returned.
-        assertTrue(Objects.equals(callback.mResponseAsString, redirectText));
+        assertThat(callback.mResponseAsString).isEqualTo(redirectText);
     }
 
     @Test
@@ -688,8 +688,10 @@ public class FakeUrlRequestTest {
 
         assertEquals(ResponseStep.ON_FAILED, callback.mResponseStep);
         // Checks that the exception from {@link DirectPreventingExecutor} was successfully returned
-        // to the callabck in the onFailed method.
-        assertTrue(callback.mError.getCause() instanceof InlineExecutionProhibitedException);
+        // to the callback in the onFailed method.
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .isInstanceOf(InlineExecutionProhibitedException.class);
     }
 
     @Test
@@ -911,7 +913,7 @@ public class FakeUrlRequestTest {
         builder.build().start();
         callback.blockForDone();
 
-        assertNotNull(callback.mResponseInfo);
+        assertThat(callback.mResponseInfo).isNotNull();
         assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
         assertEquals("", callback.mResponseAsString);
         dataProvider.assertClosed();
@@ -1221,9 +1223,13 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Read upload data length 2 exceeds expected length 1",
-                callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Read upload data length 2 exceeds expected length 1");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1256,9 +1262,13 @@ public class FakeUrlRequestTest {
         builder.build().start();
         callback.blockForDone();
         dataProvider.assertClosed();
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Read upload data length 8192 exceeds expected length 8191",
-                callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Read upload data length 8192 exceeds expected length 8191");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1287,8 +1297,10 @@ public class FakeUrlRequestTest {
         assertEquals(0, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Sync length failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync length failure");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1318,8 +1330,10 @@ public class FakeUrlRequestTest {
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Sync read failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync read failure");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1349,8 +1363,10 @@ public class FakeUrlRequestTest {
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Async read failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Async read failure");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1379,8 +1395,10 @@ public class FakeUrlRequestTest {
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Thrown read failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Thrown read failure");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1414,9 +1432,13 @@ public class FakeUrlRequestTest {
         assertEquals(0, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Inline execution is prohibited for this request",
-                callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Inline execution is prohibited for this request");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1450,9 +1472,11 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
-        assertContains("Exception posting task to executor", callback.mError.getMessage());
-        assertContains("Inline execution is prohibited for this request",
-                callback.mError.getCause().getMessage());
+        assertThat(callback.mError).hasMessageThat().contains("Exception posting task to executor");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Inline execution is prohibited for this request");
         assertEquals(null, callback.mResponseInfo);
         dataProvider.assertClosed();
     }
@@ -1513,8 +1537,10 @@ public class FakeUrlRequestTest {
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(1, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Sync rewind failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync rewind failure");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1543,8 +1569,13 @@ public class FakeUrlRequestTest {
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(1, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Async rewind failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Async rewind failure");
         assertEquals(null, callback.mResponseInfo);
     }
 
@@ -1573,8 +1604,13 @@ public class FakeUrlRequestTest {
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(1, dataProvider.getNumRewindCalls());
 
-        assertContains("Exception received from UploadDataProvider", callback.mError.getMessage());
-        assertContains("Thrown rewind failure", callback.mError.getCause().getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Thrown rewind failure");
         assertEquals(null, callback.mResponseInfo);
     }
 

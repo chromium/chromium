@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="1722370509450468186">Parolunuz Hesabınızda (<ph name="EMAIL" />) saxlanacaq.</translation>
 <translation id="1736662517232558588">Təmizlənmiş Chromium datası</translation>
-<translation id="177102542580335555">Bu Chromium profili üçün standart qoruma əldə edirsiniz</translation>
 <translation id="1838412507805038478">Chromium təsdiq edir ki, <ph name="ISSUER" /> bu veb saytı sertifikatlaşdırıb.</translation>
 <translation id="1843424232666537147">Chromium 'un funksiyaları internet datanızı idarə etməyə və veb səhifələri tez yükləməyə kömək edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromium'dan maksimum yararlanmaq üçün Google Hesabınızla Chromium'a daxil olun.</translation>
 <translation id="3639997914391704523">Google Hesabınız ilə daxil olduqda Chromium parollarınızı yoxlaya bilər.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> bu cihazda Chromium istifadə edirdi və əlfəcinlər, parollar və digər ayarlar qalıb.</translation>
+<translation id="3661862315467204831">iOS-da Chromium ayarlarını açın, sonra "Defolt Brauzer TƏTBİQİ" üzərinə toxunun və Chromium seçin.</translation>
 <translation id="372658070733623520">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün kimliyinizi təsdiq edin.</translation>
 <translation id="3805899903892079518">Chromium məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
+<translation id="3827545470516145620">Bu cihazda standart təhlükəsizlik qoruması əldə edirsiniz</translation>
 <translation id="3955621079070267756">Chromium-u istənilən tətbiqdən açın</translation>
 <translation id="4043291146360695975">Parollar yalnız bu cihazda Parol Menecerində saxlanılır.</translation>
 <translation id="4099085513035183040">Chromium Beta'da dəstəklənmir</translation>

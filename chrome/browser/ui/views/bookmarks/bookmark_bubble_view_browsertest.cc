@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +16,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -28,15 +28,16 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
+class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
  public:
-  BookmarkBubbleViewBrowserTest() {
-    test_features_.InitAndEnableFeature(commerce::kShoppingList);
-  }
+  BaseBookmarkBubbleViewBrowserTest() = default;
 
-  BookmarkBubbleViewBrowserTest(const BookmarkBubbleViewBrowserTest&) = delete;
-  BookmarkBubbleViewBrowserTest& operator=(
-      const BookmarkBubbleViewBrowserTest&) = delete;
+  BaseBookmarkBubbleViewBrowserTest(const BaseBookmarkBubbleViewBrowserTest&) =
+      delete;
+  BaseBookmarkBubbleViewBrowserTest& operator=(
+      const BaseBookmarkBubbleViewBrowserTest&) = delete;
+
+  ~BaseBookmarkBubbleViewBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     auto* helper = commerce::ShoppingListUiTabHelper::FromWebContents(
@@ -102,10 +103,41 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     }
   }
 
+ protected:
+  base::test::ScopedFeatureList test_features_;
+
  private:
   raw_ptr<commerce::MockShoppingService, DanglingUntriaged>
       mock_shopping_service_;
-  base::test::ScopedFeatureList test_features_;
+};
+
+class BookmarkBubbleViewBrowserTest : public BaseBookmarkBubbleViewBrowserTest {
+ public:
+  BookmarkBubbleViewBrowserTest() {
+    test_features_.InitAndEnableFeature(commerce::kShoppingList);
+  }
+
+  BookmarkBubbleViewBrowserTest(const BookmarkBubbleViewBrowserTest&) = delete;
+  BookmarkBubbleViewBrowserTest& operator=(
+      const BookmarkBubbleViewBrowserTest&) = delete;
+
+  ~BookmarkBubbleViewBrowserTest() override = default;
+};
+
+class PowerBookmarkBubbleViewBrowserTest
+    : public BaseBookmarkBubbleViewBrowserTest {
+ public:
+  PowerBookmarkBubbleViewBrowserTest() {
+    test_features_.InitWithFeatures(
+        {commerce::kShoppingList, features::kPowerBookmarksSidePanel}, {});
+  }
+
+  PowerBookmarkBubbleViewBrowserTest(
+      const PowerBookmarkBubbleViewBrowserTest&) = delete;
+  PowerBookmarkBubbleViewBrowserTest& operator=(
+      const PowerBookmarkBubbleViewBrowserTest&) = delete;
+
+  ~PowerBookmarkBubbleViewBrowserTest() override = default;
 };
 
 // Ash always has sync ON
@@ -122,6 +154,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
+                       InvokeUi_bookmark_details_on_trackable_product) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PowerBookmarkBubbleViewBrowserTest,
                        InvokeUi_bookmark_details_on_trackable_product) {
   ShowAndVerifyUi();
 }

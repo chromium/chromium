@@ -38,8 +38,6 @@ import java.util.Arrays;
  * the rest of Chrome.
  */
 public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
-    private final Context mContext;
-
     /** The delegate for accessing the location bar for observation and modification. */
     private final UrlBarDelegate mUrlBarDelegate;
 
@@ -60,7 +58,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
         super(context, suggestionHost, faviconFetcher);
 
-        mContext = context;
         mUrlBarDelegate = locationBarDelegate;
         mTabSupplier = tabSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -110,36 +107,35 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                 new SuggestionSpannable(suggestion.getDisplayText()));
 
         setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder
-                        .forDrawableRes(getContext(), R.drawable.ic_globe_24dp)
+                SuggestionDrawableState.Builder.forDrawableRes(mContext, R.drawable.ic_globe_24dp)
                         .setAllowTint(true)
                         .build());
 
         setActionButtons(model,
-                Arrays.asList(new Action(SuggestionDrawableState.Builder
-                                                 .forDrawableRes(getContext(),
-                                                         R.drawable.ic_share_white_24dp)
-                                                 .setLarge(true)
-                                                 .setAllowTint(true)
-                                                 .build(),
-                                      OmniboxResourceProvider.getString(
-                                              mContext, R.string.menu_share_page),
-                                      null, this::onShareLink),
+                Arrays.asList(
                         new Action(SuggestionDrawableState.Builder
-                                           .forDrawableRes(
-                                                   getContext(), R.drawable.ic_content_copy_black)
+                                           .forDrawableRes(mContext, R.drawable.ic_share_white_24dp)
                                            .setLarge(true)
                                            .setAllowTint(true)
                                            .build(),
+                                OmniboxResourceProvider.getString(
+                                        mContext, R.string.menu_share_page),
+                                null, this::onShareLink),
+                        new Action(
+                                SuggestionDrawableState.Builder
+                                        .forDrawableRes(mContext, R.drawable.ic_content_copy_black)
+                                        .setLarge(true)
+                                        .setAllowTint(true)
+                                        .build(),
                                 OmniboxResourceProvider.getString(mContext, R.string.copy_link),
                                 () -> onCopyLink(suggestion)),
                         // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
-                        new Action(SuggestionDrawableState.Builder
-                                           .forDrawableRes(
-                                                   getContext(), R.drawable.bookmark_edit_active)
-                                           .setLarge(true)
-                                           .setAllowTint(true)
-                                           .build(),
+                        new Action(
+                                SuggestionDrawableState.Builder
+                                        .forDrawableRes(mContext, R.drawable.bookmark_edit_active)
+                                        .setLarge(true)
+                                        .setAllowTint(true)
+                                        .build(),
                                 OmniboxResourceProvider.getString(
                                         mContext, R.string.bookmark_item_edit),
                                 () -> onEditLink(suggestion))));

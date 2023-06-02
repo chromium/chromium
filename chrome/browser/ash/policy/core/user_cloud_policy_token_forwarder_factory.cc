@@ -15,7 +15,8 @@ namespace policy {
 // static
 UserCloudPolicyTokenForwarderFactory*
 UserCloudPolicyTokenForwarderFactory::GetInstance() {
-  return base::Singleton<UserCloudPolicyTokenForwarderFactory>::get();
+  static base::NoDestructor<UserCloudPolicyTokenForwarderFactory> instance;
+  return instance.get();
 }
 
 UserCloudPolicyTokenForwarderFactory::UserCloudPolicyTokenForwarderFactory()
@@ -30,7 +31,8 @@ UserCloudPolicyTokenForwarderFactory::UserCloudPolicyTokenForwarderFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-UserCloudPolicyTokenForwarderFactory::~UserCloudPolicyTokenForwarderFactory() {}
+UserCloudPolicyTokenForwarderFactory::~UserCloudPolicyTokenForwarderFactory() =
+    default;
 
 KeyedService* UserCloudPolicyTokenForwarderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

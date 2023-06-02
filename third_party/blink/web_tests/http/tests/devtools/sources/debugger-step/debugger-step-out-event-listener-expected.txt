@@ -2,51 +2,51 @@ Tests that stepping out of an event listener will lead to a pause in the next ev
 
 Set timer for test function.
 Call stack:
-    0) inner (debugger-step-out-event-listener.js:33)
-    1) testFunction (debugger-step-out-event-listener.js:39)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepInto...
-Executing StepInto...
-Executing StepInto...
-Call stack:
-    0) fooEventHandler1 (debugger-step-out-event-listener.js:22)
-    1) inner (debugger-step-out-event-listener.js:34)
-    2) testFunction (debugger-step-out-event-listener.js:39)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
-    0) fooEventHandler2 (debugger-step-out-event-listener.js:26)
-    1) inner (debugger-step-out-event-listener.js:34)
-    2) testFunction (debugger-step-out-event-listener.js:39)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
     0) inner (debugger-step-out-event-listener.js:36)
-    1) testFunction (debugger-step-out-event-listener.js:39)
+    1) testFunction (debugger-step-out-event-listener.js:42)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepInto...
+Executing StepInto...
+Executing StepInto...
+Call stack:
+    0) fooEventHandler1 (debugger-step-out-event-listener.js:25)
+    1) inner (debugger-step-out-event-listener.js:37)
+    2) testFunction (debugger-step-out-event-listener.js:42)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) fooEventHandler2 (debugger-step-out-event-listener.js:29)
+    1) inner (debugger-step-out-event-listener.js:37)
+    2) testFunction (debugger-step-out-event-listener.js:42)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) inner (debugger-step-out-event-listener.js:39)
+    1) testFunction (debugger-step-out-event-listener.js:42)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Set timer for test function.
 Call stack:
-    0) inner (debugger-step-out-event-listener.js:33)
-    1) testFunction (debugger-step-out-event-listener.js:39)
+    0) inner (debugger-step-out-event-listener.js:36)
+    1) testFunction (debugger-step-out-event-listener.js:42)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepOut...
 Call stack:
-    0) testFunction (debugger-step-out-event-listener.js:40)
+    0) testFunction (debugger-step-out-event-listener.js:43)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

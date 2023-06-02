@@ -22,8 +22,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchGroup;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.GroupType;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
@@ -35,9 +34,7 @@ import org.chromium.chrome.test.util.browser.Features;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
 public final class AuxiliarySearchBridgeTest {
-    private static final String TAB_TITLE = "tab";
     private static final String BOOKMARK_TITLE = "bookmark";
-    private static final String TAB_URL = "https://tab.google.com";
     private static final String BOOKMARK_URL = "https://bookmark.google.com";
     private static final long FAKE_NATIVE_PROVIDER = 1;
 
@@ -74,14 +71,11 @@ public final class AuxiliarySearchBridgeTest {
     public void getSearchableDataTest() {
         doReturn(false).when(mProfile).isOffTheRecord();
 
-        var bookmark = AuxiliarySearchGroup.Entry.newBuilder()
+        var bookmark = AuxiliarySearchBookmarkGroup.Bookmark.newBuilder()
                                .setTitle(BOOKMARK_TITLE)
                                .setUrl(BOOKMARK_URL)
                                .build();
-        var proto = AuxiliarySearchGroup.newBuilder()
-                            .addEntry(bookmark)
-                            .setGroupType(GroupType.BOOKMARK_GROUP)
-                            .build();
+        var proto = AuxiliarySearchBookmarkGroup.newBuilder().addBookmark(bookmark).build();
 
         doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
         doReturn(proto.toByteArray())
@@ -91,11 +85,10 @@ public final class AuxiliarySearchBridgeTest {
         AuxiliarySearchBridge bridge = new AuxiliarySearchBridge(mProfile);
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
 
-        AuxiliarySearchGroup group = bridge.getBookmarksSearchableData();
+        AuxiliarySearchBookmarkGroup group = bridge.getBookmarksSearchableData();
 
-        assertEquals(group.getEntryCount(), 1);
-        assertEquals(group.getEntry(0).getTitle(), BOOKMARK_TITLE);
-        assertEquals(group.getEntry(0).getUrl(), BOOKMARK_URL);
-        assertEquals(group.getGroupType(), GroupType.BOOKMARK_GROUP);
+        assertEquals(group.getBookmarkCount(), 1);
+        assertEquals(group.getBookmark(0).getTitle(), BOOKMARK_TITLE);
+        assertEquals(group.getBookmark(0).getUrl(), BOOKMARK_URL);
     }
 }

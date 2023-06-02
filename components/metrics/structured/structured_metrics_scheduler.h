@@ -28,6 +28,9 @@ class StructuredMetricsScheduler : public metrics::MetricsRotationScheduler {
       delete;
 
   ~StructuredMetricsScheduler() override;
+
+ protected:
+  void LogMetricsInitSequence(InitSequence sequence) override;
 };
 }  // namespace metrics::structured
 

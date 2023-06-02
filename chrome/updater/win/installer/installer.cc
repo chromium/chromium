@@ -22,6 +22,7 @@
 // code size.
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -161,6 +162,24 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
   }
 
   return TRUE;
+}
+
+absl::optional<base::FilePath> FindOfflineDir(
+    const base::FilePath& unpack_path) {
+  const base::FilePath base_offline_dir =
+      unpack_path.Append(L"bin").Append(L"Offline");
+  if (!base::PathExists(base_offline_dir)) {
+    return absl::nullopt;
+  }
+  base::FileEnumerator file_enumerator(base_offline_dir, false,
+                                       base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath path = file_enumerator.Next(); !path.empty();
+       path = file_enumerator.Next()) {
+    if (IsGuid(path.BaseName().value())) {
+      return path;
+    }
+  }
+  return absl::nullopt;
 }
 
 // Finds and writes to disk resources of type 'B7' (7zip archive). Returns false
@@ -368,8 +387,6 @@ ProcessExitResult InstallerMain(HMODULE module) {
     return HandleRunDeElevated(command_line);
   }
 
-  // TODO(crbug.com/1379164) - simplify the command line handling to avoid
-  // mutating the command line of the process to make logging work.
   base::CommandLine::Init(0, nullptr);
   *base::CommandLine::ForCurrentProcess() = command_line;
   InitLogging(scope);
@@ -435,6 +452,20 @@ ProcessExitResult InstallerMain(HMODULE module) {
   // setup.
   ::SetProcessWorkingSetSize(::GetCurrentProcess(), static_cast<SIZE_T>(-1),
                              static_cast<SIZE_T>(-1));
+
+  // Determine if an offlinedir is embedded and, if it is, add an
+  // --offlinedir={GUID} switch to indicate that an offline install should
+  // be performed.
+  const absl::optional<base::FilePath> offline_dir =
+      FindOfflineDir(unpack_path);
+  if (offline_dir.has_value()) {
+    if (!cmd_line_args.append(L" --") ||
+        !cmd_line_args.append(base::SysUTF8ToWide(kOfflineDirSwitch).c_str()) ||
+        !cmd_line_args.append(L"=") ||
+        !cmd_line_args.append(offline_dir->BaseName().value().c_str())) {
+      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+    }
+  }
 
   PathString setup_path;
   if (!setup_path.assign(unpack_path.value().c_str()) ||

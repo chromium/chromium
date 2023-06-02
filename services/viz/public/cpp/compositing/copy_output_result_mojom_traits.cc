@@ -54,6 +54,7 @@ EnumTraits<viz::mojom::CopyOutputResultFormat, viz::CopyOutputResult::Format>::
       return viz::mojom::CopyOutputResultFormat::RGBA;
     case viz::CopyOutputResult::Format::I420_PLANES:
     case viz::CopyOutputResult::Format::NV12_PLANES:
+    case viz::CopyOutputResult::Format::NV12_MULTIPLANE:
       break;  // Not intended for transport across service boundaries.
   }
   NOTREACHED();
@@ -158,7 +159,7 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
   // only one plane that is relevant in the |result|:
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
   return mojo::MakeOptionalAsPointer(
-      &result->GetTextureResult()->planes[0].mailbox);
+      &result->GetTextureResult()->mailbox_holders[0].mailbox);
 }
 
 // static
@@ -176,7 +177,7 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
   // only one plane that is relevant in the |result|:
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
   return mojo::MakeOptionalAsPointer(
-      &result->GetTextureResult()->planes[0].sync_token);
+      &result->GetTextureResult()->mailbox_holders[0].sync_token);
 }
 
 // static
@@ -307,6 +308,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
 
     case viz::CopyOutputResult::Format::I420_PLANES:
     case viz::CopyOutputResult::Format::NV12_PLANES:
+    case viz::CopyOutputResult::Format::NV12_MULTIPLANE:
       break;  // Not intended for transport across service boundaries.
   }
 

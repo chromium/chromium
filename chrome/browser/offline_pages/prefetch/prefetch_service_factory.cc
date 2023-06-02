@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,7 +57,8 @@ PrefetchServiceFactory::PrefetchServiceFactory()
 
 // static
 PrefetchServiceFactory* PrefetchServiceFactory::GetInstance() {
-  return base::Singleton<PrefetchServiceFactory>::get();
+  static base::NoDestructor<PrefetchServiceFactory> instance;
+  return instance.get();
 }
 
 // static

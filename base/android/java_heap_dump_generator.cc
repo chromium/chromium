@@ -7,7 +7,7 @@
 #include <jni.h>
 
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/JavaHeapDumpGenerator_jni.h"
+#include "base/base_jni/JavaHeapDumpGenerator_jni.h"
 
 namespace base {
 namespace android {

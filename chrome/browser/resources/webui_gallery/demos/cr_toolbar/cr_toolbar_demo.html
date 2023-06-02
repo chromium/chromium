@@ -1,5 +1,4 @@
-<link rel="stylesheet" href="../demo.css">
-<style>
+<style include="demo">
   .content {
     padding: 16px;
   }
@@ -18,7 +17,7 @@
     always-show-logo="[[alwaysShowLogo_]]"
     show-menu="[[showMenu_]]"
     show-search="[[showSearch_]]"
-    on-cr-toolbar-menu-tap="onMenuTap_"
+    on-cr-toolbar-menu-click="onMenuClick_"
     on-search-changed="onSearchChanged_">
   <div hidden$="[[!showSlottedContent_]]">
     Slotted right-hand content

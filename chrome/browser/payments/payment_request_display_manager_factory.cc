@@ -10,7 +10,8 @@ namespace payments {
 
 PaymentRequestDisplayManagerFactory*
 PaymentRequestDisplayManagerFactory::GetInstance() {
-  return base::Singleton<PaymentRequestDisplayManagerFactory>::get();
+  static base::NoDestructor<PaymentRequestDisplayManagerFactory> instance;
+  return instance.get();
 }
 
 PaymentRequestDisplayManager*
@@ -32,7 +33,8 @@ PaymentRequestDisplayManagerFactory::PaymentRequestDisplayManagerFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-PaymentRequestDisplayManagerFactory::~PaymentRequestDisplayManagerFactory() {}
+PaymentRequestDisplayManagerFactory::~PaymentRequestDisplayManagerFactory() =
+    default;
 
 KeyedService* PaymentRequestDisplayManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

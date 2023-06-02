@@ -20,9 +20,13 @@ static_library("test_support") {
     "//testing/gtest",
   ]
   sources = [
+    "mock_auth_attempt_consumer.cc",
+    "mock_auth_attempt_consumer.h",
     "mock_auth_factor_engine.cc",
     "mock_auth_factor_engine.h",
     "mock_auth_factor_engine_factory.cc",
     "mock_auth_factor_engine_factory.h",
+    "mock_auth_factor_status_consumer.cc",
+    "mock_auth_factor_status_consumer.h",
   ]
 }

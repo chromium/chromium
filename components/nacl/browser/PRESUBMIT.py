@@ -6,8 +6,6 @@
 match the corresponding bad_message.h file.
 """
 
-USE_PYTHON3 = True
-
 def _RunHistogramChecks(input_api, output_api, histogram_name):
   try:
     # Setup sys.path so that we can call histograms code.

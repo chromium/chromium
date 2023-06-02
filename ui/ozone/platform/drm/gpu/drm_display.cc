@@ -341,38 +341,53 @@ bool DrmDisplay::SetPrivacyScreen(bool enabled) {
   return privacy_screen_property_->SetPrivacyScreenProperty(enabled);
 }
 
-bool DrmDisplay::SetHDR10Mode() {
+gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
+    const gfx::ColorSpace::TransferID transfer_id) {
+  if (!is_hdr_capable_) {
+    return gfx::HDRStaticMetadata::Eotf::kGammaSdrRange;
+  }
+
+  switch (transfer_id) {
+    case gfx::ColorSpace::TransferID::PQ:
+      return gfx::HDRStaticMetadata::Eotf::kPq;
+    case gfx::ColorSpace::TransferID::HLG:
+      return gfx::HDRStaticMetadata::Eotf::kHlg;
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
+    case gfx::ColorSpace::TransferID::LINEAR_HDR:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
+    case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
+      return gfx::HDRStaticMetadata::Eotf::kGammaHdrRange;
+    default:
+      NOTREACHED();
+      return gfx::HDRStaticMetadata::Eotf::kGammaSdrRange;
+  }
+}
+
+bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   DCHECK(connector_);
   DCHECK(hdr_static_metadata_.has_value());
-  ScopedDrmPropertyPtr color_space_property(
-      drm_->GetProperty(connector_.get(), kColorSpace));
-  if (!color_space_property) {
-    PLOG(INFO) << "'" << kColorSpace << "' property doesn't exist.";
-    return false;
-  }
-  if (!drm_->SetProperty(
-          connector_->connector_id, color_space_property->prop_id,
-          GetEnumValueForName(*drm_, color_space_property->prop_id,
-                              kColorSpaceBT2020RGBEnumName))) {
-    PLOG(INFO) << "Cannot set '" << kColorSpaceBT2020RGBEnumName
-               << "' to 'Colorspace' property.";
-    return false;
-  }
+  DCHECK(color_space.IsValid());
 
   drm_hdr_output_metadata* hdr_output_metadata =
       static_cast<drm_hdr_output_metadata*>(
           malloc(sizeof(drm_hdr_output_metadata)));
   hdr_output_metadata->metadata_type = 0;
   hdr_output_metadata->hdmi_metadata_type1.metadata_type = 0;
-  hdr_output_metadata->hdmi_metadata_type1.eotf = 2;  // PQ
+
+  gfx::HDRStaticMetadata::Eotf eotf = GetEotf(color_space.GetTransferID());
+  DCHECK(hdr_static_metadata_->IsEotfSupported(eotf));
+  hdr_output_metadata->hdmi_metadata_type1.eotf = static_cast<uint8_t>(eotf);
+
   hdr_output_metadata->hdmi_metadata_type1.max_cll = 0;
-  hdr_output_metadata->hdmi_metadata_type1.max_fall = 0;
+  hdr_output_metadata->hdmi_metadata_type1.max_fall =
+      hdr_static_metadata_->max_avg;
   hdr_output_metadata->hdmi_metadata_type1.max_display_mastering_luminance =
       hdr_static_metadata_->max;
   hdr_output_metadata->hdmi_metadata_type1.min_display_mastering_luminance =
       hdr_static_metadata_->min;
-  gfx::ColorSpace hdr10 = gfx::ColorSpace::CreateHDR10();
-  SkColorSpacePrimaries primaries = hdr10.GetPrimaries();
+
+  SkColorSpacePrimaries primaries = color_space.GetPrimaries();
   constexpr int kPrimariesFixedPoint = 50000;
   hdr_output_metadata->hdmi_metadata_type1.display_primaries[0].x =
       primaries.fRX * kPrimariesFixedPoint;
@@ -410,6 +425,27 @@ bool DrmDisplay::SetHDR10Mode() {
     return false;
   }
   return true;
+}
+
+bool DrmDisplay::SetHDR10Mode() {
+  DCHECK(connector_);
+  DCHECK(hdr_static_metadata_.has_value());
+  ScopedDrmPropertyPtr color_space_property(
+      drm_->GetProperty(connector_.get(), kColorSpace));
+  if (!color_space_property) {
+    PLOG(INFO) << "'" << kColorSpace << "' property doesn't exist.";
+    return false;
+  }
+  if (!drm_->SetProperty(
+          connector_->connector_id, color_space_property->prop_id,
+          GetEnumValueForName(*drm_, color_space_property->prop_id,
+                              kColorSpaceBT2020RGBEnumName))) {
+    PLOG(INFO) << "Cannot set '" << kColorSpaceBT2020RGBEnumName
+               << "' to 'Colorspace' property.";
+    return false;
+  }
+
+  return SetHdrOutputMetadata(gfx::ColorSpace::CreateHDR10());
 }
 
 void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {

@@ -82,7 +82,7 @@
 <translation id="2434158240863470628">Преземањето е завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Функциите на некои сајтови можеби нема да работат во режимот „Инкогнито“</translation>
 <translation id="2442870161001914531">Секогаш барај сајт за компјутер</translation>
-<translation id="2479148705183875116">Одете во „Поставки“</translation>
+<translation id="2479148705183875116">Отворете „Поставки“</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2490684707762498678">Управувани од <ph name="APP_NAME" /></translation>
@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Дозволи колачиња од трети лица</translation>
 <translation id="4428065317363009941">Персонализирање на рекламите</translation>
 <translation id="4434045419905280838">Скокачки прозорци/пренасочувања</translation>
-<translation id="4440642537584213025">Прошири ја <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Исклучете го звукот за одреден сајт.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# колаче}one{# колаче}other{# колачиња}}</translation>
 <translation id="4478158430052450698">Олеснете го приспособувањето зум за различни сајтови</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7882806643839505685">Дозволете го звукот за одреден сајт.</translation>
 <translation id="789180354981963912">Блокирајте колачиња од трети страни во „Инкогнито“:</translation>
+<translation id="7895868624847501462">Со дејствово ќе се избришат сите локални податоци, што опфаќа и колачиња, а ќе се ресетираат и сите дозволи за <ph name="DOMAIN" />, како и сите сајтови под него</translation>
 <translation id="7940722705963108451">Потсети ме</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сајт во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}one{<ph name="FPS_MEMBERS_COUNT" /> сајт во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}other{<ph name="FPS_MEMBERS_COUNT" /> сајтови во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}}</translation>
 <translation id="7986741934819883144">Изберете контакт</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="8300705686683892304">Управувани од апликација</translation>
 <translation id="8324158725704657629">Не прашувај повторно</translation>
+<translation id="8338445138528827481">Со дејствово ќе се избришат сите локални податоци, што опфаќа и колачиња, а ќе се ресетираат и сите дозволи за <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Можете да зумирате или да одзумирате на сајтовите што ги посетувате</translation>
 <translation id="8372893542064058268">Дозволи Синхронизација во заднина за одреден сајт.</translation>
 <translation id="8376384591331888629">Вклучувајќи колачиња од трети страни</translation>

@@ -9,7 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/BundleUtils_jni.h"
+#include "base/base_jni/BundleUtils_jni.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"

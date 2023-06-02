@@ -40,19 +40,22 @@ class BookmarkToolbarProperties {
     static final WritableBooleanPropertyKey SEARCH_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey EDIT_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey NEW_FOLDER_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
     // Can change within SelectableListToolbar which makes the model value to become stale.
     static final WritableObjectPropertyKey<Integer> NAVIGATION_BUTTON_STATE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableIntPropertyKey CHECKED_SORT_MENU_ID = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CHECKED_VIEW_MENU_ID = new WritableIntPropertyKey();
 
+    static final WritableObjectPropertyKey<Boolean> FAKE_SELECTION_STATE_CHANGE =
+            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+
     /** Bookmark state properties. */
     static final WritableObjectPropertyKey<BookmarkId> CURRENT_FOLDER =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
 
     /** Callables to delegate business logic back to the mediator */
-    static final WritableObjectPropertyKey<Runnable> OPEN_SEARCH_UI_RUNNABLE =
-            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Function<Integer, Boolean>> MENU_ID_CLICKED_FUNCTION =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER_CALLBACK =
@@ -60,7 +63,7 @@ class BookmarkToolbarProperties {
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
-            SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
-            CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID, OPEN_SEARCH_UI_RUNNABLE,
-            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK};
+            SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NEW_FOLDER_BUTTON_VISIBLE,
+            NAVIGATION_BUTTON_STATE, CURRENT_FOLDER, CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID,
+            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK, FAKE_SELECTION_STATE_CHANGE};
 }

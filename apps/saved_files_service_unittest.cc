@@ -84,7 +84,7 @@ class SavedFilesServiceUnitTest : public testing::Test {
   }
 
   extensions::TestExtensionEnvironment env_;
-  raw_ptr<const extensions::Extension> extension_;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;
   raw_ptr<SavedFilesService> service_;
   base::FilePath path_;
 };

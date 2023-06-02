@@ -53,7 +53,8 @@ enum class AppListShowSource {
   kAssistantEntryPoint = 6,
   kScrollFromShelf = 7,
   kBrowser = 8,
-  kMaxValue = kBrowser,
+  kWelcomeTour = 9,
+  kMaxValue = kWelcomeTour,
 };
 
 // Tracks the conclusion of each search session starting from the search box.

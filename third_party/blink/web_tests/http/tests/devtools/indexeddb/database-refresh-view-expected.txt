@@ -4,16 +4,16 @@ Dumping IndexedDB tree:
     (empty)
 Created database.
 Dumping IndexedDB tree:
-    database: testDatabase - http://127.0.0.1:8000
+    database: testDatabase
         (no object stores)
 Created first objectstore.
 Dumping IndexedDB tree:
-    database: testDatabase - http://127.0.0.1:8000
+    database: testDatabase
         Object store: testObjectStore1
             Index: testIndex
 Created second objectstore.
 Dumping IndexedDB tree:
-    database: testDatabase - http://127.0.0.1:8000
+    database: testDatabase
         Object store: testObjectStore1
             Index: testIndex
         Object store: testObjectStore2

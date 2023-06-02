@@ -24,6 +24,8 @@ NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
 NSString* const kMagicStackScrollViewAccessibilityIdentifier =
     @"MagicStackScrollViewAccessibilityIdentifier";
 
+const CGFloat kMagicStackWideWidth = 430;
+
 const CGFloat kMostVisitedBottomMargin = 13;
 
 const int kTileAblationImpressionThresholdMinutes = 5;

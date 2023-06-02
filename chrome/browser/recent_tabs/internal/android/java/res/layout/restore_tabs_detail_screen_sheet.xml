@@ -16,7 +16,10 @@ found in the LICENSE file.
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:orientation="horizontal">
+        android:paddingBottom="12dp"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/restore_tabs_sheet_padding"
+        android:paddingRight="@dimen/restore_tabs_sheet_padding">
         <ImageButton
             android:id="@+id/restore_tabs_toolbar_back_image_button"
             android:layout_width="wrap_content"
@@ -39,10 +42,46 @@ found in the LICENSE file.
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/restore_tabs_detail_screen_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:divider="@null"
-        android:paddingBottom="24dp"
+        android:clipToPadding="false"
+        android:paddingBottom="10dp"
         android:paddingLeft="@dimen/restore_tabs_sheet_padding_content"
         android:paddingRight="@dimen/restore_tabs_sheet_padding_content"/>
+    <View
+        android:id="@+id/restore_tabs_bottom_toolbar_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line_bg_color_baseline"/>
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingLeft="@dimen/restore_tabs_sheet_padding_content"
+        android:paddingRight="@dimen/restore_tabs_sheet_padding_content"
+        android:orientation="horizontal"
+        android:paddingTop="16dp"
+        android:layout_marginBottom="@dimen/restore_tabs_bottom_sheet_padding">
+        <!-- Action buttons section -->
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/restore_tabs_button_change_all_tabs_selection"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"/>
+        <Space
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/restore_tabs_button_open_selected_tabs"
+            style="@style/FilledButton.Flat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"/>
+    </LinearLayout>
 </LinearLayout>

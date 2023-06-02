@@ -510,11 +510,7 @@ void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate);
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,
-#if BUILDFLAG(IS_ANDROID)
-                                       int obfuscation_length = 2);
-#else
-                                       int obfuscation_length = 4);
-#endif
+                                       int obfuscation_length);
 
 // Returns 2-digit month string, like "02", "10".
 std::string NextMonth();

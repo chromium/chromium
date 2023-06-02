@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -260,7 +261,9 @@ class FilteringNetworkManagerTest : public testing::Test,
   std::vector<rtc::Network> networks_;
   int next_new_network_id_ = 0;
 
-  std::vector<const rtc::Network*> network_list_;
+  // This field is not vector<raw_ptr<...>> due to interaction with third_party
+  // api.
+  RAW_PTR_EXCLUSION std::vector<const rtc::Network*> network_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_;

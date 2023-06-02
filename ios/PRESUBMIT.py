@@ -10,8 +10,6 @@ for more details about the presubmit API built into depot_tools.
 
 import os
 
-USE_PYTHON3 = True
-
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
 BUG_PATTERN = r'(crbug\.com|b)/\d+$'

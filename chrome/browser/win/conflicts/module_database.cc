@@ -292,8 +292,8 @@ void ModuleDatabase::RemoveObserver(ModuleDatabaseObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ModuleDatabase::ForceStartInspection() {
-  module_inspector_.ForceStartInspection();
+void ModuleDatabase::StartInspection() {
+  module_inspector_.StartInspection();
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -427,6 +427,8 @@ void ModuleDatabase::MaybeInitializeThirdPartyConflictsManager(
 
   if (IncompatibleApplicationsUpdater::IsWarningEnabled() ||
       ModuleBlocklistCacheUpdater::IsBlockingEnabled()) {
+    StartInspection();
+
     third_party_conflicts_manager_ =
         std::make_unique<ThirdPartyConflictsManager>(this);
 

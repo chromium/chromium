@@ -58,6 +58,8 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
 
   std::unique_ptr<MetricsProvider> system_profile_provider_;
 
+  std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
+
   std::unique_ptr<StructuredMetricsProvider> structured_metrics_provider_;
 
   base::ScopedTempDir temp_dir_;

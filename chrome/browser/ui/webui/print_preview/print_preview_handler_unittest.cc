@@ -412,7 +412,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   int bad_messages_;
   base::flat_set<mojom::PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
-  const raw_ptr<content::WebContents> initiator_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> initiator_;
 };
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -1401,7 +1401,8 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   layout.Set(kSettingPrintableAreaWidth, 578);
   layout.Set(kSettingPrintableAreaHeight, 734);
   handler()->SendPageLayoutReady(std::move(layout),
-                                 /*has_custom_page_size_style,=*/false,
+                                 /*all_pages_have_custom_size,=*/false,
+                                 /*all_pages_have_custom_orientation,=*/false,
                                  preview_request_id);
 
   // Verify that page-layout-ready webUI event was fired.
@@ -1426,7 +1427,8 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   // Check that there are no new web UI messages sent.
   size_t message_count = web_ui()->call_data().size();
   handler()->SendPageLayoutReady(base::Value::Dict(),
-                                 /*has_custom_page_size_style,=*/false,
+                                 /*all_pages_have_custom_size,=*/false,
+                                 /*all_pages_have_custom_orientation,=*/false,
                                  preview_request_id);
   EXPECT_EQ(message_count, web_ui()->call_data().size());
   handler()->SendPageCountReady(1, -1, 0);

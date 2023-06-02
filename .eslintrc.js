@@ -144,6 +144,14 @@ module.exports = {
           format: ['strictCamelCase'],
           modifiers: ['private'],
           trailingUnderscore: 'allow',
+
+          // Disallow the 'Tap_' suffix, in favor of 'Click_' in event handlers.
+          // Note: Unfortunately this ESLint rule does not provide a way to
+          // customize the error message to better inform developers.
+          custom: {
+            regex: '^on[a-zA-Z0-9]+Tap$',
+            match: false,
+          },
         },
         {
           selector: 'classProperty',

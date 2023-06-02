@@ -175,8 +175,9 @@ const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
 base::android::ScopedJavaLocalRef<jobject>
 HistoryClustersAction::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
-    j_omnibox_action_.Reset(
-        BuildHistoryClustersAction(env, strings_.hint, query_));
+    j_omnibox_action_.Reset(BuildHistoryClustersAction(
+        env, reinterpret_cast<intptr_t>(this), strings_.hint,
+        strings_.accessibility_hint, query_));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
@@ -194,7 +195,7 @@ void AttachHistoryClustersActions(
   return;
 #else
 
-  if (!service || !service->IsJourneysEnabled()) {
+  if (!service || !service->IsJourneysEnabledAndVisible()) {
     return;
   }
 

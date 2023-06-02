@@ -63,11 +63,7 @@ SVGGradientElement::SVGGradientElement(const QualifiedName& tag_name,
                       SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
           this,
           svg_names::kGradientUnitsAttr,
-          SVGUnitTypes::kSvgUnitTypeObjectboundingbox)) {
-  AddToPropertyMap(gradient_transform_);
-  AddToPropertyMap(spread_method_);
-  AddToPropertyMap(gradient_units_);
-}
+          SVGUnitTypes::kSvgUnitTypeObjectboundingbox)) {}
 
 void SVGGradientElement::Trace(Visitor* visitor) const {
   visitor->Trace(gradient_transform_);
@@ -209,6 +205,46 @@ Vector<Gradient::ColorStop> SVGGradientElement::BuildStops() const {
         Gradient::ColorStop(offset, stop.StopColorIncludingOpacity()));
   }
   return stops;
+}
+
+SVGAnimatedPropertyBase* SVGGradientElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kGradientTransformAttr) {
+    return gradient_transform_.Get();
+  } else if (attribute_name == svg_names::kSpreadMethodAttr) {
+    return spread_method_.Get();
+  } else if (attribute_name == svg_names::kGradientUnitsAttr) {
+    return gradient_units_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret =
+        SVGURIReference::PropertyFromAttribute(attribute_name);
+    if (ret) {
+      return ret;
+    } else {
+      return SVGElement::PropertyFromAttribute(attribute_name);
+    }
+  }
+}
+
+void SVGGradientElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{
+        gradient_transform_.Get(), spread_method_.Get(), gradient_units_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGURIReference::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGGradientElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  if (gradient_transform_->HasPresentationAttributeMapping() &&
+      gradient_transform_->IsAnimating()) {
+    CollectStyleForPresentationAttribute(svg_names::kGradientTransformAttr,
+                                         g_empty_atom, style);
+  }
+  SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

@@ -848,7 +848,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 
   TRACE_EVENT0("blink", "SVGImage::dataChanged::load");
 
-  frame->ForceSynchronousDocumentInstall("image/svg+xml", Data());
+  frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"), Data());
 
   // Set up our Page reference after installing our document. This avoids
   // tripping on a non-existing (null) Document if a GC is triggered during the

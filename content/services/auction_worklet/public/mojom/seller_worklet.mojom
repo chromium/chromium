@@ -97,6 +97,12 @@ interface ScoreAdClient {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `scoring_latency` How long it took to execute the scoreAd() JavaScript,
+  //  (including the top-level).
+  //
+  // `trusted_signals_fetch_latency` How long it took to fetch the trusted
+  //  scoring signals, if any. 0 if there weren't any.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if `score` is positive, nor should it be assumed to be non-empty if
@@ -110,6 +116,8 @@ interface ScoreAdClient {
                     url.mojom.Url? debug_loss_report_url,
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
+                    mojo_base.mojom.TimeDelta scoring_latency,
+                    mojo_base.mojom.TimeDelta trusted_signals_fetch_latency,
                     array<string> errors);
 };
 
@@ -302,6 +310,9 @@ interface SellerWorklet {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `reporting_latency` How long it took to run `reportResult()` JS, including
+  //  the top-level.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if the other values are populated, nor should it be assumed to be
@@ -329,6 +340,7 @@ interface SellerWorklet {
            url.mojom.Url? report_url,
            map<string, url.mojom.Url> ad_beacon_map,
            array<PrivateAggregationRequest> pa_requests,
+           mojo_base.mojom.TimeDelta reporting_latency,
            array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet.

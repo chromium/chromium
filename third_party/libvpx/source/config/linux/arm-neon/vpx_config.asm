@@ -3,6 +3,8 @@
 .syntax unified
 .equ VPX_ARCH_ARM ,  1
 .equ ARCH_ARM ,  1
+.equ VPX_ARCH_AARCH64 ,  0
+.equ ARCH_AARCH64 ,  0
 .equ VPX_ARCH_MIPS ,  0
 .equ ARCH_MIPS ,  0
 .equ VPX_ARCH_X86 ,  0

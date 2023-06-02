@@ -38,6 +38,9 @@ source_set("lib") {
     "decompress.h",
     "delete_with_retry.cc",
     "delete_with_retry.h",
+    "enumerate_resources.cc",
+    "enumerate_resources.h",
+    "memory_range.h",
     "mini_file.cc",
     "mini_file.h",
     "mini_installer.cc",
@@ -49,10 +52,10 @@ source_set("lib") {
     "mini_string.cc",
     "mini_string.h",
     "path_string.h",
-    "pe_resource.cc",
-    "pe_resource.h",
     "regkey.cc",
     "regkey.h",
+    "write_to_disk.cc",
+    "write_to_disk.h",
   ]
 
   deps = [
@@ -80,6 +83,7 @@ source_set("unit_tests") {
     "mini_file_test.cc",
     "mini_installer_unittest.cc",
     "mini_string_test.cc",
+    "write_to_disk_unittest.cc",
   ]
 
   public_deps = [ ":lib" ]

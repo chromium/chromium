@@ -101,7 +101,7 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
   TestableProximityAuthSystem(
       ash::secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<UnlockManager> unlock_manager,
-      ProximityAuthPrefManager* pref_manager)
+      ProximityAuthProfilePrefManager* pref_manager)
       : ProximityAuthSystem(secure_channel_client, std::move(unlock_manager)),
         life_cycle_(nullptr) {}
 

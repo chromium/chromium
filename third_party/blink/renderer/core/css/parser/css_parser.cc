@@ -98,7 +98,7 @@ void CSSParser::ParseSheetForInspector(const CSSParserContext* context,
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     MutableCSSPropertyValueSet* declaration,
     CSSPropertyID unresolved_property,
-    const String& string,
+    StringView string,
     bool important,
     const ExecutionContext* execution_context) {
   return ParseValue(
@@ -141,7 +141,7 @@ static inline const CSSParserContext* GetParserContext(
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     MutableCSSPropertyValueSet* declaration,
     CSSPropertyID unresolved_property,
-    const String& string,
+    StringView string,
     bool important,
     SecureContextMode secure_context_mode,
     StyleSheetContents* style_sheet,
@@ -193,7 +193,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValueForCustomProperty(
     MutableCSSPropertyValueSet* declaration,
     const AtomicString& property_name,
-    const String& value,
+    StringView value,
     bool important,
     SecureContextMode secure_context_mode,
     StyleSheetContents* style_sheet,
@@ -221,7 +221,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValueForCustomProperty(
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     MutableCSSPropertyValueSet* declaration,
     CSSPropertyID unresolved_property,
-    const String& string,
+    StringView string,
     bool important,
     const CSSParserContext* context) {
   DCHECK(ThreadState::Current()->IsAllocationAllowed());

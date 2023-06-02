@@ -5,6 +5,7 @@
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 
 #include "base/containers/span.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/pickle.h"
 #include "base/task/sequenced_task_runner.h"
@@ -185,7 +186,15 @@ class SQLitePersistentSharedDictionaryStore::Backend
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetDictionaries)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetAllDictionaries)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(ClearAllDictionaries)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(ClearDictionaries)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(DeleteExpiredDictionaries)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(ProcessEviction)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetAllDiskCacheKeyTokens)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(DeleteDictionariesByDiskCacheKeyTokens)
 #undef DEFINE_CROSS_SEQUENCE_CALL_METHOD
+
+  void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
+                                    base::Time last_used_time);
 
  private:
   ~Backend() override = default;
@@ -200,6 +209,16 @@ class SQLitePersistentSharedDictionaryStore::Backend
       const SharedDictionaryStorageIsolationKey& isolation_key);
   DictionaryMapOrError GetAllDictionariesImpl();
   Error ClearAllDictionariesImpl();
+  UnguessableTokenSetOrError ClearDictionariesImpl(
+      base::Time start_time,
+      base::Time end_time,
+      base::RepeatingCallback<bool(const GURL&)> url_matcher);
+  UnguessableTokenSetOrError DeleteExpiredDictionariesImpl(base::Time now);
+  UnguessableTokenSetOrError ProcessEvictionImpl(uint64_t cache_max_size,
+                                                 uint64_t low_watermark);
+  UnguessableTokenSetOrError GetAllDiskCacheKeyTokensImpl();
+  Error DeleteDictionariesByDiskCacheKeyTokensImpl(
+      const std::set<base::UnguessableToken>& disk_cache_key_tokens);
 
   // If a matching dictionary exists, populates 'size_out' and
   // 'disk_cache_key_out' with the dictionary's respective values and returns
@@ -221,6 +240,52 @@ class SQLitePersistentSharedDictionaryStore::Backend
   bool CreateDatabaseSchema() override;
   absl::optional<int> DoMigrateDatabaseSchema() override;
   void DoCommit() override;
+
+  // Commits the last used time update.
+  Error CommitDictionaryLastUsedTimeUpdate(int64_t primary_key_in_database,
+                                           base::Time last_used_time);
+
+  // Selects dictionaries which `res_time` is between `start_time` and
+  // `end_time`. And fills their primary keys and tokens and total size.
+  Error SelectMatchingDictionaries(
+      base::Time start_time,
+      base::Time end_time,
+      std::vector<int64_t>* primary_keys_out,
+      std::vector<base::UnguessableToken>* tokens_out,
+      int64_t* total_size_out);
+  // Selects dictionaries which `res_time` is between `start_time` and
+  // `end_time`, and which `frame_origin` or `top_frame_site` or `host` matches
+  // with `url_matcher`. And fills their primary keys and tokens and total size.
+  Error SelectMatchingDictionariesWithUrlMatcher(
+      base::Time start_time,
+      base::Time end_time,
+      base::RepeatingCallback<bool(const GURL&)> url_matcher,
+      std::vector<int64_t>* primary_keys_out,
+      std::vector<base::UnguessableToken>* tokens_out,
+      int64_t* total_size_out);
+  // Selects dictionaries in order of `last_used_time` if the total size of all
+  // dictionaries exceeds `cache_max_size` until the total size reaches
+  // `low_watermark`, and fills their primary keys and tokens and total size.
+  Error SelectEvictionCandidates(
+      uint64_t cache_max_size,
+      uint64_t low_watermark,
+      std::vector<int64_t>* primary_keys_out,
+      std::vector<base::UnguessableToken>* tokens_out,
+      int64_t* total_size_after_eviction_out);
+  // Deletes a dictionary with `primary_key`.
+  Error DeleteDictionaryByPrimaryKey(int64_t primary_key);
+  // Deletes a dictionary with `disk_cache_key_token` and returns the deleted
+  // dictionarie's size.
+  base::expected<uint64_t, Error> DeleteDictionaryByDiskCacheToken(
+      const base::UnguessableToken& disk_cache_key_token);
+
+  // Total number of pending last used time update operations (may not match the
+  // size of `pending_last_used_time_updates_`, due to operation coalescing).
+  size_t num_pending_ GUARDED_BY(lock_) = 0;
+  std::map<int64_t, base::Time> pending_last_used_time_updates_
+      GUARDED_BY(lock_);
+  // Protects `num_pending_`, and `pending_last_used_time_updates_`.
+  mutable base::Lock lock_;
 };
 
 bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
@@ -244,10 +309,49 @@ SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
 }
 
 void SQLitePersistentSharedDictionaryStore::Backend::DoCommit() {
-  // Currently we don't batch queries because RegisterDictionary() is not
-  // expected to be called so frequently.
-  // TODO(crbug.com/1413922): Consider using batching when we implement a method
-  // for updating `last_used_time`.
+  std::map<int64_t, base::Time> pending_last_used_time_updates;
+  {
+    base::AutoLock locked(lock_);
+    pending_last_used_time_updates_.swap(pending_last_used_time_updates);
+    num_pending_ = 0;
+  }
+  if (!db() || pending_last_used_time_updates.empty()) {
+    return;
+  }
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return;
+  }
+  for (const auto& it : pending_last_used_time_updates) {
+    if (CommitDictionaryLastUsedTimeUpdate(it.first, it.second) != Error::kOk) {
+      return;
+    }
+  }
+  transaction.Commit();
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    CommitDictionaryLastUsedTimeUpdate(int64_t primary_key_in_database,
+                                       base::Time last_used_time) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return Error::kFailedToInitializeDatabase;
+  }
+  static constexpr char kQuery[] =
+      "UPDATE dictionaries SET last_used_time=? WHERE id=?";
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, last_used_time);
+  statement.BindInt64(1, primary_key_in_database);
+  if (!statement.Run()) {
+    return Error::kFailedToExecuteSql;
+  }
+  return Error::kOk;
 }
 
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
@@ -365,6 +469,9 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
   if (!InitializeDatabase()) {
     return base::unexpected(Error::kFailedToInitializeDatabase);
   }
+
+  // Commit `pending_last_used_time_updates_`.
+  DoCommit();
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -525,6 +632,483 @@ SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionariesImpl() {
   return Error::kOk;
 }
 
+SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+SQLitePersistentSharedDictionaryStore::Backend::ClearDictionariesImpl(
+    base::Time start_time,
+    base::Time end_time,
+    base::RepeatingCallback<bool(const GURL&)> url_matcher) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return base::unexpected(Error::kFailedToInitializeDatabase);
+  }
+
+  // Commit `pending_last_used_time_updates_`.
+  DoCommit();
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return base::unexpected(Error::kFailedToBeginTransaction);
+  }
+  std::vector<int64_t> primary_keys;
+  std::vector<base::UnguessableToken> tokens;
+  int64_t total_size = 0;
+  Error error = url_matcher ? SelectMatchingDictionariesWithUrlMatcher(
+                                  start_time, end_time, std::move(url_matcher),
+                                  &primary_keys, &tokens, &total_size)
+                            : SelectMatchingDictionaries(start_time, end_time,
+                                                         &primary_keys, &tokens,
+                                                         &total_size);
+  if (error != Error::kOk) {
+    return base::unexpected(error);
+  }
+  for (int64_t primary_key : primary_keys) {
+    error = DeleteDictionaryByPrimaryKey(primary_key);
+    if (error != Error::kOk) {
+      return base::unexpected(error);
+    }
+  }
+  if (total_size != 0) {
+    uint64_t total_dictionary_size = 0;
+    error = UpdateTotalDictionarySizeInMetaTable(-total_size,
+                                                 &total_dictionary_size);
+    if (error != Error::kOk) {
+      return base::unexpected(error);
+    }
+  }
+
+  transaction.Commit();
+  return base::ok(
+      std::set<base::UnguessableToken>(tokens.begin(), tokens.end()));
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::SelectMatchingDictionaries(
+    base::Time start_time,
+    base::Time end_time,
+    std::vector<int64_t>* primary_keys_out,
+    std::vector<base::UnguessableToken>* tokens_out,
+    int64_t* total_size_out) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "size,"
+          "token_high,"
+          "token_low FROM dictionaries "
+          "WHERE res_time>=? AND res_time<? "
+          "ORDER BY id";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, start_time);
+  statement.BindTime(1, end_time.is_null() ? base::Time::Max() : end_time);
+
+  base::CheckedNumeric<int64_t> checked_total_size;
+  while (statement.Step()) {
+    const int64_t primary_key_in_database = statement.ColumnInt64(0);
+    const size_t size = statement.ColumnInt64(1);
+    const int64_t token_high = statement.ColumnInt64(2);
+    const int64_t token_low = statement.ColumnInt64(3);
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    primary_keys_out->emplace_back(primary_key_in_database);
+    tokens_out->emplace_back(*disk_cache_key_token);
+    checked_total_size += size;
+  }
+  *total_size_out = checked_total_size.ValueOrDie();
+  return Error::kOk;
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    SelectMatchingDictionariesWithUrlMatcher(
+        base::Time start_time,
+        base::Time end_time,
+        base::RepeatingCallback<bool(const GURL&)> url_matcher,
+        std::vector<int64_t>* primary_keys_out,
+        std::vector<base::UnguessableToken>* tokens_out,
+        int64_t* total_size_out) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "frame_origin,"
+          "top_frame_site,"
+          "host,"
+          "size,"
+          "token_high,"
+          "token_low FROM dictionaries "
+          "WHERE res_time>=? AND res_time<? "
+          "ORDER BY id";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, start_time);
+  statement.BindTime(1, end_time.is_null() ? base::Time::Max() : end_time);
+
+  base::CheckedNumeric<int64_t> checked_total_size;
+  while (statement.Step()) {
+    const int64_t primary_key_in_database = statement.ColumnInt64(0);
+    const std::string frame_origin_string = statement.ColumnString(1);
+    const std::string top_frame_site_string = statement.ColumnString(2);
+    const std::string host = statement.ColumnString(3);
+    const size_t size = statement.ColumnInt64(4);
+    const int64_t token_high = statement.ColumnInt64(5);
+    const int64_t token_low = statement.ColumnInt64(6);
+
+    if (!url_matcher.Run(GURL(frame_origin_string)) &&
+        !url_matcher.Run(GURL(top_frame_site_string)) &&
+        !url_matcher.Run(GURL(host))) {
+      continue;
+    }
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    primary_keys_out->emplace_back(primary_key_in_database);
+    tokens_out->emplace_back(*disk_cache_key_token);
+    checked_total_size += size;
+  }
+  *total_size_out = checked_total_size.ValueOrDie();
+  return Error::kOk;
+}
+
+SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
+    base::Time now) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return base::unexpected(Error::kFailedToInitializeDatabase);
+  }
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return base::unexpected(Error::kFailedToBeginTransaction);
+  }
+  static constexpr char kQuery[] =
+      // clang-format off
+      "DELETE FROM dictionaries "
+          "WHERE exp_time<=? "
+          "RETURNING size, token_high, token_low";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, now);
+
+  std::vector<base::UnguessableToken> tokens;
+  base::CheckedNumeric<int64_t> checked_total_size = 0;
+  while (statement.Step()) {
+    const size_t size = statement.ColumnInt64(0);
+    const int64_t token_high = statement.ColumnInt64(1);
+    const int64_t token_low = statement.ColumnInt64(2);
+
+    checked_total_size += size;
+
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    tokens.emplace_back(*disk_cache_key_token);
+  }
+
+  int64_t total_size = checked_total_size.ValueOrDie();
+  if (total_size != 0) {
+    uint64_t total_dictionary_size = 0;
+    Error error = UpdateTotalDictionarySizeInMetaTable(-total_size,
+                                                       &total_dictionary_size);
+    if (error != Error::kOk) {
+      return base::unexpected(error);
+    }
+  }
+  transaction.Commit();
+  return base::ok(
+      std::set<base::UnguessableToken>(tokens.begin(), tokens.end()));
+}
+
+SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
+    uint64_t cache_max_size,
+    uint64_t low_watermark) {
+  if (!InitializeDatabase()) {
+    return base::unexpected(Error::kFailedToInitializeDatabase);
+  }
+
+  // Commit `pending_last_used_time_updates_`.
+  DoCommit();
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return base::unexpected(Error::kFailedToBeginTransaction);
+  }
+  std::vector<int64_t> primary_keys;
+  std::vector<base::UnguessableToken> tokens;
+  int64_t total_size_after_eviction = 0;
+  Error error =
+      SelectEvictionCandidates(cache_max_size, low_watermark, &primary_keys,
+                               &tokens, &total_size_after_eviction);
+  if (error != Error::kOk) {
+    return base::unexpected(error);
+  }
+  CHECK_EQ(primary_keys.size(), tokens.size());
+  if (primary_keys.empty()) {
+    return base::ok(std::set<base::UnguessableToken>());
+  }
+  for (int64_t primary_key : primary_keys) {
+    error = DeleteDictionaryByPrimaryKey(primary_key);
+    if (error != Error::kOk) {
+      return base::unexpected(error);
+    }
+  }
+
+  if (!meta_table()->SetValue(kTotalDictSizeKey, total_size_after_eviction)) {
+    return base::unexpected(Error::kFailedToSetTotalDictSize);
+  }
+
+  transaction.Commit();
+  return base::ok(
+      std::set<base::UnguessableToken>(tokens.begin(), tokens.end()));
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
+    uint64_t cache_max_size,
+    uint64_t low_watermark,
+    std::vector<int64_t>* primary_keys_out,
+    std::vector<base::UnguessableToken>* tokens_out,
+    int64_t* total_size_after_eviction_out) {
+  base::expected<uint64_t, Error> total_dictionary_size_result =
+      GetTotalDictionarySizeImpl();
+  if (!total_dictionary_size_result.has_value()) {
+    return total_dictionary_size_result.error();
+  }
+  uint64_t total_dictionary_size = total_dictionary_size_result.value();
+  if (total_dictionary_size <= cache_max_size) {
+    return Error::kOk;
+  }
+  base::CheckedNumeric<uint64_t> checked_total_dictionary_size =
+      total_dictionary_size;
+
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "size,"
+          "token_high,"
+          "token_low FROM dictionaries "
+          "ORDER BY last_used_time";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  std::vector<base::UnguessableToken> tokens;
+  while (statement.Step()) {
+    const int64_t primary_key_in_database = statement.ColumnInt64(0);
+    const size_t size = statement.ColumnInt64(1);
+    const int64_t token_high = statement.ColumnInt64(2);
+    const int64_t token_low = statement.ColumnInt64(3);
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    checked_total_dictionary_size -= size;
+
+    if (!checked_total_dictionary_size.IsValid()) {
+      base::debug::DumpWithoutCrashing();
+      return Error::kInvalidTotalDictSize;
+    }
+
+    *total_size_after_eviction_out =
+        base::checked_cast<int64_t>(checked_total_dictionary_size.ValueOrDie());
+    primary_keys_out->emplace_back(primary_key_in_database);
+    tokens_out->emplace_back(*disk_cache_key_token);
+    if (low_watermark >= checked_total_dictionary_size.ValueOrDie()) {
+      break;
+    }
+  }
+  return Error::kOk;
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::DeleteDictionaryByPrimaryKey(
+    int64_t primary_key) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  static constexpr char kQuery[] = "DELETE FROM dictionaries WHERE id=?";
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindInt64(0, primary_key);
+
+  if (!statement.Run()) {
+    return Error::kFailedToExecuteSql;
+  }
+  return Error::kOk;
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    DeleteDictionariesByDiskCacheKeyTokensImpl(
+        const std::set<base::UnguessableToken>& disk_cache_key_tokens) {
+  if (!InitializeDatabase()) {
+    return Error::kFailedToInitializeDatabase;
+  }
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return Error::kFailedToBeginTransaction;
+  }
+
+  base::CheckedNumeric<int64_t> checked_total_dictionary_size;
+  for (const auto& token : disk_cache_key_tokens) {
+    base::expected<uint64_t, Error> result =
+        DeleteDictionaryByDiskCacheToken(token);
+    if (!result.has_value()) {
+      return result.error();
+    }
+    checked_total_dictionary_size += result.value();
+  }
+
+  int64_t deleted_size = checked_total_dictionary_size.ValueOrDie();
+  if (deleted_size != 0u) {
+    uint64_t total_dictionary_size = 0;
+    Error error = UpdateTotalDictionarySizeInMetaTable(-deleted_size,
+                                                       &total_dictionary_size);
+    if (error != Error::kOk) {
+      return error;
+    }
+  }
+
+  if (!transaction.Commit()) {
+    return Error::kFailedToCommitTransaction;
+  }
+  return Error::kOk;
+}
+
+base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
+SQLitePersistentSharedDictionaryStore::Backend::
+    DeleteDictionaryByDiskCacheToken(
+        const base::UnguessableToken& disk_cache_key_token) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return base::unexpected(Error::kFailedToInitializeDatabase);
+  }
+  static constexpr char kQuery[] =
+      // clang-format off
+      "DELETE FROM dictionaries "
+          "WHERE token_high=? AND token_low=?"
+          "RETURNING size";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  // There is no `sql::Statement::BindUint64()` method. So we cast to int64_t.
+  int64_t token_high =
+      static_cast<int64_t>(disk_cache_key_token.GetHighForSerialization());
+  int64_t token_low =
+      static_cast<int64_t>(disk_cache_key_token.GetLowForSerialization());
+  statement.BindInt64(0, token_high);
+  statement.BindInt64(1, token_low);
+
+  base::CheckedNumeric<uint64_t> checked_size = 0;
+  while (statement.Step()) {
+    const size_t size = statement.ColumnInt64(0);
+    checked_size += size;
+  }
+  return base::ok(checked_size.ValueOrDie());
+}
+
+SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+SQLitePersistentSharedDictionaryStore::Backend::GetAllDiskCacheKeyTokensImpl() {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return base::unexpected(Error::kFailedToInitializeDatabase);
+  }
+
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "id,"
+          "token_high,"
+          "token_low FROM dictionaries "
+          "ORDER BY id";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  std::vector<base::UnguessableToken> tokens;
+  while (statement.Step()) {
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(statement.ColumnInt64(1), statement.ColumnInt64(2));
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    tokens.emplace_back(*disk_cache_key_token);
+  }
+  return base::ok(
+      std::set<base::UnguessableToken>(tokens.begin(), tokens.end()));
+}
+
+void SQLitePersistentSharedDictionaryStore::Backend::
+    UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
+                                 base::Time last_used_time) {
+  CHECK(client_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!background_task_runner()->RunsTasksInCurrentSequence());
+  size_t num_pending;
+  {
+    base::AutoLock locked(lock_);
+    pending_last_used_time_updates_[primary_key_in_database] = last_used_time;
+    num_pending = ++num_pending_;
+  }
+  // Commit every 30 seconds.
+  static const int kCommitIntervalMs = 30 * 1000;
+  // Commit right away if we have more than 100 operations.
+  static const size_t kCommitAfterBatchSize = 100;
+  if (num_pending == 1) {
+    // We've gotten our first entry for this batch, fire off the timer.
+    if (!background_task_runner()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(&Backend::Commit, this),
+            base::Milliseconds(kCommitIntervalMs))) {
+      NOTREACHED() << "background_task_runner_ is not running.";
+    }
+  } else if (num_pending >= kCommitAfterBatchSize) {
+    // We've reached a big enough batch, fire off a commit now.
+    PostBackgroundTask(FROM_HERE, base::BindOnce(&Backend::Commit, this));
+  }
+}
+
 bool SQLitePersistentSharedDictionaryStore::Backend::
     GetExistingDictionarySizeAndDiskCacheKeyToken(
         const SharedDictionaryStorageIsolationKey& isolation_key,
@@ -578,6 +1162,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
   checked_total_dictionary_size += size_delta;
   if (!checked_total_dictionary_size.IsValid()) {
     LOG(ERROR) << "Invalid total_dict_size detected.";
+    base::debug::DumpWithoutCrashing();
     return Error::kInvalidTotalDictSize;
   }
   *total_dictionary_size_out = checked_total_dictionary_size.ValueOrDie();
@@ -639,6 +1224,60 @@ void SQLitePersistentSharedDictionaryStore::ClearAllDictionaries(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->ClearAllDictionaries(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
+}
+
+void SQLitePersistentSharedDictionaryStore::ClearDictionaries(
+    const base::Time start_time,
+    const base::Time end_time,
+    base::RepeatingCallback<bool(const GURL&)> url_matcher,
+    base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->ClearDictionaries(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      start_time, end_time, std::move(url_matcher));
+}
+
+void SQLitePersistentSharedDictionaryStore::DeleteExpiredDictionaries(
+    const base::Time now,
+    base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->DeleteExpiredDictionaries(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)), now);
+}
+
+void SQLitePersistentSharedDictionaryStore::ProcessEviction(
+    const uint64_t cache_max_size,
+    const uint64_t low_watermark,
+    base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->ProcessEviction(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      cache_max_size, low_watermark);
+}
+
+void SQLitePersistentSharedDictionaryStore::GetAllDiskCacheKeyTokens(
+    base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->GetAllDiskCacheKeyTokens(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
+}
+
+void SQLitePersistentSharedDictionaryStore::
+    DeleteDictionariesByDiskCacheKeyTokens(
+        std::set<base::UnguessableToken> disk_cache_key_tokens,
+        base::OnceCallback<void(Error)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->DeleteDictionariesByDiskCacheKeyTokens(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      std::move(disk_cache_key_tokens));
+}
+
+void SQLitePersistentSharedDictionaryStore::UpdateDictionaryLastUsedTime(
+    int64_t primary_key_in_database,
+    base::Time last_used_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->UpdateDictionaryLastUsedTime(primary_key_in_database,
+                                         last_used_time);
 }
 
 base::WeakPtr<SQLitePersistentSharedDictionaryStore>

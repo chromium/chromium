@@ -73,10 +73,10 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   ~Blob() override;
 
   virtual uint64_t size() const { return blob_data_handle_->size(); }
-  virtual Blob* slice(int64_t start,
-                      int64_t end,
-                      const String& content_type,
-                      ExceptionState&) const;
+  Blob* slice(int64_t start,
+              int64_t end,
+              const String& content_type,
+              ExceptionState&) const;
 
   // To allow ExceptionState to be passed in last, manually enumerate the
   // optional argument overloads.
@@ -108,13 +108,13 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   virtual bool HasBackingFile() const { return false; }
 
   // Used by the JavaScript Blob and File constructors.
-  virtual void AppendTo(BlobData&) const;
+  void AppendTo(BlobData&) const;
 
   // URLRegistrable to support PublicURLs.
   URLRegistry& Registry() const final;
   bool IsMojoBlob() final;
   void CloneMojoBlob(mojo::PendingReceiver<mojom::blink::Blob>) final;
-  mojo::PendingRemote<mojom::blink::Blob> AsMojoBlob();
+  mojo::PendingRemote<mojom::blink::Blob> AsMojoBlob() const;
 
   // ImageBitmapSource implementation
   bool IsBlob() const override { return true; }

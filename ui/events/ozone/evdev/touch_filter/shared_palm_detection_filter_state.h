@@ -13,20 +13,12 @@ struct SharedPalmDetectionFilterState {
   // The latest stylus touch time. Note that this can include "hover".
   base::TimeTicks latest_stylus_touch_time;
 
-  // Latest time that a finger was detected on a touchscreen. It may or may not
-  // have been converted into a palm later.
-  base::TimeTicks latest_finger_touch_time = base::TimeTicks::UnixEpoch();
+  // Latest time that a finger touch was detected on a touchscreen. It may or
+  // may not have been detected as a palm.
+  base::TimeTicks latest_finger_touch_time;
 
-  // From a touch screen, the number of active touches on the screen that aren't
-  // palms.
-  uint32_t active_finger_touches = 0;
-
-  // From a touch screen, the number of active palms on the screen.
-  uint32_t active_palm_touches = 0;
-
-  // Latest time that a palm was detected on a touchscreen. the palm may or may
-  // not still be on the touchscreen.
-  base::TimeTicks latest_palm_touch_time = base::TimeTicks::UnixEpoch();
+  // If there is a palm in the latest touch frame.
+  bool has_palm = false;
 };
 
 }  // namespace ui

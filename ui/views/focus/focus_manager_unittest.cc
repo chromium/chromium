@@ -454,7 +454,7 @@ class FocusInAboutToRequestFocusFromTabTraversalView : public View {
   }
 
  private:
-  raw_ptr<views::View> view_to_focus_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> view_to_focus_ = nullptr;
 };
 }  // namespace
 
@@ -1219,10 +1219,10 @@ class RedirectToParentFocusManagerTest : public FocusManagerTest {
   }
 
  protected:
-  raw_ptr<FocusManager> parent_focus_manager_ = nullptr;
-  raw_ptr<FocusManager> bubble_focus_manager_ = nullptr;
+  raw_ptr<FocusManager, DanglingUntriaged> parent_focus_manager_ = nullptr;
+  raw_ptr<FocusManager, DanglingUntriaged> bubble_focus_manager_ = nullptr;
 
-  raw_ptr<BubbleDialogDelegateView> bubble_ = nullptr;
+  raw_ptr<BubbleDialogDelegateView, DanglingUntriaged> bubble_ = nullptr;
 };
 
 // Test that when an accelerator is sent to a bubble that isn't registered,

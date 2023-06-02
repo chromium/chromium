@@ -123,6 +123,7 @@
   "ui-slow-animations",
   "unsafely-treat-insecure-origin-as-secure",
   "update-menu-item-custom-summary",
+  "use-android-staging-smds",
   "use-angle",
   "use-custom-messages-domain",
   "use-fake-device-for-media-stream",

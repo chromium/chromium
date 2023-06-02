@@ -6,7 +6,6 @@
 
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
-#include "chrome/browser/companion/core/msbb_delegate.h"
 #include "chrome/browser/companion/core/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -14,11 +13,8 @@
 namespace companion {
 
 PromoHandler::PromoHandler(PrefService* pref_service,
-                           SigninDelegate* signin_delegate,
-                           MsbbDelegate* msbb_delegate)
-    : pref_service_(pref_service),
-      signin_delegate_(signin_delegate),
-      msbb_delegate_(msbb_delegate) {}
+                           SigninDelegate* signin_delegate)
+    : pref_service_(pref_service), signin_delegate_(signin_delegate) {}
 
 PromoHandler::~PromoHandler() = default;
 
@@ -33,26 +29,32 @@ void PromoHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void PromoHandler::OnPromoAction(PromoType promo_type,
-                                 PromoAction promo_action) {
-  if (promo_type == PromoType::kSignin) {
-    OnSigninPromo(promo_action);
-  } else if (promo_type == PromoType::kMsbb) {
-    OnMsbbPromo(promo_action);
-  } else if (promo_type == PromoType::kExps) {
-    OnExpsPromo(promo_action);
+                                 PromoAction promo_action,
+                                 const absl::optional<GURL>& exps_promo_url) {
+  switch (promo_type) {
+    case PromoType::kSignin:
+      OnSigninPromo(promo_action);
+      return;
+    case PromoType::kMsbb:
+      OnMsbbPromo(promo_action);
+      return;
+    case PromoType::kExps:
+      OnExpsPromo(promo_action, exps_promo_url);
+      return;
   }
 }
 
 void PromoHandler::OnSigninPromo(PromoAction promo_action) {
-  if (promo_action == PromoAction::kRejected) {
-    IncrementPref(kSigninPromoDeclinedCountPref);
+  switch (promo_action) {
+    case PromoAction::kRejected:
+      IncrementPref(kSigninPromoDeclinedCountPref);
+      return;
+    case PromoAction::kShown:
+      return;
+    case PromoAction::kAccepted:
+      signin_delegate_->StartSigninFlow();
+      return;
   }
-
-  if (promo_action != PromoAction::kAccepted) {
-    return;
-  }
-
-  signin_delegate_->StartSigninFlow();
 }
 
 void PromoHandler::OnMsbbPromo(PromoAction promo_action) {
@@ -60,17 +62,20 @@ void PromoHandler::OnMsbbPromo(PromoAction promo_action) {
     IncrementPref(kMsbbPromoDeclinedCountPref);
   } else if (promo_action == PromoAction::kAccepted) {
     // Turn on MSBB.
-    msbb_delegate_->EnableMsbb(true);
+    signin_delegate_->EnableMsbb(true);
   }
 }
 
-void PromoHandler::OnExpsPromo(PromoAction promo_action) {
+void PromoHandler::OnExpsPromo(PromoAction promo_action,
+                               const absl::optional<GURL>& exps_promo_url) {
   if (promo_action == PromoAction::kShown) {
     IncrementPref(kExpsPromoShownCountPref);
   } else if (promo_action == PromoAction::kRejected) {
     IncrementPref(kExpsPromoDeclinedCountPref);
   } else if (promo_action == PromoAction::kAccepted) {
-    // TODO(b/272954072): Nothing to do. Just collect metrics.
+    if (exps_promo_url.has_value()) {
+      signin_delegate_->LoadUrlInNewTab(exps_promo_url.value());
+    }
   }
 }
 

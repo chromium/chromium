@@ -83,7 +83,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  raw_ptr<ui::TestClipboard> test_clipboard_;
+  raw_ptr<ui::TestClipboard, DanglingUntriaged> test_clipboard_;
   url::ScopedSchemeRegistryForTests scoped_scheme_registry_;
 };
 

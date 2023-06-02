@@ -35,6 +35,7 @@ import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, UnusedSitePermissions}
 import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
+import {SafetyCheckExtensionsBrowserProxyImpl} from './safety_check_extensions_browser_proxy.js';
 import {getTemplate} from './safety_check_page.html.js';
 
 interface ParentChangedEvent {
@@ -84,6 +85,14 @@ export class SettingsSafetyCheckPageElement extends
         },
       },
 
+      /** Boolean to show/hide extensions entry point. */
+      safetyCheckExtensionsReviewEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('safetyCheckExtensionsReviewEnabled');
+        },
+      },
+
       /* List of notification permission sites. */
       notificationPermissionSites_: Array,
     };
@@ -93,6 +102,8 @@ export class SettingsSafetyCheckPageElement extends
   private parentDisplayString_: string;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private safetyCheckUnusedSitePermissionsEnabled_: boolean;
+  private safetyCheckExtensionsReviewEnabled_: boolean;
+  private safetyCheckNumberOfExtensionsThatNeedReview_: number;
   private notificationPermissionSites_: NotificationPermission[] = [];
   private unusedSitePermissions_: UnusedSitePermissions[] = [];
   private shouldRecordMetrics_: boolean = false;
@@ -115,6 +126,11 @@ export class SettingsSafetyCheckPageElement extends
     this.addWebUiListener(
         SafetyCheckCallbackConstants.PARENT_CHANGED,
         this.onSafetyCheckParentChanged_.bind(this));
+
+    // Register for safety check status updates.
+    this.addWebUiListener(
+        SafetyCheckCallbackConstants.EXTENSIONS_CHANGED,
+        this.shouldShowSafetyCheckExtensionsReview_.bind(this));
 
     // Configure default UI.
     this.parentDisplayString_ =
@@ -142,6 +158,10 @@ export class SettingsSafetyCheckPageElement extends
 
     this.unusedSitePermissions_ = await this.permissionsBrowserProxy_
                                       .getRevokedUnusedSitePermissionsList();
+
+    this.safetyCheckNumberOfExtensionsThatNeedReview_ =
+        await SafetyCheckExtensionsBrowserProxyImpl.getInstance()
+            .getNumberOfExtensionsThatNeedReview();
 
     if (this.shouldRecordMetrics_) {
       this.metricsBrowserProxy_
@@ -240,6 +260,16 @@ export class SettingsSafetyCheckPageElement extends
   private shouldShowUnusedSitePermissions_(): boolean {
     return this.safetyCheckUnusedSitePermissionsEnabled_ &&
         this.unusedSitePermissions_.length !== 0;
+  }
+
+  private shouldShowSafetyCheckExtensionsReview_(): boolean {
+    if (this.safetyCheckExtensionsReviewEnabled_ &&
+        this.safetyCheckNumberOfExtensionsThatNeedReview_ !== 0) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.SafetyCheck.ShownExtensionsReviewRow');
+      return true;
+    }
+    return false;
   }
 }
 

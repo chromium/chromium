@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './cloud_upload_dialog.js';
+import './connect_onedrive.js';
 import './file_handler_page.js';
 import './strings.m.js';
 
@@ -49,6 +50,10 @@ switch (dialogArgs.args.dialogPage) {
         dialogArgs.args.fileNames.length, dialogArgs.args.operationType,
         CloudProvider.GOOGLE_DRIVE);
     document.body.append(movePage);
+    break;
+  }
+  case DialogPage.kConnectToOneDrive: {
+    document.body.append(document.createElement('connect-onedrive'));
     break;
   }
 }

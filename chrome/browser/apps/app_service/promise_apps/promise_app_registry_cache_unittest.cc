@@ -4,11 +4,10 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 
-#include <sstream>
-
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
-#include "components/services/app_service/public/cpp/app_types.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,6 +86,88 @@ TEST_F(PromiseAppRegistryCacheTest, GetAllPromiseApps) {
   EXPECT_EQ(promise_app_list.size(), 2u);
   EXPECT_EQ(promise_app_list[0]->package_id, package_id_1);
   EXPECT_EQ(promise_app_list[1]->package_id, package_id_2);
+}
+
+class PromiseAppRegistryCacheObserverTest : public testing::Test,
+                                            PromiseAppRegistryCache::Observer {
+ public:
+  void SetUp() override {
+    cache_ = std::make_unique<PromiseAppRegistryCache>();
+  }
+
+  // apps::PromiseAppRegistryCache::Observer:
+  void OnPromiseAppUpdate(const PromiseAppUpdate& update) override {
+    EXPECT_EQ(update, *expected_update_);
+    on_promise_app_updated_called_ = true;
+  }
+
+  void OnPromiseAppRegistryCacheWillBeDestroyed(
+      apps::PromiseAppRegistryCache* cache) override {
+    obs_.Reset();
+  }
+
+  void ExpectPromiseAppUpdate(std::unique_ptr<PromiseAppUpdate> update) {
+    expected_update_ = std::move(update);
+    if (!obs_.IsObserving()) {
+      obs_.Observe(cache());
+    }
+    on_promise_app_updated_called_ = false;
+  }
+
+  bool CheckOnPromiseAppUpdatedCalled() {
+    return on_promise_app_updated_called_;
+  }
+
+  PromiseAppRegistryCache* cache() { return cache_.get(); }
+
+ private:
+  base::ScopedObservation<PromiseAppRegistryCache,
+                          PromiseAppRegistryCache::Observer>
+      obs_{this};
+  std::unique_ptr<PromiseAppUpdate> expected_update_;
+  std::unique_ptr<PromiseAppRegistryCache> cache_;
+  bool on_promise_app_updated_called_;
+};
+
+TEST_F(PromiseAppRegistryCacheObserverTest, OnPromiseAppUpdate_NewPromiseApp) {
+  auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->name = "Test";
+  promise_app->progress = 0;
+  promise_app->status = PromiseStatus::kPending;
+  promise_app->should_show = false;
+
+  ASSERT_FALSE(cache()->HasPromiseApp(kTestPackageId));
+
+  // Check that we get the appropriate update when registering a new promise
+  // app.
+  ExpectPromiseAppUpdate(
+      std::make_unique<PromiseAppUpdate>(nullptr, promise_app.get()));
+  cache()->OnPromiseApp(std::move(promise_app));
+  EXPECT_TRUE(CheckOnPromiseAppUpdatedCalled());
+}
+
+TEST_F(PromiseAppRegistryCacheObserverTest,
+       OnPromiseAppUpdate_ModifyPromiseApp) {
+  auto promise_app_pending = std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app_pending->status = PromiseStatus::kPending;
+  promise_app_pending->should_show = false;
+  ExpectPromiseAppUpdate(
+      std::make_unique<PromiseAppUpdate>(nullptr, promise_app_pending.get()));
+  cache()->OnPromiseApp(promise_app_pending->Clone());
+  EXPECT_TRUE(CheckOnPromiseAppUpdatedCalled());
+
+  // Check that we get the appropriate update when going from pending to
+  // installing.
+  auto promise_app_installing = std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app_installing->name = "Test";
+  promise_app_installing->progress = 0.4;
+  promise_app_installing->status = PromiseStatus::kInstalling;
+  promise_app_installing->should_show = true;
+  ExpectPromiseAppUpdate(std::make_unique<PromiseAppUpdate>(
+      promise_app_pending.get(), promise_app_installing.get()));
+  EXPECT_FALSE(CheckOnPromiseAppUpdatedCalled());
+  cache()->OnPromiseApp(std::move(promise_app_installing));
+  EXPECT_TRUE(CheckOnPromiseAppUpdatedCalled());
 }
 
 }  // namespace apps

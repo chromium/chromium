@@ -110,8 +110,8 @@ class ViewsTutorialTest : public views::ViewsTestBase {
                                         &help_bubble_registry_};
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::LabelButton> button_ = nullptr;
-  raw_ptr<views::Label> indicator_ = nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> button_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> indicator_ = nullptr;
   bool hide_button_on_press_ = false;
 
  private:

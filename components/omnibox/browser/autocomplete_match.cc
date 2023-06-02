@@ -450,19 +450,30 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // static
 const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
+  const bool use_chrome_refresh_icons =
+      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
     case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-      return omnibox::kAnswerCurrencyIcon;
+      return use_chrome_refresh_icons
+                 ? omnibox::kAnswerCurrencyChromeRefreshIcon
+                 : omnibox::kAnswerCurrencyIcon;
     case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-      return omnibox::kAnswerDictionaryIcon;
+      return use_chrome_refresh_icons
+                 ? omnibox::kAnswerDictionaryChromeRefreshIcon
+                 : omnibox::kAnswerDictionaryIcon;
     case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-      return omnibox::kAnswerFinanceIcon;
+      return use_chrome_refresh_icons ? omnibox::kAnswerFinanceChromeRefreshIcon
+                                      : omnibox::kAnswerFinanceIcon;
     case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-      return omnibox::kAnswerSunriseIcon;
+      return use_chrome_refresh_icons ? omnibox::kAnswerSunriseChromeRefreshIcon
+                                      : omnibox::kAnswerSunriseIcon;
     case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-      return omnibox::kAnswerTranslationIcon;
+      return use_chrome_refresh_icons
+                 ? omnibox::kAnswerTranslationChromeRefreshIcon
+                 : omnibox::kAnswerTranslationIcon;
     case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-      return omnibox::kAnswerWhenIsIcon;
+      return use_chrome_refresh_icons ? omnibox::kAnswerWhenIsChromeRefreshIcon
+                                      : omnibox::kAnswerWhenIsIcon;
     default:
       return omnibox::kAnswerDefaultIcon;
   }
@@ -474,8 +485,11 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
                           provider ? provider->type() : -1);
+  const bool use_chrome_refresh_icons =
+      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   if (is_bookmark)
-    return omnibox::kBookmarkIcon;
+    return use_chrome_refresh_icons ? omnibox::kBookmarkChromeRefreshIcon
+                                    : omnibox::kBookmarkIcon;
   if (answer.has_value())
     return AnswerTypeToAnswerIcon(answer->type());
   switch (type) {
@@ -493,12 +507,15 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TAB_SEARCH_DEPRECATED:
     case Type::TILE_NAVSUGGEST:
     case Type::OPEN_TAB:
-      return omnibox::kPageIcon;
+      return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
+                                      : omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
       if (subtypes.contains(/*SUBTYPE_TRENDS=*/143))
-        return omnibox::kTrendingUpIcon;
-      return vector_icons::kSearchIcon;
+        return use_chrome_refresh_icons ? omnibox::kTrendingUpChromeRefreshIcon
+                                        : omnibox::kTrendingUpIcon;
+      return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
+                                      : vector_icons::kSearchIcon;
     }
 
     case Type::SEARCH_WHAT_YOU_TYPED:
@@ -511,19 +528,22 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CLIPBOARD_TEXT:
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
-      return vector_icons::kSearchIcon;
+      return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
+                                      : vector_icons::kSearchIcon;
 
     case Type::SEARCH_HISTORY:
     case Type::SEARCH_SUGGEST_PERSONALIZED: {
       DCHECK(IsSearchHistoryType(type));
-      return omnibox::kClockIcon;
+      return use_chrome_refresh_icons ? omnibox::kClockChromeRefreshIcon
+                                      : omnibox::kClockIcon;
     }
 
     case Type::EXTENSION_APP_DEPRECATED:
       return omnibox::kExtensionAppIcon;
 
     case Type::CALCULATOR:
-      return omnibox::kCalculatorIcon;
+      return use_chrome_refresh_icons ? omnibox::kCalculatorChromeRefreshIcon
+                                      : omnibox::kCalculatorIcon;
 
     case Type::SEARCH_SUGGEST_TAIL:
     case Type::NULL_RESULT_MESSAGE:
@@ -550,14 +570,17 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         case DocumentType::DRIVE_OTHER:
           return omnibox::kDriveLogoIcon;
         default:
-          return omnibox::kPageIcon;
+          return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
+                                          : omnibox::kPageIcon;
       }
 
     case Type::HISTORY_CLUSTER:
-      return omnibox::kJourneysIcon;
+      return use_chrome_refresh_icons ? omnibox::kJourneysChromeRefreshIcon
+                                      : omnibox::kJourneysIcon;
 
     case Type::STARTER_PACK:
-      return omnibox::kProductIcon;
+      return use_chrome_refresh_icons ? omnibox::kProductChromeRefreshIcon
+                                      : omnibox::kProductIcon;
 
     case Type::NUM_TYPES:
       // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.
@@ -1404,7 +1427,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 
   // Merge scoring signals from duplicate match for ML model scoring and
   // training.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled()) {
     MergeScoringSignals(duplicate_match);
   }
 }

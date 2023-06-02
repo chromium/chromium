@@ -97,6 +97,13 @@ template("chrome_common_shared_library") {
     if (!(defined(testonly) && testonly)) {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+    } else {
+      # Compress sections to stay under 4gb hard limit on 32-bit current_cpu.
+      # https://crbug.com/1449278
+      if (symbol_level == 2 && !use_debug_fission &&
+          (current_cpu == "arm" || current_cpu == "x86")) {
+        configs += [ "//build/config:compress_debug_sections" ]
+      }
     }
 
     configs += [ "//build/config/compiler:chrome_orderfile_config" ]

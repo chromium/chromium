@@ -44,7 +44,8 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
-  EXPECT_EQ(PrivateAggregationBudgetKey::Api::kFledge, api_for_budgeting);
+  EXPECT_EQ(PrivateAggregationBudgetKey::Api::kProtectedAudience,
+            api_for_budgeting);
   EXPECT_FALSE(context_id.has_value());
 
   receiver_set_.Add(this, std::move(pending_receiver), worklet_origin);
@@ -64,15 +65,23 @@ void TestInterestGroupPrivateAggregationManager::SendHistogramReport(
         contributions,
     blink::mojom::AggregationServiceMode aggregation_mode,
     blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-  EXPECT_EQ(1u, contributions.size());
   const url::Origin& worklet_origin = receiver_set_.current_context();
-  auction_worklet::mojom::PrivateAggregationRequestPtr request =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(std::move(contributions[0])),
-          aggregation_mode, std::move(debug_mode_details));
 
-  private_aggregation_requests_[worklet_origin].push_back(std::move(request));
+  if (!allow_multiple_calls_per_origin_) {
+    EXPECT_FALSE(base::Contains(private_aggregation_requests_, worklet_origin));
+  }
+
+  // Here, we 'unbatch' the contributions into separate requests. This allows
+  // for simpler equality checks in testing.
+  for (blink::mojom::AggregatableReportHistogramContributionPtr& contribution :
+       contributions) {
+    auction_worklet::mojom::PrivateAggregationRequestPtr request =
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            auction_worklet::mojom::AggregatableReportContribution::
+                NewHistogramContribution(std::move(contribution)),
+            aggregation_mode, debug_mode_details->Clone());
+    private_aggregation_requests_[worklet_origin].push_back(std::move(request));
+  }
 }
 void TestInterestGroupPrivateAggregationManager::
     SetDebugModeDetailsOnNullReport(
@@ -112,6 +121,13 @@ void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
           const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
         logged_private_aggregation_requests_.push_back(request->Clone());
       });
+}
+
+void TestInterestGroupPrivateAggregationManager::Reset() {
+  private_aggregation_requests_.clear();
+  logged_private_aggregation_requests_.clear();
+  receiver_set_.Clear();
+  allow_multiple_calls_per_origin_ = false;
 }
 
 }  // namespace content

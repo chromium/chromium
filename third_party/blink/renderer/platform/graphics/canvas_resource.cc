@@ -14,6 +14,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -258,7 +259,8 @@ viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
 }
 
 gfx::BufferFormat CanvasResource::GetBufferFormat() const {
-  return viz::BufferFormat(GetSharedImageFormat().resource_format());
+  return viz::SinglePlaneSharedImageFormatToBufferFormat(
+      GetSharedImageFormat());
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
@@ -469,9 +471,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   gpu::Mailbox shared_image_mailbox;
   if (gpu_memory_buffer_) {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
-        gpu_memory_buffer_.get(), gpu_memory_buffer_manager, GetColorSpace(),
-        surface_origin, surface_alpha_type, shared_image_usage_flags,
-        "CanvasResourceRasterGmb");
+        GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
+        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
+        gpu_memory_buffer_->CloneHandle());
   } else {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
@@ -571,8 +573,8 @@ void CanvasResourceRasterSharedImage::TearDown() {
   DCHECK(!is_cross_thread());
 
   // The context deletes all shared images on destruction which means no
-  // cleanup is needed if the context was lost.
-  if (ContextProviderWrapper()) {
+  // cleanup is needed if the context or the mailbox was lost.
+  if (ContextProviderWrapper() && !IsLost() && IsValid()) {
     auto* raster_interface = RasterInterface();
     auto* shared_image_interface =
         ContextProviderWrapper()->ContextProvider()->SharedImageInterface();

@@ -10,9 +10,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/sync/base/features.h"
-#include "components/sync/base/time.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 
@@ -43,7 +43,7 @@ MakeDegradedRecoverabilityState(
   degraded_recoverability_state.set_degraded_recoverability_value(
       degraded_recoverability_value);
   degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
-      syncer::TimeToProtoTime(last_refresh_time));
+      TimeToProtoTime(last_refresh_time));
   return degraded_recoverability_state;
 }
 
@@ -63,9 +63,9 @@ TrustedVaultDegradedRecoverabilityHandler::
       degraded_recoverability_state.degraded_recoverability_value();
   if (degraded_recoverability_state
           .has_last_refresh_time_millis_since_unix_epoch()) {
-    base::Time last_refresh_time = syncer::ProtoTimeToTime(
-        degraded_recoverability_state
-            .last_refresh_time_millis_since_unix_epoch());
+    base::Time last_refresh_time =
+        ProtoTimeToTime(degraded_recoverability_state
+                            .last_refresh_time_millis_since_unix_epoch());
     if (base::Time::Now() >= last_refresh_time) {
       last_refresh_time_ =
           base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
@@ -73,9 +73,9 @@ TrustedVaultDegradedRecoverabilityHandler::
   }
 
   long_degraded_recoverability_refresh_period_ =
-      syncer::kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
   short_degraded_recoverability_refresh_period_ =
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
   UpdateCurrentRefreshPeriod();
 }
 

@@ -141,15 +141,26 @@ class EventInjector {
     return TRUE;
   }
 
+  static void Finalize(GSource* source) {
+    // Since the Source object memory is managed by glib, Source implicit
+    // destructor is never called, and thus Source's raw_ptr never release its
+    // internal reference on the pump pointer. This leads to adding pressure to
+    // the BackupRefPtr quarantine.
+    static_cast<Source*>(source)->injector = nullptr;
+  }
+
   raw_ptr<Source> source_;
   std::vector<Event> events_;
   int processed_events_;
   static GSourceFuncs SourceFuncs;
 };
 
-GSourceFuncs EventInjector::SourceFuncs = {EventInjector::Prepare,
-                                           EventInjector::Check,
-                                           EventInjector::Dispatch, nullptr};
+GSourceFuncs EventInjector::SourceFuncs = {
+    EventInjector::Prepare,
+    EventInjector::Check,
+    EventInjector::Dispatch,
+    EventInjector::Finalize,
+};
 
 void IncrementInt(int *value) {
   ++*value;

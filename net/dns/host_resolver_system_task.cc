@@ -273,23 +273,6 @@ void HostResolverSystemTask::StartLookupAttempt() {
   DCHECK(!was_completed());
   ++attempt_number_;
 
-  auto lookup_complete_cb =
-      base::BindOnce(&HostResolverSystemTask::OnLookupComplete,
-                     weak_ptr_factory_.GetWeakPtr(), attempt_number_);
-
-  // If a hook has been installed, call it instead of posting a resolution task
-  // to a worker thread.
-  if (GetSystemDnsResolverOverride()) {
-    GetSystemDnsResolverOverride().Run(hostname_, address_family_, flags_,
-                                       std::move(lookup_complete_cb), network_);
-  } else {
-    base::OnceCallback<int(AddressList * addrlist, int* os_error)> resolve_cb =
-        base::BindOnce(&ResolveOnWorkerThread, params_.resolver_proc, hostname_,
-                       address_family_, flags_, network_);
-    PostSystemDnsResolutionTaskAndReply(std::move(resolve_cb),
-                                        std::move(lookup_complete_cb));
-  }
-
   net_log_.AddEventWithIntParams(
       NetLogEventType::HOST_RESOLVER_MANAGER_ATTEMPT_STARTED, "attempt_number",
       attempt_number_);
@@ -306,6 +289,25 @@ void HostResolverSystemTask::StartLookupAttempt() {
                        weak_ptr_factory_.GetWeakPtr()),
         params_.unresponsive_delay *
             std::pow(params_.retry_factor, attempt_number_ - 1));
+  }
+
+  auto lookup_complete_cb =
+      base::BindOnce(&HostResolverSystemTask::OnLookupComplete,
+                     weak_ptr_factory_.GetWeakPtr(), attempt_number_);
+
+  // If a hook has been installed, call it instead of posting a resolution task
+  // to a worker thread.
+  if (GetSystemDnsResolverOverride()) {
+    GetSystemDnsResolverOverride().Run(hostname_, address_family_, flags_,
+                                       std::move(lookup_complete_cb), network_);
+    // Do not add code below. `lookup_complete_cb` may have already deleted
+    // `this`.
+  } else {
+    base::OnceCallback<int(AddressList * addrlist, int* os_error)> resolve_cb =
+        base::BindOnce(&ResolveOnWorkerThread, params_.resolver_proc, hostname_,
+                       address_family_, flags_, network_);
+    PostSystemDnsResolutionTaskAndReply(std::move(resolve_cb),
+                                        std::move(lookup_complete_cb));
   }
 }
 
@@ -409,14 +411,23 @@ int SystemHostResolverCall(const std::string& host,
   // OpenBSD does not support it, either.
   hints.ai_flags = 0;
 #else
+  // On other operating systems, AI_ADDRCONFIG may reduce the amount of
+  // unnecessary DNS lookups, e.g. getaddrinfo() will not send a request for
+  // AAAA records if the current machine has no IPv6 addresses configured and
+  // therefore could not use the resulting AAAA record anyway. On some ancient
+  // routers, AAAA DNS queries won't be handled correctly and will cause
+  // multiple retransmitions and large latency spikes.
   hints.ai_flags = AI_ADDRCONFIG;
 #endif
 
   // On Linux AI_ADDRCONFIG doesn't consider loopback addresses, even if only
   // loopback addresses are configured. So don't use it when there are only
-  // loopback addresses.
-  if (host_resolver_flags & HOST_RESOLVER_LOOPBACK_ONLY)
+  // loopback addresses. See loopback_only.h and
+  // https://fedoraproject.org/wiki/QA/Networking/NameResolution/ADDRCONFIG for
+  // a description of some of the issues AI_ADDRCONFIG can cause.
+  if (host_resolver_flags & HOST_RESOLVER_LOOPBACK_ONLY) {
     hints.ai_flags &= ~AI_ADDRCONFIG;
+  }
 
   if (host_resolver_flags & HOST_RESOLVER_CANONNAME)
     hints.ai_flags |= AI_CANONNAME;

@@ -43,16 +43,15 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
     : profile_(profile),
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
-  drive::DriveIntegrationService* const drive_service = GetDriveService();
-  drive_service->AddObserver(this);
+  if (drive::DriveIntegrationService* const drive_service = GetDriveService()) {
+    drive_service->AddObserver(this);
+  }
 }
 
 GoogleDrivePageHandler::~GoogleDrivePageHandler() {
-  drive::DriveIntegrationService* const drive_service = GetDriveService();
-  if (!drive_service) {
-    return;
+  if (drive::DriveIntegrationService* const drive_service = GetDriveService()) {
+    drive_service->RemoveObserver(this);
   }
-  drive_service->RemoveObserver(this);
 }
 
 void GoogleDrivePageHandler::CalculateRequiredSpace() {

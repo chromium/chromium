@@ -47,11 +47,13 @@ class ASH_EXPORT CalendarEventListView
   // Updates the event list entries.
   void UpdateListItems();
 
-  // Takes a list of `CalendarEvent`'s and generates a parent container
-  // containing each `CalendarEvent` as a `CalendarEventListItemViewJelly` view.
+  // Takes a list of `CalendarEvent`'s and a parent view id and generates a
+  // parent container containing each `CalendarEvent` as a
+  // `CalendarEventListItemViewJelly` view.
   // Returns the parent container.
   std::unique_ptr<views::View> CreateChildEventListView(
-      std::list<google_apis::calendar::CalendarEvent> events);
+      std::list<google_apis::calendar::CalendarEvent> events,
+      int parent_view_id);
 
   // Owned by `CalendarView`.
   raw_ptr<CalendarViewController, ExperimentalAsh> calendar_view_controller_;

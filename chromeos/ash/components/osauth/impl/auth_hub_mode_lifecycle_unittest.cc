@@ -12,6 +12,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_mode_lifecycle.h"
 #include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
@@ -41,10 +42,7 @@ class MockModeLifecycleOwner : public AuthHubModeLifecycle::Owner {
   MockModeLifecycleOwner() = default;
   ~MockModeLifecycleOwner() override = default;
 
-  MOCK_METHOD(void,
-              OnReadyForMode,
-              (AuthHubMode, AuthHubModeLifecycle::EnginesMap),
-              (override));
+  MOCK_METHOD(void, OnReadyForMode, (AuthHubMode, AuthEnginesMap), (override));
   MOCK_METHOD(void, OnExitedMode, (AuthHubMode), (override));
   MOCK_METHOD(void, OnModeShutdown, (), (override));
 };
@@ -131,7 +129,7 @@ TEST_F(AuthHubModeLifecycleTest, SingleFactorInitShutdown) {
   EXPECT_FALSE(lifecycle_.IsReady());
   Mock::VerifyAndClearExpectations(&owner_);
 
-  AuthHubModeLifecycle::EnginesMap engines;
+  AuthEnginesMap engines;
   EXPECT_CALL(owner_, OnReadyForMode(Eq(AuthHubMode::kLoginScreen), _))
       .WillOnce(MoveArg<1>(&engines));
 
@@ -233,7 +231,7 @@ TEST_F(AuthHubModeLifecycleTest, SingleFactorReInitialization) {
 
   // Should finish shutdown and proceed to initialization for second
   // requested mode.
-  AuthHubModeLifecycle::EnginesMap engines;
+  AuthEnginesMap engines;
   EXPECT_CALL(owner_, OnReadyForMode(Eq(AuthHubMode::kInSession), _))
       .WillOnce(MoveArg<1>(&engines));
 
@@ -264,7 +262,7 @@ TEST_F(AuthHubModeLifecycleTest, FactorInitializationTimeout) {
 
   EXPECT_CALL(*engines_[kOneFactor], InitializationTimedOut());
 
-  AuthHubModeLifecycle::EnginesMap engines;
+  AuthEnginesMap engines;
   EXPECT_CALL(owner_, OnReadyForMode(Eq(AuthHubMode::kLoginScreen), _))
       .WillOnce(MoveArg<1>(&engines));
 
@@ -295,7 +293,7 @@ TEST_F(AuthHubModeLifecycleTest, FactorShutdownTimeout) {
   ExpectLoginFactor(kOneFactor);
   ExpectLoginFactor(kAnotherFactor);
 
-  AuthHubModeLifecycle::EnginesMap engines;
+  AuthEnginesMap engines;
   EXPECT_CALL(owner_, OnReadyForMode(Eq(AuthHubMode::kLoginScreen), _))
       .WillOnce(MoveArg<1>(&engines));
 

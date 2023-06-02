@@ -90,10 +90,7 @@ SVGTextContentElement::SVGTextContentElement(const QualifiedName& tag_name,
           MakeGarbageCollected<SVGAnimatedEnumeration<SVGLengthAdjustType>>(
               this,
               svg_names::kLengthAdjustAttr,
-              kSVGLengthAdjustSpacing)) {
-  AddToPropertyMap(text_length_);
-  AddToPropertyMap(length_adjust_);
-}
+              kSVGLengthAdjustSpacing)) {}
 
 void SVGTextContentElement::Trace(Visitor* visitor) const {
   visitor->Trace(text_length_);
@@ -345,6 +342,26 @@ bool SVGTextContentElement::SelfHasRelativeLengths() const {
 SVGTextContentElement* SVGTextContentElement::ElementFromLineLayoutItem(
     const LineLayoutItem& line_layout_item) {
   return nullptr;
+}
+
+SVGAnimatedPropertyBase* SVGTextContentElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == text_length_->AttributeName()) {
+    return text_length_.Get();
+  } else if (attribute_name == svg_names::kLengthAdjustAttr) {
+    return length_adjust_.Get();
+  } else {
+    return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGTextContentElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{text_length_.Get(), length_adjust_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGraphicsElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

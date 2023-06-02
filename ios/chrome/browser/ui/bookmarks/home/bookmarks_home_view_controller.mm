@@ -114,7 +114,9 @@ typedef NS_ENUM(NSInteger, BookmarksContextBarState) {
 };
 
 // Estimated TableView row height.
-const CGFloat kEstimatedRowHeight = 65.0;
+constexpr CGFloat kEstimatedRowHeight = 65.0;
+// Separation between non-empty account and profile sections.
+constexpr CGFloat kSpaceBetweenAccountAndProfileSections = 32.0;
 
 // Returns a vector of all URLs in `nodes`.
 std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
@@ -408,7 +410,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.searchTerm = @"";
 
-  if (_profileBookmarkModel->loaded()) {
+  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     [self loadBookmarkViews];
   } else {
     [self showLoadingSpinnerBackground];
@@ -423,7 +426,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
   // Hide the toolbar if we're displaying the root node.
-  if (_profileBookmarkModel->loaded() &&
+  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get()) &&
       (![self isDisplayingBookmarkRoot] ||
        self.mediator.currentlyShowingSearchResults)) {
     self.navigationController.toolbarHidden = NO;
@@ -498,10 +502,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.tableView.dropDelegate = self.dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
 
-  // Setting a sectionFooterHeight of 0 will be the same as not having a
-  // footerView, which shows a cell separator for the last cell. Removing this
-  // line will also create a default footer of height 30.
-  self.tableView.sectionFooterHeight = 1;
   self.tableView.accessibilityIdentifier = kBookmarksHomeTableViewIdentifier;
   self.tableView.estimatedRowHeight = kEstimatedRowHeight;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
@@ -531,7 +531,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [self editExternalBookmarkIfSet];
 
-  DCHECK(_profileBookmarkModel->loaded());
+  DCHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+      _profileBookmarkModel.get(), _accountBookmarkModel.get()));
   DCHECK([self isViewLoaded]);
 }
 
@@ -1052,7 +1053,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
               node, self.displayedFolderNode, position,
-              _profileBookmarkModel.get(), self.browserState)];
+              _profileBookmarkModel.get(), _accountBookmarkModel.get(),
+              self.browserState)];
 }
 
 - (void)handleRefreshContextBar {
@@ -2531,6 +2533,29 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                                actionProvider:actionProvider];
 }
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return [self.tableViewModel numberOfItemsInSection:section] == 0
+             ? 0
+             : UITableViewAutomaticDimension;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  // Add space between profile and account sections only if both are not empty,
+  // to avoid useless space at the end of the account section content.
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
+          BookmarksHomeSectionIdentifierRootAccount &&
+      [self hasItemsInSectionIdentifier:
+                BookmarksHomeSectionIdentifierRootProfile] &&
+      [self hasItemsInSectionIdentifier:
+                BookmarksHomeSectionIdentifierRootAccount]) {
+    return kSpaceBetweenAccountAndProfileSections;
+  } else {
+    return 0;
+  }
+}
+
 #pragma mark - TableViewURLDragDataSource
 
 - (URLInfo*)tableView:(UITableView*)tableView
@@ -2567,7 +2592,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
               base::SysUTF8ToNSString(URL.spec()), URL,
               self.displayedFolderNode, index, _profileBookmarkModel.get(),
-              self.browserState)];
+              _accountBookmarkModel.get(), self.browserState)];
 }
 
 @end

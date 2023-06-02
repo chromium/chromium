@@ -52,6 +52,8 @@ class MODULES_EXPORT SmartCardResourceManager final
                            ExceptionState& exception_state);
   ScriptPromise watchForReaders(ScriptState* script_state,
                                 ExceptionState& exception_state);
+  ScriptPromise establishContext(ScriptState* script_state,
+                                 ExceptionState& exception_state);
 
   // mojom::blink::SmartCardServiceClient overrides:
   void ReaderAdded(SmartCardReaderInfoPtr reader_info) override;
@@ -75,6 +77,9 @@ class MODULES_EXPORT SmartCardResourceManager final
   void UpdateReadersCache(mojom::blink::SmartCardGetReadersResultPtr);
 
   void OnServiceClientRegistered(bool supports_reader_presence_observer);
+  void OnCreateContextDone(
+      ScriptPromiseResolver*,
+      device::mojom::blink::SmartCardCreateContextResultPtr);
   void ResolveWatchForReadersPromise(ScriptPromiseResolver* resolver);
   SmartCardReaderPresenceObserver* GetOrCreatePresenceObserver();
 
@@ -84,6 +89,7 @@ class MODULES_EXPORT SmartCardResourceManager final
       receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_readers_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> watch_for_readers_promises_;
+  HeapHashSet<Member<ScriptPromiseResolver>> create_context_promises_;
   bool tracking_started_ = false;
 
   // maps a reader name to its object

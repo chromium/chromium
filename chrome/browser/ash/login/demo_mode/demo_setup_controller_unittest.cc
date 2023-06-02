@@ -17,6 +17,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
+#include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -39,10 +41,12 @@ namespace ash {
 namespace {
 
 using test::DemoModeSetupResult;
+using test::SetupDemoModeNoEnrollment;
+using test::SetupDemoModeOnlineEnrollment;
 using test::SetupDummyOfflinePolicyDir;
-using test::SetupMockDemoModeNoEnrollmentHelper;
-using test::SetupMockDemoModeOnlineEnrollmentHelper;
 using ::testing::_;
+using ::testing::Mock;
+using ::testing::NiceMock;
 
 class DemoSetupControllerTestHelper {
  public:
@@ -129,7 +133,6 @@ class DemoSetupControllerTest : public testing::Test {
   }
 
   void TearDown() override {
-    EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(nullptr);
     SessionManagerClient::Shutdown();
     DBusThreadManager::Shutdown();
     SystemSaltGetter::Shutdown();
@@ -152,7 +155,12 @@ class DemoSetupControllerTest : public testing::Test {
 };
 
 TEST_F(DemoSetupControllerTest, OnlineSuccess) {
-  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupDemoModeOnlineEnrollment(&mock_enrollment_launcher,
+                                DemoModeSetupResult::SUCCESS);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->Enroll(
@@ -169,7 +177,12 @@ TEST_F(DemoSetupControllerTest, OnlineSuccess) {
 }
 
 TEST_F(DemoSetupControllerTest, OnlineErrorDefault) {
-  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::ERROR_DEFAULT);
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupDemoModeOnlineEnrollment(&mock_enrollment_launcher,
+                                DemoModeSetupResult::ERROR_DEFAULT);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->Enroll(
@@ -187,8 +200,12 @@ TEST_F(DemoSetupControllerTest, OnlineErrorDefault) {
 }
 
 TEST_F(DemoSetupControllerTest, OnlineErrorPowerwashRequired) {
-  SetupMockDemoModeOnlineEnrollmentHelper(
-      DemoModeSetupResult::ERROR_POWERWASH_REQUIRED);
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupDemoModeOnlineEnrollment(&mock_enrollment_launcher,
+                                DemoModeSetupResult::ERROR_POWERWASH_REQUIRED);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->Enroll(
@@ -207,7 +224,11 @@ TEST_F(DemoSetupControllerTest, OnlineErrorPowerwashRequired) {
 
 TEST_F(DemoSetupControllerTest, OnlineComponentError) {
   // Expect no enrollment attempt.
-  SetupMockDemoModeNoEnrollmentHelper();
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupDemoModeNoEnrollment(&mock_enrollment_launcher);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->SetCrOSComponentLoadErrorForTest(
@@ -228,7 +249,12 @@ TEST_F(DemoSetupControllerTest, OnlineComponentError) {
 }
 
 TEST_F(DemoSetupControllerTest, EnrollTwice) {
-  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::ERROR_DEFAULT);
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupDemoModeOnlineEnrollment(&mock_enrollment_launcher,
+                                DemoModeSetupResult::ERROR_DEFAULT);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->Enroll(
@@ -245,8 +271,10 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
   EXPECT_EQ("", GetDeviceRequisition());
 
   helper_->Reset();
+  Mock::VerifyAndClearExpectations(&mock_enrollment_launcher);
 
-  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
+  SetupDemoModeOnlineEnrollment(&mock_enrollment_launcher,
+                                DemoModeSetupResult::SUCCESS);
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->Enroll(
@@ -374,7 +402,12 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailForCustomOU) {
 }
 
 TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStore) {
-  SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
+  NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher;
+  SetupDemoModeOnlineEnrollment(&mock_enrollment_launcher,
+                                DemoModeSetupResult::SUCCESS);
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher));
 
   tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOnline);
   tested_controller_->SetAndCanonicalizeRetailerName("Retailer");

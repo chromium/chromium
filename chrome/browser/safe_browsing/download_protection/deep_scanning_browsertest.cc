@@ -176,7 +176,7 @@ class DownloadDeepScanningBrowserTestBase
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         browser()->profile())
         ->SetIdentityManagerForTesting(
             identity_test_environment_->identity_manager());

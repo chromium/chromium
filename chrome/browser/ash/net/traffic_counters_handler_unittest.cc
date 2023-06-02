@@ -21,6 +21,8 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -34,7 +36,12 @@ class TrafficCountersHandlerTest : public ::testing::Test {
  public:
   TrafficCountersHandlerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // TODO(b/278643115) Remove LoginState dependency.
     LoginState::Initialize();
+
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<user_manager::FakeUserManager>());
+
     helper_ = std::make_unique<NetworkHandlerTestHelper>();
     helper_->AddDefaultProfiles();
     helper_->ResetDevicesAndServices();
@@ -76,6 +83,7 @@ class TrafficCountersHandlerTest : public ::testing::Test {
     traffic_counters_handler_.reset();
     cros_network_config_.reset();
     helper_.reset();
+    scoped_user_manager_.reset();
     LoginState::Shutdown();
   }
 
@@ -177,6 +185,7 @@ class TrafficCountersHandlerTest : public ::testing::Test {
   // are dependent on them.
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
   std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;

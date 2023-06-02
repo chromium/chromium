@@ -219,8 +219,8 @@ class AppMenuHandlerImpl
         if (mDelegate.shouldShowHeader(appRect.height())) {
             headerResourceId = mDelegate.getHeaderResourceId();
         }
-        mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, pt.y,
-                footerResourceId, headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
+        mAppMenu.show(wrapper, anchorView, isByPermanentButton, rotation, appRect, footerResourceId,
+                headerResourceId, mDelegate.getGroupDividerId(), mHighlightMenuId,
                 customViewBinders, mDelegate.isMenuIconAtStart());
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();

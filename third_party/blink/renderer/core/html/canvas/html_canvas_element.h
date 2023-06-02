@@ -75,6 +75,8 @@ class
 typedef CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext
     RenderingContext;
 
+CORE_EXPORT BASE_DECLARE_FEATURE(kStartCanvasWithAccelerationDisabled);
+
 // This contains the information of HTML Canvas Element,
 // There are four different types of rendering context this HTML Canvas can own.
 // It can be a 3D Context (WebGL or WebGL2), 2D Context,
@@ -315,6 +317,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool IsPlaceholder() const override { return IsOffscreenCanvasRegistered(); }
 
+  bool ShouldDisableAccelerationBecauseOfReadback() const;
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -343,7 +347,6 @@ class CORE_EXPORT HTMLCanvasElement final
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
   bool ShouldAccelerate() const;
-
   void ParseAttribute(const AttributeModificationParams&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   bool AreAuthorShadowsAllowed() const override { return false; }

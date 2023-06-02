@@ -138,7 +138,7 @@ export class KeyboardRemapModifierKeyRowElement extends
       // Launcher and Search key will display icon instead of text.
       case MetaKey.kLauncher:
       case MetaKey.kSearch:
-        return '';
+        return this.i18n('perDeviceKeyboardKeySearch');
     }
   }
 

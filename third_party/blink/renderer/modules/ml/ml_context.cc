@@ -113,6 +113,7 @@ void MLContext::computeSync(MLGraph* graph,
 }
 
 void MLContext::CreateWebNNGraph(ScriptState* script_state,
+                                 webnn::mojom::blink::GraphInfoPtr graph_info,
                                  CreateWebNNGraphCallback callback) {
   if (!webnn_context_.is_bound()) {
     // Needs to create `WebNNContext` interface first.
@@ -121,16 +122,19 @@ void MLContext::CreateWebNNGraph(ScriptState* script_state,
     ml_->CreateWebNNContext(
         std::move(options),
         WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(this),
-                      WrapPersistent(script_state), std::move(callback)));
+                      WrapPersistent(script_state), std::move(graph_info),
+                      std::move(callback)));
   } else {
     // Directly use `WebNNContext` to create `WebNNGraph` message pipe.
     webnn_context_->CreateGraph(
+        std::move(graph_info),
         WTF::BindOnce(std::move(callback), CreateWebNNGraphResult::kOk));
   }
 }
 
 void MLContext::OnCreateWebNNContext(
     ScriptState* script_state,
+    webnn::mojom::blink::GraphInfoPtr graph_info,
     CreateWebNNGraphCallback callback,
     webnn::mojom::blink::CreateContextResult result,
     mojo::PendingRemote<webnn::mojom::blink::WebNNContext>
@@ -158,6 +162,7 @@ void MLContext::OnCreateWebNNContext(
           execution_context->GetTaskRunner(TaskType::kInternalDefault));
 
       webnn_context_->CreateGraph(
+          std::move(graph_info),
           WTF::BindOnce(std::move(callback), CreateWebNNGraphResult::kOk));
       return;
     }

@@ -68,9 +68,10 @@ void ClearAppUsageStats(const std::string& app_id) {
 #elif BUILDFLAG(IS_WIN)
   for (const auto& key_path : UsageStatsRegKeyPaths()) {
     LONG outcome = base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()),
-                                     key_path.c_str(), Wow6432(KEY_WRITE))
+                                     key_path.c_str(), Wow6432(DELETE))
                        .DeleteKey(base::SysUTF8ToWide(app_id).c_str());
-    ASSERT_TRUE(outcome == ERROR_SUCCESS || outcome == ERROR_FILE_NOT_FOUND);
+    ASSERT_TRUE(outcome == ERROR_SUCCESS || outcome == ERROR_FILE_NOT_FOUND ||
+                outcome == ERROR_INVALID_HANDLE);
   }
 #endif
 }

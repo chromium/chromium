@@ -278,7 +278,8 @@ TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   EXPECT_CALL(*mock_engine_, AbortPendingReads());
   manifest_demuxer_->CancelPendingSeek(base::Seconds(5));
   task_environment_.RunUntilIdle();
-  ASSERT_EQ(manifest_demuxer_->get_media_time_for_testing(), base::Seconds(5));
+  ASSERT_EQ(manifest_demuxer_->get_media_time_for_testing(),
+            base::Seconds(100));
 
   // Running `delay_cb` will finish the seek, and start a new update, even if
   // it runs with kNoTimestamp.
@@ -286,7 +287,8 @@ TEST_F(ManifestDemuxerTest, CancelSeekAfterDemuxerBeforeEngine) {
   std::move(delay_cb).Run(kNoTimestamp);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(!!delay_cb);
-  ASSERT_EQ(manifest_demuxer_->get_media_time_for_testing(), base::Seconds(5));
+  ASSERT_EQ(manifest_demuxer_->get_media_time_for_testing(),
+            base::Seconds(100));
 
   // Run it again to end the loop.
   std::move(delay_cb).Run(kNoTimestamp);

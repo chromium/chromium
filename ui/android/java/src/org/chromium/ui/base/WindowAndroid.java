@@ -24,7 +24,6 @@ import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -38,7 +37,6 @@ import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -78,29 +76,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             KeyboardVisibilityDelegate.getInstance();
 
-    private class TouchExplorationMonitor {
-        // Listener that tells us when touch exploration is enabled or disabled.
-        private AccessibilityManager.TouchExplorationStateChangeListener mTouchExplorationListener;
-
-        TouchExplorationMonitor() {
-            mTouchExplorationListener =
-                    new AccessibilityManager.TouchExplorationStateChangeListener() {
-                @Override
-                public void onTouchExplorationStateChanged(boolean enabled) {
-                    mIsTouchExplorationEnabled =
-                            mAccessibilityManager.isTouchExplorationEnabled();
-                    refreshWillNotDraw();
-                }
-            };
-            mAccessibilityManager.addTouchExplorationStateChangeListener(mTouchExplorationListener);
-        }
-
-        void destroy() {
-            mAccessibilityManager.removeTouchExplorationStateChangeListener(
-                    mTouchExplorationListener);
-        }
-    }
-
     // Native pointer to the c++ WindowAndroid object.
     private long mNativeWindowAndroid;
     private final DisplayAndroid mDisplayAndroid;
@@ -120,18 +95,9 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private HashSet<Animator> mAnimationsOverContent = new HashSet<>();
     private View mAnimationPlaceholderView;
 
-    // System accessibility service.
-    private final AccessibilityManager mAccessibilityManager;
-
     /** A mechanism for observing and updating the application window's bottom inset. */
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier =
             new ApplicationViewportInsetSupplier();
-
-    // Whether touch exploration is enabled.
-    private boolean mIsTouchExplorationEnabled;
-
-    // A class that monitors the touch exploration state.
-    private TouchExplorationMonitor mTouchExplorationMonitor;
 
     private AndroidPermissionDelegate mPermissionDelegate;
 
@@ -242,12 +208,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         // Multiple refresh rate support is only available on M+.
         recomputeSupportedRefreshRates();
 
-        // Temporary solution for flaky tests, see https://crbug.com/767624 for context
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mAccessibilityManager =
-                    (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
-                            Context.ACCESSIBILITY_SERVICE);
-        }
         // Configuration.isDisplayServerWideColorGamut must be queried from the window's context.
         // Because of crbug.com/756180, many devices report true for isScreenWideColorGamut in
         // 8.0.0, even when they don't actually support wide color gamut.
@@ -677,9 +637,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         }
 
         mUnownedUserDataHost.destroy();
-
-        if (mTouchExplorationMonitor != null) mTouchExplorationMonitor.destroy();
-
         mApplicationBottomInsetSupplier.destroy();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
@@ -749,12 +706,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      */
     public void setAnimationPlaceholderView(View view) {
         mAnimationPlaceholderView = view;
-
-        // The accessibility focus ring also gets clipped by the SurfaceView 'hole', so
-        // make sure the animation placeholder view is in place if touch exploration is on.
-        mIsTouchExplorationEnabled = mAccessibilityManager.isTouchExplorationEnabled();
-        refreshWillNotDraw();
-        mTouchExplorationMonitor = new TouchExplorationMonitor();
     }
 
     /**
@@ -824,7 +775,9 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         animation.start();
 
         // When the first animation starts, make the placeholder 'draw' itself.
-        refreshWillNotDraw();
+        if (mAnimationPlaceholderView.willNotDraw()) {
+            mAnimationPlaceholderView.setWillNotDraw(false);
+        }
 
         // When the last animation ends, remove the placeholder view,
         // returning to the default optimized state.
@@ -833,7 +786,9 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
             public void onAnimationEnd(Animator animation) {
                 animation.removeListener(this);
                 mAnimationsOverContent.remove(animation);
-                refreshWillNotDraw();
+                if (mAnimationsOverContent.isEmpty()) {
+                    mAnimationPlaceholderView.setWillNotDraw(true);
+                }
             }
         });
     }
@@ -857,19 +812,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         View decorView = window.peekDecorView();
         if (decorView == null) return null;
         return decorView.getWindowToken();
-    }
-
-    /**
-     * Update whether the placeholder is 'drawn' based on whether an animation is running
-     * or touch exploration is enabled - if either of those are true, we call
-     * setWillNotDraw(false) to ensure that the animation is drawn over the SurfaceView,
-     * and otherwise we call setWillNotDraw(true).
-     */
-    private void refreshWillNotDraw() {
-        boolean willNotDraw = !mIsTouchExplorationEnabled && mAnimationsOverContent.isEmpty();
-        if (mAnimationPlaceholderView.willNotDraw() != willNotDraw) {
-            mAnimationPlaceholderView.setWillNotDraw(willNotDraw);
-        }
     }
 
     /**

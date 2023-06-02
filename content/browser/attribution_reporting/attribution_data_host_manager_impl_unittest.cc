@@ -573,10 +573,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kRegistered = 0, kProcessed = 3.
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
-
-  // kContextMenu = 2.
-  histograms.ExpectBucketCount(
-      "Conversions.SourceRegistration.NavigationType.Background", 2, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1436,7 +1432,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError2",
+  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError3",
                                 SourceRegistrationError::kInvalidJson, 1);
 }
 

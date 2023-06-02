@@ -87,10 +87,9 @@ void SuggestionControllerJavaScriptFeature::SelectNextElementInFrame(
     web::WebFrame* frame,
     const std::string& form_name,
     const std::string& field_name) {
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(form_name));
-  parameters.push_back(base::Value(field_name));
-  CallJavaScriptFunction(frame, "suggestion.selectNextElement", parameters);
+  CallJavaScriptFunction(
+      frame, "suggestion.selectNextElement",
+      base::Value::List().Append(form_name).Append(field_name));
 }
 
 void SuggestionControllerJavaScriptFeature::SelectPreviousElementInFrame(
@@ -102,10 +101,9 @@ void SuggestionControllerJavaScriptFeature::SelectPreviousElementInFrame(
     web::WebFrame* frame,
     const std::string& form_name,
     const std::string& field_name) {
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(form_name));
-  parameters.push_back(base::Value(field_name));
-  CallJavaScriptFunction(frame, "suggestion.selectPreviousElement", parameters);
+  CallJavaScriptFunction(
+      frame, "suggestion.selectPreviousElement",
+      base::Value::List().Append(form_name).Append(field_name));
 }
 
 void SuggestionControllerJavaScriptFeature::
@@ -123,11 +121,9 @@ void SuggestionControllerJavaScriptFeature::
         const std::string& field_name,
         base::OnceCallback<void(bool, bool)> completion_handler) {
   DCHECK(completion_handler);
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(form_name));
-  parameters.push_back(base::Value(field_name));
   CallJavaScriptFunction(
-      frame, "suggestion.hasPreviousNextElements", parameters,
+      frame, "suggestion.hasPreviousNextElements",
+      base::Value::List().Append(form_name).Append(field_name),
       base::BindOnce(&ProcessPreviousAndNextElementsPresenceResult,
                      std::move(completion_handler)),
       base::Seconds(kJavaScriptExecutionTimeoutInSeconds));

@@ -24,7 +24,8 @@ bool IsHistorySyncEnabled(Profile* profile) {
 
 // static
 WebHistoryServiceFactory* WebHistoryServiceFactory::GetInstance() {
-  return base::Singleton<WebHistoryServiceFactory>::get();
+  static base::NoDestructor<WebHistoryServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -64,5 +65,4 @@ WebHistoryServiceFactory::WebHistoryServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-WebHistoryServiceFactory::~WebHistoryServiceFactory() {
-}
+WebHistoryServiceFactory::~WebHistoryServiceFactory() = default;

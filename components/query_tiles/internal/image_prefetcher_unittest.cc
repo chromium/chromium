@@ -102,8 +102,8 @@ class ImagePrefetcherTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockImageLoader> image_loader_;
   std::unique_ptr<ImagePrefetcher> image_prefetcher_;
+  raw_ptr<MockImageLoader> image_loader_;
 };
 
 // All images should be fetched for ImagePrefetchMode::kAll.

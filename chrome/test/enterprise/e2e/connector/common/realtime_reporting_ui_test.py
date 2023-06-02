@@ -14,6 +14,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from test_util import create_chrome_webdriver
 from test_util import getElementFromShadowRoot
 
+from histogram.util import poll_histogram
+
 UnsafePageLink = 'http://testsafebrowsing.appspot.com/s/malware.html'
 UnsafeDownloadLink = 'http://testsafebrowsing.appspot.com/s/badrep.exe'
 
@@ -32,7 +34,9 @@ def main(argv):
   exclude_switches = ['disable-background-networking']
   chrome_options = webdriver.ChromeOptions()
   chrome_options.add_experimental_option('excludeSwitches', exclude_switches)
+  chrome_options.add_argument('--enable-stats-collection-bindings')
 
+  result = {}
   driver = create_chrome_webdriver(chrome_options=chrome_options)
 
   try:
@@ -60,7 +64,7 @@ def main(argv):
     driver.switch_to.window(driver.window_handles[1])
     WebDriverWait(driver=driver, timeout=10)
 
-    driver.find_element_by_xpath('//*[@id="reload-policies"]').click
+    driver.find_element_by_xpath('//*[@id="reload-policies"]').click()
     # Give the page 2 seconds to render the legend
     time.sleep(2)
     status_box = driver.find_element_by_css_selector('status-box')
@@ -80,13 +84,21 @@ def main(argv):
     WebDriverWait(driver=driver, timeout=10)
     msgs = json.loads(
         driver.find_element_by_css_selector('#reporting-events > div').text)
-    logging.info('ReportedEvent:%s' % msgs)
-    logging.info('\nDeviceId:' + deviceId.strip())
+    result['ReportedEvent'] = msgs
+    result['DeviceId'] = deviceId.strip()
+
+    hg = poll_histogram(driver, [
+        'Enterprise.ReportingEventUploadSuccess',
+        'Enterprise.ReportingEventUploadFailure',
+    ])
+    if hg:
+      result['Histogram'] = hg
 
   except Exception as e:
     logging.critical(e, exc_info=True)
   finally:
     driver.quit()
+  logging.info(f'Result:{json.dumps(result)}')
 
 
 if __name__ == '__main__':

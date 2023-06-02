@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 663 tests; 482 PASS, 181 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 674 tests; 491 PASS, 183 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -633,8 +633,17 @@ FAIL Parsing: <non-special://[:80/> without base assert_throws_js: function "fun
           new URL(expected.input, base);
         }" did not throw
 PASS Parsing: <blob:https://example.com:443/> without base
+PASS Parsing: <blob:http://example.org:88/> without base
 PASS Parsing: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> without base
 PASS Parsing: <blob:> without base
+PASS Parsing: <blob:blob:> without base
+PASS Parsing: <blob:blob:https://example.org/> without base
+PASS Parsing: <blob:about:blank> without base
+PASS Parsing: <blob:file://host/path> without base
+PASS Parsing: <blob:ftp://host/path> without base
+PASS Parsing: <blob:ws://example.org/> without base
+PASS Parsing: <blob:wss://example.org/> without base
+PASS Parsing: <blob:http%3a//example.org/> without base
 PASS Parsing: <http://0x7f.0.0.0x7g> without base
 PASS Parsing: <http://0X7F.0.0.0X7G> without base
 PASS Parsing: <http://[::127.0.0.0.1]> without base
@@ -798,5 +807,7 @@ FAIL Parsing: <stun://test:test> without base assert_throws_js: function "functi
 FAIL Parsing: <stun://[:1]> without base assert_throws_js: function "function() {
           new URL(expected.input, base);
         }" did not throw
+FAIL Parsing: <w://x:0> without base assert_equals: host expected "x:0" but got ""
+FAIL Parsing: <west://x:0> without base assert_equals: host expected "x:0" but got ""
 Harness: the test ran to completion.
 

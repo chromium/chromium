@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -21,12 +21,13 @@ MediaNotificationServiceFactory::MediaNotificationServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-MediaNotificationServiceFactory::~MediaNotificationServiceFactory() {}
+MediaNotificationServiceFactory::~MediaNotificationServiceFactory() = default;
 
 // static
 MediaNotificationServiceFactory*
 MediaNotificationServiceFactory::GetInstance() {
-  return base::Singleton<MediaNotificationServiceFactory>::get();
+  static base::NoDestructor<MediaNotificationServiceFactory> instance;
+  return instance.get();
 }
 
 // static

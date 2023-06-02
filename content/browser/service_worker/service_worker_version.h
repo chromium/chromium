@@ -851,8 +851,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   static constexpr base::TimeDelta kStartNewWorkerTimeout = base::Minutes(5);
   // Timeout for the worker to stop.
   static constexpr base::TimeDelta kStopWorkerTimeout = base::Seconds(5);
-  // Duration to keep worker warmed-up.
-  static constexpr base::TimeDelta kWarmUpDuration = base::Minutes(10);
 
   ~ServiceWorkerVersion() override;
 

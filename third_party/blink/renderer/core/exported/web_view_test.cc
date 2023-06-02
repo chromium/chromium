@@ -273,6 +273,15 @@ class WebViewTest : public testing::Test {
                        const std::string& html_file);
   bool SimulateGestureAtElement(WebInputEvent::Type, Element*);
   bool SimulateGestureAtElementById(WebInputEvent::Type, const WebString& id);
+  WebGestureEvent BuildTapEvent(WebInputEvent::Type,
+                                int tap_event_count,
+                                const gfx::PointF& position_in_widget);
+  bool SimulateTapEventAtElement(WebInputEvent::Type,
+                                 int tap_event_count,
+                                 Element*);
+  bool SimulateTapEventAtElementById(WebInputEvent::Type,
+                                     int tap_event_count,
+                                     const WebString& id);
   gfx::Size PrintICBSizeFromPageSize(const gfx::Size& page_size);
 
   ExternalDateTimeChooser* GetExternalDateTimeChooser(
@@ -2760,6 +2769,61 @@ bool WebViewTest::SimulateGestureAtElementById(WebInputEvent::Type type,
   return SimulateGestureAtElement(type, element);
 }
 
+WebGestureEvent WebViewTest::BuildTapEvent(
+    WebInputEvent::Type type,
+    int tap_event_count,
+    const gfx::PointF& position_in_widget) {
+  WebGestureEvent event(type, WebInputEvent::kNoModifiers,
+                        WebInputEvent::GetStaticTimeStampForTests(),
+                        WebGestureDevice::kTouchscreen);
+  event.SetPositionInWidget(position_in_widget);
+
+  switch (type) {
+    case WebInputEvent::Type::kGestureTapDown:
+      event.data.tap_down.tap_down_count = tap_event_count;
+      break;
+    case WebInputEvent::Type::kGestureTap:
+      event.data.tap.tap_count = tap_event_count;
+      break;
+    default:
+      break;
+  }
+  return event;
+}
+
+bool WebViewTest::SimulateTapEventAtElement(WebInputEvent::Type type,
+                                            int tap_event_count,
+                                            Element* element) {
+  if (!element || !element->GetLayoutObject()) {
+    return false;
+  }
+
+  DCHECK(web_view_helper_.GetWebView());
+  element->scrollIntoViewIfNeeded();
+
+  const gfx::PointF center = gfx::PointF(
+      web_view_helper_.GetWebView()
+          ->MainFrameImpl()
+          ->GetFrameView()
+          ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
+          .CenterPoint());
+
+  const WebGestureEvent event = BuildTapEvent(type, tap_event_count, center);
+  web_view_helper_.GetWebView()->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(event, ui::LatencyInfo()));
+  RunPendingTasks();
+  return true;
+}
+
+bool WebViewTest::SimulateTapEventAtElementById(WebInputEvent::Type type,
+                                                int tap_event_count,
+                                                const WebString& id) {
+  DCHECK(web_view_helper_.GetWebView());
+  auto* element = static_cast<Element*>(
+      web_view_helper_.LocalMainFrame()->GetDocument().GetElementById(id));
+  return SimulateTapEventAtElement(type, tap_event_count, element);
+}
+
 gfx::Size WebViewTest::PrintICBSizeFromPageSize(const gfx::Size& page_size) {
   // The expected layout size comes from the calculation done in
   // ResizePageRectsKeepingRatio() which is used from PrintContext::begin() to
@@ -3235,6 +3299,92 @@ TEST_F(WebViewTest, LongPressSelection) {
   EXPECT_TRUE(SimulateGestureAtElementById(
       WebInputEvent::Type::kGestureLongPress, target));
   EXPECT_EQ("testword", frame->SelectionAsText().Utf8());
+}
+
+TEST_F(WebViewTest, DoublePressSelection) {
+  ScopedTouchTextEditingRedesignForTest touch_text_editing_redesign(true);
+  RegisterMockedHttpURLLoad("double_press_selection.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "double_press_selection.html");
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebString target = WebString::FromUTF8("target");
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+
+  // Double press should select nearest word.
+  EXPECT_TRUE(SimulateTapEventAtElementById(
+      WebInputEvent::Type::kGestureTapDown, 1, target));
+  EXPECT_TRUE(SimulateTapEventAtElementById(WebInputEvent::Type::kGestureTap, 1,
+                                            target));
+  EXPECT_TRUE(SimulateTapEventAtElementById(
+      WebInputEvent::Type::kGestureTapDown, 2, target));
+  EXPECT_EQ("selection", frame->SelectionAsText().Utf8());
+
+  // Releasing double tap should keep the selection.
+  EXPECT_TRUE(SimulateTapEventAtElementById(WebInputEvent::Type::kGestureTap, 2,
+                                            target));
+  EXPECT_EQ("selection", frame->SelectionAsText().Utf8());
+}
+
+TEST_F(WebViewTest, DoublePressSelectionOnSelectStartFalse) {
+  ScopedTouchTextEditingRedesignForTest touch_text_editing_redesign(true);
+  RegisterMockedHttpURLLoad("double_press_selection.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "double_press_selection.html");
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebString onselectstartfalse = WebString::FromUTF8("onselectstartfalse");
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+
+  // Should not select anything when onselectstart is false.
+  EXPECT_TRUE(SimulateTapEventAtElementById(
+      WebInputEvent::Type::kGestureTapDown, 1, onselectstartfalse));
+  EXPECT_TRUE(SimulateTapEventAtElementById(WebInputEvent::Type::kGestureTap, 1,
+                                            onselectstartfalse));
+  EXPECT_TRUE(SimulateTapEventAtElementById(
+      WebInputEvent::Type::kGestureTapDown, 2, onselectstartfalse));
+  EXPECT_EQ("", frame->SelectionAsText().Utf8());
+  EXPECT_TRUE(SimulateTapEventAtElementById(WebInputEvent::Type::kGestureTap, 2,
+                                            onselectstartfalse));
+  EXPECT_EQ("", frame->SelectionAsText().Utf8());
+}
+
+TEST_F(WebViewTest, DoublePressSelectionPreventDefaultMouseDown) {
+  ScopedTouchTextEditingRedesignForTest touch_text_editing_redesign(true);
+  RegisterMockedHttpURLLoad("double_press_selection.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "double_press_selection.html");
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  web_view->MainFrameImpl()->ExecuteScript(
+      WebScriptSource("document.getElementById('targetdiv').addEventListener("
+                      "'mousedown', function(e) { e.preventDefault();});"));
+
+  WebString target = WebString::FromUTF8("target");
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+
+  // Double press should not select anything.
+  EXPECT_TRUE(SimulateTapEventAtElementById(
+      WebInputEvent::Type::kGestureTapDown, 1, target));
+  EXPECT_TRUE(SimulateTapEventAtElementById(WebInputEvent::Type::kGestureTap, 1,
+                                            target));
+  EXPECT_TRUE(SimulateTapEventAtElementById(
+      WebInputEvent::Type::kGestureTapDown, 2, target));
+  EXPECT_EQ("", frame->SelectionAsText().Utf8());
+
+  // Releasing double tap also should not select anything.
+  EXPECT_TRUE(SimulateTapEventAtElementById(WebInputEvent::Type::kGestureTap, 2,
+                                            target));
+  EXPECT_EQ("", frame->SelectionAsText().Utf8());
 }
 
 TEST_F(WebViewTest, FinishComposingTextDoesNotDismissHandles) {

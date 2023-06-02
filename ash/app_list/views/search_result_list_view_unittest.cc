@@ -59,15 +59,14 @@ class SearchResultListViewTest : public views::test::WidgetTest {
 
     default_view_ = std::make_unique<SearchResultListView>(
         &view_delegate_, nullptr,
-        SearchResultView::SearchResultViewType::kDefault, true, absl::nullopt);
+        SearchResultView::SearchResultViewType::kDefault, absl::nullopt);
     default_view_->SetListType(
         SearchResultListView::SearchResultListType::kBestMatch);
     default_view_->SetActive(true);
 
     answer_card_view_ = std::make_unique<SearchResultListView>(
         &view_delegate_, nullptr,
-        SearchResultView::SearchResultViewType::kAnswerCard, true,
-        absl::nullopt);
+        SearchResultView::SearchResultViewType::kAnswerCard, absl::nullopt);
     answer_card_view_->SetListType(
         SearchResultListView::SearchResultListType::kAnswerCard);
     answer_card_view_->SetActive(true);

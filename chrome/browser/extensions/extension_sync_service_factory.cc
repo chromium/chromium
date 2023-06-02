@@ -22,7 +22,8 @@ ExtensionSyncService* ExtensionSyncServiceFactory::GetForBrowserContext(
 
 // static
 ExtensionSyncServiceFactory* ExtensionSyncServiceFactory::GetInstance() {
-  return base::Singleton<ExtensionSyncServiceFactory>::get();
+  static base::NoDestructor<ExtensionSyncServiceFactory> instance;
+  return instance.get();
 }
 
 ExtensionSyncServiceFactory::ExtensionSyncServiceFactory()
@@ -39,7 +40,7 @@ ExtensionSyncServiceFactory::ExtensionSyncServiceFactory()
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
 }
 
-ExtensionSyncServiceFactory::~ExtensionSyncServiceFactory() {}
+ExtensionSyncServiceFactory::~ExtensionSyncServiceFactory() = default;
 
 KeyedService* ExtensionSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

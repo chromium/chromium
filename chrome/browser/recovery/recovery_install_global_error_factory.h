@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_
 #define CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -29,7 +29,7 @@ class RecoveryInstallGlobalErrorFactory : public ProfileKeyedServiceFactory {
       const RecoveryInstallGlobalErrorFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<RecoveryInstallGlobalErrorFactory>;
+  friend base::NoDestructor<RecoveryInstallGlobalErrorFactory>;
 
   RecoveryInstallGlobalErrorFactory();
   ~RecoveryInstallGlobalErrorFactory() override;

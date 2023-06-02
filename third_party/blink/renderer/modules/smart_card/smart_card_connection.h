@@ -37,6 +37,13 @@ class SmartCardConnection final : public ScriptWrappable {
                          const DOMArrayPiece& send_buffer,
                          ExceptionState& exception_state);
   ScriptPromise status();
+  ScriptPromise control(ScriptState* script_state,
+                        uint32_t control_code,
+                        const DOMArrayPiece& data,
+                        ExceptionState& exception_state);
+  ScriptPromise getAttribute(ScriptState* script_state,
+                             uint32_t tag,
+                             ExceptionState& exception_state);
 
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
@@ -48,8 +55,9 @@ class SmartCardConnection final : public ScriptWrappable {
                         device::mojom::blink::SmartCardResultPtr result);
   void OnDataResult(ScriptPromiseResolver* resolver,
                     device::mojom::blink::SmartCardDataResultPtr result);
+  void CloseMojoConnection();
 
-  bool operation_in_progress_ = false;
+  Member<ScriptPromiseResolver> ongoing_request_;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;
   device::mojom::blink::SmartCardProtocol active_protocol_;
 };

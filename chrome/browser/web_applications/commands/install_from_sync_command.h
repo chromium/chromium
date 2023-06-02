@@ -110,7 +110,7 @@ class InstallFromSyncCommand
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
-  const raw_ptr<WebAppUrlLoader> url_loader_;
+  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> url_loader_;
   const raw_ptr<Profile> profile_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;
   const Params params_;

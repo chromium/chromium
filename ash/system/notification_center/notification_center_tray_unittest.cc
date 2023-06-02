@@ -16,12 +16,15 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -287,6 +290,100 @@ TEST_F(NotificationCenterTrayTest, FocusRing) {
   EXPECT_TRUE(test_api()->GetFocusRing()->GetVisible());
   EXPECT_EQ(test_api()->GetFocusRing()->size(),
             test_api()->GetTray()->size() + kTrayBackgroundFocusPadding.size());
+}
+
+// Tests that `NotificationCounterView` is not still visible on secondary
+// display after logging in with a pinned notification present. This covers
+// b/284139989.
+TEST_F(NotificationCenterTrayTest,
+       NotificationCounterVisibilityForMultiDisplay) {
+  // The behavior under test relies on `TrayItemView` animations being
+  // scheduled, but `TrayItemView` animations are bypassed when the animation
+  // duration scale mode is set to ZERO_DURATION. Hence, set the animation
+  // duration scale mode to something else for this test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // This test relies on the lock screen actually being created (and creating
+  // the lock screen requires the existence of an `AuthEventsRecorder`).
+  std::unique_ptr<AuthEventsRecorder> auth_events_recorder =
+      AuthEventsRecorder::CreateForTesting();
+  GetSessionControllerClient()->set_show_lock_screen_views(true);
+
+  // Create two displays.
+  UpdateDisplay("800x799,800x799");
+  auto secondary_display_id = display_manager()->GetDisplayAt(1).id();
+  auto* secondary_notification_center_tray =
+      test_api()->GetTrayOnDisplay(secondary_display_id);
+  auto* secondary_notification_counter_view =
+      secondary_notification_center_tray->notification_icons_controller()
+          ->notification_counter_view();
+
+  // Add a pinned notification.
+  test_api()->AddPinnedNotification();
+
+  // Verify that the secondary display's notification center tray shows an icon
+  // for the pinned notification and not the `NotificationCounterView`.
+  ASSERT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  ASSERT_FALSE(secondary_notification_counter_view->GetVisible());
+
+  // Go to the lock screen.
+  GetSessionControllerClient()->LockScreen();
+
+  // Log back in.
+  GetSessionControllerClient()->UnlockScreen();
+
+  // Verify that the `NotificationCounterView` on the secondary display is not
+  // visible.
+  EXPECT_FALSE(secondary_notification_counter_view->GetVisible());
+}
+
+// Test fixture that disables notification popups.
+class NotificationCenterTrayNoPopupsTest : public NotificationCenterTrayTest {
+ public:
+  NotificationCenterTrayNoPopupsTest() = default;
+  NotificationCenterTrayNoPopupsTest(
+      const NotificationCenterTrayNoPopupsTest&) = delete;
+  NotificationCenterTrayNoPopupsTest& operator=(
+      const NotificationCenterTrayNoPopupsTest&) = delete;
+  ~NotificationCenterTrayNoPopupsTest() override = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSuppressMessageCenterPopups);
+    NotificationCenterTrayTest::SetUp();
+  }
+};
+
+// Tests that `NotificationCenterTray`'s `TrayItemView`s show up when adding a
+// secondary display. Notification popups are disabled for this test because the
+// presence of a popup actually hides the issue (i.e. the secondary display's
+// `NotificationCenterTray`'s `TrayItemView`s work as intended when a popup is
+// present). This covers b/281158734.
+TEST_F(NotificationCenterTrayNoPopupsTest,
+       TrayItemsVisibleWhenAddingSecondaryDisplay) {
+  // Start with one display.
+  UpdateDisplay("800x799");
+
+  // Add a pinned notification and a non-pinned notification.
+  test_api()->AddNotification();
+  test_api()->AddPinnedNotification();
+
+  // Verify that both the notification counter as well as an icon for the pinned
+  // notification are visible in the notification center tray.
+  ASSERT_TRUE(test_api()->IsPinnedIconShown());
+  ASSERT_TRUE(test_api()->IsNotificationCounterShown());
+
+  // Add a secondary display.
+  UpdateDisplay("800x799,800x799");
+  auto secondary_display_id = display_manager()->GetDisplayAt(1).id();
+
+  // Verify that both the notification counter as well as an icon for the pinned
+  // notification are visible in the secondary display's notification center
+  // tray.
+  EXPECT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  EXPECT_TRUE(
+      test_api()->IsNotificationCounterShownOnDisplay(secondary_display_id));
 }
 
 // Test suite for the notification center when `kPrivacyIndicators` is enabled.

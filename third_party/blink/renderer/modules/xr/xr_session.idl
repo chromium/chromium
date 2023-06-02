@@ -52,7 +52,7 @@ enum XRReflectionFormat {
   [CallWith=ScriptState, MeasureAs=XRSessionGetInputSources, SameObject] readonly attribute XRInputSourceArray inputSources;
   [SameObject] readonly attribute XRDOMOverlayState domOverlayState;
   readonly attribute XRReflectionFormat preferredReflectionFormat;
-  [RuntimeEmabled=WebXREnabledFeatures] readonly attribute FrozenArray<DOMString> enabledFeatures;
+  [RuntimeEnabled=WebXREnabledFeatures] readonly attribute FrozenArray<DOMString> enabledFeatures;
 
   attribute EventHandler onend;
   attribute EventHandler onselect;

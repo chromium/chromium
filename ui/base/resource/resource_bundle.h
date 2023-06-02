@@ -414,9 +414,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Returns k100Percent if no resource is loaded.
   ResourceScaleFactor GetMaxResourceScaleFactor() const;
 
-  // Returns true if |scale_factor| is supported by this platform.
-  static bool IsScaleFactorSupported(ResourceScaleFactor scale_factor);
-
   // Checks whether overriding locale strings is supported. This will fail with
   // a DCHECK if the first string resource has already been queried.
   void CheckCanOverrideStringResources();

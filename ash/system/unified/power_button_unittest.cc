@@ -23,8 +23,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/skia_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -98,10 +101,41 @@ class PowerButtonTest : public NoSessionAshTestBase {
 
   PowerButton* GetPowerButton() { return button_; }
 
+  views::ImageView* GetPowerChevronIcon() {
+    auto* icon = button_->button_content_->GetViewByID(
+        VIEW_ID_QS_POWER_BUTTON_CHEVRON_ICON);
+    CHECK(icon);
+    return static_cast<views::ImageView*>(icon);
+  }
+
   ui::Layer* GetBackgroundLayer() { return button_->background_view_->layer(); }
 
   // Simulates mouse press event on the power button.
   void SimulatePowerButtonPress() { LeftClickOn(button_->button_content_); }
+
+  ui::ImageModel GetExpectedChevronImageModel(bool use_up_chevron) {
+    auto icon_color_id = use_up_chevron
+                             ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                             : cros_tokens::kCrosSysOnSurface;
+
+    return ui::ImageModel::FromVectorIcon(
+        use_up_chevron ? kChevronUpSmallIcon : kChevronDownSmallIcon,
+        icon_color_id);
+  }
+
+  bool ChevronIconsMatch(bool use_up_chevron) {
+    const auto* power_chevron_icon = GetPowerChevronIcon();
+
+    return gfx::BitmapsAreEqual(
+        *power_chevron_icon->GetImage().bitmap(),
+        *GetExpectedChevronImageModel(use_up_chevron)
+             .Rasterize(power_chevron_icon->GetColorProvider())
+             .bitmap());
+  }
+
+  bool IsUpChevron() { return ChevronIconsMatch(/*use_up_chevron=*/true); }
+
+  bool IsDownChevron() { return ChevronIconsMatch(/*use_up_chevron=*/false); }
 
   // Owned by view hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
@@ -395,8 +429,8 @@ TEST_F(PowerButtonTest, ButtonRoundedRadii) {
   EXPECT_EQ(gfx::RoundedCornersF(4, 16, 16, 16),
             GetBackgroundLayer()->rounded_corner_radii());
 
-  // Click on a random button to close the menu.
-  LeftClickOn(GetLockButton());
+  // Click the power button again to close the menu.
+  SimulatePowerButtonPress();
 
   // Sets a RTL locale.
   base::i18n::SetICUDefaultLocale("ar");
@@ -420,6 +454,25 @@ TEST_F(PowerButtonTest, DeviceRebootOnShutdownPolicyHidesPowerOffButton) {
 
   EXPECT_FALSE(GetPowerOffButton());
   EXPECT_TRUE(GetRestartButton());
+}
+
+TEST_F(PowerButtonTest, ChevronFlipsWhenMenuIsShowing) {
+  CreateUserSessions(1);
+
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+  EXPECT_FALSE(IsMenuShowing());
+  EXPECT_TRUE(IsDownChevron());
+
+  SimulatePowerButtonPress();
+
+  EXPECT_TRUE(IsMenuShowing());
+  EXPECT_TRUE(IsUpChevron());
+
+  // Click the power button again to close the menu.
+  SimulatePowerButtonPress();
+
+  EXPECT_FALSE(IsMenuShowing());
+  EXPECT_TRUE(IsDownChevron());
 }
 
 }  // namespace ash

@@ -194,8 +194,7 @@ BOOL SetStartupParametersForSpotlightAction(
                                 title:defaultBrowserTitle],
           ];
 
-          [self.spotlightInterface indexSearchableItems:spotlightItems
-                                      completionHandler:nil];
+          [self.spotlightInterface indexSearchableItems:spotlightItems];
         });
   }];
 }

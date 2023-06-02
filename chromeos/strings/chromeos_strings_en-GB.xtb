@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Desks</translation>
 <translation id="1018219910092211213">Can't resolve DNS</translation>
 <translation id="1018656279737460067">Cancelled</translation>
-<translation id="1022433422498218992">General controls</translation>
+<translation id="1020274983236703756">Exclusive <ph name="PRODUCT_NAME" /> assets now available</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Authentication type</translation>
 <translation id="1776228893584526149">Wallpaper tone</translation>
 <translation id="1782199038061388045">translation</translation>
-<translation id="1790209694022261219">Windows and desks</translation>
 <translation id="1792647875738159689">Cancelling scanning</translation>
 <translation id="1801418420130173017">Disable Dark theme</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1827738518074806965">Art gallery</translation>
+<translation id="1836553715834333258">System colour</translation>
 <translation id="1838374766361614909">Clear search</translation>
+<translation id="1840474674287087346">Desktop colour</translation>
 <translation id="1851218745569890714">Video conferencing</translation>
 <translation id="1852934301711881861">Install Chrome OS Flex</translation>
 <translation id="1856388568474281774">Down arrow</translation>
@@ -195,7 +196,7 @@
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
-<translation id="2448312741937722512">Types</translation>
+<translation id="2448312741937722512">Type</translation>
 <translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Browser navigation</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
-<translation id="2902312830803030883">More actions</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
 <translation id="2940811910881150316">Can’t test device. Reopen the lid to test.</translation>
-<translation id="2981143481017883351">Exclusive Chromebook assets now available</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3017079585324758401">Background</translation>
-<translation id="3020183492814296499">Shortcuts</translation>
 <translation id="3027578600144895987">Close the camera</translation>
 <translation id="3031560714565892478">Device is a video camera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3226657629376379887">Layout actions menu</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> exclusive</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
 <translation id="3275729367986477355">Avatar image</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit files}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Key direction</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3303855915957856445">No search results found</translation>
+<translation id="3305294846493618482">more</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3328783797891415197">Test running</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
-<translation id="3386675685417744672">Chromebook exclusive</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Privacy screen toggle</translation>
 <translation id="3639846061339007994">top</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
+<translation id="3663574643422533538">Select <ph name="PRODUCT_NAME" /> exclusive artwork</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="370665806235115550">Loading...</translation>
 <translation id="3708186454126126312">Previously connected</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">WARNING</translation>
 <translation id="4054683689023980771">Downloading image</translation>
 <translation id="4060260348856573701">New APN</translation>
-<translation id="4079743696465895866">Select Chromebook exclusive artwork</translation>
 <translation id="4093865285251893588">Profile image</translation>
 <translation id="409427325554347132">Save test details</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Select album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB touchpad</translation>
+<translation id="4113067922640381334">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4130035430755296270">Keep hovering for more layout options</translation>
 <translation id="4131410914670010031">Black and white</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Scan to</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
+<translation id="4500966230243561393">Interface colour</translation>
 <translation id="4503223151711056411">Left arrow</translation>
 <translation id="4507392511610824664">brightness up</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">When your screen is idle, show photos, time, weather and media info.</translation>
+<translation id="5035083460461104704">Theme colour</translation>
 <translation id="5038292761217083259">keyboard multicolour</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
 <translation id="6017514345406065928">Green</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Enable automatic monthly reset</translation>
 <translation id="6037291330010597344">The scanner’s document feeder is empty. Add documents and try again.</translation>
 <translation id="6040143037577758943">Close</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>
 <translation id="763165478673169849">Last reset time</translation>
+<translation id="7633068090678117093">Background image</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="765159867434478292">Split</translation>
 <translation id="7656388927906093505">Device is a mouse.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">Uninitialised</translation>
 <translation id="8593058461203131755">pause media</translation>
 <translation id="8620617069779373398">Roaming status</translation>
+<translation id="8626489604350149811">More actions for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
 <translation id="8651481478098336970">volume mute</translation>
 <translation id="8655295600908251630">Channel</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8936793075252196307">Client IP address</translation>
+<translation id="8944651180182756621">Launcher colour</translation>
 <translation id="894617464444543719">Device is a phone.</translation>
 <translation id="8957423540740801332">right</translation>
 <translation id="8968751544471797276">Charging rate</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">Less than a minute remaining</translation>
+<translation id="9174334653006917325">UI colour</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Your keyboard can automatically match your wallpaper</translation>
 <translation id="9189000703457422362">Can't connect to this network using automatically detected APNs. Contact your mobile operator for more information.</translation>

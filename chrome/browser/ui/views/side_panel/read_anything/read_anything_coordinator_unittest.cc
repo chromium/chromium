@@ -35,7 +35,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
     TestWithBrowserView::SetUp();
 
-    side_panel_coordinator_ = browser_view()->side_panel_coordinator();
+    side_panel_coordinator_ =
+        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
     side_panel_registry_ =
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =
@@ -62,9 +63,11 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   }
 
  protected:
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
-  raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
-  raw_ptr<ReadAnythingCoordinator> read_anything_coordinator_ = nullptr;
+  raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
+      nullptr;
+  raw_ptr<SidePanelRegistry, DanglingUntriaged> side_panel_registry_ = nullptr;
+  raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>
+      read_anything_coordinator_ = nullptr;
 
   MockReadAnythingCoordinatorObserver coordinator_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -149,7 +149,7 @@ class TreeViewTest : public ViewsTestBase {
   PrefixSelector* selector() { return tree_->GetPrefixSelector(); }
 
   ui::TreeNodeModel<TestNode> model_;
-  raw_ptr<TreeView> tree_;
+  raw_ptr<TreeView, DanglingUntriaged> tree_;
   UniqueWidgetPtr widget_;
 
  private:

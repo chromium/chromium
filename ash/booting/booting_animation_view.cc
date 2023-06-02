@@ -7,9 +7,11 @@
 #include <string>
 
 #include "ash/public/cpp/image_util.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -57,17 +59,10 @@ void Resize(views::AnimatedImageView& animated_image_view) {
 
 }  // namespace
 
-BootingAnimationView::BootingAnimationView(const std::string& animation_data) {
+BootingAnimationView::BootingAnimationView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto skottie = cc::SkottieWrapper::CreateSerializable(
-      std::vector<uint8_t>(animation_data.begin(), animation_data.end()));
-  AddChildView(
-      views::Builder<views::AnimatedImageView>()
-          .CopyAddressTo(&animation_)
-          .SetAnimatedImage(std::make_unique<lottie::Animation>(skottie))
-          .Build());
-  animation_->SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
-  animated_image_view_observer_.Observe(animation_);
+  SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
+  animation_ = AddChildView(std::make_unique<views::AnimatedImageView>());
 }
 
 BootingAnimationView::~BootingAnimationView() = default;
@@ -77,27 +72,28 @@ void BootingAnimationView::Play() {
       lottie::Animation::Style::kLinear, *animation_->animated_image()));
 }
 
-lottie::Animation* BootingAnimationView::GetAnimatedImage() {
-  return animation_->animated_image();
-}
-
-void BootingAnimationView::OnViewBoundsChanged(View* observed_view) {
-  gfx::Rect content_bounds = observed_view->GetContentsBounds();
-  if (content_bounds.IsEmpty()) {
+void BootingAnimationView::SetAnimatedImage(const std::string& animation_data) {
+  auto skottie = cc::SkottieWrapper::CreateSerializable(
+      std::vector<uint8_t>(animation_data.begin(), animation_data.end()));
+  if (!skottie->is_valid()) {
+    LOG(ERROR) << "Invalid animation data.";
     return;
   }
+  animation_->SetAnimatedImage(std::make_unique<lottie::Animation>(skottie));
 
-  // By default, the |animated_image_view_| will render the animation with the
-  // fixed dimensions specified in the Lottie file. To render the animation
-  // at the view's full bounds, wait for the view's initial layout to happen
-  // so that its proper bounds become available (they are 0x0 initially) before
-  // starting the animation playback.
-  gfx::Rect previous_animation_bounds = animation_->GetImageBounds();
+  // Make animation cover the widget.
+  if (base::i18n::IsRTL()) {
+    gfx::Rect content_bounds = animation_->GetContentsBounds();
+    gfx::Transform transform;
+    transform.RotateAboutYAxis(180.0);
+    transform.Translate(-content_bounds.width(), 0);
+    animation_->SetTransform(transform);
+  }
   Resize(*animation_);
-  VLOG(1) << "View bounds available. Resized animation with native size "
-          << animation_->animated_image()->GetOriginalSize().ToString()
-          << " from " << previous_animation_bounds.ToString() << " to "
-          << animation_->GetImageBounds().ToString();
+}
+
+lottie::Animation* BootingAnimationView::GetAnimatedImage() {
+  return animation_ ? animation_->animated_image() : nullptr;
 }
 
 }  // namespace ash

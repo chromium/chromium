@@ -27,25 +27,29 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
+import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.UserSelectableType;
 
 /**
  * Autofill profiles fragment, which allows the user to edit autofill profiles.
  */
-public class AutofillProfilesFragment
-        extends PreferenceFragmentCompat implements PersonalDataManager.PersonalDataManagerObserver,
-                                                    FragmentHelpAndFeedbackLauncher {
+public class AutofillProfilesFragment extends PreferenceFragmentCompat
+        implements PersonalDataManager.PersonalDataManagerObserver, FragmentHelpAndFeedbackLauncher,
+                   ProfileDependentSetting {
     private static AddressEditor.Delegate sAddressEditorDelegate = new AddressEditor.Delegate() {
         // User has either created a new address, or edited an existing address.
         // We should save changes in any case.
@@ -70,6 +74,7 @@ public class AutofillProfilesFragment
     static final String PREF_NEW_PROFILE = "new_profile";
     private @Nullable EditorDialog mEditorDialog;
 
+    private Profile mProfile;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Override
@@ -147,7 +152,6 @@ public class AutofillProfilesFragment
         });
         getPreferenceScreen().addPreference(autofillSwitch);
 
-        final boolean addressSyncEnabled = isAddressSyncEnabled();
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
             assert profile.getIsLocal();
             // Add a preference for the profile.
@@ -155,7 +159,7 @@ public class AutofillProfilesFragment
             pref.setTitle(profile.getFullName());
             pref.setSummary(profile.getLabel());
             pref.setKey(pref.getTitle().toString()); // For testing.
-            if (!addressSyncEnabled && profile.getSource() != Source.ACCOUNT) {
+            if (shouldShowLocalProfileIcon(profile)) {
                 // Conditionally set local profile icon for address profiles that are neither
                 // synced, nor saved in the account.
                 pref.setWidgetLayoutResource(R.layout.autofill_local_profile_icon);
@@ -221,15 +225,16 @@ public class AutofillProfilesFragment
         mEditorDialog = prepareEditorDialog(editorPreference.getGUID());
         AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
         if (autofillAddress == null) {
-            AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
-                    /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
-                    /*isMigrationToAccount=*/false);
-            addressEditor.showEditorDialog();
-        } else {
             AddressEditor addressEditor =
-                    new AddressEditor(mEditorDialog, sAddressEditorDelegate, autofillAddress,
+                    new AddressEditor(mEditorDialog, sAddressEditorDelegate, mProfile,
                             /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
                             /*isMigrationToAccount=*/false);
+            addressEditor.showEditorDialog();
+        } else {
+            AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
+                    mProfile, autofillAddress,
+                    /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
+                    /*isMigrationToAccount=*/false);
             addressEditor.showEditorDialog();
         }
     }
@@ -245,7 +250,7 @@ public class AutofillProfilesFragment
         };
 
         return new EditorDialog(
-                getActivity(), runnable, Profile.getLastUsedRegularProfile(), false);
+                getActivity(), runnable, HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
     }
 
     @Nullable
@@ -261,10 +266,17 @@ public class AutofillProfilesFragment
         return new AutofillAddress(getActivity(), profile);
     }
 
-    private boolean isAddressSyncEnabled() {
+    private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {
+        if (!IdentityServicesProvider.get().getIdentityManager(mProfile).hasPrimaryAccount(
+                    ConsentLevel.SIGNIN)) {
+            return false;
+        }
+        if (profile.getSource() == Source.ACCOUNT) {
+            return false;
+        }
         SyncService syncService = SyncService.get();
-        return syncService != null && syncService.isSyncFeatureEnabled()
-                && syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
+        return syncService == null || !syncService.isSyncFeatureEnabled()
+                || !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
     private Context getStyledContext() {
@@ -274,6 +286,11 @@ public class AutofillProfilesFragment
     @VisibleForTesting
     EditorDialog getEditorDialogForTest() {
         return mEditorDialog;
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 
     @Override

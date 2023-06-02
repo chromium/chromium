@@ -147,7 +147,9 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
   if ((permission == PermissionType::AUDIO_CAPTURE ||
        permission == PermissionType::VIDEO_CAPTURE) &&
       command_line->HasSwitch(switches::kUseFakeDeviceForMediaStream) &&
-      command_line->HasSwitch(switches::kUseFakeUIForMediaStream)) {
+      command_line->HasSwitch(switches::kUseFakeUIForMediaStream) &&
+      command_line->GetSwitchValueASCII(
+          switches::kUseFakeDeviceForMediaStream) != "deny") {
     return blink::mojom::PermissionStatus::GRANTED;
   }
 

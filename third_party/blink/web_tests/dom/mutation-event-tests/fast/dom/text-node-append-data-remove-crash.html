@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body onload="runTest()">
+<script src="../../../../resources/gc.js"></script>
+<script>
+var count = 0;
+if (window.testRunner)
+{
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function runTest()
+{
+    try {
+       divBlock.addEventListener("DOMCharacterDataModified", eventListener, false);
+       pBlock.outerText = "text";
+       divBlock.innerHTML = "PASS, didn't crash.";
+    }
+    catch (exception) {
+       divBlock.innerHTML = "Threw an exception - " + exception;
+    }
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+
+function eventListener()
+{
+    try {
+      var range = document.createRange();
+      range.setStart(divBlock, 0);
+      range.setEnd(divBlock, divBlock.childNodes.length - 1);
+      range.deleteContents();
+      gc();
+  } catch(e) { }
+}
+
+</script>
+<div id="divBlock">
+<br/>textnode1<p id="pBlock"></p>textnode2<br/>
+</div>
+</body>
+</html>

@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -73,9 +74,19 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
 }
 
 int GetObfuscationLength() {
-  // The obfuscation length is 2 for the Android keyboard accessory. It is 4 for
-  // other platforms.
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the obfuscation length is 2 when the Android keyboard
+  // accessory is enabled (though this length applies to all Suggestions
+  // created for Android).
   return IsKeyboardAccessoryEnabled() ? 2 : 4;
+#elif BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(
+             features::kAutofillUseTwoDotsForLastFourDigits)
+             ? 2
+             : 4;
+#else
+  return 4;
+#endif
 }
 
 bool ShouldSplitCardNameAndLastFourDigits() {
@@ -128,8 +139,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   }
 
   for (auto& suggestion : suggestions) {
-    suggestion.frontend_id = MakeFrontendIdFromBackendId(
-        suggestion.GetPayload<Suggestion::BackendId>());
+    suggestion.frontend_id = kAddressEntry;
 
     // Populate feature IPH for externally created account profiles.
     const AutofillProfile* profile = personal_data_->GetProfileByGUID(
@@ -213,13 +223,6 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
                      [](const Suggestion& a, const Suggestion& b) {
                        return a.match < b.match;
                      });
-  }
-
-  for (Suggestion& suggestion : suggestions) {
-    if (suggestion.frontend_id.as_int() == 0) {
-      suggestion.frontend_id = MakeFrontendIdFromBackendId(
-          suggestion.GetPayload<Suggestion::BackendId>());
-    }
   }
 
   return suggestions;
@@ -406,36 +409,6 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   return card.nickname();
 }
 
-Suggestion::FrontendId AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
-    const Suggestion::BackendId& cc_or_address_backend_id) {
-  if (!base::Uuid::ParseCaseInsensitive(*cc_or_address_backend_id).is_valid()) {
-    return Suggestion::FrontendId();
-  }
-
-  int& frontend_id = backend_to_frontend_map_[cc_or_address_backend_id];
-  if (!frontend_id) {
-    frontend_id = static_cast<int>(backend_to_frontend_map_.size());
-    frontend_to_backend_map_[frontend_id] = cc_or_address_backend_id;
-  }
-  DCHECK_GT(frontend_id, 0);
-  DCHECK_EQ(backend_to_frontend_map_.size(), frontend_to_backend_map_.size());
-  return Suggestion::FrontendId(frontend_id);
-}
-
-Suggestion::BackendId AutofillSuggestionGenerator::GetBackendIdFromFrontendId(
-    Suggestion::FrontendId frontend_id) {
-  if (frontend_id.as_int() <= 0) {
-    NOTREACHED();
-    return Suggestion::BackendId();
-  }
-  const auto it = frontend_to_backend_map_.find(frontend_id.as_int());
-  if (it == frontend_to_backend_map_.end()) {
-    NOTREACHED();
-    return Suggestion::BackendId();
-  }
-  return it->second;
-}
-
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card) const {
   switch (candidate_card->record_type()) {
@@ -466,10 +439,9 @@ const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
 
   std::vector<CreditCard*> server_cards =
       personal_data_->GetServerCreditCards();
-  auto it = base::ranges::find_if(
-      server_cards.begin(), server_cards.end(),
-      [&](const CreditCard* server_card) {
-        return local_card->IsLocalDuplicateOfServerCard(*server_card);
+  auto it =
+      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
+        return local_card->IsLocalOrServerDuplicateOf(*server_card);
       });
 
   if (it != server_cards.end())
@@ -491,6 +463,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
+  CHECK(suggestion.frontend_id == kAutocompleteEntry);
+  suggestion.frontend_id = kCreditCardEntry;
   suggestion.payload = Suggestion::BackendId(credit_card.guid());
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
                                                : Suggestion::SUBSTRING_MATCH;
@@ -628,7 +602,8 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
   }
 
 #if BUILDFLAG(IS_IOS)
-  // On iOS, the label is formatted as "••••1234".
+  // On iOS, the label is formatted as either "••••1234" or "••1234", depending
+  // on the obfuscation length.
   return {
       Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
           GetObfuscationLength()))};

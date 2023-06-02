@@ -118,6 +118,27 @@ password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
   return factory->GetDriverForFrame(web_contents->GetFocusedFrame());
 }
 
+ShouldShowAction ShouldShowCredManReentryAction(
+    autofill::mojom::FocusedFieldType focused_field_type,
+    bool has_pending_credman_flow) {
+  if (!has_pending_credman_flow) {
+    return ShouldShowAction(false);
+  }
+  switch (focused_field_type) {
+    case autofill::mojom::FocusedFieldType::kFillablePasswordField:
+    case autofill::mojom::FocusedFieldType::kFillableUsernameField:
+    case autofill::mojom::FocusedFieldType::kFillableWebauthnTaggedField:
+      return ShouldShowAction(true);
+    case autofill::mojom::FocusedFieldType::kFillableNonSearchField:
+    case autofill::mojom::FocusedFieldType::kFillableSearchField:
+    case autofill::mojom::FocusedFieldType::kFillableTextArea:
+    case autofill::mojom::FocusedFieldType::kUnfillableElement:
+    case autofill::mojom::FocusedFieldType::kUnknown:
+      return ShouldShowAction(false);
+  }
+  NOTREACHED_NORETURN() << "Showing undefined for " << focused_field_type;
+}
+
 }  // namespace
 
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
@@ -395,14 +416,16 @@ void PasswordAccessoryControllerImpl::OnGenerationRequested(
   pwd_generation_controller->OnGenerationRequested(type);
 }
 
-void PasswordAccessoryControllerImpl::UpdateCredManReentryUi() {
+void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
+    autofill::mojom::FocusedFieldType focused_field_type) {
   if (!WebAuthnCredManDelegate::IsCredManEnabled()) {
     return;  // No updates required.
   }
   if (WebAuthnCredManDelegate* delegate =
           WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
     GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
-        ShouldShowAction(delegate->HasResults()),
+        ShouldShowCredManReentryAction(focused_field_type,
+                                       delegate->HasResults()),
         autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
   }
 }

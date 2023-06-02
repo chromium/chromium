@@ -258,10 +258,7 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // Checks for a key press that could only have occurred from a non-imposter
   // keyboard. Disables Imposter flag and triggers a callback which will update
   // the dispatched list of keyboards with this new information.
-  if (key_state_.count() == 1 && ((key >= KEY_1 && key <= KEY_EQUAL) ||
-                                  (key >= KEY_Q && key <= KEY_RIGHTBRACE) ||
-                                  (key >= KEY_A && key <= KEY_APOSTROPHE) ||
-                                  (key >= KEY_BACKSLASH && key <= KEY_SLASH))) {
+  if (key_state_.count() == 1 && IsValidKeyboardKeyPress(key)) {
     bool was_suspected = IsSuspectedImposter();
     SetSuspectedImposter(false);
     if (was_suspected && received_valid_input_callback_) {

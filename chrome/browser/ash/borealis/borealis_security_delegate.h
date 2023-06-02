@@ -29,8 +29,7 @@ class BorealisSecurityDelegate : public guest_os::GuestOsSecurityDelegate {
   // exo::SecurityDelegate overrides:
   bool CanSelfActivate(aura::Window* window) const override;
   bool CanLockPointer(aura::Window* window) const override;
-  bool CanSetBoundsWithServerSideDecoration(
-      aura::Window* window) const override;
+  SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
 
   // Used in tests to avoid the async Build() call.
   static std::unique_ptr<BorealisSecurityDelegate> MakeForTesting(

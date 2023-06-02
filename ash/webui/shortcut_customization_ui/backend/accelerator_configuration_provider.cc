@@ -58,30 +58,38 @@ constexpr size_t kMaxAcceleratorsAllowed = 5;
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
-  static auto hiddenAcceleratorMap = base::NoDestructor<HiddenAcceleratorMap>(
-      {{AcceleratorAction::kToggleAppList,
-        {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::RELEASED)}},
-       {AcceleratorAction::kShowShortcutViewer,
-        {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
-                         ui::Accelerator::KeyState::PRESSED),
-         ui::Accelerator(
-             ui::VKEY_OEM_2,
-             ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-             ui::Accelerator::KeyState::PRESSED)}},
-       {AcceleratorAction::kOpenGetHelp,
-        {ui::Accelerator(ui::VKEY_OEM_2,
-                         ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED)}},
-       {AcceleratorAction::kToggleFullscreen,
-        {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED)}},
-       {AcceleratorAction::kSwitchToLastUsedIme,
-        {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::RELEASED)}}});
-  return *hiddenAcceleratorMap;
+  static const auto kHiddenAcceleratorMap =
+      base::NoDestructor<HiddenAcceleratorMap>({
+          {AcceleratorAction::kToggleAppList,
+           {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::PRESSED),
+            ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::RELEASED)}},
+          {AcceleratorAction::kShowShortcutViewer,
+           {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
+                            ui::Accelerator::KeyState::PRESSED),
+            ui::Accelerator(
+                ui::VKEY_OEM_2,
+                ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+                ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kOpenGetHelp,
+           {ui::Accelerator(ui::VKEY_OEM_2,
+                            ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+                            ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kToggleFullscreen,
+           {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kSwitchToLastUsedIme,
+           {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+                            ui::Accelerator::KeyState::RELEASED)}},
+          {AcceleratorAction::kMediaPause,
+           {ui::Accelerator(ui::VKEY_PAUSE, ui::EF_NONE,
+                            ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kMediaPlay,
+           {ui::Accelerator(ui::VKEY_PLAY, ui::EF_NONE,
+                            ui::Accelerator::KeyState::PRESSED)}},
+      });
+  return *kHiddenAcceleratorMap;
 }
 
 constexpr int kCustomizationModifierMask =
@@ -502,11 +510,17 @@ void AcceleratorConfigurationProvider::AddAccelerator(
     return;
   }
 
-  // Only allow a maximum of five accelerators per action.
-  const size_t accelerator_count =
-      ash_accelerator_configuration_->GetAcceleratorsForAction(action_id)
-          .size();
-  if (accelerator_count >= kMaxAcceleratorsAllowed) {
+  // Only allow a maximum of `kMaxAcceleratorsAllowed` per action.
+  const auto& ash_accelerators_mapping =
+      cached_configuration_.find(mojom::AcceleratorSource::kAsh);
+  CHECK(ash_accelerators_mapping != cached_configuration_.end());
+
+  const auto found_accelerator_infos =
+      ash_accelerators_mapping->second.find(action_id);
+  // Check that there is less than `kMaxAcceleratorsAllowed` accelerator infos
+  // in the cached accelerator configuration mapping for `action_id`.
+  if (found_accelerator_infos != ash_accelerators_mapping->second.end() &&
+      found_accelerator_infos->second.size() >= kMaxAcceleratorsAllowed) {
     result_data->result = AcceleratorConfigResult::kMaximumAcceleratorsReached;
     std::move(callback).Run(std::move(result_data));
     return;
@@ -561,12 +575,15 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+  absl::optional<AcceleratorConfigResult> error_result =
       ValidateSourceAndAction(source, action_id,
                               ash_accelerator_configuration_);
+  if (!error_result.has_value()) {
+    error_result = ValidateAccelerator(new_accelerator);
+  }
 
-  if (validated_source_action_result.has_value()) {
-    result_data->result = *validated_source_action_result;
+  if (error_result.has_value()) {
+    result_data->result = *error_result;
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -680,6 +697,9 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
   for (auto& observer : accelerators_updated_observers_) {
     observer.OnAcceleratorsUpdated(mojo::Clone(config_map));
   }
+
+  // Store a cached copy of the configuration map.
+  cached_configuration_ = mojo::Clone(config_map);
 }
 
 void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
@@ -696,7 +716,7 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
 
   // Return early if there are no alias accelerators (Because certain keys are
   // unavailable), accelerator will be suppressed/disabled and its state will be
-  // kDisabledByUnavailableKeys.
+  // `kDisabledByUnavailableKeys`.
   if (accelerator_aliases.empty()) {
     output.push_back(CreateStandardAcceleratorInfo(
         accelerator, locked, GetAcceleratorType(accelerator),

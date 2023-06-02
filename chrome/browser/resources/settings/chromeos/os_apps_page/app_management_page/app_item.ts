@@ -17,7 +17,8 @@ import {openAppDetailPage} from './util.js';
 
 const AppManagementAppItemElementBase = AppManagementStoreMixin(PolymerElement);
 
-class AppManagementAppItemElement extends AppManagementAppItemElementBase {
+export class AppManagementAppItemElement extends
+    AppManagementAppItemElementBase {
   static get is() {
     return 'app-management-app-item';
   }

@@ -33,20 +33,6 @@ namespace net {
 
 namespace {
 
-void UpdatePublicResetAddressMismatchHistogram(
-    const IPEndPoint& server_hello_address,
-    const IPEndPoint& public_reset_address) {
-  int sample = GetAddressMismatch(server_hello_address, public_reset_address);
-  // We are seemingly talking to an older server that does not support the
-  // feature, so we can't report the results in the histogram.
-  if (sample < 0) {
-    return;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.PublicResetAddressMismatch2",
-                            static_cast<QuicAddressMismatch>(sample),
-                            QUIC_ADDRESS_MISMATCH_MAX);
-}
-
 // If |address| is an IPv4-mapped IPv6 address, returns ADDRESS_FAMILY_IPV4
 // instead of ADDRESS_FAMILY_IPV6. Othewise, behaves like GetAddressFamily().
 AddressFamily GetRealAddressFamily(const IPAddress& address) {
@@ -391,11 +377,6 @@ void QuicConnectionLogger::OnIncomingAck(
                               least_unacked_sent_packet);
 }
 
-void QuicConnectionLogger::OnStopWaitingFrame(
-    const quic::QuicStopWaitingFrame& frame) {
-  event_logger_.OnStopWaitingFrame(frame);
-}
-
 void QuicConnectionLogger::OnRstStreamFrame(
     const quic::QuicRstStreamFrame& frame) {
   base::UmaHistogramSparse("Net.QuicSession.RstStreamErrorCodeServer",
@@ -464,13 +445,6 @@ void QuicConnectionLogger::OnCoalescedPacketSent(
     const quic::QuicCoalescedPacket& coalesced_packet,
     size_t length) {
   event_logger_.OnCoalescedPacketSent(coalesced_packet, length);
-}
-
-void QuicConnectionLogger::OnPublicResetPacket(
-    const quic::QuicPublicResetPacket& packet) {
-  UpdatePublicResetAddressMismatchHistogram(
-      local_address_from_shlo_, ToIPEndPoint(packet.client_address));
-  event_logger_.OnPublicResetPacket(packet);
 }
 
 void QuicConnectionLogger::OnVersionNegotiationPacket(

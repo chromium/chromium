@@ -221,6 +221,22 @@ TEST_F(SetUpListTest, ObservesPrefs) {
   [delegate verify];
 }
 
+// Tests that `allItemsComplete` correctly returns whether all items are
+// complete.
+TEST_F(SetUpListTest, AllItemsComplete) {
+  BuildSetUpList();
+  EXPECT_FALSE([set_up_list_ allItemsComplete]);
+
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kSignInSync);
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kDefaultBrowser);
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kAutofill);
+
+  EXPECT_TRUE([set_up_list_ allItemsComplete]);
+}
+
 // Tests that the Set Up List can be disabled.
 TEST_F(SetUpListTest, Disable) {
   EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(local_state_.Get()));

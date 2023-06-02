@@ -46,6 +46,20 @@ DeskTemplate::DeskTemplate(base::Uuid uuid,
       template_name_(base::UTF8ToUTF16(name)),
       device_form_factor_(syncer::GetLocalDeviceFormFactor()) {}
 
+DeskTemplate::DeskTemplate(base::Uuid uuid,
+                           DeskTemplateSource source,
+                           const std::string& name,
+                           const base::Time created_time,
+                           DeskTemplateType type,
+                           bool should_launch_on_startup)
+    : uuid_(std::move(uuid)),
+      source_(source),
+      type_(type),
+      created_time_(created_time),
+      template_name_(base::UTF8ToUTF16(name)),
+      should_launch_on_startup_(should_launch_on_startup),
+      device_form_factor_(syncer::GetLocalDeviceFormFactor()) {}
+
 DeskTemplate::~DeskTemplate() = default;
 
 // static
@@ -72,7 +86,8 @@ constexpr char DeskTemplate::kIncognitoWindowIdentifier[];
 
 std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
-      uuid_, source_, base::UTF16ToUTF8(template_name_), created_time_, type_);
+      uuid_, source_, base::UTF16ToUTF8(template_name_), created_time_, type_,
+      should_launch_on_startup_);
   if (WasUpdatedSinceCreation())
     desk_template->set_updated_time(updated_time_);
   if (desk_restore_data_)

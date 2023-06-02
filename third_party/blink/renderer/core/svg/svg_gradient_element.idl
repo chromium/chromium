@@ -26,8 +26,7 @@
 // https://svgwg.org/svg2-draft/pservers.html#InterfaceSVGGradientElement
 
 [
-    Exposed=Window,
-    DoNotCheckConstants
+    Exposed=Window
 ] interface SVGGradientElement : SVGElement {
     // Spread Method Types
     [MeasureAs=SVG1DOMPaintServer] const unsigned short SVG_SPREADMETHOD_UNKNOWN = 0;

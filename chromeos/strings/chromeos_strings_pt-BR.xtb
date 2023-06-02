@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Espaços de trabalho</translation>
 <translation id="1018219910092211213">Não foi possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
-<translation id="1022433422498218992">Controles gerais</translation>
+<translation id="1020274983236703756">Recursos exclusivos do <ph name="PRODUCT_NAME" /> já estão disponíveis</translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
@@ -113,7 +113,6 @@
 <translation id="1768959921651994223">Tipo de autenticação</translation>
 <translation id="1776228893584526149">Tom do plano de fundo</translation>
 <translation id="1782199038061388045">tradução</translation>
-<translation id="1790209694022261219">Janelas e espaços de trabalho</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
 <translation id="1801418420130173017">Desativar o tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -239,14 +238,11 @@
 <translation id="2873483161362553159">Navegação no navegador</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
-<translation id="2902312830803030883">Mais ações</translation>
 <translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o código QR</translation>
 <translation id="2940811910881150316">Não foi possível testar o dispositivo. Abra a tampa novamente para testar.</translation>
-<translation id="2981143481017883351">Recursos exclusivos do Chromebook já disponíveis</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="3017079585324758401">Plano de fundo</translation>
-<translation id="3020183492814296499">Atalhos</translation>
 <translation id="3027578600144895987">Fechar a câmera</translation>
 <translation id="3031560714565892478">Este dispositivo é uma câmera de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -273,6 +269,7 @@
 <translation id="3226405216343213872">Procurando scanners</translation>
 <translation id="3226657629376379887">Menu de ações de layout</translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
+<translation id="3248223063252096240">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
 <translation id="3275729367986477355">Imagem do avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar arquivo}one{Editar arquivo}other{Editar arquivos}}</translation>
@@ -280,6 +277,7 @@
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
+<translation id="3305294846493618482">mais</translation>
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
 <translation id="3340011300870565703">O fone direito tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
@@ -288,7 +286,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
-<translation id="3386675685417744672">Exclusivo no Chromebook</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
 <translation id="3413935475507503304">Para continuar com a atualização, clique em "Próxima".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -325,6 +322,7 @@
 <translation id="3632579075709132555">Alternar Tela de privacidade</translation>
 <translation id="3639846061339007994">parte de cima</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
+<translation id="3663574643422533538">Selecione pôsteres exclusivos do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
@@ -369,12 +367,12 @@
 <translation id="404928562651467259">AVISO</translation>
 <translation id="4054683689023980771">Fazendo o download da imagem</translation>
 <translation id="4060260348856573701">Novo APN</translation>
-<translation id="4079743696465895866">Selecione uma arte exclusiva do Chromebook</translation>
 <translation id="4093865285251893588">Imagem do perfil</translation>
 <translation id="409427325554347132">Salvar detalhes do teste</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Selecionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
+<translation id="4113067922640381334">Agora você tem acesso a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />planos de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Passe o cursor para ver mais opções de layout</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
@@ -614,6 +612,7 @@
 <translation id="5972388717451707488">Mecanismo de atualização</translation>
 <translation id="5984145644188835034">Plano de fundo padrão</translation>
 <translation id="6017514345406065928">Verde</translation>
+<translation id="6019566113895157499">Atalhos do teclado</translation>
 <translation id="6034694447310538551">Ativar redefinição mensal automática</translation>
 <translation id="6037291330010597344">O alimentador de documentos do scanner está vazio. Adicione documentos e tente novamente.</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -937,6 +936,7 @@
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8593058461203131755">pausar mídia</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
+<translation id="8626489604350149811">Mais ações para o site <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>

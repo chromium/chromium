@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
-#import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
@@ -99,15 +98,22 @@ using password_manager::metrics_util::PasswordCheckInteraction;
 
 namespace {
 
+// Height of empty footer below the manage account header.
+// This ammount added to the internal padding of the manage account header (8pt)
+// and the height of the empty header of the next section (10pt) achieves the
+// desired vertical spacing (20pt) between the manager account header's text and
+// the first item of the next section.
+constexpr CGFloat kManageAccountHeaderSectionFooterHeight = 2;
+
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeHeader,
-  // Section: SectionIdentifierSavePasswordsSwitch
+  // Section: SectionIdentifierManageAccountHeader
   ItemTypeLinkHeader = kItemTypeEnumZero,
   // Section: SectionIdentifierPasswordCheck
   ItemTypePasswordCheckStatus,
   ItemTypeCheckForProblemsButton,
   ItemTypeLastCheckTimestampFooter,
   // Section: SectionIdentifierSavedPasswords
+  ItemTypeHeader,
   ItemTypeSavedPassword,  // This is a repeated item type.
   // Section: SectionIdentifierBlocked
   ItemTypeBlocked,  // This is a repeated item type.
@@ -235,9 +241,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   BOOL _faviconMetricLogged;
 }
 
-// Object handling passwords export operations.
-@property(nonatomic, strong) PasswordExporter* passwordExporter;
-
 // Current passwords search term.
 @property(nonatomic, copy) NSString* searchTerm;
 
@@ -268,10 +271,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 // YES, if the user has tapped on the "Check Now" button.
 @property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
-
-// On-device encryption state according to the sync service.
-@property(nonatomic, assign)
-    OnDeviceEncryptionState onDeviceEncryptionStateInModel;
 
 // Return YES if the search bar should be enabled.
 @property(nonatomic, assign) BOOL shouldEnableSearchBar;
@@ -316,9 +315,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
     [self updateUIForEditState];
   }
-  // This value represents the state in the UI. It is set to
-  // `OnDeviceEncryptionStateNotShown` because nothing is currently shown.
-  _onDeviceEncryptionStateInModel = OnDeviceEncryptionStateNotShown;
   return self;
 }
 
@@ -436,7 +432,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
-  [self updatePasswordCheckSection];
+  [self updatePasswordCheckSectionWithState:self.passwordCheckState];
   [self updateUIForEditState];
 }
 
@@ -467,8 +463,17 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
   TableViewModel* model = self.tableViewModel;
 
+  if (!_manageAccountLinkItem) {
+    _manageAccountLinkItem = [self manageAccountLinkItem];
+  }
+
   // Don't show sections hidden when search controller is displayed.
   if (!_tableIsInSearchMode) {
+    // Manage account header.
+    [model addSectionWithIdentifier:SectionIdentifierManageAccountHeader];
+    [model setHeader:_manageAccountLinkItem
+        forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
+
     // Password check.
     [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
     if (!_passwordProblemsItem) {
@@ -531,15 +536,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_EXCEPTIONS_HEADING);
     [model setHeader:headerItem
         forSectionWithIdentifier:SectionIdentifierBlocked];
-  }
-
-  // Add the descriptive text at the top of the screen. The section for this
-  // header is not visible in while in search mode. Adding it to the model only
-  // when not in search mode.
-  _manageAccountLinkItem = [self manageAccountLinkItem];
-  if (!_tableIsInSearchMode) {
-    [model setHeader:_manageAccountLinkItem
-        forSectionWithIdentifier:[self sectionForManageAccountLinkHeader]];
   }
 
   [self filterItems:self.searchTerm];
@@ -645,10 +641,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 #pragma mark - Items
-- (PasswordSectionIdentifier)sectionForManageAccountLinkHeader {
-  return SectionIdentifierPasswordCheck;
-}
-
 - (TableViewLinkHeaderFooterItem*)manageAccountLinkItem {
   TableViewLinkHeaderFooterItem* header =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
@@ -833,7 +825,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     return;
   }
 
-  [self updatePasswordCheckSection];
+  [self updatePasswordCheckSectionWithState:state];
 
   // When the Password Checkup feature is enabled, this timestamp only appears
   // in the detail text of the Password Checkup status cell. It is therefore
@@ -999,6 +991,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         [self clearSectionWithIdentifier:SectionIdentifierPasswordCheck
                         withRowAnimation:UITableViewRowAnimationTop];
 
+        [self clearSectionWithIdentifier:SectionIdentifierManageAccountHeader
+                        withRowAnimation:UITableViewRowAnimationTop];
+
         // Hide the toolbar when the search controller is presented.
         self.navigationController.toolbarHidden = YES;
       }
@@ -1025,6 +1020,17 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         int sectionIndex = 0;
         NSMutableArray<NSIndexPath*>* rowsIndexPaths =
             [[NSMutableArray alloc] init];
+
+        // Add manage account header.
+        [model insertSectionWithIdentifier:SectionIdentifierManageAccountHeader
+                                   atIndex:sectionIndex];
+        [model setHeader:_manageAccountLinkItem
+            forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
+        [self.tableView
+              insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+            withRowAnimation:UITableViewRowAnimationTop];
+
+        sectionIndex++;
 
         // Add "Password check" section.
         [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
@@ -1070,9 +1076,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                         SectionIdentifierAddPasswordButton]]];
           sectionIndex++;
         }
-
-        [model setHeader:_manageAccountLinkItem
-            forSectionWithIdentifier:[self sectionForManageAccountLinkHeader]];
 
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
                               withRowAnimation:UITableViewRowAnimationTop];
@@ -1688,6 +1691,19 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 }
 
+- (void)setPasswordProblemsItemAccessibilityLabelForSafeState {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus
+                              sectionIdentifier:SectionIdentifierPasswordCheck];
+  UITableViewCell* passwordProblemsCell =
+      [self.tableView cellForRowAtIndexPath:indexPath];
+  passwordProblemsCell.accessibilityLabel = [NSString
+      stringWithFormat:
+          @"%@. %@", passwordProblemsCell.accessibilityLabel,
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL)];
+}
+
 // Logs metrics related to favicons for the Password Manager.
 - (void)logMetricsForFavicons {
   DCHECK(!_faviconMetricLogged);
@@ -1825,7 +1841,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self deleteItemAtIndexPaths:indexPaths];
 }
 
-- (void)updatePasswordCheckSection {
+- (void)updatePasswordCheckSectionWithState:(PasswordCheckUIState)state {
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierPasswordCheck]) {
     return;
@@ -1835,6 +1851,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       performBatchUpdates:^{
         if (_passwordProblemsItem) {
           [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
+          // When in safe state, a custom accessibility label needs to be set
+          // for the Password Checkup cell.
+          if (state == PasswordCheckStateSafe) {
+            [self setPasswordProblemsItemAccessibilityLabelForSafeState];
+          }
         }
         if (_checkForProblemsItem) {
           // If kIOSPasswordCheckup feature is disabled, only reconfigure the
@@ -2002,7 +2023,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   UIView* view = [super tableView:tableView viewForHeaderInSection:section];
 
   if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
-      [self sectionForManageAccountLinkHeader]) {
+      SectionIdentifierManageAccountHeader) {
     // This is the text at the top of the page with a link. Attach as a delegate
     // to ensure clicks on the link are handled.
     TableViewLinkHeaderFooterView* linkView =
@@ -2011,6 +2032,18 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 
   return view;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  // Customize height of emtpy footer for manage account header section to
+  // achieve desired vertical spacing to next item.
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
+      SectionIdentifierManageAccountHeader) {
+    return kManageAccountHeaderSectionFooterHeight;
+  }
+
+  return [super tableView:tableView heightForFooterInSection:section];
 }
 
 #pragma mark - UITableViewDataSource

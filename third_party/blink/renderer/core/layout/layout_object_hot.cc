@@ -88,8 +88,9 @@ LayoutBox* LayoutObject::EnclosingScrollableBox() const {
       continue;
 
     auto* ancestor_box = To<LayoutBox>(ancestor);
-    if (ancestor_box->CanBeScrolledAndHasScrollableArea())
+    if (ancestor_box->IsUserScrollable()) {
       return ancestor_box;
+    }
   }
 
   return nullptr;

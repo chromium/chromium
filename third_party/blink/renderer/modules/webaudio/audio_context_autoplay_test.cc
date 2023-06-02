@@ -15,9 +15,9 @@
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -88,24 +88,24 @@ class AudioContextAutoplayTest
     frame_test_helpers::LoadHTMLString(
         To<WebLocalFrameImpl>(helper_.LocalMainFrame()->FirstChild()), "",
         WebURL(KURL("https://cross-origin.com")));
-    GetDocument().GetSettings()->SetAutoplayPolicy(GetParam());
-    ChildDocument().GetSettings()->SetAutoplayPolicy(GetParam());
+    GetWindow().GetFrame()->GetSettings()->SetAutoplayPolicy(GetParam());
+    ChildWindow().GetFrame()->GetSettings()->SetAutoplayPolicy(GetParam());
 
     histogram_tester_ = std::make_unique<HistogramTester>();
   }
 
-  Document& GetDocument() {
-    return *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  LocalDOMWindow& GetWindow() {
+    return *helper_.LocalMainFrame()->GetFrame()->DomWindow();
   }
 
-  Document& ChildDocument() {
+  LocalDOMWindow& ChildWindow() {
     return *To<WebLocalFrameImpl>(helper_.LocalMainFrame()->FirstChild())
                 ->GetFrame()
-                ->GetDocument();
+                ->DomWindow();
   }
 
-  ScriptState* GetScriptStateFrom(const Document& document) {
-    return ToScriptStateForMainWorld(document.GetFrame());
+  ScriptState* GetScriptStateFrom(const LocalDOMWindow& window) {
+    return ToScriptStateForMainWorld(window.GetFrame());
   }
 
   void RejectPendingResolvers(AudioContext* audio_context) {
@@ -129,7 +129,7 @@ class AudioContextAutoplayTest
 // Creates an AudioContext without a gesture inside a x-origin child frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateNoGesture_Child) {
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {
@@ -153,7 +153,7 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateNoGesture_Child) {
 // Creates an AudioContext without a gesture inside a main frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateNoGesture_Main) {
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {
@@ -175,11 +175,11 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateNoGesture_Main) {
 // child frame.
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_CallResumeNoGesture_Child) {
-  ScriptState::Scope scope(GetScriptStateFrom(ChildDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(ChildWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
-  audio_context->resumeContext(GetScriptStateFrom(ChildDocument()),
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  audio_context->resumeContext(GetScriptStateFrom(ChildWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -204,11 +204,11 @@ TEST_P(AudioContextAutoplayTest,
 
 // Creates an AudioContext then call resume without a gesture in a main frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeNoGesture_Main) {
-  ScriptState::Scope scope(GetScriptStateFrom(GetDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(GetWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
-  audio_context->resumeContext(GetScriptStateFrom(ChildDocument()),
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  audio_context->resumeContext(GetScriptStateFrom(ChildWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -231,10 +231,10 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeNoGesture_Main) {
 // Creates an AudioContext with a user gesture inside a x-origin child frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateGesture_Child) {
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
 
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {
@@ -258,10 +258,10 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateGesture_Child) {
 // Creates an AudioContext with a user gesture inside a main frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateGesture_Main) {
   LocalFrame::NotifyUserActivation(
-      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      GetWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {
@@ -282,15 +282,15 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateGesture_Main) {
 // Creates an AudioContext then calls resume with a user gesture inside a
 // x-origin child frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeGesture_Child) {
-  ScriptState::Scope scope(GetScriptStateFrom(ChildDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(ChildWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
 
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
 
-  audio_context->resumeContext(GetScriptStateFrom(ChildDocument()),
+  audio_context->resumeContext(GetScriptStateFrom(ChildWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -316,15 +316,15 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeGesture_Child) {
 // Creates an AudioContext then calls resume with a user gesture inside a main
 // frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeGesture_Main) {
-  ScriptState::Scope scope(GetScriptStateFrom(GetDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(GetWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
 
   LocalFrame::NotifyUserActivation(
-      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      GetWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
 
-  audio_context->resumeContext(GetScriptStateFrom(GetDocument()),
+  audio_context->resumeContext(GetScriptStateFrom(GetWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -348,7 +348,7 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeGesture_Main) {
 // x-origin child frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartNoGesture_Child) {
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   audio_context->NotifySourceNodeStart();
   RecordAutoplayStatus(audio_context);
 
@@ -374,7 +374,7 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartNoGesture_Child) {
 // main frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartNoGesture_Main) {
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   audio_context->NotifySourceNodeStart();
   RecordAutoplayStatus(audio_context);
 
@@ -397,10 +397,10 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartNoGesture_Main) {
 // x-origin child frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartGesture_Child) {
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
 
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
   audio_context->NotifySourceNodeStart();
   RecordAutoplayStatus(audio_context);
 
@@ -426,10 +426,10 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartGesture_Child) {
 // main frame.
 TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartGesture_Main) {
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
 
   LocalFrame::NotifyUserActivation(
-      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      GetWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
   audio_context->NotifySourceNodeStart();
   RecordAutoplayStatus(audio_context);
 
@@ -452,15 +452,15 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartGesture_Main) {
 // finally allows the AudioContext to produce sound inside x-origin child frame.
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_NodeStartNoGestureThenSuccess_Child) {
-  ScriptState::Scope scope(GetScriptStateFrom(ChildDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(ChildWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   audio_context->NotifySourceNodeStart();
 
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
-  audio_context->resumeContext(GetScriptStateFrom(ChildDocument()),
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
+  audio_context->resumeContext(GetScriptStateFrom(ChildWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -487,15 +487,15 @@ TEST_P(AudioContextAutoplayTest,
 // finally allows the AudioContext to produce sound inside a main frame.
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_NodeStartNoGestureThenSuccess_Main) {
-  ScriptState::Scope scope(GetScriptStateFrom(GetDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(GetWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   audio_context->NotifySourceNodeStart();
 
   LocalFrame::NotifyUserActivation(
-      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
-  audio_context->resumeContext(GetScriptStateFrom(GetDocument()),
+      GetWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
+  audio_context->resumeContext(GetScriptStateFrom(GetWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -519,15 +519,15 @@ TEST_P(AudioContextAutoplayTest,
 // finally allows the AudioContext to produce sound inside x-origin child frame.
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_NodeStartGestureThenSucces_Child) {
-  ScriptState::Scope scope(GetScriptStateFrom(ChildDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(ChildWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
 
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
   audio_context->NotifySourceNodeStart();
-  audio_context->resumeContext(GetScriptStateFrom(ChildDocument()),
+  audio_context->resumeContext(GetScriptStateFrom(ChildWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -554,15 +554,15 @@ TEST_P(AudioContextAutoplayTest,
 // finally allows the AudioContext to produce sound inside a main frame.
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_NodeStartGestureThenSucces_Main) {
-  ScriptState::Scope scope(GetScriptStateFrom(GetDocument()));
+  ScriptState::Scope scope(GetScriptStateFrom(GetWindow()));
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
 
   LocalFrame::NotifyUserActivation(
-      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      GetWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
   audio_context->NotifySourceNodeStart();
-  audio_context->resumeContext(GetScriptStateFrom(GetDocument()),
+  audio_context->resumeContext(GetScriptStateFrom(GetWindow()),
                                ASSERT_NO_EXCEPTION);
   RejectPendingResolvers(audio_context);
   RecordAutoplayStatus(audio_context);
@@ -587,10 +587,10 @@ TEST_P(AudioContextAutoplayTest,
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_DocumentReceivedGesture_Child) {
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
 
   AudioContext* audio_context = AudioContext::Create(
-      ChildDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &ChildWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {
@@ -624,10 +624,10 @@ TEST_P(AudioContextAutoplayTest,
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_DocumentReceivedGesture_Main) {
   LocalFrame::NotifyUserActivation(
-      ChildDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+      ChildWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {
@@ -649,10 +649,10 @@ TEST_P(AudioContextAutoplayTest,
 // document received a user gesture before navigation.
 TEST_P(AudioContextAutoplayTest,
        AutoplayMetrics_DocumentReceivedGesture_BeforeNavigation) {
-  GetDocument().GetFrame()->SetHadStickyUserActivationBeforeNavigation(true);
+  GetWindow().GetFrame()->SetHadStickyUserActivationBeforeNavigation(true);
 
   AudioContext* audio_context = AudioContext::Create(
-      GetDocument(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   RecordAutoplayStatus(audio_context);
 
   switch (GetParam()) {

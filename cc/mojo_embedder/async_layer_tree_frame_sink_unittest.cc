@@ -80,7 +80,8 @@ TEST(AsyncLayerTreeFrameSinkTest,
   init_params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   init_params.pipes.client_receiver = client.InitWithNewPipeAndPassReceiver();
   auto layer_tree_frame_sink = std::make_unique<AsyncLayerTreeFrameSink>(
-      std::move(provider), nullptr, &init_params);
+      std::move(provider), nullptr, /*shared_image_interface=*/nullptr,
+      &init_params);
 
   base::PlatformThreadId called_thread_id = base::kInvalidThreadId;
   base::RunLoop close_run_loop;
@@ -144,7 +145,8 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
         client.InitWithNewPipeAndPassReceiver();
 
     layer_tree_frame_sink_ = std::make_unique<AsyncLayerTreeFrameSink>(
-        std::move(context_provider), nullptr, &init_params_);
+        std::move(context_provider), nullptr,
+        /*shared_image_interface=*/nullptr, &init_params_);
 
     viz::LocalSurfaceId local_surface_id(1, base::UnguessableToken::Create());
     layer_tree_frame_sink_->SetLocalSurfaceId(local_surface_id);

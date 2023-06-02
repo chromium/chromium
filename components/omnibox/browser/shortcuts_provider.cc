@@ -197,7 +197,8 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
       input.type() != metrics::OmniboxInputType::EMPTY &&
       !input.text().empty() && initialized_) {
-    GetMatches(input, OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled());
+    GetMatches(input,
+               OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
   }
 }
 
@@ -262,16 +263,6 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
        base::StartsWith(it->first, term_string, base::CompareCase::SENSITIVE);
        ++it) {
     const ShortcutsDatabase::Shortcut& shortcut = it->second;
-
-    // Allow `HISTORY_CLUSTER` suggestions only if the appropriate feature is
-    // enabled.
-#if !BUILDFLAG(IS_IOS)
-    if (!history_clusters::GetConfig()
-             .omnibox_history_cluster_provider_shortcuts &&
-        shortcut.match_core.type == AutocompleteMatch::Type::HISTORY_CLUSTER) {
-      continue;
-    }
-#endif  // !BUILDFLAG(IS_IOS)
 
     const GURL stripped_destination_url(AutocompleteMatch::GURLToStrippedGURL(
         shortcut.match_core.destination_url, input, template_url_service,
@@ -513,11 +504,8 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
             match.inline_autocompletion.empty();
       }
 #if !BUILDFLAG(IS_IOS)
-    } else if (match.type != AutocompleteMatch::Type::HISTORY_CLUSTER ||
-               history_clusters::GetConfig()
-                   .omnibox_history_cluster_provider_allow_default) {
-      // Don't try to default history cluster suggestions unless
-      // `omnibox_history_cluster_provider_allow_default` is enabled.
+    } else if (match.type != AutocompleteMatch::Type::HISTORY_CLUSTER) {
+      // Don't default history cluster suggestions.
 #else
     } else {
 #endif

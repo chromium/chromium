@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_TEST_UTIL_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_TEST_UTIL_H_
 
+#include <string>
+
+struct AccountInfo;
 class Profile;
 
 namespace supervised_user_test_util {
@@ -15,6 +18,11 @@ void AddCustodians(Profile* profile);
 // Updates preferences relevant to requesting extensions permissions.
 void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
                                                           bool enabled);
+
+// Populates account info with a `given_name` and other fake data needed for a
+// valid `AccountInfo` structure.
+void PopulateAccountInfoWithName(AccountInfo& info,
+                                 const std::string& given_name);
 
 }  // namespace supervised_user_test_util
 

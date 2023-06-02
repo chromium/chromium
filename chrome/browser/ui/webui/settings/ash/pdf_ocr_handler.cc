@@ -5,9 +5,9 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/webui/settings/ash/pdf_ocr_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 

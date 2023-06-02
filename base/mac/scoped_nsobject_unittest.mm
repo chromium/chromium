@@ -7,6 +7,10 @@
 #include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(__has_feature) && __has_feature(objc_arc)
+#error "This file must not be compiled with ARC."
+#endif
+
 namespace {
 
 TEST(ScopedNSObjectTest, ScopedNSObject) {

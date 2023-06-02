@@ -1,0 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This interface is implemented by ash-chrome. It allows lacros-chrome to
+// request ash-chrome to display Kerberos ui.
+[Stable, Uuid="2e9a66de-3463-4383-bf6a-ab35f8c47bed"]
+interface KerberosInBrowser {
+  // Displays the Kerberos ui.
+  ShowKerberosInBrowserDialog@0();
+};

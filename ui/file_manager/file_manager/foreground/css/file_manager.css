@@ -188,7 +188,7 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   background-color: transparent;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 16px 16px;
+  background-size: 20px 20px;
 }
 
 #directory-tree .tree-row > .label {
@@ -368,6 +368,10 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 }
 
 /* Can be removed after new directory replacement. -- END */
+
+#directory-tree xf-tree-item > input::selection {
+  background-color: var(--cros-text-highlight-color);
+}
 
 /* These changes are for the new directory to work with FilesLegacy style. */
 #directory-tree .align-right-icon {
@@ -807,7 +811,12 @@ body.check-select #cancel-selection-button-wrapper {
 
 /* Search button */
 body.check-select-v1 #search-button {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
   visibility: hidden;
+  width: 0;
 }
 
 /* Search box */
@@ -826,6 +835,10 @@ body.check-select-v1 #search-button {
 
 .dialog-header.files-ng #search-box cr-input::part(input) {
   caret-color: var(--cr-input-color);
+}
+
+body.check-select-v1 #search-box {
+  visibility: hidden;
 }
 
 .dialog-header.files-ng #search-box.has-cursor,
@@ -1188,7 +1201,8 @@ body.check-select .breadcrumbs {
   padding-inline: 16px 12px;
 }
 
-body.check-select #read-only-indicator {
+body.check-select #read-only-indicator,
+body.check-select #offline-folder-indicator {
   display: none;
 }
 
@@ -1236,6 +1250,19 @@ body.check-select #read-only-indicator {
   --empty-folder-svg-file-color: var(--cros-illustration-secondary-color);
   --empty-folder-svg-ellipse-color: var(--cros-illustration-color-1);
   --empty-folder-svg-folder-color: var(--cros-illustration-color-1-shade-2);
+
+
+  /* TODO(b/283366482) Remove this manual GM3 -> GM2 mapping once b/280712160
+  fixed. */
+  --cros-sys-illo-color1: var(--cros-illustration-color-1);
+  --cros-sys-illo-color1-2: var(--cros-illustration-color-1-shade-2);
+  --cros-sys-illo-secondary: var(--cros-illustration-secondary-color);
+  --cros-sys-illo-color3: var(--cros-illustration-color-3);
+  --cros-sys-illo-color5: var(--cros-illustration-color-5);
+  --cros-sys-illo-color2: var(--cros-illustration-color-2);
+  --cros-sys-illo-base: var(--cros-illustration-base-color);
+
+
   margin-top: 64px;
   text-align: center;
 }
@@ -1253,7 +1280,7 @@ body.check-select #read-only-indicator {
   text-align: center;
   /* Ensure links in label are on top when not hidden so a click is not
   absorbed by an empty file-list. */
-  z-index: 999;
+  z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
 #empty-folder > .label > span#empty-folder-title {
@@ -1404,19 +1431,23 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
+#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
+#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status,
+#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
   display: flex;
 }
 
-#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline] {
+#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline],
+#list-container.thumbnail-view li.cant-pin .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color: var(--cros-icon-color-secondary);
 }
 
 /* Only display outlines for entries with thumbnails. */
 #list-container.thumbnail-view li:has(.thumbnail) .inline-status .progress,
-#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline] {
+#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline],
+#list-container.thumbnail-view li.cant-pin:has(.thumbnail) .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color-outline: var(--cros-bg-color);
 }
 
@@ -2360,14 +2391,17 @@ body.files-ng #list-container li .detail-thumbnail {
 #list-container .list li.encrypted:not([renaming]) .encryption-status,
 #list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
+#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
+#list-container .list li.cant-pin:not([renaming]) .inline-status,
+#list-container .list li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
   display: flex;
 }
 
 #list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
-#list-container .list li.pinned .inline-status xf-icon[type=offline] {
+#list-container .list li.pinned .inline-status xf-icon[type=offline],
+#list-container .list li.cant-pin .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color: var(--cros-icon-color-secondary);
 }
 

@@ -193,19 +193,20 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   if (animation) {
     // A cancelled CSS animation does not become active again due to an
     // animation update.
-    if (!animation->UnlimitedCurrentTime() && !animation->StartTimeInternal()) {
+    if (animation->CalculateAnimationPlayState() == Animation::kIdle) {
       return absl::nullopt;
     }
 
     // In most cases, current time is preserved on an animation update.
     inherited_time = animation->UnlimitedCurrentTime();
-    previous_timeline = animation->timeline();
+    previous_timeline = animation->TimelineInternal();
     resets_current_time_on_resume = animation->ResetsCurrentTimeOnResume();
   }
 
   bool range_changed =
-      !animation || (range_start != animation->GetRangeStartInternal() ||
-                     range_end != animation->GetRangeEndInternal());
+      !animation || ((range_start != animation->GetRangeStartInternal() ||
+                      range_end != animation->GetRangeEndInternal()) &&
+                     !animation->StartTimeInternal());
 
   if (timeline && timeline->IsProgressBased()) {
     if (is_paused_ || ((timeline == previous_timeline) &&
@@ -218,23 +219,14 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // animation's start time. Need to compute a new value for
     // inherited_time_.
     double relative_offset;
-    if (timeline->IsViewTimeline()) {
-      TimelineRange timeline_range = timeline->GetTimelineRange();
-      // TODO(kevers): Support animation-range for a non-view scroll-timeline.
-      if (playback_rate_ >= 0) {
-        relative_offset =
-            range_start ? timeline_range.ToFractionalOffset(range_start.value())
-                        : 0;
-      } else {
-        relative_offset =
-            range_end ? timeline_range.ToFractionalOffset(range_end.value())
-                      : 1;
-      }
+    TimelineRange timeline_range = timeline->GetTimelineRange();
+    if (playback_rate_ >= 0) {
+      relative_offset =
+          range_start ? timeline_range.ToFractionalOffset(range_start.value())
+                      : 0;
     } else {
-      // A non-view scroll-timeline has its start time at 0 or end time.
-      // TODO(kevers): Update once non-view scroll-timeline support animation
-      // ranges.
-      relative_offset = playback_rate_ >= 0 ? 0 : 1;
+      relative_offset =
+          range_end ? timeline_range.ToFractionalOffset(range_end.value()) : 1;
     }
     if (timeline->CurrentTime()) {
       AnimationTimeDelta pending_start_time =
@@ -1413,12 +1405,12 @@ ScrollSnapshotTimeline* CSSAnimations::FindTimelineForNode(
   if (!element)
     return nullptr;
   const TimelineData* timeline_data = GetTimelineData(*element);
-  if (ViewTimeline* timeline =
-          FindTimelineForElement<ViewTimeline>(name, timeline_data, update)) {
-    return timeline;
-  }
   if (ScrollTimeline* timeline =
           FindTimelineForElement<ScrollTimeline>(name, timeline_data, update)) {
+    return timeline;
+  }
+  if (ViewTimeline* timeline =
+          FindTimelineForElement<ViewTimeline>(name, timeline_data, update)) {
     return timeline;
   }
   return FindTimelineForElement<DeferredTimeline>(name, timeline_data, update);
@@ -1888,7 +1880,6 @@ void CSSAnimations::CalculateAnimationUpdate(
         CSSAnimationProxy animation_proxy(timeline, /* animation */ nullptr,
                                           is_paused, range_start, range_end,
                                           timing);
-
         update.StartAnimation(
             name, name_index, i,
             *MakeGarbageCollected<InertEffect>(
@@ -2209,7 +2200,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       effect->UpdateSpecifiedTiming(entry.effect->SpecifiedTiming());
     }
     CSSAnimation& css_animation = To<CSSAnimation>(*entry.animation);
-    if (css_animation.timeline() != entry.timeline) {
+    if (css_animation.TimelineInternal() != entry.timeline) {
       css_animation.setTimeline(entry.timeline);
       css_animation.ResetIgnoreCSSTimeline();
     }
@@ -2705,11 +2696,11 @@ void CSSAnimations::CalculateTransitionUpdate(
       << "Should always pass nullptr instead of ensured styles";
   const ComputedStyle* scope_old_style =
       PostStyleUpdateScope::GetOldStyle(animating_element);
-  bool is_initial_style = old_style && old_style->IsPseudoInitialStyle();
-  DCHECK(old_style == scope_old_style || !scope_old_style && is_initial_style)
+  bool is_starting_style = old_style && old_style->IsStartingStyle();
+  DCHECK(old_style == scope_old_style || !scope_old_style && is_starting_style)
       << "The old_style passed in should be the style for the element at the "
-         "beginning of the lifecycle update, or a style based on the :initial "
-         "style";
+         "beginning of the lifecycle update, or a style based on the "
+         "@starting-style style";
 #endif
 
   if (!animation_style_recalc && old_style) {

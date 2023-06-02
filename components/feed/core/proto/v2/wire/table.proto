@@ -14,6 +14,7 @@ message Table {
   message Column {
     optional TypeKind type = 1;
     optional string name = 3;
+    repeated int64 int64_values = 2 [packed = true];
     repeated uint64 uint64_values = 4 [packed = true];
   }
   optional string name = 5;

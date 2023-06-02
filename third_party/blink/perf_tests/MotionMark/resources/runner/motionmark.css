@@ -1,0 +1,571 @@
+/*
+ * Copyright (C) 2018-2020 Apple Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/* Outer harness */
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    background-color: hsl(0, 0%, 95%);
+
+    font-family: "Helvetica Neue", Helvetica, Verdana, sans-serif;
+    font-size: 15px;
+
+    cursor: default;
+
+    -webkit-user-select: none;
+}
+
+body.showing-intro,
+body.showing-results {
+    background-color: hsl(35, 100%, 100%);
+    background-image: url(crystal.svg), url(lines.svg);
+    background-size: auto 225%, auto 100%;
+    background-repeat: no-repeat;
+
+    animation: background-fade 1s ease-in 1s, background-color 60s linear infinite 2s;
+    animation-play-state: paused;
+
+    will-change: background-color;
+}
+
+body.showing-test-container {
+    overflow: hidden;
+}
+
+body.images-loaded {
+    animation-play-state: running;
+}
+
+@media screen and (min-width: 667px) {
+    body {
+        font-size: 24px;
+    }
+
+    body.showing-intro,
+    body.showing-results {
+        background-size: 200% 100%, 150% auto;
+    }
+}
+
+@media screen and (min-width: 1025px) {
+    body.showing-intro,
+    body.showing-results {
+        background-size: 150% 100%, 150% auto;
+    }
+}
+
+::selection {
+    background-color: black;
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+section {
+    display: none;
+}
+
+section.selected {
+    display: block;
+}
+
+.logo {
+    position: relative;
+}
+
+.logo svg {
+    width: 350px;
+    height: 88px;
+
+    max-width: 100%;
+
+    color: hsl(35, 100%, 50%);
+
+    animation: foreground-color 60s linear infinite 2s;
+    animation-play-state: paused;
+
+    will-change: color;
+}
+
+.logo div {
+    transform: skewX(-10deg);
+    margin-left: 1em;
+}
+
+body.images-loaded .logo svg {
+    animation-play-state: running;
+}
+
+@media screen and (min-width: 667px) {
+    .logo svg {
+        width: 525px;
+        height: 130px;
+        padding-left: .4em;
+    }
+
+    .logo div {
+        position: absolute;
+        left: 360px;
+        bottom: 0.2em;
+        font-size: 75%;
+    }
+}
+
+section .body {
+    margin: 2em 1em 0;
+    max-width: 350px;
+}
+
+section .body p {
+    margin: 1em 0;
+    line-height: 1.5em;
+    max-width: 60vw;
+
+    -webkit-user-select: text;
+    cursor: text;
+}
+
+@media screen and (min-width: 667px) {
+    section .body {
+        margin-left: 2.5em;
+        max-width: 500px;
+        transform: skewX(-10deg);
+    }
+
+    section button {
+        transform: none;
+    }
+}
+
+button {
+    background-color: hsl(35, 100%, 50%);
+    color: white;
+
+    padding: 0.25em;
+    margin: 1.5em -0.25em 0 0;
+
+    min-width: 50%;
+
+    border: none;
+
+    font-family: inherit;
+    font-size: inherit;
+
+    transform: skewX(-10deg);
+
+    transition: 100ms filter ease-in-out;
+
+    animation: background-color 60s linear infinite 2s;
+    animation-play-state: paused;
+
+    will-change: background-color;
+}
+
+body.images-loaded button {
+    animation-play-state: running;
+}
+
+button:hover {
+    filter: brightness(115%);
+}
+
+button:active {
+    filter: brightness(130%);
+}
+
+button:disabled {
+    opacity: 0.5;
+    filter: none !important;
+}
+
+@media print {
+    button {
+        display: none;
+    }
+}
+
+.portrait-orientation-check {
+    display: none;
+}
+
+@media screen and (max-device-width: 1025px) and (orientation: portrait) {
+    .portrait-orientation-check {
+        display: block;
+    }
+}
+
+@media screen and (max-device-width: 1025px) and (orientation: portrait) {
+    .landscape-orientation-check {
+        /* This keeps the button color animation in sync with page, while display: none does not. */
+        visibility: hidden;
+    }
+}
+
+@keyframes background-fade {
+    100% {
+        background-color: hsl(35, 100%, 50%);
+    }
+}
+
+@keyframes background-color {
+    0%, 10% {
+        background-color: hsl(35, 100%, 50%);
+    }
+
+    12%, 20% {
+        background-color: hsl(75, 100%, 30%);
+    }
+
+    22%, 30% {
+        background-color: hsl(115, 100%, 30%);
+    }
+
+    32%, 40% {
+        background-color: hsl(155, 100%, 30%);
+    }
+
+    42%, 50% {
+        background-color: hsl(195, 100%, 30%);
+    }
+
+    52%, 60% {
+        background-color: hsl(235, 100%, 30%);
+    }
+
+    62%, 70% {
+        background-color: hsl(275, 100%, 30%);
+    }
+
+    72%, 80% {
+        background-color: hsl(315, 100%, 30%);
+    }
+
+    82%, 90% {
+        background-color: hsl(355, 100%, 30%);
+    }
+
+    92%, 100% {
+        background-color: hsl(395, 100%, 50%);
+    }
+}
+
+@keyframes foreground-color {
+    0%, 10% {
+        color: hsl(35, 100%, 50%);
+    }
+
+    12%, 20% {
+        color: hsl(75, 100%, 30%);
+    }
+
+    22%, 30% {
+        color: hsl(115, 100%, 30%);
+    }
+
+    32%, 40% {
+        color: hsl(155, 100%, 30%);
+    }
+
+    42%, 50% {
+        color: hsl(195, 100%, 30%);
+    }
+
+    52%, 60% {
+        color: hsl(235, 100%, 30%);
+    }
+
+    62%, 70% {
+        color: hsl(275, 100%, 30%);
+    }
+
+    72%, 80% {
+        color: hsl(315, 100%, 30%);
+    }
+
+    82%, 90% {
+        color: hsl(355, 100%, 30%);
+    }
+
+    92%, 100% {
+        color: hsl(395, 100%, 50%);
+    }
+}
+
+/* Intro section, About page */
+
+#intro, #about {
+    padding: 2em;
+}
+
+#intro {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
+}
+
+body.images-loaded #intro {
+    opacity: 1;
+}
+
+#about .body {
+    transform: none;
+    margin: 0;
+    max-width: initial;
+}
+
+#about li {
+    line-height: 1.5em;
+}
+
+#about button {
+    padding: .75em 2em;
+    margin: 1.5em auto 0;
+    min-width: initial;
+    transform: skewX(-10deg);
+}
+#about h3 {
+    margin-top: 3em;
+}
+#about #log {
+    font-size: .9em;
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+#about #log li {
+    margin-top: .5em;
+}
+
+@media screen and (min-width: 667px) {
+    #about .body {
+        font-size: .7em;
+        margin: 1em;
+    }
+
+    #about ol, #about ul {
+        padding-left: 3em;
+    }
+}
+
+
+#intro a, #about a,
+#intro a:visited, #about a:visited {
+    color: black;
+}
+
+/* Running test section */
+
+.frame-container {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+}
+
+.frame-container > iframe {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+    margin: 0;
+}
+
+body.small .frame-container {
+    width: 568px;
+    height: 320px;
+    margin-left: -284px;
+    margin-top: -160px;
+}
+
+body.medium .frame-container {
+    width: 900px;
+    height: 600px;
+    margin-left: -450px;
+    margin-top: -300px;
+}
+
+body.large .frame-container {
+    width: 1600px;
+    height: 800px;
+    margin-left: -800px;
+    margin-top: -400px;
+}
+
+/* Results section */
+
+#results {
+    padding: 2em;
+}
+
+#results .body {
+    -webkit-user-select: text;
+}
+
+#results .score-container {
+    padding-bottom: 2em;
+}
+
+#results .table-container {
+    position: relative;
+}
+
+#results .table-container > div {
+    margin-left: 40%;
+}
+
+#results .score {
+    font-size: 5em;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 1;
+    margin: 0;
+}
+
+#results .confidence {
+    font-size: 2em;
+    font-style: italic;
+    line-height: 1;
+    margin: 0;
+    text-indent: 1.75em;
+    color: hsl(0, 0%, 40%);
+    padding-bottom: .3em;
+}
+
+#results table {
+    border-spacing: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 25%;
+}
+
+#results table td,
+#results table th {
+    padding: 0.25em;
+}
+
+#results table td.suites-separator {
+    padding: 0;
+}
+
+#results table tr:nth-child(even) {
+    background-color: hsla(0, 0%, 0%, 0.05);
+}
+
+#results #results-header {
+    top: 0;
+    left: 0;
+    width: 40%;
+    position: absolute;
+}
+
+#results #results-score {
+    float: left;
+}
+
+#results #results-data span {
+    font-size: .75em;
+    color: hsl(0, 0%, 40%);
+}
+
+#results #results-header td,
+#results #results-header th {
+    text-align: right;
+    padding-right: 1em !important;
+    padding-left: 0.5em !important;
+}
+
+#results #results-score td,
+#results #results-score th {
+    text-align: left;
+    padding-right: 0.5em !important;
+}
+
+#results #results-score td {
+    cursor: text;
+}
+
+@media screen and (min-width: 667px) {
+    #results .score,
+    #results .confidence {
+        font-style: normal;
+    }
+}
+
+.detail span {
+    display: none;
+}
+
+body.small .detail .small,
+body.medium .detail .medium,
+body.large .detail .large {
+    display: initial;
+}
+
+#overlay {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    background: hsla(0, 0%, 100%, 0.9);
+}
+
+@supports (-webkit-backdrop-filter: blur(10px)) {
+    #overlay {
+        background: hsla(0, 0%, 100%, 0.7);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}
+
+#overlay > div {
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    margin-top: -250px;
+    margin-left: -250px;
+
+    top: 50%;
+    left: 50%;
+}
+
+#overlay > div div {
+    overflow: scroll;
+
+    font-size: 12px;
+    -webkit-user-select: text;
+    cursor: text;
+
+    max-height: 250px;
+
+    border: 1px solid hsla(0, 0%, 0%, 0.1);
+    padding: 1em;
+}

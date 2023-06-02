@@ -29,9 +29,10 @@
 #include "absl/base/casts.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/per_thread_tls.h"
-#include "absl/base/internal/raw_logging.h"
 #include "absl/base/optimization.h"
 #include "absl/debugging/internal/stack_consumption.h"
+#include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 
@@ -124,15 +125,17 @@ static char try_symbolize_buffer[4096];
 // absl::Symbolize() returns false, otherwise returns try_symbolize_buffer with
 // the result of absl::Symbolize().
 static const char *TrySymbolizeWithLimit(void *pc, int limit) {
-  ABSL_RAW_CHECK(limit <= sizeof(try_symbolize_buffer),
-                 "try_symbolize_buffer is too small");
+  CHECK_LE(limit, sizeof(try_symbolize_buffer))
+      << "try_symbolize_buffer is too small";
 
   // Use the heap to facilitate heap and buffer sanitizer tools.
   auto heap_buffer = absl::make_unique<char[]>(sizeof(try_symbolize_buffer));
   bool found = absl::Symbolize(pc, heap_buffer.get(), limit);
   if (found) {
-    ABSL_RAW_CHECK(strnlen(heap_buffer.get(), limit) < limit,
-                   "absl::Symbolize() did not properly terminate the string");
+    CHECK_LT(static_cast<int>(
+                 strnlen(heap_buffer.get(), static_cast<size_t>(limit))),
+             limit)
+        << "absl::Symbolize() did not properly terminate the string";
     strncpy(try_symbolize_buffer, heap_buffer.get(),
             sizeof(try_symbolize_buffer) - 1);
     try_symbolize_buffer[sizeof(try_symbolize_buffer) - 1] = '\0';
@@ -155,8 +158,8 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
 #if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
   void *return_address = __builtin_return_address(0);
   const char *symbol = TrySymbolize(return_address);
-  ABSL_RAW_CHECK(symbol != nullptr, "TestWithReturnAddress failed");
-  ABSL_RAW_CHECK(strcmp(symbol, "main") == 0, "TestWithReturnAddress failed");
+  CHECK_NE(symbol, nullptr) << "TestWithReturnAddress failed";
+  CHECK_STREQ(symbol, "main") << "TestWithReturnAddress failed";
   std::cout << "TestWithReturnAddress passed" << std::endl;
 #endif
 }
@@ -314,8 +317,8 @@ static int FilterElfHeader(struct dl_phdr_info *info, size_t size, void *data) {
 TEST(Symbolize, SymbolizeWithMultipleMaps) {
   // Force kPadding0 and kPadding1 to be linked in.
   if (volatile_bool) {
-    ABSL_RAW_LOG(INFO, "%s", kPadding0);
-    ABSL_RAW_LOG(INFO, "%s", kPadding1);
+    LOG(INFO) << kPadding0;
+    LOG(INFO) << kPadding1;
   }
 
   // Verify we can symbolize everything.
@@ -463,9 +466,9 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideNonInlineFunction() {
     (defined(__i386__) || defined(__x86_64__))
   void *pc = non_inline_func();
   const char *symbol = TrySymbolize(pc);
-  ABSL_RAW_CHECK(symbol != nullptr, "TestWithPCInsideNonInlineFunction failed");
-  ABSL_RAW_CHECK(strcmp(symbol, "non_inline_func") == 0,
-                 "TestWithPCInsideNonInlineFunction failed");
+  CHECK_NE(symbol, nullptr) << "TestWithPCInsideNonInlineFunction failed";
+  CHECK_STREQ(symbol, "non_inline_func")
+      << "TestWithPCInsideNonInlineFunction failed";
   std::cout << "TestWithPCInsideNonInlineFunction passed" << std::endl;
 #endif
 }
@@ -475,9 +478,8 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideInlineFunction() {
     (defined(__i386__) || defined(__x86_64__))
   void *pc = inline_func();  // Must be inlined.
   const char *symbol = TrySymbolize(pc);
-  ABSL_RAW_CHECK(symbol != nullptr, "TestWithPCInsideInlineFunction failed");
-  ABSL_RAW_CHECK(strcmp(symbol, __FUNCTION__) == 0,
-                 "TestWithPCInsideInlineFunction failed");
+  CHECK_NE(symbol, nullptr) << "TestWithPCInsideInlineFunction failed";
+  CHECK_STREQ(symbol, __FUNCTION__) << "TestWithPCInsideInlineFunction failed";
   std::cout << "TestWithPCInsideInlineFunction passed" << std::endl;
 #endif
 }
@@ -519,9 +521,8 @@ __attribute__((target("arm"))) int ArmThumbOverlapArm(int x) {
 void ABSL_ATTRIBUTE_NOINLINE TestArmThumbOverlap() {
 #if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
   const char *symbol = TrySymbolize((void *)&ArmThumbOverlapArm);
-  ABSL_RAW_CHECK(symbol != nullptr, "TestArmThumbOverlap failed");
-  ABSL_RAW_CHECK(strcmp("ArmThumbOverlapArm()", symbol) == 0,
-                 "TestArmThumbOverlap failed");
+  CHECK_NE(symbol, nullptr) << "TestArmThumbOverlap failed";
+  CHECK_STREQ("ArmThumbOverlapArm()", symbol) << "TestArmThumbOverlap failed";
   std::cout << "TestArmThumbOverlap passed" << std::endl;
 #endif
 }
@@ -584,7 +585,7 @@ int main(int argc, char **argv) {
 #if !defined(__EMSCRIPTEN__)
   // Make sure kHpageTextPadding is linked into the binary.
   if (volatile_bool) {
-    ABSL_RAW_LOG(INFO, "%s", kHpageTextPadding);
+    LOG(INFO) << kHpageTextPadding;
   }
 #endif  // !defined(__EMSCRIPTEN__)
 

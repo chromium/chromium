@@ -45,12 +45,14 @@ found in the LICENSE file.
     <dimen name="location_bar_status_icon_holding_space_size">8dp</dimen>
     <dimen name="location_bar_icon_end_padding">0dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused">12dp</dimen>
+    <dimen name="location_bar_icon_end_padding_focused_smaller">10dp</dimen>
     <dimen name="location_bar_verbose_start_padding_verbose_text">4dp</dimen>
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
     <dimen name="location_bar_url_action_offset">-8dp</dimen>
     <dimen name="location_bar_url_action_padding">8dp</dimen>
 
-    <dimen name="location_bar_status_view_left_space_width">8dp</dimen>
+    <dimen name="location_bar_status_view_left_space_width">10dp</dimen>
+    <dimen name="location_bar_status_view_left_space_width_bigger">12dp</dimen>
 
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
 
@@ -87,14 +89,11 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_start">10dp</dimen>
-    <dimen name="omnibox_suggestion_36dp_icon_margin_start_smaller">9dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_start_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_end">10dp</dimen>
-    <dimen name="omnibox_suggestion_36dp_icon_margin_end_smaller">9dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_end_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_margin_start">16dp</dimen>
-    <dimen name="omnibox_suggestion_24dp_icon_margin_start_modern">12dp</dimen>
-    <dimen name="omnibox_suggestion_24dp_icon_margin_end">16dp</dimen>
+    <dimen name="omnibox_suggestion_24dp_icon_margin_start_modern_bigger">14dp</dimen>
     <dimen name="omnibox_suggestion_favicon_size">24dp</dimen>
     <dimen name="omnibox_suggestion_decoration_image_size">36dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size">56dp</dimen>
@@ -105,6 +104,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_end_padding">8dp</dimen>
 
     <dimen name="omnibox_suggestion_bg_elevation">@dimen/default_elevation_0</dimen>
+    <dimen name="omnibox_suggestion_bg_elevation_modern">@dimen/default_elevation_0</dimen>
     <dimen name="omnibox_suggestion_bg_round_corner_radius">16dp</dimen>
     <dimen name="omnibox_suggestion_vertical_margin">1dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing">16dp</dimen>

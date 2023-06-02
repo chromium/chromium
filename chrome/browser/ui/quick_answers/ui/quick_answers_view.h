@@ -56,6 +56,8 @@ class QuickAnswersView : public views::View {
       base::WeakPtr<QuickAnswersUiController> controller);
 
   // views::View:
+  void RequestFocus() override;
+  bool HasFocus() const override;
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
@@ -73,6 +75,8 @@ class QuickAnswersView : public views::View {
   void ShowRetryView();
 
   ui::ImageModel GetIconImageModelForTesting();
+
+  gfx::Rect GetAnchorViewBounds() { return anchor_view_bounds_; }
 
  private:
   void InitLayout();

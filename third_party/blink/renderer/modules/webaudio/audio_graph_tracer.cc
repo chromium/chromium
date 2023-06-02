@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
@@ -156,9 +156,8 @@ AudioGraphTracer* AudioGraphTracer::FromPage(Page* page) {
   return Supplement<Page>::From<AudioGraphTracer>(page);
 }
 
-AudioGraphTracer* AudioGraphTracer::FromDocument(
-    const Document& document) {
-  return AudioGraphTracer::FromPage(document.GetPage());
+AudioGraphTracer* AudioGraphTracer::FromWindow(const LocalDOMWindow& window) {
+  return AudioGraphTracer::FromPage(window.GetFrame()->GetPage());
 }
 
 }  // namespace blink

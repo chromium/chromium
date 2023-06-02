@@ -37,11 +37,14 @@
     // Description of the file type.
     DOMString name;
 
-    // Array of ImageResources.
+    // Array of ImageResources. Only icons declared at the manifest level are
+    // currently supported. The icon for the extension will appear in the "Open"
+    // menu.
     Icon[]? icons;
 
     // Whether multiple files should be opened in a single client or multiple.
-    // Defaults to `single-client`.
+    // Defaults to `single-client`, which opens one window containing one array
+    // with each file. `multiple-clients` opens a new window for each file.
     DOMString? launch_type;
   };
 

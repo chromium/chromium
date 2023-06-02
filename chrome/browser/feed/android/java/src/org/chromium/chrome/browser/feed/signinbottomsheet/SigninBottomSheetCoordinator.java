@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -32,6 +33,7 @@ import org.chromium.ui.widget.Toast;
 public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final BottomSheetController mController;
     private final SigninManager mSigninManager;
     private boolean mSetTestToast;
@@ -41,10 +43,11 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final AccountPickerBottomSheetStrings mBottomSheetStrings;
 
     public SigninBottomSheetCoordinator(WindowAndroid windowAndroid,
-            BottomSheetController controller, Profile profile,
-            @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
+            DeviceLockActivityLauncher deviceLockActivityLauncher, BottomSheetController controller,
+            Profile profile, @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
             @Nullable Runnable onSigninSuccessCallback, @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mController = controller;
         mProfile = profile;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
@@ -104,8 +107,9 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     }
 
     public void show() {
-        mAccountPickerBottomSheetCoordinator = new AccountPickerBottomSheetCoordinator(
-                mWindowAndroid, mController, this, mBottomSheetStrings);
+        mAccountPickerBottomSheetCoordinator =
+                new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController, this,
+                        mBottomSheetStrings, mDeviceLockActivityLauncher);
     }
 
     private void makeSigninNotAllowedToast() {

@@ -511,9 +511,8 @@ bool XDGToplevelWrapperImpl::SupportsScreenCoordinates() const {
              ZAURA_TOPLEVEL_SET_SUPPORTS_SCREEN_COORDINATES_SINCE_VERSION;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
-  if (!features::IsWaylandScreenCoordinatesEnabled())
-    return;
   if (!SupportsScreenCoordinates()) {
     LOG(WARNING) << "Server implementation of wayland is incompatible, "
                     "WaylandScreenCoordinatesEnabled has no effect.";
@@ -527,6 +526,7 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
   zaura_toplevel_add_listener(aura_toplevel_.get(), &aura_toplevel_listener,
                               this);
 }
+#endif
 
 void XDGToplevelWrapperImpl::SetZOrder(ZOrderLevel z_order) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=

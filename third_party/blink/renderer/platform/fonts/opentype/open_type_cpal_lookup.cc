@@ -46,4 +46,34 @@ absl::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
   return absl::nullopt;
 }
 
+Vector<SkColor> OpenTypeCpalLookup::RetrieveColorRecords(
+    sk_sp<SkTypeface> typeface,
+    unsigned palette_index) {
+  hb::unique_ptr<hb_face_t> face(HbFaceFromSkTypeface(typeface));
+
+  if (!face) {
+    return Vector<SkColor>();
+  }
+
+  unsigned num_colors = hb_ot_color_palette_get_colors(
+      face.get(), palette_index, 0, nullptr, nullptr);
+  if (!num_colors) {
+    return Vector<SkColor>();
+  }
+
+  std::unique_ptr<hb_color_t[]> colors =
+      std::make_unique<hb_color_t[]>(num_colors);
+  if (!hb_ot_color_palette_get_colors(face.get(), palette_index, 0, &num_colors,
+                                      colors.get())) {
+    return Vector<SkColor>();
+  }
+  Vector<SkColor> color_records(num_colors);
+  for (unsigned i = 0; i < num_colors; i++) {
+    color_records[i] = SkColorSetARGB(
+        hb_color_get_alpha(colors[i]), hb_color_get_red(colors[i]),
+        hb_color_get_green(colors[i]), hb_color_get_blue(colors[i]));
+  }
+  return color_records;
+}
+
 }  // namespace blink

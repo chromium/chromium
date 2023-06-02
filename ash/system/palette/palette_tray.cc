@@ -434,6 +434,10 @@ void PaletteTray::OnShellInitialized() {
   }
 }
 
+void PaletteTray::OnShellDestroying() {
+  projector_session_observation_.Reset();
+}
+
 void PaletteTray::OnDisplayConfigurationChanged() {
   UpdateIconVisibility();
 }

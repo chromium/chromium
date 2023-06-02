@@ -422,6 +422,41 @@ TEST_P(CookieSettingsTest, CookiesControlsEnabledForIncognito) {
                 /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides));
 }
 
+TEST_P(CookieSettingsTest, ForceThirdPartyCookieBlocking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kForceThirdPartyCookieBlocking);
+
+  auto cookie_setting_overrides = GetCookieSettingOverrides();
+
+  // Build new CookieSettings since `cookie_settings_` was created before
+  // ForceThirdPartyCookieBlocking was enabled.
+  scoped_refptr<CookieSettings> cookie_settings = new CookieSettings(
+      settings_map_.get(), &prefs_, false, "chrome-extension");
+
+  EXPECT_TRUE(cookie_settings->ShouldBlockThirdPartyCookies());
+
+  EXPECT_EQ(cookie_settings->IsFullCookieAccessAllowed(
+                kBlockedSite, kFirstPartySiteForCookies,
+                /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides),
+            IsForceAllowThirdPartyCookies());
+
+  // Test that ForceThirdPartyCookieBlocking overrides preference changes.
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kOff));
+  EXPECT_EQ(cookie_settings->IsFullCookieAccessAllowed(
+                kBlockedSite, kFirstPartySiteForCookies,
+                /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides),
+            IsForceAllowThirdPartyCookies());
+
+  // Test that ForceThirdPartyCookieBlocking can be overridden by site-specific
+  // content settings.
+  cookie_settings->SetCookieSetting(kBlockedSite, CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      kBlockedSite, kFirstPartySiteForCookies,
+      /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides));
+}
+
 #if BUILDFLAG(IS_IOS)
 // Test fixture with ImprovedCookieControls disabled.
 class ImprovedCookieControlsDisabledCookieSettingsTest

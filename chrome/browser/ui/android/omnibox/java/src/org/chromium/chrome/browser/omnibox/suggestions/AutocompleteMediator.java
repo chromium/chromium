@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -181,6 +182,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);
         mClearFocusCallback = this::finishInteraction;
         OmniboxResourceProvider.invalidateDrawableCache();
+
+        var pm = context.getPackageManager();
+        var dialIntent = new Intent(Intent.ACTION_DIAL);
+        OmniboxActionFactoryImpl.get().setDialerAvailable(
+                !pm.queryIntentActivities(dialIntent, 0).isEmpty());
     }
 
     /**

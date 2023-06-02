@@ -21,14 +21,14 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
  */
 export enum CloudPanelType {
   OFFLINE = 'offline',
-  NOT_ENOUGH_SPACE = 'not-enough-space',
+  NOT_ENOUGH_SPACE = 'not_enough_space',
 }
 
 /**
  * The `<xf-cloud-panel>` represents the current state that the Drive bulk
  * pinning process is currently in. When files are being pinned and downloaded,
  * the `items` and `progress` attributes are used to signify that the panel is
- * in progress. The `type` attribute can be used with `not-enough-space` and
+ * in progress. The `type` attribute can be used with `not_enough_space` and
  * `offline` to signify possible error or paused states.
  */
 @customElement('xf-cloud-panel')
@@ -75,7 +75,10 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            if (value && value.toUpperCase() in CloudPanelType) {
+            if (!value) {
+              return null;
+            }
+            if (value.toUpperCase() in CloudPanelType) {
               return value as CloudPanelType;
             }
             console.warn(`Failed to convert ${value} to CloudPanelType`);
@@ -169,6 +172,10 @@ export class XfCloudPanel extends XfBase {
   override render() {
     return html`<cr-action-menu>
       <div class="body">
+        <div class="static progress" id="progress-preparing">
+          <files-spinner></files-spinner>
+          ${str('DRIVE_PREPARING_TO_SYNC')}
+        </div>
         <div id="progress-state">
           <div class="progress">${
         this.items && this.items > 1 ?
@@ -215,6 +222,10 @@ export class XfCloudPanel extends XfBase {
 
 function getCSS() {
   return css`
+    cr-action-menu {
+      --cr-menu-border-radius: 20px;
+    }
+
     :host {
       position: absolute;
       right: 0px;
@@ -224,6 +235,7 @@ function getCSS() {
 
     :host(:not([items][percentage])) #progress-state,
     :host([percentage="100"]) #progress-state,
+    :host([percentage="0"]) #progress-state,
     :host([type]) #progress-state {
       display: none;
     }
@@ -233,11 +245,16 @@ function getCSS() {
       display: none;
     }
 
+    :host(:not([items][percentage="0"])) #progress-preparing,
+    :host([type]) #progress-preparing {
+      display: none;
+    }
+
     :host(:not([type="offline"])) #progress-offline {
       display: none;
     }
 
-    :host(:not([type="not-enough-space"])) #progress-not-enough-space {
+    :host(:not([type="not_enough_space"])) #progress-not-enough-space {
       display: none;
     }
 
@@ -272,7 +289,7 @@ function getCSS() {
     }
 
     .status-description {
-      color: var(--cros-text-color-secondary);
+      color: var(--cros-sys-on_surface_variant);
       font: var(--cros-annotation-1-font);
       line-height: 20px;
       padding: 0px 16px 20px;
@@ -280,7 +297,7 @@ function getCSS() {
     }
 
     .progress {
-      color: var(--cros-text-color-primary);
+      color: var(--cros-sys-on_surface);
       font: var(--cros-button-2-font);
       line-height: 20px;
       margin-inline: 16px;
@@ -288,7 +305,7 @@ function getCSS() {
     }
 
     .progress-description {
-      color: var(--cros-text-color-secondary);
+      color: var(--cros-sys-on_surface_variant);
       font: var(--cros-annotation-1-font);
       padding-bottom: 20px;
       padding-inline: 16px;
@@ -302,8 +319,20 @@ function getCSS() {
       width: calc(100% - 32px);
     }
 
+    #progress-preparing {
+      flex-direction: row;
+      padding-bottom: 20px;
+    }
+
+    #progress-preparing files-spinner {
+      height: 20px;
+      margin: 0;
+      margin-inline-end: 8px;
+      width: 20px;
+    }
+
     progress::-webkit-progress-bar {
-      background-color: var(--cros-sys-primary_container);
+      background-color: var(--cros-sys-highlight_shape);
       border-radius: 10px;
     }
 
@@ -322,10 +351,10 @@ function getCSS() {
       background-color: var(--cros-sys-base_elevated);
       border: 0;
       font: var(--cros-button-2-font);
-      height: 52px;
-      padding-bottom: 8px;
+      height: 36px;
+      margin-bottom: 8px;
+      margin-top: 8px;
       padding-inline: 16px;
-      padding-top: 8px;
       text-align: left;
     }
 

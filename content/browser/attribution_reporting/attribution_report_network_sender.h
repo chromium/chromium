@@ -26,6 +26,10 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class AttributionReport;
@@ -63,6 +67,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
                               scoped_refptr<net::HttpResponseHeaders>)>;
 
   void SendReport(GURL url,
+                  url::Origin origin,
                   const std::string& body,
                   net::HttpRequestHeaders headers,
                   UrlLoaderCallback callback);

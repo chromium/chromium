@@ -264,7 +264,7 @@ static_library("libaom") {
         [ "//third_party/libaom/source/libaom/aom_ports/arm_cpudetect.c" ]
   }
   if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   public_configs = [ ":libaom_external_config" ]
   public_deps = [ ":libaom_buildflags" ]

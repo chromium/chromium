@@ -15,14 +15,16 @@ pub struct ChromiumPaths {
     pub root: PathBuf,
     /// The third_party/rust directory.
     pub third_party: &'static Path,
-    /// The Rust source tree, containing the standard library and vendored
-    /// dependencies.
-    pub rust_src: &'static Path,
-    pub rust_src_vendor: &'static Path,
-    pub rust_std: &'static Path,
+    /// The vendor directory relative to the root of the Rust source tree.
+    pub rust_src_vendor_subdir: &'static Path,
+    /// The root of the Rust source tree that is installed in //third_party and
+    /// used in the Chromium GN build.
+    pub rust_src_installed: &'static Path,
     pub std_config_file: &'static Path,
     pub std_build: &'static Path,
     pub std_fake_root: &'static Path,
+    pub std_fake_root_config_template: &'static Path,
+    pub std_fake_root_cargo_template: &'static Path,
 }
 
 impl ChromiumPaths {
@@ -35,12 +37,13 @@ impl ChromiumPaths {
         Ok(ChromiumPaths {
             root: cur_dir.clone(),
             third_party: check_path(&cur_dir, RUST_THIRD_PARTY_DIR)?,
-            rust_src: check_path(&cur_dir, RUST_SRC_DIR)?,
-            rust_src_vendor: check_path(&cur_dir, RUST_SRC_VENDOR_DIR)?,
-            rust_std: check_path(&cur_dir, RUST_STD_DIR)?,
+            rust_src_vendor_subdir: Path::new(RUST_SRC_VENDOR_SUBDIR),
+            rust_src_installed: check_path(&cur_dir, RUST_SRC_INSTALLED_DIR)?,
             std_config_file: check_path(&cur_dir, STD_CONFIG_FILE)?,
             std_build: check_path(&cur_dir, STD_BUILD_DIR)?,
             std_fake_root: check_path(&cur_dir, STD_FAKE_ROOT)?,
+            std_fake_root_config_template: check_path(&cur_dir, STD_FAKE_ROOT_CONFIG_TEMPLATE)?,
+            std_fake_root_cargo_template: check_path(&cur_dir, STD_FAKE_ROOT_CARGO_TEMPLATE)?,
         })
     }
 
@@ -51,6 +54,17 @@ impl ChromiumPaths {
         path: &'a Path,
     ) -> Result<std::borrow::Cow<'a, str>, std::path::StripPrefixError> {
         Ok(path.strip_prefix(&self.root)?.to_string_lossy())
+    }
+
+    /// Modifies the file name in a path from `foo.bar.template` to `foo.bar`.
+    pub fn strip_template(&self, path: &Path) -> Option<std::path::PathBuf> {
+        if path.extension()? != "template" {
+            None
+        } else {
+            let mut buf = path.to_owned();
+            buf.set_file_name(path.file_stem()?);
+            Some(buf)
+        }
     }
 }
 
@@ -67,9 +81,10 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
-static RUST_SRC_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust";
-static RUST_SRC_VENDOR_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust/vendor";
-static RUST_STD_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust/library/std";
+static RUST_SRC_VENDOR_SUBDIR: &str = "vendor";
+static RUST_SRC_INSTALLED_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust";
 static STD_CONFIG_FILE: &str = "build/rust/std/gnrt_config.toml";
 static STD_BUILD_DIR: &str = "build/rust/std/rules";
 static STD_FAKE_ROOT: &str = "build/rust/std/fake_root";
+static STD_FAKE_ROOT_CONFIG_TEMPLATE: &str = "build/rust/std/fake_root/.cargo/config.toml.template";
+static STD_FAKE_ROOT_CARGO_TEMPLATE: &str = "build/rust/std/fake_root/Cargo.toml.template";

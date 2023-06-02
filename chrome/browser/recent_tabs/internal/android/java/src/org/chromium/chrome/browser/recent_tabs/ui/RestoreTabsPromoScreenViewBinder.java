@@ -64,9 +64,13 @@ public class RestoreTabsPromoScreenViewBinder {
                 getExpandIconSelectorView(view).setImageResource(
                         R.drawable.restore_tabs_expand_more);
                 getSelectedDeviceView(view).setOnClickListener((v) -> delegate.onShowDeviceList());
+                getSheetSubtitleTextView(view).setText(view.mContentView.getContext().getString(
+                        R.string.restore_tabs_promo_sheet_subtitle_multi_device));
             } else {
                 getExpandIconSelectorView(view).setVisibility(View.GONE);
                 getSelectedDeviceView(view).setOnClickListener(null);
+                getSheetSubtitleTextView(view).setText(view.mContentView.getContext().getString(
+                        R.string.restore_tabs_promo_sheet_subtitle_single_device));
             }
 
             int numSelectedTabs =
@@ -74,12 +78,11 @@ public class RestoreTabsPromoScreenViewBinder {
             getRestoreTabsButton(view).setEnabled(numSelectedTabs != 0);
             getRestoreTabsButton(view).setText(
                     view.mContentView.getContext().getResources().getQuantityString(
-                            R.plurals.restore_tabs_promo_sheet_restore_tabs, numSelectedTabs,
-                            numSelectedTabs));
+                            R.plurals.restore_tabs_open_tabs, numSelectedTabs, numSelectedTabs));
             getRestoreTabsButton(view).setOnClickListener((v) -> {
                 getRestoreTabsButton(view).announceForAccessibility(
                         view.mContentView.getContext().getResources().getString(
-                                R.string.restore_tabs_promo_sheet_open_tabs_button_clicked_description));
+                                R.string.restore_tabs_open_tabs_button_clicked_description));
                 delegate.onAllTabsChosen();
             });
 
@@ -142,5 +145,9 @@ public class RestoreTabsPromoScreenViewBinder {
 
     private static ImageView getDeviceIconView(ViewHolder view) {
         return view.mContentView.findViewById(R.id.restore_tabs_promo_sheet_device_icon);
+    }
+
+    private static TextView getSheetSubtitleTextView(ViewHolder view) {
+        return view.mContentView.findViewById(R.id.restore_tabs_promo_sheet_subtitle);
     }
 }

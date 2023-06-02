@@ -6,7 +6,11 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
+#include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -18,6 +22,8 @@
 #include "components/prefs/pref_service.h"
 
 namespace {
+
+bool is_test = false;
 
 std::vector<std::string> SplitCsvString(const std::string& csv_string) {
   return base::SplitString(csv_string, ",", base::TRIM_WHITESPACE,
@@ -110,6 +116,71 @@ bool IsValidConfiguration(
       });
 }
 
+std::vector<double> ParseProbabilityVector(std::string probability_vector_csv) {
+  std::vector<std::string> probability_string_vector =
+      base::SplitString(permissions::feature_params::kProbabilityVector.Get(),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<double> checked_probability_vector;
+  double probability;
+  for (std::string probability_string : probability_string_vector) {
+    if (!base::StringToDouble(probability_string, &probability)) {
+      // Parsing failed, configuration error. Return empty array.
+      return std::vector<double>();
+    }
+    checked_probability_vector.push_back(probability);
+  }
+  return checked_probability_vector;
+}
+
+std::vector<double>& GetProbabilityVector(std::string probability_vector_csv) {
+  static base::NoDestructor<std::vector<double>> probability_vector(
+      [probability_vector_csv] {
+        return ParseProbabilityVector(probability_vector_csv);
+      }());
+
+  if (is_test) {
+    CHECK_IS_TEST();
+    *probability_vector = ParseProbabilityVector(probability_vector_csv);
+  }
+  return *probability_vector;
+}
+
+std::vector<std::string> ParseRequestFilterVector(
+    std::string request_vector_csv) {
+  return base::SplitString(
+      permissions::feature_params::kPermissionsPromptSurveyRequestTypeFilter
+          .Get(),
+      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+
+std::vector<std::string>& GetRequestFilterVector(
+    std::string request_vector_csv) {
+  static base::NoDestructor<std::vector<std::string>> request_filter_vector(
+      [request_vector_csv] {
+        return ParseRequestFilterVector(request_vector_csv);
+      }());
+  if (is_test) {
+    CHECK_IS_TEST();
+    *request_filter_vector = ParseRequestFilterVector(request_vector_csv);
+  }
+  return *request_filter_vector;
+}
+
+std::vector<std::pair<std::string, std::string>>
+ComputePermissionPromptTriggerIdPairs(const std::string& trigger_name_base) {
+  std::vector<std::string> permission_trigger_id_vector(base::SplitString(
+      permissions::feature_params::kPermissionsPromptSurveyTriggerId.Get(), ",",
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  int trigger_index = 0;
+  std::vector<std::pair<std::string, std::string>> pairs;
+  pairs.clear();
+  for (const auto& trigger_id : permission_trigger_id_vector) {
+    pairs.emplace_back(
+        trigger_name_base + base::NumberToString(trigger_index++), trigger_id);
+  }
+  return pairs;
+}
+
 }  // namespace
 
 namespace permissions {
@@ -196,7 +267,19 @@ void PermissionHatsTriggerHelper::RegisterProfilePrefs(
 }
 
 bool PermissionHatsTriggerHelper::ArePromptTriggerCriteriaSatisfied(
-    PromptParametersForHaTS prompt_parameters) {
+    PromptParametersForHaTS prompt_parameters,
+    const std::string& trigger_name_base) {
+  auto trigger_and_probability = permissions::PermissionHatsTriggerHelper::
+      GetPermissionPromptTriggerNameAndProbabilityForRequestType(
+          trigger_name_base,
+          permissions::PermissionUmaUtil::GetRequestTypeString(
+              prompt_parameters.request_type));
+
+  if (!trigger_and_probability.has_value() ||
+      base::RandDouble() >= trigger_and_probability->second) {
+    return false;
+  }
+
   if (!IsValidConfiguration(prompt_parameters)) {
     return false;
   }
@@ -275,6 +358,67 @@ std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
     default:
       NOTREACHED();
   }
+}
+
+// static
+std::vector<std::pair<std::string, std::string>>&
+PermissionHatsTriggerHelper::GetPermissionPromptTriggerIdPairs(
+    const std::string& trigger_name_base) {
+  static base::NoDestructor<std::vector<std::pair<std::string, std::string>>>
+      trigger_id_pairs([trigger_name_base] {
+        return ComputePermissionPromptTriggerIdPairs(trigger_name_base);
+      }());
+  if (is_test) {
+    CHECK_IS_TEST();
+    *trigger_id_pairs =
+        ComputePermissionPromptTriggerIdPairs(trigger_name_base);
+  }
+  return *trigger_id_pairs;
+}
+
+// static
+absl::optional<std::pair<std::string, double>> PermissionHatsTriggerHelper::
+    GetPermissionPromptTriggerNameAndProbabilityForRequestType(
+        const std::string& trigger_name_base,
+        const std::string& request_type) {
+  auto& trigger_id_pairs = GetPermissionPromptTriggerIdPairs(trigger_name_base);
+  auto& probability_vector = GetProbabilityVector(
+      permissions::feature_params::kProbabilityVector.Get());
+
+  if (trigger_id_pairs.size() == 1 && probability_vector.size() <= 1) {
+    // If a value is configured, use it, otherwise set it to 1.
+    return std::make_pair(
+        trigger_id_pairs[0].first,
+        probability_vector.size() == 1 ? probability_vector[0] : 1.0);
+  } else if (trigger_id_pairs.size() != probability_vector.size()) {
+    // Configuration error
+    return absl::nullopt;
+  } else {
+    auto& request_filter_vector = GetRequestFilterVector(
+        permissions::feature_params::kPermissionsPromptSurveyRequestTypeFilter
+            .Get());
+
+    if (request_filter_vector.size() != trigger_id_pairs.size()) {
+      // Configuration error
+      return absl::nullopt;
+    }
+
+    for (unsigned long i = 0; i < trigger_id_pairs.size(); i++) {
+      if (base::EqualsCaseInsensitiveASCII(request_type,
+                                           request_filter_vector[i])) {
+        return std::make_pair(trigger_id_pairs.at(i).first,
+                              probability_vector[i]);
+      }
+    }
+
+    // No matching filter
+    return absl::nullopt;
+  }
+}
+
+// static
+void PermissionHatsTriggerHelper::SetIsTest() {
+  is_test = true;
 }
 
 }  // namespace permissions

@@ -4,12 +4,14 @@
 
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
 
-#include <memory>
-
 namespace ash {
 
 MockAuthFactorEngine::MockAuthFactorEngine() = default;
 
 MockAuthFactorEngine::~MockAuthFactorEngine() = default;
+
+MockAuthFactorEngineObserver::MockAuthFactorEngineObserver() = default;
+
+MockAuthFactorEngineObserver::~MockAuthFactorEngineObserver() = default;
 
 }  // namespace ash

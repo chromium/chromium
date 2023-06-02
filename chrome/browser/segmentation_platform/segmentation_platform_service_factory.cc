@@ -14,6 +14,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/client_util/local_tab_handler.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
@@ -37,6 +38,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 
 namespace segmentation_platform {
 namespace {
@@ -61,7 +63,7 @@ std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
 
   input_delegate_holder->SetDelegate(
       proto::CustomInput::FILL_TAB_METRICS,
-      std::make_unique<segmentation_platform::processing::TabSessionSource>(
+      std::make_unique<segmentation_platform::processing::LocalTabSource>(
           session_sync_service, tab_fetcher));
 
   // Input delegates that are shared by multiple models.are added here.
@@ -105,6 +107,9 @@ SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
 
 KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (context->IsOffTheRecord())
+    return nullptr;
+
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature))
     return new DummySegmentationPlatformService();
 
@@ -113,7 +118,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   sync_sessions::SessionSyncService* session_sync_service =
       SessionSyncServiceFactory::GetForProfile(profile);
-  auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
+  auto tab_fetcher = std::make_unique<processing::LocalTabHandler>(
+      session_sync_service, profile);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
 
@@ -156,10 +162,10 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
                            service, SyncServiceFactory::GetForProfile(profile),
                            profile->GetPrefs(), field_trial_register));
 
-  service->SetUserData(
-      kSegmentationTabRankDispatcherUserDataKey,
-      std::make_unique<TabRankDispatcher>(service, session_sync_service,
-                                          std::move(tab_fetcher)));
+  auto rank_dispatcher = std::make_unique<TabRankDispatcher>(
+      service, session_sync_service, std::move(tab_fetcher));
+  service->SetUserData(kSegmentationTabRankDispatcherUserDataKey,
+                       std::move(rank_dispatcher));
 
   return service;
 }

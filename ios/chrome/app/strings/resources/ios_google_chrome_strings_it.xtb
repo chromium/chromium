@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="2736805085127235148">Le notifiche di Chrome sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
+<translation id="2840432500933227975">Apri le Impostazioni di Chrome in iOS, quindi tocca "App predefinita del browser" e seleziona Chrome.</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Ciò significa che Chrome richiederà ogni volta il sito per dispositivi mobili.</translation>
 <translation id="3706101708757577809">Ora puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="3720541637541300822">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
+<translation id="3827545470516145620">Otterrai la protezione di sicurezza standard su questo dispositivo</translation>
 <translation id="384394811301901750">Google Chrome non può utilizzare la videocamera al momento</translation>
 <translation id="3980220367029651214">Stai per cambiare account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I tuoi attuali dati di Chrome vengono gestiti da <ph name="DOMAIN" />. I dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">La tua organizzazione ti richiede di non effettuare l'accesso a Chrome.</translation>
@@ -150,7 +152,6 @@ Aspetti da considerare:
   • Se Chrome si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali.
 
   • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">È attiva la protezione standard per questo profilo Chrome</translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
 <translation id="9122931302567044771">Ciò significa che Chrome richiederà ogni volta il sito desktop.</translation>
 </translationbundle>

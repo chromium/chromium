@@ -333,8 +333,14 @@ class BrowserServiceLacrosWindowlessBrowserTest
   }
 };
 
+// TODO(crbug.com/1447850) This test constantly fail for internal builder.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_HandlesUncleanExit DISABLED_HandlesUncleanExit
+#else
+#define MAYBE_HandlesUncleanExit HandlesUncleanExit
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
-                       HandlesUncleanExit) {
+                       MAYBE_HandlesUncleanExit) {
   // Browser launch should be suppressed with the kNoStartupWindow switch.
   ASSERT_FALSE(browser());
 

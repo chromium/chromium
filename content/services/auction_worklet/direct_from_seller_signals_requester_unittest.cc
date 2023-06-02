@@ -31,8 +31,20 @@ namespace {
 constexpr char kRequiredHeaders[] =
     "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
 
+constexpr char kRequiredHeadersNewName[] =
+    "X-Allow-FLEDGE: true\nAd-Auction-Only: true";
+
+constexpr char kRequiredHeadersBothNewAndOldNames[] =
+    "X-Allow-FLEDGE: true\nAd-Auction-Only: true\nX-FLEDGE-Auction-Only: true";
+
+constexpr char kRequiredHeadersBothNewAndOldNamesMismatch[] =
+    "X-Allow-FLEDGE: true\nAd-Auction-Only: true\nX-FLEDGE-Auction-Only: false";
+
 constexpr char kFalseAuctionOnly[] =
     "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: false";
+
+constexpr char kFalseAuctionOnlyNewName[] =
+    "X-Allow-FLEDGE: true\nAd-Auction-Only: false";
 
 // The signals URL and response are arbitrary, from the point of
 // DirectFromSellerSignalsRequester.
@@ -419,7 +431,38 @@ TEST_F(DirectFromSellerSignalsRequesterTest, MissingAuctionOnly) {
   AddResponse(&url_loader_factory_, GURL(kSignalsUrl), kJsonMimeType,
               kUtf8Charset, kSignalsResponse, kAllowFledgeHeader);
   Result result = LoadSignalsAndWait(requester, GURL(kSignalsUrl));
-  EXPECT_EQ("Missing X-FLEDGE-Auction-Only header.", ExtractSignals(result));
+  EXPECT_EQ(
+      "Missing Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) header.",
+      ExtractSignals(result));
+}
+
+TEST_F(DirectFromSellerSignalsRequesterTest, NewHeaderName) {
+  DirectFromSellerSignalsRequester requester;
+  AddResponse(&url_loader_factory_, GURL(kSignalsUrl), kJsonMimeType,
+              kUtf8Charset, kSignalsResponse, kRequiredHeadersNewName);
+  Result result = LoadSignalsAndWait(requester, GURL(kSignalsUrl));
+  EXPECT_EQ(kSignalsResponse, ExtractSignals(result));
+}
+
+TEST_F(DirectFromSellerSignalsRequesterTest, BothNewAndOldHeaderNames) {
+  DirectFromSellerSignalsRequester requester;
+  AddResponse(&url_loader_factory_, GURL(kSignalsUrl), kJsonMimeType,
+              kUtf8Charset, kSignalsResponse,
+              kRequiredHeadersBothNewAndOldNames);
+  Result result = LoadSignalsAndWait(requester, GURL(kSignalsUrl));
+  EXPECT_EQ(kSignalsResponse, ExtractSignals(result));
+}
+
+TEST_F(DirectFromSellerSignalsRequesterTest, BothNewAndOldHeaderNamesMismatch) {
+  DirectFromSellerSignalsRequester requester;
+  AddResponse(&url_loader_factory_, GURL(kSignalsUrl), kJsonMimeType,
+              kUtf8Charset, kSignalsResponse,
+              kRequiredHeadersBothNewAndOldNamesMismatch);
+  Result result = LoadSignalsAndWait(requester, GURL(kSignalsUrl));
+  EXPECT_EQ(
+      "Ad-Auction-Only: true does not match deprecated header "
+      "X-FLEDGE-Auction-Only: false.",
+      ExtractSignals(result));
 }
 
 TEST_F(DirectFromSellerSignalsRequesterTest, BadAuctionOnly) {
@@ -428,7 +471,20 @@ TEST_F(DirectFromSellerSignalsRequesterTest, BadAuctionOnly) {
               kUtf8Charset, kSignalsResponse, kFalseAuctionOnly);
   Result result = LoadSignalsAndWait(requester, GURL(kSignalsUrl));
   EXPECT_EQ(
-      "Wrong X-FLEDGE-Auction-Only header value. Expected \"true\", found "
+      "Wrong Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) header "
+      "value. Expected \"true\", found "
+      "\"false\".",
+      ExtractSignals(result));
+}
+
+TEST_F(DirectFromSellerSignalsRequesterTest, BadAuctionOnlyNewName) {
+  DirectFromSellerSignalsRequester requester;
+  AddResponse(&url_loader_factory_, GURL(kSignalsUrl), kJsonMimeType,
+              kUtf8Charset, kSignalsResponse, kFalseAuctionOnlyNewName);
+  Result result = LoadSignalsAndWait(requester, GURL(kSignalsUrl));
+  EXPECT_EQ(
+      "Wrong Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) header "
+      "value. Expected \"true\", found "
       "\"false\".",
       ExtractSignals(result));
 }

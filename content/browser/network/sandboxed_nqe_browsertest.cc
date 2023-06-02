@@ -7,9 +7,10 @@
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/network/network_service_util_internal.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -89,12 +90,11 @@ class SandboxedNQEBrowserTest : public ContentBrowserTest {
       sandbox::policy::features::kNetworkServiceSandbox,
 #endif
     };
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features,
-        /*disabled_features=*/{features::kNetworkServiceInProcess});
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    ForceOutOfProcessNetworkServiceImpl();
   }
 
-  void SetUp() override {
+  void SetUpOnMainThread() override {
 #if BUILDFLAG(IS_WIN)
     if (!sandbox::features::IsAppContainerSandboxSupported()) {
       // On *some* Windows, sandboxing cannot be enabled. We skip all the tests
@@ -107,8 +107,6 @@ class SandboxedNQEBrowserTest : public ContentBrowserTest {
     // test body from running when one of the assertions fails.
     ASSERT_TRUE(IsOutOfProcessNetworkService());
     ASSERT_TRUE(sandbox::policy::features::IsNetworkSandboxEnabled());
-
-    ContentBrowserTest::SetUp();
   }
 
   // Simulates a network quality change.

@@ -30,7 +30,8 @@ OneGoogleBarService* OneGoogleBarServiceFactory::GetForProfile(
 
 // static
 OneGoogleBarServiceFactory* OneGoogleBarServiceFactory::GetInstance() {
-  return base::Singleton<OneGoogleBarServiceFactory>::get();
+  static base::NoDestructor<OneGoogleBarServiceFactory> instance;
+  return instance.get();
 }
 
 OneGoogleBarServiceFactory::OneGoogleBarServiceFactory()

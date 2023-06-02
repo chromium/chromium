@@ -31,7 +31,6 @@ if (include_js_tests) {
       "extensions/cr_extensions_interactive_ui_tests.js",
       "history/history_focus_test.js",
       "password_manager/password_manager_interactive_ui_tests.js",
-      "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
       "support_tool/support_tool_interactive_ui_test.js",
       "tab_search/tab_search_interactive_ui_tests.js",
@@ -39,10 +38,12 @@ if (include_js_tests) {
 
     if (is_chromeos_ash) {
       sources += [ "cr_focus_row_behavior_interactive_test.js" ]
+    } else {
+      sources += [ "signin/local_profile_customization_interactive_ui_test.js" ]
     }
 
-    if (!is_chromeos_ash) {
-      sources += [ "signin/local_profile_customization_interactive_ui_test.js" ]
+    if (enable_print_preview) {
+      sources += [ "print_preview/print_preview_interactive_ui_tests.js" ]
     }
 
     if (enable_webui_tab_strip) {
@@ -115,10 +116,6 @@ if (include_js_tests) {
       "whats_new/whats_new_browsertest.js",
     ]
 
-    if (is_chrome_branded) {
-      sources += [ "media_router/cast_feedback_ui_browsertest.js" ]
-    }
-
     gen_include_files = [
       "a11y/accessibility_audit_rules.js",
       "a11y/accessibility_test.js",
@@ -137,14 +134,13 @@ if (include_js_tests) {
       "//skia",
     ]
 
+    if (is_chrome_branded) {
+      sources += [ "media_router/cast_feedback_ui_browsertest.js" ]
+    }
+
     if (use_nss_certs) {
       deps +=
           [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
-    }
-
-    if (is_chromeos_ash) {
-      gen_include_files +=
-          [ "settings/chromeos/a11y/os_settings_accessibility_test.js" ]
     }
 
     if (is_chromeos_ash || is_win || is_mac) {
@@ -163,6 +159,7 @@ if (include_js_tests) {
         "chromeos/ash_common/post_message_api/post_message_api_browsertest.js",
         "chromeos/bluetooth_pairing_dialog_browsertest.js",
         "chromeos/cloud_upload/cloud_upload_dialog_browsertest.js",
+        "chromeos/cloud_upload/connect_onedrive_browsertest.js",
         "chromeos/cloud_upload/file_handler_page_browsertest.js",
         "chromeos/cloud_upload/move_confirmation_page_browsertest.js",
         "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
@@ -179,6 +176,8 @@ if (include_js_tests) {
         "settings/chromeos/a11y/os_a11y_browsertest.js",
         "settings/chromeos/os_settings_browsertest.js",
       ]
+      gen_include_files +=
+          [ "settings/chromeos/a11y/os_settings_accessibility_test.js" ]
     } else {
       sources += [
         "intro/intro_browsertest.js",
@@ -249,6 +248,7 @@ if (include_js_tests) {
       "cr_components/cr_components_mojo_browsertest.js",
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
+      "location_internals/location_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
       "media/media_history_webui_browsertest.js",
       "metrics_reporter/metrics_reporter_browsertest.js",
@@ -454,6 +454,7 @@ generate_grd("build_grd") {
     "downloads:build_grdp",
     "history:build_grdp",
     "js:build_grdp",
+    "location_internals:build_grdp",
     "metrics_internals:build_grdp",
     "metrics_reporter:build_grdp",
     "mojo:build_grdp",
@@ -482,6 +483,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
+    "$target_gen_dir/location_internals/resources.grdp",
     "$target_gen_dir/metrics_internals/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
@@ -525,19 +527,6 @@ generate_grd("build_grd") {
   if (is_chrome_branded) {
     deps += [ "media_router:build_grdp" ]
     grdp_files += [ "$target_gen_dir/media_router/resources.grdp" ]
-  }
-
-  if (!is_chromeos_ash) {
-    deps += [
-      "intro:build_grdp",
-      "signin:build_grdp",
-      "welcome:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/intro/resources.grdp",
-      "$target_gen_dir/welcome/resources.grdp",
-      "$target_gen_dir/signin/resources.grdp",
-    ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -593,6 +582,17 @@ generate_grd("build_grd") {
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]
+  } else {
+    deps += [
+      "intro:build_grdp",
+      "signin:build_grdp",
+      "welcome:build_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/intro/resources.grdp",
+      "$target_gen_dir/welcome/resources.grdp",
+      "$target_gen_dir/signin/resources.grdp",
+    ]
   }
 
   if (is_chromeos_ash || is_win || is_mac) {
@@ -601,5 +601,5 @@ generate_grd("build_grd") {
   }
 
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
 }

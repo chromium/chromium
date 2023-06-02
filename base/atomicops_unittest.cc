@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <type_traits>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -176,10 +177,12 @@ static void TestStore() {
 
   AtomicType value;
 
-  base::subtle::NoBarrier_Store(&value, kVal1);
-  EXPECT_EQ(kVal1, value);
-  base::subtle::NoBarrier_Store(&value, kVal2);
-  EXPECT_EQ(kVal2, value);
+  if constexpr (std::is_same<AtomicType, base::subtle::Atomic32>::value) {
+    base::subtle::NoBarrier_Store(&value, kVal1);
+    EXPECT_EQ(kVal1, value);
+    base::subtle::NoBarrier_Store(&value, kVal2);
+    EXPECT_EQ(kVal2, value);
+  }
 
   base::subtle::Release_Store(&value, kVal1);
   EXPECT_EQ(kVal1, value);

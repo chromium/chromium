@@ -80,6 +80,7 @@ source_set("unit_tests") {
     "//components/component_updater",
     "//components/download/internal/background_service/ios:background_service",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/sync_preferences",

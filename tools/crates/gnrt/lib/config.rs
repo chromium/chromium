@@ -36,6 +36,8 @@ pub struct ResolveConfig {
 pub struct CrateConfig {
     /// `cfg(...)` options for building this crate.
     pub cfg: Vec<String>,
+    /// Features to enable when building this crate.
+    pub features: Vec<String>,
     /// Compile-time environment variables for this crate.
     pub env: Vec<String>,
     /// Apply rustc metadata to this target.
@@ -50,6 +52,8 @@ pub struct CrateConfig {
     /// Removes the specified default library configs in the target.
     #[serde(default)]
     pub remove_library_configs: Vec<String>,
+    /// Skip building and running the build script.
+    pub skip_build_rs: bool,
     /// GN deps to add to the generated target.
     pub extra_gn_deps: Vec<String>,
     /// Remove GN deps added by the overall config.

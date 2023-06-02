@@ -1255,3 +1255,5 @@ EXPORTS
     ?words@?$BigUnsigned@$0FE@@strings_internal@absl@@QBEPBIXZ
     ?xsputn@Streambuf@OStringStream@strings_internal@absl@@MAEHPBDH@Z
     ?ymd_ord@impl@detail@cctz@time_internal@absl@@YA_J_JCC@Z
+    AbslInternalSpinLockDelay
+    AbslInternalSpinLockWake

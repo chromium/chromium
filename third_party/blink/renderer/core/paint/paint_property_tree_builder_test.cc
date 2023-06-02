@@ -406,7 +406,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {
   EXPECT_EQ(gfx::Rect(10, 10, 85, 85), scroll->ContainerRect());
   EXPECT_EQ(gfx::Rect(10, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
-  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOriginInt());
   EXPECT_EQ(PhysicalOffset(10, 10), content->FirstFragment().PaintOffset());
 
   EXPECT_EQ(DocContentClip(), overflow_clip->Parent());
@@ -425,7 +425,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {
   EXPECT_EQ(gfx::Rect(10, 10, 85, 85), scroll->ContainerRect());
   EXPECT_EQ(gfx::Rect(10, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
-  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOriginInt());
   EXPECT_EQ(PhysicalOffset(10, 10), content->FirstFragment().PaintOffset());
 
   EXPECT_EQ(DocContentClip(), overflow_clip->Parent());
@@ -459,7 +459,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollRTL) {
   EXPECT_EQ(gfx::Rect(25, 10, 85, 85), scroll->ContainerRect());
   EXPECT_EQ(gfx::Rect(25, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
-  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOriginInt());
   EXPECT_EQ(PhysicalOffset(25, 10), content->FirstFragment().PaintOffset());
 
   EXPECT_EQ(DocContentClip(), overflow_clip->Parent());
@@ -478,7 +478,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollRTL) {
   EXPECT_EQ(gfx::Rect(25, 10, 85, 85), scroll->ContainerRect());
   EXPECT_EQ(gfx::Rect(25, 10, 400, 400), scroll->ContentsRect());
   EXPECT_EQ(PhysicalOffset(), scroller->FirstFragment().PaintOffset());
-  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOrigin());
+  EXPECT_EQ(gfx::Point(315, 0), scroller->ScrollOriginInt());
   EXPECT_EQ(PhysicalOffset(25, 10), content->FirstFragment().PaintOffset());
 
   EXPECT_EQ(DocContentClip(), overflow_clip->Parent());

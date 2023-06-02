@@ -403,15 +403,6 @@ bool Body::IsBodyLocked() const {
   return body_buffer && body_buffer->IsStreamLocked();
 }
 
-bool Body::HasPendingActivity() const {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
-    return false;
-  auto* body_buffer = BodyBuffer();
-  if (!body_buffer)
-    return false;
-  return body_buffer->HasPendingActivity();
-}
-
 Body::Body(ExecutionContext* context) : ExecutionContextClient(context) {}
 
 void Body::RejectInvalidConsumption(ExceptionState& exception_state) const {

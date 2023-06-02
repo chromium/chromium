@@ -155,19 +155,19 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
 
   void OnHandshakeIOComplete(int result);
 
-  int DoPayloadRead(IOBuffer* buf, int buf_len);
-  int DoPayloadWrite();
+  [[nodiscard]] int DoPayloadRead(IOBuffer* buf, int buf_len);
+  [[nodiscard]] int DoPayloadWrite();
 
-  int DoHandshakeLoop(int last_io_result);
-  int DoHandshake();
+  [[nodiscard]] int DoHandshakeLoop(int last_io_result);
+  [[nodiscard]] int DoHandshake();
   void DoHandshakeCallback(int result);
   void DoReadCallback(int result);
   void DoWriteCallback(int result);
 
-  int Init();
+  [[nodiscard]] int Init();
   void ExtractClientCert();
 
-  raw_ptr<SSLServerContextImpl> context_;
+  raw_ptr<SSLServerContextImpl, DanglingUntriaged> context_;
 
   NetLogWithSource net_log_;
 
@@ -312,7 +312,7 @@ void SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete(
   signature_result_ = error;
   if (signature_result_ == OK)
     signature_ = signature;
-  DoHandshakeLoop(ERR_IO_PENDING);
+  OnHandshakeIOComplete(ERR_IO_PENDING);
 }
 
 // static

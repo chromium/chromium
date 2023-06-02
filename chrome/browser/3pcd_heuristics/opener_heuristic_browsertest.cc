@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -102,6 +103,7 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
+    host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
     DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
@@ -149,11 +151,18 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
   }
 
   void SimulateMouseClick(WebContents* web_contents) {
+    content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
     UserActivationObserver observer(web_contents,
                                     web_contents->GetPrimaryMainFrame());
     content::SimulateMouseClick(web_contents, 0,
                                 blink::WebMouseEvent::Button::kLeft);
     observer.Wait();
+  }
+
+  void DestroyWebContents(WebContents* web_contents) {
+    content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
+    web_contents->Close();
+    destruction_watcher.Wait();
   }
 
   base::SimpleTestClock clock_;
@@ -410,4 +419,148 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_EQ(entries[0].metrics["SecondsSinceCommitted"],
             BucketizeSecondsSinceCommitted(base::Minutes(2)));
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       TopLevelIsReported_PastInteraction_NoSameSiteIframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  RecordInteraction(GURL("https://b.test"), clock_.Now() - base::Hours(3));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+  ASSERT_TRUE(OpenPopup(popup_url).has_value());
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.TopLevel",
+                                         {"HasSameSiteIframe"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            toplevel_url);
+  EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
+            static_cast<int32_t>(OptionalBool::kFalse));
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       TopLevelIsReported_NewInteraction_NoSameSiteIframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  ASSERT_EQ(ukm_recorder.GetEntriesByName("OpenerHeuristic.TopLevel").size(),
+            0u);
+
+  SimulateMouseClick(*maybe_popup);
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.TopLevel",
+                                         {"HasSameSiteIframe"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            toplevel_url);
+  EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
+            static_cast<int32_t>(OptionalBool::kFalse));
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       TopLevelIsReported_HasSameSiteIframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url =
+      embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
+  GURL iframe_url =
+      embedded_test_server()->GetURL("sub.b.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  const std::string iframe_id = "test";
+  WebContents* web_contents = GetActiveWebContents();
+
+  RecordInteraction(GURL("https://b.test"), clock_.Now() - base::Hours(3));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(), iframe_id,
+                                           iframe_url));
+  ASSERT_TRUE(OpenPopup(popup_url).has_value());
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.TopLevel",
+                                         {"HasSameSiteIframe"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            toplevel_url);
+  EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
+            static_cast<int32_t>(OptionalBool::kTrue));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OpenerHeuristicBrowserTest,
+    TopLevelIsReported_UnknownSameSiteIframe_OpenerWasClosed) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  DestroyWebContents(web_contents);
+
+  ASSERT_EQ(ukm_recorder.GetEntriesByName("OpenerHeuristic.TopLevel").size(),
+            0u);
+
+  SimulateMouseClick(*maybe_popup);
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.TopLevel",
+                                         {"HasSameSiteIframe"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            toplevel_url);
+  EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
+            static_cast<int32_t>(OptionalBool::kUnknown));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OpenerHeuristicBrowserTest,
+    TopLevelIsNotReported_UnknownSameSiteIframe_OpenerNavigatedAway) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL other_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html?other");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, other_url));
+
+  ASSERT_EQ(ukm_recorder.GetEntriesByName("OpenerHeuristic.TopLevel").size(),
+            0u);
+
+  SimulateMouseClick(*maybe_popup);
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.TopLevel",
+                                         {"HasSameSiteIframe"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            toplevel_url);
+  EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
+            static_cast<int32_t>(OptionalBool::kUnknown));
 }

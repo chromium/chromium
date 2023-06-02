@@ -18,9 +18,17 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
+fuzzer_test("ini_parser_fuzzer") {
+  sources = [ "ini_parser_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//chrome/common:ini_parser",
+  ]
+}
 grit("resources") {
   source = "common_resources.grd"
   defines = chrome_grit_defines
@@ -224,7 +232,6 @@ static_library("common_lib") {
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",
-    "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",
     "//components/translate/content/common",
     "//components/translate/core/common",
@@ -270,6 +277,10 @@ static_library("common_lib") {
     "//components/page_load_metrics/common:common",
     "//components/password_manager/content/common",
   ]
+
+  if (enable_supervised_users) {
+    public_deps += [ "//components/supervised_user/core/common" ]
+  }
 
   if (enable_pdf) {
     deps += [ "//components/pdf/common" ]
@@ -605,8 +616,6 @@ static_library("constants") {
     "//components/bookmarks/common",
     "//components/nacl/common:switches",
     "//components/offline_pages/buildflags",
-    "//components/supervised_user/core/common",
-    "//components/supervised_user/core/common:buildflags",
     "//extensions/buildflags",
     "//media:media_buildflags",
     "//ppapi/buildflags",

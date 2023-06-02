@@ -1,0 +1,27 @@
+Tests that ServiceWorker starts again after stopped when autoAttach:true and waitForDebuggerOnStart:false
+Attached to Target
+ServiceWorker is activated
+ServiceWorker RunningStatus: running
+Target attached: true
+Got message: push message 1
+ServiceWorker runningStatus: running
+ServiceWorker is stopped
+ServiceWorker runningStatus: stopped
+Target attached: true
+Got message: push message 2
+ServiceWorker runningStatus: running
+Target attached: true
+ServiceWorker is stopped
+ServiceWorker runningStatus: stopped
+Target attached: true
+Detached from Target
+auto-attach waitForDebuggerOnStart option changed
+Attached to Target
+ServiceWorker is waiting for debugger at starting
+ServiceWorker runningStatus: starting
+Target attached: true
+ServiceWorker is started
+Got message: push message 3
+ServiceWorker runningStatus: running
+Target attached: true
+

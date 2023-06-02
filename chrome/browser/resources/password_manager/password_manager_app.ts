@@ -29,8 +29,8 @@ import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CheckupSectionElement} from './checkup_section.js';
+import {PasswordRemovedEvent} from './credential_details/password_details_card.js';
 import {FocusConfig} from './focus_config.js';
-import {PasswordRemovedEvent} from './password_details_card.js';
 import {getTemplate} from './password_manager_app.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordsSectionElement} from './passwords_section.js';
@@ -145,7 +145,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
       this.$.drawerTemplate.if = true;
     });
 
-    this.addEventListener('cr-toolbar-menu-tap', this.onMenuButtonTap_);
+    this.addEventListener('cr-toolbar-menu-click', this.onMenuButtonClick_);
   }
 
   override currentRouteChanged(route: Route): void {
@@ -180,7 +180,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     }
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     this.$.drawer.toggle();
   }
 

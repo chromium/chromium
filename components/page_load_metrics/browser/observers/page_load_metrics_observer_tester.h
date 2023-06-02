@@ -180,9 +180,10 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   content::WebContents* web_contents() const { return web_contents_; }
 
   RegisterObserversCallback register_callback_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   raw_ptr<content::RenderViewHostTestHarness> rfh_test_harness_;
-  raw_ptr<MetricsWebContentsObserver> metrics_web_contents_observer_;
+  raw_ptr<MetricsWebContentsObserver, DanglingUntriaged>
+      metrics_web_contents_observer_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };

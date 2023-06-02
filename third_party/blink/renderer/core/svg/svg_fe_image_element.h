@@ -47,7 +47,6 @@ class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
   SVGAnimatedPreserveAspectRatio* preserveAspectRatio() {
     return preserve_aspect_ratio_.Get();
   }
-
   const SVGElement* TargetElement() const;
 
   void Dispose();
@@ -69,6 +68,10 @@ class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   bool TaintsOrigin() const override;
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
 
   Member<SVGAnimatedPreserveAspectRatio> preserve_aspect_ratio_;
 

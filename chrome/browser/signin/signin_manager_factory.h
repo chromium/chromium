@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/signin_manager.h"
@@ -18,7 +18,7 @@ class SigninManagerFactory : public ProfileKeyedServiceFactory {
   static SigninManager* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<SigninManagerFactory>;
+  friend base::NoDestructor<SigninManagerFactory>;
 
   SigninManagerFactory();
   ~SigninManagerFactory() override;

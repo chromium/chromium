@@ -14,10 +14,12 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/features.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -48,10 +50,14 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
@@ -84,7 +90,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -167,7 +173,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // controller will present this.
 @property(nonatomic, strong) BVCContainerViewController* bvcContainer;
 // Handler for the transitions between the TabGrid and the Browser.
-@property(nonatomic, strong) TabGridTransitionHandler* transitionHandler;
+@property(nonatomic, strong)
+    LegacyTabGridTransitionHandler* legacyTransitionHandler;
 // Mediator for regular Tabs.
 @property(nonatomic, strong) TabGridMediator* regularTabsMediator;
 // Mediator for incognito Tabs.
@@ -202,8 +209,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) InactiveTabsCoordinator* inactiveTabsCoordinator;
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
-// The timestamp of the user exiting the tab grid.
-@property(nonatomic, assign) base::TimeTicks tabGridExitTime;
 
 // The page configuration used when create the tab grid view controller;
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
@@ -509,13 +514,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.priceCardMediator logMetrics:TAB_SWITCHER];
 }
 
-- (void)reportTabGridUsageTime {
-  base::TimeDelta duration = self.tabGridExitTime - self.tabGridEnterTime;
-  base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpent", duration);
-  self.tabGridEnterTime = base::TimeTicks();
-  self.tabGridExitTime = base::TimeTicks();
-}
-
 - (void)showTabViewController:(UIViewController*)viewController
                     incognito:(BOOL)incognito
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
@@ -524,11 +522,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   DCHECK(viewController || (thumbStripEnabled && self.bvcContainer));
 
   if (shouldCloseTabGrid) {
-    self.tabGridExitTime = base::TimeTicks::Now();
-
     // Record when the tab switcher is dismissed.
     base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
-    [self reportTabGridUsageTime];
+
+    // Record how long the tab switcher was presented.
+    base::TimeDelta duration = base::TimeTicks::Now() - self.tabGridEnterTime;
+    base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpent", duration);
+    self.tabGridEnterTime = base::TimeTicks();
   }
 
   if (thumbStripEnabled) {
@@ -666,12 +666,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        animationEnabled:(BOOL)animationEnabled
                                              completion:
                                                  (ProceduralBlock)completion {
-  self.transitionHandler =
+  self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
-  [self.transitionHandler transitionFromBrowser:self.bvcContainer
-                                      toTabGrid:self.baseViewController
-                                     activePage:activePage
-                                 withCompletion:completion];
+  [self.legacyTransitionHandler transitionFromBrowser:self.bvcContainer
+                                            toTabGrid:self.baseViewController
+                                           activePage:activePage
+                                       withCompletion:completion];
 }
 
 // Performs the Tab Grid to Browser transition.
@@ -679,19 +679,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        animationEnabled:(BOOL)animationEnabled
                                              completion:
                                                  (ProceduralBlock)completion {
-  self.transitionHandler =
+  self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
-  [self.transitionHandler transitionFromTabGrid:self.baseViewController
-                                      toBrowser:self.bvcContainer
-                                     activePage:activePage
-                                 withCompletion:completion];
+  [self.legacyTransitionHandler transitionFromTabGrid:self.baseViewController
+                                            toBrowser:self.bvcContainer
+                                           activePage:activePage
+                                       withCompletion:completion];
 }
 
 // Creates a transition handler with `animationEnabled` parameter.
-- (TabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
+- (LegacyTabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
     (BOOL)animationEnabled {
-  TabGridTransitionHandler* transitionHandler =
-      [[TabGridTransitionHandler alloc]
+  LegacyTabGridTransitionHandler* transitionHandler =
+      [[LegacyTabGridTransitionHandler alloc]
           initWithLayoutProvider:self.baseViewController];
   transitionHandler.animationDisabled = !animationEnabled;
 
@@ -898,8 +898,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
   baseViewController.remoteTabsViewController.browser = self.regularBrowser;
-  self.remoteTabsMediator = [[RecentTabsMediator alloc] init];
-  self.remoteTabsMediator.browserState = regularBrowserState;
+  sync_sessions::SessionSyncService* syncService =
+      SessionSyncServiceFactory::GetForBrowserState(regularBrowserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(regularBrowserState);
+  sessions::TabRestoreService* restoreService =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+          regularBrowserState);
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(regularBrowserState);
+  SyncSetupService* service =
+      SyncSetupServiceFactory::GetForBrowserState(regularBrowserState);
+  self.remoteTabsMediator =
+      [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
+                                             identityManager:identityManager
+                                              restoreService:restoreService
+                                               faviconLoader:faviconLoader
+                                            syncSetupService:service];
+
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
   self.remoteTabsMediator.webStateList = regularWebStateList;
   baseViewController.remoteTabsViewController.imageDataSource =
@@ -922,7 +938,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // hierarchy. As a workaround, the view controller hierarchy is loaded here
   // before `RecentTabsMediator` updates are started.
   self.window.rootViewController = self.baseViewController;
-  if (self.remoteTabsMediator.browserState) {
+  if (regularBrowserState) {
     [self.remoteTabsMediator initObservers];
     [self.remoteTabsMediator refreshSessionsView];
   }
@@ -1328,13 +1344,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
-  bookmarks::BookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           self.regularBrowser->GetBrowserState());
-  bool currentlyBookmarked =
-      bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
-
-  if (currentlyBookmarked) {
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(
+          self.regularBrowser->GetBrowserState());
+  if (bookmark_utils_ios::IsBookmarked(URL, localOrSyncableBookmarkModel,
+                                       accountBookmarkModel)) {
     [self editBookmarkWithURL:URL];
   } else {
     base::RecordAction(base::UserMetricsAction(

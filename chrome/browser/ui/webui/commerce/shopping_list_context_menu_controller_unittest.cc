@@ -38,7 +38,8 @@ class MockShoppingListHandler : public ShoppingListHandler {
             shopping_service,
             nullptr,
             nullptr,
-            "") {}
+            "",
+            nullptr) {}
 
   MOCK_METHOD(void, TrackPriceForBookmark, (int64_t bookmark_id));
   MOCK_METHOD(void, UntrackPriceForBookmark, (int64_t bookmark_id));
@@ -84,7 +85,7 @@ class ShoppingListContextMenuControllerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::UserActionTester user_action_tester_;
-  raw_ptr<const bookmarks::BookmarkNode> bookmark_;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged> bookmark_;
 
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;

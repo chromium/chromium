@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/event_log.h"
-#include "base/base_jni_headers/EventLog_jni.h"
+#include "base/base_jni/EventLog_jni.h"
 
 namespace base {
 namespace android {

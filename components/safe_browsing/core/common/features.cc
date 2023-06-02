@@ -27,7 +27,7 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
 
 BASE_FEATURE(kAddPageLoadTokenToClientSafeBrowsingReport,
              "AddPageLoadTokenToClientSafeBrowsingReport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAntiPhishingTelemetry,
              "AntiPhishingTelemetry",
@@ -51,6 +51,10 @@ BASE_FEATURE(kClientSideDetectionTypeForceRequest,
 
 BASE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist,
              "SafeBrowsingComponentUpdaterAndroidProtegoAllowlist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeepScanningUpdatedUX,
+             "SafeBrowsingDeepScanningUpdatedUX",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayedWarnings,
@@ -175,6 +179,10 @@ BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
+    &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
+    /*default_value=*/false};
+
 BASE_FEATURE(kNestedArchives,
              "SafeBrowsingArchiveImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -210,6 +218,10 @@ const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
 BASE_FEATURE(kSafeBrowsingOnUIThread,
              "SafeBrowsingOnUIThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
+             "SafeBrowsingReferrerChainWithCopyPasteNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",

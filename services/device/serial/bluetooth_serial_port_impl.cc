@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -26,8 +26,8 @@ void BluetoothSerialPortImpl::Open(
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
     OpenCallback callback) {
-  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableBluetoothSerialPortProfileInSerialApi));
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kEnableBluetoothSerialPortProfileInSerialApi));
 
   // This BluetoothSerialPortImpl is owned by its |receiver_| and |watcher_| and
   // will self-destruct on connection failure.

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_single_line.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -98,13 +99,13 @@ class DataListIndicatorElement final : public HTMLDivElement {
     DCHECK(ContainingShadowRoot()->IsUserAgent());
     SetShadowPseudoId(shadow_element_names::kPseudoCalendarPickerIndicator);
     setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
-    setAttribute(html_names::kStyleAttr,
-                 "display:list-item; "
-                 "list-style:disclosure-open inside; "
-                 "counter-increment: list-item 0;"
-                 "block-size:1em;");
+    SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kListItem);
+    SetInlineStyleProperty(CSSPropertyID::kListStyle, "disclosure-open inside");
+    SetInlineStyleProperty(CSSPropertyID::kCounterIncrement, "list-item 0");
+    SetInlineStyleProperty(CSSPropertyID::kBlockSize, 1.0,
+                           CSSPrimitiveValue::UnitType::kEms);
     // Do not expose list-item role.
-    setAttribute(html_names::kAriaHiddenAttr, "true");
+    setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
   }
 };
 

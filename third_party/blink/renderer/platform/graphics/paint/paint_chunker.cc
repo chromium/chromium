@@ -204,17 +204,24 @@ void PaintChunker::AddSelectionToCurrentChunk(
   auto& chunk = chunks_->back();
 
 #if DCHECK_IS_ON()
+  gfx::Rect bounds_rect = chunk.bounds;
+
+  // In rare cases in the wild, the bounds_rect is 1 pixel off from the
+  // edge_rect below. We were unable to find the root cause, or to reproduce
+  // this locally, so we're relaxing the DCHECK. See https://crbug.com/1441243.
+  bounds_rect.Outset(1);
+
   if (start) {
     gfx::Rect edge_rect = gfx::BoundingRect(start->edge_start, start->edge_end);
-    DCHECK(chunk.bounds.Contains(edge_rect))
-        << chunk.bounds.ToString() << " does not contain "
+    DCHECK(bounds_rect.Contains(edge_rect))
+        << bounds_rect.ToString() << " does not contain "
         << edge_rect.ToString() << ", original bounds: " << debug_info;
   }
 
   if (end) {
     gfx::Rect edge_rect = gfx::BoundingRect(end->edge_start, end->edge_end);
-    DCHECK(chunk.bounds.Contains(edge_rect))
-        << chunk.bounds.ToString() << " does not contain "
+    DCHECK(bounds_rect.Contains(edge_rect))
+        << bounds_rect.ToString() << " does not contain "
         << edge_rect.ToString() << ", original bounds: " << debug_info;
   }
 #endif

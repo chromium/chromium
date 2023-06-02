@@ -305,9 +305,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
   const base::FilePath path_to_test_file =
       GetPathToTestFile("sample_web_app.json");
   const base::Value web_app_debug_value = WebAppToPlatformAgnosticDebugValue(
-      test::CreateRandomWebApp({.base_url = GURL("https://example.com/"),
-                                .seed = 1234,
-                                .non_zero = true}));
+      test::CreateRandomWebApp({.seed = 1234, .non_zero = true}));
 
   if (IsRebaseline()) {
     LOG(INFO) << "Generating expectations sample web app unit test in "
@@ -323,6 +321,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       << kGenerateExpectationsMessage;
 }
 
+TEST(WebAppTest, RandomAppAsDebugValue_NoCrash) {
+  for (uint32_t seed = 0; seed < 1000; ++seed) {
+    const base::Value web_app_debug_value =
+        test::CreateRandomWebApp({.seed = seed})->AsDebugValue();
+
+    EXPECT_TRUE(web_app_debug_value.is_dict());
+    EXPECT_TRUE(base::ToString(web_app_debug_value).length() > 10);
+  }
+}
+
 TEST(WebAppTest, IsolationDataStartsEmpty) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
@@ -333,8 +341,9 @@ TEST(WebAppTest, IsolationDataStartsEmpty) {
 TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
-  app.SetIsolationData(WebApp::IsolationData(InstalledBundle{
-      .path = base::FilePath(FILE_PATH_LITERAL("random_path"))}));
+  app.SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
+      base::Version("1.0.0")));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
@@ -344,6 +353,7 @@ TEST(WebAppTest, IsolationDataDebugValue) {
             "path": "random_path"
           }
         },
+        "version": "1.0.0",
         "controlled_frame_partitions": []
       })")
                                             .value();
@@ -370,12 +380,15 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {{url::Origin::Create(GURL("https://example.com")),
-         /*has_subdomain_wildcard=*/false},
-        {url::Origin::Create(GURL("https://example.net")),
-         /*has_subdomain_wildcard=*/true},
-        {url::Origin::Create(GURL("https://*.example.net")),
-         /*has_subdomain_wildcard=*/false}},
+       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.com")),
+            /*has_subdomain_wildcard=*/false),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.net")),
+            /*has_subdomain_wildcard=*/true),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://*.example.net")),
+            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},

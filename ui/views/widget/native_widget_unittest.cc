@@ -30,7 +30,7 @@ class ScopedTestWidget {
   internal::NativeWidgetPrivate* get() const { return native_widget_; }
 
  private:
-  raw_ptr<internal::NativeWidgetPrivate> native_widget_;
+  raw_ptr<internal::NativeWidgetPrivate, DanglingUntriaged> native_widget_;
 };
 
 class NativeWidgetTest : public ViewsTestBase {

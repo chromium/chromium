@@ -32,7 +32,8 @@ WebAppProvider* WebAppProviderFactory::GetForProfile(Profile* profile) {
 
 // static
 WebAppProviderFactory* WebAppProviderFactory::GetInstance() {
-  return base::Singleton<WebAppProviderFactory>::get();
+  static base::NoDestructor<WebAppProviderFactory> instance;
+  return instance.get();
 }
 
 // static

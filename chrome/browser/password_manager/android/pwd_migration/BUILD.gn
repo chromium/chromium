@@ -35,6 +35,7 @@ android_library("java") {
     "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -48,6 +49,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningIntroFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningOnClickHandler.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningOptionsFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningProperties.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
@@ -100,6 +103,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_core_java",
@@ -113,10 +117,14 @@ android_library("javatests") {
 }
 
 android_resources("java_resources") {
-  deps = [ "//ui/android:ui_java_resources" ]
+  deps = [
+    "//components/browser_ui/widget/android:java_resources",
+    "//ui/android:ui_java_resources",
+  ]
   sources = [
     "java/res/layout/pwd_migration_warning.xml",
     "java/res/layout/pwd_migration_warning_intro_fragment.xml",
+    "java/res/layout/pwd_migration_warning_options.xml",
     "java/res/values/dimens.xml",
   ]
 }

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Английски (САЩ) с клавиатура „Дворак“</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Хост</translation>
 <translation id="1521655867290435174">Google Таблици</translation>
-<translation id="1538729222189715449">Файловете за Linux се отварят...</translation>
 <translation id="1547964879613821194">Канадска (английски) клавиатура</translation>
 <translation id="1556189134700913550">Прилагане за всички</translation>
 <translation id="1561842594491319104">Устройствата с Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Сайт в Google</translation>
 <translation id="1853795129690976061">Тази папка е споделена с Linux</translation>
 <translation id="1864756863218646478">Файлът не можа да бъде намерен.</translation>
+<translation id="1877377730633446520">Това ще използва около <ph name="REQUIRED_SPACE" />. Понастоящем разполагате с(ъс) <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, свързване</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
 <translation id="1920798810075583923">Диня</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
 <translation id="2001796770603320721">Управление в Диск</translation>
+<translation id="2004942826429452291">Файловете ще се съхраняват в облака и на този Chromebook.</translation>
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
 <translation id="2025955442973426285">Тигриня</translation>
 <translation id="2037845485764049925">Руски</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Настройки на устройството</translation>
 <translation id="2084809735218147718">Благодарност</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
+<translation id="2089751716171649322">Лесен достъп до файловете ви в Google Диск, когато сте офлайн</translation>
 <translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> елемента ще бъдат изтрити и няма да можете да ги възстановите.</translation>
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Инсталиране с Linux</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Кешът ви в Google Диск бе изчистен.</translation>
 <translation id="2239068707900391003">Човек с кафе</translation>
 <translation id="2251368349685848079">Възстановяване от кошчето</translation>
 <translation id="2278133026967558505">Достъп до файла от всички уебсайтове и URL адреси</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">Монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
+<translation id="3501954296166022751">Файловете ви в Google Диск са налице офлайн</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> елемента се подготвят за синхронизиране...</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Промяната на тази настройка ще засегне всички споделени мрежи</translation>
 <translation id="3737576078404241332">Премахване от страничната лента</translation>
 <translation id="3749289110408117711">Име на файла</translation>
-<translation id="3780536599611287598">Нямате разрешение за преместване на файлове в(ъв) „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="3786301125658655746">Офлайн сте</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3793469551756281394">Оставащото време е около <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
 <translation id="4465725236958772856">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, управлява се от администратора ви, свързване</translation>
 <translation id="4470564870223067757">Хангъл, 2 набора</translation>
+<translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4474142134969976028">Няма съответстващи резултати</translation>
 <translation id="4477002475007461989">Румънски</translation>
 <translation id="4477219268485577442">Българска фонетична клавиатура</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> елемента се възстановяват</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{За да използвате режим „инкогнито“, организацията ви изисква разширение}other{За да използвате режим „инкогнито“, организацията ви изисква някои разширения}}</translation>
-<translation id="4823651846660089135">Устройството е само за четене</translation>
 <translation id="4826849268470072925">Тамилски (ITRANS)</translation>
 <translation id="482932175346970750">Въведете <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в браузъра си.</translation>
 <translation id="4843566743023903107">Устройствата Chromebase</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
+<translation id="5519161320735100193">Настройки за Google Диск</translation>
 <translation id="5522908512596376669">Списъкът с файлове е превключен към списъчен изглед.</translation>
 <translation id="5524517123096967210">Файлът не можа да бъде прочетен.</translation>
 <translation id="5533102081734025921">Изображение във формат <ph name="IMAGE_TYPE" /></translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Премахнахте избора на всички елементи.</translation>
 <translation id="5838825566232597749">Американска (Уъркман) международна клавиатура</translation>
 <translation id="5845721951356578987">Медицинска сестра</translation>
+<translation id="5860491529813859533">Включване</translation>
 <translation id="5861477046012235702">Геймър</translation>
 <translation id="5864471791310927901">Търсенето на DHCP сървър не бе успешно</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Автоматично откриване на уеб прокси сървъра</translation>
 <translation id="6337014272874260727">Освобождаване от пространството за бърз достъп до файловете</translation>
 <translation id="6339145975392024142">Американска международна (PC)</translation>
-<translation id="6346310558342052870">Достъпът е ограничен</translation>
 <translation id="6356685157277930264">Прозорец с информация за файловете</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Невалидна стойност в списъка със съответствия на суфикса на домейна</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7806708061868529807">Иврит</translation>
 <translation id="78104721049218340">Тайски с клавиатура Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Грешка при конфигурирането на мрежата</translation>
 <translation id="7839804798877833423">При извличането на тези файлове ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">катакана</translation>
 <translation id="7908793776359722643">При форматирането на даден дял ще бъдат изтрити всички съхранявани в него данни. Това действие не може да бъде отменено.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Файловете в „Моят диск“ ще се синхронизират автоматично с вашия Chromebook, така че да можете да осъществявате достъп до тях без връзка с интернет.</translation>
 <translation id="7925247922861151263">Проверката за AAA не бе успешна</translation>
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
+<translation id="7933875256234974853">Синхронизирането на файлове в Диск се подготвя...</translation>
 <translation id="7943385054491506837">Американска (Коулмак) клавиатура</translation>
 <translation id="7953739707111622108">Това устройство не може да бъде отворено, защото файловата му система не бе разпозната.</translation>
 <translation id="7969525169268594403">словенски</translation>
 <translation id="7972920761225148017">Френски (Швейцария)</translation>
 <translation id="7973962044839454485">Удостоверяването през PPP не бе успешно поради неправилно потребителско име или парола</translation>
 <translation id="7980421588063892270">Английски (САЩ) с клавиатура „Коулмак“</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> файла се синхронизират</translation>
 <translation id="8000066093800657092">Няма мрежа</translation>
 <translation id="8008366997883261463">Джак Ръсел териер</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">датски</translation>
 <translation id="8949925099261528566">Установена е връзка – няма достъп до интернет</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
+<translation id="8971742885766657349">Синхронизиране – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
 <translation id="8998871447376656508">Няма достатъчно свободно място в Google Диск за завършване на качването.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Инсталирането стартира успешно.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219908252191632183">Лунен пейзаж</translation>
+<translation id="937795003075802289">1 файл се синхронизира</translation>
 <translation id="938470336146445890">Моля, инсталирайте потребителски сертификат.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Променено от</translation>

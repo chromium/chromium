@@ -15,6 +15,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -88,7 +90,7 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
   }
 }
 
-gfx::Insets GetTrayBubbleInsets() {
+gfx::Insets GetTrayBubbleInsets(aura::Window* window) {
   // Decrease bottom and side insets by `kShelfDisplayOffset` to compensate for
   // the adjustment of the respective edges in Shelf::GetSystemTrayAnchorRect().
   gfx::Insets insets = gfx::Insets::TLBR(
@@ -104,7 +106,7 @@ gfx::Insets GetTrayBubbleInsets() {
   if (!in_tablet_mode)
     return insets;
 
-  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+  Shelf* shelf = Shelf::ForWindow(window);
   bool is_bottom_alignment =
       shelf->alignment() == ShelfAlignment::kBottom ||
       shelf->alignment() == ShelfAlignment::kBottomLocked;
@@ -112,14 +114,14 @@ gfx::Insets GetTrayBubbleInsets() {
   if (!is_bottom_alignment)
     return insets;
 
-  int height_compensation = GetBubbleInsetHotseatCompensation();
+  int height_compensation = GetBubbleInsetHotseatCompensation(window);
   insets.set_bottom(insets.bottom() + height_compensation);
   return insets;
 }
 
-int GetBubbleInsetHotseatCompensation() {
+int GetBubbleInsetHotseatCompensation(aura::Window* window) {
   int height_compensation = kTrayBubbleInsetHotseatCompensation;
-  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+  Shelf* shelf = Shelf::ForWindow(window);
 
   switch (shelf->GetBackgroundType()) {
     case ShelfBackgroundType::kInApp:
@@ -165,8 +167,8 @@ gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
   return gfx::Insets();
 }
 
-int CalculateMaxTrayBubbleHeight() {
-  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+int CalculateMaxTrayBubbleHeight(aura::Window* window) {
+  Shelf* shelf = Shelf::ForWindow(window);
 
   // We calculate the available height from the top of the screen to the top of
   // the bubble's anchor rect. We can not use the bottom of the screen since the
@@ -181,9 +183,30 @@ int CalculateMaxTrayBubbleHeight() {
   bool in_tablet_mode = Shell::Get()->tablet_mode_controller() &&
                         Shell::Get()->tablet_mode_controller()->InTabletMode();
   if (in_tablet_mode) {
-    free_space_height_above_anchor -= GetBubbleInsetHotseatCompensation();
+    free_space_height_above_anchor -= GetBubbleInsetHotseatCompensation(window);
   }
   return free_space_height_above_anchor - kBubbleMenuPadding * 2;
+}
+
+TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
+    TrayBackgroundView* tray,
+    bool anchor_to_shelf_corner) {
+  TrayBubbleView::InitParams init_params;
+  init_params.delegate = tray->GetWeakPtr();
+  init_params.parent_window = tray->GetBubbleWindowContainer();
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = anchor_to_shelf_corner
+                                ? tray->shelf()->GetSystemTrayAnchorRect()
+                                : tray->GetAnchorBoundsInScreen();
+  init_params.insets = GetTrayBubbleInsets(tray->GetBubbleWindowContainer());
+  init_params.shelf_alignment = tray->shelf()->alignment();
+  init_params.preferred_width = kTrayMenuWidth;
+  init_params.close_on_deactivate = true;
+  init_params.translucent = true;
+  init_params.corner_radius = kTrayItemCornerRadius;
+  init_params.reroute_event_handler = true;
+
+  return init_params;
 }
 
 }  // namespace ash

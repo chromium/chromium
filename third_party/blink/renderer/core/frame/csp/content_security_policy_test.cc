@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
+#include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -31,8 +33,14 @@
 
 namespace blink {
 
+namespace {
+
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
+using testing::Contains;
+using testing::SizeIs;
+
+}  // namespace
 
 class ContentSecurityPolicyTest : public testing::Test {
  public:
@@ -132,6 +140,10 @@ TEST_F(ContentSecurityPolicyTest, ParseInsecureRequestPolicy) {
   }
 }
 
+MATCHER_P(HasSubstr, s, "") {
+  return arg.Contains(s);
+}
+
 TEST_F(ContentSecurityPolicyTest, AddPolicies) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "script-src 'none'", ContentSecurityPolicyType::kReport,
@@ -144,21 +156,35 @@ TEST_F(ContentSecurityPolicyTest, AddPolicies) {
   const KURL not_example_url("http://not-example.com");
 
   auto* csp2 = MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  csp2->BindToDelegate(*test_delegate);
   csp2->AddPolicies(mojo::Clone(csp->GetParsedPolicies()));
-  EXPECT_FALSE(csp2->AllowScriptFromSource(
+
+  EXPECT_TRUE(csp2->AllowScriptFromSource(
       example_url, String(), IntegrityMetadataSet(), kParserInserted,
       example_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      ReportingDisposition::kSuppressReporting,
+      ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
+  EXPECT_THAT(
+      test_delegate->console_messages(),
+      Contains(HasSubstr("Refused to load the script 'http://example.com/'")));
+
+  test_delegate->console_messages().clear();
   EXPECT_TRUE(csp2->AllowImageFromSource(
       example_url, example_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      ReportingDisposition::kSuppressReporting,
+      ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
-  EXPECT_FALSE(csp2->AllowImageFromSource(
+  EXPECT_THAT(test_delegate->console_messages(), SizeIs(0));
+
+  test_delegate->console_messages().clear();
+  EXPECT_TRUE(csp2->AllowImageFromSource(
       not_example_url, not_example_url,
       ResourceRequest::RedirectStatus::kNoRedirect,
-      ReportingDisposition::kSuppressReporting,
+      ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
+  EXPECT_THAT(test_delegate->console_messages(),
+              Contains(HasSubstr(
+                  "Refused to load the image 'http://not-example.com/'")));
 }
 
 TEST_F(ContentSecurityPolicyTest, IsActiveForConnectionsWithConnectSrc) {

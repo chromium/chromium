@@ -40,7 +40,7 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
                           forKey:NSURLLocalizedNameKey
                            error:nil]) {
     // This shouldn't happen but just in case.
-    app_name = [app_url lastPathComponent];
+    app_name = app_url.lastPathComponent;
   }
   NSImage* app_icon = nil;
   if (![app_url getResourceValue:&app_icon

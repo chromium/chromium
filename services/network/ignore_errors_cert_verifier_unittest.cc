@@ -80,7 +80,7 @@ class IgnoreErrorsCertVerifierTest : public ::testing::Test {
 
   // The wrapped CertVerifier. Defaults to returning ERR_CERT_INVALID. Owned by
   // |verifier_|.
-  raw_ptr<MockCertVerifier> mock_verifier_;
+  raw_ptr<MockCertVerifier, DanglingUntriaged> mock_verifier_;
   IgnoreErrorsCertVerifier verifier_;
 };
 

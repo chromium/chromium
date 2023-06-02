@@ -40,7 +40,7 @@ class ClipboardFilter : public ClipboardStub {
   void InjectClipboardEvent(const ClipboardEvent& event) override;
 
  private:
-  raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
+  raw_ptr<ClipboardStub, DanglingUntriaged> clipboard_stub_ = nullptr;
   bool enabled_ = true;
   absl::optional<size_t> max_size_;
 };

@@ -377,14 +377,15 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Runs the async batch scoring for all the eligible matches in
   // `results_.matches_`. Passes `completion_callback` to
-  // `OnBatchUrlScoringModelDone()` callback upon finishing scoring.
+  // `OnUrlScoringModelDone()` callback which is called once the model is done
+  // for all the eligible matches, whether successfully or not.
   void RunBatchUrlScoringModel(base::OnceClosure completion_callback);
 
   // Called when the async scoring model is done running for all the eligible
   // matches in `results_.matches_`. Redistributes the existing relevance scores
-  // to the matches based on the model output (i.e. highest relevance now
-  // belongs to the match with the highest output value, and vice versa),
-  // re-sorts and trims the matches, and calls `completion_callback`.
+  // to the matches based on the model prediction scores (i.e. highest relevance
+  // score is given to the match with the highest prediction score, and vice
+  // versa), and calls `completion_callback`.
   void OnUrlScoringModelDone(
       const base::ElapsedTimer elapsed_timer,
       base::OnceClosure completion_callback,
@@ -394,6 +395,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Tries to cancel any pending requests to the scoring model and prevents
   // `OnUrlScoringModelDone()` and its completion callback from being called.
   void CancelUrlScoringModel();
+
+  // Constructs a destination URL from supplied search terms args.
+  // TODO(1418077): look for a way to dissolve this function into direct
+  // application where it's needed.
+  GURL ComputeURLFromSearchTermsArgs(
+      TemplateURL* template_url,
+      const TemplateURLRef::SearchTermsArgs& args) const;
 
   base::ObserverList<Observer> observers_;
 

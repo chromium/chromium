@@ -1510,7 +1510,7 @@ class DeletingWindowDelegate : public test::TestWindowDelegate {
     got_event_ = true;
   }
 
-  raw_ptr<Window> window_;
+  raw_ptr<Window, DanglingUntriaged> window_;
   bool delete_during_handle_;
   bool got_event_;
 };
@@ -1838,7 +1838,7 @@ class OnMouseExitDeletingEventFilter : public EventFilterRecorder {
 
   // Closure that is run prior to |object_to_delete_| being deleted.
   base::OnceClosure delete_closure_;
-  raw_ptr<T> object_to_delete_;
+  raw_ptr<T, DanglingUntriaged> object_to_delete_;
 };
 
 // Tests that RootWindow drops mouse-moved event that is supposed to be sent to
@@ -2073,7 +2073,7 @@ class DeleteHostFromHeldMouseEventDelegate : public test::TestWindowDelegate {
   void OnWindowDestroyed(Window* window) override { got_destroy_ = true; }
 
  private:
-  raw_ptr<WindowTreeHost> host_;
+  raw_ptr<WindowTreeHost, DanglingUntriaged> host_;
   bool got_mouse_event_;
   bool got_destroy_;
 };
@@ -2991,7 +2991,7 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
   }
 
   raw_ptr<WindowEventDispatcher> dispatcher_;
-  raw_ptr<Window> window_;
+  raw_ptr<Window, DanglingUntriaged> window_;
 };
 
 // Tests that gesture events dispatched through the asynchronous flow have
@@ -3250,7 +3250,7 @@ TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
     }
 
    private:
-    raw_ptr<aura::Window> focused_;
+    raw_ptr<aura::Window, DanglingUntriaged> focused_;
   };
   Handler mouse_handler(focused);
   mouse_target->AddPostTargetHandler(&mouse_handler);

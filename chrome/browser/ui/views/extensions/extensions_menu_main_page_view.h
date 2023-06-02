@@ -30,12 +30,27 @@ class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
-class RequestsAccessSection;
+class MessageSection;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View {
  public:
   METADATA_HEADER(ExtensionsMenuMainPageView);
+
+  enum class MessageSectionState {
+    // Site is restricted to all extensions.
+    kRestrictedAccess,
+    // User can customize each extension's access to the site.
+    kUserCustomizedAccess,
+    // User can customize each extension's access to the site, but a page
+    // reload is required to reflect changes.
+    kUserCustomizedAccessReload,
+    // User blocked all extensions access to the site.
+    kUserBlockedAccess,
+    // User blocked all extensions access to the site, but a page
+    // reload is required to reflect changes.
+    kUserBlockedAccessReload,
+  };
 
   explicit ExtensionsMenuMainPageView(Browser* browser,
                                       ExtensionsMenuHandler* menu_handler);
@@ -69,6 +84,9 @@ class ExtensionsMenuMainPageView : public views::View {
                        bool is_site_settings_toggle_visible,
                        bool is_site_settings_toggle_on);
 
+  // Updates the message section given `state`.
+  void UpdateMessageSection(MessageSectionState state);
+
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information.
   void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
@@ -80,16 +98,14 @@ class ExtensionsMenuMainPageView : public views::View {
   // if existent.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
 
-  // Clears all the entries in the `requests_access_section_`.
-  void ClearExtensionsRequestingAccess();
-
-  void OnToggleButtonPressed();
-
   // Accessors used by tests:
   // Returns the currently-showing menu items.
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
+  views::Label* GetTextContainerForTesting();
+  views::View* GetReloadContainerForTesting();
+  views::View* GetRequestsAccessContainerForTesting();
   std::vector<extensions::ExtensionId>
   GetExtensionsRequestingAccessForTesting();
   views::View* GetExtensionRequestingAccessEntryForTesting(
@@ -105,8 +121,8 @@ class ExtensionsMenuMainPageView : public views::View {
   raw_ptr<views::Label> subheader_subtitle_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
-  // Requests access section.
-  raw_ptr<RequestsAccessSection> requests_access_section_;
+  // Message section.
+  raw_ptr<MessageSection> message_section_;
 
   // Menu items section.
   // The view containing the menu items. This is separated for easy insertion

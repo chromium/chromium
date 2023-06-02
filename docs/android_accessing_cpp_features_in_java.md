@@ -2,7 +2,42 @@
 
 [TOC]
 
-## Introduction
+# Checking if a Feature is enabled
+
+In C++, add your `base::Feature` to an existing `base::android::FeatureMap` in the appropriate layer/component. Then, you can check the
+enabled state like so:
+
+```java
+// FooFeatureMap can check FooFeatures.MY_FEATURE as long as foo_feature_map.cc
+// adds `kMyFeature` to its `base::android::FeatureMap`.
+if (FooFeatureMap.getInstance().isEnabled(FooFeatures.MY_FEATURE)) {
+    // ...
+}
+```
+
+If the components or layer does not have a FeatureMap, create a new one:
+
+1. In C++, create a new `foo_feature_map.cc` (ex.
+[`content_feature_map`](/content/browser/android/content_feature_map.cc)) with:
+    * `kFeaturesExposedToJava` array with a pointer to your `base::Feature`.
+    * `GetFeatureMap` with a static `base::android::FeatureMap` initialized
+      with `kFeaturesExposedToJava`.
+    * `JNI_FooFeatureList_GetNativeMap` simply calling `GetFeatureMap`.
+2. In Java, create a `FooFeatureMap.java` class extending `FeatureMap.java`
+   (ex. [`ContentFeatureMap`](/content/public/android/java/src/org/chromium/content/browser/ContentFeatureMap.java)) with:
+    * A `getInstance()` that returns the singleton instance.
+    * A single `long getNativeMap()` as @NativeMethods.
+    * An `@Override` for the abstract `getNativeMap()` simply calling
+      `FooFeatureMapJni.get().getNativeMap()`.
+3. Still in Java, `FooFeatures.java` with the String constants with the feature
+   names needs to be generated or created.
+    * Auto-generate it by writing a `FooFeatures.java.tmpl`. [See instructions
+      below]((#generating-foo-feature-list-java)).
+    * If `FooFeatures` cannot be auto-generated, keep the list of String
+      constants with the feature names in a `FooFeatures` or `FooFeatureList`
+      separate from the pure boilerplate `FooFeatureMap`.
+
+# Auto-generating FooFeatureList.java {#generating-foo-feature-list-java}
 
 Accessing C++ `base::Features` in Java is implemented via a Python script which
 analyzes the `*_features.cc` file and generates the corresponding Java class,
@@ -123,7 +158,7 @@ org/chromium/foo/FooFeatures.java:41: error: duplicate declaration of field: MY_
     public static final String MY_FEATURE = "MyFeature";
 ```
 
-This can happen if you've re-declared a feature for mutually-exclsuive build
+This can happen if you've re-declared a feature for mutually-exclusive build
 configs (ex. the feature is enabled-by-default for one config, but
 disabled-by-default for another). Example:
 
@@ -152,28 +187,6 @@ BASE_FEATURE(kMyFeature,
 
 ```
 
-## Checking if a Feature is enabled
-
-The standard pattern is to create a `FooFeatureList.java` class with an
-`isEnabled()` method (ex.
-[`ContentFeatureList`](/content/public/android/java/src/org/chromium/content_public/browser/ContentFeatureList.java)).
-This should call into C++ (ex.
-[`content_feature_list`](/content/browser/android/content_feature_list.cc)),
-where a subset of features are exposed via the `kFeaturesExposedToJava` array.
-You can either add your `base::Feature` to an existing `feature_list` or create
-a new `FeatureList` class if no existing one is suitable. Then you can check the
-enabled state like so:
-
-```java
-// It's OK if ContentFeatureList checks FooFeatures.*, so long as
-// content_feature_list.cc exposes `kMyFeature`.
-if (ContentFeatureList.isEnabled(FooFeatures.MY_FEATURE)) {
-    // ...
-}
-```
-
-At the moment, `base::Features` must be explicitly exposed to Java this way, in
-whichever layer needs to access their state. See https://crbug.com/1060097.
 
 ## See also
 * [Accessing C++ Enums In Java](android_accessing_cpp_enums_in_java.md)

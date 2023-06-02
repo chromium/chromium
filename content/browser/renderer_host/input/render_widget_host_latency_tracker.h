@@ -62,7 +62,8 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
   // default action prevented. Only valid for single finger gestures.
   bool touch_start_default_prevented_;
 
-  raw_ptr<RenderWidgetHostDelegate> render_widget_host_delegate_;
+  raw_ptr<RenderWidgetHostDelegate, DanglingUntriaged>
+      render_widget_host_delegate_;
 };
 
 }  // namespace content

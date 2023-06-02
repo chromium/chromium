@@ -27,6 +27,10 @@
 #include "components/reporting/metrics/fakes/fake_sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -89,11 +93,22 @@ std::string DevicePath(const std::string& interface_name) {
 class NetworkTelemetrySamplerTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
-    ash::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+
+    const AccountId account_id = AccountId::FromUserEmail("test@test");
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->UserLoggedIn(account_id,
+                                    network_handler_test_helper_.UserHash(),
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
+    ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,
-        ash::LoginState::LOGGED_IN_USER_REGULAR,
-        network_handler_test_helper_.UserHash());
+        ash::LoginState::LOGGED_IN_USER_REGULAR);
 
     network_handler_test_helper_.AddDefaultProfiles();
     network_handler_test_helper_.ResetDevicesAndServices();
@@ -103,6 +118,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    scoped_user_manager_.reset();
     ash::LoginState::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
   }
@@ -160,6 +176,8 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
+
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 

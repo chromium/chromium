@@ -46,8 +46,8 @@ void WebStateListFaviconDriverObserver::WebStateReplacedAt(
     web::WebState* new_web_state,
     int index) {
   if (old_web_state) {
-    // Forward to WebStateDetachedAt as this is considered a webState removal.
-    WebStateDetachedAt(web_state_list, old_web_state, index);
+    // Forward to DetachWebState as this is considered a WebState removal.
+    DetachWebState(old_web_state);
   }
 
   if (new_web_state) {
@@ -59,15 +59,7 @@ void WebStateListFaviconDriverObserver::WebStateDetachedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index) {
-  favicon::WebFaviconDriver* driver =
-      favicon::WebFaviconDriver::FromWebState(web_state);
-  if (driver) {
-    auto iterator = driver_to_web_state_map_.find(driver);
-    DCHECK(iterator != driver_to_web_state_map_.end());
-    DCHECK(iterator->second == web_state);
-    driver_to_web_state_map_.erase(iterator);
-    driver->RemoveObserver(this);
-  }
+  DetachWebState(web_state);
 }
 
 void WebStateListFaviconDriverObserver::OnFaviconUpdated(
@@ -92,5 +84,18 @@ void WebStateListFaviconDriverObserver::AddNewWebState(
     DCHECK(iterator == driver_to_web_state_map_.end());
     driver_to_web_state_map_[driver] = web_state;
     driver->AddObserver(this);
+  }
+}
+
+void WebStateListFaviconDriverObserver::DetachWebState(
+    web::WebState* web_state) {
+  favicon::WebFaviconDriver* driver =
+      favicon::WebFaviconDriver::FromWebState(web_state);
+  if (driver) {
+    auto iterator = driver_to_web_state_map_.find(driver);
+    DCHECK(iterator != driver_to_web_state_map_.end());
+    DCHECK(iterator->second == web_state);
+    driver_to_web_state_map_.erase(iterator);
+    driver->RemoveObserver(this);
   }
 }

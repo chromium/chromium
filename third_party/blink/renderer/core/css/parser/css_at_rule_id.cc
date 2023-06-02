@@ -112,9 +112,9 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     }
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
-  if (EqualIgnoringASCIICase(name, "initial")) {
+  if (EqualIgnoringASCIICase(name, "starting-style")) {
     if (RuntimeEnabledFeatures::CSSInitialPseudoEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleInitial;
+      return CSSAtRuleID::kCSSAtRuleStartingStyle;
     }
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
@@ -142,8 +142,6 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleFontFeatureValues;
     case CSSAtRuleID::kCSSAtRuleImport:
       return WebFeature::kCSSAtRuleImport;
-    case CSSAtRuleID::kCSSAtRuleInitial:
-      return WebFeature::kCSSAtRuleInitial;
     case CSSAtRuleID::kCSSAtRuleKeyframes:
       return WebFeature::kCSSAtRuleKeyframes;
     case CSSAtRuleID::kCSSAtRuleLayer:
@@ -164,6 +162,8 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleOrnaments;
     case CSSAtRuleID::kCSSAtRuleScope:
       return WebFeature::kCSSAtRuleScope;
+    case CSSAtRuleID::kCSSAtRuleStartingStyle:
+      return WebFeature::kCSSAtRuleStartingStyle;
     case CSSAtRuleID::kCSSAtRuleStyleset:
       return WebFeature::kCSSAtRuleStylistic;
     case CSSAtRuleID::kCSSAtRuleStylistic:

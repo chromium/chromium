@@ -112,8 +112,8 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     // with a stop at (0 + epsilon).
     pos.push_back(WebCoreDoubleToSkScalar(0));
     if (color_filter_) {
-      colors.push_back(color_filter_->filterColor4f(
-          stops_.front().color.toSkColor4f(), nullptr, nullptr));
+      colors.push_back(
+          color_filter_->FilterColor(stops_.front().color.toSkColor4f()));
     } else {
       colors.push_back(stops_.front().color.toSkColor4f());
     }
@@ -122,8 +122,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
   for (const auto& stop : stops_) {
     pos.push_back(WebCoreDoubleToSkScalar(stop.stop));
     if (color_filter_) {
-      colors.push_back(color_filter_->filterColor4f(stop.color.toSkColor4f(),
-                                                    nullptr, nullptr));
+      colors.push_back(color_filter_->FilterColor(stop.color.toSkColor4f()));
     } else {
       colors.push_back(stop.color.toSkColor4f());
     }

@@ -660,6 +660,10 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Subpage summary for malware warning for the user.">
         Chromium blocked this file because it has malware
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT"
+                       desc="Subpage summary of warning for Deep Scanning.">
+        Chromium recommends scanning this file because it may be dangerous
+      </message>
 
       <!-- Tailored Warning in Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE"
@@ -742,6 +746,17 @@ Permissions you've already given to websites and apps may apply to this account.
           Chromium found that these items contain malware:
         </message>
       </if>
+
+      <!-- Extension Safety Check Detail Page strings -->
+      <message name="IDS_SAFETY_CHECK_EXTENSIONS_MALWARE" desc="The text explaining the reason for disabling extension. The extension in question contains malware.">
+        This extension contains malware and is unsafe. Remove it from Chromium so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
+       <message name="IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION" desc="The text explaining the reason for disabling extension. The extension in question violates Chrome Web Store policy.">
+          This extension violates the Chrome Web Store policy, and might be unsafe. Remove it from Chromium so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
+      <message name="IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED" desc="The text explaining the reason for disabling extension. The extension in question was unpublished by the developer.">
+          This extension was unpublished by its developer, and might be unsafe. Remove it from Chromium so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
 
       <!-- chrome://settings/extensions page -->
       <message name="IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR" desc="The label on the toggle to allow the extension to show site access requests in the toolbar.">
@@ -827,7 +842,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <message name="IDS_VIEW_PASSWORDS" desc="Item in the app menu which shows Password Manager page">
-        Password Manager
+        P&amp;assword Manager
       </message>
 
       <!-- Chrome sign-in page -->
@@ -1722,10 +1737,16 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details. Note: MacOS has the wording 'Chromium is trying to' prepended onto the message during user auth.">
           modify settings for filling payment methods.
         </message>
+        <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was succesful, we would then show the edit card dialog. Note: MacOS has the wording 'Chromium is trying to' prepended onto the message during user auth.">
+          edit payment methods.
+        </message>
       </if>
       <if expr="is_win">
         <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details.">
           Chromium is trying to modify settings for filling payment methods.
+        </message>
+        <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was succesful, we would then show the edit card dialog.">
+          Chromium is trying to edit payment methods.
         </message>
       </if>
     </messages>

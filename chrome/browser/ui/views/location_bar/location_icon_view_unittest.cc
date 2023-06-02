@@ -109,7 +109,7 @@ class LocationIconViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<TestLocationBarModel> location_bar_model_;
   std::unique_ptr<TestLocationIconDelegate> delegate_;
-  raw_ptr<LocationIconView> view_;
+  raw_ptr<LocationIconView, DanglingUntriaged> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

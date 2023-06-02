@@ -40,7 +40,7 @@ class TestBookmarkClientWithUndo : public bookmarks::TestBookmarkClient {
   }
 
  private:
-  const raw_ptr<BookmarkUndoService> undo_service_;
+  const raw_ptr<BookmarkUndoService, DanglingUntriaged> undo_service_;
 };
 
 class BookmarkUndoServiceTest : public testing::Test {

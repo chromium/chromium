@@ -41,7 +41,6 @@ AutofillProfile ConstructCompleteProfile() {
   profile.set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.set_profile_label("profile_label");
-  profile.set_disallow_settings_visible_updates(true);
 
   // Set testing values and statuses for the name.
   profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX, u"Dr.",
@@ -99,6 +98,9 @@ AutofillProfile ConstructCompleteProfile() {
                                            u"Marcos y Oliva",
                                            VerificationStatus::kObserved);
 
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
+                                           VerificationStatus::kObserved);
+
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SORTING_CODE, u"CEDEX",
                                            VerificationStatus::kObserved);
 
@@ -147,7 +149,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_use_count(7);
   specifics.set_use_date(1423182152);
   specifics.set_profile_label("profile_label");
-  specifics.set_disallow_settings_visible_updates(true);
 
   // Set values and statuses for the names.
   specifics.add_name_honorific("Dr.");
@@ -264,6 +265,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_between_streets_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
+  specifics.set_address_home_admin_level_2("Oxaca");
+  specifics.set_address_home_admin_level_2_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_sorting_code("CEDEX");
   specifics.set_address_home_sorting_code_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -289,7 +294,8 @@ class AutofillProfileSyncUtilTest : public testing::Test {
     test_clock_.SetNow(kJune2017);
     features_.InitWithFeatures(
         {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets},
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2},
         {});
   }
 

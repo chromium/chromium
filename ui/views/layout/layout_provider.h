@@ -144,6 +144,7 @@ enum class ShapeContextTokens {
   kButtonRadius,
   kComboboxRadius,
   kDialogRadius,
+  kFindBarViewRadius,
   kMenuRadius,
   kMenuAuxRadius,
   kMenuTouchRadius,

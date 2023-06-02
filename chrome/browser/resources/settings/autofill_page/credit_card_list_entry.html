@@ -39,19 +39,33 @@
         margin-inline-end: 16px;
         vertical-align: middle;
       }
+
+      .screen-reader-only-substituted-parent {
+        position: relative;
+      }
+      .screen-reader-only-visually-hidden {
+        clip-path: inset(100%);
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
         <template is="dom-if" if="[[showExpirationAsSecondaryLabelEnabled_]]">
           <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
         </template>
-        <div class="summary-column">
-          <div id="summaryLabel" class="ellipses">
+        <div class="summary-column screen-reader-only-substituted-parent">
+          <div class="screen-reader-only-visually-hidden">
+            [[getSummaryAriaLabel_(creditCard)]],
+            [[getSummaryAriaSublabel_(creditCard)]]
+          </div>
+          <div id="summaryLabel" class="ellipses" aria-hidden="true">
             [[creditCard.metadata.summaryLabel]]
           </div>
           <div id="summarySublabel"
               hidden$="[[!showExpirationAsSecondaryLabelEnabled_]]"
-              class="ellipses sub-label">
+              class="ellipses sub-label" aria-hidden="true">
             [[getSummarySublabel_(creditCard, virtualCardEnrollmentEnabled_)]]
           </div>
         </div>

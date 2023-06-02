@@ -285,15 +285,17 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<NiceMock<content::MockDownloadManager>> download_manager_ = nullptr;
+  raw_ptr<NiceMock<content::MockDownloadManager>, DanglingUntriaged>
+      download_manager_ = nullptr;
   std::vector<std::unique_ptr<NiceMockDownloadItem>> download_items_;
   std::vector<offline_items_collection::OfflineItem> offline_items_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<
       NiceMock<offline_items_collection::MockOfflineContentProvider>>
       offline_content_provider_;
-  raw_ptr<DownloadBubbleUpdateService> update_service_ = nullptr;
+  raw_ptr<DownloadBubbleUpdateService, DanglingUntriaged> update_service_ =
+      nullptr;
 };
 
 TEST_F(DownloadBubbleUpdateServiceTest, PopulatesCaches) {
@@ -904,11 +906,12 @@ class DownloadBubbleUpdateServiceIncognitoTest
   }
 
  protected:
-  raw_ptr<Profile> incognito_profile_ = nullptr;
-  raw_ptr<NiceMock<content::MockDownloadManager>> incognito_download_manager_ =
-      nullptr;
+  raw_ptr<Profile, DanglingUntriaged> incognito_profile_ = nullptr;
+  raw_ptr<NiceMock<content::MockDownloadManager>, DanglingUntriaged>
+      incognito_download_manager_ = nullptr;
   std::vector<std::unique_ptr<NiceMockDownloadItem>> incognito_download_items_;
-  raw_ptr<DownloadBubbleUpdateService> incognito_update_service_ = nullptr;
+  raw_ptr<DownloadBubbleUpdateService, DanglingUntriaged>
+      incognito_update_service_ = nullptr;
 };
 
 // Tests that initializing an update service for an incognito profile sets both

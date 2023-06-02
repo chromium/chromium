@@ -34,6 +34,27 @@ chromium-metrics-reviews@google.com.
   <variant name="TpmNotBoundToPcr"/>
 </variants>
 
+<variants name="CryptohomeAuthFactorTypes">
+  <variant name="" summary="Aggregated."/>
+  <variant name=".CryptohomeRecovery"/>
+  <variant name=".Fingerprint"/>
+  <variant name=".Kiosk"/>
+  <variant name=".LegacyFingerprint"/>
+  <variant name=".Password"/>
+  <variant name=".Pin"/>
+  <variant name=".SmardCard"/>
+</variants>
+
+<variants name="CryptohomeErrorOperations">
+  <variant name="AddAuthFactorError"/>
+  <variant name="AuthenticateAuthFactorError"/>
+  <variant name="Error"/>
+  <variant name="PrepareAuthFactorError"/>
+  <variant name="RecreateAuthFactorError"/>
+  <variant name="RemoveAuthFactorError"/>
+  <variant name="UssMigrationError"/>
+</variants>
+
 <histogram name="Cryptohome.AsyncDBusRequest" units="ms"
     expires_after="2022-01-02">
   <owner>zuan@chromium.org</owner>
@@ -64,6 +85,23 @@ chromium-metrics-reviews@google.com.
     which generally occurs whenever an operation requiring authentication
     happens (e.g. verifying credentials, adding or updating credentials,
     mounting the user home directory, et cetera).
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.BackupKeysetCleanupResult"
+    enum="CryptohomeBackupKeysetCleanupResult" expires_after="2024-05-18">
+  <owner>betuls@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Records the result of the backup VaultKeyset cleanup for users with mixed
+    USS-VaultKeyset configurations. Backup VaultKeysets are keysets marked as
+    backup during the migration to USS and kept as a rollback protection. Since
+    M114 backup keysets are removed on AuthSession start if the USS migration of
+    the particular user is completed. Starting with M115 backup keyset for the
+    migrated credential is removed after the successful authentication with the
+    given credential with USS, even if the USS migration is not completed. This
+    metric tracks the result of the removal of backup keysets after successful
+    authetnication for users whose USS migration isn't completed yet.
   </summary>
 </histogram>
 
@@ -243,6 +281,34 @@ chromium-metrics-reviews@google.com.
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Cryptohome errors.</summary>
+</histogram>
+
+<histogram name="Cryptohome.Fingerprint.AuthSignal"
+    enum="CryptohomeFingerprintScanResult" expires_after="2024-05-18">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Fingerprint scan result signals during fingerprint authentication. Reporting
+    happens during the auth session started when the user presses their finger
+    for system auth (login, unlock etc.). Each finger touch detected by the
+    fingerprint sensor results in 1 signal, and internal failures of the
+    fingerprint sensor also results in 1 special signal indicating the end of
+    session although fingerprint authentication isn't completed.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.Fingerprint.EnrollSignal"
+    enum="CryptohomeFingerprintScanResult" expires_after="2024-05-18">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Fingerprint scan result signals during fingerprint enrollment. Reporting
+    happens during the enroll session started when the user adds a new
+    fingerprint from OS settings. Each finger touch detected by the fingerprint
+    sensor results in 1 signal, and internal failures of the fingerprint sensor
+    also results in 1 special signal indicating the end of session although
+    fingerprint enrollment isn't completed.
+  </summary>
 </histogram>
 
 <histogram name="Cryptohome.FreedCacheVaultDiskSpaceInMb" units="MB"
@@ -601,16 +667,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.TimeSessionUnlock" units="ms"
-    expires_after="2023-06-04">
-  <owner>hardikgoyal@google.com</owner>
-  <owner>betuls@google.com</owner>
-  <summary>
-    The amount of time (ms) for Chrome OS cryptohome daemon to verify the user's
-    password during an unlock operation.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorUSS" units="ms"
     expires_after="2023-11-01">
   <owner>thomascedeno@google.com</owner>
@@ -701,16 +757,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted home
     directory.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.TimeToMountGuestAsync" units="ms"
-    expires_after="2021-01-01">
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    The amount of time (ms) for Chrome OS cryptohome to mount the encrypted
-    guest home directory asynchronously.
   </summary>
 </histogram>
 
@@ -867,7 +913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{AuthBlockType}.CredentialRevocationResult"
-    enum="CryptohomeLECredError" expires_after="2023-07-01">
+    enum="CryptohomeLECredError" expires_after="2024-01-01">
   <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -906,13 +952,10 @@ chromium-metrics-reviews@google.com.
   <token key="AuthSessionFunction">
     <variant name="TimeToAuthSessionAddAuthFactorUSS"/>
     <variant name="TimeToAuthSessionAddAuthFactorVK"/>
-    <variant name="TimetoAuthSessionAddCredentials"/>
-    <variant name="TimeToAuthSessionAuthenticate"/>
     <variant name="TimeToAuthSessionAuthenticateAuthFactorUSS"/>
     <variant name="TimeToAuthSessionAuthenticateAuthFactorVK"/>
     <variant name="TimeToAuthSessionUpdateAuthFactorUSS"/>
     <variant name="TimeToAuthSessionUpdateAuthFactorVK"/>
-    <variant name="TimeToAuthSessionUpdateCredentials"/>
   </token>
   <token key="AuthBlockType">
     <variant name="ChallengeCredential"/>
@@ -948,7 +991,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cryptohome.{ErrorBucket}.AllLocations"
+<histogram name="Cryptohome.{ErrorOperation}{AuthFactorType}.AllLocations"
     enum="CryptohomeErrorLocation" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -969,7 +1012,7 @@ chromium-metrics-reviews@google.com.
     report each individual ErrorLocation's corresponding enum value when an
     error ocurred.
 
-    This histogram is also separated into several {ErrorBucket}s. The most
+    This histogram is also separated into several error buckets. The most
     standard error bucket is 'Error', which collects the errors populated in
     dbus responses. Other buckets are errors we collect in some subrountines,
     like migration. Migration errors are not surfaced to dbus responses, but
@@ -979,14 +1022,12 @@ chromium-metrics-reviews@google.com.
     know which lines that handle error in cryptohomed has been triggered due to
     an error.
   </summary>
-  <token key="ErrorBucket">
-    <variant name="Error"/>
-    <variant name="RecreateAuthFactorError.Pin"/>
-    <variant name="UssMigrationError"/>
-  </token>
+  <token key="ErrorOperation" variants="CryptohomeErrorOperations"/>
+  <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="Cryptohome.{ErrorBucket}.DevUnexpectedState"
+<histogram
+    name="Cryptohome.{ErrorOperation}{AuthFactorType}.DevUnexpectedState"
     enum="CryptohomeErrorLocation" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1010,7 +1051,7 @@ chromium-metrics-reviews@google.com.
     notification standpoint, it functions similar to a DCHECK(), except it never
     crashes cryptohome and handles the error in a graceful manner.
 
-    This histogram is also separated into several {ErrorBucket}s. The most
+    This histogram is also separated into several error buckets. The most
     standard error bucket is 'Error', which collects the errors populated in
     dbus responses. Other buckets are errors we collect in some subrountines,
     like migration. Migration errors are not surfaced to dbus responses, but
@@ -1019,14 +1060,11 @@ chromium-metrics-reviews@google.com.
     This is useful to cryptohome developers because they'll be alerted when any
     of the situations that the developers doesn't expect to occur occurs.
   </summary>
-  <token key="ErrorBucket">
-    <variant name="Error"/>
-    <variant name="RecreateAuthFactorError.Pin"/>
-    <variant name="UssMigrationError"/>
-  </token>
+  <token key="ErrorOperation" variants="CryptohomeErrorOperations"/>
+  <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="Cryptohome.{ErrorBucket}.HashedStack"
+<histogram name="Cryptohome.{ErrorOperation}{AuthFactorType}.HashedStack"
     enum="CryptohomeErrorHashed" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1047,7 +1085,7 @@ chromium-metrics-reviews@google.com.
     ErrorLocation, and hash the entire stack, then we report the hash. The
     original stack of ErrorLocation is logged.
 
-    This histogram is also separated into several {ErrorBucket}s. The most
+    This histogram is also separated into several error buckets. The most
     standard error bucket is 'Error', which collects the errors populated in
     dbus responses. Other buckets are errors we collect in some subrountines,
     like migration. Migration errors are not surfaced to dbus responses, but
@@ -1057,14 +1095,12 @@ chromium-metrics-reviews@google.com.
     CryptohomeError by the content of the stack, and identify new ways the error
     can occur if they do occur.
   </summary>
-  <token key="ErrorBucket">
-    <variant name="Error"/>
-    <variant name="RecreateAuthFactorError.Pin"/>
-    <variant name="UssMigrationError"/>
-  </token>
+  <token key="ErrorOperation" variants="CryptohomeErrorOperations"/>
+  <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="Cryptohome.{ErrorBucket}.LeafErrorWithoutTPM"
+<histogram
+    name="Cryptohome.{ErrorOperation}{AuthFactorType}.LeafErrorWithoutTPM"
     enum="CryptohomeErrorLocation" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1085,7 +1121,7 @@ chromium-metrics-reviews@google.com.
     last ErrorLocation in the stack of ErrorLocation in the CryptohomeError, if
     the last ErrorLocation does not have a TPM Error Code associated with it.
 
-    This histogram is also separated into several {ErrorBucket}s. The most
+    This histogram is also separated into several error buckets. The most
     standard error bucket is 'Error', which collects the errors populated in
     dbus responses. Other buckets are errors we collect in some subrountines,
     like migration. Migration errors are not surfaced to dbus responses, but
@@ -1096,14 +1132,11 @@ chromium-metrics-reviews@google.com.
     this histogram doesn't involve hashing, so it would be more convenient for
     the developers.
   </summary>
-  <token key="ErrorBucket">
-    <variant name="Error"/>
-    <variant name="RecreateAuthFactorError.Pin"/>
-    <variant name="UssMigrationError"/>
-  </token>
+  <token key="ErrorOperation" variants="CryptohomeErrorOperations"/>
+  <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="Cryptohome.{ErrorBucket}.LeafErrorWithTPM"
+<histogram name="Cryptohome.{ErrorOperation}{AuthFactorType}.LeafErrorWithTPM"
     enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-11-01">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1131,7 +1164,7 @@ chromium-metrics-reviews@google.com.
     addition, we might also report success values in this histogram. Success
     values map to zero.
 
-    This histogram is also separated into several {ErrorBucket}s. The most
+    This histogram is also separated into several error buckets. The most
     standard error bucket is 'Error', which collects the errors populated in
     dbus responses. Other buckets are errors we collect in some subrountines,
     like migration. Migration errors are not surfaced to dbus responses, but
@@ -1142,11 +1175,8 @@ chromium-metrics-reviews@google.com.
     the error, and this histogram doesn't involve hashing, so it would be more
     convenient for the developers.
   </summary>
-  <token key="ErrorBucket">
-    <variant name="Error"/>
-    <variant name="RecreateAuthFactorError.Pin"/>
-    <variant name="UssMigrationError"/>
-  </token>
+  <token key="ErrorOperation" variants="CryptohomeErrorOperations"/>
+  <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
 <histogram name="CryptohomeClient" units="ms" expires_after="2023-07-24">

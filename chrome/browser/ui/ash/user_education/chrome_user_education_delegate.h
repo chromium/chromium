@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_USER_EDUCATION_CHROME_USER_EDUCATION_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/user_education/user_education_delegate.h"
 #include "base/scoped_observation.h"
@@ -32,6 +33,8 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
       user_education::HelpBubbleParams help_bubble_params,
       ui::ElementIdentifier element_id,
       ui::ElementContext element_context) override;
+  absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
+      const std::string& app_id) const override;
   void RegisterTutorial(
       const AccountId& account_id,
       ash::TutorialId tutorial_id,

@@ -66,6 +66,11 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // Testing Accessors.
@@ -84,9 +89,6 @@ class SavedTabGroupModelListener : public BrowserListObserver,
       local_tab_group_listeners_;
   raw_ptr<SavedTabGroupModel> model_ = nullptr;
   raw_ptr<Profile> profile_;
-
-  // Use to prevent double-observation. See https://crbug.com/1426389.
-  std::unordered_set<Browser*> observed_browsers_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_LISTENER_H_

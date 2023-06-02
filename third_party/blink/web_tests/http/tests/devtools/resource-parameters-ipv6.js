@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests that resources panel shows form data parameters.\n`);
-  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.navigatePromise('http://[::1]:8000/devtools/resources/inspected-page.html');
   await TestRunner.evaluateInPagePromise(`
       document.write(\`<form target="target-iframe" method="POST" action="http://[::1]:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&amp;queryParam2=#fragmentParam1=fragmentValue1&amp;fragmentParam2=">

@@ -52,4 +52,4 @@ class BruschettaDownloadClient : public download::Client {
 
 }  // namespace bruschetta
 
-#endif
+#endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_DOWNLOAD_CLIENT_H_

@@ -51,8 +51,8 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
       bool updates_from_webstore_or_empty_update_url) override;
   void UninstallExtension(const std::string& id,
                           const std::string& profile_user_name,
-                          const base::FilePath& local_install_dir,
-                          const base::FilePath& extension_root,
+                          const base::FilePath& extensions_install_dir,
+                          const base::FilePath& extension_dir_to_delete,
                           const base::FilePath& profile_dir) override;
 
   // Return shared install dir.

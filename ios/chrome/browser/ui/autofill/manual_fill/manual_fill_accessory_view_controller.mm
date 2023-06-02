@@ -163,6 +163,13 @@ static NSTimeInterval MFAnimationDuration = 0.2;
       defaultSymbol
           ? DefaultSymbolWithConfiguration(symbolName, imageConfiguration)
           : CustomSymbolWithConfiguration(symbolName, imageConfiguration);
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+    button.configuration = buttonConfiguration;
+  }
+
   [button setImage:image forState:UIControlStateNormal];
   button.tintColor = IconActiveTintColor();
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -206,17 +213,11 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   self.passwordButton.hidden = self.isPasswordButtonHidden;
 
-  // TODO(crbug.com/1418068):Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets =
-          NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
-      self.passwordButton.configuration = buttonConfiguration;
-    }
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        self.passwordButton.configuration;
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
+    self.passwordButton.configuration = buttonConfiguration;
   } else {
     UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
     SetContentEdgeInsets(self.passwordButton, contentEdgeInsets);

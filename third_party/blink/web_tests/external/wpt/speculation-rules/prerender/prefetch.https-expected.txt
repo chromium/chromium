@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Prerender navigation requests should use prefetched results assert_equals: Network request count expected "1" but got "2"
-Harness: the test ran to completion.
-

@@ -50,7 +50,8 @@ OwnerSettingsServiceAsh* OwnerSettingsServiceAshFactory::GetForBrowserContext(
 
 // static
 OwnerSettingsServiceAshFactory* OwnerSettingsServiceAshFactory::GetInstance() {
-  return base::Singleton<OwnerSettingsServiceAshFactory>::get();
+  static base::NoDestructor<OwnerSettingsServiceAshFactory> instance;
+  return instance.get();
 }
 
 // static

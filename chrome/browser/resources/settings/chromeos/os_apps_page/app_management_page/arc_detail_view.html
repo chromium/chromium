@@ -53,14 +53,20 @@
       </template>
     </div>
   </div>
+  <app-management-more-permissions-item id="managePermissions"
+    hidden$="[[!hasReadOnlyPermissions_]]"
+    class="permission-card-row separated-row" app="[[app_]]"
+    more-permissions-label="$i18n{appManagementArcManagePermissionsLabel}">
+  </app-management-more-permissions-item>
   <app-management-resize-lock-item
       id="resizeLockSetting"
       class="permission-card-row separated-row row-with-description"
       app="[[app_]]">
   </app-management-resize-lock-item>
   <app-management-more-permissions-item id="moreSettings"
+      hidden$="[[hasReadOnlyPermissions_]]"
       class="permission-card-row separated-row" app="[[app_]]"
-      more-permissions-label="[[getMorePermissionsLabel_()]]">
+      more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
   </app-management-more-permissions-item>
   <app-management-supported-links-item
       id="supportedLinksSetting"

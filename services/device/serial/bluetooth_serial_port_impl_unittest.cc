@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -22,7 +23,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,8 +96,8 @@ MojoResult ReadConsumerData(mojo::ScopedDataPipeConsumerHandle& consumer,
 class BluetoothSerialPortImplTest : public testing::Test {
  public:
   BluetoothSerialPortImplTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableBluetoothSerialPortProfileInSerialApi);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
   }
   BluetoothSerialPortImplTest(const BluetoothSerialPortImplTest&) = delete;
   BluetoothSerialPortImplTest& operator=(const BluetoothSerialPortImplTest&) =
@@ -159,6 +160,7 @@ class BluetoothSerialPortImplTest : public testing::Test {
   std::unique_ptr<MockBluetoothDevice> mock_device_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

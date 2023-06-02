@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/top_shortcuts_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -14,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -31,6 +33,8 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   ~TopShortcutsViewTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndDisableFeature(features::kQsRevamp);
     NoSessionAshTestBase::SetUp();
 
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
@@ -82,6 +86,7 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   }
 
  private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;

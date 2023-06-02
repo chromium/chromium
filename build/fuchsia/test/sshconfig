@@ -1,0 +1,39 @@
+# Configure port 8022 for connecting to a device with the local address.
+# This makes it possible to forward 8022 to a device connected remotely.
+# The fuchsia private key is used for the identity.
+Host 127.0.0.1
+  Port 8022
+Host ::1
+  Port 8022
+Host *
+# Turn off refusing to connect to hosts whose key has changed
+StrictHostKeyChecking no
+CheckHostIP no
+# Disable recording the known hosts
+UserKnownHostsFile=/dev/null
+# Do not forward auth agent connection to remote, no X11
+ForwardAgent no
+ForwardX11 no
+# Connection timeout in seconds
+ConnectTimeout=10
+# Check for server alive in seconds, max count before disconnecting
+ServerAliveInterval 1
+ServerAliveCountMax 10
+# Try to keep the master connection open to speed reconnecting.
+ControlMaster auto
+ControlPersist yes
+# When expanded, the ControlPath below cannot have more than 90 characters
+# (total of 108 minus 18 used by a random suffix added by ssh).
+# '%C' expands to 40 chars and there are 9 fixed chars, so '~' can expand to
+# up to 41 chars, which is a reasonable limit for a user's home in most
+# situations. If '~' expands to more than 41 chars, the ssh connection
+# will fail with an error like:
+#     unix_listener: path "..." too long for Unix domain socket
+# A possible solution is to use /tmp instead of ~, but it has
+# its own security concerns.
+ControlPath=~/.ssh/fx-%C
+# Connect with user, use the identity specified.
+User fuchsia
+IdentitiesOnly yes
+IdentityFile ~/.ssh/fuchsia_ed25519
+GSSAPIDelegateCredentials no

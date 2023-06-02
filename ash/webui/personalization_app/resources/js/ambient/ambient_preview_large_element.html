@@ -29,11 +29,11 @@
     height: 100%;
   }
 
-  #container.zero-state-disabled {
+  #container.ambient-mode-enabled {
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
-  :host-context(body.jelly-enabled) #container.zero-state-disabled {
+  :host-context(body.jelly-enabled) #container.ambient-mode-enabled {
     grid-template-areas:
       '. slot          .'
       '. image         .'
@@ -66,10 +66,6 @@
     color: var(--cros-text-color-primary);
     font: var(--personalization-app-label-font);
     margin: 12px 0;
-  }
-
-  #ambientLabel.enterprise {
-    opacity: var(--cros-disabled-opacity);
   }
 
   #messageContainer {
@@ -146,18 +142,6 @@
   #imageContainer,
   #imagePlaceholder {
     grid-area: image;
-  }
-
-  #imageContainer[ambient-mode-managed] img.disabled {
-    opacity: var(--cros-disabled-opacity);
-  }
-
-  #imageContainer img.disabled {
-    /**
-     * Use 50% for image instead of default cros-disabled-opacity.
-     * TODO(b/236415314) get this into design system as a semantic value.
-     */
-    opacity: 50%;
   }
 
   #albumTitle {
@@ -300,6 +284,10 @@
     border-radius: 16px;
   }
 
+  .help-link {
+    color: var(--text-color-action);
+    text-decoration: none;
+  }
 </style>
 <div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
   <!-- Use inline svg in order to reference the clip path by url() -->
@@ -317,7 +305,7 @@
   </svg>
   <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
     <template is="dom-if" if="[[!isAmbientModeAllowed_]]">
-      <div id="ambientLabel" class="enterprise">
+      <div id="ambientLabel" class="disabled">
         <h2>$i18n{screensaverLabel}</h2>
         <cr-icon-button disabled
             iron-icon="cr:chevron-right">
@@ -337,8 +325,9 @@
           $i18n{ambientModeMainPageEnterpriseUserMessage}
         </span>
         <cr-button class="primary action-button">
-          <!-- TODO(b/258838122): on-click behavior -->
-          <div>$i18n{ambientModeLearnMoreLabel}</div>
+          <!-- TODO(b/282827734): create new p-link for the support page -->
+          <a class="help-link" href="https://support.google.com/chromebook?p=wallpaper_fileerror"
+              target="_blank">$i18n{ambientModeLearnMoreLabel}</a>
         </cr-button>
       </div>
     </template>

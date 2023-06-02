@@ -766,8 +766,6 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   });
 
   test('validDialog', async function() {
-    // Asserting very basic functionality for now.
-    // TODO(b/277180677): add more tests as functionality is implemented.
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     assertTrue(!!page.shadowRoot!.querySelector('div'));

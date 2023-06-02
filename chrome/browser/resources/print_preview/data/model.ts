@@ -598,7 +598,9 @@ export class PrintPreviewModelElement extends PolymerElement {
       'updateSettingsFromDestination_(destination.capabilities)',
       'updateSettingsAvailabilityFromDocumentSettings_(' +
           'documentSettings.isModifiable, documentSettings.isFromArc,' +
-          'documentSettings.hasCssMediaStyles, documentSettings.hasSelection)',
+          'documentSettings.allPagesHaveCustomSize,' +
+          'documentSettings.allPagesHaveCustomOrientation,' +
+          'documentSettings.hasSelection)',
       'updateHeaderFooterAvailable_(' +
           'margins, settings.margins.value, settings.mediaSize.value)',
 
@@ -807,7 +809,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     const isSaveAsPDF = this.destination.type === PrinterType.PDF_PRINTER;
     const knownSizeToSaveAsPdf = isSaveAsPDF &&
         (!this.documentSettings.isModifiable ||
-         this.documentSettings.hasCssMediaStyles);
+         this.documentSettings.allPagesHaveCustomSize);
     const scalingAvailable =
         !knownSizeToSaveAsPdf && !this.documentSettings.isFromArc;
     this.setSettingPath_('scaling.available', scalingAvailable);
@@ -944,7 +946,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (!caps || !caps.page_orientation || !caps.page_orientation.option ||
         (!this.documentSettings.isModifiable &&
          !this.documentSettings.isFromArc) ||
-        this.documentSettings.hasCssMediaStyles) {
+        this.documentSettings.allPagesHaveCustomOrientation) {
       return false;
     }
     let hasAutoOrPortraitOption = false;

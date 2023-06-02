@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -55,6 +56,16 @@ GFX_EXPORT void GetVisibleMargins(const ImageSkia& image,
                                   int* left,
                                   int* right);
 
+// Returns a resized Image from the provided Image.
+// The resizing operation uses skia::ImageOperations::RESIZE_GOOD quality.
+// This function is safe to use with any valid Image and gfx::Size objects.
+// Returns:
+// - If the provided image has a scale other than 1.0f, or if it already has the
+//   requested size, the function returns the original Image object unchanged.
+// - Otherwise, it returns a new Image object containing a resized version of
+//   the original.
+GFX_EXPORT Image ResizedImage(const Image& image, const gfx::Size& size);
+
 // Downsizes the image if its area exceeds kSearchByImageMaxImageArea AND
 // (either its width exceeds kSearchByImageMaxImageWidth OR its height exceeds
 // kSearchByImageMaxImageHeight) in preparation for searching.
@@ -67,12 +78,6 @@ GFX_EXPORT Image ResizedImageForMaxDimensions(const Image& image,
                                               int max_width,
                                               int max_height,
                                               int max_area);
-
-Image ResizedImageForSearchByImageSkiaRepresentation(const Image& image);
-Image ResizedImageForMaxDimensionsSkiaRepresentation(const Image& image,
-                                                     int max_width,
-                                                     int max_height,
-                                                     int max_area);
 
 }  // namespace gfx
 

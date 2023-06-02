@@ -8,7 +8,7 @@
 <body>
 <script>
 attribution_reporting_promise_test(async t => {
-  const otherReportingOrigin = get_host_info().HTTPS_REMOTE_ORIGIN;
+  const otherReportingOrigin = get_host_info().HTTPS_NOTSAMESITE_ORIGIN;
 
   registerAttributionSrcByImg([
     createRedirectChain([

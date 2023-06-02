@@ -22,7 +22,8 @@ MenuManager* MenuManagerFactory::GetForBrowserContext(
 
 // static
 MenuManagerFactory* MenuManagerFactory::GetInstance() {
-  return base::Singleton<MenuManagerFactory>::get();
+  static base::NoDestructor<MenuManagerFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -44,7 +45,7 @@ MenuManagerFactory::MenuManagerFactory()
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-MenuManagerFactory::~MenuManagerFactory() {}
+MenuManagerFactory::~MenuManagerFactory() = default;
 
 KeyedService* MenuManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

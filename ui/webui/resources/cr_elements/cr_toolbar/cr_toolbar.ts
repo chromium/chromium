@@ -108,9 +108,9 @@ export class CrToolbarElement extends PolymerElement {
     return this.$.search;
   }
 
-  private onMenuTap_() {
+  private onMenuClick_() {
     this.dispatchEvent(new CustomEvent(
-        'cr-toolbar-menu-tap', {bubbles: true, composed: true}));
+        'cr-toolbar-menu-click', {bubbles: true, composed: true}));
   }
 
   focusMenuButton() {

@@ -24,6 +24,7 @@ public class SerializedCriticalPersistedTabData implements PersistedTabDataResul
     private final int mThemeColor;
     private final @Nullable @TabLaunchType Integer mLaunchTypeAtCreation;
     private final @TabUserAgent int mUserAgent;
+    private final long mLastNavigationCommittedTimestampMillis;
 
     /**
      * @param parentId parent identifier for a {@link Tab}
@@ -37,11 +38,13 @@ public class SerializedCriticalPersistedTabData implements PersistedTabDataResul
      * @param themeColor theme color of the {@link Tab}
      * @param launchTypeAtCreation the way the {@link Tab} was launched
      * @param userAgent user agent for the {@link Tab}
+     * @param lastNavigationCommittedTimestampMillis time of the last committed navigation in the
+     *         {@link Tab}
      */
     protected SerializedCriticalPersistedTabData(int parentId, int rootId, long timestampMillis,
             WebContentsState webContentsState, String openerAppId, int webContentsStateVersion,
             int themeColor, @Nullable @TabLaunchType Integer launchTypeAtCreation,
-            @TabUserAgent int userAgent) {
+            @TabUserAgent int userAgent, long lastNavigationCommittedTimestampMillis) {
         mParentId = parentId;
         mRootId = rootId;
         mTimestampMillis = timestampMillis;
@@ -51,6 +54,7 @@ public class SerializedCriticalPersistedTabData implements PersistedTabDataResul
         mThemeColor = themeColor;
         mLaunchTypeAtCreation = launchTypeAtCreation;
         mUserAgent = userAgent;
+        mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
     }
 
     protected int getParentId() {
@@ -95,5 +99,9 @@ public class SerializedCriticalPersistedTabData implements PersistedTabDataResul
 
     protected @TabUserAgent int getUserAgent() {
         return mUserAgent;
+    }
+
+    protected long getLastNavigationCommittedTimestampMillis() {
+        return mLastNavigationCommittedTimestampMillis;
     }
 }

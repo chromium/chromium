@@ -18,21 +18,15 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-class SavedTabGroup;
-
 // A SavedTabGroupTab stores the url, title, and favicon of a tab.
 class SavedTabGroupTab {
  public:
-  // Used to denote groups that have not been given a position.
-  static constexpr int kUnsetPosition = -1;
-
   SavedTabGroupTab(const GURL& url,
                    const std::u16string& title,
                    const base::Uuid& group_guid,
-                   SavedTabGroup* group = nullptr,
+                   absl::optional<size_t> position,
                    absl::optional<base::Uuid> saved_tab_guid = absl::nullopt,
                    absl::optional<base::Token> local_tab_id = absl::nullopt,
-                   absl::optional<int> position = absl::nullopt,
                    absl::optional<base::Time>
                        creation_time_windows_epoch_micros = absl::nullopt,
                    absl::optional<base::Time> update_time_windows_epoch_micros =
@@ -47,8 +41,7 @@ class SavedTabGroupTab {
   const absl::optional<base::Token> local_tab_id() const {
     return local_tab_id_;
   }
-  int position() const { return position_; }
-  const SavedTabGroup* saved_tab_group() const { return saved_tab_group_; }
+  absl::optional<size_t> position() const { return position_; }
   const GURL& url() const { return url_; }
   const std::u16string& title() const { return title_; }
   const absl::optional<gfx::Image>& favicon() const { return favicon_; }
@@ -60,11 +53,6 @@ class SavedTabGroupTab {
   }
 
   // Mutators.
-  SavedTabGroupTab& SetSavedTabGroup(SavedTabGroup* saved_tab_group) {
-    saved_tab_group_ = saved_tab_group;
-    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
-    return *this;
-  }
   SavedTabGroupTab& SetURL(GURL url) {
     url_ = url;
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
@@ -85,7 +73,7 @@ class SavedTabGroupTab {
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
-  SavedTabGroupTab& SetPosition(int position) {
+  SavedTabGroupTab& SetPosition(size_t position) {
     position_ = position;
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
@@ -115,6 +103,9 @@ class SavedTabGroupTab {
   // Converts this `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
 
+  // Returns true iff syncable data fields in `this` and `other` are equivalent.
+  bool IsSyncEquivalent(const SavedTabGroupTab& other) const;
+
  private:
   // The ID used to represent the tab in sync.
   base::Uuid saved_tab_guid_;
@@ -126,13 +117,9 @@ class SavedTabGroupTab {
   absl::optional<base::Token> local_tab_id_;
 
   // The current position of the tab in relation to all other tabs in the group.
-  // A value of kUnsetPosition means that the group was not assigned a position
-  // and will be assigned one when it is added into its saved group.
-  int position_;
-
-  // The Group which owns this tab, this can be null if sync hasn't sent the
-  // group over yet.
-  raw_ptr<SavedTabGroup> saved_tab_group_;
+  // A value of nullopt means that the group was not assigned a position and
+  // will be assigned one when it is added into its saved group.
+  absl::optional<size_t> position_;
 
   // The link to navigate with.
   GURL url_;

@@ -113,6 +113,10 @@ source_set("chromeos") {
     "policy/dlp/dialogs/dlp_warn_notifier.h",
     "policy/dlp/dialogs/files_policy_dialog.cc",
     "policy/dlp/dialogs/files_policy_dialog.h",
+    "policy/dlp/dialogs/files_policy_error_dialog.cc",
+    "policy/dlp/dialogs/files_policy_error_dialog.h",
+    "policy/dlp/dialogs/files_policy_warn_dialog.cc",
+    "policy/dlp/dialogs/files_policy_warn_dialog.h",
     "policy/dlp/dialogs/policy_dialog_base.cc",
     "policy/dlp/dialogs/policy_dialog_base.h",
     "policy/dlp/dlp_clipboard_bubble_constants.h",
@@ -143,6 +147,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_file_destination.h",
     "policy/dlp/dlp_files_controller.cc",
     "policy/dlp/dlp_files_controller.h",
+    "policy/dlp/dlp_files_utils.cc",
+    "policy/dlp/dlp_files_utils.h",
     "policy/dlp/dlp_histogram_helper.cc",
     "policy/dlp/dlp_histogram_helper.h",
     "policy/dlp/dlp_notification_helper.cc",
@@ -177,6 +183,8 @@ source_set("chromeos") {
     "video_conference/video_conference_manager_client_common.h",
     "video_conference/video_conference_media_listener.cc",
     "video_conference/video_conference_media_listener.h",
+    "video_conference/video_conference_ukm_helper.cc",
+    "video_conference/video_conference_ukm_helper.h",
     "video_conference/video_conference_web_app.cc",
     "video_conference/video_conference_web_app.h",
 
@@ -277,6 +285,7 @@ source_set("chromeos") {
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/sync_device_info",
+    "//components/ukm",
     "//components/vector_icons",
     "//content/public/common",
     "//crypto",
@@ -369,6 +378,8 @@ source_set("chromeos") {
       "policy/dlp/dlp_browser_helper_lacros.h",
       "policy/dlp/dlp_content_manager_lacros.cc",
       "policy/dlp/dlp_content_manager_lacros.h",
+      "policy/dlp/dlp_files_controller_lacros.cc",
+      "policy/dlp/dlp_files_controller_lacros.h",
       "reporting/device_reporting_settings_lacros.cc",
       "reporting/device_reporting_settings_lacros.h",
       "reporting/metric_reporting_manager_lacros.cc",
@@ -465,11 +476,14 @@ source_set("unit_tests") {
     "policy/dlp/dlp_copy_or_move_hook_delegate_unittest.cc",
     "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
     "policy/dlp/dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
+    "policy/dlp/dlp_files_controller_unittest.cc",
+    "policy/dlp/dlp_files_utils_unittest.cc",
     "policy/dlp/dlp_reporting_manager_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
     "reporting/network/network_bandwidth_sampler_unittest.cc",
     "reporting/user_reporting_settings_unittest.cc",
+    "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -488,6 +502,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise/data_controls:data_controls",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sharing/proto",
@@ -516,6 +531,7 @@ source_set("unit_tests") {
     "//components/reporting/util:status",
     "//components/reporting/util:test_callbacks_support",
     "//components/strings:components_strings",
+    "//components/ukm",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
@@ -524,6 +540,7 @@ source_set("unit_tests") {
     "//extensions/common",
     "//extensions/common:common_constants",
     "//storage/browser",
+    "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
@@ -598,6 +615,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_lacros) {
     sources += [
+      "policy/dlp/dlp_files_controller_lacros_unittest.cc",
       "reporting/device_reporting_settings_lacros_unittest.cc",
       "reporting/metric_reporting_manager_lacros_unittest.cc",
     ]

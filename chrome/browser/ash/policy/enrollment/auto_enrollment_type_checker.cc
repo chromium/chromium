@@ -12,11 +12,13 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -60,7 +62,7 @@ std::string FRERequirementToString(
 }
 
 // Kill switch config request parameters.
-const net::NetworkTrafficAnnotationTag kKSConfigTrafficAnnotation =
+constexpr net::NetworkTrafficAnnotationTag kKSConfigTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "unified_state_determination_kill_switch",
         R"(
@@ -90,13 +92,17 @@ const net::NetworkTrafficAnnotationTag kKSConfigTrafficAnnotation =
               setting: "This feature cannot be controlled by Chrome settings."
               chrome_policy {}
             })");
-const char kKSConfigUrl[] =
+constexpr char kKSConfigUrl[] =
     "https://www.gstatic.com/chromeos-usd-experiment/v1.json";
-const base::TimeDelta kKSConfigFetchTimeout = base::Seconds(1);
-const int kKSConfigFetchRetries = 4;
-const size_t kKSConfigMaxSize = 1024;  // 1KB
-const char kKSConfigFetchMethod[] = "GET";
-const char kKSConfigDisableUpToVersionKey[] = "disable_up_to_version";
+constexpr base::TimeDelta kKSConfigFetchTimeout = base::Seconds(1);
+constexpr int kKSConfigFetchTries = 4;
+constexpr size_t kKSConfigMaxSize = 1024;  // 1KB
+constexpr char kKSConfigFetchMethod[] = "GET";
+constexpr char kKSConfigDisableUpToVersionKey[] = "disable_up_to_version";
+constexpr int kUMAKSFetchNumTriesMinValue = 1;
+constexpr int kUMAKSFetchNumTriesExclusiveMaxValue = 51;
+constexpr int kUMAKSFetchNumTriesBuckets =
+    kUMAKSFetchNumTriesExclusiveMaxValue - kUMAKSFetchNumTriesMinValue;
 
 // This value represents current version of the code. After we have enabled kill
 // switch for a particular version, we can increment it after fixing the logic.
@@ -107,6 +113,13 @@ const int kCodeVersion = 0;
 
 // When set to true, unified state determination is disabled.
 absl::optional<bool> g_unified_state_determination_kill_switch;
+
+void ReportKillSwitchFetchTries(int tries) {
+  base::UmaHistogramCustomCounts(kUMAStateDeterminationKillSwitchFetchNumTries,
+                                 tries, kUMAKSFetchNumTriesMinValue,
+                                 kUMAKSFetchNumTriesExclusiveMaxValue,
+                                 kUMAKSFetchNumTriesBuckets);
+}
 
 void ParseKSConfig(base::OnceClosure init_callback,
                    const std::string& response) {
@@ -134,10 +147,16 @@ void ParseKSConfig(base::OnceClosure init_callback,
 void FetchKSConfig(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::OnceClosure init_callback,
-    int retries_left,
+    int tries_left,
     std::unique_ptr<network::SimpleURLLoader> loader = nullptr,
     std::unique_ptr<std::string> response = nullptr) {
-  if (!response && retries_left) {
+  if (loader) {
+    base::UmaHistogramSparse(
+        kUMAStateDeterminationKillSwitchFetchNetworkErrorCode,
+        -loader->NetError());
+  }
+
+  if (!response && tries_left) {
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = GURL(kKSConfigUrl);
     request->method = kKSConfigFetchMethod;
@@ -152,7 +171,7 @@ void FetchKSConfig(
     loader_ptr->DownloadToString(
         loader_factory.get(),
         base::BindOnce(FetchKSConfig, loader_factory, std::move(init_callback),
-                       retries_left - 1, std::move(loader)),
+                       tries_left - 1, std::move(loader)),
         kKSConfigMaxSize);
     return;
   }
@@ -162,12 +181,14 @@ void FetchKSConfig(
   if (!response) {
     LOG(ERROR) << "Kill switch config request failed with code "
                << loader->NetError();
+    ReportKillSwitchFetchTries(kKSConfigFetchTries);
     std::move(init_callback).Run();
     return;
   }
 
   VLOG(1) << "Received kill switch config response after "
-          << (kKSConfigFetchRetries - retries_left) << " tries: " << *response;
+          << (kKSConfigFetchTries - tries_left) << " tries: " << *response;
+  ReportKillSwitchFetchTries(kKSConfigFetchTries - tries_left);
   ParseKSConfig(std::move(init_callback), *response);
 }
 
@@ -184,8 +205,7 @@ bool IsUnifiedStateDeterminationDisabledByKillSwitch() {
 void AutoEnrollmentTypeChecker::Initialize(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     base::OnceClosure init_callback) {
-  FetchKSConfig(loader_factory, std::move(init_callback),
-                kKSConfigFetchRetries);
+  FetchKSConfig(loader_factory, std::move(init_callback), kKSConfigFetchTries);
 }
 
 // static

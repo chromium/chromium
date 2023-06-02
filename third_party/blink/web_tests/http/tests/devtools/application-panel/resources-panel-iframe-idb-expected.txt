@@ -18,9 +18,9 @@ Storage
   http://127.0.0.1:8000/
   http://devtools.oopif.test:8000/^0http://127.0.0.1
  IndexedDB
-  Database-iframe - http://devtools.oopif.test:8000/^0http://127.0.0.1
+  Database-iframe
    Database-iframe
-  Database-main-frame - http://127.0.0.1:8000/
+  Database-main-frame
  Web SQL
  Cookies
   http://127.0.0.1:8000
@@ -63,7 +63,7 @@ Storage
  Session Storage
   http://127.0.0.1:8000/
  IndexedDB
-  Database-main-frame - http://127.0.0.1:8000/
+  Database-main-frame
  Web SQL
  Cookies
   http://127.0.0.1:8000
@@ -105,8 +105,8 @@ Storage
   http://127.0.0.1:8000/
   http://devtools.oopif.test:8000/^0http://127.0.0.1
  IndexedDB
-  Database-main-frame - http://127.0.0.1:8000/
-  Database-iframe - http://devtools.oopif.test:8000/^0http://127.0.0.1
+  Database-main-frame
+  Database-iframe
    Database-iframe
  Web SQL
  Cookies

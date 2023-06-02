@@ -197,6 +197,8 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kToggleMessageCenterBubble},
     {true, ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kShowStylusTools},
+    {true, ui::VKEY_X, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kStopScreenRecording},
     {true, ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kToggleSystemTrayBubble},
     // Until we have unified settings and notifications the "hamburger"

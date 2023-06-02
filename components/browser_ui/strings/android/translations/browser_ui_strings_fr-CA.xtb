@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Autoriser les témoins tiers</translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4434045419905280838">Fenêt. context. et redirections</translation>
-<translation id="4440642537584213025">Développer <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Désactivez le son sur un site précis.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# témoin}one{# témoin}other{# témoins}}</translation>
 <translation id="4478158430052450698">Faciliter la personnalisation du zoom pour différents sites</translation>
@@ -311,6 +310,7 @@
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6653342741369270081">Appuyez sur le bouton de retour pour quitter le mode plein écran.</translation>
 <translation id="6689172468748959065">Photos de profils</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
 <translation id="6722828510648505498">Bloquez les invites de connexion provenant de services de vérification d'identité.</translation>
@@ -371,6 +371,7 @@
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7882806643839505685">Autorisez le son sur un site précis.</translation>
 <translation id="789180354981963912">Bloquer les témoins tiers en navigation privée :</translation>
+<translation id="7895868624847501462">Cette action effacera toutes les données locales, y compris les témoins, et réinitialisera toutes les autorisations pour <ph name="DOMAIN" /> et tous les sites qui y sont subordonnés</translation>
 <translation id="7940722705963108451">Me le rappeler</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> peut voir votre activité dans le groupe}one{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> peut voir votre activité dans le groupe}other{<ph name="FPS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="FPS_OWNER" /> peut voir votre activité dans le groupe}}</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
@@ -396,6 +397,7 @@
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8300705686683892304">Gérés par une application</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
+<translation id="8338445138528827481">Cette action effacera toutes les données locales, y compris les témoins, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Vous pouvez zoomer ou dézoomer sur les sites que vous visitez</translation>
 <translation id="8372893542064058268">Autorisez la synchronisation en arrière-plan pour un site en particulier.</translation>
 <translation id="8376384591331888629">Y compris les témoins tiers sur ce site</translation>

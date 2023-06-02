@@ -153,6 +153,10 @@ namespace feature_params {
 const base::FeatureParam<bool> kUseStrongerPromptLanguage{
     &features::kOneTimePermission, "use_stronger_prompt_language", false};
 
+const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout{
+    &features::kOneTimePermission, "one_time_permission_timeout",
+    base::Minutes(5)};
+
 const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_url", ""};
@@ -171,9 +175,27 @@ const base::FeatureParam<double>
 
 #if !BUILDFLAG(IS_ANDROID)
 // Specifies the `trigger_id` of the HaTS survey to trigger immediately after
-// the user has interacted with a permission prompt.
+// the user has interacted with a permission prompt. Multiple values can be
+// configured by providing a comma separated list. If this is done, a
+// corresponding probability_vector and request_type_filter of equal length must
+// be configured. If this is done, each trigger_id applies to the request type
+// at the corresponding position in the request_type_filter and has probability
+// of probability p * hats_p of triggering, where p is the probability at the
+// corresponding position in the probability_vector and hats_p is the
+// probability configured for the HaTS survey.
 const base::FeatureParam<std::string> kPermissionsPromptSurveyTriggerId{
     &permissions::features::kPermissionsPromptSurvey, "trigger_id", ""};
+
+// If multiple trigger ids are configured, the trigger id at position p only
+// triggers for the request type at position p of the request type filter,
+// and calls the HaTS service with the probability at position p in the
+// probability vector. The HaTS service also has a feature parameter called
+// probability. The probability vector is a secondary probability to
+// distribute surveys among the multiple triggers, while the HaTS service
+// probability is the probability of triggering overall.
+const base::FeatureParam<std::string> kProbabilityVector{
+    &permissions::features::kPermissionsPromptSurvey, "probability_vector",
+    "1.0"};
 
 // Specifies the type of permission request for which the prompt HaTS
 // survey is triggered (as long as other filters are also satisfied). Valid

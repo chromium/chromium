@@ -69,8 +69,7 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                                              WaylandConnection* connection)
     : WaylandWindow(delegate, connection),
       state_(PlatformWindowState::kNormal),
-      screen_coordinates_enabled_(
-          features::IsWaylandScreenCoordinatesEnabled()) {
+      screen_coordinates_enabled_(kDefaultScreenCoordinateEnabled) {
   // Set a class property key, which allows |this| to be used for interactive
   // events, e.g. move or resize.
   SetWmMoveResizeHandler(this, AsWmMoveResizeHandler());
@@ -90,11 +89,15 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
     LOG(ERROR) << "Failed to create a ShellToplevel.";
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   screen_coordinates_enabled_ &= shell_toplevel_->SupportsScreenCoordinates();
   screen_coordinates_enabled_ &= !use_native_frame_;
 
-  if (screen_coordinates_enabled_)
+  if (screen_coordinates_enabled_) {
     shell_toplevel_->EnableScreenCoordinates();
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   shell_toplevel_->SetAppId(window_unique_id_);

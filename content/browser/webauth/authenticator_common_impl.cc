@@ -364,8 +364,7 @@ absl::optional<device::CredProtectRequest> ProtectionPolicyToCredProtect(
       if (make_credential_options.resident_key ==
               device::ResidentKeyRequirement::kRequired &&
           make_credential_options.user_verification ==
-              device::UserVerificationRequirement::kPreferred &&
-          base::FeatureList::IsEnabled(device::kWebAuthnCredProtectThree)) {
+              device::UserVerificationRequirement::kPreferred) {
         return device::CredProtectRequest::kUVRequired;
       }
       if (make_credential_options.resident_key !=

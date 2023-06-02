@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="2736805085127235148">Notifikasi Chrome saat ini dinonaktifkan di setelan perangkat.</translation>
 <translation id="2767464022270041271">Tidak ada sandi tersimpan. Pengelola Sandi Google dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
+<translation id="2840432500933227975">Buka Setelan Chrome di iOS, lalu ketuk "Aplikasi Default Browser" dan pilih Chrome.</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chrome Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Artinya, Chrome akan selalu meminta situs seluler.</translation>
 <translation id="3706101708757577809">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="3720541637541300822">Kunci Tab Samaran Saat Anda Menutup Chrome</translation>
+<translation id="3827545470516145620">Anda mendapatkan perlindungan keamanan standar di perangkat ini</translation>
 <translation id="384394811301901750">Google Chrome saat ini tidak dapat menggunakan kamera</translation>
 <translation id="3980220367029651214">Anda berganti akun sinkronisasi dari <ph name="USER_EMAIL1" /> ke <ph name="USER_EMAIL2" />. Data Chrome yang sudah ada dikelola oleh <ph name="DOMAIN" />. Tindakan ini akan menghapus data Anda dari perangkat berikut, namun data Anda akan tetap tersedia di <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasi mengharuskan Anda tetap logout dari Chrome.</translation>
@@ -150,7 +152,6 @@ Hal-hal yang perlu dipertimbangkan:
   • Jika Chrome mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
 
   • Jika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Anda mendapatkan perlindungan keamanan standar untuk profil Chrome ini</translation>
 <translation id="9112744793181547300">Setel Chrome sebagai Default?</translation>
 <translation id="9122931302567044771">Artinya, Chrome akan selalu meminta situs desktop.</translation>
 </translationbundle>

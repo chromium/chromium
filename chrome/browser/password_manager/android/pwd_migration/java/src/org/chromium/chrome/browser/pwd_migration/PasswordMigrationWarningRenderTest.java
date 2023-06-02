@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
@@ -14,6 +16,7 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,15 +30,19 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
 import java.util.Arrays;
@@ -57,17 +64,24 @@ public class PasswordMigrationWarningRenderTest {
 
     @Mock
     private Callback<Integer> mDismissCallback;
+    @Mock
+    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
 
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
     private PropertyModel mModel;
 
+    @ClassRule
+    public static DisableAnimationsTestRule sDisableAnimationsRule =
+            new DisableAnimationsTestRule();
+
+    @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -86,7 +100,8 @@ public class PasswordMigrationWarningRenderTest {
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
-            mModel = PasswordMigrationWarningProperties.createDefaultModel(mDismissCallback);
+            mModel = PasswordMigrationWarningProperties.createDefaultModel(
+                    mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(
                     mActivityTestRule.getActivity(), mBottomSheetController);
             PropertyModelChangeProcessor.create(mModel, mView,
@@ -110,13 +125,43 @@ public class PasswordMigrationWarningRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testShowsPasswordMigrationWwarningFirstPage() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1449036")
+    public void testShowsPasswordMigrationWarningFirstPage() throws Exception {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
-
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
+        // The test waits for the fragment containing the button to be attached.
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                     R.id.password_migration_more_options_button));
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.pwd_migration_warning_sheet);
+
         mRenderTestRule.render(bottomSheetView, "pwd_migration_warning_first_page");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1448525")
+    public void testShowsPasswordMigrationWarningSecondPageWithNoUserSignedIn() throws Exception {
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
+        // The test waits for the fragment containing the button to be attached.
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.password_migration_cancel_button)
+                        != null);
+
+        View bottomSheetView =
+                mActivityTestRule.getActivity().findViewById(R.id.pwd_migration_warning_sheet);
+        RadioButtonWithDescription signInOrSyncButton =
+                bottomSheetView.findViewById(R.id.radio_sign_in_or_sync);
+        pollUiThread(() -> signInOrSyncButton.isChecked());
+
+        mRenderTestRule.render(
+                bottomSheetView, "pwd_migration_warning_second_page_no_user_signed_in");
     }
 }

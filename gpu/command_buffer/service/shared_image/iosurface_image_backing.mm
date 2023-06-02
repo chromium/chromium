@@ -8,13 +8,15 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
+#include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -123,8 +125,7 @@ std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
   graphite_textures.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
     SkISize sk_size = gfx::SizeToSkISize(format.GetPlaneSize(plane, size));
-    skgpu::graphite::BackendTexture backend_texture(sk_size,
-                                                    mtl_textures[plane].get());
+    graphite_textures.emplace_back(sk_size, mtl_textures[plane].get());
   }
   return graphite_textures;
 }
@@ -319,9 +320,11 @@ SkiaIOSurfaceRepresentation::BeginWriteAccess(
 }
 
 void SkiaIOSurfaceRepresentation::EndWriteAccess() {
+#if DCHECK_IS_ON()
   for (auto& surface : write_surfaces_) {
     DCHECK(surface->unique());
   }
+#endif
 
   CheckContext();
   write_surfaces_.clear();
@@ -437,10 +440,12 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
   }
 
   void EndWriteAccess() override {
-    backing_impl()->HandleEndAccessSync(/*readonly=*/false);
+#if DCHECK_IS_ON()
     for (auto& surface : write_surfaces_) {
-      surface->flush();
+      DCHECK(surface->unique());
     }
+#endif
+    backing_impl()->HandleEndAccessSync(/*readonly=*/false);
     write_surfaces_.clear();
   }
 
@@ -720,7 +725,8 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     uint32_t usage,
     GLenum gl_target,
     bool framebuffer_attachment_angle,
-    bool is_cleared)
+    bool is_cleared,
+    bool retain_gl_texture)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -737,20 +743,20 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
       cleared_rect_(is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
-  DCHECK(io_surface_);
+  CHECK(io_surface_);
 
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
   // https://crbug.com/1251724
-  if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)
+  if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU) {
     return;
+  }
 
-// iOS uses Metal and doesn't need to retain the GL texture.
-#if !BUILDFLAG(IS_IOS)
   // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
   // best approach as it can lead to issues with context losses.
-  egl_state_for_legacy_mailbox_ = RetainGLTexture();
-#endif
+  if (retain_gl_texture) {
+    egl_state_for_legacy_mailbox_ = RetainGLTexture();
+  }
 }
 
 IOSurfaceImageBacking::~IOSurfaceImageBacking() {
@@ -925,17 +931,18 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     WGPUBackendType backend_type,
     std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
-  // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
-  // regarding RGBA versus BGRA.
+  // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
+  // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
   viz::SharedImageFormat actual_format = format();
-  if (actual_format == viz::SinglePlaneFormat::kRGBA_8888) {
+  const uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface_);
+  if (io_surface_format == 'BGRA') {
     actual_format = viz::SinglePlaneFormat::kBGRA_8888;
   }
 
   // TODO(crbug.com/1293514): Remove this if condition after using single
   // multiplanar mailbox and actual_format could report multiplanar format
   // correctly.
-  if (IOSurfaceGetPixelFormat(io_surface_) == '420v') {
+  if (io_surface_format == '420v') {
     actual_format = viz::LegacyMultiPlaneFormat::kNV12;
   }
 
@@ -1043,7 +1050,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
     return std::make_unique<SkiaGraphiteIOSurfaceRepresentation>(
-        manager, this, tracker, context_state->gpu_graphite_main_recorder(),
+        manager, this, tracker, context_state->gpu_main_graphite_recorder(),
         std::move(mtl_textures));
 #endif
   }
@@ -1347,7 +1354,7 @@ bool IOSurfaceImageBacking::InitializePixels(
       IOSurfaceGetBaseAddressOfPlane(io_surface_, io_surface_plane_));
   size_t dst_stride =
       IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_);
-  const size_t src_stride = (BitsPerPixel(format()) / 8) * size().width();
+  const size_t src_stride = (format().BitsPerPixel() / 8) * size().width();
 
   const uint8_t* src_data = pixel_data.data();
   size_t height = size().height();

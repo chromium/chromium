@@ -23,6 +23,7 @@ class CroshSystemAppDelegate : public ash::SystemWebAppDelegate {
   Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowInSearch() const override;
   bool ShouldHaveTabStrip() const override;
+  bool UseSystemThemeColor() const override;
 };
 
 // Returns a WebAppInstallInfo used to install the app.

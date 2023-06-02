@@ -93,23 +93,6 @@ struct CrossThreadCopier<base::RepeatingCallback<void(base::TimeDelta)>>
 }  // namespace WTF
 
 namespace blink {
-
-// Feature flag for driving the Metronome by VSyncs instead of by timer.
-BASE_FEATURE(kVSyncDecoding,
-             "VSyncDecoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature parameter controlling VSyncDecoding tick durations during occluded
-// tabs.
-const base::FeatureParam<base::TimeDelta>
-    kVSyncDecodingHiddenOccludedTickDuration{
-        &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
-
-// Feature flag for batching send packets.
-BASE_FEATURE(kWebRtcSendPacketBatch,
-             "WebRtcSendPacketBatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
@@ -214,7 +197,7 @@ class PeerConnectionStaticDeps {
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     if (!metronome_source_) {
       std::unique_ptr<MetronomeSource::TickProvider> tick_provider;
-      if (base::FeatureList::IsEnabled(kVSyncDecoding)) {
+      if (base::FeatureList::IsEnabled(features::kVSyncDecoding)) {
         vsync_provider_.emplace(
             Platform::Current()->VideoFrameCompositorTaskRunner(),
             To<LocalDOMWindow>(context)
@@ -226,7 +209,7 @@ class PeerConnectionStaticDeps {
         tick_provider = VSyncTickProvider::Create(
             *vsync_provider_, chrome_worker_thread_.task_runner(),
             std::make_unique<TimerBasedTickProvider>(
-                kVSyncDecodingHiddenOccludedTickDuration.Get()));
+                features::kVSyncDecodingHiddenOccludedTickDuration.Get()));
       } else {
         tick_provider = std::make_unique<TimerBasedTickProvider>(
             TimerBasedTickProvider::kDefaultPeriod);
@@ -601,7 +584,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     )");
   socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
       p2p_socket_dispatcher_.Get(), traffic_annotation, /*batch_udp_packets=*/
-      base::FeatureList::IsEnabled(kWebRtcSendPacketBatch));
+      base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch));
 
   gpu_factories_ = gpu_factories;
   // base::Unretained is safe below, because

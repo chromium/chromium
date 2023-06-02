@@ -9,8 +9,6 @@ for more details about the presubmit API built into gcl.
 
 import os
 
-USE_PYTHON3 = True
-
 
 def _CheckFileTimeoutMetaTags(f):
     """Checks if the given file has timeout meta tags."""

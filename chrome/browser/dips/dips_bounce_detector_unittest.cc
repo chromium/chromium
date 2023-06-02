@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -116,6 +117,8 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     recorded_events_.insert(std::make_tuple(url, time, event));
   }
 
+  void IncrementPageSpecificBounceCount(const GURL& final_url) override {}
+
   // Get the (committed) URL that the SourceId was generated for.
   const std::string& URLForSourceId(ukm::SourceId source_id) {
     return url_by_source_id_[source_id];
@@ -149,13 +152,20 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
 
   const std::vector<std::string>& redirects() const { return redirects_; }
 
+  int stateful_bounce_count() const { return stateful_bounce_count_; }
+
  private:
-  void RecordBounce(const GURL& url,
-                    const GURL& initial_url,
-                    const GURL& final_url,
-                    base::Time time,
-                    bool stateful) {
+  void RecordBounce(
+      const GURL& url,
+      const GURL& initial_url,
+      const GURL& final_url,
+      base::Time time,
+      bool stateful,
+      base::RepeatingCallback<void(const GURL&)> increment_bounce_callback) {
     recorded_bounces_.insert(std::make_tuple(url, time, stateful));
+    if (stateful) {
+      stateful_bounce_count_++;
+    }
   }
 
   GURL committed_url_;
@@ -166,6 +176,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
   std::set<BounceTuple> recorded_bounces_;
   std::set<EventTuple> recorded_events_;
   std::vector<std::string> reported_sites_;
+  int stateful_bounce_count_ = 0;
 };
 
 class FakeNavigation : public DIPSNavigationHandle {
@@ -210,6 +221,11 @@ class FakeNavigation : public DIPSNavigationHandle {
   bool HasCommitted() const override { return has_committed_; }
   const GURL& GetPreviousPrimaryMainFrameURL() const override {
     return previous_url_;
+  }
+  // TODO (crbug.com/1442658): Add support for simulating opening a link in a
+  // new tab.
+  const GURL GetInitiator() const override {
+    return previous_url_.is_empty() ? GURL("about:blank") : previous_url_;
   }
   const std::vector<GURL>& GetRedirectChain() const override { return chain_; }
 
@@ -300,6 +316,10 @@ class DIPSBounceDetectorTest : public ::testing::Test {
     return delegate_.redirects();
   }
 
+  int stateful_bounce_count() const {
+    return delegate_.stateful_bounce_count();
+  }
+
  private:
   TestBounceDetectorDelegate delegate_;
   DIPSBounceDetector detector_{&delegate_, task_environment_.GetMockTickClock(),
@@ -357,6 +377,7 @@ TEST_F(DIPSBounceDetectorTest,
                                   /*stateful=*/false),
                   MakeBounceTuple("http://i.test", mocked_bounce_time_3,
                                   /*stateful=*/false)));
+  EXPECT_EQ(stateful_bounce_count(), 0);
 }
 
 // Ensures that for every navigation, a client redirect occurring after
@@ -396,6 +417,7 @@ TEST_F(DIPSBounceDetectorTest,
                                   /*stateful=*/false),
                   MakeBounceTuple("http://f.test", mocked_bounce_time_2,
                                   /*stateful=*/false)));
+  EXPECT_EQ(stateful_bounce_count(), 0);
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
@@ -419,6 +441,38 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
                   ("[1/3] a.test/ -> b.test/ (Read) -> e.test/"),
                   ("[2/3] a.test/ -> c.test/ (Write) -> e.test/"),
                   ("[3/3] a.test/ -> d.test/ (ReadWrite) -> e.test/")));
+
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
+                                  /*stateful=*/true),
+                  MakeBounceTuple("http://d.test", mocked_bounce_time,
+                                  /*stateful=*/true)));
+  EXPECT_EQ(stateful_bounce_count(), 2);
+}
+
+TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_OnStartUp) {
+  StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kRead)
+      .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
+      .RedirectTo("http://d.test")
+      .AccessCookie(CookieOperation::kRead)
+      .AccessCookie(CookieOperation::kChange)
+      .RedirectTo("http://e.test")
+      .Finish(true);
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
+
+  EXPECT_THAT(
+      redirects(),
+      testing::ElementsAre(("[1/3] blank -> b.test/ (Read) -> e.test/"),
+                           ("[2/3] blank -> c.test/ (Write) -> e.test/"),
+                           ("[3/3] blank -> d.test/ (ReadWrite) -> e.test/")));
 
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
@@ -463,6 +517,7 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_LateNotification) {
                                   /*stateful=*/false),
                   MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/true)));
+  EXPECT_EQ(stateful_bounce_count(), 2);
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client) {
@@ -480,6 +535,26 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client) {
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(MakeBounceTuple(
                   "http://b.test", mocked_bounce_time, /*stateful=*/false)));
+  EXPECT_EQ(stateful_bounce_count(), 0);
+}
+
+TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_OnStartUp) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kRead);
+  AccessClientCookie(CookieOperation::kChange);
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  NavigateTo("http://b.test", kNoUserGesture);
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
+
+  EXPECT_THAT(
+      redirects(),
+      testing::ElementsAre(("[1/1] blank -> a.test/ (ReadWrite) -> b.test/")));
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(MakeBounceTuple(
+                  "http://a.test", mocked_bounce_time, /*stateful=*/true)));
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_MergeCookies) {
@@ -505,6 +580,7 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_MergeCookies) {
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(MakeBounceTuple(
                   "http://b.test", mocked_bounce_time, /*stateful=*/true)));
+  EXPECT_EQ(stateful_bounce_count(), 1);
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_ServerClientServer) {
@@ -532,6 +608,7 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_ServerClientServer) {
                                   /*stateful=*/false),
                   MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/false)));
+  EXPECT_EQ(stateful_bounce_count(), 0);
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_Uncommitted) {
@@ -562,6 +639,7 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_Uncommitted) {
                                   /*stateful=*/false),
                   MakeBounceTuple("http://e.test", mocked_bounce_time,
                                   /*stateful=*/false)));
+  EXPECT_EQ(stateful_bounce_count(), 0);
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
@@ -593,6 +671,7 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
                                   /*stateful=*/false),
                   MakeBounceTuple("http://e.test", mocked_bounce_time,
                                   /*stateful=*/false)));
+  EXPECT_EQ(stateful_bounce_count(), 0);
 }
 
 TEST_F(DIPSBounceDetectorTest,

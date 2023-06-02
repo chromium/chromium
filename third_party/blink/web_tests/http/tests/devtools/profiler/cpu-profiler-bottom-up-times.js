@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests bottom-up view self and total time calculation in CPU profiler.\n`);
-  await TestRunner.loadLegacyModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
+  await TestRunner.loadLegacyModule('profiler');
 
   var profileAndExpectations = {
     'title': 'profile1',

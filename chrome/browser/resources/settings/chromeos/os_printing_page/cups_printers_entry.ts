@@ -18,6 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
+import {PrinterSettingsUserAction, recordPrinterSettingsUserAction} from './cups_printers.js';
 import {getTemplate} from './cups_printers_entry.html.js';
 import {computePrinterState, PrinterState, PrinterStatusReason, STATUS_REASON_STRING_KEY_MAP} from './printer_status.js';
 
@@ -123,6 +124,7 @@ export class SettingsCupsPrintersEntryElement extends
           detail: {item: this.printerEntry},
         });
     this.dispatchEvent(queryDiscoveredPrinterEvent);
+    recordPrinterSettingsUserAction(PrinterSettingsUserAction.SAVE_PRINTER);
   }
 
   private onAddAutomaticPrinterClick_(): void {
@@ -132,6 +134,7 @@ export class SettingsCupsPrintersEntryElement extends
       detail: {item: this.printerEntry},
     });
     this.dispatchEvent(addAutomaticPrinterEvent);
+    recordPrinterSettingsUserAction(PrinterSettingsUserAction.SAVE_PRINTER);
   }
 
   private onAddServerPrinterClick_(): void {

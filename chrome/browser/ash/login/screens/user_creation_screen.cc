@@ -43,6 +43,8 @@ std::string UserCreationScreen::GetResultString(Result result) {
       return "EnterpriseEnroll";
     case Result::KIOSK_ENTERPRISE_ENROLL:
       return "KioskEnterpriseEnroll";
+    case Result::CONTINUE_QUICK_START_FLOW:
+      return "ContinueQuickStartFlow";
     case Result::CANCEL:
       return "Cancel";
     case Result::SKIPPED:
@@ -87,6 +89,15 @@ bool UserCreationScreen::MaybeSkip(WizardContext& context) {
 void UserCreationScreen::ShowImpl() {
   if (!view_)
     return;
+
+  // Maybe continue QuickStart flow is there is an ongoing setup.
+  const auto quick_start_setup_ongoig = LoginDisplayHost::default_host()
+                                            ->GetWizardContext()
+                                            ->quick_start_setup_ongoing;
+  if (quick_start_setup_ongoig) {
+    RunExitCallback(Result::CONTINUE_QUICK_START_FLOW);
+    return;
+  }
 
   scoped_observation_.Observe(network_state_informer_.get());
 

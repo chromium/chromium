@@ -820,8 +820,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                            net::HttpRequestHeaders::kUserAgent));
 }
 
+// https://crbug.com/1446050
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       SetUserAgentStringRendererInitiated) {
+                       DISABLED_SetUserAgentStringRendererInitiated) {
   net::test_server::ControllableHttpResponse response_1(embedded_test_server(),
                                                         "", true);
   net::test_server::ControllableHttpResponse response_2(embedded_test_server(),

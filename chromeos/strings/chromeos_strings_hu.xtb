@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Íróasztalok</translation>
 <translation id="1018219910092211213">A DNS nem oldható fel</translation>
 <translation id="1018656279737460067">Megszakítva</translation>
-<translation id="1022433422498218992">Általános vezérlők</translation>
+<translation id="1020274983236703756">Exkluzív <ph name="PRODUCT_NAME" />-elemek váltak hozzáférhetővé</translation>
 <translation id="1022628058306505708">A Föld mozgása</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
@@ -113,7 +113,6 @@
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1776228893584526149">Háttérkép tónusa</translation>
 <translation id="1782199038061388045">Fordítás</translation>
-<translation id="1790209694022261219">Ablakok és asztalok</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1801418420130173017">Sötét téma kikapcsolása</translation>
 <translation id="1807246157184219062">Világos</translation>
@@ -239,14 +238,11 @@
 <translation id="2873483161362553159">Navigáció böngészővel</translation>
 <translation id="2874939134665556319">Előző szám</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
-<translation id="2902312830803030883">További műveletek</translation>
 <translation id="2926057806159140518">Adja meg felhasználónevét és jelszavát, vagy olvassa be QR-kódját.</translation>
 <translation id="2940811910881150316">Az eszköz tesztelése nem sikerült. Nyissa fel újra a fedelet a teszteléshez.</translation>
-<translation id="2981143481017883351">Mostantól rendelkezésre állnak kizárólag Chromebookon hozzáférhető elemek</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3017079585324758401">Háttér</translation>
-<translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3027578600144895987">Kamera bezárása</translation>
 <translation id="3031560714565892478">Az eszköz egy videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -273,6 +269,7 @@
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> exkluzív</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
 <translation id="3275729367986477355">Avatarkép</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
@@ -280,6 +277,7 @@
 <translation id="3291996639387199448">Kulcs iránya</translation>
 <translation id="3294437725009624529">Vendég</translation>
 <translation id="3303855915957856445">Nincs találat</translation>
+<translation id="3305294846493618482">több</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -288,7 +286,6 @@
 <translation id="3360306038446926262">Ablakok</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
-<translation id="3386675685417744672">Csak Chromebookon</translation>
 <translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
 <translation id="3413935475507503304">A frissítéssel való folytatáshoz kattintson a Tovább lehetőségre.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -325,6 +322,7 @@
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3639846061339007994">felső</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
+<translation id="3663574643422533538">Exkluzív <ph name="PRODUCT_NAME" />-műalkotás kiválasztása</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="3708186454126126312">Korábban csatlakoztatva</translation>
@@ -369,12 +367,12 @@
 <translation id="404928562651467259">FIGYELMEZTETÉS</translation>
 <translation id="4054683689023980771">Kép letöltése</translation>
 <translation id="4060260348856573701">Új APN</translation>
-<translation id="4079743696465895866">Kizárólag Chromebookon hozzáférhető műalkotások kiválasztása</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
+<translation id="4113067922640381334">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> férhet hozzá</translation>
 <translation id="4117637339509843559">Sötét mód</translation>
 <translation id="4130035430755296270">További elrendezési lehetőségekért mozgassa tovább az egérmutatót</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
@@ -614,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Alapértelmezett háttérkép</translation>
 <translation id="6017514345406065928">Zöld</translation>
+<translation id="6019566113895157499">Billentyűparancsok</translation>
 <translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
 <translation id="6037291330010597344">A szkenner dokumentumadagolója üres. Helyezzen be dokumentumokat, és próbálja újra.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -937,6 +936,7 @@
 <translation id="8576249514688522074">Nincs inicializálva</translation>
 <translation id="8593058461203131755">médiatartalom szüneteltetése</translation>
 <translation id="8620617069779373398">Roaming állapota</translation>
+<translation id="8626489604350149811">További műveletek a következőhöz: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Világoslila</translation>
 <translation id="8651481478098336970">némítás</translation>
 <translation id="8655295600908251630">Csatorna</translation>

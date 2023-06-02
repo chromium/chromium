@@ -8,7 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts for
 details on the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
@@ -82,7 +81,7 @@ def CommonChecks(input_api, output_api):
 
   # Disabled due to http://crbug.com/410936
   #output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-  #input_api, output_api, J('buildbot', 'tests', skip_shebang_check=True)))
+  #input_api, output_api, J('buildbot', 'tests')))
 
   pylib_test_env = dict(input_api.environ)
   pylib_test_env.update({
@@ -121,10 +120,7 @@ def CommonChecks(input_api, output_api):
               J('gyp', 'util', 'md5_check_test.py'),
               J('gyp', 'util', 'resource_utils_test.py'),
           ],
-          env=pylib_test_env,
-          run_on_python2=False,
-          run_on_python3=True,
-          skip_shebang_check=True))
+          env=pylib_test_env))
 
   return input_api.RunTests(tests)
 

@@ -216,7 +216,7 @@ class PopularSitesTest : public ::testing::Test {
   const TestPopularSite kYouTube;
   const TestPopularSite kChromium;
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;

@@ -4,10 +4,71 @@
 
 module webnn.mojom;
 
+// Represents the `MLOperand` which describes not only input and constant
+// operand, but also the output operand of operator.
+struct Operand {
+  // Represents the `MLOperandType` in the WebIDL definition.
+  enum DataType {
+    kFloat32,
+    kFloat16,
+    kInt32,
+    kUint32,
+    kInt8,
+    kUint8,
+  };
+
+  enum Kind { kInput, kConstant, kOutput };
+
+  Kind kind;
+  // The data type of the operand.
+  DataType data_type;
+  // The dimensions of the operand.
+  array<uint32> dimensions;
+  // The name field is only required for input/output operands of graph.
+  string? name;
+};
+
+// Represents the operations defined in `MLGraphBuilder` that describes the
+// functional semantics.
+struct Operator {
+  enum Kind {
+    // Keep the order as the same as build methods of `MLGraphBuilder`.
+    kAdd,
+    kSub,
+    kMul,
+    kDiv,
+    kMax,
+    kMin,
+  };
+
+  // The kind of this `Operator`.
+  Kind kind;
+  // The id array from the `GraphInfo.operands` will be used to map the input
+  // operands of `Operator`.
+  array<uint64> input_operands;
+  // The id array from the `GraphInfo.operands` will be used to map the output
+  // operands of `Operator`.
+  array<uint64> output_operands;
+};
+
+// Describes an entire WebNN graph information.
+struct GraphInfo {
+  // A map of all operands used in this `GraphInfo`, the key is the operand id.
+  map<uint64, Operand> id_to_operand_map;
+  // The id array from the `GraphInfo.operands` is used to identify the input
+  // operands of this graph.
+  array<uint64> input_operands;
+  // The id array from the `GraphInfo.operands` is used to identify the output
+  // operands of this graph.
+  array<uint64> output_operands;
+  // The operators are sorted in the topological order.
+  array<Operator> operators;
+};
+
 // WebNNGraph runs in the GPU process and is called by the renderer process to
-// compile and execute a computational graph. Graph building and execution is
-// performed by calling hardware accelerated OS machine learning APIs.
+// execute the computational graph. Graph execution is performed by calling
+// hardware accelerated OS machine learning APIs.
 interface WebNNGraph {
-  // TODO(crbug.com/1273291): Add `Build` and `Compute` method to compile and
-  // execute computational graph with system framework.
+  // TODO(crbug.com/1273291): Add `Compute` method to execute computational
+  // graph with system framework.
 };

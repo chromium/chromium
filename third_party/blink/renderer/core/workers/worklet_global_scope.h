@@ -78,6 +78,11 @@ class CORE_EXPORT WorkletGlobalScope
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return true; }
   CodeCacheHost* GetCodeCacheHost() override;
+  absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+  FindRaceNetworkRequestURLLoaderFactory(
+      const base::UnguessableToken& token) override {
+    return absl::nullopt;
+  }
 
   // Returns `blob_url_store_pending_remote_` for use when instantiating the
   // PublicURLManager in threaded worklet contexts. This method should only be

@@ -598,10 +598,8 @@ ScreensaverImagesPolicyHandler* AmbientAshTestBase::managed_policy_handler() {
   if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
     return nullptr;
   }
-  AmbientManagedSlideshowUiLauncher* ui_launcher =
-      static_cast<AmbientManagedSlideshowUiLauncher*>(
-          ambient_controller()->ambient_ui_launcher());
-  return &ui_launcher->screensaver_images_policy_handler_;
+
+  return ambient_controller()->screensaver_images_policy_handler_.get();
 }
 
 AmbientPhotoCache* AmbientAshTestBase::photo_cache() {

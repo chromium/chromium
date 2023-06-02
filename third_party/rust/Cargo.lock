@@ -83,6 +83,7 @@ dependencies = [
  "memoffset",
  "once_cell",
  "proc-macro2",
+ "qr_code",
  "quote",
  "rand",
  "rand_pcg",
@@ -276,6 +277,10 @@ version = "1.0.56"
 dependencies = [
  "unicode-ident",
 ]
+
+[[package]]
+name = "qr_code"
+version = "2.0.0"
 
 [[package]]
 name = "quote"

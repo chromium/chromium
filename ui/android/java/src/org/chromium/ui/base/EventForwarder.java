@@ -388,6 +388,14 @@ public class EventForwarder {
 
         int eventAction = event.getActionMasked();
 
+        // Ignore ACTION_HOVER_ENTER & ACTION_HOVER_EXIT because every mouse-down on Android
+        // follows a hover-exit and is followed by a hover-enter.  https://crbug.com/715114
+        // filed on distinguishing actual hover enter/exit from these bogus ones.
+        if (eventAction == MotionEvent.ACTION_HOVER_ENTER
+                || eventAction == MotionEvent.ACTION_HOVER_EXIT) {
+            return false;
+        }
+
         // For mousedown and mouseup events, we use ACTION_BUTTON_PRESS
         // and ACTION_BUTTON_RELEASE respectively because they provide
         // info about the changed-button.

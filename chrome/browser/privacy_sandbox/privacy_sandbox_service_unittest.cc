@@ -1003,7 +1003,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
-  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate,
+          DanglingUntriaged>
       mock_delegate_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler
@@ -4429,7 +4430,30 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
       /*expected_count=*/2);
 }
 
-TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
+class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted
+    : public PrivacySandboxServiceM1RestrictedNoticePromptTest {
+ public:
+  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() override {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate->SetUpIsSubjectToM1NoticeRestrictedResponse(
+        /*is_subject_to_restricted_notice=*/true);
+    mock_delegate->SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(
+        /*is_unrestricted=*/true);
+    return mock_delegate;
+  }
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "false"},
+         {"notice-required", "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+          "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
        RecordPrivacySandbox4StartupMetrics_GraduationFlow) {
   const std::string privacy_sandbox_prompt_startup_histogram =
       "Settings.PrivacySandbox.PromptStartupState";
@@ -4439,14 +4463,13 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
       prefs::kPrivacySandboxM1PromptSuppressed,
       static_cast<int>(PrivacySandboxService::PromptSuppressedReason::kNone));
 
-  // Restricted Notice flow NOT completed & user ready for graduation.
+  // Restricted Notice flow NOT completed
   {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
                         false);
-    // User waiting for graduation
+    // User was reported restricted
     prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
-    prefs()->SetBoolean(prefs::kPrivacySandboxM1Unrestricted, true);
 
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
     histogram_tester.ExpectBucketCount(
@@ -4457,14 +4480,14 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
         /*expected_count=*/1);
   }
 
-  // Restricted Notice flow completed & user ready for graduation.
+  // Restricted Notice flow completed
   {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
                         true);
-    // User waiting for graduation
+
+    // User was reported restricted
     prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
-    prefs()->SetBoolean(prefs::kPrivacySandboxM1Unrestricted, true);
 
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
     histogram_tester.ExpectBucketCount(
@@ -4474,15 +4497,74 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
                 kWaitingForGraduationRestrictedNoticeFlowCompleted),
         /*expected_count=*/1);
   }
+}
 
-  // Restricted Notice flow completed & user NOT ready for graduation.
+TEST_F(
+    PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
+    RecordPrivacySandbox4StartupMetrics_GraduationFlowWhenNoticeShownToGuardian) {
+  const std::string privacy_sandbox_prompt_startup_histogram =
+      "Settings.PrivacySandbox.PromptStartupState";
+
+  base::HistogramTester histogram_tester;
+
+  // User was reported restricted
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
+
+  // Prompt is suppressed because direct notice was shown to guardian
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PrivacySandboxService::PromptSuppressedReason::
+                           kNoticeShownToGuardian));
+
+  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+  histogram_tester.ExpectBucketCount(
+      privacy_sandbox_prompt_startup_histogram,
+      static_cast<int>(
+          PrivacySandboxService::PromptStartupState::
+              kWaitingForGraduationRestrictedNoticeFlowNotCompleted),
+      /*expected_count=*/1);
+}
+
+class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted
+    : public PrivacySandboxServiceM1RestrictedNoticePromptTest {
+ public:
+  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  CreateMockDelegate() override {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate->SetUpIsSubjectToM1NoticeRestrictedResponse(
+        /*is_subject_to_restricted_notice=*/true);
+    mock_delegate->SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(
+        /*is_unrestricted=*/false);
+    return mock_delegate;
+  }
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "false"},
+         {"notice-required", "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+          "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted,
+       RecordPrivacySandbox4StartupMetrics_GraduationFlow) {
+  const std::string privacy_sandbox_prompt_startup_histogram =
+      "Settings.PrivacySandbox.PromptStartupState";
+
+  // Ensure prompt not suppressed.
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PrivacySandboxService::PromptSuppressedReason::kNone));
+
+  // Restricted Notice flow completed
   {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
                         true);
-    // User NOT waiting for graduation
+    // User was reported restricted
     prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
-    prefs()->SetBoolean(prefs::kPrivacySandboxM1Unrestricted, false);
 
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
     histogram_tester.ExpectBucketCount(
@@ -4492,14 +4574,13 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticePromptTest,
         /*expected_count=*/1);
   }
 
-  // Restricted Notice flow NOT completed & user NOT ready for graduation.
+  // Restricted Notice flow NOT completed
   {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
                         false);
-    // User NOT waiting for graduation
+    // User was reported restricted
     prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
-    prefs()->SetBoolean(prefs::kPrivacySandboxM1Unrestricted, false);
 
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
     histogram_tester.ExpectBucketCount(

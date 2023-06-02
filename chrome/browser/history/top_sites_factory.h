@@ -14,7 +14,7 @@ class Profile;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace history {
@@ -43,7 +43,7 @@ class TopSitesFactory : public RefcountedProfileKeyedServiceFactory {
   TopSitesFactory& operator=(const TopSitesFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<TopSitesFactory>;
+  friend base::NoDestructor<TopSitesFactory>;
 
   TopSitesFactory();
   ~TopSitesFactory() override;

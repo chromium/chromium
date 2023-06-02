@@ -12,9 +12,9 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.android_webview.common.crash.CrashUploadUtil;
-import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
+import org.chromium.android_webview.nonembedded.crash.CrashUploadUtil;
+import org.chromium.android_webview.nonembedded.crash.SystemWideCrashDirectories;
 import org.chromium.base.Log;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 

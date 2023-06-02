@@ -46,6 +46,7 @@ class CONTENT_EXPORT SmartCardService
                device::mojom::SmartCardShareMode share_mode,
                device::mojom::SmartCardProtocolsPtr preferred_protocols,
                ConnectCallback callback) override;
+  void CreateContext(CreateContextCallback callback) override;
 
   // SmartCardReaderTracker::Observer overrides:
   void OnReaderAdded(
@@ -70,7 +71,7 @@ class CONTENT_EXPORT SmartCardService
     SmartCardService::ConnectCallback callback;
   };
 
-  void OnCreateContextDone(
+  void OnCreateInternalContextDone(
       device::mojom::SmartCardCreateContextResultPtr result);
   void OnConnectDone(ConnectCallback callback,
                      device::mojom::SmartCardConnectResultPtr result);

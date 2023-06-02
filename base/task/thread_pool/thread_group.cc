@@ -53,7 +53,7 @@ ThreadGroup::ScopedReenqueueExecutor::~ScopedReenqueueExecutor() {
 
 void ThreadGroup::ScopedReenqueueExecutor::
     SchedulePushTaskSourceAndWakeUpWorkers(
-        TransactionWithRegisteredTaskSource transaction_with_task_source,
+        RegisteredTaskSourceAndTransaction transaction_with_task_source,
         ThreadGroup* destination_thread_group) {
   DCHECK(destination_thread_group);
   DCHECK(!destination_thread_group_);
@@ -148,7 +148,7 @@ RegisteredTaskSource ThreadGroup::RemoveTaskSource(
 void ThreadGroup::ReEnqueueTaskSourceLockRequired(
     BaseScopedCommandsExecutor* workers_executor,
     ScopedReenqueueExecutor* reenqueue_executor,
-    TransactionWithRegisteredTaskSource transaction_with_task_source) {
+    RegisteredTaskSourceAndTransaction transaction_with_task_source) {
   // Decide in which thread group the TaskSource should be reenqueued.
   ThreadGroup* destination_thread_group = delegate_->GetThreadGroupForTraits(
       transaction_with_task_source.transaction.traits());
@@ -234,7 +234,7 @@ void ThreadGroup::UpdateSortKeyImpl(BaseScopedCommandsExecutor* executor,
 
 void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
     BaseScopedCommandsExecutor* executor,
-    TransactionWithRegisteredTaskSource transaction_with_task_source) {
+    RegisteredTaskSourceAndTransaction transaction_with_task_source) {
   CheckedAutoLock auto_lock(lock_);
   DCHECK(!replacement_thread_group_);
   DCHECK_EQ(delegate_->GetThreadGroupForTraits(

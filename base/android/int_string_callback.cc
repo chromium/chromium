@@ -11,7 +11,7 @@
 #include <jni.h>
 
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/IntStringCallback_jni.h"
+#include "base/base_jni/IntStringCallback_jni.h"
 
 namespace base {
 namespace android {

@@ -17,7 +17,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
-#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -43,12 +42,12 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
@@ -247,8 +246,231 @@ class ClipboardHistoryControllerTest : public AshTestBase {
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
 };
 
+// Tests that Search + V with no history fails to show a menu.
+TEST_F(ClipboardHistoryControllerTest, NoHistoryNoMenu) {
+  base::HistogramTester histogram_tester;
+  ShowMenu();
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 0);
+}
+
+// Tests that Search + V shows a menu when there is something to show.
+TEST_F(ClipboardHistoryControllerTest, ShowMenu) {
+  base::HistogramTester histogram_tester;
+
+  // Copy something to enable the clipboard history menu.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  ShowMenu();
+
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  // No user journey time should be recorded as the menu is still showing.
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 1);
+
+  // Hide the menu.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 1);
+
+  // Reshow the menu.
+  ShowMenu();
+
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // No new UserJourneyTime histogram should be recorded as the menu is
+  // still showing.
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 2);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 2);
+
+  // Hide the menu.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 1, 2);
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 2);
+}
+
+// Verifies that the clipboard history is disabled in some user modes, which
+// means that the clipboard history should not be recorded and meanwhile the
+// menu view should not show (https://crbug.com/1100739).
+TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
+  // Write one item into the clipboard history.
+  WriteTextToClipboardAndConfirm(u"text");
+
+  constexpr struct {
+    user_manager::UserType user_type;
+    bool is_enabled;
+  } kTestCases[] = {{user_manager::USER_TYPE_REGULAR, true},
+                    {user_manager::USER_TYPE_GUEST, true},
+                    {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
+                    {user_manager::USER_TYPE_KIOSK_APP, false},
+                    {user_manager::USER_TYPE_CHILD, true},
+                    {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
+                    {user_manager::USER_TYPE_WEB_KIOSK_APP, false}};
+
+  UserSession session;
+  session.session_id = 1u;
+  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
+  session.user_info.display_name = "User 1";
+  session.user_info.display_email = "user1@test.com";
+
+  for (const auto& test_case : kTestCases) {
+    // Switch to the target user mode.
+    session.user_info.type = test_case.user_type;
+    Shell::Get()->session_controller()->UpdateUserSession(session);
+
+    // Write a new item into the clipboard buffer.
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(u"test");
+    }
+
+    if (test_case.is_enabled) {
+      WaitForOperationConfirmed();
+    } else {
+      FlushMessageLoop();
+      // Note: This check might not catch a scenario where a mode expected to be
+      // disabled actually allows writes to go through, because the operation
+      // might not have finished yet in that case. The history verification
+      // below mitigates the chance that such a bug would not be caught.
+      EXPECT_TRUE(operation_confirmed_future_.IsEmpty());
+    }
+
+    const std::list<ClipboardHistoryItem>& items =
+        Shell::Get()->clipboard_history_controller()->history()->GetItems();
+    if (test_case.is_enabled) {
+      // Verify that the new item should be included in the clipboard history
+      // and the menu should be able to show.
+      EXPECT_EQ(items.size(), 2u);
+
+      ShowMenu();
+
+      EXPECT_TRUE(
+          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+
+      PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+      EXPECT_FALSE(
+          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+
+      // Restore the clipboard history by removing the new item.
+      ClipboardHistory* clipboard_history = const_cast<ClipboardHistory*>(
+          Shell::Get()->clipboard_history_controller()->history());
+      clipboard_history->RemoveItemForId(items.begin()->id());
+    } else {
+      // Verify that the new item should not be written into the clipboard
+      // history. The menu cannot show although the clipboard history is
+      // non-empty.
+      EXPECT_EQ(items.size(), 1u);
+
+      ShowMenu();
+
+      EXPECT_FALSE(
+          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+    }
+  }
+}
+
+// Verifies that the clipboard history menu is disabled when the screen for
+// user adding shows.
+TEST_F(ClipboardHistoryControllerTest, DisableInUserAddingScreen) {
+  WriteTextToClipboardAndConfirm(u"text");
+
+  // Emulate that the user adding screen displays.
+  Shell::Get()->session_controller()->ShowMultiProfileLogin();
+
+  // Try to show the clipboard history menu; verify that the menu does not show.
+  ShowMenu();
+  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+}
+
+// Tests that pressing Search while holding the V key does not show the
+// Launcher.
+TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
+  GetEventGenerator()->PressKey(ui::VKEY_V, ui::EF_NONE);
+  GetEventGenerator()->PressKey(ui::VKEY_COMMAND, ui::EF_NONE);
+
+  // Release V, which could trigger a key released accelerator.
+  GetEventGenerator()->ReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
+
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
+      /*display_id=*/absl::nullopt));
+
+  // Release Search, which could trigger the Launcher.
+  GetEventGenerator()->ReleaseKey(ui::VKEY_COMMAND, ui::EF_NONE);
+
+  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
+      /*display_id=*/absl::nullopt));
+}
+
+// Tests that clearing a single item from the clipboard clears clipboard
+// history.
+TEST_F(ClipboardHistoryControllerTest, ClearClipboardClearsHistory) {
+  // Write a single item to the clipboard.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  // Clear the clipboard.
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  FlushMessageLoop();
+
+  // History should also be cleared.
+  const std::list<ClipboardHistoryItem>& items =
+      Shell::Get()->clipboard_history_controller()->history()->GetItems();
+  EXPECT_TRUE(items.empty());
+
+  ShowMenu();
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
+// Tests that clearing the clipboard closes the clipboard history menu.
+TEST_F(ClipboardHistoryControllerTest,
+       ClearingClipboardClosesClipboardHistory) {
+  // Write a single item to the clipboard.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  ASSERT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  ShowMenu();
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // The cursor is visible after showing the clipboard history menu through
+  // the accelerator.
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  FlushMessageLoop();
+
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
 TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
-  // Write a bitmap to ClipboardHistory.
+  // Write a bitmap to the clipboard.
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   WriteImageToClipboardAndConfirm(test_bitmap);
 
@@ -261,7 +483,7 @@ TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
 }
 
 TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
-  // Write a bunch of bitmaps to ClipboardHistory.
+  // Write a bunch of bitmaps to the clipboard.
   std::vector<const SkBitmap> test_bitmaps;
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(2, 1));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
@@ -284,7 +506,7 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
 }
 
 TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
-  // Write a bitmap to ClipboardHistory.
+  // Write a bitmap to the clipboard.
   std::vector<const SkBitmap> test_bitmaps;
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
@@ -317,7 +539,7 @@ TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
 }
 
 TEST_F(ClipboardHistoryControllerTest, LockedScreenText) {
-  // Write text to ClipboardHistory and verify that it can be retrieved.
+  // Write text to the clipboard and verify that it can be retrieved.
   WriteTextToClipboardAndConfirm(u"test");
   auto history_list = GetHistoryValues();
   ASSERT_EQ(history_list.size(), 1u);
@@ -327,7 +549,7 @@ TEST_F(ClipboardHistoryControllerTest, LockedScreenText) {
 }
 
 TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
-  // Write a bitmap to ClipboardHistory and verify that it can be returned.
+  // Write a bitmap to the clipboard and verify that it can be returned.
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   WriteImageToClipboardAndConfirm(test_bitmap);
   auto result = GetHistoryValues();
@@ -511,356 +733,16 @@ TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
   }
 }
 
-// Base class for tests of Clipboard History parameterized by whether the
-// `kClipboardHistoryRefresh` feature flag is enabled.
-class ClipboardHistoryControllerRefreshTest
+class ClipboardHistoryControllerShowSourceTest
     : public ClipboardHistoryControllerTest,
-      public testing::WithParamInterface</*refresh_enabled=*/bool> {
+      public testing::WithParamInterface<ClipboardHistoryControllerShowSource> {
  public:
-  ClipboardHistoryControllerRefreshTest() {
-    std::vector<base::test::FeatureRef> refresh_features = {
-        chromeos::features::kClipboardHistoryRefresh,
-        chromeos::features::kJelly};
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (IsClipboardHistoryRefreshEnabled() ? enabled_features : disabled_features)
-        .swap(refresh_features);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
-
-  // Some toasts can display on multiple root windows, so the caller can use
-  // `root_window` to target a toast on a specific root window.
-  ToastOverlay* GetCurrentOverlay(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting(
-        root_window);
-  }
-
-  views::LabelButton* GetDismissButton(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    ToastOverlay* overlay = GetCurrentOverlay(root_window);
-    DCHECK(overlay);
-    return overlay->dismiss_button_for_testing();
-  }
-
-  void ClickDismissButton(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    views::LabelButton* dismiss_button = GetDismissButton(root_window);
-    const gfx::Point button_center =
-        dismiss_button->GetBoundsInScreen().CenterPoint();
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(button_center);
-    event_generator->ClickLeftButton();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ClipboardHistoryControllerShowSource GetSource() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryControllerRefreshTest,
-                         /*refresh_enabled=*/testing::Bool());
-
-// Tests that search + v with no history fails to show a menu.
-TEST_P(ClipboardHistoryControllerRefreshTest, NoHistoryNoMenu) {
-  base::HistogramTester histogram_tester;
-  ShowMenu();
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", 0);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown", 0);
-}
-
-// Tests that search + v shows a menu when there is something to show.
-TEST_P(ClipboardHistoryControllerRefreshTest, ShowMenu) {
-  base::HistogramTester histogram_tester;
-
-  // Copy something to enable the clipboard history menu.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  // TODO(b/267694484): Do not fork these values once the menu can show items
-  // with the refresh feature enabled.
-  const int num_items_shown = IsClipboardHistoryRefreshEnabled() ? 0 : 1;
-  int num_items_shown_samples = 0;
-  ShowMenu();
-
-  if (!IsClipboardHistoryRefreshEnabled()) {
-    ++num_items_shown_samples;
-  }
-
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  // No user journey time should be recorded as the menu is still showing.
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 0);
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", num_items_shown,
-      num_items_shown_samples);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown",
-      num_items_shown_samples);
-
-  // Hide the menu.
-  PressAndReleaseKey(ui::VKEY_ESCAPE);
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", num_items_shown,
-      num_items_shown_samples);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown",
-      num_items_shown_samples);
-
-  // Reshow the menu.
-  ShowMenu();
-
-  if (!IsClipboardHistoryRefreshEnabled()) {
-    ++num_items_shown_samples;
-  }
-
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // No new UserJourneyTime histogram should be recorded as the menu is
-  // still showing.
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 1);
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", num_items_shown,
-      num_items_shown_samples);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown",
-      num_items_shown_samples);
-
-  // Hide the menu.
-  PressAndReleaseKey(ui::VKEY_ESCAPE);
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 2);
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", num_items_shown,
-      num_items_shown_samples);
-  histogram_tester.ExpectTotalCount(
-      "Ash.ClipboardHistory.ContextMenu.DisplayFormatShown",
-      num_items_shown_samples);
-}
-
-// Verifies that the clipboard history is disabled in some user modes, which
-// means that the clipboard history should not be recorded and meanwhile the
-// menu view should not show (https://crbug.com/1100739).
-TEST_P(ClipboardHistoryControllerRefreshTest, VerifyAvailabilityInUserModes) {
-  // Write one item into the clipboard history.
-  WriteTextToClipboardAndConfirm(u"text");
-
-  constexpr struct {
-    user_manager::UserType user_type;
-    bool is_enabled;
-  } kTestCases[] = {{user_manager::USER_TYPE_REGULAR, true},
-                    {user_manager::USER_TYPE_GUEST, true},
-                    {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-                    {user_manager::USER_TYPE_KIOSK_APP, false},
-                    {user_manager::USER_TYPE_CHILD, true},
-                    {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
-                    {user_manager::USER_TYPE_WEB_KIOSK_APP, false}};
-
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-
-  for (const auto& test_case : kTestCases) {
-    // Switch to the target user mode.
-    session.user_info.type = test_case.user_type;
-    Shell::Get()->session_controller()->UpdateUserSession(session);
-
-    // Write a new item into the clipboard buffer.
-    {
-      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteText(u"test");
-    }
-
-    if (test_case.is_enabled) {
-      WaitForOperationConfirmed();
-    } else {
-      FlushMessageLoop();
-      // Note: This check might not catch a scenario where a mode expected to be
-      // disabled actually allows writes to go through, because the operation
-      // might not have finished yet in that case. The history verification
-      // below mitigates the chance that such a bug would not be caught.
-      EXPECT_TRUE(operation_confirmed_future_.IsEmpty());
-    }
-
-    const std::list<ClipboardHistoryItem>& items =
-        Shell::Get()->clipboard_history_controller()->history()->GetItems();
-    if (test_case.is_enabled) {
-      // Verify that the new item should be included in the clipboard history
-      // and the menu should be able to show.
-      EXPECT_EQ(items.size(), 2u);
-
-      ShowMenu();
-
-      EXPECT_TRUE(
-          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-
-      PressAndReleaseKey(ui::VKEY_ESCAPE);
-
-      EXPECT_FALSE(
-          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-
-      if (IsClipboardHistoryRefreshEnabled()) {
-        // Wait for the clipboard manager to be fully destroyed so that the
-        // presence of an open modal window does not block the next test case's
-        // accelerator action from being performed.
-        FlushMessageLoop();
-      }
-
-      // Restore the clipboard history by removing the new item.
-      ClipboardHistory* clipboard_history = const_cast<ClipboardHistory*>(
-          Shell::Get()->clipboard_history_controller()->history());
-      clipboard_history->RemoveItemForId(items.begin()->id());
-    } else {
-      // Verify that the new item should not be written into the clipboard
-      // history. The menu cannot show although the clipboard history is
-      // non-empty.
-      EXPECT_EQ(items.size(), 1u);
-
-      ShowMenu();
-
-      EXPECT_FALSE(
-          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-    }
-  }
-}
-
-// Verifies that the clipboard history menu is disabled when the screen for
-// user adding shows.
-TEST_P(ClipboardHistoryControllerRefreshTest, DisableInUserAddingScreen) {
-  WriteTextToClipboardAndConfirm(u"text");
-
-  // Emulate that the user adding screen displays.
-  Shell::Get()->session_controller()->ShowMultiProfileLogin();
-
-  // Try to show the clipboard history menu; verify that the menu does not show.
-  ShowMenu();
-  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-}
-
-// Tests that pressing and holding VKEY_V, then the search key (EF_COMMAND_DOWN)
-// does not show the AppList.
-TEST_P(ClipboardHistoryControllerRefreshTest, VThenSearchDoesNotShowLauncher) {
-  GetEventGenerator()->PressKey(ui::VKEY_V, ui::EF_NONE);
-  GetEventGenerator()->PressKey(ui::VKEY_LWIN, ui::EF_NONE);
-
-  // Release VKEY_V, which could trigger a key released accelerator.
-  GetEventGenerator()->ReleaseKey(ui::VKEY_V, ui::EF_NONE);
-
-  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/absl::nullopt));
-
-  // Release VKEY_LWIN(search/launcher), which could trigger the app list.
-  GetEventGenerator()->ReleaseKey(ui::VKEY_LWIN, ui::EF_NONE);
-
-  EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      /*display_id=*/absl::nullopt));
-}
-
-// Tests that clearing the clipboard clears ClipboardHistory
-TEST_P(ClipboardHistoryControllerRefreshTest, ClearClipboardClearsHistory) {
-  // Write a single item to ClipboardHistory.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  // Clear the clipboard.
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  FlushMessageLoop();
-
-  // History should also be cleared.
-  const std::list<ClipboardHistoryItem>& items =
-      Shell::Get()->clipboard_history_controller()->history()->GetItems();
-  EXPECT_TRUE(items.empty());
-
-  ShowMenu();
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-}
-
-// Tests that clearing the clipboard closes the ClipboardHistory menu.
-TEST_P(ClipboardHistoryControllerRefreshTest,
-       ClearingClipboardClosesClipboardHistory) {
-  // Write a single item to ClipboardHistory.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  ASSERT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
-
-  ShowMenu();
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // The cursor is visible after showing the clipboard history menu through
-  // the accelerator.
-  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
-
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  FlushMessageLoop();
-
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-}
-
-// Tests that a toast is shown if something was copied to clipboard history.
-TEST_P(ClipboardHistoryControllerRefreshTest, ShowToast) {
-  // Copy something to enable the clipboard history menu.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  ToastManagerImpl* manager_ = Shell::Get()->toast_manager();
-  if (IsClipboardHistoryRefreshEnabled()) {
-    EXPECT_TRUE(manager_->IsRunning(kClipboardCopyToastId));
-    ClickDismissButton();
-    EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  } else {
-    EXPECT_FALSE(manager_->IsRunning(kClipboardCopyToastId));
-  }
-}
-
-class ClipboardHistoryControllerShowSourceTest
-    : public ClipboardHistoryControllerTest,
-      public testing::WithParamInterface<
-          std::tuple<ClipboardHistoryControllerShowSource,
-                     /*refresh_enabled=*/bool>> {
- public:
-  ClipboardHistoryControllerShowSourceTest() {
-    std::vector<base::test::FeatureRef> refresh_features = {
-        chromeos::features::kClipboardHistoryRefresh,
-        chromeos::features::kJelly};
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (IsClipboardHistoryRefreshEnabled() ? enabled_features : disabled_features)
-        .swap(refresh_features);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  ClipboardHistoryControllerShowSource GetSource() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool IsClipboardHistoryRefreshEnabled() const {
-    return std::get<1>(GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ClipboardHistoryControllerShowSourceTest,
-    testing::Combine(testing::ValuesIn(GetClipboardHistoryShowSources()),
-                     /*refresh_enabled=*/testing::Bool()));
+                         ClipboardHistoryControllerShowSourceTest,
+                         testing::ValuesIn(GetClipboardHistoryShowSources()));
 
 // Tests that `ShowMenu()` returns whether the menu was shown successfully.
 TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
@@ -914,12 +796,6 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
 // Tests that the client-provided `OnMenuClosingCallback` runs before the menu
 // closes.
 TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
-  if (IsClipboardHistoryRefreshEnabled()) {
-    // TODO(b/267694484): Do not skip this test case once the menu can paste
-    // with the refresh feature enabled.
-    GTEST_SKIP();
-  }
-
   base::test::RepeatingTestFuture<bool> on_menu_closing_future;
   base::HistogramTester histogram_tester;
 
@@ -963,8 +839,8 @@ TEST_P(ClipboardHistoryControllerShowSourceTest, OnMenuClosingCallback) {
                                       /*expected_bucket_count=*/1);
 }
 
-// TODO(b/278109818): Move clipboard history refresh tests into a separate test
-// file.
+// TODO(http://b/278109818): Move clipboard history refresh tests into a
+// separate test file.
 
 // A parameterized test base to verify the clipboard history refresh feature on
 // every display format.
@@ -980,14 +856,14 @@ class ClipboardHistoryRefreshDisplayFormatTest
                          ClipboardHistoryDisplayFormat>> {
  public:
   ClipboardHistoryRefreshDisplayFormatTest() {
-    std::vector<base::test::FeatureRef> refresh_features = {
-        chromeos::features::kClipboardHistoryRefresh,
-        chromeos::features::kJelly};
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
-        .swap(refresh_features);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryRefreshEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
+  }
+
+  bool IsClipboardHistoryRefreshEnabled() const {
+    return std::get<0>(GetParam());
   }
 
   void ShowTextfieldContextMenu(views::View* textfield) {

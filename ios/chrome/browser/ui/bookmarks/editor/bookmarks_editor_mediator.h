@@ -13,7 +13,6 @@
 @protocol BookmarksEditorMediatorDelegate;
 class ChromeBrowserState;
 class PrefService;
-class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -49,7 +48,6 @@ class SyncService;
             accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
                     bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
                            prefs:(PrefService*)prefs
-                syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
                     browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;

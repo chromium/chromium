@@ -15,9 +15,6 @@ from dataclasses import dataclass
 
 PRESUBMIT_VERSION = '2.0.0'
 
-# This line is 'magic' in that git-cl looks for it to decide whether to
-# use Python3 instead of Python2 when running the code in this file.
-USE_PYTHON3 = True
 
 _EXCLUDED_PATHS = (
     # Generated file
@@ -762,8 +759,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        # Fuchsia provides C++ libraries that use std::shared_ptr<>.
        '^base/fuchsia/.*\.(cc|h)',
        '.*fuchsia.*test\.(cc|h)',
-       # Needed for clang plugin tests
-       '^tools/clang/plugins/tests/',
+       # Clang plugins have different build config.
+       '^tools/clang/plugins/',
        _THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
@@ -990,6 +987,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'net/der/.*',
         # Needed to use APIs from the above.
         r'net/cert/.*',
+        # Needed by Caspian, which compiles to WASM.
+        r'tools/binary_size/libsupersize/viewer/caspian/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
@@ -1026,7 +1025,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'absl::optional instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+          # Clang plugins have different build config.
+          '^tools/clang/plugins/',
+          # Not an error in third_party folders.
+          _THIRD_PARTY_EXCEPT_BLINK,
+      ],
     ),
     BanRule(
       r'/#include <chrono>',
@@ -1504,6 +1508,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       (
           r'^base/win/scoped_winrt_initializer\.cc$',
+          r'^third_party/abseil-cpp/absl/.*',
       ),
     ),
     BanRule(
@@ -1683,7 +1688,7 @@ _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS = [
     r'testing/buildbot/',
     r'^components/policy/resources/policy_templates\.json$',
     r'^third_party/protobuf/',
-    r'^third_party/blink/perf_tests/speedometer/resources/todomvc/learn.json',
+    r'^third_party/blink/perf_tests/speedometer.*/resources/todomvc/learn\.json',
     r'^third_party/blink/renderer/devtools/protocol\.json$',
     r'^third_party/blink/web_tests/external/wpt/',
     r'^tools/perf/',
@@ -5444,21 +5449,12 @@ def ChecksCommon(input_api, output_api):
         if not input_api.os_path.exists(test_file):
             continue
 
-        use_python3 = False
-        with open(f.LocalPath(), encoding='utf-8') as fp:
-            use_python3 = any(
-                line.startswith('USE_PYTHON3 = True')
-                for line in fp.readlines())
-
         results.extend(
             input_api.canned_checks.RunUnitTestsInDirectory(
                 input_api,
                 output_api,
                 full_path,
-                files_to_check=[r'^PRESUBMIT_test\.py$'],
-                run_on_python2=not use_python3,
-                run_on_python3=use_python3,
-                skip_shebang_check=True))
+                files_to_check=[r'^PRESUBMIT_test\.py$']))
     return results
 
 

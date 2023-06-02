@@ -45,6 +45,8 @@ class ASH_EXPORT AmbientInfoView : public views::View,
 
   void SetTextTransform(const gfx::Transform& transform);
 
+  int GetAdjustedLeftPaddingToMatchBottom();
+
  private:
   void InitLayout();
 

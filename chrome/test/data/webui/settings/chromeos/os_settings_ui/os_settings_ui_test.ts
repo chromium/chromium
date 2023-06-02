@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, OsSettingsMainElement, OsSettingsPageElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,7 +14,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 suite('OSSettingsUi', function() {
   let ui: OsSettingsUiElement;
   let settingsMain: OsSettingsMainElement|null;
-  let settingsPage: OsSettingsPageElement|null;
+  let mainPageContainer: MainPageContainerElement|null;
 
   suiteSetup(async function() {
     document.body.innerHTML = '';
@@ -26,11 +26,12 @@ suite('OSSettingsUi', function() {
     settingsMain = ui.shadowRoot!.querySelector('os-settings-main');
     assert(settingsMain);
 
-    settingsPage = settingsMain.shadowRoot!.querySelector('os-settings-page');
-    assert(settingsPage);
+    mainPageContainer =
+        settingsMain.shadowRoot!.querySelector('main-page-container');
+    assert(mainPageContainer);
 
     const idleRender =
-        settingsPage.shadowRoot!.querySelector('settings-idle-load');
+        mainPageContainer.shadowRoot!.querySelector('settings-idle-load');
     assert(idleRender);
     await idleRender.get();
     flush();
@@ -38,27 +39,29 @@ suite('OSSettingsUi', function() {
 
   test('Update required end of life banner visibility', function() {
     flush();
-    assert(settingsPage);
+    assert(mainPageContainer);
     assertEquals(
         null,
-        settingsPage.shadowRoot!.querySelector('#updateRequiredEolBanner'));
+        mainPageContainer.shadowRoot!.querySelector(
+            '#updateRequiredEolBanner'));
 
-    settingsPage!.set('showUpdateRequiredEolBanner_', true);
+    mainPageContainer!.set('showUpdateRequiredEolBanner_', true);
     flush();
-    assertTrue(
-        !!settingsPage.shadowRoot!.querySelector('#updateRequiredEolBanner'));
+    assertTrue(!!mainPageContainer.shadowRoot!.querySelector(
+        '#updateRequiredEolBanner'));
   });
 
   test('Update required end of life banner close button click', function() {
-    assert(settingsPage);
-    settingsPage.set('showUpdateRequiredEolBanner_', true);
+    assert(mainPageContainer);
+    mainPageContainer.set('showUpdateRequiredEolBanner_', true);
     flush();
-    const banner = settingsPage.shadowRoot!.querySelector<HTMLElement>(
+    const banner = mainPageContainer.shadowRoot!.querySelector<HTMLElement>(
         '#updateRequiredEolBanner');
     assertTrue(!!banner);
 
-    const closeButton = settingsPage.shadowRoot!.querySelector<HTMLElement>(
-        '#closeUpdateRequiredEol');
+    const closeButton =
+        mainPageContainer.shadowRoot!.querySelector<HTMLElement>(
+            '#closeUpdateRequiredEol');
     assert(closeButton);
     closeButton.click();
     flush();

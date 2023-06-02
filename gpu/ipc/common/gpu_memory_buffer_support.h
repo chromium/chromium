@@ -13,6 +13,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
@@ -100,6 +101,30 @@ class GPU_EXPORT GpuMemoryBufferSupport {
 #if BUILDFLAG(IS_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif
+};
+
+// Helper class to manage allocated GMB info and to provide interface to dump
+// the memory consumed by that GMB.
+class GPU_EXPORT AllocatedBufferInfo {
+ public:
+  AllocatedBufferInfo(const gfx::GpuMemoryBufferHandle& handle,
+                      const gfx::Size& size,
+                      gfx::BufferFormat format);
+  ~AllocatedBufferInfo();
+
+  gfx::GpuMemoryBufferType type() const { return type_; }
+
+  // Add a memory dump for this buffer to |pmd|. Returns false if adding the
+  // dump failed.
+  bool OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    int client_id,
+                    uint64_t client_tracing_process_id) const;
+
+ private:
+  gfx::GpuMemoryBufferId buffer_id_;
+  gfx::GpuMemoryBufferType type_;
+  size_t size_in_bytes_;
+  base::UnguessableToken shared_memory_guid_;
 };
 
 }  // namespace gpu

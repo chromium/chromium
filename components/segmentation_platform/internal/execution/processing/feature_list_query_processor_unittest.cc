@@ -214,7 +214,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
   MockUkmDataManager ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;
   raw_ptr<MockSignalDatabase> signal_database_;
-  raw_ptr<MockFeatureAggregator> feature_aggregator_;
+  raw_ptr<MockFeatureAggregator, DanglingUntriaged> feature_aggregator_;
 
   std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
 };

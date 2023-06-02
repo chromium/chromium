@@ -35,7 +35,6 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace {
@@ -235,7 +234,6 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, /*force_new_profile=*/true, /*show_link_data_option=*/true,
-      SK_ColorWHITE,
       base::BindOnce(
           [](Browser* browser, signin::SigninChoice* result,
              signin::SigninChoice choice) {

@@ -63,8 +63,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
   EXPECT_EQ(1ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
-  EXPECT_TRUE(
-      [user_script.source containsString:@"__gCrWeb.javaScriptFeatureTest"]);
+  EXPECT_TRUE([user_script.source containsString:@"javaScriptFeatureTest="]);
   EXPECT_EQ(WKUserScriptInjectionTimeAtDocumentStart,
             user_script.injectionTime);
   EXPECT_EQ(NO, user_script.forMainFrameOnly);
@@ -90,8 +89,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
   EXPECT_EQ(1ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
-  EXPECT_TRUE(
-      [user_script.source containsString:@"__gCrWeb.javaScriptFeatureTest"]);
+  EXPECT_TRUE([user_script.source containsString:@"javaScriptFeatureTest="]);
   EXPECT_EQ(WKUserScriptInjectionTimeAtDocumentEnd, user_script.injectionTime);
   EXPECT_EQ(YES, user_script.forMainFrameOnly);
 }
@@ -116,8 +114,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
   EXPECT_EQ(1ul, [GetUserContentController().userScripts count]);
   WKUserScript* user_script =
       [GetUserContentController().userScripts lastObject];
-  EXPECT_TRUE(
-      [user_script.source containsString:@"__gCrWeb.javaScriptFeatureTest"]);
+  EXPECT_TRUE([user_script.source containsString:@"javaScriptFeatureTest"]);
   EXPECT_EQ(WKUserScriptInjectionTimeAtDocumentEnd, user_script.injectionTime);
   EXPECT_EQ(YES, user_script.forMainFrameOnly);
 }

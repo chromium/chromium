@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
+import org.chromium.components.browser_ui.site_settings.CookiesInfo;
 import org.chromium.components.browser_ui.site_settings.LocalStorageInfo;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -423,6 +424,12 @@ public class WebsitePermissionsFetcherTest {
                 return;
             }
             callback.onResult(mLocalStorageInfoMap);
+        }
+
+        @Override
+        public void fetchCookiesInfo(BrowserContextHandle browserContextHandle,
+                Callback<Map<String, CookiesInfo>> callback) {
+            callback.onResult(new HashMap<>());
         }
 
         @Override

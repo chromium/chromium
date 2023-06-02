@@ -244,9 +244,9 @@ struct BLINK_COMMON_EXPORT
   }
 
   static const std::vector<blink::mojom::PermissionsPolicyFeature>&
-  required_permissions_to_load(
+  effective_enabled_permissions(
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
-    return config.required_permissions_to_load_;
+    return config.effective_enabled_permissions_;
   }
 
   static bool Read(blink::mojom::FencedFrameConfigDataView data,
@@ -298,9 +298,9 @@ struct BLINK_COMMON_EXPORT
   }
 
   static const std::vector<blink::mojom::PermissionsPolicyFeature>&
-  required_permissions_to_load(
+  effective_enabled_permissions(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
-    return properties.required_permissions_to_load_;
+    return properties.effective_enabled_permissions_;
   }
 
   static bool Read(

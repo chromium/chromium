@@ -361,12 +361,11 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // raw (minimal) audio processing mode. Will be empty in most cases.
   std::vector<ABI::Windows::Media::Effects::AudioEffectType> raw_effect_types_;
 
-  // Will be enabled if "--use-fake-audio-capture-timestamps" has been added to
-  // the command line. This mode can be used in situations where the default
-  // capture timestamps are known to be invalid (e.g. for virtual devices) and
-  // must be emulated with local timeticks to ensure a monotonic timestamp
-  // sequence. See crbug.com/1315231 for more details.
-  bool use_fake_audio_capture_timestamps_ = false;
+  // Set to true if the absolute difference between a QPC timestamp converted
+  // into a TimeTick value and a default base::TimeTicks::Now() is larger than
+  // 500 msec. A true return value should trigger usage of "fake" audio
+  // timestamps instead of default which are QPC based.
+  absl::optional<bool> use_fake_audio_capture_timestamps_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

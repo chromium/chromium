@@ -1510,18 +1510,21 @@ void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
 
-static constexpr partition_alloc::PartitionOptions kOpts = {
-    .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-    .backup_ref_ptr = partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-};
-
 class BackupRefPtrTest : public testing::Test {
  protected:
   void SetUp() override {
     // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
     // new/delete once PartitionAlloc Everywhere is fully enabled.
     partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-    allocator_.init(kOpts);
+    allocator_.init(
+        {.cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+         .backup_ref_ptr =
+             partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+         .memory_tagging =
+             base::CPU::GetInstanceNoAllocation().has_mte()
+                 ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                 : partition_alloc::PartitionOptions::MemoryTagging::
+                       kDisabled});
   }
 
   partition_alloc::PartitionAllocator allocator_;
@@ -1534,7 +1537,7 @@ TEST_F(BackupRefPtrTest, Basic) {
       reinterpret_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
   // Use the actual raw_ptr implementation, not a test substitute, to
   // exercise real PartitionAlloc paths.
-  raw_ptr<int> wrapped_ptr1 = raw_ptr1;
+  raw_ptr<int, DisableDanglingPtrDetection> wrapped_ptr1 = raw_ptr1;
 
   *raw_ptr1 = 42;
   EXPECT_EQ(*raw_ptr1, *wrapped_ptr1);
@@ -1617,7 +1620,7 @@ TEST_F(BackupRefPtrTest, EndPointer) {
 TEST_F(BackupRefPtrTest, QuarantinedBytes) {
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator_.root()->Alloc(sizeof(uint64_t), ""));
-  raw_ptr<uint64_t> wrapped_ptr1 = raw_ptr1;
+  raw_ptr<uint64_t, DisableDanglingPtrDetection> wrapped_ptr1 = raw_ptr1;
   EXPECT_EQ(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
@@ -1697,6 +1700,7 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_DEATH_IF_SUPPORTED(** protected_arr_ptr = 4, "");
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
+  protected_ptr = nullptr;
   allocator.root()->Free(ptr);
 }
 
@@ -1749,6 +1753,7 @@ TEST_F(BackupRefPtrTest, AdvanceAcrossPools) {
   // Same when a pointer is shifted from inside the BRP pool out of it.
   EXPECT_CHECK_DEATH(protected_ptr += (array1 - in_pool_ptr));
 
+  protected_ptr = nullptr;
   allocator_.root()->Free(in_pool_ptr);
 }
 
@@ -1786,6 +1791,13 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
 #endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
   EXPECT_EQ(protected_ptr2_2 - protected_ptr2, 1);
   EXPECT_EQ(protected_ptr2 - protected_ptr2_2, -1);
+
+  protected_ptr1 = nullptr;
+  protected_ptr1_2 = nullptr;
+  protected_ptr1_3 = nullptr;
+  protected_ptr1_4 = nullptr;
+  protected_ptr2 = nullptr;
+  protected_ptr2_2 = nullptr;
 
   allocator_.root()->Free(ptr1);
   allocator_.root()->Free(ptr2);
@@ -2111,6 +2123,8 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
               }),
               CountersMatch());
 
+  protected_ptr = nullptr;
+  protected_ptr_end = nullptr;
   allocator_.root()->Free(ptr);
 }
 
@@ -2144,7 +2158,7 @@ TEST_F(BackupRefPtrTest, Duplicate) {
 TEST_F(BackupRefPtrTest, WriteAfterFree) {
   constexpr uint64_t kPayload = 0x1234567890ABCDEF;
 
-  raw_ptr<uint64_t> ptr =
+  raw_ptr<uint64_t, DisableDanglingPtrDetection> ptr =
       static_cast<uint64_t*>(allocator_.root()->Alloc(sizeof(uint64_t), ""));
 
   // Now |ptr| should be quarantined.
@@ -2179,7 +2193,7 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
       static_cast<uint8_t*>(allocator_.root()->Alloc(sizeof(uint8_t), ""));
   *native_ptr = 0;
   {
-    raw_ptr<uint8_t> smart_ptr = native_ptr;
+    raw_ptr<uint8_t, DisableDanglingPtrDetection> smart_ptr = native_ptr;
 
     allocator_.root()->Free(smart_ptr);
     // Access the allocation through the native pointer to avoid triggering

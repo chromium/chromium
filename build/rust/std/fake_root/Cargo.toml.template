@@ -1,0 +1,22 @@
+[package]
+name = "fake_root"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.sysroot]
+path = "../../../../RUST_SRC_ROOT/library/sysroot"
+default-features = false
+features = [
+    "backtrace",
+    "panic-unwind",
+    "profiler",
+    "std_detect_dlsym_getauxval",
+    "std_detect_file_io"
+]
+
+[patch.crates-io]
+rustc-std-workspace-core = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-core' }
+rustc-std-workspace-alloc = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-alloc' }
+rustc-std-workspace-std = { path = '../../../../RUST_SRC_ROOT/library/rustc-std-workspace-std' }

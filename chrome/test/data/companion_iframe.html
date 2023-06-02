@@ -1,4 +1,7 @@
 <html>
+<body>
+  <a id="some_link" href="google.html" target="_blank">Click Here</a>
+</body>
 <script>
 
   // The proto received on last update postmessage. Reset on getLastReceivedCompanionProto().
@@ -17,6 +20,7 @@
   function onBrowserMessage(event) {
     if (event.data['type'] == 31) { // `MethodType.kUpdateCompanionPage`
       window.lastReceivedCompanionProto = event.data['companionUpdateParams'];
+      promiseResolve(event.data['companionUpdateParams']);
     } else if (event.data['type'] == 32) { // `MethodType.kOnCqFindTextResultsAvailable`
       promiseResolve(event.data['cqTextFindResults']);
     }

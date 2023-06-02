@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -48,9 +49,9 @@ constexpr char kStaticLoadingScreenURL[] =
     "https://www.gstatic.com/diner/chrome/atp_loading.html";
 
 AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
-    BrowserView* browser_view) {
-  browser_view_ = browser_view;
-  auto* browser_context = browser_view->GetProfile();
+    content::WebContents* parent_web_contents)
+    : parent_web_contents_(parent_web_contents->GetWeakPtr()) {
+  auto* browser_context = outer_browser_view()->GetProfile();
 
   // Allow view to be focusable in order to receive focus when side panel is
   // opened.
@@ -131,7 +132,9 @@ content::WebContents* AboutThisSiteSidePanelView::OpenURLFromTab(
   // from the context menu.
   content::OpenURLParams new_params(params);
   new_params.url = CleanUpQueryParams(params.url);
-  outer_delegate()->OpenURLFromTab(source, new_params);
+  if (auto* delegate = outer_delegate()) {
+    delegate->OpenURLFromTab(source, new_params);
+  }
   return nullptr;
 }
 
@@ -139,19 +142,34 @@ bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
   // Redirect keyboard events to the main browser.
-  return outer_delegate()->HandleKeyboardEvent(source, event);
+  if (auto* delegate = outer_delegate()) {
+    return delegate->HandleKeyboardEvent(source, event);
+  }
+  return false;
+}
+
+BrowserView* AboutThisSiteSidePanelView::outer_browser_view() {
+  if (parent_web_contents_) {
+    auto* browser =
+        chrome::FindBrowserWithWebContents(parent_web_contents_.get());
+    return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+  }
+  return nullptr;
 }
 
 content::WebContentsDelegate* AboutThisSiteSidePanelView::outer_delegate() {
-  return browser_view_->browser();
+  auto* browser_view = outer_browser_view();
+  return browser_view ? browser_view->browser() : nullptr;
 }
 
 void AboutThisSiteSidePanelView::OpenUrlInBrowser(
     const content::OpenURLParams& params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::OpenURLParams new_params(params);
-  new_params.url = CleanUpQueryParams(params.url);
-  browser_view_->browser()->OpenURL(new_params);
+  if (auto* browser_view = outer_browser_view()) {
+    content::OpenURLParams new_params(params);
+    new_params.url = CleanUpQueryParams(params.url);
+    browser_view->browser()->OpenURL(new_params);
+  }
 }
 
 bool AboutThisSiteSidePanelView::IsNavigationAllowed(const GURL& new_url,

@@ -151,6 +151,9 @@ std::string GetDebugJSONForClusters(
       base::Value::Dict debug_visit =
           GetDebugJSONDictForAnnotatedVisit(visit.annotated_visit);
       debug_visit.Set("score", visit.score);
+      debug_visit.Set("interaction_state",
+                      history::ClusterVisit::InteractionStateToInt(
+                          visit.interaction_state));
       debug_visit.Set("site_engagement_score", visit.engagement_score);
 
       base::Value::List debug_duplicate_visits;

@@ -58,6 +58,8 @@ FilterBuffer filter_buffer;
 
 std::unique_ptr<SizeInfo> info;
 std::unique_ptr<SizeInfo> before_info;
+std::vector<std::string> removed_sources;
+std::vector<std::string> added_sources;
 std::unique_ptr<DeltaSizeInfo> diff_info;
 std::unique_ptr<TreeBuilder> builder;
 
@@ -116,24 +118,37 @@ bool IsMultiContainer() {
   return info->containers.size() > 1 || !info->containers[0].name.empty();
 }
 
+void ClearInfoAndBuilderObjects() {
+  builder.reset(nullptr);
+  diff_info.reset(nullptr);
+  before_info.reset(nullptr);
+  info.reset(nullptr);
+  removed_sources = {};
+  added_sources = {};
+}
+
 }  // namespace
 
 extern "C" {
 void LoadSizeFile(char* compressed, size_t size) {
+  ClearInfoAndBuilderObjects();
   if (IsDiffSizeInfo(compressed, size)) {
     info = std::make_unique<SizeInfo>();
     before_info = std::make_unique<SizeInfo>();
-    diff_info.reset(nullptr);
-    ParseDiffSizeInfo(compressed, size, before_info.get(), info.get());
+    ParseDiffSizeInfo(compressed, size, before_info.get(), info.get(),
+                      &removed_sources, &added_sources);
+    // DeltaSizeInfo instantiation for sparse diff.
+    diff_info.reset(new DeltaSizeInfo(
+        Diff(before_info.get(), info.get(), &removed_sources, &added_sources)));
   } else {
-    diff_info.reset(nullptr);
     info = std::make_unique<SizeInfo>();
     ParseSizeInfo(compressed, size, info.get());
   }
 }
 
 void LoadBeforeSizeFile(const char* compressed, size_t size) {
-  diff_info.reset(nullptr);
+  // Don't call ClearInfoAndBuilderObjects(): It's assumed that LoadSizeFile()
+  // was called immediately before.
   before_info = std::make_unique<SizeInfo>();
   ParseSizeInfo(compressed, size, before_info.get());
 }
@@ -239,7 +254,9 @@ bool BuildTree(bool method_count_mode,
   // viewer, but if we already have a DeltaSizeInfo we can skip regenerating it
   // and let the TreeBuilder filter the symbols we care about.
   if (diff_mode && !diff_info) {
-    diff_info.reset(new DeltaSizeInfo(Diff(before_info.get(), info.get())));
+    // DeltaSizeInfo instantiation for dense diff.
+    diff_info.reset(new DeltaSizeInfo(
+        Diff(before_info.get(), info.get(), nullptr, nullptr)));
   }
 
   if (diff_mode) {
@@ -274,7 +291,7 @@ bool BuildTree(bool method_count_mode,
   return bool(diff_info);
 }
 
-// Returns a string that can be parsed to a JS object.
+// Returns a JSON string representing root data.
 const char* Open(const char* path) {
   static std::string result;
   Json::Value v = builder->Open(path);
@@ -282,15 +299,16 @@ const char* Open(const char* path) {
   return result.c_str();
 }
 
-// Returns a string representing the metadata that can be parsed to a JS object.
+// Returns a JSON string representing the metadata.
 const char* GetMetadata() {
-  static std::string result;
-  result = "\"size_file\" : " + JsonSerialize(info->fields);
+  static std::string cached_json;
+  Json::Value v;
+  v["size_file"] = info->fields;
   if (before_info != nullptr) {
-    result += ", \"before_size_file\" : " + JsonSerialize(before_info->fields);
+    v["before_size_file"] = before_info->fields;
   }
-  result = "{" + result + "}";
-  return result.c_str();
+  cached_json = JsonSerialize(v);
+  return cached_json.c_str();
 }
 
 // Returns global properties.

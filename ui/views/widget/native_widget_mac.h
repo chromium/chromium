@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/window_open_disposition.h"
@@ -211,8 +212,8 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
 
   // Calls |callback| with the newly created NativeWidget whenever a
   // NativeWidget is created.
-  static void SetInitNativeWidgetCallback(
-      base::RepeatingCallback<void(NativeWidgetMac*)> callback);
+  static base::CallbackListSubscription RegisterInitNativeWidgetCallback(
+      const base::RepeatingCallback<void(NativeWidgetMac*)>& callback);
 
  protected:
   // The argument to SetBounds is sometimes in screen coordinates and sometimes

@@ -14,7 +14,8 @@ namespace extensions {
 // static
 ExtensionNotificationDisplayHelperFactory*
 ExtensionNotificationDisplayHelperFactory::GetInstance() {
-  return base::Singleton<ExtensionNotificationDisplayHelperFactory>::get();
+  static base::NoDestructor<ExtensionNotificationDisplayHelperFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -36,7 +37,7 @@ ExtensionNotificationDisplayHelperFactory::
               .Build()) {}
 
 ExtensionNotificationDisplayHelperFactory::
-    ~ExtensionNotificationDisplayHelperFactory() {}
+    ~ExtensionNotificationDisplayHelperFactory() = default;
 
 KeyedService*
 ExtensionNotificationDisplayHelperFactory::BuildServiceInstanceFor(

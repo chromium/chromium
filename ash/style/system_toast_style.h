@@ -55,6 +55,7 @@ class ASH_EXPORT SystemToastStyle : public views::View {
                        const std::u16string& second_button_text);
 
   views::LabelButton* dismiss_button() const { return dismiss_button_; }
+  views::LabelButton* second_button() const { return second_button_; }
   views::Label* label() const { return label_; }
 
  private:

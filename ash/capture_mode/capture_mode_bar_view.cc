@@ -35,8 +35,6 @@ namespace {
 
 constexpr auto kBarPadding = gfx::Insets::VH(14, 16);
 
-constexpr int kBorderRadius = 20;
-
 }  // namespace
 
 CaptureModeBarView::~CaptureModeBarView() = default;
@@ -65,14 +63,32 @@ void CaptureModeBarView::SetSettingsMenuShown(bool shown) {
   settings_button_->SetToggled(shown);
 }
 
+void CaptureModeBarView::AddedToWidget() {
+  // Since the layer of the shadow has to be added as a sibling to this view's
+  // layer, we need to wait until the view is added to the widget.
+  auto* parent = layer()->parent();
+  parent->Add(shadow_->GetLayer());
+  parent->StackAtBottom(shadow_->GetLayer());
+}
+
+void CaptureModeBarView::Layout() {
+  views::View::Layout();
+
+  // The shadow layer is a sibling of this view's layer, and should have the
+  // same bounds.
+  shadow_->SetContentBounds(layer()->bounds());
+}
+
 CaptureModeBarView::CaptureModeBarView()
-    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
-          this,
+    // Use the `ShadowOnTextureLayer` for the view with fully rounded corners.
+    : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+
+  const int border_radius = capture_mode::kCaptureBarHeight / 2;
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kBorderRadius));
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(border_radius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
@@ -83,12 +99,12 @@ CaptureModeBarView::CaptureModeBarView()
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   capture_mode_util::SetHighlightBorder(
-      this, kBorderRadius,
+      this, border_radius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder2);
 
-  shadow_->SetRoundedCornerRadius(kBorderRadius);
+  shadow_->SetRoundedCornerRadius(border_radius);
 }
 
 void CaptureModeBarView::AppendCommonElements() {

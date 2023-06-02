@@ -167,7 +167,7 @@ void WebAppUninstallDialogDelegateView::Uninstall() {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
-  if (!provider->install_finalizer().CanUserUninstallWebApp(app_id_)) {
+  if (!provider->registrar_unsafe().CanUserUninstallWebApp(app_id_)) {
     std::exchange(dialog_, nullptr)->UninstallCancelled();
     return;
   }

@@ -8,15 +8,18 @@
     <canvas id='canvas2' width='100' height='100'></canvas>
     <canvas id='canvas3' width='100' height='100'></canvas>
     <canvas id='canvas4' width='100' height='100'></canvas>
+    <canvas id='canvas5' width='100' height='100'></canvas>
     <script>
       var canvas1 = document.getElementById('canvas1');
       var canvas2 = document.getElementById('canvas2');
       var canvas3 = document.getElementById('canvas3');
       var canvas4 = document.getElementById('canvas4');
+      var canvas5 = document.getElementById('canvas5');
       var ctx1 = canvas1.getContext('2d');
       var ctx2 = canvas2.getContext('2d');
       var ctx3 = canvas3.getContext('2d');
       var ctx4 = canvas4.getContext('2d');
+      var ctx5 = canvas5.getContext('2d');
 
       ctx1.fillStyle = 'green';
       ctx1.fillRect(0, 0, 100, 100);
@@ -38,7 +41,28 @@
       ctx4.fillStyle = 'green';
       ctx4.fillRect(0, 0, 10, 100);
       ctx4.drawImage(canvas1, 10, 0);
-  
+
+      ctx5.fillStyle = 'green';
+      ctx5.fillRect(0, 0, 100, 100);
+      ctx5.save();
+      ctx5.beginPath();
+      ctx5.moveTo(10, 10);
+      ctx5.lineTo(90, 50);
+      ctx5.lineTo(10, 90);
+      ctx5.clip();
+      ctx5.save();
+      ctx5.beginPath();
+      ctx5.moveTo(90, 10);
+      ctx5.lineTo(90, 90);
+      ctx5.lineTo(10, 50);
+      ctx5.clip();
+      ctx5.fillStyle = 'purple';
+      ctx5.fillRect(0, 0, 100, 100);
+      ctx5.restore();
+      ctx5.fillStyle = 'yellow';
+      ctx5.globalAlpha = 0.5;
+      ctx5.fillRect(0, 0, 100, 100);
+
     </script>
   </body>
 </html>

@@ -141,7 +141,6 @@ class MainView : public views::Button {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
     SetInstallFocusRingOnFocus(false);
-    set_suppress_default_focus_handling();
 
     // This is because waiting for mouse-release to fire buttons would be too
     // late, since mouse-press dismisses the menu.
@@ -374,6 +373,18 @@ views::UniqueWidgetPtr QuickAnswersView::CreateWidget(
       reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
 
   return widget;
+}
+
+void QuickAnswersView::RequestFocus() {
+  // When the Quick Answers view is focused, we actually want `main_view_`
+  // to have the focus for highlight and selection purposes.
+  main_view_->RequestFocus();
+}
+
+bool QuickAnswersView::HasFocus() const {
+  // When the Quick Answers view is focused, `main_view_` should have
+  // the focus.
+  return main_view_->HasFocus();
 }
 
 void QuickAnswersView::OnFocus() {
@@ -690,7 +701,7 @@ void QuickAnswersView::UpdateBounds() {
   int y_min = anchor_view_bounds_.y() - kMarginDip - MaximumViewHeight();
   if (y_min < display::Screen::GetScreen()
                   ->GetDisplayMatching(anchor_view_bounds_)
-                  .bounds()
+                  .work_area()
                   .y()) {
     // The Quick Answers view will be off screen if showing above the anchor.
     // Show below the anchor instead.
@@ -700,7 +711,7 @@ void QuickAnswersView::UpdateBounds() {
   gfx::Rect bounds = {{anchor_view_bounds_.x(), y}, {GetBoundsWidth(), height}};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the toplevel window and the
+  // For Lacros, `bounds` is already relative to the top-level window and the
   // position will be calculated on server side.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
 #endif
@@ -824,10 +835,10 @@ void QuickAnswersView::UpdateQuickAnswerResult(
 
 std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   std::vector<views::View*> focusable_views;
-  // The view itself does not gain focus for retry-view and transfers it to the
+  // The main view does not gain focus for retry-view and transfers it to the
   // retry-label, and so is not included when this is the case.
   if (!retry_label_) {
-    focusable_views.push_back(this);
+    focusable_views.push_back(main_view_);
   }
   if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible()) {
     focusable_views.push_back(dogfood_feedback_button_);

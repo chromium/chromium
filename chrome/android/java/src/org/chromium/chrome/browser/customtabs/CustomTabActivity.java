@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
@@ -133,7 +134,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         FontPreloader.getInstance().onPostInflationStartupCustomTabActivity();
 
-        mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
+        if (mRootUiCoordinator.getStatusBarColorController() != null) {
+            mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
+        }
 
         // Properly attach tab's InfoBarContainer to the view hierarchy if the tab is already
         // attached to a ChromeActivity, as the main tab might have been initialized prior to
@@ -159,8 +162,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     protected boolean isPageInsightsHubEnabled() {
-        // TODO(b/282739536): Add more conditions.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB);
+        // TODO(b/282739536): Add supplemental Web and App activity(sWAA) user setting.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
+                && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(
+                        mIntentDataProvider)
+                && SyncService.get().isSyncingUnencryptedUrls();
     }
 
     @Override
@@ -257,7 +263,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
         } else if (id == R.id.page_insights_id) {
-            // TODO(b/282739536): Open PageInsights Hub.
+            assert mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator() != null;
+            mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator().launch();
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);

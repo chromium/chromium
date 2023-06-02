@@ -136,7 +136,8 @@ class EventRewriterAsh : public EventRewriter {
     // Used to record when either Alt+Click or Search+Click is remapped to a
     // right click event. The `kEventRemappedToRightClick` pref will be used
     // to determine the default behavior for simulating a right click.
-    virtual void RecordEventRemappedToRightClick() = 0;
+    virtual void RecordEventRemappedToRightClick(
+        bool alt_based_right_click) = 0;
 
     // Used to record Alt/Search based key event rewrites for Six Pack keys.
     // `alt_based` tells us whether this "six pack" event was produced by an

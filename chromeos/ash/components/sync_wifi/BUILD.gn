@@ -81,6 +81,7 @@ source_set("test_support") {
   deps = [
     ":sync_wifi",
     "//base/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/services/network_config",

@@ -84,7 +84,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     kCompositedHas3dTransform = 8,
     kCompositedHas2dShear = 9,
     kCompositedHas2dRotation = 10,
-    kMaxValue = kCompositedHas2dRotation
+    kCompositedFeatureDisabled = 11,
+    kMaxValue = kCompositedFeatureDisabled
   };
 
   gfx::RectF GetPrimaryPlaneDisplayRect(

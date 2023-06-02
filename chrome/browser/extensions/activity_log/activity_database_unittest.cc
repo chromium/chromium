@@ -150,7 +150,7 @@ class ActivityDatabaseTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  raw_ptr<ActivityDatabaseTestPolicy> db_delegate_;
+  raw_ptr<ActivityDatabaseTestPolicy, DanglingUntriaged> db_delegate_;
 };
 
 // Check that the database is initialized properly.

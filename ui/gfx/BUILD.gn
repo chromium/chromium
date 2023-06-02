@@ -293,7 +293,7 @@ component("gfx") {
     ":gfx_skia",
     ":gfx_switches",
     ":memory_buffer_sources",
-    ":native_widget_types",
+    ":native_widget_types_sources",
     ":resize_image_dimensions",
     ":selection_bound_sources",
     "//base",
@@ -499,21 +499,36 @@ source_set("resize_image_dimensions") {
 }
 
 # Depend on this to use native_widget_types.h without pulling in all of gfx.
-source_set("native_widget_types") {
+# The structure here allows native_widget_types to be part of the gfx component
+# in the component build, but be a separate source set in a static build.
+group("native_widget_types") {
+  if (is_component_build) {
+    public_deps = [ ":gfx" ]
+  } else {
+    public_deps = [ ":native_widget_types_sources" ]
+  }
+}
+
+source_set("native_widget_types_sources") {
+  visibility = [ ":*" ]  # Depend on through ":native_widget_types".
+
   public = [ "native_widget_types.h" ]
+  sources = [ "native_widget_types.cc" ]
 
   public_deps = [
     ":gfx_export",
     "//base",
   ]
 
-  if (is_mac) {
-    sources = [ "native_widget_types.mm" ]
-
-    frameworks = [ "AppKit.framework" ]
-  }
-
   deps = [ "//build:chromeos_buildflags" ]
+
+  defines = [ "GFX_IMPLEMENTATION" ]
+
+  if (is_mac) {
+    sources += [ "native_widget_types_mac.mm" ]
+    frameworks = [ "AppKit.framework" ]
+    deps += [ "//base:base_arc" ]
+  }
 }
 
 group("selection_bound") {
@@ -527,7 +542,7 @@ group("selection_bound") {
 # Depend on this to use selection_bound.h without pulling in all of gfx.
 # Cannot be a static_library in component builds due to exported functions
 source_set("selection_bound_sources") {
-  visibility = [ ":*" ]
+  visibility = [ ":*" ]  # Depend on through ":selection_bound".
 
   sources = [
     "gfx_export.h",
@@ -584,11 +599,14 @@ source_set("memory_buffer_sources") {
     "gpu_fence.h",
     "gpu_fence_handle.cc",
     "gpu_fence_handle.h",
-    "native_pixmap.h",
     "overlay_priority_hint.h",
     "overlay_transform.h",
     "surface_origin.h",
   ]
+
+  if (!is_nacl) {
+    sources += [ "native_pixmap.h" ]
+  }
 
   if (use_blink) {
     sources += [
@@ -607,12 +625,15 @@ source_set("memory_buffer_sources") {
 
   deps = [
     ":gfx_switches",
-    ":native_widget_types",
     "//base",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//ui/gfx/geometry",
   ]
+
+  if (!is_nacl) {
+    deps += [ ":native_widget_types_sources" ]
+  }
 
   if (is_linux || is_chromeos) {
     sources += [
@@ -727,6 +748,7 @@ test("gfx_unittests") {
     "geometry/linear_gradient_unittest.cc",
     "geometry/mask_filter_info_unittest.cc",
     "geometry/rrect_f_unittest.cc",
+    "geometry/sin_cos_degrees_unittest.cc",
     "geometry/transform_operations_unittest.cc",
     "geometry/transform_unittest.cc",
     "image/buffer_w_stream_unittest.cc",
@@ -868,12 +890,11 @@ test("gfx_unittests") {
   ]
 
   if (use_blink) {
-    sources += [ "bidi_line_iterator_unittest.cc" ]
-    if (!is_ios) {
-      # TODO(crbug.com/1428953): many render text tests fail on iOS, even when
-      # use_blink is true.
-      sources += [ "render_text_unittest.cc" ]
-    }
+    sources += [
+      "bidi_line_iterator_unittest.cc",
+      "render_text_unittest.cc",
+    ]
+
     deps += [ "//third_party:freetype_harfbuzz" ]
   }
 

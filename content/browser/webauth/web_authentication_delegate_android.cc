@@ -32,16 +32,3 @@ JNI_WebAuthenticationDelegate_GetIntentSender(
              static_cast<intptr_t>(delegatePtr))
       ->GetIntentSender(web_contents);
 }
-
-static int JNI_WebAuthenticationDelegate_GetSupportLevel(
-    JNIEnv* env,
-    jlong delegatePtr,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
-  content::WebContents* const web_contents =
-      content::WebContents::FromJavaWebContents(java_web_contents);
-
-  static_assert(sizeof(delegatePtr) >= sizeof(intptr_t));
-  return reinterpret_cast<content::WebAuthenticationDelegate*>(
-             static_cast<intptr_t>(delegatePtr))
-      ->GetSupportLevel(web_contents);
-}

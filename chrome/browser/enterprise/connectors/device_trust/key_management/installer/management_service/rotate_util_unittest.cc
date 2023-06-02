@@ -88,8 +88,9 @@ class RotateUtilTest : public testing::Test {
     return command_line;
   }
 
-  raw_ptr<MockKeyNetworkDelegate> mock_network_delegate_;
-  raw_ptr<MockKeyPersistenceDelegate> mock_persistence_delegate_;
+  raw_ptr<MockKeyNetworkDelegate, DanglingUntriaged> mock_network_delegate_;
+  raw_ptr<MockKeyPersistenceDelegate, DanglingUntriaged>
+      mock_persistence_delegate_;
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   base::test::TaskEnvironment task_environment_;

@@ -147,9 +147,9 @@ BASE_FEATURE(kConversionMeasurement,
 // content.
 BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
              "ExcludeLowEntropyImagesFromLCP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<double> kMinimumEntropyForLCP{
-    &kExcludeLowEntropyImagesFromLCP, "min_bpp", 2};
+    &kExcludeLowEntropyImagesFromLCP, "min_bpp", 0.05};
 
 BASE_FEATURE(kGMSCoreEmoji, "GMSCoreEmoji", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -289,25 +289,11 @@ constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge{
     &kPrivateAggregationApi, "enabled_in_fledge",
     /*default_value=*/true};
 
-// Selectively allows the FLEDGE-specific extensions to be disabled.
+// Selectively allows the Protected Audience-specific extensions to be disabled.
 constexpr base::FeatureParam<bool>
     kPrivateAggregationApiFledgeExtensionsEnabled{&kPrivateAggregationApi,
                                                   "fledge_extensions_enabled",
-                                                  /*default_value=*/false};
-
-// Maximum budget allowed to be claimed per-origin per-day per-API. See
-// `content::PrivateAggregationBudgeter` for more detail.
-constexpr base::FeatureParam<int> kPrivateAggregationApiMaxBudgetPerScope{
-    &kPrivateAggregationApi, "max_budget_per_scope", /*default_value=*/65536};
-
-// Has the same effect as enabling
-// kPrivateAggregationApiFledgeExtensionsEnabled. This is intended as a
-// convenience for local testing only.
-// TODO(alexmt): Remove when kPrivateAggregationApiFledgeExtensionsEnabled is
-// enabled by default.
-BASE_FEATURE(kPrivateAggregationApiFledgeExtensionsLocalTestingOverride,
-             "PrivateAggregationApiFledgeExtensionsLocalTestingOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+                                                  /*default_value=*/true};
 
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
@@ -352,7 +338,7 @@ const base::FeatureParam<int>
 
 BASE_FEATURE(kSharedStorageSelectURLLimit,
              "SharedStorageSelectURLLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kSharedStorageSelectURLBitBudgetPerPageLoad = {
     &kSharedStorageSelectURLLimit, "SharedStorageSelectURLBitBudgetPerPageLoad",
     12};
@@ -642,6 +628,81 @@ const base::FeatureParam<ForceDarkImageClassifier>
                                    ForceDarkImageClassifier::kUseBlinkSettings,
                                    &forcedark_image_classifier_policy_options};
 
+// Enable service worker warming-up feature. (https://crbug.com/1431792)
+BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
+             "SpeculativeServiceWorkerWarmUp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If true, do not actually warm-up service workers.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpDryRun{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_dry_run", false};
+
+// kSpeculativeServiceWorkerWarmUp observes anchor events such as visibility,
+// pointerover, and pointerdown. These events could be triggered very often. To
+// reduce the frequency of processing, kSpeculativeServiceWorkerWarmUp uses a
+// timer to batch URL candidates together for this amount of duration.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpBatchTimer{&kSpeculativeServiceWorkerWarmUp,
+                                              "sw_warm_up_batch_timer",
+                                              base::Milliseconds(100)};
+
+// kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
+// count.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_max_count", 10};
+
+// kSpeculativeServiceWorkerWarmUp remembers recent warm-up requests to prevent
+// excessive duplicate warm-up. The following cache size is the cache size for
+// duplicated request checks.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestCacheSize{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_cache_size", 1000};
+
+// kSpeculativeServiceWorkerWarmUp enqueues navigation candidate URLs. This is
+// the queue length of the candidate URLs.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestQueueLength{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_queue_length", 1000};
+
+// kSpeculativeServiceWorkerWarmUp accept requests of navigation candidate URLs.
+// This is the request count limit per document.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestLimit{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_limit", 1000};
+
+// Duration to keep worker warmed-up.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpDuration{&kSpeculativeServiceWorkerWarmUp,
+                                            "sw_warm_up_duration",
+                                            base::Minutes(10)};
+// Duration to re-warmup service worker. This duration must be shorter than
+// sw_warm_up_duration.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpReWarmUpThreshold{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_re_warm_up_threshold",
+        base::Minutes(7)};
+
+// Enable IntersectionObserver to detect anchor's visibility.
+const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpIntersectionObserver{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_intersection_observer",
+        true};
+
+// Duration from previous IntersectionObserver event to the next event.
+const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay{
+        &kSpeculativeServiceWorkerWarmUp,
+        "sw_warm_up_intersection_observer_delay", 100};
+
+// Warms up service workers when the anchor becomes visible.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnVisible{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_visible", true};
+
+// Warms up service workers when a pointerover event is triggered on an anchor.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerover", true};
+
+// Warms up service workers when a pointerdown event is triggered on an anchor.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
+
 // Instructs WebRTC to honor the Min/Max Video Encode Accelerator dimensions.
 BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
              "WebRtcUseMinMaxVEADimensions",
@@ -815,7 +876,14 @@ BASE_FEATURE(kResamplingScrollEvents,
 
 BASE_FEATURE(kFilteringScrollPrediction,
              "FilteringScrollPrediction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             // TODO(b/284271126): Run the experiment on desktop and enable if
+             // positive.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kKalmanHeuristics,
              "KalmanHeuristics",
@@ -1009,6 +1077,8 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Feature flag to enable debug reporting APIs.
+// Due to an issue in how prevWins were stored this flag should not be enabled
+// until July 2023.
 BASE_FEATURE(kBiddingAndScoringDebugReportingAPI,
              "BiddingAndScoringDebugReportingAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1086,12 +1156,13 @@ const base::FeatureParam<int>
 // multiple configurations as long as they are compatible (from both Chrome's
 // and users/websites' perspective). For a configuration that's incompatible
 // with previous ones, a new dedicated version number should be used.
-const base::FeatureParam<int> kBrowsingTopicsConfigVersion{&kBrowsingTopics,
-                                                           "config_version", 1};
+const base::FeatureParam<int> kBrowsingTopicsConfigVersion{
+    &kBrowsingTopics, "config_version", kBrowsingTopicsConfigVersionDefault};
 // The taxonomy version. This only affects the topics classification that occurs
 // during this browser session, and doesn't affect the pre-existing epochs.
 const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
-    &kBrowsingTopics, "taxonomy_version", 1};
+    &kBrowsingTopics, "taxonomy_version",
+    kBrowsingTopicsTaxonomyVersionDefault};
 
 const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
     &kBrowsingTopics, "browsing_topics_disabled_topics_list", ""};
@@ -1103,6 +1174,15 @@ const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
 BASE_FEATURE(kBrowsingTopicsXHR,
              "BrowsingTopicsXHR",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables calling the Topics API through Javascript (i.e.
+// document.browsingTopics()). For this feature to take effect, the main Topics
+// feature has to be enabled first (i.e. `kBrowsingTopics` is enabled, and,
+// either a valid Origin Trial token exists or `kPrivacySandboxAdsAPIsOverride`
+// is enabled.)
+BASE_FEATURE(kBrowsingTopicsDocumentAPI,
+             "BrowsingTopicsDocumentAPI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the check for whether the IP address is publicly routable will be
 // bypassed when determining the eligibility for a page to be included in topics
@@ -1247,10 +1327,6 @@ BASE_FEATURE(kSystemColorChooser,
 BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
              "NoForcedFrameUpdatesForWebTests",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDurableClientHintsCache,
-             "DurableClientHintsCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
     &kReduceUserAgentMinorVersion, "build_version", "0"};
@@ -1529,6 +1605,10 @@ BASE_FEATURE(kStylusPointerAdjustment,
              "StylusPointerAdjustment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHiddenSelectionBounds,
+             "HiddenSelectionBounds",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDisableArrayBufferSizeLimitsForTesting,
              "DisableArrayBufferSizeLimitsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1585,10 +1665,6 @@ BASE_FEATURE(kFastPathPaintPropertyUpdates,
              "FastPathPaintPropertyUpdates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleOffscreenAnimatingSvgImages,
-             "ThrottleOffscreenAnimatingSvgImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kThreadedBodyLoader,
              "ThreadedBodyLoader",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1644,6 +1720,17 @@ BASE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread,
              "WebRtcCombinedNetworkAndWorkerThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVSyncDecoding,
+             "VSyncDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kVSyncDecodingHiddenOccludedTickDuration{
+        &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
+
+BASE_FEATURE(kWebRtcSendPacketBatch,
+             "WebRtcSendPacketBatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allow process isolation of iframes with the 'sandbox' attribute set. Whether
 // or not such an iframe will be isolated may depend on options specified with
 // the attribute. Note: At present, only iframes with origin-restricted
@@ -1677,6 +1764,10 @@ BASE_FEATURE(kSSVTrailerEnforceExposureAssertion,
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCorrectFloatExtensionTestForWebGL,
+             "CorrectFloatExtensionTestForWebGL",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSplitUserMediaQueues,
              "SplitUserMediaQueues",
@@ -1755,10 +1846,6 @@ const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
     "max-fcp-delay",
     100);
 
-BASE_FEATURE(kWebRtcStatsReportIdl,
-             "WebRtcStatsReportIdl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1813,8 +1900,12 @@ BASE_FEATURE(kMainThreadHighPriorityImageLoading,
              "MainThreadHighPriorityImageLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInputIpcDirect,
-             "InputIpcDirect",
+BASE_FEATURE(kDirectCompositorThreadIpc,
+             "DirectCompositorThreadIpc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCSPWildcardsInPermissionsPolicies,
+             "CSPWildcardsInPermissionsPolicies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

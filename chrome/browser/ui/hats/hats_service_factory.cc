@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -18,7 +18,8 @@ HatsService* HatsServiceFactory::GetForProfile(Profile* profile,
 
 // static
 HatsServiceFactory* HatsServiceFactory::GetInstance() {
-  return base::Singleton<HatsServiceFactory>::get();
+  static base::NoDestructor<HatsServiceFactory> instance;
+  return instance.get();
 }
 
 HatsServiceFactory::HatsServiceFactory()

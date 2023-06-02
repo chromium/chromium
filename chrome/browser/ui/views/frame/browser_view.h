@@ -77,7 +77,6 @@ class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
 class SidePanel;
-class SidePanelCoordinator;
 class StatusBubbleViews;
 class TabSearchBubbleHost;
 class TabStrip;
@@ -214,8 +213,6 @@ class BrowserView : public BrowserWindow,
   views::View* contents_container() { return contents_container_; }
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
-
-  SidePanelCoordinator* side_panel_coordinator();
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -463,7 +460,6 @@ class BrowserView : public BrowserWindow,
                           int index,
                           int reason) override;
   void OnTabDetached(content::WebContents* contents, bool was_active) override;
-  void OnTabRestored(int command_id) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
@@ -519,9 +515,7 @@ class BrowserView : public BrowserWindow,
   bool IsToolbarShowing() const override;
   bool IsLocationBarVisible() const override;
   bool IsBorderlessModeEnabled() const override;
-  void ShowSidePanel(
-      absl::optional<SidePanelEntryId> entry_id,
-      absl::optional<SidePanelOpenTrigger> open_trigger) override;
+  void ShowChromeLabs() override;
 
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;

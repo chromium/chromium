@@ -30,12 +30,6 @@ class AutofillWalletModelTypeController : public syncer::ModelTypeController,
       syncer::ModelType type,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_full_sync_mode,
-      PrefService* pref_service,
-      syncer::SyncService* sync_service);
-  AutofillWalletModelTypeController(
-      syncer::ModelType type,
-      std::unique_ptr<syncer::ModelTypeControllerDelegate>
-          delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_transport_mode,
       PrefService* pref_service,

@@ -8,9 +8,6 @@ for more details about the presubmit API built into depot_tools.
 """
 
 
-USE_PYTHON3 = True
-
-
 def CommonChecks(input_api, output_api):
   output = []
   output.extend(
@@ -23,10 +20,7 @@ def CommonChecks(input_api, output_api):
         output_api,
         input_api.PresubmitLocalPath(),
         files_to_check=[r'.+_test\.py$'],
-        files_to_skip=[],
-        run_on_python2=False,
-        run_on_python3=True,
-        skip_shebang_check=True)
+        files_to_skip=[])
 
     output.extend(input_api.RunTests(py_tests, False))
   return output

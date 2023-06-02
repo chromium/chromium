@@ -16,6 +16,7 @@
 class BrowserView;
 class SidePanelToolbarButton;
 class ToolbarButton;
+class SidePanelCoordinator;
 
 // Container for side panel button and pinned side panel entries shown in the
 // toolbar.
@@ -29,6 +30,8 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
 
   // Gets the side panel button for the toolbar.
   SidePanelToolbarButton* GetSidePanelButton() const;
+
+  ToolbarButton& GetPinnedButtonForId(SidePanelEntry::Id id);
 
   void ObserveSidePanelView(views::View* side_panel);
 
@@ -69,7 +72,7 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
    private:
     std::unique_ptr<ui::MenuModel> CreateMenuModel();
 
-    raw_ptr<BrowserView> browser_view_;
+    raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
     SidePanelEntry::Id id_;
   };
 
@@ -84,6 +87,8 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
   void OnPinnedButtonPrefChanged();
 
   void UpdatePinnedButtonsVisibility();
+
+  SidePanelCoordinator* GetSidePanelCoordinator();
 
   const raw_ptr<BrowserView> browser_view_;
 

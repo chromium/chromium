@@ -314,7 +314,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kUninitializedPoolBaseAddress =
       static_cast<uintptr_t>(-1);
 
-  struct PA_THREAD_ISOLATED_ALIGN alignas(kPartitionCachelineSize) PoolSetup {
+  struct alignas(kPartitionCachelineSize) PA_THREAD_ISOLATED_ALIGN PoolSetup {
     // Before PartitionAddressSpace::Init(), no allocation are allocated from a
     // reserved address space. Therefore, set *_pool_base_address_ initially to
     // -1, so that PartitionAddressSpace::IsIn*Pool() always returns false.

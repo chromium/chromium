@@ -98,11 +98,6 @@ SVGSVGElement::SVGSVGElement(Document& doc)
       time_container_(MakeGarbageCollected<SMILTimeContainer>(*this)),
       translation_(MakeGarbageCollected<SVGPoint>()),
       current_scale_(1) {
-  AddToPropertyMap(x_);
-  AddToPropertyMap(y_);
-  AddToPropertyMap(width_);
-  AddToPropertyMap(height_);
-
   UseCounter::Count(doc, WebFeature::kSVGSVGElement);
 }
 
@@ -744,6 +739,50 @@ void SVGSVGElement::Trace(Visitor* visitor) const {
   visitor->Trace(view_spec_);
   SVGGraphicsElement::Trace(visitor);
   SVGFitToViewBox::Trace(visitor);
+}
+
+SVGAnimatedPropertyBase* SVGSVGElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kXAttr) {
+    return x_.Get();
+  } else if (attribute_name == svg_names::kYAttr) {
+    return y_.Get();
+  } else if (attribute_name == svg_names::kWidthAttr) {
+    return width_.Get();
+  } else if (attribute_name == svg_names::kHeightAttr) {
+    return height_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret =
+        SVGFitToViewBox::PropertyFromAttribute(attribute_name);
+    if (ret) {
+      return ret;
+    } else {
+      return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
+    }
+  }
+}
+
+void SVGSVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{x_.Get(), y_.Get(), width_.Get(),
+                                     height_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFitToViewBox::SynchronizeSVGAttribute(name);
+  SVGGraphicsElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  for (auto* property : (SVGAnimatedPropertyBase*[]){
+           x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
+    if (property->HasPresentationAttributeMapping() &&
+        property->IsAnimating()) {
+      CollectStyleForPresentationAttribute(property->AttributeName(),
+                                           g_empty_atom, style);
+    }
+  }
+  SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

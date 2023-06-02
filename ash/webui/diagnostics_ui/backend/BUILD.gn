@@ -127,6 +127,7 @@ source_set("unit_tests") {
     "//components/onc",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
+    "//components/user_manager:test_support",
     "//content/test:test_support",
     "//dbus",
     "//device/udev_linux:test_support",

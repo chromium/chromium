@@ -182,9 +182,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 }
 
 #pragma mark - AppStateObserver
-
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
+    sceneDidBecomeActive:(SceneState*)sceneState {
   if (appState.initStage < InitStageFinal) {
     return;
   }
@@ -193,8 +192,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationService()
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
-  clientManager->OnBrowserReady();
-  [appState removeObserver:self];
+  clientManager->OnSceneActiveForegroundBrowserReady();
 }
 
 @end

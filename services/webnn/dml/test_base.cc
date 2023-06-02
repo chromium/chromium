@@ -9,16 +9,21 @@
 
 namespace webnn::dml {
 
-void TestBase::SetUp() {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseGpuInTests)) {
-    // GTEST_SKIP() will let SetUp() method return directly.
-    GTEST_SKIP() << "Skipping all tests for this fixture if GPU hardware "
-                    "hasn't been used in tests.";
-  }
+bool UseGPUInTests() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kUseGpuInTests);
+}
+
+bool TestBase::InitializeGLDisplay() {
   display_ = gl::init::InitializeGLNoExtensionsOneOff(
       /*init_bindings=*/true,
       /*gpu_preference=*/gl::GpuPreference::kDefault);
+  return display_ != nullptr;
+}
+
+void TestBase::SetUp() {
+  SKIP_TEST_IF(!UseGPUInTests());
+  ASSERT_TRUE(InitializeGLDisplay());
 }
 
 void TestBase::TearDown() {

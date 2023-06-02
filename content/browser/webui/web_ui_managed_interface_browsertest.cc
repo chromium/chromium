@@ -66,7 +66,8 @@ template <typename Type>
 int InstanceCounter<Type>::count_ = 0;
 
 // FooImpl implements Foo.
-class FooImpl : public WebUIManagedInterface<FooImpl, mojom::Foo> {
+class FooImpl : public mojom::Foo,
+                public WebUIManagedInterface<FooImpl, mojom::Foo> {
  public:
   FooImpl() { InstanceCounter<FooImpl>::Increment(); }
 
@@ -80,7 +81,8 @@ class FooImpl : public WebUIManagedInterface<FooImpl, mojom::Foo> {
 
 // FooImpl implements Foo and talks to a Bar remote.
 class FooBarImpl
-    : public WebUIManagedInterface<FooBarImpl, mojom::Foo, mojom::Bar> {
+    : public mojom::Foo,
+      public WebUIManagedInterface<FooBarImpl, mojom::Foo, mojom::Bar> {
  public:
   FooBarImpl() { InstanceCounter<FooBarImpl>::Increment(); }
 
@@ -392,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(WebUIManagedInterfaceBrowserTest, WebUIInIframe) {
 
   // Iframe navigation will destroy interface impls.
   Reload(foo_frame);
+  foo_frame = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(0, InstanceCounter<FooImpl>::count());
 
   // Interface impls can be created after reload.

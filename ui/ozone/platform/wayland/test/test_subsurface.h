@@ -56,9 +56,10 @@ class TestSubSurface : public ServerObject {
   raw_ptr<wl_resource> surface_ = nullptr;
 
   // Parent surface resource.
-  raw_ptr<wl_resource> parent_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> parent_resource_ = nullptr;
 
-  raw_ptr<TestAugmentedSubSurface> augmented_subsurface_ = nullptr;
+  raw_ptr<TestAugmentedSubSurface, DanglingUntriaged> augmented_subsurface_ =
+      nullptr;
 };
 
 }  // namespace wl

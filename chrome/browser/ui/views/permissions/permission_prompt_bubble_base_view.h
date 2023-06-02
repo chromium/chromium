@@ -85,6 +85,9 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
   void CreateWidget();
 
   UrlIdentity GetUrlIdentityObject() { return url_identity_; }
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetDelegate() {
+    return delegate_;
+  }
 
   // Determines whether the current request should also display an
   // "Allow only this time" option in addition to the "Allow on every visit"

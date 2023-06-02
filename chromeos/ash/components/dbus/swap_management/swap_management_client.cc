@@ -83,6 +83,18 @@ class SwapManagementClientImpl : public SwapManagementClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void MGLRUSetEnable(uint8_t value,
+                      chromeos::VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(swap_management::kSwapManagementInterface,
+                                 swap_management::kMGLRUSetEnable);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendByte(value);
+    swap_management_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SwapManagementClientImpl::OnResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   void OnResponse(chromeos::VoidDBusMethodCallback callback,
                   dbus::Response* response) {

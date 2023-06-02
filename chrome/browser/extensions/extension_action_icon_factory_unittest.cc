@@ -173,7 +173,7 @@ class ExtensionActionIconFactoryTest
   content::BrowserTaskEnvironment task_environment_;
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService> extension_service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

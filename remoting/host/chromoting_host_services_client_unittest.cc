@@ -43,7 +43,7 @@ class ChromotingHostServicesClientTest : public testing::Test,
   void SetRemoteDisconnectCallback(base::OnceClosure callback);
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<base::Environment> environment_;
+  raw_ptr<base::Environment, DanglingUntriaged> environment_;
   bool is_server_started_ = true;
   std::unique_ptr<ChromotingHostServicesClient> client_;
   mojo::ReceiverSet<mojom::ChromotingHostServices> host_services_receivers_;

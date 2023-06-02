@@ -213,13 +213,13 @@ void FloatingAccessibilityView::Initialize() {
     feature_view->Initialize();
     feature_view->CalculateTargetBounds();
     feature_view->UpdateLayout();
-    feature_view->views::View::AddObserver(this);
+    feature_view->AddObserver(this);
   }
   if (IsKioskImeButtonEnabled()) {
     ime_button_->Initialize();
     ime_button_->CalculateTargetBounds();
     ime_button_->UpdateLayout();
-    ime_button_->views::View::AddObserver(this);
+    ime_button_->AddObserver(this);
     ime_button_->SetVisible(true);
   }
 }

@@ -199,6 +199,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
     collapse_state_ = state;
   }
 
+  StatusAreaAnimationController* animation_controller() {
+    return animation_controller_.get();
+  }
+
  private:
   friend class MediaTrayTest;
   friend class TrayBackgroundViewTest;

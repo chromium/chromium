@@ -187,19 +187,25 @@ found in the LICENSE file.
       <message name="IDS_RESTORE_TABS_PROMO_SHEET_EXPAND_ICON_DEVICE_INFO_DESCRIPTION" desc="Accessibility string for the icon that allows entering the device selection detail sheet.">
         Change to other synced devices under this menu item.
       </message>
-      <message name="IDS_RESTORE_TABS_PROMO_SHEET_OPEN_TABS_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user clicks the open tabs button.">
+      <message name="IDS_RESTORE_TABS_OPEN_TABS_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user clicks the open tabs button.">
         All selected tabs from the currently selected device will be restored.
+      </message>
+      <message name="IDS_RESTORE_TABS_REVIEW_TABS_SCREEN_CHANGE_ALL_TABS_SELECTION_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user clicks the select all or deselect all button depending on current tab selection states.">
+        All tabs selected will be deselected, or all tabs deselected will be selected.
       </message>
       <message name="IDS_RESTORE_TABS_PROMO_SHEET_REVIEW_TABS_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user clicks the review tabs button.">
         Review the selected tabs to be restored from the currently selected device.
       </message>
       <message name="IDS_RESTORE_TABS_PROMO_SHEET_TITLE" desc="Header for the Restore Tabs promo sheet where a user can pick a device and its selected tabs to restore after an FRE workflow.">
-        Get tabs you left on old devices
+        Get tabs from other devices
       </message>
-      <message name="IDS_RESTORE_TABS_PROMO_SHEET_SUBTITLE" desc="Subtitle for the Restore Tabs promo sheet where a user can pick a device and its selected tabs to restore after an FRE workflow.">
-        Choose the device you'd like to get tabs from
+      <message name="IDS_RESTORE_TABS_PROMO_SHEET_SUBTITLE_MULTI_DEVICE" desc="Subtitle for the Restore Tabs promo sheet where a user can pick a device and its selected tabs to restore after an FRE workflow.">
+        Choose the device you’d like to get tabs from
       </message>
-      <message name="IDS_RESTORE_TABS_PROMO_SHEET_RESTORE_TABS" desc="Text for restoring all currently selected tabs from the chosen device.">
+      <message name="IDS_RESTORE_TABS_PROMO_SHEET_SUBTITLE_SINGLE_DEVICE" desc="Subtitle for the Restore Tabs promo sheet where a user can pick the selected tabs on the device listed to restore after an FRE workflow.">
+        You can get tabs from the device listed below
+      </message>
+      <message name="IDS_RESTORE_TABS_OPEN_TABS" desc="Text for restoring all currently selected tabs from the chosen device.">
         {TABS_COUNT, plural,
           =1 {Open <ph name="TABS_COUNT_ONE">%1$s<ex>1</ex></ph> tab}
           other {Open <ph name="TABS_COUNT_MANY">%1$s<ex>8</ex></ph> tabs}
@@ -219,6 +225,15 @@ found in the LICENSE file.
       </message>
       <message name="IDS_RESTORE_TABS_BACK_TO_PROMO_SCREEN_ICON_DESCRIPTION" desc="Acessibility string describing the back icon on the device selection and review tabs detail sheets.">
         Back
+      </message>
+      <message name="IDS_RESTORE_TABS_REVIEW_TABS_SCREEN_SHEET_TITLE" desc="Title for the Restore Tabs detail sheet where a user can select or deselect tabs to restore and navigate back to the promo screen.">
+        Review tabs
+      </message>
+      <message name="IDS_RESTORE_TABS_REVIEW_TABS_SCREEN_SELECT_ALL" desc="Text for selecting all tabs from the current device shown on the screen.">
+        Select all
+      </message>
+      <message name="IDS_RESTORE_TABS_REVIEW_TABS_SCREEN_DESELECT_ALL" desc="Text for deselecting all tabs from the current device shown on the screen.">
+        Deselect all
       </message>
     </messages>
   </release>

@@ -104,8 +104,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
 
-        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                .notifyEvent(EventConstants.PAGE_INFO_OPENED);
+        TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(EventConstants.PAGE_INFO_OPENED);
     }
 
     private void initOfflinePageParams() {

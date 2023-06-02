@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 
 namespace ui {
 
@@ -113,16 +114,11 @@ float GetScaleForMaxSupportedResourceScaleFactor() {
   return kResourceScaleFactorScales[GetMaxSupportedResourceScaleFactor()];
 }
 
-bool IsSupportedScale(float scale) {
+bool IsScaleFactorSupported(ResourceScaleFactor scale_factor) {
   CHECK_NE(g_supported_resource_scale_factors, nullptr)
       << "ResourceBundle needs to be intialized.";
 
-  for (const auto scale_factor_idx : *g_supported_resource_scale_factors) {
-    if (kResourceScaleFactorScales[scale_factor_idx] == scale) {
-      return true;
-    }
-  }
-  return false;
+  return base::Contains(*g_supported_resource_scale_factors, scale_factor);
 }
 
 namespace test {

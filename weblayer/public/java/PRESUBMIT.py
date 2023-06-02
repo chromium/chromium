@@ -12,8 +12,6 @@ import subprocess
 import sys
 import tempfile
 
-USE_PYTHON3 = True
-
 _WEBLAYER_PUBLIC_MANIFEST_PATH=os.path.join("weblayer", "public", "java",
                                             "AndroidManifest.xml")
 

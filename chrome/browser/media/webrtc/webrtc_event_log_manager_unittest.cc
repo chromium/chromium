@@ -1234,7 +1234,7 @@ class WebRtcEventLogManagerTestIncognito
         std::make_unique<MockRenderProcessHost>(incognito_profile_);
   }
 
-  raw_ptr<Profile> incognito_profile_;
+  raw_ptr<Profile, DanglingUntriaged> incognito_profile_;
   std::unique_ptr<MockRenderProcessHost> incognito_rph_;
 };
 

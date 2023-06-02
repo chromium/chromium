@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
 <translation id="2736805085127235148">Obavještenja Chromea su trenutno isključena u postavkama uređaja.</translation>
 <translation id="2767464022270041271">Nije sačuvana nijedna lozinka. Google upravitelj lozinki može provjeriti vaše lozinke kada ih sačuvate.</translation>
+<translation id="2840432500933227975">Otvorite Postavke Chromea u iOS-u pa dodirnite "Zadani APP za preglednik" i odaberite Chrome.</translation>
 <translation id="2869959624320573933">Prijavite se na Chrome</translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Ovo znači da će Chrome svaki put zatražiti web lokaciju za mobilni uređaj.</translation>
 <translation id="3706101708757577809">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="3720541637541300822">Zaključaj anonimne kartice pri zatvaranju Chromea</translation>
+<translation id="3827545470516145620">Dobijate standardnu sigurnosnu zaštitu na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može koristiti vašu kameru</translation>
 <translation id="3980220367029651214">Prebacujete sinhronizirane račune s <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vašim postojećim Chrome podacima upravlja domena <ph name="DOMAIN" />. Ovo će izbrisati sve podatke s uređaja, ali vaši podaci će ostati na računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
@@ -148,7 +150,6 @@ Stvari za razmatranje:
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama.
   • Ako dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije.
   • Ako uključite sinhronizaciju, pokazatelji također mogu uključivati informacije o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Za ovaj Chrome profil dobijate standardnu sigurnosnu zaštitu</translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
 </translationbundle>

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 @class GridCell;
 
@@ -64,7 +64,7 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 - (void)hideActivityIndicator;
 @end
 
-@interface GridTransitionCell : GridCell <GridToTabTransitionView>
+@interface GridTransitionCell : GridCell <LegacyGridToTabTransitionView>
 // Returns a cell with the same theme, icon, snapshot, title, and frame as
 // `cell` (but no delegate or identifier) for use in animated transitions.
 + (instancetype)transitionCellFromCell:(GridCell*)cell;

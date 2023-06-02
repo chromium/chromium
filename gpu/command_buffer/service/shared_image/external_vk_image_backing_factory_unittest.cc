@@ -70,7 +70,7 @@ class ExternalVkImageBackingFactoryDawnTest
     ExternalVkImageBackingFactoryTest::SetUp();
 
     // Create a Dawn Vulkan device
-    dawn_instance_.DiscoverDefaultAdapters();
+    dawn_instance_.DiscoverDefaultPhysicalDevices();
 
     std::vector<dawn::native::Adapter> adapters = dawn_instance_.GetAdapters();
     auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Vulkan,
@@ -272,7 +272,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     flush_info.fSignalSemaphores = end_semaphores.data();
     gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_.get(),
                                           &flush_info);
-    dest_surface->flush(flush_info, nullptr);
+    gr_context()->flush(dest_surface, flush_info, nullptr);
     skia_scoped_access->ApplyBackendSurfaceEndState();
     gr_context()->submit();
   }
@@ -423,7 +423,8 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
         flush_info.fSignalSemaphores = end_semaphores.data();
       }
       for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-        scoped_write_access->surface(plane)->flush(flush_info, nullptr);
+        gr_context()->flush(scoped_write_access->surface(plane), flush_info,
+                            nullptr);
       }
       gr_context()->submit();
     }
@@ -524,7 +525,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   ASSERT_TRUE(shared_image_ref);
 
-  VerifyPixelsWithReadback(mailbox, bitmaps);
+  VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
 }
 
 std::string TestParamToString(

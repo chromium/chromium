@@ -52,6 +52,12 @@ class NGLineInfoList {
     return Back();
   }
 
+  void RemoveFront() {
+    DCHECK_GT(size_, 0u);
+    --size_;
+    start_index_ = (start_index_ + 1) % kCapacity;
+  }
+
   // Get the cached `NGLineInfo` for the `break_token`, remove it from this
   // list, and set `is_cached_out` to `true`. If it doesn't exist, returns an
   // unused instance. The unused instance may be a new instance or a used
@@ -64,11 +70,6 @@ class NGLineInfoList {
   NGLineInfo& UnusedInstance() {
     DCHECK(IsEmpty());
     return line_infos_[0];
-  }
-  void RemoveFront() {
-    DCHECK_GT(size_, 0u);
-    --size_;
-    start_index_ = (start_index_ + 1) % kCapacity;
   }
 
   wtf_size_t size_ = 0;

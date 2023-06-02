@@ -32,6 +32,7 @@
 #include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
@@ -40,10 +41,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/browser_process.h"
-#endif
 
 namespace {
 
@@ -59,7 +56,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<GeolocationPermissionContextDelegate>(profile);
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  delegates.geolocation_manager = g_browser_process->geolocation_manager();
+  delegates.geolocation_manager = device::GeolocationManager::GetInstance();
   DCHECK(delegates.geolocation_manager);
 #endif
   delegates.media_stream_device_enumerator =

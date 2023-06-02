@@ -952,8 +952,10 @@ void LayerTreeImpl::SetTransformMutated(ElementId element_id,
   DCHECK_EQ(1u,
             property_trees()->transform_tree().element_id_to_node_index().count(
                 element_id));
-  if (IsSyncTree() || IsRecycleTree())
+  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
+      (IsSyncTree() || IsRecycleTree())) {
     element_id_to_transform_animations_[element_id] = transform;
+  }
   if (property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
                                                                      transform))
     set_needs_update_draw_properties();
@@ -963,8 +965,10 @@ void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
   DCHECK_EQ(1u,
             property_trees()->effect_tree().element_id_to_node_index().count(
                 element_id));
-  if (IsSyncTree() || IsRecycleTree())
+  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
+      (IsSyncTree() || IsRecycleTree())) {
     element_id_to_opacity_animations_[element_id] = opacity;
+  }
   if (property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
                                                                 opacity))
     set_needs_update_draw_properties();
@@ -975,8 +979,10 @@ void LayerTreeImpl::SetFilterMutated(ElementId element_id,
   DCHECK_EQ(1u,
             property_trees()->effect_tree().element_id_to_node_index().count(
                 element_id));
-  if (IsSyncTree() || IsRecycleTree())
+  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
+      (IsSyncTree() || IsRecycleTree())) {
     element_id_to_filter_animations_[element_id] = filters;
+  }
   if (property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
                                                                filters))
     set_needs_update_draw_properties();
@@ -988,8 +994,10 @@ void LayerTreeImpl::SetBackdropFilterMutated(
   DCHECK_EQ(1u,
             property_trees()->effect_tree().element_id_to_node_index().count(
                 element_id));
-  if (IsSyncTree() || IsRecycleTree())
+  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
+      (IsSyncTree() || IsRecycleTree())) {
     element_id_to_backdrop_filter_animations_[element_id] = backdrop_filters;
+  }
   if (property_trees()->effect_tree_mutable().OnBackdropFilterAnimated(
           element_id, backdrop_filters))
     set_needs_update_draw_properties();
@@ -1090,67 +1098,70 @@ void LayerTreeImpl::UpdatePropertyTreeAnimationFromMainThread() {
   // This code is assumed to only run on the sync tree; the node updates are
   // then synced when the tree is activated. See http://crbug.com/916512
   DCHECK(IsSyncTree());
-
-  auto& effect_tree = property_trees_.effect_tree_mutable();
-  auto element_id_to_opacity = element_id_to_opacity_animations_.begin();
-  while (element_id_to_opacity != element_id_to_opacity_animations_.end()) {
-    const ElementId id = element_id_to_opacity->first;
-    EffectNode* node = effect_tree.FindNodeFromElementId(id);
-    if (!node || !node->is_currently_animating_opacity ||
-        node->opacity == element_id_to_opacity->second) {
-      element_id_to_opacity_animations_.erase(element_id_to_opacity++);
-      continue;
-    }
-    node->opacity = element_id_to_opacity->second;
-    effect_tree.set_needs_update(true);
-    ++element_id_to_opacity;
-  }
-
-  auto element_id_to_filter = element_id_to_filter_animations_.begin();
-  while (element_id_to_filter != element_id_to_filter_animations_.end()) {
-    const ElementId id = element_id_to_filter->first;
-    EffectNode* node = effect_tree.FindNodeFromElementId(id);
-    if (!node || !node->is_currently_animating_filter ||
-        node->filters == element_id_to_filter->second) {
-      element_id_to_filter_animations_.erase(element_id_to_filter++);
-      continue;
-    }
-    node->filters = element_id_to_filter->second;
-    effect_tree.set_needs_update(true);
-    ++element_id_to_filter;
-  }
-
-  auto element_id_to_backdrop_filter =
-      element_id_to_backdrop_filter_animations_.begin();
-  while (element_id_to_backdrop_filter !=
-         element_id_to_backdrop_filter_animations_.end()) {
-    const ElementId id = element_id_to_backdrop_filter->first;
-    EffectNode* node = effect_tree.FindNodeFromElementId(id);
-    if (!node || !node->is_currently_animating_backdrop_filter ||
-        node->backdrop_filters == element_id_to_backdrop_filter->second) {
-      element_id_to_backdrop_filter_animations_.erase(
-          element_id_to_backdrop_filter++);
-      continue;
-    }
-    node->backdrop_filters = element_id_to_backdrop_filter->second;
-    effect_tree.set_needs_update(true);
-    ++element_id_to_backdrop_filter;
-  }
-
   auto& transform_tree = property_trees_.transform_tree_mutable();
-  auto element_id_to_transform = element_id_to_transform_animations_.begin();
-  while (element_id_to_transform != element_id_to_transform_animations_.end()) {
-    const ElementId id = element_id_to_transform->first;
-    TransformNode* node = transform_tree.FindNodeFromElementId(id);
-    if (!node || !node->is_currently_animating ||
-        node->local == element_id_to_transform->second) {
-      element_id_to_transform_animations_.erase(element_id_to_transform++);
-      continue;
+
+  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation)) {
+    auto& effect_tree = property_trees_.effect_tree_mutable();
+    auto element_id_to_opacity = element_id_to_opacity_animations_.begin();
+    while (element_id_to_opacity != element_id_to_opacity_animations_.end()) {
+      const ElementId id = element_id_to_opacity->first;
+      EffectNode* node = effect_tree.FindNodeFromElementId(id);
+      if (!node || !node->is_currently_animating_opacity ||
+          node->opacity == element_id_to_opacity->second) {
+        element_id_to_opacity_animations_.erase(element_id_to_opacity++);
+        continue;
+      }
+      node->opacity = element_id_to_opacity->second;
+      effect_tree.set_needs_update(true);
+      ++element_id_to_opacity;
     }
-    node->local = element_id_to_transform->second;
-    node->needs_local_transform_update = true;
-    transform_tree.set_needs_update(true);
-    ++element_id_to_transform;
+
+    auto element_id_to_filter = element_id_to_filter_animations_.begin();
+    while (element_id_to_filter != element_id_to_filter_animations_.end()) {
+      const ElementId id = element_id_to_filter->first;
+      EffectNode* node = effect_tree.FindNodeFromElementId(id);
+      if (!node || !node->is_currently_animating_filter ||
+          node->filters == element_id_to_filter->second) {
+        element_id_to_filter_animations_.erase(element_id_to_filter++);
+        continue;
+      }
+      node->filters = element_id_to_filter->second;
+      effect_tree.set_needs_update(true);
+      ++element_id_to_filter;
+    }
+
+    auto element_id_to_backdrop_filter =
+        element_id_to_backdrop_filter_animations_.begin();
+    while (element_id_to_backdrop_filter !=
+           element_id_to_backdrop_filter_animations_.end()) {
+      const ElementId id = element_id_to_backdrop_filter->first;
+      EffectNode* node = effect_tree.FindNodeFromElementId(id);
+      if (!node || !node->is_currently_animating_backdrop_filter ||
+          node->backdrop_filters == element_id_to_backdrop_filter->second) {
+        element_id_to_backdrop_filter_animations_.erase(
+            element_id_to_backdrop_filter++);
+        continue;
+      }
+      node->backdrop_filters = element_id_to_backdrop_filter->second;
+      effect_tree.set_needs_update(true);
+      ++element_id_to_backdrop_filter;
+    }
+
+    auto element_id_to_transform = element_id_to_transform_animations_.begin();
+    while (element_id_to_transform !=
+           element_id_to_transform_animations_.end()) {
+      const ElementId id = element_id_to_transform->first;
+      TransformNode* node = transform_tree.FindNodeFromElementId(id);
+      if (!node || !node->is_currently_animating ||
+          node->local == element_id_to_transform->second) {
+        element_id_to_transform_animations_.erase(element_id_to_transform++);
+        continue;
+      }
+      node->local = element_id_to_transform->second;
+      node->needs_local_transform_update = true;
+      transform_tree.set_needs_update(true);
+      ++element_id_to_transform;
+    }
   }
 
   for (auto iter : transform_tree.element_id_to_node_index())

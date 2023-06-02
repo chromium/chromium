@@ -36,6 +36,7 @@ static_library("camera_app_ui") {
     ":document_scanning",
     ":mojo_bindings",
     ":window_managemet",
+    "//ash",
     "//ash/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/web_applications",
@@ -54,8 +55,6 @@ static_library("camera_app_ui") {
 
 source_set("window_managemet") {
   sources = [
-    "camera_app_window_manager.cc",
-    "camera_app_window_manager.h",
     "camera_app_window_state_controller.cc",
     "camera_app_window_state_controller.h",
   ]
@@ -93,23 +92,6 @@ source_set("document_scanning") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "camera_app_window_manager_unittest.cc" ]
-
-  deps = [
-    ":window_managemet",
-    "//base",
-    "//base/test:test_support",
-    "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/views",
-    "//ui/views:test_support",
-  ]
-}
-
 mojom("mojo_bindings") {
   sources = [ "camera_app_helper.mojom" ]
 
@@ -138,7 +120,7 @@ generate_grd("build_grd") {
   out_grd = resources_grd_file
   grdp_files = [ generated_grdp_file ]
 
-  manifest_files = [ "$target_gen_dir/resources/build_ts.manifest" ]
+  manifest_files = [ "$target_gen_dir/resources/build_ts_manifest.json" ]
   input_files_base_dir = rebase_path("resources", "//")
   input_files = []
 

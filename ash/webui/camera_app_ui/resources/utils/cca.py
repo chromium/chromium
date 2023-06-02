@@ -318,7 +318,7 @@ def deploy(args):
         '--inlineSources',
         # Makes devtools show TypeScript source with better path
         '--sourceRoot',
-        '/js/',
+        '/',
         # For easier developing / test cycle.
         '--noUnusedLocals',
         'false',

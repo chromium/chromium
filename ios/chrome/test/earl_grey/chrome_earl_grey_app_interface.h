@@ -101,6 +101,9 @@
 // Returns the number of open non-incognito tabs.
 + (NSUInteger)mainTabCount [[nodiscard]];
 
+// Returns the number of open inactive tabs.
++ (NSUInteger)inactiveTabCount [[nodiscard]];
+
 // Returns the number of open incognito tabs.
 + (NSUInteger)incognitoTabCount [[nodiscard]];
 

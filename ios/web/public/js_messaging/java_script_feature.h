@@ -12,12 +12,12 @@
 
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
+#import "base/values.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
-class Value;
 }  // namespace base
 
 namespace web {
@@ -182,7 +182,7 @@ class JavaScriptFeature {
   // See WebFrame::CallJavaScriptFunction for more details.
   bool CallJavaScriptFunction(WebFrame* web_frame,
                               const std::string& function_name,
-                              const std::vector<base::Value>& parameters);
+                              const base::Value::List& parameters);
 
   // Calls `function_name` with `parameters` in `web_frame` within the content
   // world that this feature has been configured. `callback` will be called with
@@ -192,7 +192,7 @@ class JavaScriptFeature {
   bool CallJavaScriptFunction(
       WebFrame* web_frame,
       const std::string& function_name,
-      const std::vector<base::Value>& parameters,
+      const base::Value::List& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout);
 

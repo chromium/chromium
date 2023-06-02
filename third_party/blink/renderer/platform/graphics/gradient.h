@@ -160,7 +160,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
   mutable sk_sp<PaintShader> cached_shader_;
-  mutable sk_sp<SkColorFilter> color_filter_;
+  mutable sk_sp<cc::ColorFilter> color_filter_;
 
   Color::ColorSpace color_space_interpolation_space_ = Color::ColorSpace::kNone;
   Color::HueInterpolationMethod hue_interpolation_method_ =

@@ -18,10 +18,18 @@
   <div class="horizontal-align">
     <iron-icon id="icon" icon="[[icon]]"></iron-icon>
     <div class="vertical-align">
-      <div id="label">[[permissionLabel]]</div>
-      <div id="description" class="secondary-text">
+      <!--
+        permission-name and permission-state classes are used by tast tests to
+        find permission elements.
+      -->
+      <div id="label" class="permission-name">[[permissionLabel]]</div>
+      <div id="description" class="permission-state secondary-text">
         [[getPermissionDescriptionString_(app, permissionType)]]
       </div>
     </div>
   </div>
+  <template is="dom-if" if="[[isManaged_(app, permissionType)]]">
+    <cr-policy-indicator indicator-type="devicePolicy">
+    </cr-policy-indicator>
+  </template>
 </template>

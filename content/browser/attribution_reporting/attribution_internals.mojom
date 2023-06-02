@@ -218,9 +218,8 @@ interface Observer {
 // storage layer.
 interface Handler {
   // Returns the state of the Attribution Reporting API in the WebUI's browsing context.
-  // `attribution_support` is the `Attribution-Reporting-Support` request header value.
   IsAttributionReportingEnabled() => (bool enabled, bool debug_mode,
-                                      string attribution_support);
+                                      network.mojom.AttributionSupport attribution_support);
 
   // Returns all active sources that are persisted in storage. This does
   // not include expired sources, or sources that can no longer be attributed

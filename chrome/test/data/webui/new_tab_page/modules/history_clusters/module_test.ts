@@ -248,6 +248,35 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
 
     [LayoutType.kLayout1, LayoutType.kLayout2, LayoutType.kLayout3].forEach(
         layoutType => {
+          test('Scrollable content when overflowing', async () => {
+            loadTimeData.overrideValues({
+              modulesOverflowScrollbarEnabled: true,
+            });
+
+            const clusters = [createSampleCluster(layoutType)];
+            handler.setResultFor('getClusters', Promise.resolve({clusters}));
+            handler.setResultFor(
+                'getCartForCluster', Promise.resolve({cart: null}));
+            const moduleElement = await historyClustersDescriptor.initialize(
+                                      0) as HistoryClustersModuleElement;
+            await handler.whenCalled('getClusters');
+
+            const overflowWidth = 766;
+            const containerWidth = 360;
+
+            const containerElement = document.createElement('div');
+            containerElement.style.maxWidth = `${containerWidth}px`;
+            containerElement.appendChild(moduleElement);
+            document.body.append(containerElement);
+            await waitAfterNextRender(containerElement);
+
+            assertEquals(containerWidth, containerElement.offsetWidth);
+            assertEquals(
+                overflowWidth,
+                moduleElement.shadowRoot!.querySelector(
+                                             '.layout')!.scrollWidth);
+          });
+
           test(`Layout ${layoutType}: Visit tile click metrics`, async () => {
             // Arrange.
             const moduleElement =

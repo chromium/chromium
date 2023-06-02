@@ -86,7 +86,6 @@ void EnterpriseProfileWelcomeUI::Initialize(
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
-    absl::optional<SkColor> unused_profile_color,
     signin::SigninChoiceCallback proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
       browser, type, profile_creation_required_by_policy, show_link_data_option,

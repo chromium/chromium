@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -77,9 +77,7 @@ class CrowdDenySafeBrowsingRequest {
   VerdictCallback callback_;
 
   // For telemetry purposes. The caller guarantees |clock_| to outlive |this|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
   const base::Time request_start_time_;
 
   base::WeakPtrFactory<CrowdDenySafeBrowsingRequest> weak_factory_{this};

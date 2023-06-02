@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -25,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
@@ -120,7 +122,6 @@ import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
@@ -293,7 +294,8 @@ public class RootUiCoordinator
     protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
     protected final FullscreenManager mFullscreenManager;
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    protected final StatusBarColorController mStatusBarColorController;
+    @Nullable
+    protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
@@ -308,6 +310,7 @@ public class RootUiCoordinator
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Nullable
     private final BackPressManager mBackPressManager;
+    private final @NonNull Supplier<Bundle> mSavedInstanceStateSupplier;
     @Nullable
     private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
@@ -360,6 +363,7 @@ public class RootUiCoordinator
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
+     * @param savedInstanceStateSupplier Supplies the saved instance state.
      */
     public RootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -397,7 +401,8 @@ public class RootUiCoordinator
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager) {
+            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager,
+            @NonNull Supplier<Bundle> savedInstanceStateSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -424,6 +429,7 @@ public class RootUiCoordinator
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mInitializeUiWithIncognitoColors = initializeUiWithIncognitoColors;
         mBackPressManager = backPressManager;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
@@ -479,10 +485,14 @@ public class RootUiCoordinator
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity),
                 shouldAllowThemingInNightMode(), shouldAllowBrightThemeColors());
 
-        mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
-                mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
-                mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
+        if (BuildInfo.getInstance().isAutomotive) {
+            StatusBarColorController.setStatusBarColor(mActivity.getWindow(), Color.BLACK);
+        } else {
+            mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
+                    mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
+                    mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
+        }
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mPageZoomCoordinator = new PageZoomCoordinator(new PageZoomCoordinatorDelegate() {
@@ -506,6 +516,7 @@ public class RootUiCoordinator
         return mToolbarManager;
     }
 
+    @Nullable
     public StatusBarColorController getStatusBarColorController() {
         return mStatusBarColorController;
     }
@@ -802,10 +813,14 @@ public class RootUiCoordinator
                 getIncognitoReauthCoordinatorFactory();
         assert incognitoReauthCoordinatorFactory
                 != null : "Sub-classes need to provide a valid factory instance.";
+        boolean isIncognitoReauthPendingOnRestore = mSavedInstanceStateSupplier.hasValue()
+                && mSavedInstanceStateSupplier.get().getBoolean(
+                        IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         mIncognitoReauthController =
                 new IncognitoReauthControllerImpl(mTabModelSelectorSupplier.get(),
                         mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
-                        mProfileSupplier, incognitoReauthCoordinatorFactory, mActivity.getTaskId());
+                        mProfileSupplier, incognitoReauthCoordinatorFactory,
+                        () -> isIncognitoReauthPendingOnRestore, mActivity.getTaskId());
         mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }
 
@@ -1263,7 +1278,9 @@ public class RootUiCoordinator
     }
 
     protected void setStatusBarScrimFraction(float scrimFraction) {
-        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+        if (mStatusBarColorController != null) {
+            mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+        }
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
@@ -1328,7 +1345,7 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub),
-                    this::getAppRectInWindow);
+                    this::getAppRectOnScreen);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
                             -> ChromePureJavaExceptionReporter.reportJavaException(
@@ -1358,7 +1375,7 @@ public class RootUiCoordinator
     /**
      * Returns {@link Rect} that represents the app client area the app menu should fit in.
      */
-    protected Rect getAppRectInWindow() {
+    protected Rect getAppRectOnScreen() {
         Rect appRect = new Rect();
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
         return appRect;
@@ -1464,9 +1481,8 @@ public class RootUiCoordinator
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
                 mBrowserControlsManager, mModalDialogManagerSupplier,
                 this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
-                mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier,
-                mLayoutStateProviderOneShotSupplier,
-                ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity));
+                mOmniboxFocusStateSupplier, panelManagerSupplier,
+                mLayoutStateProviderOneShotSupplier);
 
         // TODO(crbug.com/1279941): Consider moving handler registration to feature code.
         if (BackPressManager.isEnabled()) {

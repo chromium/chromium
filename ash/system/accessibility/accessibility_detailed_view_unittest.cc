@@ -420,6 +420,11 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   }
 
   bool IsStickyKeysEnabledOnDetailMenu() const {
+    // The sticky_keys_view_ is not created when Spoken Feedback is enabled.
+    if (IsSpokenFeedbackEnabledOnDetailMenu()) {
+      DCHECK(!detailed_menu_->sticky_keys_view_);
+      return false;
+    }
     return IsEnabledOnDetailMenu(controller_->sticky_keys().enabled(),
                                  detailed_menu_->sticky_keys_view_);
   }
@@ -1380,6 +1385,30 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SpokenFeedback) {
   CloseDetailMenu();
 }
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest,
+       SpokenFeedbackConflictingFeatures) {
+  EnableStickyKeys(true);
+  SetFocusHighlightEnabled(true);
+  CreateDetailedMenu();
+  EXPECT_TRUE(IsStickyKeysEnabledOnDetailMenu());
+  EXPECT_TRUE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  CloseDetailMenu();
+
+  // When ChromeVox is on, even though sticky keys and focus highlight were
+  // enabled, they will not be shown.
+  EnableSpokenFeedback(true);
+  CreateDetailedMenu();
+  EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  CloseDetailMenu();
+
+  EnableSpokenFeedback(false);
+  CreateDetailedMenu();
+  EXPECT_TRUE(IsStickyKeysEnabledOnDetailMenu());
+  EXPECT_TRUE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  CloseDetailMenu();
+}
+
 TEST_F(AccessibilityDetailedViewLoginScreenTest, SelectToSpeak) {
   // Enabling select to speak.
   EnableSelectToSpeak(true);
@@ -2086,7 +2115,8 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   EXPECT_TRUE(IsHighlightMouseCursorEnabledOnDetailMenu());
   // Focus highlighting can't be on when spoken feedback is on
   EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
-  EXPECT_TRUE(IsStickyKeysEnabledOnDetailMenu());
+  // Sticky keys can't be on when spoken feedback is on.
+  EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   EXPECT_TRUE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
 

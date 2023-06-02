@@ -91,6 +91,10 @@
     margin-top: 40px;
   }
 
+  #folderEmptyState {
+    margin-bottom: 40px;
+  }
+
   sp-empty-state[guest] {
     margin-top: 66px;
   }
@@ -184,7 +188,8 @@
   </div>
 
   <div class="sp-card"
-      hidden$="[[shouldHideCard_(labels_.*, searchQuery_, shownBookmarks_)]]">
+      hidden$="[[shouldHideCard_(labels_.*, searchQuery_, shownBookmarks_,
+          guestMode_)]]">
     <sp-heading
         hidden$="[[shouldHideHeader_(
             labels_.*, searchQuery_, shownBookmarks_)]]"
@@ -219,6 +224,15 @@
           aria-disabled="[[!shownBookmarks_.length]]"
           on-click="onBulkEditClicked_"></cr-icon-button>
     </sp-heading>
+
+    <div class="sp-scroller" hidden="[[shownBookmarks_.length]]">
+      <sp-empty-state id="folderEmptyState"
+          image-path="./images/bookmarks_empty.svg"
+          dark-image-path="./images/bookmarks_empty_dark.svg"
+          heading="$i18n{emptyTitleFolder}"
+          body="$i18n{emptyBodyFolder}">
+      </sp-empty-state>
+    </div>
 
     <div id="bookmarks" class="bookmarks sp-scroller"
         hidden="[[!shownBookmarks_.length]]"
@@ -274,8 +288,8 @@
     </div>
   </div>
 
-  <sp-empty-state
-      hidden="[[shownBookmarks_.length]]"
+  <sp-empty-state id="topLevelEmptyState"
+      hidden="[[!shouldShowTopLevelEmptyState_(shownBookmarks_, guestMode_)]]"
       guest$="[[guestMode_]]"
       image-path="[[getEmptyImagePath_(labels_.*, searchQuery_)]]"
       dark-image-path="[[getEmptyImagePathDark_(labels_.*, searchQuery_)]]"

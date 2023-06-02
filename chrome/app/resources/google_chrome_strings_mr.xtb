@@ -31,6 +31,7 @@
  आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
+<translation id="1555506416658437797">पेमेंट पद्धती संपादित करा.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
 <translation id="1587223624401073077">Google Chrome तुमचा कॅमेरा वापरत आहे.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> धोकादायक आहे, त्यामुळे Chrom ने ती ब्लॉक केली आहे.</translation>
@@ -82,6 +83,7 @@
 <translation id="234869673307233423">Chrome तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="235650106824528204">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chrome डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2399868464369312507">Google Chrome हे पेमेंट पद्धती संपादित करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2401189691232800402">ChromeOS सिस्टीम</translation>
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
@@ -390,6 +392,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8418845734693287262">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromeOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="8433638294851456451">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="8451192282033883849">तुमचे खाते <ph name="MANAGER_NAME" /> यांनी व्यवस्थापित केले आहे. तुमचा अ‍ॅडमिनिस्ट्रेटर ही Chrome ब्राउझर प्रोफाइल आणि त्यातील डेटा, जसे की बुकमार्क, इतिहास आणि पासवर्ड पाहू व संपादित करू शकतो.</translation>
+<translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome साठी आत्ताच एक विशिष्ट सुरक्षितता अपडेट लागू करण्यात आला. आता रीस्टार्ट करा आणि आम्ही तुमचे टॅब रिस्टोअर करू.</translation>
 <translation id="8504220326736535258">या फाइलमध्ये मालवेअर असल्याने, Chrome ने ती ब्लॉक केली</translation>
 <translation id="8516431725144212809">Chrome च्या अंदाजानुसार तुमची स्वारस्ये</translation>
@@ -406,6 +409,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8649026945479135076">सर्वसाधारणपणे, तुम्ही भेट देता त्या साइट तुमचा अनुभव पर्सनलाइझ करण्यासाठी, तुम्हाला स्वारस्य असलेल्या गोष्टी लक्षात ठेवतात. साइट तुमच्या स्वारस्यांबद्दलची माहिती Chrome वापरून स्टोअरदेखील करू शकतात.</translation>
 <translation id="8669527147644353129">Google Chrome मदतनीस</translation>
 <translation id="8679801911857917785">तुम्ही Chrome सुरू करता तेव्हा कोणते पेज दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
+<translation id="8684875378076460854">Chrome हे ही फाइल स्कॅन करण्याच्या शिफारशी करते, कारण ती धोकादायक असू शकते</translation>
 <translation id="8686817260976772516">Chrome प्रोफाइल वापरून तुम्ही तुमच्या सर्व गोष्टी Chrome वर वेगवेगळ्या ठेवू शकता. मित्रमैत्रिणी आणि कुटुंबासाठी प्रोफाइल तयार करा किंवा त्यांची काम व मनोरंजन यामध्ये विभागणी करा.</translation>
 <translation id="8712767363896337380">जवळजवळ अप टू डेट! अपडेट करणे पूर्ण करण्यासाठी, Chrome पुन्हा लाँच करा.</translation>
 <translation id="873133009373065397">Google Chrome डीफॉल्ट ब्राउझर निर्धारित करू शकत नाही किंवा सेट करू शकत नाही</translation>

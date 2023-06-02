@@ -163,7 +163,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
       OpacityMode,
       LatencyMode = kNormalLatency,
       CanvasContextCreationAttributesCore::WillReadFrequently =
-          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined);
+          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
+      HTMLCanvasElement* canvas = nullptr);
 
   ScriptState* GetScriptState() {
     return ToScriptStateForMainWorld(canvas_element_->DomWindow()->GetFrame());
@@ -238,13 +239,17 @@ void CanvasRenderingContext2DTest::CreateContext(
     OpacityMode opacity_mode,
     LatencyMode latency_mode,
     CanvasContextCreationAttributesCore::WillReadFrequently
-        will_read_frequently) {
+        will_read_frequently,
+    HTMLCanvasElement* canvas) {
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = opacity_mode == kNonOpaque;
   attributes.desynchronized = latency_mode == kLowLatency;
   attributes.will_read_frequently = will_read_frequently;
-  canvas_element_->GetCanvasRenderingContext(canvas_type, attributes);
+  if (!canvas) {
+    canvas = canvas_element_;
+  }
+  canvas->GetCanvasRenderingContext(canvas_type, attributes);
 }
 
 void CanvasRenderingContext2DTest::SetUp() {
@@ -1452,6 +1457,23 @@ class CanvasRenderingContext2DTestAccelerated
     : public CanvasRenderingContext2DTest {
  protected:
   bool AllowsAcceleration() override { return true; }
+
+  void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
+    for (int i = 0; i < 200; ++i) {
+      auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+      CreateContext(
+          kNonOpaque, kNormalLatency,
+          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
+          canvas);
+      canvas->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      // Expect that at least the first 10 are accelerated. The exact number
+      // depends on the feature params.
+      if (i < 10) {
+        EXPECT_TRUE(canvas->IsAccelerated());
+      }
+      canvas->DisableAcceleration();
+    }
+  }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
@@ -1592,6 +1614,76 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.
   EXPECT_FALSE(CanvasElement().ResourceProvider()->HasRecordedDrawOps());
+}
+
+class CanvasRenderingContext2DTestAcceleratedMultipleDisables
+    : public CanvasRenderingContext2DTest {
+ protected:
+  void SetUp() override {
+    base::FieldTrialParams params;
+    params["canvas-disable-acceleration-threshold"] = "10";
+    params["canvas-disable-acceleration-percent"] = "80";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kStartCanvasWithAccelerationDisabled, params);
+    CanvasRenderingContext2DTest::SetUp();
+  }
+
+  bool AllowsAcceleration() override { return true; }
+
+  void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
+    for (int i = 0; i < 10; ++i) {
+      auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+      CreateContext(
+          kNonOpaque, kNormalLatency,
+          CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
+          canvas);
+      canvas->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      EXPECT_TRUE(canvas->IsAccelerated());
+      canvas->DisableAcceleration();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(
+    CanvasRenderingContext2DTestAcceleratedMultipleDisables);
+
+TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
+       ReadFrequentlyUndefined) {
+  CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled();
+  CreateContext(
+      kNonOpaque, kNormalLatency,
+      CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  // Because a bunch of canvases had acceleration explicitly disabled, canvases
+  // created with `kUndefined` should start with acceleration disabled.
+  EXPECT_FALSE(CanvasElement().IsAccelerated());
+}
+
+TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
+       ReadFrequentlyFalse) {
+  CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled();
+  CreateContext(
+      kNonOpaque, kNormalLatency,
+      CanvasContextCreationAttributesCore::WillReadFrequently::kFalse);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  // Canvases created with `kFalse` should always start with acceleration
+  // enabled regardless of how many canvases had acceleration disabled.
+  EXPECT_TRUE(CanvasElement().IsAccelerated());
+}
+
+TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
+       ReadFrequentlyTrue) {
+  CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled();
+  CreateContext(kNonOpaque, kNormalLatency,
+                CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  // Canvases created with `kTrue` should always start with acceleration
+  // disabled regardless of how many canvases had acceleration explicitly
+  // disabled.
+  EXPECT_FALSE(CanvasElement().IsAccelerated());
 }
 
 class CanvasRenderingContext2DTestImageChromium

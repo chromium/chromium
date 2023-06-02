@@ -30,7 +30,7 @@ namespace {
 // `parameters`.
 NSString* CreateFunctionCallWithParamaters(
     const std::string& name,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
   for (const auto& value : parameters) {
     std::string string_value;
@@ -95,7 +95,7 @@ BrowserState* WebFrameImpl::GetBrowserState() {
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world,
     bool reply_with_result) {
   int message_id = next_message_id_;
@@ -109,9 +109,8 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   return false;
 }
 
-bool WebFrameImpl::CallJavaScriptFunction(
-    const std::string& name,
-    const std::vector<base::Value>& parameters) {
+bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
+                                          const base::Value::List& parameters) {
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetPageContentWorldForBrowserState(
           GetBrowserState());
@@ -122,7 +121,7 @@ bool WebFrameImpl::CallJavaScriptFunction(
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world) {
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               /*reply_with_result=*/false);
@@ -130,7 +129,7 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   JavaScriptContentWorld* content_world =
@@ -142,7 +141,7 @@ bool WebFrameImpl::CallJavaScriptFunction(
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
@@ -231,7 +230,7 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
 bool WebFrameImpl::ExecuteJavaScriptFunction(
     JavaScriptContentWorld* content_world,
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     int message_id,
     bool reply_with_result) {
   DCHECK(content_world);

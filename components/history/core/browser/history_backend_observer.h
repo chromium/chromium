@@ -61,10 +61,10 @@ class HistoryBackendObserver {
                              const URLRows& deleted_rows,
                              const std::set<GURL>& favicon_urls) = 0;
 
-  // Called when a visit is updated. Typically this happens when the visit
-  // duration is updated, and in some redirect cases when the transition type
-  // is updated.
-  virtual void OnVisitUpdated(const VisitRow& visit) = 0;
+  // Called when a visit, or some of its annotations, are updated. `reason`
+  // specifies what specifically was updated.
+  virtual void OnVisitUpdated(const VisitRow& visit,
+                              VisitUpdateReason reason) = 0;
 
   // Called when a visit is deleted - usually either due to expiry, or because
   // the user explicitly deleted it.

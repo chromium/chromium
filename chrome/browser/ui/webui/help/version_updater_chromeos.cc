@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -323,7 +324,16 @@ void VersionUpdaterCros::UpdateStatusChanged(
       if (status.last_attempt_error() ==
           static_cast<int32_t>(
               update_engine::ErrorCode::kOmahaUpdateIgnoredPerPolicy)) {
-        my_status = DISABLED_BY_ADMIN;
+        if (policy::IsDeviceEnterpriseManaged()) {
+          my_status = DISABLED_BY_ADMIN;
+        } else {
+          // Handle the special case where after a consumer rollback,
+          // updating to the previously installed version just rolledback from
+          // is disallowed.
+          // TODO(b/277962165) Update the platform side to expose a more
+          // specific error code for this case.
+          my_status = UPDATE_TO_ROLLBACK_VERSION_DISALLOWED;
+        }
       } else if (status.last_attempt_error() ==
                  static_cast<int32_t>(
                      update_engine::ErrorCode::kOmahaErrorInHTTPResponse)) {

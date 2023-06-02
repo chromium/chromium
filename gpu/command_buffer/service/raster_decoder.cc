@@ -30,7 +30,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_entry.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -57,7 +57,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -78,6 +78,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -764,7 +765,7 @@ class RasterDecoderImpl final : public RasterDecoder,
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       auto* surface = access->surface(plane_index);
       DCHECK(surface);
-      surface->flush();
+      skgpu::ganesh::Flush(surface);
     }
     access->ApplyBackendSurfaceEndState();
 
@@ -1212,24 +1213,10 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
-  // TODO(piman): have a consistent limit in shared image backings.
-  // https://crbug.com/960588
-  if (shared_context_state_->GrContextIsGL()) {
-    api()->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size);
-  } else if (shared_context_state_->GrContextIsVulkan()) {
-#if BUILDFLAG(ENABLE_VULKAN)
-    caps.max_texture_size = shared_context_state_->vk_context_provider()
-                                ->GetDeviceQueue()
-                                ->vk_physical_device_properties()
-                                .limits.maxImageDimension2D;
-#else
-    NOTREACHED();
-#endif
-  } else {
-    // TODO(crbug.com/1090476): Query Dawn for this value once an API exists for
-    // capabilities.
-    caps.max_texture_size = 8192;
-  }
+  caps.max_texture_size = shared_context_state_->GetMaxTextureSize();
+  caps.using_vulkan_context =
+      shared_context_state_->GrContextIsVulkan() ? true : false;
+
   if (feature_info()->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,
@@ -2149,7 +2136,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                        "Failed to write pixels to SkCanvas");
   }
 
-  surface->flush();
+  skgpu::ganesh::Flush(surface);
   dest_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores));
 

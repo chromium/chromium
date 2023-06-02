@@ -183,6 +183,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanDeleteFromFileSystem(int child_id,
                                const std::string& filesystem_id) override;
   bool HasWebUIBindings(int child_id) override;
+  void GrantSendMidiMessage(int child_id) override;
   void GrantSendMidiSysExMessage(int child_id) override;
   bool CanAccessDataForOrigin(int child_id, const url::Origin& origin) override;
   void AddFutureIsolatedOrigins(
@@ -455,7 +456,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RegisterFileSystemPermissionPolicy(storage::FileSystemType type,
                                           int policy);
 
-  // Returns true if sending system exclusive messages is allowed.
+  // Returns true if sending MIDI messages is allowed.
+  bool CanSendMidiMessage(int child_id);
+
+  // Returns true if sending system exclusive (SysEx) MIDI messages is allowed.
   bool CanSendMidiSysExMessage(int child_id);
 
   // Remove all isolated origins associated with |browser_context| and clear any

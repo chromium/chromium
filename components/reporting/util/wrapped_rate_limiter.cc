@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,20 +35,22 @@ WrappedRateLimiter::~WrappedRateLimiter() {
 bool WrappedRateLimiter::Acquire(base::WeakPtr<WrappedRateLimiter> self,
                                  size_t event_size) {
   if (!self) {
+    base::UmaHistogramBoolean(kRateLimitedEventsUma, false);
     return false;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-  return self->rate_limiter_->Acquire(event_size);
+  if (!self->rate_limiter_->Acquire(event_size)) {
+    base::UmaHistogramBoolean(kRateLimitedEventsUma, false);
+    return false;
+  }
+  base::UmaHistogramBoolean(kRateLimitedEventsUma, true);
+  return true;
 }
 
 // static
 void WrappedRateLimiter::AsyncAcquire(base::WeakPtr<WrappedRateLimiter> self,
                                       size_t event_size,
                                       base::OnceCallback<void(bool)> cb) {
-  if (!self) {
-    std::move(cb).Run(false);
-    return;
-  }
   base::BindOnce(&WrappedRateLimiter::Acquire, self)
       .Then(std::move(cb))
       .Run(event_size);

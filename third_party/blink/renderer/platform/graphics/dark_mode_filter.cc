@@ -51,11 +51,11 @@ bool ShouldUseRasterSidePath(Image* image) {
   return image->IsBitmapImage();
 }
 
-sk_sp<SkColorFilter> GetDarkModeFilterForImageOnMainThread(
+sk_sp<cc::ColorFilter> GetDarkModeFilterForImageOnMainThread(
     DarkModeFilter* filter,
     Image* image,
     const SkIRect& rounded_src) {
-  sk_sp<SkColorFilter> color_filter;
+  sk_sp<cc::ColorFilter> color_filter;
   DarkModeImageCache* cache = image->GetDarkModeImageCache();
   DCHECK(cache);
   if (cache->Exists(rounded_src)) {
@@ -126,7 +126,7 @@ DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
   if (!color_filter)
     return;
 
-  image_filter = color_filter->ToSkColorFilter();
+  image_filter = color_filter->ToColorFilter();
 
   foreground_classifier =
       DarkModeColorClassifier::MakeForegroundColorClassifier(settings);
@@ -222,7 +222,7 @@ void DarkModeFilter::ApplyFilterToImage(Image* image,
   // Blink-side dark mode path - Apply dark mode to images in main thread
   // only. If the result is not cached, calling this path is expensive and
   // will block main thread.
-  sk_sp<SkColorFilter> color_filter =
+  sk_sp<cc::ColorFilter> color_filter =
       GetDarkModeFilterForImageOnMainThread(this, image, src.roundOut());
   if (color_filter)
     flags->setColorFilter(std::move(color_filter));
@@ -245,7 +245,7 @@ bool DarkModeFilter::ShouldApplyFilterToImage(ImageType type) const {
   return type == ImageType::kIcon || type == ImageType::kSeparator;
 }
 
-sk_sp<SkColorFilter> DarkModeFilter::GenerateImageFilter(
+sk_sp<cc::ColorFilter> DarkModeFilter::GenerateImageFilter(
     const SkPixmap& pixmap,
     const SkIRect& src) const {
   DCHECK(immutable_.settings.image_policy == DarkModeImagePolicy::kFilterSmart);
@@ -257,7 +257,7 @@ sk_sp<SkColorFilter> DarkModeFilter::GenerateImageFilter(
              : nullptr;
 }
 
-sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() const {
+sk_sp<cc::ColorFilter> DarkModeFilter::GetImageFilter() const {
   DCHECK(immutable_.image_filter);
   return immutable_.image_filter;
 }

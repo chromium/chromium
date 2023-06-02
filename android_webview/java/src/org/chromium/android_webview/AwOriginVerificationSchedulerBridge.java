@@ -10,6 +10,8 @@ import org.chromium.base.annotations.NativeMethods;
 
 @JNINamespace("android_webview")
 class AwOriginVerificationSchedulerBridge {
+    private AwOriginVerificationSchedulerBridge() {}
+
     @CalledByNative
     static void verify(String url, long nativeCallbackPtr) {
         AwOriginVerificationScheduler.getInstance().verify(url, (verified) -> {

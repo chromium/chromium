@@ -357,7 +357,14 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
       /*served=*/true);
   // Try to navigate again to the same URL.
   NavigateMainframeRendererTo(GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 2u);
+  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 3u);
+  // PrepareToServe("/candidate2.html?a=2&b=3") is anyway called, but in
+  // non-test environment this will be merged or ignored later in
+  // PrefetchService.
+  EXPECT_EQ(GetPrefetchesPreparedToServe()[2].first,
+            GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
+  EXPECT_EQ(GetPrefetchesPreparedToServe()[2].second->GetURL(),
+            GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
 
   // Cover the case where we want to navigate to a URL with No-Vary-Search for
   // which the PrefetchContainer WeakPtr is not valid anymore.
@@ -366,7 +373,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
   DCHECK(!GetPrefetchesPreparedToServe()[1].second);
   NavigateMainframeRendererTo(
       GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 2u);
+  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 3u);
 }
 
 TEST_F(PrefetchDocumentManagerTest,
@@ -534,39 +541,39 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager));
-  EXPECT_TRUE(prefetch_urls[0]->IsIsolatedNetworkContextRequiredForURL(
-      GetCrossOriginUrl("/candidate1.html")));
+  EXPECT_TRUE(
+      prefetch_urls[0]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[1]->GetURL(), GetCrossOriginUrl("/candidate2.html"));
   EXPECT_EQ(prefetch_urls[1]->GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kEager));
-  EXPECT_TRUE(prefetch_urls[1]->IsIsolatedNetworkContextRequiredForURL(
-      GetCrossOriginUrl("/candidate2.html")));
+  EXPECT_TRUE(
+      prefetch_urls[1]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[2]->GetURL(), GetSameOriginUrl("/candidate3.html"));
   EXPECT_EQ(prefetch_urls[2]->GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kEager));
-  EXPECT_FALSE(prefetch_urls[2]->IsIsolatedNetworkContextRequiredForURL(
-      GetSameOriginUrl("/candidate3.html")));
+  EXPECT_FALSE(
+      prefetch_urls[2]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[3]->GetURL(), GetCrossOriginUrl("/candidate6.html"));
   EXPECT_EQ(prefetch_urls[3]->GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kConservative));
-  EXPECT_TRUE(prefetch_urls[3]->IsIsolatedNetworkContextRequiredForURL(
-      GetCrossOriginUrl("/candidate6.html")));
+  EXPECT_TRUE(
+      prefetch_urls[3]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[4]->GetURL(),
             GetSameSiteCrossOriginUrl("/candidate7.html"));
   EXPECT_EQ(prefetch_urls[4]->GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kEager));
-  EXPECT_FALSE(prefetch_urls[4]->IsIsolatedNetworkContextRequiredForURL(
-      GetSameSiteCrossOriginUrl("/candidate7.html")));
+  EXPECT_FALSE(
+      prefetch_urls[4]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[5]->GetURL(), GetSameOriginUrl("/candidate8.html"));
   EXPECT_EQ(prefetch_urls[5]->GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager));
-  EXPECT_FALSE(prefetch_urls[5]->IsIsolatedNetworkContextRequiredForURL(
-      GetSameOriginUrl("/candidate8.html")));
+  EXPECT_FALSE(
+      prefetch_urls[5]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   // Check that the only remaining entries in candidates are those that
   // shouldn't be prefetched by |PrefetchService|.

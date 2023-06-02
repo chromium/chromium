@@ -12,7 +12,6 @@
 #include <map>
 #include <memory>
 
-#include "base/mac/scoped_nsobject.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 namespace extensions {
@@ -38,10 +37,10 @@ class GlobalShortcutListenerMac : public GlobalShortcutListener,
   ~GlobalShortcutListenerMac() override;
 
  private:
-  typedef int KeyId;
-  typedef std::map<ui::Accelerator, KeyId> AcceleratorIdMap;
-  typedef std::map<KeyId, ui::Accelerator> IdAcceleratorMap;
-  typedef std::map<KeyId, EventHotKeyRef> IdHotKeyRefMap;
+  using KeyId = int;
+  using AcceleratorIdMap = std::map<ui::Accelerator, KeyId>;
+  using IdAcceleratorMap = std::map<KeyId, ui::Accelerator>;
+  using IdHotKeyRefMap = std::map<KeyId, EventHotKeyRef>;
 
   // Keyboard event callbacks.
   void OnHotKeyEvent(EventHotKeyID hot_key_id);
@@ -71,10 +70,10 @@ class GlobalShortcutListenerMac : public GlobalShortcutListener,
       EventHandlerCallRef next_handler, EventRef event, void* user_data);
 
   // Whether this object is listening for global shortcuts.
-  bool is_listening_;
+  bool is_listening_ = false;
 
   // The hotkey identifier for the next global shortcut that is added.
-  KeyId hot_key_id_;
+  KeyId hot_key_id_ = 0;
 
   // A map of all hotkeys (media keys and shortcuts) mapping to their
   // corresponding hotkey IDs. For quickly finding if an accelerator is
@@ -88,7 +87,7 @@ class GlobalShortcutListenerMac : public GlobalShortcutListener,
   IdHotKeyRefMap id_hot_key_refs_;
 
   // Event handler for keyboard shortcut hot keys.
-  EventHandlerRef event_handler_;
+  EventHandlerRef event_handler_ = nullptr;
 
   // Media keys listener.
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;

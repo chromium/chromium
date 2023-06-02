@@ -23,6 +23,7 @@ source_set("android") {
     "touch_to_fill_password_generation_bridge.h",
     "touch_to_fill_password_generation_bridge_impl.cc",
     "touch_to_fill_password_generation_bridge_impl.h",
+    "touch_to_fill_password_generation_delegate.h",
   ]
 
   deps = [
@@ -55,6 +56,8 @@ source_set("test_support") {
   ]
 
   sources = [
+    "fake_touch_to_fill_password_generation_bridge.cc",
+    "fake_touch_to_fill_password_generation_bridge.h",
     "mock_touch_to_fill_password_generation_bridge.cc",
     "mock_touch_to_fill_password_generation_bridge.h",
   ]

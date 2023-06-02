@@ -24,6 +24,7 @@ found in the LICENSE file.
             android:layout_marginHorizontal="@dimen/standard_illustration_marginHorizontal"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:maxHeight="@dimen/illustration_maxHeight"
             android:adjustViewBounds="true"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/privacy_guide_cookies_image"

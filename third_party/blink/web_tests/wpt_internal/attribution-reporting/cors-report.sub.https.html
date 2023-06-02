@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="">
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+const reportingOrigin = 'https://{{host}}:{{ports[https][0]}}';
+const redirectOrigin = 'https://{{host}}:{{ports[https][1]}}';
+attribution_reporting_promise_test(async t => {
+  await redirectReportsTo(redirectOrigin);
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+      reportingOrigin,
+      source: {
+        destination: 'https://{{host}}',
+        source_event_id: generateSourceEventId(),
+      },
+    },
+    {
+      reportingOrigin,
+      trigger: {event_trigger_data: [{trigger_data: '2'}]},
+    },
+  ]));
+  const payload = await pollAttributionReports(eventLevelReportsUrl, redirectOrigin, 500 /*ms*/);
+  assert_equals(payload, null);
+}, 'Ensure that cross-origin redirects are disallowed.');
+</script>

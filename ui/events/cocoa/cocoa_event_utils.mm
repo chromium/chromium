@@ -11,24 +11,29 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 bool IsLeftButtonEvent(NSEvent* event) {
-  NSEventType type = [event type];
+  NSEventType type = event.type;
   return type == NSEventTypeLeftMouseDown ||
          type == NSEventTypeLeftMouseDragged || type == NSEventTypeLeftMouseUp;
 }
 
 bool IsRightButtonEvent(NSEvent* event) {
-  NSEventType type = [event type];
+  NSEventType type = event.type;
   return type == NSEventTypeRightMouseDown ||
          type == NSEventTypeRightMouseDragged ||
          type == NSEventTypeRightMouseUp;
 }
 
 bool IsMiddleButtonEvent(NSEvent* event) {
-  if ([event buttonNumber] != 2)
+  if (event.buttonNumber != 2) {
     return false;
+  }
 
   NSEventType type = [event type];
   return type == NSEventTypeOtherMouseDown ||
@@ -84,57 +89,59 @@ int EventFlagsFromNSEventWithModifiers(NSEvent* event, NSUInteger modifiers) {
   flags |= IsRightButtonEvent(event) ? ui::EF_RIGHT_MOUSE_BUTTON : 0;
   flags |= IsMiddleButtonEvent(event) ? ui::EF_MIDDLE_MOUSE_BUTTON : 0;
 
-  if ([event type] == NSEventTypeKeyDown && [event isARepeat])
+  if (event.type == NSEventTypeKeyDown && event.ARepeat) {
     flags |= ui::EF_IS_REPEAT;
+  }
 
   return flags;
 }
 
 bool IsKeyUpEvent(NSEvent* event) {
-  if ([event type] != NSEventTypeFlagsChanged)
-    return [event type] == NSEventTypeKeyUp;
+  if (event.type != NSEventTypeFlagsChanged) {
+    return event.type == NSEventTypeKeyUp;
+  }
 
-  switch ([event keyCode]) {
+  switch (event.keyCode) {
     case kVK_Command:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICELCMDKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICELCMDKEYMASK,
                              NX_DEVICERCMDKEYMASK, NSEventModifierFlagCommand);
     case kVK_RightCommand:
       return IsModifierKeyUp([event modifierFlags], NX_DEVICERCMDKEYMASK,
                              NX_DEVICELCMDKEYMASK, NSEventModifierFlagCommand);
 
     case kVK_CapsLock:
-      return ([event modifierFlags] & NSEventModifierFlagCapsLock) == 0;
+      return (event.modifierFlags & NSEventModifierFlagCapsLock) == 0;
 
     case kVK_Shift:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICELSHIFTKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICELSHIFTKEYMASK,
                              NX_DEVICERSHIFTKEYMASK, NSEventModifierFlagShift);
     case kVK_RightShift:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICERSHIFTKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICERSHIFTKEYMASK,
                              NX_DEVICELSHIFTKEYMASK, NSEventModifierFlagShift);
 
     case kVK_Option:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICELALTKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICELALTKEYMASK,
                              NX_DEVICERALTKEYMASK, NSEventModifierFlagOption);
     case kVK_RightOption:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICERALTKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICERALTKEYMASK,
                              NX_DEVICELALTKEYMASK, NSEventModifierFlagOption);
 
     case kVK_Control:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICELCTLKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICELCTLKEYMASK,
                              NX_DEVICERCTLKEYMASK, NSEventModifierFlagControl);
     case kVK_RightControl:
-      return IsModifierKeyUp([event modifierFlags], NX_DEVICERCTLKEYMASK,
+      return IsModifierKeyUp(event.modifierFlags, NX_DEVICERCTLKEYMASK,
                              NX_DEVICELCTLKEYMASK, NSEventModifierFlagControl);
 
     case kVK_Function:
-      return ([event modifierFlags] & NSEventModifierFlagFunction) == 0;
+      return (event.modifierFlags & NSEventModifierFlagFunction) == 0;
   }
   return false;
 }
 
 std::vector<uint8_t> EventToData(NSEvent* event) {
   base::ScopedCFTypeRef<CFDataRef> cf_data(
-      CGEventCreateData(nullptr, [event CGEvent]));
+      CGEventCreateData(nullptr, event.CGEvent));
   const uint8_t* cf_data_ptr = CFDataGetBytePtr(cf_data.get());
   size_t cf_data_size = CFDataGetLength(cf_data.get());
   return std::vector<uint8_t>(cf_data_ptr, cf_data_ptr + cf_data_size);

@@ -58,6 +58,7 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
   HANDLE GetHandle() const;
+  const gfx::DXGIHandleToken& GetToken() const;
 
  private:
   GpuMemoryBufferImplDXGI(gfx::GpuMemoryBufferId id,

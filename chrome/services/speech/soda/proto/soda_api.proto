@@ -13,7 +13,7 @@ package speech.soda.chrome;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// Next ID to use: 16
+// Next ID to use: 17
 message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
@@ -77,6 +77,9 @@ message ExtendedSodaConfigMsg {
   // In order to enable multilang, ExtendedSodaConfigMsg.language_pack_directory
   // must correctly specify the LP for the primary locale.
   optional MultilangConfig multilang_config = 15;
+
+  // Whether to mask / leave offensive words in recognition.
+  optional bool mask_offensive_words = 16 [default = false];
 }
 
 // Next ID: 3
@@ -208,10 +211,33 @@ message SodaAudioLevelInfo {
 }
 
 message SodaLangIdEvent {
+  enum AsrSwitchResult {
+    // No switch is attempted when:
+    // 1. Multilang is disabled.
+    // 2. top_language_confidence did not meet the sensitivity threshold.
+    // 3. the top detected language is the same as the one currently being
+    // transcribed.
+    // 4. The LangId results were jittery and this event was ignored for being
+    // too short.
+    DEFAULT_NO_SWITCH = 0;
+    // ASR successfully switched to this locale.
+    SWITCH_SUCCEEDED = 1;
+    // ASR attempted to switch to this locale, but could not load the provided
+    // LP.
+    SWITCH_FAILED = 2;
+    // ASR did not attempt to switch because no LP was provided for the locale,
+    // but top_language_confidence met the sensitivity threshold.
+    SWITCH_SKIPPED_NO_LP = 3;
+  }
+
   // Locale, e.g. "en-us" or "af-za"
   optional string language = 1;
+
   // Equal to the internal enum from langid confidence.
   optional int32 confidence_level = 2;
+
+  // Flag indicating whether ASR successfully switched to this locale.
+  optional AsrSwitchResult asr_switch_result = 3;
 }
 
 message SodaResponse {

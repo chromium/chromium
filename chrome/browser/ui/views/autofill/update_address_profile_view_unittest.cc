@@ -93,7 +93,7 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<UpdateAddressProfileView> view_;
+  raw_ptr<UpdateAddressProfileView, DanglingUntriaged> view_;
   testing::NiceMock<MockSaveUpdateAddressProfileBubbleController>
       mock_controller_;
 };

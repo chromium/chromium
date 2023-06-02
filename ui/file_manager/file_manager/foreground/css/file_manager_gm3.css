@@ -161,7 +161,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   background-color: transparent;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 16px 16px;
+  background-size: 20px 20px;
 }
 
 #directory-tree .tree-row > .file-row > .label {
@@ -279,10 +279,11 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 
 html[dir='rtl'] #directory-tree .tree-row > .file-row > .align-right-icon {
   left: -12px; /* Same as padding inline end of side nav. */
+  right: unset;
 }
 
 #directory-tree .tree-row > .file-row > .external-link-icon iron-icon {
-  padding: 6px;
+  padding: 10px;
 }
 
 #directory-tree .tree-row > .file-row > .root-eject {
@@ -314,6 +315,14 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
   --ink-color: var(--cros-sys-ripple_neutral_on_prominent);
 }
 /* Can be removed after new directory replacement. -- END */
+
+#directory-tree xf-tree-item > input::selection {
+  background-color: var(--cros-sys-highlight_text);
+}
+
+#directory-tree xf-tree-item > .external-link-icon iron-icon {
+  padding: 10px;
+}
 
 /* Splitter. */
 /* Prevent the sudden flickering when opening the Files app. "div.splitter" is
@@ -352,7 +361,7 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
   background: none;
   border-bottom: 1px solid transparent;
   box-sizing: border-box;
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-sys-on_surface_variant);
   display: flex;
   flex: none;
   flex-direction: row;
@@ -370,7 +379,7 @@ body.check-select .dialog-header {
 /* Display a border during check-select mode if we're in a dialog. (This
    can only happen in an open-multi-file dialog). */
 body[type='open-multi-file'].check-select .dialog-header {
-  border-top: 1px solid var(--cros-bg-color);
+  border-top: 1px solid var(--cros-sys-app_base);
 }
 
 .dialog-header > .spacer {
@@ -441,7 +450,7 @@ body.check-select .dialog-header
   height: 40px;
   margin: 4px;
   min-width: 40px;
-  padding: 0;
+  padding: 10px;
   width: 40px;
 }
 
@@ -655,7 +664,12 @@ body.check-select #cancel-selection-button-wrapper {
 
 /* Search button */
 body.check-select-v1 #search-button {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
   visibility: hidden;
+  width: 0;
 }
 
 /* Search box */
@@ -668,6 +682,10 @@ body.check-select-v1 #search-button {
 .dialog-header.files-ng #search-box cr-input::part(input) {
   caret-color: var(--cros-sys-primary);
   margin-inline-end: 16px;
+}
+
+body.check-select-v1 #search-box {
+  visibility: hidden;
 }
 
 .dialog-header.files-ng #search-box.has-cursor,
@@ -702,7 +720,7 @@ body.check-select-v1 #search-button {
 }
 
 html:not(.pointer-active) .dialog-header.files-ng #search-box .clear:hover {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 .dialog-header.files-ng #search-box .clear > .icon {
@@ -735,14 +753,14 @@ html[dir='rtl'] #search-box .clear {
 }
 
 .dialog-header.files-ng cr-toggle {
-  --cr-toggle-checked-bar-color: var(--cros-sys-primary);
+  --cr-toggle-checked-bar-color: var(--cros-sys-primary_container);
   /* bar color above already defines the opacity, so use 100% here */
   --cr-toggle-checked-bar-opacity: 100%;
-  --cr-toggle-checked-button-color: var(--cros-sys-on_primary);
-  --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-checked-button-color: var(--cros-sys-primary);
+  --cr-toggle-checked-ripple-color: transparent;
   --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
-  --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
-  --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-surface_variant);
+  --cr-toggle-unchecked-ripple-color: transparent;
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
   margin-inline: 6px;
@@ -751,7 +769,7 @@ html[dir='rtl'] #search-box .clear {
 
 /* only show the ripple ring for tab navigation */
 html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
-  --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
+  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
 }
 
 /* Container for the detail and thumbnail list views. */
@@ -914,7 +932,7 @@ html.focus-outline-visible
 html.focus-outline-visible
     .dialog-footer div.select > div.options:not(:hover) option.selected::after {
   border: 2px solid var(--cros-sys-focus_ring);
-  border-radius: 4px;
+  border-radius: 8px;
   content: '';
   height: 32px; /* option height - 2 x border width */
   left: 0;
@@ -969,13 +987,13 @@ body.check-select .breadcrumbs {
   padding-inline: 8px 12px;
 }
 
-body.check-select #read-only-indicator {
+body.check-select #read-only-indicator,
+body.check-select #offline-folder-indicator {
   display: none;
 }
 
 .dialog-header.files-ng #read-only-icon {
   -webkit-mask-image: url(../images/files/ui/visibility_ng.svg);
-  background-color: var(--cros-icon-color-secondary);
   height: 20px;
   margin-inline-end: 8px;
   width: 20px;
@@ -1034,7 +1052,7 @@ body.check-select #read-only-indicator {
   width: 320px;
   /* Ensure links in label are on top when not hidden so a click is not
   absorbed by an empty file-list. */
-  z-index: 999;
+  z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
 #empty-folder #empty-folder-title {
@@ -1042,7 +1060,7 @@ body.check-select #read-only-indicator {
 }
 
 #empty-folder > .label > span#empty-folder-desc > a {
-  color: var(--cros-text-color-prominent);
+  color: var(--cros-sys-primary);
   font: var(--cros-body-1-font);
 }
 
@@ -1060,11 +1078,12 @@ body.check-select #read-only-indicator {
 }
 
 #file-list .drag-selection-border {
-  background-color: rgba(var(--cros-bg-color-rgb), 30%);
-  border: 2px solid rgba(var(--cros-bg-color-rgb), 60%);
+  background-color: var(--cros-sys-highlight_shape);
+  border: 2px solid var(--cros-sys-primary);
+  border-radius: 4px;
   box-sizing: border-box;
   display: flex;
-  outline: 1px solid var(--cros-selection-outline);
+  outline: 1px solid var(--cros-sys-separator);
   position: absolute;
   z-index: 2;
 }
@@ -1189,13 +1208,16 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
+#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
+#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status,
+#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
   display: flex;
 }
 
-#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline] {
+#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline],
+#list-container.thumbnail-view li.cant-pin .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color: currentColor;
 }
 
@@ -1423,6 +1445,7 @@ body.files-ng #default-tasks-list {
 }
 
 #default-tasks-list li {
+  border-radius: 8px;
   height: 40px;
   line-height: 40px;
 }
@@ -1500,11 +1523,11 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
 #list-container .group-heading {
   border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-sys-on_surface);
   font: var(--cros-button-2-font);
   /* The desired height plus the border width. */
   height: calc(56px + 1px);
-  padding-inline-start: 16px;
+  padding-inline-start: 20px;
   padding-top: 20px;
   /* Make sure clicking this area can unselect file items. */
   pointer-events: none;
@@ -1708,7 +1731,6 @@ li[renaming=''] .filename-label {
   -webkit-mask-size: 16px 16px;
   background-color: currentColor;
   height: 24px;
-  margin-inline-end: 14px;
   margin-inline-start: auto;
   padding-inline-start: 8px;
   width: 24px;
@@ -1740,7 +1762,6 @@ body.check-select #list-container li[selected] .detail-checkmark {
 
 #list-container list li .detail-thumbnail > .thumbnail {
   -webkit-user-drag: none;
-  background-color: var(--cros-highlight-color-hover);
   background-position: center;
   background-size: cover;
   border-radius: 14px;
@@ -1829,7 +1850,7 @@ body.files-ng #drag-container .drag-contents {
   left: 8px;
   padding-inline-start: 8px;
   right: 8px;
-  top: 8px;
+  top: 12px;
 }
 
 body.files-ng #drag-container .drag-multiple {
@@ -2009,11 +2030,14 @@ list:focus li[selected] .table-row-cell .dlp-managed-icon,
 
 .table-row-cell > .dateholder {
   display: flex;
+  margin-inline-end: 14px;
 }
 
 .table-row-cell > .dateholder > .date {
   flex: 1 1;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
 }
 
 .table-row-cell > .dateholder > .dlp-managed-icon {
@@ -2034,7 +2058,7 @@ list:focus li[selected] .table-row-cell .dlp-managed-icon,
    * variable needs to be created and applied here.
    */
   --cr-icon-button-fill-color: var(--cros-sys-outline);
-  --cr-icon-button-hover-background-color: var(--cros-ripple-color);
+  --cr-icon-button-hover-background-color: var(--cros-sys-hover_on_subtle);
   --cr-icon-button-icon-size: 32px;
   --cr-icon-button-margin-start: 0px;
   --cr-icon-button-size: 32px;
@@ -2120,14 +2144,17 @@ body.files-ng #list-container li .detail-checkmark {
 #list-container .list li.encrypted:not([renaming]) .encryption-status,
 #list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
+#list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
+#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
+#list-container .list li.cant-pin:not([renaming]) .inline-status,
+#list-container .list li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
   display: flex;
 }
 
 #list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
-#list-container .list li.pinned .inline-status xf-icon[type=offline] {
+#list-container .list li.pinned .inline-status xf-icon[type=offline],
+#list-container .list li.cant-pin .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color: currentColor;
 }
 
@@ -2248,12 +2275,6 @@ list.autocomplete-suggestions > li > div[search-icon] {
 list.autocomplete-suggestions > [selected],
 list.autocomplete-suggestions > [lead] {
   background-color: var(--cros-menu-item-background-hover);
-}
-
-.cr-dialog-container.files-ng #suggest-app-dialog.cr-dialog-frame {
-  max-width: unset !important;
-  min-width: unset !important;
-  width: 735px;
 }
 
 .error-dialog-frame .error-dialog-img {

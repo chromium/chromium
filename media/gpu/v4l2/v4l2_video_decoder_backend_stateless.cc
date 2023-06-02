@@ -426,6 +426,10 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
         PumpOutputSurfaces();
         return true;
 
+      case AcceleratedVideoDecoder::kColorSpaceChange:
+        NOTIMPLEMENTED_LOG_ONCE();
+        return false;
+
       case AcceleratedVideoDecoder::kRanOutOfStreamData:
         // Current decode request is finished processing.
         if (current_decode_request_) {

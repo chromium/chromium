@@ -51,11 +51,7 @@ SVGFEColorMatrixElement::SVGFEColorMatrixElement(Document& document)
       type_(MakeGarbageCollected<SVGAnimatedEnumeration<ColorMatrixType>>(
           this,
           svg_names::kTypeAttr,
-          FECOLORMATRIX_TYPE_MATRIX)) {
-  AddToPropertyMap(values_);
-  AddToPropertyMap(in1_);
-  AddToPropertyMap(type_);
-}
+          FECOLORMATRIX_TYPE_MATRIX)) {}
 
 void SVGFEColorMatrixElement::Trace(Visitor* visitor) const {
   visitor->Trace(values_);
@@ -107,6 +103,29 @@ FilterEffect* SVGFEColorMatrixElement::Build(SVGFilterBuilder* filter_builder,
       filter, filter_type, values_->CurrentValue()->ToFloatVector());
   effect->InputEffects().push_back(input1);
   return effect;
+}
+
+SVGAnimatedPropertyBase* SVGFEColorMatrixElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kValuesAttr) {
+    return values_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else if (attribute_name == svg_names::kTypeAttr) {
+    return type_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEColorMatrixElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{values_.Get(), in1_.Get(), type_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

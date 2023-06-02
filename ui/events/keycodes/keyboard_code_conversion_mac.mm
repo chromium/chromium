@@ -3,16 +3,21 @@
 // found in the LICENSE file.
 
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
+#include "base/mac/foundation_util.h"
 
 #import <Carbon/Carbon.h>
 
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/memory/scoped_policy.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace ui {
 
@@ -220,7 +225,7 @@ const KeyCodeMap kKeyCodesMap[] = {
 
 bool IsKeypadOrNumericKeyEvent(NSEvent* event) {
   // Check that this is the type of event that has a keyCode.
-  switch ([event type]) {
+  switch (event.type) {
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp:
     case NSEventTypeFlagsChanged:
@@ -229,7 +234,7 @@ bool IsKeypadOrNumericKeyEvent(NSEvent* event) {
       return false;
   }
 
-  switch ([event keyCode]) {
+  switch (event.keyCode) {
     case kVK_ANSI_KeypadClear:
     case kVK_ANSI_KeypadEquals:
     case kVK_ANSI_KeypadMultiply:
@@ -787,27 +792,28 @@ KeyboardCode KeyboardCodeFromNSEvent(NSEvent* event) {
   // Numeric keys 0-9 should always return |keyCode| 0-9.
   // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Printable_keys_in_standard_position
   if (!IsKeypadOrNumericKeyEvent(event) &&
-      ([event type] == NSEventTypeKeyDown ||
-       [event type] == NSEventTypeKeyUp)) {
+      (event.type == NSEventTypeKeyDown || event.type == NSEventTypeKeyUp)) {
     // Handles Dvorak-QWERTY Cmd case.
     // https://github.com/WebKit/webkit/blob/4d41c98b1de467f5d2a8fcba84d7c5268f11b0cc/Source/WebCore/platform/mac/PlatformEventFactoryMac.mm#L329
-    NSString* characters = [event characters];
-    if ([characters length] > 0)
+    NSString* characters = event.characters;
+    if (characters.length > 0) {
       code = KeyboardCodeFromCharCode([characters characterAtIndex:0]);
+    }
     if (code)
       return code;
 
-    characters = [event charactersIgnoringModifiers];
-    if ([characters length] > 0)
+    characters = event.charactersIgnoringModifiers;
+    if (characters.length > 0) {
       code = KeyboardCodeFromCharCode([characters characterAtIndex:0]);
+    }
     if (code)
       return code;
   }
-  return KeyboardCodeFromKeyCode([event keyCode]);
+  return KeyboardCodeFromKeyCode(event.keyCode);
 }
 
 int ISOKeyboardKeyCodeMap(int nativeKeyCode) {
-  // OS X will swap 'Backquote' and 'IntlBackslash' if it's an ISO keyboard.
+  // macOS will swap 'Backquote' and 'IntlBackslash' if it's an ISO keyboard.
   // https://crbug.com/600607
   switch (nativeKeyCode) {
     case kVK_ISO_Section:
@@ -822,40 +828,41 @@ int ISOKeyboardKeyCodeMap(int nativeKeyCode) {
 DomCode DomCodeFromNSEvent(NSEvent* event) {
   if (KBGetLayoutType(LMGetKbdType()) == kKeyboardISO) {
     return ui::KeycodeConverter::NativeKeycodeToDomCode(
-        ISOKeyboardKeyCodeMap([event keyCode]));
+        ISOKeyboardKeyCodeMap(event.keyCode));
   }
 
-  return ui::KeycodeConverter::NativeKeycodeToDomCode([event keyCode]);
+  return ui::KeycodeConverter::NativeKeycodeToDomCode(event.keyCode);
 }
 
 DomKey DomKeyFromNSEvent(NSEvent* event) {
   // Apply the lookup based on the character first since that has the
   // Keyboard layout and modifiers already applied; whereas the keyCode
   // doesn't.
-  if ([event type] == NSEventTypeKeyDown || [event type] == NSEventTypeKeyUp) {
-    // Cannot use [event characters] to check whether it's a dead key, because
-    // KeyUp event has the character form of the dead key in [event characters].
+  if (event.type == NSEventTypeKeyDown || event.type == NSEventTypeKeyUp) {
+    // Cannot use `event.characters` to check whether it's a dead key, because
+    // KeyUp event has the character form of the dead key in `event.characters`.
     bool is_dead_key = false;
     // MacKeycodeAndModifiersToCharacter() is efficient (around 6E-4 ms).
     unichar dead_dom_key_char = MacKeycodeAndModifiersToCharacter(
-        [event keyCode], [event modifierFlags], &is_dead_key);
+        event.keyCode, event.modifierFlags, &is_dead_key);
     if (is_dead_key)
       return DomKey::DeadKeyFromCombiningCharacter(dead_dom_key_char);
 
     // Mac Eisu Kana key events have a space symbol (U+0020) as [event
     // characters]. However, the symbol is not generated for users and the event
     // is just used for enabling/disabling an IME.
-    if ([event keyCode] == kVK_JIS_Eisu || [event keyCode] == kVK_JIS_Kana)
-      return DomKeyFromKeyCode([event keyCode]);
+    if (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana) {
+      return DomKeyFromKeyCode(event.keyCode);
+    }
 
-    // [event characters] will have dead key state applied.
-    NSString* characters = [event characters];
-    if ([characters length] > 0) {
+    // `event.characters` will have dead key state applied.
+    NSString* characters = event.characters;
+    if (characters.length > 0) {
       // An invalid dead key combination will produce two characters, according
       // to spec DomKey should be the last character.
       // e.g. On French keyboard [+a will produce "^q", DomKey should be 'q'.
       unichar dom_key_char =
-          [characters characterAtIndex:[characters length] - 1];
+          [characters characterAtIndex:characters.length - 1];
       if (IsUnicodeControl(dom_key_char)) {
         // Filter non-glyph modifiers if the generated characters are part of
         // Unicode 'Other, Control' General Category.
@@ -866,7 +873,7 @@ DomKey DomKeyFromNSEvent(NSEvent* event) {
                                           NSEventModifierFlagOption;
         // MacKeycodeAndModifiersToCharacter() is efficient (around 6E-4 ms).
         dom_key_char = MacKeycodeAndModifiersToCharacter(
-            [event keyCode], [event modifierFlags] & kAllowedModifiersMask,
+            event.keyCode, event.modifierFlags & kAllowedModifiersMask,
             &unused_is_dead_key);
       }
 
@@ -876,7 +883,7 @@ DomKey DomKeyFromNSEvent(NSEvent* event) {
         return DomKeyFromCharCode(dom_key_char);
     }
   }
-  return DomKeyFromKeyCode([event keyCode]);
+  return DomKeyFromKeyCode(event.keyCode);
 }
 
 UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
@@ -887,8 +894,9 @@ UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
                                          UInt32* dead_key_state) {
   DCHECK(dead_key_state);
 
-  CFDataRef layout_data = static_cast<CFDataRef>(TISGetInputSourceProperty(
-      input_source, kTISPropertyUnicodeKeyLayoutData));
+  CFDataRef layout_data =
+      base::mac::CFCast<CFDataRef>(TISGetInputSourceProperty(
+          input_source, kTISPropertyUnicodeKeyLayoutData));
   if (!layout_data)
     return 0xFFFD;  // REPLACEMENT CHARACTER
 

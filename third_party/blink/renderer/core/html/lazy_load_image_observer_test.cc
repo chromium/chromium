@@ -670,19 +670,25 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // visible yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0, 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0, 1);
+  histogram_tester.ExpectUniqueSample("Blink.VisibleLoadTime.LazyLoadImages", 0,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 0, 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 0);
 }
 
 // A fully above-the-fold cached image should not report below-the-fold metrics.
@@ -731,9 +737,9 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldCachedImageMetrics) {
 
   // Nothing was below the fold so no BelowTheFold metrics should be reported.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
 }
 
 // An image that loads immediately due to being cached should not report
@@ -768,9 +774,9 @@ TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {
 
   // VisibleBeforeLoaded should not be recorded since the image is not visible.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
 
   // Scroll down so that the image is in the viewport.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
@@ -783,9 +789,9 @@ TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {
   // The image is now visible but loaded before being visible, so no
   // VisibleBeforeLoaded metrics should have been recorded.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
 }
 
 TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
@@ -805,13 +811,13 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
   // VisibleBeforeLoaded should have been recorded immediately when the image
   // became visible.
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
 
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // finished loading yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
 
   image_resource.Complete(TestImage());
 
@@ -819,14 +825,19 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
   test::RunPendingTasks();
 
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
+  histogram_tester.ExpectTotalCount("Blink.VisibleLoadTime.LazyLoadImages", 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
 }
 
 TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
@@ -864,7 +875,7 @@ TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // visible yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
 
   // Scroll down such that the image is visible.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
@@ -875,13 +886,19 @@ TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
   test::RunPendingTasks();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
+  histogram_tester.ExpectUniqueSample("Blink.VisibleLoadTime.LazyLoadImages", 0,
+                                      1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0, 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0, 1);
 }
 
 TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
@@ -914,13 +931,13 @@ TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
   // VisibleBeforeLoaded should have been recorded immediately when the image
   // became visible.
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
 
   // VisibleLoadTime should not have been recorded yet, since the image is not
   // finished loading yet.
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
 
   image_resource.Complete(TestImage());
 
@@ -928,14 +945,19 @@ TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
   test::RunPendingTasks();
 
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
       static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
+  histogram_tester.ExpectTotalCount("Blink.VisibleLoadTime.LazyLoadImages", 1);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 1);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 1);
 }
 
 // LazyLoadImages metrics should not be recorded for non-lazy image loads.
@@ -959,13 +981,13 @@ TEST_F(LazyLoadImagesTest, NonLazyIgnoredForLazyLoadImagesMetrics) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
   histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
 }
 
 // Allow lazy loading of file:/// urls.

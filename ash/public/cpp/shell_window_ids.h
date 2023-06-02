@@ -164,6 +164,12 @@ enum ShellWindowId {
   // notifier elements such as notification popups and system nudges.
   kShellWindowId_SettingBubbleContainer,
 
+  // The container for help bubbles which are anchored to views for the purpose
+  // of user education. In the case of the Welcome Tour, which walks new users
+  // through ChromeOS System UI, a background blur will be applied to the
+  // container with a masked cut out for the help bubble anchor view.
+  kShellWindowId_HelpBubbleContainer,
+
   // Contains special accessibility windows that can inset the display work area
   // (e.g. the ChromeVox spoken feedback window).
   // TODO(jamescook): Consolidate this with DockedMagnifierContainer.

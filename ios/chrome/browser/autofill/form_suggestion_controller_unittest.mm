@@ -75,16 +75,17 @@ using autofill::PopupType;
 
 + (instancetype)providerWithSuggestions {
   NSArray* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:nil
-                             identifier:0
-                      backendIdentifier:nil
-                         requiresReauth:NO],
+    [FormSuggestion
+        suggestionWithValue:@"foo"
+         displayDescription:nil
+                       icon:nil
+                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+          backendIdentifier:nil
+             requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                             identifier:1
+                            popupItemId:autofill::PopupItemId::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -382,16 +383,17 @@ TEST_F(FormSuggestionControllerTest,
   // Set up the controller with some providers, one of which can provide
   // suggestions.
   NSArray* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:nil
-                             identifier:0
-                      backendIdentifier:nil
-                         requiresReauth:NO],
+    [FormSuggestion
+        suggestionWithValue:@"foo"
+         displayDescription:nil
+                       icon:nil
+                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+          backendIdentifier:nil
+             requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                             identifier:1
+                            popupItemId:autofill::PopupItemId::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -434,12 +436,13 @@ TEST_F(FormSuggestionControllerTest,
 TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   // Send some suggestions to the controller and then tap one.
   NSArray* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:nil
-                             identifier:0
-                      backendIdentifier:nil
-                         requiresReauth:NO],
+    [FormSuggestion
+        suggestionWithValue:@"foo"
+         displayDescription:nil
+                       icon:nil
+                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+          backendIdentifier:nil
+             requiresReauth:NO],
   ];
   TestSuggestionProvider* provider =
       [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
@@ -471,12 +474,13 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
 // Tests that the autofill suggestion IPH is triggered when suggesting an
 // address if the suggestion's `featureForiPH` property is set.
 TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
-  FormSuggestion* suggestion = [FormSuggestion suggestionWithValue:@"foo"
-                                                displayDescription:nil
-                                                              icon:nil
-                                                        identifier:0
-                                                 backendIdentifier:nil
-                                                    requiresReauth:NO];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"foo"
+       displayDescription:nil
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   suggestion.featureForIPH = @"YES";
   NSArray* suggestions = @[ suggestion ];
   TestSuggestionProvider* provider =

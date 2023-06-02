@@ -12,14 +12,17 @@
 namespace segmentation_platform {
 namespace {
 
-void FillTabsFromSessions(
+void FillTabsFromSessionsAfterTime(
     const std::vector<const sync_sessions::SyncedSession*> sessions,
-    std::vector<TabFetcher::TabEntry>& tabs) {
+    std::vector<TabFetcher::TabEntry>& tabs,
+    base::Time tabs_loaded_after_timestamp) {
   for (const auto* session : sessions) {
     for (const auto& session_and_window : session->windows) {
       const auto& window = session_and_window.second->wrapped_window;
       for (const auto& tab : window.tabs) {
-        tabs.emplace_back(tab->tab_id, session->GetSessionTag());
+        if (tab->timestamp >= tabs_loaded_after_timestamp) {
+          tabs.emplace_back(tab->tab_id, session->GetSessionTag());
+        }
       }
     }
   }
@@ -47,7 +50,20 @@ bool TabFetcher::FillAllRemoteTabs(std::vector<TabEntry>& tabs) {
   }
   std::vector<const sync_sessions::SyncedSession*> sessions;
   open_ui_delegate->GetAllForeignSessions(&sessions);
-  FillTabsFromSessions(sessions, tabs);
+  FillTabsFromSessionsAfterTime(sessions, tabs, base::Time());
+  return true;
+}
+
+bool TabFetcher::FillAllRemoteTabsAfterTime(
+    std::vector<TabEntry>& tabs,
+    base::Time tabs_loaded_after_timestamp) {
+  auto* open_ui_delegate = session_sync_service_->GetOpenTabsUIDelegate();
+  if (!open_ui_delegate) {
+    return false;
+  }
+  std::vector<const sync_sessions::SyncedSession*> sessions;
+  open_ui_delegate->GetAllForeignSessions(&sessions);
+  FillTabsFromSessionsAfterTime(sessions, tabs, tabs_loaded_after_timestamp);
   return true;
 }
 
@@ -81,7 +97,7 @@ bool TabFetcher::FillAllLocalTabsFromSyncSessions(std::vector<TabEntry>& tabs) {
   if (!local_session) {
     return false;
   }
-  FillTabsFromSessions({local_session}, tabs);
+  FillTabsFromSessionsAfterTime({local_session}, tabs, base::Time());
   return true;
 }
 
@@ -102,6 +118,27 @@ base::TimeDelta TabFetcher::GetLocalTabTimeSinceModified(
     const TabFetcher::Tab& tab) {
   NOTIMPLEMENTED();
   return base::TimeDelta::Max();
+}
+
+size_t TabFetcher::GetRemoteTabsCountAfterTime(
+    base::Time tabs_loaded_after_timestamp) {
+  std::vector<TabFetcher::TabEntry> all_tabs;
+  FillAllRemoteTabsAfterTime(all_tabs, tabs_loaded_after_timestamp);
+  return all_tabs.size();
+}
+
+absl::optional<base::Time> TabFetcher::GetLatestRemoteSessionModifiedTime() {
+  auto* open_ui_delegate = session_sync_service_->GetOpenTabsUIDelegate();
+  if (!open_ui_delegate) {
+    return absl::nullopt;
+  }
+  std::vector<const sync_sessions::SyncedSession*> sessions;
+  open_ui_delegate->GetAllForeignSessions(&sessions);
+  if (sessions.empty()) {
+    return absl::nullopt;
+  }
+  // Get latest session modified time.
+  return sessions[0]->GetModifiedTime();
 }
 
 }  // namespace segmentation_platform

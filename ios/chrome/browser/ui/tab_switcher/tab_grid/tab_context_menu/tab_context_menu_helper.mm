@@ -8,6 +8,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
@@ -193,11 +195,14 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
-  bookmarks::BookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           _browserState);
-  return item && bookmarkModel &&
-         bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState);
+  return item &&
+         bookmark_utils_ios::IsBookmarked(
+             item.URL, localOrSyncableBookmarkModel, accountBookmarkModel);
 }
 
 // Returns `YES` if the tab for the given `identifier` is pinned.

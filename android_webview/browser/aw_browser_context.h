@@ -146,6 +146,9 @@ class AwBrowserContext : public content::BrowserContext,
 
   void ClearPersistentOriginTrialStorageForTesting(JNIEnv* env);
 
+  jboolean HasFormData(JNIEnv* env);
+  void ClearFormData(JNIEnv* env);
+
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
 
   void SetExtraHeaders(const GURL& url, const std::string& headers);

@@ -138,6 +138,17 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
           Setting.kShowDiacritic,
         ]),
       },
+
+      /**
+       * Whether settings should be split per device.
+       */
+      isDeviceSettingsSplitEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -151,6 +162,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   private showExternalMetaKey_: boolean;
   private shouldShowDiacriticSetting_ =
       loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
+  private isDeviceSettingsSplitEnabled_: boolean;
 
   constructor() {
     super();
@@ -172,7 +184,16 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     if (route !== routes.KEYBOARD) {
       return;
     }
-
+    if (Router.getInstance().currentRoute === routes.KEYBOARD &&
+        this.isDeviceSettingsSplitEnabled_) {
+      // Call setCurrentRoute function to go to the per device keyboard subpage
+      // when the feature flag is turned on. We don't use navigateTo function
+      // since we don't want to navigate back to the previous keyboard subpage.
+      setTimeout(() => {
+        Router.getInstance().setCurrentRoute(
+            routes.PER_DEVICE_KEYBOARD, new URLSearchParams(), false);
+      });
+    }
     this.attemptDeepLink();
   }
 

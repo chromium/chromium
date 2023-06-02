@@ -138,8 +138,10 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   void SetUp() override;
 
  private:
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
-  raw_ptr<extensions::PermissionsManager> permissions_manager_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
+  raw_ptr<extensions::PermissionsManager, DanglingUntriaged>
+      permissions_manager_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_

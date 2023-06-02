@@ -763,6 +763,14 @@ void DocumentLoader::DidObserveLoadingBehavior(LoadingBehaviorFlag behavior) {
   }
 }
 
+void DocumentLoader::DidObserveJavaScriptFrameworks(
+    const JavaScriptFrameworkDetectionResult& result) {
+  if (frame_) {
+    DCHECK_GE(state_, kCommitted);
+    GetLocalFrameClient().DidObserveJavaScriptFrameworks(result);
+  }
+}
+
 // static
 WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
   switch (type) {
@@ -1676,8 +1684,8 @@ bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
 
 void DocumentLoader::InitializeEmptyResponse() {
   response_ = ResourceResponse(url_);
-  response_.SetMimeType("text/html");
-  response_.SetTextEncodingName("utf-8");
+  response_.SetMimeType(AtomicString("text/html"));
+  response_.SetTextEncodingName(AtomicString("utf-8"));
 }
 
 void DocumentLoader::StartLoading() {
@@ -1996,14 +2004,14 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     CHECK(is_error_page_for_failed_navigation_);
     CHECK(origin_to_commit_->IsOpaque());
     origin = origin_to_commit_;
-    origin_calculation_debug_info_ = "use_origin_to_commit";
+    origin_calculation_debug_info_ = AtomicString("use_origin_to_commit");
   } else if (IsPagePopupRunningInWebTest(frame_)) {
     // If we are a page popup in LayoutTests ensure we use the popup
     // owner's security origin so the tests can possibly access the
     // document via internals API.
     auto* owner_context = frame_->PagePopupOwner()->GetExecutionContext();
     origin = owner_context->GetSecurityOrigin()->IsolatedCopy();
-    origin_calculation_debug_info_ = "use_popup_owner_origin";
+    origin_calculation_debug_info_ = AtomicString("use_popup_owner_origin");
   } else if (owner_document && owner_document->domWindow()) {
     // Prefer taking `origin` from `owner_document` if one is available - this
     // will correctly inherit/alias `SecurityOrigin::domain_` from the
@@ -2022,23 +2030,15 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // But origin_to_commit_ is currently cloned with IsolatedCopy() which
     // breaks aliasing...
     origin = owner_document->domWindow()->GetMutableSecurityOrigin();
-    origin_calculation_debug_info_ = "use_owner_document_origin";
+    origin_calculation_debug_info_ = AtomicString("use_owner_document_origin");
   } else {
-    origin_calculation_debug_info_ = "use_url_with_precursor";
+    origin_calculation_debug_info_ = AtomicString("use_url_with_precursor");
     // Otherwise, create an origin that propagates precursor information
     // as needed. For non-opaque origins, this creates a standard tuple
     // origin, but for opaque origins, it creates an origin with the
     // initiator origin as the precursor.
-    scoped_refptr<const SecurityOrigin> precursor = requestor_origin_;
-    // For uuid-in-package: resources served from WebBundles, use the Bundle's
-    // origin as the precursor.
-    if (url_.ProtocolIs("uuid-in-package") &&
-        response_.WebBundleURL().IsValid()) {
-      precursor = SecurityOrigin::Create(response_.WebBundleURL());
-      origin_calculation_debug_info_ =
-          origin_calculation_debug_info_ + "_web_bundle";
-    }
-    origin = SecurityOrigin::CreateWithReferenceOrigin(url_, precursor.get());
+    origin = SecurityOrigin::CreateWithReferenceOrigin(url_,
+                                                       requestor_origin_.get());
   }
 
   if ((policy_container_->GetPolicies().sandbox_flags &
@@ -2483,7 +2483,7 @@ void DocumentLoader::CommitNavigation() {
     auto required_permissions_for_fenced_frames =
         FencedFrameProperties()
             ? base::make_span(
-                  FencedFrameProperties()->required_permissions_to_load())
+                  FencedFrameProperties()->effective_enabled_permissions())
             : base::span<const mojom::blink::PermissionsPolicyFeature>();
     security_init.ApplyPermissionsPolicy(
         *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
@@ -2785,7 +2785,7 @@ void DocumentLoader::CreateParserPostCommit() {
     parsing_policy = kForceSynchronousParsing;
   }
   const AtomicString& encoding = commit_reason_ == CommitReason::kXSLT
-                                     ? "UTF-8"
+                                     ? AtomicString("UTF-8")
                                      : response_.TextEncodingName();
 
   Document* document = frame_->GetDocument();
@@ -2980,6 +2980,13 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(WebFeature::kEarlyHintsPreload);
   }
 
+  if (frame_->IsOutermostMainFrame() &&
+      !(Url().User().empty() && Url().Pass().empty())) {
+    // We're only measuring top-level documents here, as embedded documents
+    // with credentials are blocked (unless they match the credentials in the
+    // top-level document).
+    CountUse(WebFeature::kTopLevelDocumentWithEmbeddedCredentials);
+  }
 #if BUILDFLAG(IS_ANDROID)
   // Record whether this window was requested to be opened as a Popup.
   // Android doesn't treat popup windows any differently from normal windows

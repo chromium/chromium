@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -54,7 +55,7 @@ const wtf_size_t kCounterLengthLimit = 120;
 const CounterStyle& GetDisc() {
   const CounterStyle* disc =
       CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
-          "disc");
+          keywords::kDisc);
   DCHECK(disc);
   return *disc;
 }
@@ -582,7 +583,7 @@ CounterStyle& CounterStyle::GetDecimal() {
   DEFINE_STATIC_LOCAL(
       Persistent<CounterStyle>, decimal,
       (CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
-          "decimal")));
+          keywords::kDecimal)));
   DCHECK(decimal);
   return *decimal;
 }

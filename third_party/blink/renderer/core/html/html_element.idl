@@ -78,8 +78,8 @@
     [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;
 
     // Non-standard APIs
-    [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
-    [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;
+    [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
+    [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;
 };
 
 HTMLElement includes GlobalEventHandlers;

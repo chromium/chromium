@@ -45,10 +45,9 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     }
 
     @CalledByNative
-    void setIcon(Bitmap icon, boolean isAdaptive, boolean needToAddPadding) {
+    void setIcon(Bitmap icon, boolean isAdaptive) {
         Bitmap iconToShow = icon;
-        if (needToAddPadding) {
-            assert isAdaptive;
+        if (isAdaptive) {
             iconToShow = WebappsIconUtils.createHomeScreenIconFromWebIcon(icon, true /*maskable*/);
         }
 

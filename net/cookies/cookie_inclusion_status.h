@@ -183,7 +183,8 @@ class NET_EXPORT CookieInclusionStatus {
     // Advisory warning attached when a Secure cookie is accessed from (sent to,
     // or set by) a non-cryptographic URL. This can happen if the URL is
     // potentially trustworthy (e.g. a localhost URL, or another URL that
-    // the CookieAccessDelegate is configured to allow).
+    // the CookieAccessDelegate is configured to allow). This also applies to
+    // cookies with secure source schemes when scheme binding is enabled.
     // TODO(chlily): Add metrics for how often and where this occurs.
     WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 8,
 
@@ -223,12 +224,17 @@ class NET_EXPORT CookieInclusionStatus {
     // notifies the user that an attribute value was ignored.
     WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 13,
 
-    // Cookie was set with a Domain attribute containing non ASCII characters.
+    // The cookie was set with a Domain attribute containing non ASCII
+    // characters.
     WARN_DOMAIN_NON_ASCII = 14,
-    // Cookie's source_port did not match the port of the request.
+    // The cookie's source_port did not match the port of the request.
     WARN_PORT_MISMATCH = 15,
-    // Cookie's source_scheme did not match the scheme of the request.
+    // The cookie's source_scheme did not match the scheme of the request.
     WARN_SCHEME_MISMATCH = 16,
+    // The cookie's creation url is non-cryptographic but it specified the
+    // "Secure" attribute. A trustworthy url may be setting this cookie, but we
+    // can't confirm/deny that at the time of creation.
+    WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME = 17,
 
     // This should be kept last.
     NUM_WARNING_REASONS

@@ -6,9 +6,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "net/log/net_log_source_type.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/ssl/ssl_client_cert_type.h"
 
 namespace mojo {
 
@@ -151,34 +152,6 @@ bool StructTraits<network::mojom::ProxyServerDataView, net::ProxyServer>::Read(
 }
 
 // static
-network::mojom::SSLClientCertType
-EnumTraits<network::mojom::SSLClientCertType, net::SSLClientCertType>::ToMojom(
-    net::SSLClientCertType scheme) {
-  switch (scheme) {
-    case net::SSLClientCertType::kRsaSign:
-      return network::mojom::SSLClientCertType::kRsaSign;
-    case net::SSLClientCertType::kEcdsaSign:
-      return network::mojom::SSLClientCertType::kEcdsaSign;
-  }
-  NOTREACHED_NORETURN();
-}
-
-// static
-bool EnumTraits<network::mojom::SSLClientCertType, net::SSLClientCertType>::
-    FromMojom(network::mojom::SSLClientCertType scheme,
-              net::SSLClientCertType* out) {
-  switch (scheme) {
-    case network::mojom::SSLClientCertType::kRsaSign:
-      *out = net::SSLClientCertType::kRsaSign;
-      return true;
-    case network::mojom::SSLClientCertType::kEcdsaSign:
-      *out = net::SSLClientCertType::kEcdsaSign;
-      return true;
-  }
-  return false;
-}
-
-// static
 bool StructTraits<network::mojom::SSLCertRequestInfoDataView,
                   scoped_refptr<net::SSLCertRequestInfo>>::
     Read(network::mojom::SSLCertRequestInfoDataView data,
@@ -191,8 +164,8 @@ bool StructTraits<network::mojom::SSLCertRequestInfoDataView,
   if (!data.ReadCertAuthorities(&cert_authorities)) {
     return false;
   }
-  std::vector<net::SSLClientCertType> cert_key_types;
-  if (!data.ReadCertKeyTypes(&cert_key_types)) {
+  std::vector<uint16_t> signature_algorithms;
+  if (!data.ReadSignatureAlgorithms(&signature_algorithms)) {
     return false;
   }
 
@@ -200,10 +173,27 @@ bool StructTraits<network::mojom::SSLCertRequestInfoDataView,
   ssl_cert_request_info->host_and_port = std::move(host_and_port);
   ssl_cert_request_info->is_proxy = data.is_proxy();
   ssl_cert_request_info->cert_authorities = std::move(cert_authorities);
-  ssl_cert_request_info->cert_key_types = std::move(cert_key_types);
+  ssl_cert_request_info->signature_algorithms = std::move(signature_algorithms);
 
   *out = ssl_cert_request_info;
 
+  return true;
+}
+
+// static
+bool StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource>::
+    Read(network::mojom::NetLogSourceDataView data, net::NetLogSource* out) {
+  if (data.source_type() >=
+      static_cast<uint32_t>(net::NetLogSourceType::COUNT)) {
+    return false;
+  }
+  base::TimeTicks start_time;
+  if (!data.ReadStartTime(&start_time)) {
+    return false;
+  }
+  *out =
+      net::NetLogSource(static_cast<net::NetLogSourceType>(data.source_type()),
+                        data.source_id(), start_time);
   return true;
 }
 

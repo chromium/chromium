@@ -113,7 +113,8 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
   raw_ptr<TestingPrefServiceSimple> local_state_ = nullptr;
-  raw_ptr<performance_manager::user_tuning::UserPerformanceTuningManager>
+  raw_ptr<performance_manager::user_tuning::UserPerformanceTuningManager,
+          DanglingUntriaged>
       tuning_manager_ = nullptr;
 };
 

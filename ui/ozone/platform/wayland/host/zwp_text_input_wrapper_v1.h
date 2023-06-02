@@ -147,6 +147,10 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
       int32_t y,
       int32_t width,
       int32_t height);
+  static void OnConfirmPreedit(
+      void* data,
+      struct zcr_extended_text_input_v1* extended_text_input,
+      uint32_t selection_behavior);
 
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v1> obj_;

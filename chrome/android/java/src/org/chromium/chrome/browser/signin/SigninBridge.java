@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -116,7 +117,7 @@ final class SigninBridge {
         new AccountPickerBottomSheetCoordinator(windowAndroid, bottomSheetController,
                 new WebSigninAccountPickerDelegate(TabModelUtils.getCurrentTab(regularTabModel),
                         new WebSigninBridge.Factory(), continueUrl),
-                new AccountPickerBottomSheetStrings() {});
+                new AccountPickerBottomSheetStrings() {}, DeviceLockActivityLauncherImpl.get());
     }
 
     private SigninBridge() {}

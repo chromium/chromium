@@ -993,9 +993,9 @@ class CORE_EXPORT Node : public EventTarget {
 
  private:
   enum NodeFlags : uint32_t {
-    // Let the NodeTypeMask comes first, so the shit operation can
-    // be eliminated when get NodeType for the reason of performance.
-    // Node type flags. These never change once created.
+    // getNodeType() is called extensively. As it's called quite a bit its
+    // value is first so that a bit-shift is not needed to extract the value.
+    // Also note the node-type never changes once created.
     kNodeTypeMask = 0xf,
     kIsContainerFlag = 1 << 4,
     kElementNamespaceTypeMask = 0x3 << kElementNamespaceTypeShift,

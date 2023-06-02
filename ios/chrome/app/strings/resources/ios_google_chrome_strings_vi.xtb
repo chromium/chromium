@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
 <translation id="2736805085127235148">Thông báo của Chrome hiện đang tắt trong phần cài đặt của thiết bị.</translation>
 <translation id="2767464022270041271">Bạn chưa lưu mật khẩu nào. Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
+<translation id="2840432500933227975">Mở phần Cài đặt Chrome trong iOS, sau đó nhấn vào "Ứng dụng trình duyệt mặc định" và chọn Chrome.</translation>
 <translation id="2869959624320573933">Đăng nhập vào Chrome</translation>
 <translation id="2957447865124070833">Chọn <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chrome của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Tức là lần nào Chrome cũng yêu cầu trang web dành cho thiết bị di động.</translation>
 <translation id="3706101708757577809">Giờ đây, bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="3720541637541300822">Khóa các thẻ ẩn danh khi bạn đóng Chrome</translation>
+<translation id="3827545470516145620">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn trên thiết bị này</translation>
 <translation id="384394811301901750">Chrome không thể dùng máy ảnh bây giờ</translation>
 <translation id="3980220367029651214">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chrome hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chrome.</translation>
@@ -148,7 +150,6 @@ Những yếu tố cần xem xét:
 <ph name="BEGIN_INDENT" />  • Thông tin về mức sử dụng Chrome được gửi cho Google, tuy nhiên thông tin đó sẽ không gắn liền với bạn.
   • Nếu Chrome gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
   • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn cho hồ sơ Chrome này</translation>
 <translation id="9112744793181547300">Đặt Chrome làm trình duyệt mặc định?</translation>
 <translation id="9122931302567044771">Tức là lần nào Chrome cũng yêu cầu trang web dành cho máy tính.</translation>
 </translationbundle>

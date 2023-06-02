@@ -52,8 +52,6 @@ class AppProvisioningComponentInstallerPolicy
 
   static base::FilePath GetAppWithLocaleInstalledPath(
       const base::FilePath& base);
-  static base::FilePath GetDeduplicationInstalledPath(
-      const base::FilePath& base);
 };
 
 // Call once during startup to make the component update service aware of

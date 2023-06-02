@@ -9,7 +9,7 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
@@ -72,7 +72,7 @@
       },
     ],
   };
-  chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+  chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   const expected = '<div><p dir="auto">This should be auto</p>' +
       '<p dir="auto">This should be also be auto</p></div>';
   assertContainerInnerHTML(expected);

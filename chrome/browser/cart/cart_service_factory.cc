@@ -21,7 +21,8 @@ std::unique_ptr<KeyedService> BuildCartService(
 
 // static
 CartServiceFactory* CartServiceFactory::GetInstance() {
-  return base::Singleton<CartServiceFactory>::get();
+  static base::NoDestructor<CartServiceFactory> instance;
+  return instance.get();
 }
 
 // static

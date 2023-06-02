@@ -74,7 +74,8 @@ class PeriodicBackgroundSyncServiceImplTest
       periodic_sync_service_remote_;
 
   // Owned by |background_sync_context_|
-  raw_ptr<PeriodicBackgroundSyncServiceImpl> periodic_sync_service_impl_;
+  raw_ptr<PeriodicBackgroundSyncServiceImpl, DanglingUntriaged>
+      periodic_sync_service_impl_;
 };
 
 // Tests

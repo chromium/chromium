@@ -15,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace viz {
 struct BeginFrameArgs;
@@ -159,6 +160,8 @@ class CC_EXPORT FrameSequenceMetrics {
       base::TimeDelta frame_interval);
 
  private:
+  void CalculateCheckerboardingV3(const FrameInfo& frame_info);
+
   const FrameSequenceTrackerType type_;
 
   // Tracks some data to generate useful trace events.
@@ -181,6 +184,9 @@ class CC_EXPORT FrameSequenceMetrics {
   struct {
     uint32_t frames_expected = 0;
     uint32_t frames_dropped = 0;
+    uint32_t frames_missing_content = 0;
+    viz::BeginFrameArgs last_begin_frame_args;
+    FrameInfo last_presented_frame;
   } v3_;
 
   ThroughputData impl_throughput_;

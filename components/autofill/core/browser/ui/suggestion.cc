@@ -8,11 +8,12 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace autofill {
 
 bool operator==(Suggestion::FrontendId lhs, Suggestion::FrontendId rhs) {
-  return lhs.as_int() == rhs.as_int();
+  return lhs.as_popup_item_id() == rhs.as_popup_item_id();
 }
 
 bool operator==(Suggestion::FrontendId lhs, PopupItemId rhs) {
@@ -36,7 +37,7 @@ bool operator!=(PopupItemId lhs, Suggestion::FrontendId rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, Suggestion::FrontendId id) {
-  return os << id.as_int();
+  return os << base::to_underlying(id.as_popup_item_id());
 }
 
 Suggestion::Text::Text() = default;

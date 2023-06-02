@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.graphics.Color;
+import android.os.Bundle;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -252,6 +254,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabReparentingControllerSupplier Supplier for the {@link TabReparentingController}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
+     * @param savedInstanceStateSupplier Supplies the saved instance state.
      */
     public TabbedRootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -292,7 +295,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
-            boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager) {
+            boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager,
+            @NonNull Supplier<Bundle> savedInstanceStateSupplier) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkModelSupplier, tabBookmarkerSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
@@ -305,7 +309,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 compositorViewHolderSupplier, tabContentManagerSupplier, snackbarManagerSupplier,
                 activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
                 statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
-                ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager);
+                ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager,
+                savedInstanceStateSupplier);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
@@ -623,12 +628,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
                     public void setScrimColor(int scrimColor) {
-                        mStatusBarColorController.setScrimColor(scrimColor);
+                        if (mStatusBarColorController != null) {
+                            mStatusBarColorController.setScrimColor(scrimColor);
+                        }
                     }
 
                     @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
-                        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+                        if (mStatusBarColorController != null) {
+                            mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+                        }
                     }
 
                     @Override
@@ -834,7 +843,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusIndicatorCoordinator = new StatusIndicatorCoordinator(mActivity,
                 mCompositorViewHolderSupplier.get().getResourceManager(), browserControlsSizer,
                 mTabObscuringHandlerSupplier.get(),
-                mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
+                mStatusBarColorController == null
+                        ? (() -> Color.BLACK)
+                        : mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
                 mCanAnimateBrowserControls, layoutManager::requestUpdate);
         layoutManager.addSceneOverlay(mStatusIndicatorCoordinator.getSceneLayer());
         mStatusIndicatorObserver = new StatusIndicatorCoordinator.StatusIndicatorObserver() {

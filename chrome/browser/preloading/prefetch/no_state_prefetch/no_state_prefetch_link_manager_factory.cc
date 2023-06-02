@@ -21,7 +21,8 @@ NoStatePrefetchLinkManagerFactory::GetForBrowserContext(
 // static
 NoStatePrefetchLinkManagerFactory*
 NoStatePrefetchLinkManagerFactory::GetInstance() {
-  return base::Singleton<NoStatePrefetchLinkManagerFactory>::get();
+  static base::NoDestructor<NoStatePrefetchLinkManagerFactory> instance;
+  return instance.get();
 }
 
 NoStatePrefetchLinkManagerFactory::NoStatePrefetchLinkManagerFactory()

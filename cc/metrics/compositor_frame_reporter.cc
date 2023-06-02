@@ -1359,57 +1359,46 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   float total_predicted_delta = 0;
   bool had_gesture_scrolls = false;
 
+  // This handles cases when we have multiple scroll events. Events for dropped
+  // frames are reported by the reporter for next presented frame which could
+  // lead to having multiple scroll events.
   base::TimeTicks input_generation_ts = base::TimeTicks::Max();
   base::TimeTicks last_coalesced_ts = base::TimeTicks::Min();
   for (const auto& event : events_metrics_) {
     TRACE_EVENT("input", "GestureType", "gesture", event->type());
+    const auto* scroll_update = event->AsScrollUpdate();
+    if (!scroll_update) {
+      continue;
+    }
+
+    total_predicted_delta += scroll_update->predicted_delta();
+    had_gesture_scrolls = true;
+    input_generation_ts = std::min(
+        input_generation_ts, event->GetDispatchStageTimestamp(
+                                 EventMetrics::DispatchStage::kGenerated));
+    last_coalesced_ts =
+        std::max(last_coalesced_ts, scroll_update->last_timestamp());
+
     switch (event->type()) {
-      // TODO(kartarsingh): Clean up common logic here. Related discussion:
-      // https://crrev.com/c/4430615/19/cc/metrics/compositor_frame_reporter.cc#1393
-      case EventMetrics::EventType::kGestureScrollUpdate:
-        normal_input_count += event->AsScrollUpdate()->coalesced_event_count();
-        total_predicted_delta += event->AsScrollUpdate()->predicted_delta();
-        had_gesture_scrolls = true;
-        input_generation_ts = std::min(
-            input_generation_ts, event->GetDispatchStageTimestamp(
-                                     EventMetrics::DispatchStage::kGenerated));
-        last_coalesced_ts = std::max(last_coalesced_ts,
-                                     event->AsScrollUpdate()->last_timestamp());
-        break;
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
-        normal_input_count += event->AsScrollUpdate()->coalesced_event_count();
-        total_predicted_delta += event->AsScrollUpdate()->predicted_delta();
         if (global_trackers_.predictor_jank_tracker) {
           global_trackers_.predictor_jank_tracker
               ->ResetCurrentScrollReporting();
         }
-        had_gesture_scrolls = true;
-        input_generation_ts = std::min(
-            input_generation_ts, event->GetDispatchStageTimestamp(
-                                     EventMetrics::DispatchStage::kGenerated));
-        last_coalesced_ts = std::max(last_coalesced_ts,
-                                     event->AsScrollUpdate()->last_timestamp());
+        ABSL_FALLTHROUGH_INTENDED;
+      case EventMetrics::EventType::kGestureScrollUpdate:
+        normal_input_count += scroll_update->coalesced_event_count();
         break;
       case EventMetrics::EventType::kInertialGestureScrollUpdate:
-        fling_input_count += event->AsScrollUpdate()->coalesced_event_count();
-        total_predicted_delta += event->AsScrollUpdate()->predicted_delta();
-        had_gesture_scrolls = true;
-        input_generation_ts = std::min(
-            input_generation_ts, event->GetDispatchStageTimestamp(
-                                     EventMetrics::DispatchStage::kGenerated));
-        last_coalesced_ts = std::max(last_coalesced_ts,
-                                     event->AsScrollUpdate()->last_timestamp());
+        fling_input_count += scroll_update->coalesced_event_count();
         break;
       default:
-        continue;
+        NOTREACHED();
     }
   }
-  // To handle web test failures which causes an event to be coalesced with an
-  // event having null(0) timestamp.
-  // TODO(b/276722271) : Investigate if this needs to be fixed on test side or
-  // if this is a valid scenario.
-  if (last_coalesced_ts.is_null()) {
-    last_coalesced_ts = input_generation_ts;
+
+  if (!had_gesture_scrolls) {
+    return;
   }
 
   TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
@@ -1418,10 +1407,6 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
                 TraceScrollJankMetrics(events_metrics, fling_input_count,
                                        normal_input_count, ctx);
               });
-
-  if (!had_gesture_scrolls) {
-    return;
-  }
 
   const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
   if (global_trackers_.predictor_jank_tracker) {

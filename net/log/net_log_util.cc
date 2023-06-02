@@ -166,6 +166,24 @@ base::Value::Dict GetNetConstants() {
   }
 
   {
+    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 4),
+                  "Update with new flags");
+    constants_dict.Set(
+        "certVerifyFlags",
+        base::Value::Dict()
+            .Set("VERIFY_REV_CHECKING_ENABLED",
+                 CertVerifyProc::VERIFY_REV_CHECKING_ENABLED)
+            .Set("VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS",
+                 CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS)
+            .Set("VERIFY_ENABLE_SHA1_LOCAL_ANCHORS",
+                 CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)
+            .Set("VERIFY_DISABLE_SYMANTEC_ENFORCEMENT",
+                 CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT)
+            .Set("VERIFY_DISABLE_NETWORK_FETCHES",
+                 CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES));
+  }
+
+  {
     static_assert(SimplePathBuilderDelegate::DigestPolicy::kMaxValue ==
                       SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1,
                   "Update with new flags");

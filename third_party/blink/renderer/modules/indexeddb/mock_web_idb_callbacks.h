@@ -40,19 +40,6 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
                     const std::unique_ptr<IDBKey>& primaryKey,
                     const absl::optional<std::unique_ptr<IDBValue>>& value));
 
-  void SuccessCursor(
-      mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
-      std::unique_ptr<IDBKey> key,
-      std::unique_ptr<IDBKey> primary_key,
-      absl::optional<std::unique_ptr<IDBValue>> optional_value) override;
-  MOCK_METHOD4(
-      DoSuccessCursor,
-      void(const mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>&
-               cursor_info,
-           const std::unique_ptr<IDBKey>& key,
-           const std::unique_ptr<IDBKey>& primary_key,
-           const absl::optional<std::unique_ptr<IDBValue>>& optional_value));
-
   MOCK_METHOD3(SuccessCursorPrefetch,
                void(Vector<std::unique_ptr<IDBKey>> keys,
                     Vector<std::unique_ptr<IDBKey>> primary_keys,

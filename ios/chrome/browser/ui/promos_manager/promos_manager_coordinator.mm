@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
@@ -206,8 +207,6 @@
     return;
   }
 
-  CHECK(!current_promo.has_value()) << "Current promo is already set: "
-                                    << NameForPromo(current_promo.value());
   current_promo = promo;
 
   auto handler_it = _displayHandlerPromos.find(promo);
@@ -552,7 +551,7 @@
   }
 
   // CredentialProvider Promo handler
-  if (IsCredentialProviderExtensionPromoEnabled()) {
+  if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {
     id<CredentialProviderPromoCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
     _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =

@@ -175,20 +175,12 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
     return;
   }
 
-  // We cannot resume after timeout error.
-  if (params.policy_params->type != PolicyErrorType::kDlpWarningTimeout) {
-    LOG(ERROR)
-        << "Policy resume shouldn't be called with kDlpWarningTimeout type";
-    Complete(State::kError);
-    return;
+  if (params.policy_params->type == policy::Policy::kDlp) {
+    // TODO(b/281047180): Start scanning.
   }
 
-  if (params.policy_params->type == PolicyErrorType::kDlp) {
-    // TODO: Start scanning.
-  }
-
-  if (params.policy_params->type == PolicyErrorType::kEnterpriseConnectors) {
-    // TODO: Start transfer.
+  if (params.policy_params->type == policy::Policy::kEnterpriseConnectors) {
+    // TODO(b/281047180): Start transfer.
   }
 }
 
@@ -229,10 +221,9 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
     return;
   }
 
-  if (progress_->state != State::kScanning) {
-    progress_->state = State::kScanning;
-    progress_callback_.Run(*progress_);
-  }
+  progress_->state = State::kScanning;
+  progress_->sources_scanned = idx + 1;
+  progress_callback_.Run(*progress_);
 
   DCHECK_EQ(file_transfer_analysis_delegates_.size(),
             progress_->sources.size());

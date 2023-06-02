@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
+import '../demo.css.js';
 
 import {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -74,5 +75,7 @@ class CrSliderDemoElement extends PolymerElement {
     this.tickedValue_ = this.$.tickedSlider.value;
   }
 }
+
+export const tagName = CrSliderDemoElement.is;
 
 customElements.define(CrSliderDemoElement.is, CrSliderDemoElement);

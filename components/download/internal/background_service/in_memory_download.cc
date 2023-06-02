@@ -113,9 +113,8 @@ size_t InMemoryDownloadImpl::EstimateMemoryUsage() const {
 
 void InMemoryDownloadImpl::OnDataReceived(base::StringPiece string_piece,
                                           base::OnceClosure resume) {
-  size_t size = string_piece.size();
-  data_.append(std::string(string_piece).data(), size);
-  bytes_downloaded_ += size;
+  data_.append(string_piece);
+  bytes_downloaded_ += string_piece.size();
 
   if (paused_) {
     // Read data later and cache the resumption callback when paused.

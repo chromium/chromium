@@ -18,10 +18,12 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -60,16 +62,21 @@ void DownloadBubbleSecurityView::AddHeader() {
   auto* header = AddChildView(std::make_unique<views::View>());
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  if (!features::IsChromeRefresh2023()) {
+    header->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  }
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
                               base::Unretained(this)),
-          vector_icons::kArrowBackIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+          features::IsChromeRefresh2023()
+              ? vector_icons::kArrowBackChromeRefreshIcon
+              : vector_icons::kArrowBackIcon,
+          GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_BACK_RECENT_DOWNLOADS));
@@ -94,7 +101,9 @@ void DownloadBubbleSecurityView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::CloseBubble,
                               base::Unretained(this)),
-          vector_icons::kCloseRoundedIcon,
+          features::IsChromeRefresh2023()
+              ? vector_icons::kCloseChromeRefreshIcon
+              : vector_icons::kCloseRoundedIcon,
           GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   InstallCircleHighlightPathGenerator(close_button);
@@ -157,16 +166,17 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
       GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
   styled_label_->SizeToFit(min_label_width);
 
-  checkbox_->SetVisible(ui_info.has_checkbox);
-  if (ui_info.has_checkbox) {
+  checkbox_->SetVisible(ui_info.HasCheckbox());
+  if (ui_info.HasCheckbox()) {
     base::UmaHistogramEnumeration(kSubpageActionHistogram,
                                   DownloadBubbleSubpageAction::kShownCheckbox);
     checkbox_->SetChecked(false);
     checkbox_->SetText(ui_info.checkbox_label);
   }
 
-  if (model_->GetDangerType() ==
-      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+  if (model_->GetDangerType() == download::DownloadDangerType::
+                                     DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
+      base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
     size_t link_offset;
     std::u16string link_text = l10n_util::GetStringUTF16(
         IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK);
@@ -199,10 +209,17 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   icon_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  icon_text_row->SetProperty(views::kMarginsKey, gfx::Insets(side_margin));
+  icon_text_row->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(
+          side_margin,
+          // In CR2023 the horizontal margin is added to the parent view.
+          features::IsChromeRefresh2023() ? 0 : side_margin));
 
   icon_ = icon_text_row->AddChildView(std::make_unique<views::ImageView>());
   icon_->SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ICON));
+  const int icon_size = GetLayoutConstant(DOWNLOAD_ICON_SIZE);
+  icon_->SetImageSize({icon_size, icon_size});
 
   auto* wrapper = icon_text_row->AddChildView(std::make_unique<views::View>());
   wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -316,14 +333,14 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   if (ui_info.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
     UpdateButton(ui_info.subpage_buttons[0], /*is_secondary_button=*/false,
-                 ui_info.has_checkbox);
+                 ui_info.HasCheckbox());
   }
 
   if (ui_info.subpage_buttons.size() > 1) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
                                  ui::DIALOG_BUTTON_CANCEL);
     UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
-                 ui_info.has_checkbox);
+                 ui_info.HasCheckbox());
   }
 }
 
@@ -362,6 +379,7 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
   // Announce that the subpage was opened to inform the user about the changes
   // in the UI.
 #if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
   GetViewAccessibility().OverrideName(ui_info.warning_summary);
   NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 #else
@@ -382,6 +400,9 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
       bubble_delegate_(bubble_delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+  if (features::IsChromeRefresh2023()) {
+    SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ROW));
+  }
   AddHeader();
   AddIconAndText();
 }

@@ -14,10 +14,26 @@
 #include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
 namespace device {
+
+namespace {
+
+mojom::SerialPortInfoPtr CreatePort(base::StringPiece device_address,
+                                    base::StringPiece16 device_name,
+                                    const BluetoothUUID& service_class_id) {
+  auto port = mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->path = base::FilePath::FromUTF8Unsafe(device_address);
+  port->type = mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM;
+  port->bluetooth_service_class_id = service_class_id;
+  port->display_name = base::UTF16ToUTF8(device_name);
+  return port;
+}
+
+}  // namespace
 
 // Helper class to interact with the BluetoothAdapter which must be accessed
 // on a specific sequence.
@@ -101,8 +117,8 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
 
 BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
     scoped_refptr<base::SingleThreadTaskRunner> adapter_runner) {
-  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableBluetoothSerialPortProfileInSerialApi));
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kEnableBluetoothSerialPortProfileInSerialApi));
 
   helper_ = base::SequenceBound<AdapterHelper>(
       std::move(adapter_runner), weak_ptr_factory_.GetWeakPtr(),
@@ -140,19 +156,8 @@ void BluetoothSerialDeviceEnumerator::AddService(
   if (base::Contains(device_ports_, key))
     return;
 
-  auto port = mojom::SerialPortInfo::New();
-  port->token = base::UnguessableToken::Create();
-  port->path = base::FilePath::FromUTF8Unsafe(device_address);
-  port->type = mojom::DeviceType::SPP_DEVICE;
-  // TODO(crbug.com/1261557): Use better name.
-  // Using service class ID for development to disambiguate device services.
-  const std::string device_name_utf8 = base::UTF16ToUTF8(device_name);
-  if (service_class_id == GetSerialPortProfileUUID()) {
-    port->display_name = device_name_utf8;
-  } else {
-    port->display_name = base::StringPrintf("%s [%s]", device_name_utf8.c_str(),
-                                            service_class_id.value().c_str());
-  }
+  auto port = CreatePort(device_address, device_name, service_class_id);
+
   device_ports_.insert(std::make_pair(std::move(key), port->token));
   AddPort(std::move(port));
 }

@@ -26,7 +26,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/base/internal/raw_logging.h"
+#include "absl/log/log.h"
 #include "absl/numeric/internal/representation.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
@@ -182,9 +182,8 @@ TYPED_TEST(UniformRealDistributionTest, ParamSerializeTest) {
 
     if (!std::is_same<real_type, long double>::value) {
       // static_cast<double>(long double) can overflow.
-      std::string msg = absl::StrCat("Range: ", static_cast<double>(sample_min),
-                                     ", ", static_cast<double>(sample_max));
-      ABSL_RAW_LOG(INFO, "%s", msg.c_str());
+      LOG(INFO) << "Range: " << static_cast<double>(sample_min) << ", "
+                << static_cast<double>(sample_max);
     }
   }
 }
@@ -324,7 +323,7 @@ TYPED_TEST(UniformRealDistributionTest, ChiSquaredTest50) {
       absl::StrAppend(&msg, kChiSquared, " p-value ", p_value, "\n");
       absl::StrAppend(&msg, "High ", kChiSquared, " value: ", chi_square, " > ",
                       kThreshold);
-      ABSL_RAW_LOG(INFO, "%s", msg.c_str());
+      LOG(INFO) << msg;
       FAIL() << msg;
     }
   }

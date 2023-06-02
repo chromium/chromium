@@ -119,7 +119,7 @@ class SessionServiceTestHelper {
   }
 
  private:
-  raw_ptr<SessionService> service_;
+  raw_ptr<SessionService, DanglingUntriaged> service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_TEST_HELPER_H_

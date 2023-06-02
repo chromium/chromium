@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -88,25 +89,25 @@ bool IncludesARIAWidgetRole(const String& role) {
   return false;
 }
 
-const char* g_aria_interactive_widget_attributes[] = {
-    // These attributes implicitly indicate the given widget is interactive.
-    // From http://www.w3.org/TR/wai-aria/states_and_properties#attrs_widgets
-    // clang-format off
-    "aria-activedescendant",
-    "aria-checked",
-    "aria-controls",
-    "aria-disabled",  // If it's disabled, it can be made interactive.
-    "aria-haspopup",
-    "aria-multiselectable",
-    "aria-required",
-    "aria-selected"
-    // clang-format on
-};
-
 bool HasInteractiveARIAAttribute(const Element& element) {
-  for (size_t i = 0; i < std::size(g_aria_interactive_widget_attributes); ++i) {
-    const char* attribute = g_aria_interactive_widget_attributes[i];
-    if (element.hasAttribute(attribute)) {
+  static const QualifiedName* aria_interactive_widget_attributes[] = {
+      // These attributes implicitly indicate the given widget is interactive.
+      // From http://www.w3.org/TR/wai-aria/states_and_properties#attrs_widgets
+      // clang-format off
+      &html_names::kAriaActivedescendantAttr,
+      &html_names::kAriaCheckedAttr,
+      &html_names::kAriaControlsAttr,
+      // If it's disabled, it can be made interactive.
+      &html_names::kAriaDisabledAttr,
+      &html_names::kAriaHaspopupAttr,
+      &html_names::kAriaMultiselectableAttr,
+      &html_names::kAriaRequiredAttr,
+      &html_names::kAriaSelectedAttr
+      // clang-format on
+  };
+
+  for (const auto* attribute : aria_interactive_widget_attributes) {
+    if (element.hasAttribute(*attribute)) {
       return true;
     }
   }
@@ -121,7 +122,7 @@ bool AXObjectCache::IsInsideFocusableElementOrARIAWidget(const Node& node) {
     if (const auto* element = DynamicTo<Element>(cur_node)) {
       if (element->IsFocusable())
         return true;
-      String role = element->getAttribute("role");
+      String role = element->getAttribute(html_names::kRoleAttr);
       if (!role.empty() && IncludesARIAWidgetRole(role))
         return true;
       if (HasInteractiveARIAAttribute(*element))

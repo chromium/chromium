@@ -31,7 +31,6 @@ iframe:fullscreen {
   position: fixed;
   inset: 0;
   background: black;
-  overlay: auto !important;
 }
 
 /* Anything below are extensions over what the Fullscreen API (29 May 2018) mandates. */

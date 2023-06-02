@@ -62,8 +62,8 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                              base::flat_map<SquareSizePx, base::Time> time_map);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<WebAppIconManager> icon_manager_;
-  const raw_ref<WebAppRegistrar> registrar_;
+  const raw_ref<WebAppIconManager, DanglingUntriaged> icon_manager_;
+  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
 
   base::WeakPtrFactory<ShortcutSubManager> weak_ptr_factory_{this};
 };

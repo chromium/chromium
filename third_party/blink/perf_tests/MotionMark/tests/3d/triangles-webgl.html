@@ -1,0 +1,93 @@
+<!--
+  Copyright (C) 2015-2019 Apple Inc. All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../resources/stage.css">
+    <style>
+        #stage {
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stage"></canvas>
+    <script id="vertex" type="x-shader/x-glsl">
+attribute vec4 position;
+attribute vec4 color;
+
+uniform float scale;
+uniform float time;
+uniform float offsetX;
+uniform float offsetY;
+uniform float scalar;
+uniform float scalarOffset;
+
+varying vec4 v_color;
+
+void main() {
+
+    float fade = mod(scalarOffset + time * scalar / 10.0, 1.0);
+
+    if (fade < 0.5) {
+        fade = fade * 2.0;
+    } else {
+        fade = (1.0 - fade) * 2.0;
+    }
+
+    float xpos = position.x * scale;
+    float ypos = position.y * scale;
+
+    float angle = 3.14159 * 2.0 * fade;
+    float xrot = xpos * cos(angle) - ypos * sin(angle);
+    float yrot = xpos * sin(angle) + ypos * cos(angle);
+
+    xpos = xrot + offsetX;
+    ypos = yrot + offsetY;
+
+    v_color = vec4(fade, 1.0 - fade, 0.0, 1.0) + color;
+    gl_Position = vec4(xpos, ypos, 0.0, 1.0);
+}
+    </script>
+    <script id="fragment" type="x-shader/x-glsl">
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+varying vec4 v_color;
+
+void main() {
+    gl_FragColor = v_color;
+}
+    </script>
+    <script src="../../resources/strings.js"></script>
+    <script src="../../resources/extensions.js"></script>
+    <script src="../../resources/statistics.js"></script>
+    <script src="../resources/math.js"></script>
+    <script src="../resources/main.js"></script>
+    <script src="resources/webgl.js"></script>
+</body>
+</html>

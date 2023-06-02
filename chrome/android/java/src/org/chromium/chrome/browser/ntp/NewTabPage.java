@@ -1044,10 +1044,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     // cleaned up.
     private int getLogoMargin(boolean isTopMargin) {
         if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
+
         if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
-            return mNewTabPageLayout.getResources().getDimensionPixelSize(
-                    R.dimen.ntp_logo_vertical_margin_tablet);
+            return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
+                           R.dimen.ntp_logo_vertical_top_margin_tablet)
+                               : mNewTabPageLayout.getResources().getDimensionPixelSize(
+                                       R.dimen.ntp_logo_vertical_bottom_margin_tablet);
         }
+
         return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
                        R.dimen.ntp_logo_margin_top)
                            : mNewTabPageLayout.getResources().getDimensionPixelSize(
@@ -1112,18 +1116,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mSingleTabCardContainer.getLayoutParams();
-        int SingleTabCardContainerTopAndBottomMargin;
-        if (isScrollableMvtEnabled(mContext)) {
-            SingleTabCardContainerTopAndBottomMargin =
-                    mNewTabPageLayout.getResources().getDimensionPixelOffset(
-                            R.dimen.single_tab_card_top_and_bottom_margin_carousel_mvt_tablet);
-        } else {
-            SingleTabCardContainerTopAndBottomMargin =
-                    mNewTabPageLayout.getResources().getDimensionPixelOffset(
-                            R.dimen.single_tab_card_top_and_bottom_margin_grid_mvt_tablet);
-        }
-        marginLayoutParams.topMargin = -SingleTabCardContainerTopAndBottomMargin;
-        marginLayoutParams.bottomMargin = SingleTabCardContainerTopAndBottomMargin;
+
+        marginLayoutParams.topMargin = -mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                R.dimen.single_tab_card_top_margin_tablet);
+        marginLayoutParams.bottomMargin = mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                                                  R.dimen.single_tab_card_bottom_margin_tablet)
+                - mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                        R.dimen.feed_header_tab_list_view_top_bottom_margin);
     }
 
     /* Set the visibility of the single tab card.

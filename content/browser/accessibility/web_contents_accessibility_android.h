@@ -39,7 +39,6 @@ constexpr gfx::Size kMaxImageSize = gfx::Size(2000, 2000);
 
 class BrowserAccessibilityAndroid;
 class BrowserAccessibilityManagerAndroid;
-class TouchPassthroughManager;
 class WebContents;
 class WebContentsImpl;
 
@@ -416,8 +415,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // This isn't associated with a real WebContents and is only populated when
   // this class is constructed with a ui::AXTreeUpdate.
   std::unique_ptr<BrowserAccessibilityManagerAndroid> snapshot_root_manager_;
-
-  std::unique_ptr<TouchPassthroughManager> touch_passthrough_manager_;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 };

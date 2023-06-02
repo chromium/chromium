@@ -147,7 +147,7 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
   if (media_feature_overrides &&
       media_feature_overrides->GetPreferredColorScheme().has_value()) {
     page->SetMediaFeatureOverride(
-        "prefers-color-scheme",
+        AtomicString("prefers-color-scheme"),
         media_feature_overrides->GetPreferredColorScheme().value() ==
                 mojom::blink::PreferredColorScheme::kDark
             ? "dark"
@@ -421,7 +421,8 @@ WebPagePopupImpl::WebPagePopupImpl(
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   popup_client_->WriteDocument(data.get());
   frame->SetPageZoomFactor(popup_client_->ZoomFactor());
-  frame->ForceSynchronousDocumentInstall("text/html", std::move(data));
+  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
+                                         std::move(data));
 
   popup_owner_client_rect_ =
       popup_client_->OwnerElement().getBoundingClientRect();

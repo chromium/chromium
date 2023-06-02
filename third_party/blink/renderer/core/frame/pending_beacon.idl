@@ -4,9 +4,9 @@
 
 // https://github.com/WICG/pending-beacon/blob/main/README.md
 
-[RuntimeEnabled = PendingBeaconAPI] enum BeaconMethod { "POST", "GET" };
+enum BeaconMethod { "POST", "GET" };
 
-[RuntimeEnabled = PendingBeaconAPI] dictionary PendingBeaconOptions {
+dictionary PendingBeaconOptions {
   long backgroundTimeout = -1;
   long timeout = -1;
 };
@@ -15,8 +15,7 @@
 [
   RuntimeEnabled = PendingBeaconAPI,
   Exposed = Window,
-  SecureContext,
-  ImmutablePrototype
+  SecureContext
 ] interface PendingBeacon {
   [Measure] readonly attribute USVString url;
   [Measure] readonly attribute BeaconMethod method;

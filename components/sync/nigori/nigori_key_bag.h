@@ -9,6 +9,9 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/engine/nigori/public_private_key_pair.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
+
 namespace sync_pb {
 class EncryptedData;
 class NigoriKey;
@@ -42,6 +45,7 @@ class NigoriKeyBag {
 
   size_t size() const;
   bool HasKey(const std::string& key_name) const;
+  bool HasKeyPair(const uint32_t key_version) const;
 
   // |key_name| must exist in this keybag.
   sync_pb::NigoriKey ExportKey(const std::string& key_name) const;
@@ -57,6 +61,13 @@ class NigoriKeyBag {
   // Merges all keys from another keybag, which means adding all keys that we
   // don't know about.
   void AddAllUnknownKeysFrom(const NigoriKeyBag& other);
+
+  // Adds a Public-private key-pair to the keybag associated with |version|.
+  void AddKeyPair(PublicPrivateKeyPair key_pair, uint32_t version);
+
+  // Similar to AddKeyPair, but reads the private-key material from a proto and
+  // derives the public-key from the private-key.
+  bool AddKeyPairFromProto(const sync_pb::PrivateKey& key);
 
   // Encryption of strings (possibly binary). Returns true if success.
   // |key_name| must be known. |encrypted_output| must not be null.
@@ -77,6 +88,9 @@ class NigoriKeyBag {
 
   // The Nigoris we know about, mapped by key name.
   std::map<std::string, std::unique_ptr<const Nigori>> nigori_map_;
+
+  // Public-private key-pairs we know about, mapped by version.
+  std::map<uint32_t, const PublicPrivateKeyPair> key_pairs_map_;
 };
 
 }  // namespace syncer

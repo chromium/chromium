@@ -110,7 +110,9 @@ class DownloadDBCacheTest : public testing::Test {
 
  protected:
   std::map<std::string, download_pb::DownloadDBEntry> db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>> db_;
+  raw_ptr<leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>,
+          DanglingUntriaged>
+      db_;
   std::unique_ptr<DownloadDBCache> db_cache_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::test::TaskEnvironment task_environment_;

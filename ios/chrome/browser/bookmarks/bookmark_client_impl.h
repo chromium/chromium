@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_client.h"
+#include "components/bookmarks/common/storage_type.h"
 
 class BookmarkUndoService;
 class ChromeBrowserState;
@@ -32,7 +33,8 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
       ChromeBrowserState* browser_state,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
-      BookmarkUndoService* bookmark_undo_service);
+      BookmarkUndoService* bookmark_undo_service,
+      bookmarks::StorageType storage_type_for_uma);
 
   BookmarkClientImpl(const BookmarkClientImpl&) = delete;
   BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
@@ -50,6 +52,7 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
   bool IsPermanentNodeVisibleWhenEmpty(
       bookmarks::BookmarkNode::Type type) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
+  bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
   bool CanSyncNode(const bookmarks::BookmarkNode* node) override;
@@ -79,6 +82,8 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
 
   // Pointer to BookmarkUndoService, responsible for making operations undoable.
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
+
+  const bookmarks::StorageType storage_type_for_uma_;
 
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
 };

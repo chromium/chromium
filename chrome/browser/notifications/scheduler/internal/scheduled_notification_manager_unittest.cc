@@ -211,8 +211,8 @@ class ScheduledNotificationManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockNotificationStore> notification_store_;
-  raw_ptr<MockIconStore> icon_store_;
+  raw_ptr<MockNotificationStore, DanglingUntriaged> notification_store_;
+  raw_ptr<MockIconStore, DanglingUntriaged> icon_store_;
   std::vector<SchedulerClientType> clients_;
   std::unique_ptr<ScheduledNotificationManager> manager_;
   SchedulerConfig config_;

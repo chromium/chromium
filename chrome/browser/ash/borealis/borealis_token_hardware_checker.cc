@@ -131,7 +131,7 @@ bool BorealisTokenHardwareChecker::HasNamedToken(const char* name,
 
 bool BorealisTokenHardwareChecker::InTargetSegment() const {
   return base::FeatureList::IsEnabled(
-      ash::features::kFeatureManagementSteamOnChromebook);
+      ash::features::kFeatureManagementBorealis);
 }
 
 }  // namespace borealis

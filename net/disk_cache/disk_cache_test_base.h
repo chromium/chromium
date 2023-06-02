@@ -200,9 +200,10 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   // cache_ will always have a valid object, regardless of how the cache was
   // initialized. The implementation pointers can be NULL.
   std::unique_ptr<disk_cache::Backend> cache_;
-  raw_ptr<disk_cache::BackendImpl> cache_impl_ = nullptr;
+  raw_ptr<disk_cache::BackendImpl, DanglingUntriaged> cache_impl_ = nullptr;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
-  raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_ = nullptr;
+  raw_ptr<disk_cache::SimpleBackendImpl, DanglingUntriaged> simple_cache_impl_ =
+      nullptr;
   raw_ptr<disk_cache::MemBackendImpl> mem_cache_ = nullptr;
 
   uint32_t mask_ = 0;

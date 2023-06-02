@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
@@ -152,10 +153,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
 }
 
-// TODO(crbug.com/1445476): The test currently fails with Chrome-branded
-// patterns in Autofill.
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
-                       DISABLED_TriggerCreditCardInIframe) {
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());

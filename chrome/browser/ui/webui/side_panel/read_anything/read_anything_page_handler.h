@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,6 +57,7 @@ class ReadAnythingPageHandler
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
   // read_anything::mojom::UntrustedPageHandler:
+  void OnCopy() override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,

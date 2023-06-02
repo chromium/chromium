@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/common/content_export.h"
@@ -83,7 +84,10 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
       observation_{this};
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
-  WebMenuRunner* menu_runner_ = nil;
+
+  // This field is not a raw_ptr<> because it is a pointer to Objective-C
+  // object.
+  RAW_PTR_EXCLUSION WebMenuRunner* menu_runner_ = nil;
   bool popup_was_hidden_ = false;
 
   // Controls whether messages can be pumped during the menu fade.

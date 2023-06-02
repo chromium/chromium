@@ -59,7 +59,6 @@ source_set("backend") {
     "password_settings_updater_android_receiver_bridge_impl.h",
     "password_store_android_backend.cc",
     "password_store_android_backend.h",
-    "password_store_android_backend_api_error_codes.h",
     "password_store_android_backend_bridge_helper.h",
     "password_store_android_backend_bridge_helper_impl.cc",
     "password_store_android_backend_bridge_helper_impl.h",
@@ -428,6 +427,8 @@ source_set("unit_tests") {
     "fake_password_manager_lifecycle_helper.cc",
     "fake_password_manager_lifecycle_helper.h",
     "generated_password_saved_message_delegate_unittest.cc",
+    "mock_password_checkup_launcher_helper.cc",
+    "mock_password_checkup_launcher_helper.h",
     "mock_password_manager_error_message_helper_bridge.cc",
     "mock_password_manager_error_message_helper_bridge.h",
     "mock_password_sync_controller_delegate_bridge.cc",
@@ -473,6 +474,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/android:android",
     "//ui/base:base",
   ]
 }

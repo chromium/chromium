@@ -124,7 +124,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
   scoped_refptr<blink::TestWebRTCStatsReportObtainer> CallGetStats() {
     scoped_refptr<blink::TestWebRTCStatsReportObtainer> obtainer =
         base::MakeRefCounted<TestWebRTCStatsReportObtainer>();
-    sender_->GetStats(obtainer->GetStatsCallbackWrapper(), {}, false);
+    sender_->GetStats(obtainer->GetStatsCallbackWrapper());
     return obtainer;
   }
 
@@ -236,12 +236,6 @@ TEST_F(RTCRtpSenderImplTest, GetStats) {
   // Wait for the report, this performs the necessary run-loop.
   auto* report = obtainer->WaitForReport();
   EXPECT_TRUE(report);
-
-  // Verify dummy value.
-  EXPECT_EQ(report->Size(), 1u);
-  auto stats = report->GetStats(blink::WebString::FromUTF8("stats-id"));
-  EXPECT_TRUE(stats);
-  EXPECT_EQ(stats->TimestampMs(), 1.234);
 }
 
 TEST_F(RTCRtpSenderImplTest, CopiedSenderSharesInternalStates) {

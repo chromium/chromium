@@ -5,14 +5,19 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_IN_SUGGEST_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_IN_SUGGEST_H_
 
+#include <optional>
+
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/search_engines/template_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 
 class OmniboxActionInSuggest : public OmniboxAction {
  public:
-  explicit OmniboxActionInSuggest(omnibox::ActionInfo action_info);
+  OmniboxActionInSuggest(
+      omnibox::ActionInfo action_info,
+      absl::optional<TemplateURLRef::SearchTermsArgs> search_terms_args);
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
@@ -28,18 +33,13 @@ class OmniboxActionInSuggest : public OmniboxAction {
   // Downcasts the given OmniboxAction to an OmniboxActionInSuggest if the
   // supplied instance represents one, otherwise returns nullptr.
   static const OmniboxActionInSuggest* FromAction(const OmniboxAction* action);
+  static OmniboxActionInSuggest* FromAction(OmniboxAction* action);
+
+  omnibox::ActionInfo action_info{};
+  absl::optional<TemplateURLRef::SearchTermsArgs> search_terms_args{};
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(OmniboxActionInSuggestTest,
-                           ReportMetricsForUnknownType);
-  FRIEND_TEST_ALL_PREFIXES(BaseSearchProviderTest,
-                           CreateActionInSuggest_BuildActionURL);
   ~OmniboxActionInSuggest() override;
-
-  omnibox::ActionInfo action_info_{};
-#if BUILDFLAG(IS_ANDROID)
-  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
-#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_IN_SUGGEST_H_

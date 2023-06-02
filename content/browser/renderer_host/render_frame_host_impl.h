@@ -282,7 +282,6 @@ class RenderWidgetHostView;
 class ServiceWorkerContainerHost;
 class SiteInfo;
 class SpeechSynthesisImpl;
-class SubresourceWebBundleNavigationInfo;
 class TimeoutMonitor;
 class WebAuthRequestSecurityChecker;
 class WebBluetoothServiceImpl;
@@ -2336,8 +2335,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
-  void WillPotentiallyStartOutermostMainFrameNavigation(
-      const GURL& url) override;
+  void MaybeStartOutermostMainFrameNavigation(
+      const std::vector<GURL>& urls) override;
   void UpdateFaviconURL(
       std::vector<blink::mojom::FaviconURLPtr> favicon_urls) override;
   void DownloadURL(blink::mojom::DownloadURLParamsPtr params) override;
@@ -4681,11 +4680,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //    then the initial transient isolation info (i.e. the default value below)
   //    will be used.  This will match the opaque origin of such a frame.
   net::IsolationInfo isolation_info_ = net::IsolationInfo::CreateTransient();
-
-  // Subresource Web Bundle information that are kept around across
-  // same-document navigations.
-  std::unique_ptr<SubresourceWebBundleNavigationInfo>
-      subresource_web_bundle_navigation_info_;
 
   // Tainted once MediaStream access was granted.
   bool was_granted_media_access_ = false;

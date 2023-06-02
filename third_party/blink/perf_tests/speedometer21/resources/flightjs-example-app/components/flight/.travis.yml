@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - 0.8
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+script: "npm install; make standalone; phantomjs test/phantom-jasmine/run_jasmine_test.coffee test/run/jasmine_test.html"

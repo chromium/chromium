@@ -211,6 +211,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1442987760062738829">Shpim</translation>
 <translation id="1446396933673057385">Kontrolli i saktësisë</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Cilësimet që ka zgjedhur prindi yt po të mbajnë më të sigurt në linjë tani</translation>
 <translation id="1453974140256777690">Teksti që ngjit ose bashkëngjit i dërgohet Google Cloud ose palëve të treta për analizim. Për shembull, mund të skanohet për të dhëna delikate.</translation>
 <translation id="1455413310270022028">Goma</translation>
 <translation id="1459693405370120464">Moti</translation>
@@ -268,6 +269,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1569487616857761740">Fut datën e skadimit</translation>
 <translation id="1569694109004336106">Google Chrome po përpiqet të aktivizojë Windows Hello për plotësimin e fjalëkalimeve.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> inç</translation>
+<translation id="1576277203042721907">Statistikat për blerjet</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Shkoi diçka keq kur po shfaqej faqja e uebit.</translation>
 <translation id="1584492003828271317">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga "Reklamat e sugjeruara nga sajtet", cilësimet e tua të kukive dhe nëse sajti që po shikon i personalizon reklamat</translation>
@@ -979,6 +981,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3380864720620200369">ID-ja e klientit:</translation>
 <translation id="3381668585148405088">Verifiko blerjen tënde</translation>
 <translation id="3383566085871012386">Porosia aktuale me përparësi</translation>
+<translation id="3384522979010096022">Organizata jote nuk të lejon që të shikosh këtë sajt</translation>
 <translation id="3387261909427947069">Mënyrat e pagesës</translation>
 <translation id="3391030046425686457">Adresa e dorëzimit</translation>
 <translation id="3391482648489541560">modifikimi i skedarëve</translation>
@@ -1102,7 +1105,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3676592649209844519">ID-ja e pajisjes:</translation>
 <translation id="3677008721441257057">Mos dëshiron të thuash &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Kërkesa nuk mund të nënshkruhej</translation>
-<translation id="3678342917559046352">Shtesë e pavlefshme: Pritej që vlera të ishte në një nga format e mëposhtme: &lt;extension_id&gt; ose &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Hape faqen në një dritare të re "të fshehtë" (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informacioni i certifikatës</translation>
 <translation id="3681421644246505351">Chrome mban shënim temat e interesit bazuar në historikun më të fundit të shfletimit.</translation>
@@ -1132,6 +1134,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3740319564441798148">Autobusët dhe trenat për distanca të largëta</translation>
 <translation id="3743765582345153106">Verifiko gjithmonë kur përdoret plotësimi automatik</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
+<translation id="3744212718085287312">Të bëhet më e sigurt me një kartë virtuale herën tjetër?</translation>
 <translation id="3744286742364977428">Skedarët që shkarkon dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë.</translation>
 <translation id="3744899669254331632">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse sajti i uebit dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chromium. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
 <translation id="3748148204939282805">Sulmuesit në  <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve ose të zbulosh informacion personal (për shembull, fjalëkalime, numra telefoni ose karta krediti). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1240,6 +1243,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4040350669425716613">Kolegjet dhe universitetet</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
+<translation id="404831776305217138">URL-ja e përditësimit për shtesën me ID "<ph name="EXTENSION_ID" />" është e pavlefshme ose përdor një skemë që nuk mbështetet. Skemat e mbështetura janë: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dhe <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Do të mund ta përdorësh atë nëpër produktet e Google</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1267,6 +1271,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="410148943680000050">Publikimi në desktop</translation>
 <translation id="4103249731201008433">Numri i serisë së pajisjes është i pavlefshëm</translation>
 <translation id="4106133539597032659">Butoni "Krijo sajt", shtyp Enter për të krijuar shpejt një sajt të ri në Google Sites</translation>
+<translation id="4106887816571530227">Përmbajtja e integruar nuk lejohet</translation>
 <translation id="4110652170750985508">Rishiko pagesën tënde</translation>
 <translation id="4111546256784973544">Lojërat me armë me bojë</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
@@ -1346,7 +1351,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Shënim</translation>
 <translation id="425582637250725228">Ndryshimet që ke bërë mund të mos ruhen.</translation>
-<translation id="425869179292622354">Të bëhet më e sigurt me një kartë virtuale?</translation>
 <translation id="4258748452823770588">Nënshkrim i gabuar</translation>
 <translation id="4261046003697461417">Dokumentet e mbrojtura nuk mund të shënohen</translation>
 <translation id="4265872034478892965">Lejuar nga administratori yt</translation>
@@ -1605,6 +1609,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4876305945144899064">Nuk ka emër përdoruesi</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Asnjë}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Kërko për <ph name="TEXT" /></translation>
+<translation id="4877521229462766300">Të lejohet përmbajtja e integruar?</translation>
 <translation id="4879491255372875719">Automatike (e parazgjedhur)</translation>
 <translation id="4880827082731008257">Historiku i kërkimeve</translation>
 <translation id="4881695831933465202">Hap</translation>
@@ -1802,6 +1807,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5314967030527622926">Krijuesi i broshurës</translation>
 <translation id="5316812925700871227">Rrotullo në drejtim të kundërt të akrepave të orës</translation>
 <translation id="5317780077021120954">Ruaj</translation>
+<translation id="5323043727018853753">Përmbajtja e integruar lejohet</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> nga <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Shfletuesi yt nuk është i menaxhuar</translation>
 <translation id="5332219387342487447">Mënyra e dërgimit</translation>
@@ -2178,6 +2184,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6306713302480826305">Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar</translation>
 <translation id="6312113039770857350">Faqja e uebit nuk është e disponueshme</translation>
 <translation id="6316226860534107313">Motoçikletat dhe skuterat elektrikë</translation>
+<translation id="6316723751983724988">E re: Zgjedhjet e Family Link për Chrome zbatohen këtu</translation>
 <translation id="63172326633386613">Menaxho cilësimet e qasshmërisë</translation>
 <translation id="6319249456820053699">Kamerat dhe videokamerat</translation>
 <translation id="6321917430147971392">Kontrollo cilësimet e tua të DNS-së</translation>
@@ -2285,6 +2292,8 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6569060085658103619">Po shikon një faqe të shtesës</translation>
 <translation id="6569366777234823130">Filmat dramë</translation>
 <translation id="6573200754375280815">Dy shpime djathtas</translation>
+<translation id="6576181918031900030">Nis transmetimin</translation>
+<translation id="6578434528542148658">ID e pavlefshme e shtesës.</translation>
 <translation id="657902945730878902">Vizatimi dhe ngjyrosja</translation>
 <translation id="6579630537141957243">Të lidhet pajisja MIDI?</translation>
 <translation id="6579990219486187401">Rozë e çelur</translation>
@@ -2729,6 +2738,7 @@ Detaje shtesë:
 <translation id="7598391785903975535">Më pak se <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> nuk mund ta administrojë këtë kërkesë aktualisht.</translation>
 <translation id="7600965453749440009">Asnjëherë mos përkthe <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">Zakonisht lidhesh me këtë sajt në mënyrë të sigurt, por Chrome nuk mund të përdorte një lidhje të sigurt në këtë moment. Një sulmues mund të jetë duke u përpjekur të përgjojë ose modifikojë lidhjen tënde të internetit. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Vlera është jashtë gamës <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Data e skadimit: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të shikuar dhe menaxhuar fjalëkalimet e tua te cilësimet e Chrome</translation>
@@ -2829,6 +2839,7 @@ Detaje shtesë:
 <translation id="7822320754433038727">Gjuetia dhe qitja</translation>
 <translation id="782886543891417279">Lidhja Wi-Fi që po përdor (<ph name="WIFI_NAME" />) mund të kërkojë që të vizitosh faqen e saj të lidhjes.</translation>
 <translation id="7840103971441592723">Regjistrimi i ekranit ka filluar</translation>
+<translation id="784137052867620416">Statistikat për blerjet</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Më vonë, një sajt që viziton ti mund t'i kërkojë Chrome temat e tua që të personalizojë reklamat që shikon ti. Chrome ndan deri në 3 tema ndërkohë që mbron historikun e shfletimit dhe identitetin tënd.</translation>
@@ -2962,7 +2973,6 @@ Detaje shtesë:
 <translation id="8190193880870196235">Menaxhuar nga një shtesë</translation>
 <translation id="8194797478851900357">&amp;Zhbëj zhvendosjen</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
-<translation id="8201077131113104583">URL e pavlefshme përditësimi për shtesën me ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Përmbledhja e porosisë</translation>
 <translation id="8202370299023114387">Konflikt</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
@@ -2974,6 +2984,7 @@ Detaje shtesë:
 <translation id="8217748145574471584">Burimet njerëzore</translation>
 <translation id="8218327578424803826">Vendndodhja e caktuar:</translation>
 <translation id="8228419419708659934">Pamja me dy faqe</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> dëshiron të ketë qasje te një pajisje në rrjetin tënd:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Lojërat sportive</translation>
@@ -3022,7 +3033,6 @@ Detaje shtesë:
 <translation id="8298115750975731693">Lidhja Wi-Fi që po përdor (<ph name="WIFI_NAME" />) mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Seksioni "<ph name="SECTION" />" është i shfaqur</translation>
 <translation id="830498451218851433">Palosje në gjysmë</translation>
-<translation id="8307888238279532626">Aplikacionet e instaluara dhe sa shpesh përdoren</translation>
 <translation id="831997045666694187">Mbrëmje</translation>
 <translation id="8321476692217554900">njoftimet</translation>
 <translation id="8329068931308448247">Zarf nr. 14</translation>

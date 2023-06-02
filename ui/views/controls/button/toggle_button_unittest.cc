@@ -87,7 +87,7 @@ class ToggleButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestToggleButton> button_ = nullptr;
+  raw_ptr<TestToggleButton, DanglingUntriaged> button_ = nullptr;
   int counter_ = 0;
 };
 

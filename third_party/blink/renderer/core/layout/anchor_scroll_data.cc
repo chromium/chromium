@@ -7,8 +7,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
@@ -25,32 +23,16 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!value)
     return nullptr;
 
-  const NGPhysicalAnchorQuery* anchor_query =
-      NGPhysicalAnchorQuery::GetFromLayoutResult(*layout_object);
-  if (!anchor_query)
-    return nullptr;
-
+  const LayoutBox* box = To<LayoutBox>(layout_object);
   const LayoutObject* anchor = nullptr;
   if (value->IsNamed()) {
-    anchor =
-        anchor_query->AnchorLayoutObject(*layout_object, &value->GetName());
+    anchor = box->FindTargetAnchor(value->GetName());
   } else if (value->IsDefault() && style.AnchorDefault()) {
-    anchor =
-        anchor_query->AnchorLayoutObject(*layout_object, style.AnchorDefault());
+    anchor = box->FindTargetAnchor(*style.AnchorDefault());
   } else {
     DCHECK(value->IsImplicit() ||
            (value->IsDefault() && !style.AnchorDefault()));
-    Element* element = DynamicTo<Element>(layout_object->GetNode());
-    Element* anchor_element =
-        element ? element->ImplicitAnchorElement() : nullptr;
-    LayoutObject* anchor_layout_object =
-        anchor_element ? anchor_element->GetLayoutObject() : nullptr;
-    if (anchor_layout_object) {
-      // Even with the implicit anchor element at hand, we still need to verify
-      // whether it's an acceptable anchor element.
-      anchor = anchor_query->AnchorLayoutObject(*layout_object,
-                                                anchor_layout_object);
-    }
+    anchor = box->AcceptableImplicitAnchor();
   }
 
   return anchor;
@@ -90,13 +72,8 @@ const Vector<PhysicalScrollRange>* GetNonOverflowingScrollRanges(
   if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
     return nullptr;
   }
-  DCHECK(layout_object->IsBox());
-  const auto& layout_results = To<LayoutBox>(layout_object)->GetLayoutResults();
-  if (layout_results.empty()) {
-    return nullptr;
-  }
-  // TODO(crbug.com/1309178): Make sure it works when the box is fragmented.
-  return layout_results.front()->PositionFallbackNonOverflowingRanges();
+  CHECK(layout_object->IsBox());
+  return To<LayoutBox>(layout_object)->PositionFallbackNonOverflowingRanges();
 }
 
 }  // namespace
@@ -136,7 +113,7 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
       new_scroll_container_ids.push_back(scrollable_area->GetScrollElementId());
       new_accumulated_scroll_offset += scrollable_area->GetScrollOffset();
       new_accumulated_scroll_origin +=
-          scrollable_area->ScrollOrigin().OffsetFromOrigin();
+          scrollable_area->ScrollOriginInt().OffsetFromOrigin();
     }
   }
 
@@ -191,7 +168,7 @@ void AnchorScrollData::UpdateSnapshot() {
       InvalidatePaint();
       return;
     case SnapshotDiff::kScrollersOrFallbackPosition:
-      InvalidateLayout();
+      InvalidateLayoutAndPaint();
       return;
   }
 }
@@ -216,7 +193,7 @@ bool AnchorScrollData::ValidateSnapshot() {
       // offset-only diff only needs paint update.
       return true;
     case SnapshotDiff::kScrollersOrFallbackPosition:
-      InvalidateLayout();
+      InvalidateLayoutAndPaint();
       return false;
   }
 }
@@ -226,20 +203,17 @@ bool AnchorScrollData::ShouldScheduleNextService() {
          TakeAndCompareSnapshot(false /*update*/) != SnapshotDiff::kNone;
 }
 
-void AnchorScrollData::InvalidateLayout() {
+void AnchorScrollData::InvalidateLayoutAndPaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
   owner_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kAnchorPositioning);
+  owner_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
 
 void AnchorScrollData::InvalidatePaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
-  // TODO(crbug.com/1309178): This causes a main frame commit, which is
-  // unnecessary when there's offset-only changes and compositor has already
-  // adjusted the element correctly. Try to avoid that. See also
-  // crbug.com/1378705 as sticky position has the same issue.
   owner_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
 

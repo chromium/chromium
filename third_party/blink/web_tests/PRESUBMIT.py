@@ -16,7 +16,6 @@ import tempfile
 import re
 from html.parser import HTMLParser
 
-USE_PYTHON3 = True
 WPT_IMPORTER_EMAIL = "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com"
 
 

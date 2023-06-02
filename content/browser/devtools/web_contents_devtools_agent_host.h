@@ -84,6 +84,8 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void WebContentsDestroyed() override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
+  void FrameDeleted(int frame_tree_node_id) override;
 
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
   scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();

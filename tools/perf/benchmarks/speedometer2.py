@@ -131,7 +131,7 @@ class Speedometer20(_Speedometer2):
   """Speedometer2.0 benchmark.
   Explicitly named version."""
 
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer20')
 
   @classmethod
   def GetStoryClass(cls):
@@ -149,8 +149,7 @@ class Speedometer21(_Speedometer2):
   """Speedometer2.1 benchmark.
   Explicitly named version."""
 
-  #TODO(cbruni): update path once new version is checked in.
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer21')
 
   @classmethod
   def GetStoryClass(cls):
@@ -163,8 +162,8 @@ class Speedometer21(_Speedometer2):
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.0')
-class Speedometer2(Speedometer20):
+                documentation_url='https://browserbench.org/Speedometer2.1')
+class Speedometer2(Speedometer21):
   """The latest version of the Speedometer2 benchmark."""
   @classmethod
   def GetStoryClass(cls):
@@ -177,7 +176,7 @@ class Speedometer2(Speedometer20):
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.0')
+                documentation_url='https://browserbench.org/Speedometer2.1')
 class V8Speedometer2Future(Speedometer2):
   """The latest Speedometer2 benchmark with the V8 flag --future.
 
@@ -194,7 +193,7 @@ class V8Speedometer2Future(Speedometer2):
 
 @benchmark.Info(emails=['omerkatz@chromium.org'],
                 component='Blink>JavaScript>GarbageCollection',
-                documentation_url='https://browserbench.org/Speedometer2.0')
+                documentation_url='https://browserbench.org/Speedometer2.1')
 class Speedometer2MinorMC(Speedometer2):
   """The latest Speedometer2 benchmark with the MinorMC flag.
 

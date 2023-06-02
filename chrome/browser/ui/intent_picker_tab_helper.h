@@ -102,7 +102,7 @@ class IntentPickerTabHelper
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  const raw_ptr<web_app::WebAppRegistrar> registrar_;
+  const raw_ptr<web_app::WebAppRegistrar, DanglingUntriaged> registrar_;
   const raw_ptr<web_app::WebAppInstallManager> install_manager_;
 
   bool should_show_icon_ = false;

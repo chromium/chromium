@@ -4,7 +4,9 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import {getUniqueParents} from '../../common/js/api.js';
 import {AsyncQueue, RateLimiter} from '../../common/js/async_util.js';
+import {VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
@@ -13,6 +15,7 @@ import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 import {MetadataModelInterface} from '../../externs/metadata_model.js';
+import {getStore} from '../../state/store.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 
@@ -306,7 +309,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
    *     syncStates Updated file transfer statuses.
    * @private
    */
-  updateSyncStateMetadata_(syncStates) {
+  async updateSyncStateMetadata_(syncStates) {
     if (!this.metadataModel_) {
       // Files app is still loading. This should have no user visible impact
       // since sync status update events are constantly emitted.
@@ -314,48 +317,54 @@ export class DriveSyncHandlerImpl extends EventTarget {
     }
 
     const completedUrls = [];
-    const valuesToUpdate = [];
+    const completedValues = [];
+
     const urlsToUpdate = [];
+    const valuesToUpdate = [];
 
     for (const {fileUrl, syncStatus, progress} of syncStates) {
-      valuesToUpdate.push([syncStatus, progress]);
-      urlsToUpdate.push(fileUrl);
-
       if (syncStatus === COMPLETED) {
         completedUrls.push(fileUrl);
+        completedValues.push([syncStatus, progress, Date.now()]);
+      } else {
+        urlsToUpdate.push(fileUrl);
+        valuesToUpdate.push([syncStatus, progress]);
       }
     }
 
     this.metadataModel_.update(urlsToUpdate, METADATA_KEYS, valuesToUpdate);
 
-    // Update filtered states that are completed now and, in 300ms, are still
-    // completed (i.e., haven't started syncing again) to "not_found".
-    if (completedUrls.length > 0) {
-      setTimeout(() => this.dismissCompletedEntries_(completedUrls), 300);
-    }
-  }
-
-  /**
-   * Updates fileUrls that are still "completed" to "not_found".
-   * @param {!Array<!string>} fileUrls
-   * @private
-   */
-  dismissCompletedEntries_(fileUrls) {
-    const stillCompletedUrls = [];
-    const valuesToUpdate = [];
-
-    const metadata =
-        this.metadataModel_.getCacheByUrls(fileUrls, [SYNC_STATUS]);
-    for (let i = 0; i < metadata.length; i++) {
-      if (metadata[i].syncStatus === COMPLETED) {
-        stillCompletedUrls.push(fileUrls[i]);
-        valuesToUpdate.push(
-            [chrome.fileManagerPrivate.SyncStatus.NOT_FOUND, 0]);
-      }
+    if (!completedUrls.length) {
+      return;
     }
 
     this.metadataModel_.update(
-        stillCompletedUrls, METADATA_KEYS, valuesToUpdate);
+        completedUrls,
+        [
+          ...METADATA_KEYS,
+          chrome.fileManagerPrivate.EntryPropertyName.SYNC_COMPLETED_TIME,
+        ],
+        completedValues);
+
+    // Hold "completed" state for 300ms to give users a chance to see it.
+    await new Promise(r => setTimeout(r, 300));
+
+    const {allEntries} = getStore().getState();
+    // Unwrap entries so they are accepted by the `MetadataModel.get()` method.
+    const completedEntries = completedUrls.map(url => allEntries[url]?.entry)
+                                 .filter(Boolean)
+                                 .map(util.unwrapEntry);
+
+    if (!completedEntries.length) {
+      return;
+    }
+
+    this.metadataModel_.notifyEntriesChanged(completedEntries);
+    this.metadataModel_.get(completedEntries, [
+      ...METADATA_KEYS,
+      chrome.fileManagerPrivate.EntryPropertyName.AVAILABLE_OFFLINE,
+      chrome.fileManagerPrivate.EntryPropertyName.PINNED,
+    ]);
   }
 
   /**
@@ -518,7 +527,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
         this.updateSyncStateMetadata_([
           {
             fileUrl: event.fileUrl,
-            syncStatus: chrome.fileManagerPrivate.SyncStatus.ERROR,
+            syncStatus: chrome.fileManagerPrivate.SyncStatus.QUEUED,
             progress: 0,
           },
         ]);

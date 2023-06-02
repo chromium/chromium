@@ -58,25 +58,16 @@ class AppListItemViewPixelTest
     // As per `app_list_config_provider.cc`, dense values are used for screens
     // with width OR height <= 675.
     UpdateDisplay(use_dense_ui() ? "800x600" : "1200x800");
-    auto enabled_features = std::vector<base::test::FeatureRef>();
-    auto disabled_features = std::vector<base::test::FeatureRef>();
     if (use_drag_drop_refactor()) {
-      enabled_features.push_back(app_list_features::kDragAndDropRefactor);
       auto* drag_controller = ShellTestApi().drag_drop_controller();
       drag_drop_controller_test_api_ =
           std::make_unique<DragDropControllerTestApi>(drag_controller);
       drag_controller->SetDisableNestedLoopForTesting(true);
-    } else {
-      disabled_features.push_back(app_list_features::kDragAndDropRefactor);
     }
 
-    if (use_folder_icon_refresh()) {
-      enabled_features.push_back(features::kAppCollectionFolderRefresh);
-    } else {
-      disabled_features.push_back(features::kAppCollectionFolderRefresh);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
+         {features::kAppCollectionFolderRefresh, use_folder_icon_refresh()}});
   }
 
   void TearDown() override {

@@ -18,6 +18,7 @@ import '//webui-gallery/shared/sp_icons.html.js';
 import '//webui-gallery/shared/sp_list_item_badge.js';
 import '//webui-gallery/shared/sp_shared_style.css.js';
 import '//webui-gallery/shared/sp_shared_vars.css.js';
+import '../demo.css.js';
 
 import {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
@@ -102,5 +103,7 @@ class SpComponentsDemo extends PolymerElement {
     this.urlCount_ = this.$.urlCountSlider.value;
   }
 }
+
+export const tagName = SpComponentsDemo.is;
 
 customElements.define(SpComponentsDemo.is, SpComponentsDemo);

@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.PopupItemId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.DropdownItem;
@@ -101,10 +102,10 @@ public class AutofillUnitTest {
     private AutofillSuggestion[] createTwoAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
                 new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 42, false, false, false,
+                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
                         /* featureForIPH= */ ""),
                 new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 43, false, false, false,
+                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
                         /* featureForIPH= */ ""),
         };
     }
@@ -112,17 +113,20 @@ public class AutofillUnitTest {
     private AutofillSuggestion[] createFiveAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
                 new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 42, false, false, false,
+                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
                         /* featureForIPH= */ ""),
                 new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, 43, false, false, false,
+                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
                         /* featureForIPH= */ ""),
                 new AutofillSuggestion("Arthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 44, false, false, false, /* featureForIPH= */ ""),
+                        false, PopupItemId.ADDRESS_ENTRY, false, false, false,
+                        /* featureForIPH= */ ""),
                 new AutofillSuggestion("Porthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 45, false, false, false, /* featureForIPH= */ ""),
+                        false, PopupItemId.ADDRESS_ENTRY, false, false, false,
+                        /* featureForIPH= */ ""),
                 new AutofillSuggestion("Aramis", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, 46, false, false, false, /* featureForIPH= */ ""),
+                        false, PopupItemId.ADDRESS_ENTRY, false, false, false,
+                        /* featureForIPH= */ ""),
         };
     }
 

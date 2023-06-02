@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium 同期のデータ</translation>
 <translation id="1722370509450468186">パスワードはアカウント（<ph name="EMAIL" />）に保存されます。</translation>
 <translation id="1736662517232558588">Chromium データを削除しました</translation>
-<translation id="177102542580335555">この Chromium プロフィールは標準のセキュリティで保護されます</translation>
 <translation id="1838412507805038478">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであることが Chromium で確認されました。</translation>
 <translation id="1843424232666537147">Chromium には、インターネットのデータやウェブページの読み込み速度を管理できる機能があります。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromium を最大限に活用するには、Google アカウントで Chromium にログインしてください。</translation>
 <translation id="3639997914391704523">Google アカウントでログインすると、Chromium でパスワードを確認できるようになります。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> は Chromium を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
+<translation id="3661862315467204831">iOS で Chromium の設定を開き、[デフォルトのブラウザアプリ] をタップして [Chromium] を選択します。</translation>
 <translation id="372658070733623520">Google アカウントで Chromium データを使用して保存するには、本人確認を行ってください。</translation>
 <translation id="3805899903892079518">Chromium で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
+<translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="3955621079070267756">他のアプリから Chromium を開く</translation>
 <translation id="4043291146360695975">パスワードは、このデバイスのパスワード マネージャーにのみ保存されます。</translation>
 <translation id="4099085513035183040">Chromium ベータ版ではサポートされていません</translation>

@@ -3648,7 +3648,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
                     std::move(callback).Run(
                         storage::mojom::WriteBlobToFileResult::kSuccess);
                   },
-                  weak_ptr_factory_.GetWeakPtr(), &entry,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  base::UnsafeDanglingUntriaged(&entry),
                   write_result_callback));
           break;
         }

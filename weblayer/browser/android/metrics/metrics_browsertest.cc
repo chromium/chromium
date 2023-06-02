@@ -16,6 +16,7 @@
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "weblayer/browser/android/metrics/metrics_test_helper.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
+#include "weblayer/browser/browser_fragment_list.h"
 #include "weblayer/browser/browser_list.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/public/navigation_controller.h"
@@ -220,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTestWithConfigurableConsent,
                        IsInForegroundWhenConsentGiven) {
   // There should be at least one browser which is resumed. This is the trigger
   // for whether the MetricsService is considered in the foreground.
-  EXPECT_TRUE(BrowserList::GetInstance()->HasAtLeastOneResumedBrowser());
+  EXPECT_TRUE(
+      BrowserFragmentList::GetInstance()->HasAtLeastOneResumedBrowser());
   RunConsentCallback(true);
   // RunConsentCallback() should trigger the MetricsService to start.
   EXPECT_TRUE(WebLayerMetricsServiceClient::GetInstance()

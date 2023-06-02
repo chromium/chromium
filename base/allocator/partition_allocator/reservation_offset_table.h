@@ -64,7 +64,8 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 //    to further determine which part of the super page is used by
 //    PartitionAlloc. This isn't a problem in 64-bit mode, where allocation
 //    granularity is kSuperPageSize.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    PA_THREAD_ISOLATED_ALIGN ReservationOffsetTable {
  public:
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
   // There is one reservation offset table per Pool in 64-bit mode.
@@ -99,15 +100,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
   // If thread isolation support is enabled, we need to write-protect the tables
   // of the thread isolated pool. For this, we need to pad the tables so that
   // the thread isolated ones start on a page boundary.
-  struct _PaddedReservationOffsetTables {
-    char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ(_ReservationOffsetTable,
-                                              kNumPools)] = {};
-    struct _ReservationOffsetTable tables[kNumPools];
-    char pad_after_[PA_THREAD_ISOLATED_FILL_PAGE_SZ(
-        sizeof(_ReservationOffsetTable))] = {};
-  };
-  static PA_CONSTINIT _PaddedReservationOffsetTables
-      padded_reservation_offset_tables_ PA_THREAD_ISOLATED_ALIGN;
+  char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ(_ReservationOffsetTable,
+                                            kNumPools)] = {};
+  struct _ReservationOffsetTable tables[kNumPools];
+  static PA_CONSTINIT ReservationOffsetTable singleton_;
 #else
   // A single table for the entire 32-bit address space.
   static PA_CONSTINIT struct _ReservationOffsetTable reservation_offset_table_;
@@ -117,9 +113,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
   PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
-  return ReservationOffsetTable::padded_reservation_offset_tables_
-      .tables[handle - 1]
-      .offsets;
+  return ReservationOffsetTable::singleton_.tables[handle - 1].offsets;
 }
 
 PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(

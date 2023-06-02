@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
 <translation id="1722370509450468186">Dein Passwort wird in deinem Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="1736662517232558588">Chromium-Daten gelöscht</translation>
-<translation id="177102542580335555">Dieses Chromium-Profil wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="1838412507805038478">Chromium hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="1843424232666537147">Chromium bietet Funktionen, mit denen du deine Internetdaten und die Ladezeit von Webseiten verwalten kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1867772173333403444">4. Wähle Chromium aus</translation>
@@ -46,8 +45,10 @@
 <translation id="3567399274263440288">Wenn du Chromium optimal nutzen möchtest, melde dich mit deinem Google-Konto in Chromium an.</translation>
 <translation id="3639997914391704523">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> hat Chromium genutzt und Lesezeichen, Passwörter und andere Einstellungen auf diesem Gerät festgelegt.</translation>
+<translation id="3661862315467204831">Öffne die Chromium-Einstellungen unter iOS, tippe auf „Standard-Browser-App“ und wähle „Chromium“ aus.</translation>
 <translation id="372658070733623520">Bestätige deine Identität, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="3805899903892079518">Chromium hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
+<translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="3955621079070267756">Chromium über jede App öffnen</translation>
 <translation id="4043291146360695975">Passwörter werden auf diesem Gerät nur im Passwortmanager gespeichert.</translation>
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>

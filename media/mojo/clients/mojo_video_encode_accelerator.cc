@@ -58,7 +58,7 @@ class VideoEncodeAcceleratorClient
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
-  raw_ptr<VideoEncodeAccelerator::Client> client_;
+  raw_ptr<VideoEncodeAccelerator::Client, DanglingUntriaged> client_;
   mojo::AssociatedReceiver<mojom::VideoEncodeAcceleratorClient> receiver_;
 };
 

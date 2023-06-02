@@ -50,9 +50,6 @@ const char kFakeVideoInputGroupId2[] = "fake_video_input_group 2";
 const char kFakeAudioOutputDeviceId1[] = "fake_audio_output 1";
 const char kFakeAudioOutputDeviceId2[] = "fake_audio_output 2";
 
-constexpr char kEnumerateDevicesLatencyHistogram[] =
-    "WebRTC.EnumerateDevices.Latency";
-
 String MaxLengthCaptureHandle() {
   String maxHandle = "0123456789abcdef";  // 16 characters.
   while (maxHandle.length() < 1024) {
@@ -342,8 +339,6 @@ class MediaDevicesTest : public PageTestBase {
         "Media.MediaDevices.EnumerateDevices.Result", expected_result, 1);
     histogram_tester_.ExpectTotalCount(
         "Media.MediaDevices.EnumerateDevices.Latency", 1);
-    // Legacy latency histogram.
-    histogram_tester_.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
   }
 
  private:

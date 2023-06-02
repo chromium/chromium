@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Data from Chromium sync</translation>
 <translation id="1722370509450468186">Your password will be saved in your Account (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Cleared Chromium Data</translation>
-<translation id="177102542580335555">You're getting standard security protection for this Chromium profile</translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> was using Chromium and left bookmarks, passwords and other settings on this device.</translation>
+<translation id="3661862315467204831">Open Chromium Settings in iOS, then tap on 'Browser Default APP' and select Chromium.</translation>
 <translation id="372658070733623520">To use and save Chromium data in your Google Account, verify that it's you.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3827545470516145620">You're getting standard security protection on this device</translation>
 <translation id="3955621079070267756">Open Chromium from any app</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>

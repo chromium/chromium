@@ -130,3 +130,4 @@
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().
 -AccessCodeCastHandlerBrowserTest.ExpectProfileSynErrorWhenNoSync
+

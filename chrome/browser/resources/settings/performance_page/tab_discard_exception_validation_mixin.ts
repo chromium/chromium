@@ -27,7 +27,7 @@ export const TabDiscardExceptionValidationMixin = dedupingMixin(
             errorMessage: {type: String, value: ''},
             inputInvalid: {type: Boolean, value: false},
             rule: String,
-            submitDisabled: {type: Boolean, value: true},
+            submitDisabled: {type: Boolean, value: true, notify: true},
           };
         }
 

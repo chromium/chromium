@@ -59,14 +59,6 @@ class GLHelperBenchmark : public testing::Test {
  protected:
   void SetUp() override {
     ContextCreationAttribs attributes;
-    attributes.alpha_size = 8;
-    attributes.depth_size = 24;
-    attributes.red_size = 8;
-    attributes.green_size = 8;
-    attributes.blue_size = 8;
-    attributes.stencil_size = 8;
-    attributes.samples = 4;
-    attributes.sample_buffers = 1;
     attributes.bind_generates_resource = false;
     attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
 
@@ -116,7 +108,7 @@ class GLHelperBenchmark : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<GLInProcessContext> context_;
-  raw_ptr<gles2::GLES2Interface> gl_;
+  raw_ptr<gles2::GLES2Interface, DanglingUntriaged> gl_;
   std::unique_ptr<GLHelper> helper_;
   std::unique_ptr<GLHelperScaling> helper_scaling_;
   base::circular_deque<GLHelperScaling::ScaleOp> x_ops_, y_ops_;

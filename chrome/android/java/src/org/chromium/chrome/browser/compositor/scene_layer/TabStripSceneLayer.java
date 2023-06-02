@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -44,8 +45,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = TabStripSceneLayerJni.get().init(
-                    TabStripSceneLayer.this, ChromeFeatureList.sTabStripRedesign.isEnabled());
+            mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this,
+                    ChromeFeatureList.sTabStripRedesign.isEnabled(),
+                    TabUiFeatureUtilities.isTabStripButtonStyleDisabled());
         }
         // Set flag for testing
         if (!sTestFlag) {
@@ -151,9 +153,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripTabs, int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
 
+        // TODO(https://crbug.com/1450380): Cleanup params, as some don't change and others are now
+        //  unused.
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getId() == selectedTabId;
+
             TabStripSceneLayerJni.get().putStripTabLayer(mNativePtr, TabStripSceneLayer.this,
                     st.getId(), st.getCloseButton().getResourceId(), st.getDividerResourceId(),
                     st.getResourceId(), st.getOutlineResourceId(), st.getCloseButton().getTint(),
@@ -162,10 +167,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
                     st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
                     st.getContentOffsetY() * mDpToPx, st.getDividerOffsetX() * mDpToPx,
-                    st.getBottomMargin() * mDpToPx, st.getCloseButtonPadding() * mDpToPx,
-                    st.getCloseButton().getOpacity(), st.isStartDividerVisible(),
-                    st.isEndDividerVisible(), st.isLoading(), st.getLoadingSpinnerRotation(),
-                    st.getBrightness(), st.getContainerOpacity(), layerTitleCache, resourceManager);
+                    st.getBottomMargin() * mDpToPx, st.getTopMargin() * mDpToPx,
+                    st.getCloseButtonPadding() * mDpToPx, st.getCloseButton().getOpacity(),
+                    st.isStartDividerVisible(), st.isEndDividerVisible(), st.isLoading(),
+                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getContainerOpacity(),
+                    layerTitleCache, resourceManager);
         }
     }
 
@@ -177,7 +183,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     public interface Natives {
-        long init(TabStripSceneLayer caller, boolean isTabStripRedesignEnabled);
+        long init(TabStripSceneLayer caller, boolean isTabStripRedesignEnabled,
+                boolean isTsrButtonStyleDisabled);
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
@@ -205,7 +212,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int handleOutlineResourceId, int closeTint, int dividerTint, int handleTint,
                 int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
                 float x, float y, float width, float height, float contentOffsetX,
-                float contentOffsetY, float dividerOffsetX, float bottomOffsetY,
+                float contentOffsetY, float dividerOffsetX, float bottomMargin, float topMargin,
                 float closeButtonPadding, float closeButtonAlpha, boolean isStartDividerVisible,
                 boolean isEndDividerVisible, boolean isLoading, float spinnerRotation,
                 float brightness, float opacity, LayerTitleCache layerTitleCache,

@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">데스크</translation>
 <translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
-<translation id="1022433422498218992">일반 컨트롤</translation>
+<translation id="1020274983236703756">이제 독점 <ph name="PRODUCT_NAME" /> 애셋 사용 가능</translation>
 <translation id="1022628058306505708">지구의 흐름</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">새 기능을 이용할 수 있습니다. 자세히 알아보려면 위쪽 화살표 키를 사용하세요.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">인증 유형</translation>
 <translation id="1776228893584526149">배경화면 색조</translation>
 <translation id="1782199038061388045">번역</translation>
-<translation id="1790209694022261219">창 및 데스크</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
+<translation id="1836553715834333258">시스템 색상</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
+<translation id="1840474674287087346">데스크톱 색상</translation>
 <translation id="1851218745569890714">화상 회의</translation>
 <translation id="1852934301711881861">ChromeOS Flex 설치</translation>
 <translation id="1856388568474281774">아래쪽 화살표</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">브라우저 탐색</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
-<translation id="2902312830803030883">추가 작업</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
 <translation id="2940811910881150316">기기를 테스트할 수 없습니다. 테스트하려면 덮개를 다시 엽니다.</translation>
-<translation id="2981143481017883351">독점 Chromebook 애셋 사용 가능</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
-<translation id="3020183492814296499">바로가기</translation>
 <translation id="3027578600144895987">카메라 종료</translation>
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> 전용</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
 <translation id="3275729367986477355">아바타 이미지</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">키 방향</translation>
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
+<translation id="3305294846493618482">더보기</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
-<translation id="3386675685417744672">Chromebook 전용</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3639846061339007994">상단</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> 전용 포스터를 선택합니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">경고</translation>
 <translation id="4054683689023980771">이미지 다운로드 중</translation>
 <translation id="4060260348856573701">새 APN</translation>
-<translation id="4079743696465895866">Chromebook 전용 예술작품 선택</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
+<translation id="4113067922640381334">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
 <translation id="4131410914670010031">흑백</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="4500966230243561393">인터페이스 색상</translation>
 <translation id="4503223151711056411">왼쪽 화살표</translation>
 <translation id="4507392511610824664">밝기를 높입니다</translation>
 <translation id="4511264077854731334">포털</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
+<translation id="5035083460461104704">테마 색상</translation>
 <translation id="5038292761217083259">키보드 여러 색상</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
 <translation id="6017514345406065928">녹색</translation>
+<translation id="6019566113895157499">주요 단축키</translation>
 <translation id="6034694447310538551">월간 자동 재설정 사용 설정</translation>
 <translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">중성 색상</translation>
 <translation id="7620771111601174153">고객센터에서 자세히 알아보기</translation>
 <translation id="763165478673169849">마지막 재설정 시간</translation>
+<translation id="7633068090678117093">배경 이미지</translation>
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
 <translation id="765159867434478292">분할</translation>
 <translation id="7656388927906093505">마우스 기기입니다.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8593058461203131755">미디어를 일시중지합니다</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />의 작업 더보기</translation>
 <translation id="86356131183441916">연한 보라색</translation>
 <translation id="8651481478098336970">음소거</translation>
 <translation id="8655295600908251630">채널</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">동종</translation>
 <translation id="8930622219860340959">무선</translation>
 <translation id="8936793075252196307">클라이언트 IP 주소</translation>
+<translation id="8944651180182756621">런처 색상</translation>
 <translation id="894617464444543719">휴대전화 기기입니다.</translation>
 <translation id="8957423540740801332">오른쪽</translation>
 <translation id="8968751544471797276">충전 속도</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9161276708550942948">스페이스</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
+<translation id="9174334653006917325">UI 색상</translation>
 <translation id="917720651393141712">테스트</translation>
 <translation id="9188992814426075118">키보드 백라이트가 배경화면에 어울리게 자동으로 설정됩니다.</translation>
 <translation id="9189000703457422362">자동으로 감지된 APN을 사용하여 이 네트워크에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>

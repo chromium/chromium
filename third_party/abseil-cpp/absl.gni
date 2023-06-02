@@ -59,7 +59,7 @@ template("absl_source_set") {
           "//third_party/googletest/*",
 
           # Centipede, a fuzz test runner
-          "//third_party/centipede/*",
+          "//third_party/fuzztest/*",
 
           # WebRTC binary to run PSNR and SSIM video quality analysis. It
           # statically links absl and it is used by "browser_tests" when

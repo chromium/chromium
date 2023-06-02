@@ -142,7 +142,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1870148520156231997">Rodyti slaptažodį</translation>
 <translation id="1872096359983322073">Žibintuvėlis</translation>
 <translation id="1883255238294161206">Sutraukti sąrašą</translation>
-<translation id="1891796056033961979">Jūsų išsaugotos žymės, slaptažodžiai, nustatymai ir kiti duomenys dabar pasiekiami šiame ekrane.</translation>
 <translation id="1894023287452300670">Čia stebėkite kainą</translation>
 <translation id="1910975740091000991">„Chrome“, skirta „iOS“</translation>
 <translation id="1911619930368729126">Įkelti į „Google“ diską</translation>
@@ -316,6 +315,9 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2975121486251958312">Pasiekiamas tik inkognito režimas</translation>
 <translation id="2982481275546140226">Išvalyti duomenis</translation>
 <translation id="298306318844797842">Pridėti mokėjimo metodą...</translation>
+<translation id="2988274366244053197">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+
+Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Atidaryti naujame skirtuke</translation>
 <translation id="3020183492814296499">Spartieji klavišai</translation>
 <translation id="3037605927509011580">Oi!</translation>
@@ -379,8 +381,10 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3464194322481586217">Nepavyko stebėti kainos.</translation>
 <translation id="3469166899695866866">Sustabdyti atsisiuntimą?</translation>
 <translation id="3470502288861289375">Kopijuojama...</translation>
+<translation id="3471148582064653480">Sinchronizuokite slaptažodžius, istoriją ir kt.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} svetainėje ar programoje}one{{COUNT} svetainėje ar programoje}few{{COUNT} svetainėse ar programose}many{{COUNT} svetainės ar programos}other{{COUNT} svetainių ar programų}}</translation>
 <translation id="3474624961160222204">Tęsti kaip <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Pasiekite slaptažodžius kitose programose.</translation>
 <translation id="3478058380795961209">Gal. pab. mėnuo</translation>
 <translation id="3482959374254649722">Sinchronizuojami skirtukai...</translation>
 <translation id="3484946776651937681">Atidaryti „Atsisiuntimų“ aplanke</translation>
@@ -399,6 +403,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
 <translation id="3565207542107370586">Išvalyti naršymo duomenis…</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
+<translation id="3577555362230509265">Naudokite „Chrome“ kitose programose.</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
 <translation id="3595252146048399851">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
@@ -442,7 +447,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3891414008432200754">Kaina</translation>
 <translation id="3892144330757387737">Čia rasite istoriją</translation>
 <translation id="3897092660631435901">Meniu</translation>
-<translation id="3899568514738536144">Žiūrėti naršymo istoriją</translation>
 <translation id="3904829425754749514">Sinchronizavimas išjungtas organizacijoje. Vis tiek galėsite peržiūrėti žymes, istoriją, slaptažodžius ir kitus nustatymus šiame įrenginyje. Jei atliksite pakeitimų, jie nebus sinchronizuojami su jūsų paskyra.</translation>
 <translation id="3913386780052199712">Prisijungta prie „Chrome“</translation>
 <translation id="3915450441834151894">Svetainės informacija</translation>
@@ -499,7 +503,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="430793432425771671">Sinchronizuoti viską</translation>
 <translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
 <translation id="430967081421617822">Visas laikotarpis</translation>
-<translation id="4324952538601951430">Jūsų išsaugotos žymės, slaptažodžiai, nustatymai ir kita dabar yra čia</translation>
 <translation id="4334428914252001502">1 neskaitytas straipsnis.</translation>
 <translation id="4338650699862464074">Siunčiami „Google“ puslapių, kuriuose lankotės, URL.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Šis adresas bus ištrintas iš šio ir kitų įrenginių, kuriuose esate prisijungę.}one{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}few{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}many{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}other{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}}</translation>
@@ -653,6 +656,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5318298563956633672">Jau stebite šį produktą.</translation>
+<translation id="5325595483440111327">Žiūrėkite naršymo istoriją.</translation>
 <translation id="5339316356165661760">Įjungti sinchronizavimą</translation>
 <translation id="536067926684072644">Rodyti žymes</translation>
 <translation id="5360976571138293719">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyje <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>
@@ -751,6 +755,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="595769230373966252">Ieškoti naudojant „<ph name="SEARCH_PROVIDER" />“</translation>
 <translation id="5963939892571022323">Nepavyko sukurti nuorodos į paryškintą tekstą.</translation>
 <translation id="5965679971710331625">Esate prisijungę</translation>
+<translation id="5971872012779224351">{count,plural, =1{Ištrinta 1 žymė}one{Ištrinta {count} žymė}few{Ištrintos {count} žymės}many{Ištrinta {count} žymės}other{Ištrinta {count} žymių}}</translation>
 <translation id="5979837087407522202">Ieškoti slaptažodžių</translation>
 <translation id="5981230843984570095">Uždaryti visus neaktyvius</translation>
 <translation id="5982717868370722439">Pridėti esamus duomenis prie <ph name="USER_EMAIL" />.</translation>
@@ -920,6 +925,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="681368974849482173">Elementas sukurtas</translation>
 <translation id="6822587385560699678">Įjungus slaptažodžiai išsaugomi paskyroje <ph name="ACCOUNT" />. Išjungus slaptažodžiai išsaugomi tik šiame įrenginyje.</translation>
 <translation id="6831043979455480757">Vertėjas</translation>
+<translation id="6839843088069935119">{count,plural, =1{Žymė išsaugota „{title}“. Ji išsaugoma tik šiame įrenginyje.}one{Žymės išsaugotos „{title}“. Jos išsaugomos tik šiame įrenginyje.}few{Žymės išsaugotos „{title}“. Jos išsaugomos tik šiame įrenginyje.}many{Žymės išsaugotos „{title}“. Jos išsaugomos tik šiame įrenginyje.}other{Žymės išsaugotos „{title}“. Jos išsaugomos tik šiame įrenginyje.}}</translation>
 <translation id="6842136130964845393">Kad užtikrintumėte galimybę visada pasiekti išsaugotus slaptažodžius, patvirtinkite savo tapatybę</translation>
 <translation id="6851516051005285358">Užklausa dėl kompiuteriui skirtos svetainės versijos</translation>
 <translation id="6852222216891664518">Uždaryti prisegtą skirtuką</translation>
@@ -998,6 +1004,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7435356471928173109">Išjungė jūsų administratorius</translation>
 <translation id="7438481509621345350">Dabar atidarę naują skirtuką matysite istorijas iš „<ph name="CHANNEL_NAME" />“.</translation>
 <translation id="7446583256109515732">Skirtukas atsegtas</translation>
+<translation id="7451023311965289370">{count,plural, =1{Žymė išsaugota sistemoje „{title}“}one{Žymės išsaugotos sistemoje „{title}“}few{Žymės išsaugotos „{title}“}many{Žymės išsaugotos „{title}“}other{Žymės išsaugotos „{title}“}}</translation>
 <translation id="7454057999980797137">Valst. / apyg.</translation>
 <translation id="7459628154744868585">Sustiprinta apsauga įjungta</translation>
 <translation id="746684838091935575">3. Pasirinkite „Chrome“</translation>
@@ -1055,7 +1062,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7840771868269352570">Pasirinkti elementai bus pašalinti.</translation>
 <translation id="7845466610722898">Rodyti skaitymo sąrašą</translation>
 <translation id="784551991304901159">Jei norite peržiūrėti turinį, meniu pasirinkite „Įjungti“</translation>
-<translation id="7846158885638438868">{count,plural, =1{Žymė išsaugota skiltyje „{title}“}one{Žymės išsaugotos skiltyje „{title}“}few{Žymės išsaugotos skiltyje „{title}“}many{Žymės išsaugotos skiltyje „{title}“}other{Žymės išsaugotos skiltyje „{title}“}}</translation>
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7856733331829174190">Nepavyko atsisiųsti</translation>
 <translation id="785938070103630874">Atidarykite slaptažodžius, mokėjimo metodus arba adresą ir kt.</translation>
@@ -1135,9 +1141,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8299417921174340354">Jei norite naudoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="8299613349954694191">Norėdami naršyti žiniatinklį privačiai, atidarykite inkognito skirtuką.</translation>
 <translation id="8316944564970119719">Įveskite svetainę ir slaptažodį, tada išsaugokite</translation>
-<translation id="8317835149433843300">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus išsaugota „Google“ paskyroje.
-
-Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nauja paieška</translation>
 <translation id="8323906514956095947">Palieskite ir palaikykite, kad būtų pateikta daugiau skirtukų parinkčių</translation>
 <translation id="8328777765163860529">Uždaryti viską</translation>

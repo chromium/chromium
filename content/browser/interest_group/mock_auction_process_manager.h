@@ -83,6 +83,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
       const std::string& seller_signals_json,
+      auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -121,6 +122,11 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // OnGenerateBidComplete()), respectively, to return `delta`.
   void SetBidderTrustedSignalsFetchLatency(base::TimeDelta delta);
   void SetBiddingLatency(base::TimeDelta delta);
+
+  // Same for `reporting_latency` for ReportWin()
+  void SetReportingLatency(base::TimeDelta delta) {
+    reporting_latency_ = delta;
+  }
 
   // Invokes the GenerateBid callback. A bid of base::nullopt means no bid
   // should be offered. Waits for the GenerateBid() call first, if needed.
@@ -189,6 +195,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // OnGenerateBidComplete()), respectively,
   base::TimeDelta trusted_signals_fetch_latency_;
   base::TimeDelta bidding_latency_;
+
+  // To be fed as `reporting_latency` to ReportWin() callback.
+  base::TimeDelta reporting_latency_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -280,6 +289,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   // Waits until ReportResult() has been invoked, if it hasn't been already.
   void WaitForReportResult();
 
+  // Configures `reporting_latency` passed to ReportResult by
+  // InvokeReportResultCallback.
+  void SetReportingLatency(base::TimeDelta delta) {
+    reporting_latency_ = delta;
+  }
+
   // Invokes the ReportResultCallback for the most recent ScoreAd() call with
   // the provided score. WaitForReportResult() must have been invoked first.
   void InvokeReportResultCallback(
@@ -308,6 +323,9 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   bool expect_send_pending_signals_requests_called_ = true;
   bool send_pending_signals_requests_called_ = false;
+
+  // To be fed as `reporting_latency` to ReportResult() callback.
+  base::TimeDelta reporting_latency_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.

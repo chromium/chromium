@@ -88,16 +88,17 @@ class VIEWS_EXPORT ColorChooser : public TextfieldController,
 
   // Child views. These are owned as part of the normal views hierarchy.
   // The view of hue chooser.
-  raw_ptr<HueView> hue_ = nullptr;
+  raw_ptr<HueView, DanglingUntriaged> hue_ = nullptr;
 
   // The view of saturation/value choosing area.
-  raw_ptr<SaturationValueView> saturation_value_ = nullptr;
+  raw_ptr<SaturationValueView, DanglingUntriaged> saturation_value_ = nullptr;
 
   // The rectangle to denote the selected color.
-  raw_ptr<SelectedColorPatchView> selected_color_patch_ = nullptr;
+  raw_ptr<SelectedColorPatchView, DanglingUntriaged> selected_color_patch_ =
+      nullptr;
 
   // The textfield to write the color explicitly.
-  raw_ptr<Textfield> textfield_ = nullptr;
+  raw_ptr<Textfield, DanglingUntriaged> textfield_ = nullptr;
 
   SkColor initial_color_;
 };

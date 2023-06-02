@@ -93,7 +93,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
                                              unsigned index) = 0;
   virtual void SetPropertyInternal(CSSPropertyID,
                                    const String& property_value,
-                                   const String& value,
+                                   StringView value,
                                    bool important,
                                    SecureContextMode,
                                    ExceptionState&) = 0;

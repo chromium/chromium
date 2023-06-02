@@ -182,7 +182,7 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
     share_gles2 = share_graphics->gles2_impl();
   }
 
-  gpu::ContextCreationAttribs attrib_helper;
+  Graphics3DContextAttribs attrib_helper;
   if (attrib_list) {
     for (const int32_t* attr = attrib_list; attr[0] != PP_GRAPHICS3DATTRIB_NONE;
          attr += 2) {
@@ -191,15 +191,6 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
       switch (key) {
         case PP_GRAPHICS3DATTRIB_ALPHA_SIZE:
           attrib_helper.alpha_size = value;
-          break;
-        case PP_GRAPHICS3DATTRIB_BLUE_SIZE:
-          attrib_helper.blue_size = value;
-          break;
-        case PP_GRAPHICS3DATTRIB_GREEN_SIZE:
-          attrib_helper.green_size = value;
-          break;
-        case PP_GRAPHICS3DATTRIB_RED_SIZE:
-          attrib_helper.red_size = value;
           break;
         case PP_GRAPHICS3DATTRIB_DEPTH_SIZE:
           attrib_helper.depth_size = value;
@@ -222,12 +213,6 @@ PP_Resource PPB_Graphics3D_Proxy::CreateProxyResource(
           break;
         case PP_GRAPHICS3DATTRIB_HEIGHT:
           attrib_helper.offscreen_framebuffer_size.set_height(value);
-          break;
-        case PP_GRAPHICS3DATTRIB_GPU_PREFERENCE:
-          attrib_helper.gpu_preference =
-              (value == PP_GRAPHICS3DATTRIB_GPU_PREFERENCE_LOW_POWER)
-                  ? gl::GpuPreference::kLowPower
-                  : gl::GpuPreference::kHighPerformance;
           break;
         case PP_GRAPHICS3DATTRIB_SINGLE_BUFFER:
           attrib_helper.single_buffer = !!value;
@@ -298,7 +283,7 @@ bool PPB_Graphics3D_Proxy::OnMessageReceived(const IPC::Message& msg) {
 void PPB_Graphics3D_Proxy::OnMsgCreate(
     PP_Instance instance,
     HostResource share_context,
-    const gpu::ContextCreationAttribs& attrib_helper,
+    const Graphics3DContextAttribs& context_attribs,
     HostResource* result,
     gpu::Capabilities* capabilities,
     SerializedHandle* shared_state,
@@ -313,7 +298,7 @@ void PPB_Graphics3D_Proxy::OnMsgCreate(
   const base::UnsafeSharedMemoryRegion* region = nullptr;
   result->SetHostResource(
       instance, enter.functions()->CreateGraphics3DRaw(
-                    instance, share_context.host_resource(), attrib_helper,
+                    instance, share_context.host_resource(), context_attribs,
                     capabilities, &region, command_buffer_id));
   if (!result->is_null()) {
     shared_state->set_shmem_region(

@@ -793,7 +793,7 @@ class ChromeHidTestHelper {
   }
 #endif
 
-  void TestConnectionTrackerOpenDeviceNoConnectionCountUpdateNoNotification() {
+  void TestConnectionTrackerOpenDeviceNoConnectionCountUpdate() {
     mojo::Remote<blink::mojom::HidService> hid_service;
     ConnectToService(hid_service.BindNewPipeAndPassReceiver());
     auto origin = url::Origin::Create(origin_url_);
@@ -824,9 +824,10 @@ class ChromeHidTestHelper {
   }
 
  protected:
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
   GURL origin_url_;
-  raw_ptr<MockHidConnectionTracker> hid_connection_tracker_ = nullptr;
+  raw_ptr<MockHidConnectionTracker, DanglingUntriaged> hid_connection_tracker_ =
+      nullptr;
   // This flag is expected to be set to true only for the scenario of extension
   // origin and kEnableWebHidOnExtensionServiceWorker enabled.
   bool supports_hid_connection_tracker_ = false;
@@ -1032,11 +1033,13 @@ class ChromeHidDelegateServiceWorkerTest
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-class EnableWebHidOnExtensionServiceWorkerHelper {
+class DisableWebHidOnExtensionServiceWorkerHelper {
  public:
-  EnableWebHidOnExtensionServiceWorkerHelper() {
+  DisableWebHidOnExtensionServiceWorkerHelper() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kEnableWebHidOnExtensionServiceWorker}, {});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kEnableWebHidOnExtensionServiceWorker});
   }
 
  private:
@@ -1046,34 +1049,44 @@ class EnableWebHidOnExtensionServiceWorkerHelper {
 class ChromeHidDelegateExtensionServiceWorkerTest
     : public ChromeHidDelegateServiceWorkerTestBase {
  public:
+  ChromeHidDelegateExtensionServiceWorkerTest() {
+    supports_hid_connection_tracker_ = true;
+  }
   // ChromeHidTestHelper
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
 };
 
-class ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest
+class ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest
     : public ChromeHidDelegateExtensionServiceWorkerTest,
-      public EnableWebHidOnExtensionServiceWorkerHelper {
+      public DisableWebHidOnExtensionServiceWorkerHelper {
  public:
-  ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest() {
-    supports_hid_connection_tracker_ = true;
+  ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest() {
+    // There is no hid connection tracker activity when
+    // features::kEnableWebHidOnExtensionServiceWorker is disabled.
+    supports_hid_connection_tracker_ = false;
   }
 };
-
-class ChromeHidDelegateServiceWorkerTestFeatureEnabledTest
-    : public ChromeHidDelegateServiceWorkerTest,
-      public EnableWebHidOnExtensionServiceWorkerHelper {};
 
 class ChromeHidDelegateExtensionRenderFrameTest
     : public ChromeHidDelegateRenderFrameTestBase {
  public:
+  ChromeHidDelegateExtensionRenderFrameTest() {
+    supports_hid_connection_tracker_ = true;
+  }
   // ChromeHidTestHelper
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
 };
 
-class ChromeHidDelegateExtensionRenderFrameFeatureEnabledTest
+class ChromeHidDelegateExtensionRenderFrameFeatureDisabledTest
     : public ChromeHidDelegateExtensionRenderFrameTest,
-      public EnableWebHidOnExtensionServiceWorkerHelper {};
-
+      public DisableWebHidOnExtensionServiceWorkerHelper {
+ public:
+  ChromeHidDelegateExtensionRenderFrameFeatureDisabledTest() {
+    supports_hid_connection_tracker_ = false;
+  }
+  // ChromeHidTestHelper
+  void SetUpOriginUrl() override { SetUpExtensionOriginUrl(); }
+};
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
@@ -1111,16 +1124,12 @@ TEST_F(ChromeHidDelegateRenderFrameTest, ConnectAndNavigateCrossDocument) {
   TestConnectAndNavigateCrossDocument(web_contents());
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, HidServiceNotConnected) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureDisabledTest,
+       HidServiceNotConnected) {
   TestHidServiceNotConnected();
 }
 
 TEST_F(ChromeHidDelegateServiceWorkerTest, HidServiceNotConnected) {
-  TestHidServiceNotConnected();
-}
-
-TEST_F(ChromeHidDelegateServiceWorkerTestFeatureEnabledTest,
-       HidServiceNotConnected) {
   TestHidServiceNotConnected();
 }
 
@@ -1164,43 +1173,37 @@ TEST_F(ChromeHidDelegateExtensionRenderFrameTest,
   TestConnectAndNavigateCrossDocument(web_contents());
 }
 
-TEST_F(ChromeHidDelegateExtensionRenderFrameTest,
+TEST_F(ChromeHidDelegateExtensionRenderFrameFeatureDisabledTest,
        ConnectionTrackerOpenDeviceNoIndicatorNoNotification) {
-  TestConnectionTrackerOpenDeviceNoConnectionCountUpdateNoNotification();
+  TestConnectionTrackerOpenDeviceNoConnectionCountUpdate();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
-       AddChangeRemoveDevice) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, AddChangeRemoveDevice) {
   TestAddChangeRemoveDevice();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
-       NoPermissionDevice) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, NoPermissionDevice) {
   TestNoPermissionDevice();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
-       ReconnectHidService) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ReconnectHidService) {
   TestReconnectHidService();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
-       RevokeDevicePermission) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, RevokeDevicePermission) {
   TestRevokeDevicePermission();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest,
        RevokeDevicePermissionEphemeral) {
   TestRevokeDevicePermissionEphemeral();
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
-       ConnectAndDisconnect) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndDisconnect) {
   TestConnectAndDisconnect(/*web_contents=*/nullptr);
 }
 
-TEST_F(ChromeHidDelegateExtensionServiceWorkerFeatureEnabledTest,
-       ConnectAndRemove) {
+TEST_F(ChromeHidDelegateExtensionServiceWorkerTest, ConnectAndRemove) {
   TestConnectAndRemove(/*web_contents=*/nullptr);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

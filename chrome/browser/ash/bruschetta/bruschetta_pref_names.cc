@@ -22,6 +22,7 @@ const char kPolicyVTPMKey[] = "vtpm";
 const char kPolicyVTPMEnabledKey[] = "enabled";
 const char kPolicyVTPMUpdateActionKey[] = "policy_update_action";
 const char kPolicyOEMStringsKey[] = "oem_strings";
+const char kPolicyDisplayOrderKey[] = "display_order";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kBruschettaInstalled, false);

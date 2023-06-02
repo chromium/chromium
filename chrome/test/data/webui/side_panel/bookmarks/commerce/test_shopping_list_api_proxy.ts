@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ShoppingListApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
-import {BookmarkProductInfo, PageCallbackRouter, PageRemote} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
+import {ShoppingListApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {BookmarkProductInfo, PageCallbackRouter, PageRemote, ProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestShoppingListApiProxy extends TestBrowserProxy implements
@@ -11,6 +11,14 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
   callbackRouter: PageCallbackRouter;
   callbackRouterRemote: PageRemote;
   private products_: BookmarkProductInfo[] = [];
+  private product_: ProductInfo = {
+    title: 'Product Foo',
+    domain: 'foo.com',
+    imageUrl: {url: 'https://foo.com/image'},
+    productUrl: {url: 'https://foo.com/product'},
+    currentPrice: '$12',
+    previousPrice: '$34',
+  };
 
   constructor() {
     super([
@@ -18,6 +26,7 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
       'getAllShoppingBookmarkProductInfo',
       'trackPriceForBookmark',
       'untrackPriceForBookmark',
+      'getProductInfoForCurrentUrl',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -46,6 +55,11 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   untrackPriceForBookmark(bookmarkId: bigint) {
     this.methodCalled('untrackPriceForBookmark', bookmarkId);
+  }
+
+  getProductInfoForCurrentUrl() {
+    this.methodCalled('getProductInfoForCurrentUrl');
+    return Promise.resolve({productInfo: this.product_});
   }
 
   getCallbackRouter() {

@@ -525,13 +525,6 @@ void SingleThreadProxy::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
     scheduler_on_impl_thread_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
 
-bool SingleThreadProxy::HasInvalidationAnimation() const {
-  // DebugScopedSetImplThread here is just a formality; all SchedulerClient
-  // methods should have it.
-  DebugScopedSetImplThread impl(task_runner_provider_);
-  return false;
-}
-
 bool SingleThreadProxy::IsInsideDraw() {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());

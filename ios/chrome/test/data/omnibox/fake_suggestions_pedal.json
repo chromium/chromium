@@ -333,5 +333,126 @@
       "google:verbatimrelevance": 1300
     }
     ],
+  [
+  "pedalsafetycheck",
+  [
+    "Run Chrome Safety Check",
+    "nopedal1",
+    "nopedal2"
+  ],
+  [
+    "",
+    "",
+    "",
+  ],
+  [],
+  {
+    "google:clientdata": {
+      "bpc": false,
+      "tlw": false
+    },
+    "google:suggestdetail": [
+      {},
+      {},
+      {},
+    ],
+    "google:suggestrelevance": [
+      1253,
+      1252,
+      1251,
+    ],
+    "google:suggestsubtypes": [
+      [],
+      [],
+      [],
+    ],
+    "google:suggesttype": [
+      "QUERY",
+      "QUERY",
+      "QUERY",
+    ],
+    "google:verbatimrelevance": 1300
+  }
+  ],
+  [
+  "history",
+  [
+    "View Your Chrome History",
+    "nopedal1",
+    "nopedal2"
+  ],
+  [
+    "",
+    "",
+    "",
+  ],
+  [],
+  {
+    "google:clientdata": {
+      "bpc": false,
+      "tlw": false
+    },
+    "google:suggestdetail": [
+      {},
+      {},
+      {},
+    ],
+    "google:suggestrelevance": [
+      1253,
+      1252,
+      1251,
+    ],
+    "google:suggestsubtypes": [
+      [],
+      [],
+      [],
+    ],
+    "google:suggesttype": [
+      "QUERY",
+      "QUERY",
+      "QUERY",
+    ],
+    "google:verbatimrelevance": 1300
+  }
+  ],
+  [
+      "testupdown",
+      [
+        "testupdownautocomplete1",
+      ],
+      [
+        "",
+        "",
+        "",
+      ],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {},
+          {},
+          {},
+        ],
+        "google:suggestrelevance": [
+          1253,
+          1252,
+          1251,
+        ],
+        "google:suggestsubtypes": [
+          [],
+          [],
+          [],
+        ],
+        "google:suggesttype": [
+          "QUERY",
+          "QUERY",
+          "QUERY",
+        ],
+        "google:verbatimrelevance": 1300
+      }
+  ],
 ]
 

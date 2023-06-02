@@ -31,6 +31,8 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"
@@ -100,7 +102,12 @@ class WifiLanMediumTest : public ::testing::Test {
     // Sets up a test Wi-Fi network to varying degrees depending on |state|.
     // This is needed in order to fetch the local IP address during server
     // socket creation.
+    // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
+
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<user_manager::FakeUserManager>());
+
     switch (state) {
       case WifiInitState::kComplete:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/true);
@@ -144,6 +151,7 @@ class WifiLanMediumTest : public ::testing::Test {
     ui_proxy_config_service_.reset();
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
+    scoped_user_manager_.reset();
     ash::LoginState::Shutdown();
   }
 
@@ -318,6 +326,7 @@ class WifiLanMediumTest : public ::testing::Test {
   // Local IP fetching:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ash::NetworkProfileHandler> network_profile_handler_;
   std::unique_ptr<ash::NetworkConfigurationHandler>
       network_configuration_handler_;

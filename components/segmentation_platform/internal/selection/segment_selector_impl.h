@@ -130,7 +130,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   const raw_ptr<DefaultModelManager> default_model_manager_;
 
   // The config for providing configuration params.
-  const raw_ptr<const Config> config_;
+  const raw_ptr<const Config, DanglingUntriaged> config_;
 
   // Delegate that records selected segments to metrics.
   const raw_ptr<FieldTrialRegister> field_trial_register_;

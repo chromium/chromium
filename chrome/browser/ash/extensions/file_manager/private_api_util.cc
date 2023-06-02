@@ -18,6 +18,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
@@ -360,9 +362,13 @@ void SingleEntryPropertiesGetterForDriveFs::StartProcess() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+  file_manager::EventRouter* event_router =
+      file_manager::EventRouterFactory::GetForProfile(running_profile_);
+  if (ash::features::IsInlineSyncStatusEnabled() && event_router) {
     drivefs::SyncState sync_state =
-        integration_service->GetSyncStateForPath(file_system_url_.path());
+        ash::features::IsInlineSyncStatusProgressEventsEnabled()
+            ? event_router->GetDriveSyncStateForPath(file_system_url_.path())
+            : integration_service->GetSyncStateForPath(file_system_url_.path());
     properties_->progress = sync_state.progress;
     switch (sync_state.status) {
       case drivefs::SyncStatus::kQueued:
@@ -431,7 +437,7 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   // shows these folders as available offline, return these items as pinned and
   // available offline. This should not include shortcuts and only cover
   // directories that are parented at "My drive" (e.g. no Shared drives).
-  if (drive::util::IsDriveFsBulkPinningEnabled() &&
+  if (drive::util::IsDriveFsBulkPinningEnabled(running_profile_) &&
       IsPinManagerAvailableAndSyncingForProfile(running_profile_) &&
       IsDirectoryUnderMyDrive(metadata, relative_path_) &&
       !metadata->shortcut_details) {

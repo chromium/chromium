@@ -43,7 +43,7 @@ BASE_FEATURE(kDestroySystemProfiles,
 // "frame" when inspecting a WebContents.
 BASE_FEATURE(kDevToolsTabTarget,
              "DevToolsTabTarget",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().

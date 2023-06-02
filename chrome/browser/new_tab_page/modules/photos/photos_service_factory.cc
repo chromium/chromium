@@ -17,7 +17,8 @@ PhotosService* PhotosServiceFactory::GetForProfile(Profile* profile) {
 }
 
 PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
-  return base::Singleton<PhotosServiceFactory>::get();
+  static base::NoDestructor<PhotosServiceFactory> instance;
+  return instance.get();
 }
 
 PhotosServiceFactory::PhotosServiceFactory()

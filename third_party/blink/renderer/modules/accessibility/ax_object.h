@@ -1273,37 +1273,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return nullptr;
   }
 
-  // Modify or take an action on an object.
-  //
-  // These are the public interfaces, called from outside of Blink.
-  // Each one first tries to fire an Accessibility Object Model event,
-  // if applicable, and if that isn't handled, falls back on the
-  // native implementation via a virtual member function, below.
-  //
-  // For example, |RequestIncrementAction| fires the AOM event and if
-  // that isn't handled it calls |DoNativeIncrement|.
-  //
-  // These all return true if handled.
-  //
-  // Note: we're migrating to have PerformAction() be the only public
-  // interface, the others will all be private.
+  // Modify or take an action on an object. Returns true if handled.
   bool PerformAction(const ui::AXActionData&);
-  bool RequestDecrementAction();
-  bool RequestClickAction();
-  bool RequestFocusAction();
-  bool RequestIncrementAction();
-  bool RequestScrollToGlobalPointAction(const gfx::Point&);
-  bool RequestScrollToMakeVisibleAction();
+  // TODO(accessibility) Do this through PerformAction() and move to private.
   bool RequestScrollToMakeVisibleWithSubFocusAction(
       const gfx::Rect&,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment);
-  bool RequestSetSelectedAction(bool);
-  bool RequestSetSequentialFocusNavigationStartingPointAction();
-  bool RequestSetValueAction(const String&);
-  bool RequestShowContextMenuAction();
-  bool RequestExpandAction();
-  bool RequestCollapseAction();
 
   // These are actions, just like the actions above, and they allow us
   // to keep track of nodes that gain or lose accessibility focus, but
@@ -1550,6 +1526,20 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ComputeIsHiddenViaStyle(const ComputedStyle*) const;
   bool ComputeIsInertViaStyle(const ComputedStyle*,
                               IgnoredReasons* = nullptr) const;
+
+  // Private action interfaces. Return bool if action is performed.
+  bool RequestDecrementAction();
+  bool RequestClickAction();
+  bool RequestFocusAction();
+  bool RequestIncrementAction();
+  bool RequestScrollToGlobalPointAction(const gfx::Point&);
+  bool RequestScrollToMakeVisibleAction();
+  bool RequestSetSelectedAction(bool);
+  bool RequestSetSequentialFocusNavigationStartingPointAction();
+  bool RequestSetValueAction(const String&);
+  bool RequestShowContextMenuAction();
+  bool RequestExpandAction();
+  bool RequestCollapseAction();
 
   // This returns true if the element associated with this AXObject is has
   // focusable style, meaning that it is visible. Note that we prefer to rely on

@@ -20,4 +20,6 @@ include_rules = [
   "+services/device/public/java",
 
   "+media/base/android",
+
+  "+ui/accessibility",
 ]

@@ -186,7 +186,7 @@ PPB_Graphics3D_Impl::~PPB_Graphics3D_Impl() {
 PP_Resource PPB_Graphics3D_Impl::CreateRaw(
     PP_Instance instance,
     PP_Resource share_context,
-    const gpu::ContextCreationAttribs& attrib_helper,
+    const ppapi::Graphics3DContextAttribs& context_attribs,
     gpu::Capabilities* capabilities,
     const base::UnsafeSharedMemoryRegion** shared_state_region,
     gpu::CommandBufferId* command_buffer_id) {
@@ -199,9 +199,10 @@ PP_Resource PPB_Graphics3D_Impl::CreateRaw(
   }
   scoped_refptr<PPB_Graphics3D_Impl> graphics_3d(
       new PPB_Graphics3D_Impl(instance));
-  if (!graphics_3d->InitRaw(share_api, attrib_helper, capabilities,
-                            shared_state_region, command_buffer_id))
+  if (!graphics_3d->InitRaw(share_api, context_attribs, capabilities,
+                            shared_state_region, command_buffer_id)) {
     return 0;
+  }
   return graphics_3d->GetReference();
 }
 
@@ -287,7 +288,7 @@ gpu::GpuControl* PPB_Graphics3D_Impl::GetGpuControl() {
 
 bool PPB_Graphics3D_Impl::InitRaw(
     PPB_Graphics3D_API* share_context,
-    const gpu::ContextCreationAttribs& requested_attribs,
+    const ppapi::Graphics3DContextAttribs& requested_attribs,
     gpu::Capabilities* capabilities,
     const base::UnsafeSharedMemoryRegion** shared_state_region,
     gpu::CommandBufferId* command_buffer_id) {

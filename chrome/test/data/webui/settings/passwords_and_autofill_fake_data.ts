@@ -51,6 +51,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   const note = params.note || '';
 
   return {
+    isPasskey: false,
     urls: {
       signonRealm: 'http://' + url + '/login',
       shown: url,
@@ -211,6 +212,7 @@ export function makeInsecureCredential(
     isMuted: isMuted ?? false,
   };
   return {
+    isPasskey: false,
     id: id || 0,
     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     changePasswordUrl: `http://${url}/`,
@@ -515,6 +517,7 @@ export class PaymentsManagerExpectations {
   removedIbans: number = 0;
   isValidIban: number = 0;
   authenticateUserAndFlipMandatoryAuthToggle: number = 0;
+  authenticateUserToEditLocalCard: number = 0;
 }
 
 /**
@@ -546,6 +549,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'addVirtualCard',
       'isValidIban',
       'authenticateUserAndFlipMandatoryAuthToggle',
+      'authenticateUserToEditLocalCard',
     ]);
 
     // Set these to have non-empty data.
@@ -631,6 +635,11 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     this.methodCalled('authenticateUserAndFlipMandatoryAuthToggle');
   }
 
+  authenticateUserToEditLocalCard() {
+    this.methodCalled('authenticateUserToEditLocalCard');
+    return Promise.resolve(true);
+  }
+
   /**
    * Verifies expectations.
    */
@@ -663,5 +672,9 @@ export class TestPaymentsManager extends TestBrowserProxy implements
         expected.authenticateUserAndFlipMandatoryAuthToggle,
         this.getCallCount('authenticateUserAndFlipMandatoryAuthToggle'),
         'authenticateUserAndFlipMandatoryAuthToggle mismatch');
+    assertEquals(
+        expected.authenticateUserToEditLocalCard,
+        this.getCallCount('authenticateUserToEditLocalCard'),
+        'authenticateUserToEditLocalCard mismatch');
   }
 }

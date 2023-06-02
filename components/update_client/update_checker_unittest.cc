@@ -145,7 +145,6 @@ void UpdateCheckerTest::TearDown() {
   config_ = nullptr;
 
   // The PostInterceptor requires the message loop to run to destruct correctly.
-  // TODO(sorin): This is fragile and should be fixed.
   task_environment_.RunUntilIdle();
 }
 

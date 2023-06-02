@@ -20,6 +20,7 @@
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace web_package {
@@ -918,19 +919,18 @@ void WebBundleParser::ParseIntegrityBlock(
   parser->Start();
 }
 
-void WebBundleParser::ParseMetadata(int64_t offset,
+void WebBundleParser::ParseMetadata(absl::optional<uint64_t> offset,
                                     ParseMetadataCallback callback) {
   MetadataParser* parser =
       new MetadataParser(data_source_, base_url_, std::move(callback));
-  if (offset >= 0) {
-    parser->StartAtOffset(offset);
+  if (offset.has_value()) {
+    parser->StartAtOffset(*offset);
   } else {
-    DCHECK_EQ(offset, -1);
-    // If no offset is specified, then where we start parsing the web bundle
+    // If no offset is specified, then where we start parsing the Web Bundle
     // metadata depends on whether or not it is loaded in a random-access
-    // context. If random-access into the web bundle is possible, then we use
-    // the `length` field at its end to determine the start of the web bundle.
-    // If random-access into the web bundle is not possible, then we simply
+    // context. If random-access into the Web Bundle is possible, then we use
+    // the `length` field at its end to determine the start of the Web Bundle.
+    // If random-access into the Web Bundle is not possible, then we simply
     // start at the top.
     parser->Start();
   }

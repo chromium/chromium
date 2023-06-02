@@ -10,9 +10,9 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_browsertest_utils.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -20,11 +20,11 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/mock_clock.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash::reporting {
-
+namespace reporting {
 namespace {
 
 using ::chromeos::MissiveClientTestObserver;
@@ -110,10 +110,10 @@ class NetworkDevice {
 class NetworkInfoSamplerBrowserTest
     : public policy::DevicePolicyCrosBrowserTest {
  protected:
-  NetworkInfoSamplerBrowserTest() = default;
+  NetworkInfoSamplerBrowserTest() { test::MockClock::Get(); }
   ~NetworkInfoSamplerBrowserTest() override = default;
   void SetUpOnMainThread() override {
-    device_client_ = ash::ShillDeviceClient::Get()->GetTestInterface();
+    device_client_ = ::ash::ShillDeviceClient::Get()->GetTestInterface();
     device_client_->ClearDevices();
     ::ash::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath("path0"), kEid0, true, 1);
@@ -123,7 +123,7 @@ class NetworkInfoSamplerBrowserTest
 
   void EnableReportingNetworkInterfaces() {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceNetworkConfiguration, true);
+        ::ash::kReportDeviceNetworkConfiguration, true);
   }
 
   void AddDevice(const NetworkDevice& device) {
@@ -222,13 +222,10 @@ class NetworkInfoSamplerBrowserTest
     }
   }
 
-  MetricTestInitializationHelper metric_test_initialization_helper_{
-      &device_state_};
-
  private:
   raw_ptr<::ash::ShillDeviceClient::TestInterface, ExperimentalAsh>
       device_client_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
@@ -240,9 +237,8 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
   EnableReportingNetworkInterfaces();
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordNetworkInterface));
-  // Start initialization after the observer is initialized.
-  metric_test_initialization_helper_.SetUpDelayedInitialization();
 
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   AssertNetworkInterfaces(devices, &observer);
 }
 
@@ -259,12 +255,11 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
   EnableReportingNetworkInterfaces();
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordNetworkInterface));
-  // Start initialization after the observer is initialized.
-  metric_test_initialization_helper_.SetUpDelayedInitialization();
 
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   AssertNetworkInterfaces(devices, &observer);
 }
 
 }  // namespace
 
-}  // namespace ash::reporting
+}  // namespace reporting

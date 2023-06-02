@@ -57,15 +57,15 @@ TEST_F(QuickSettingsMediaViewContainerTest, ChangeMediaViewVisibility) {
 TEST_F(QuickSettingsMediaViewContainerTest,
        SwitchBetweenMediaViewAndDetailedView) {
   quick_settings_view()->SetShowMediaView(true);
-  EXPECT_TRUE(media_view_container()->GetVisible());
+  EXPECT_TRUE(media_view_container()->IsDrawn());
 
   // Make the quick settings view navigate to a dummy detailed view.
   quick_settings_view()->SetDetailedView(std::make_unique<views::View>());
-  EXPECT_FALSE(media_view_container()->GetVisible());
+  EXPECT_FALSE(media_view_container()->IsDrawn());
 
   // Make the quick settings view navigate back to the main view.
   quick_settings_view()->ResetDetailedView();
-  EXPECT_TRUE(media_view_container()->GetVisible());
+  EXPECT_TRUE(media_view_container()->IsDrawn());
 }
 
 }  // namespace ash

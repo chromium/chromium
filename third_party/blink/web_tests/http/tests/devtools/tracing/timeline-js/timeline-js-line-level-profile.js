@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests that a line-level CPU profile is shown in the text editor.\n`);
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule("perf_ui");
   await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');

@@ -23,6 +23,8 @@ constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
 constexpr CGFloat kPreferredCornerRadius = 20;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kPasswordOptionsKeypath = @"text_password_options";
+NSString* const kCredentialProviderPromoAccessibilityId =
+    @"kCredentialProviderPromoAccessibilityId";
 }  // namespace
 
 @interface CredentialProviderPromoViewController ()
@@ -51,6 +53,7 @@ NSString* const kPasswordOptionsKeypath = @"text_password_options";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.accessibilityIdentifier = kCredentialProviderPromoAccessibilityId;
   self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
   if (self.animationViewWrapper) {
     [self configureAndLayoutAnimationView];

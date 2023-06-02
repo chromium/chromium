@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
     await TestRunner.loadLegacyModule('quick_open');
     TestRunner.addResult("Check to see that FilteredItemSelectionDialog uses proper regex to filter results.");

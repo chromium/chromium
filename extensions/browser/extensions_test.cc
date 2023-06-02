@@ -10,8 +10,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_store.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
@@ -53,7 +53,7 @@ void ExtensionsTest::SetExtensionsBrowserClient(
 }
 
 void ExtensionsTest::SetUp() {
-  content::ForceInProcessNetworkService(true);
+  content::ForceInProcessNetworkService();
   browser_context_ = std::make_unique<content::TestBrowserContext>();
   incognito_context_ = CreateTestIncognitoContext();
 

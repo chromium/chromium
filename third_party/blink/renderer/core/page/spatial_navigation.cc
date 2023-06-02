@@ -335,8 +335,9 @@ bool IsScrollableNode(const Node* node) {
   if (node->IsDocumentNode())
     return true;
 
-  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject()))
-    return box->CanBeScrolledAndHasScrollableArea();
+  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
+    return box->IsUserScrollable();
+  }
   return false;
 }
 

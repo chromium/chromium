@@ -25,6 +25,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -307,7 +308,11 @@ public class LocationBarLayout extends FrameLayout {
 
     /** Returns the increase in StatusView end padding, when the Url bar is focused. */
     public int getEndPaddingPixelSizeOnFocusDelta() {
-        return getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+        int focusedPaddingDimen = OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
+                        && OmniboxFeatures.shouldShowSmallBottomMargin()
+                ? R.dimen.location_bar_icon_end_padding_focused_smaller
+                : R.dimen.location_bar_icon_end_padding_focused;
+        return getResources().getDimensionPixelSize(focusedPaddingDimen)
                 - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
     }
 
@@ -334,9 +339,9 @@ public class LocationBarLayout extends FrameLayout {
 
         // Set the left space expansion width.
         ViewGroup.LayoutParams leftSpacingParams = mStatusViewLeftSpace.getLayoutParams();
-        leftSpacingParams.width = (int) (getResources().getDimensionPixelSize(
-                                                 R.dimen.location_bar_status_view_left_space_width)
-                * percent);
+        int fullSpacing = OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
+
+        leftSpacingParams.width = (int) (fullSpacing * percent);
         mStatusViewLeftSpace.setLayoutParams(leftSpacingParams);
     }
 

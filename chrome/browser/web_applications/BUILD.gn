@@ -73,6 +73,8 @@ source_set("web_applications") {
     "isolated_web_apps/error/uma_logging.h",
     "isolated_web_apps/error/unusable_swbn_file_error.cc",
     "isolated_web_apps/error/unusable_swbn_file_error.h",
+    "isolated_web_apps/get_controlled_frame_partition_command.cc",
+    "isolated_web_apps/get_controlled_frame_partition_command.h",
     "isolated_web_apps/get_isolated_web_app_browsing_data_command.cc",
     "isolated_web_apps/get_isolated_web_app_browsing_data_command.h",
     "isolated_web_apps/install_isolated_web_app_command.cc",
@@ -101,10 +103,10 @@ source_set("web_applications") {
     "isolated_web_apps/isolated_web_app_url_loader_factory.h",
     "isolated_web_apps/isolated_web_app_validator.cc",
     "isolated_web_apps/isolated_web_app_validator.h",
+    "isolated_web_apps/isolated_web_app_version.cc",
+    "isolated_web_apps/isolated_web_app_version.h",
     "isolated_web_apps/pending_install_info.cc",
     "isolated_web_apps/pending_install_info.h",
-    "isolated_web_apps/register_controlled_frame_partition_command.cc",
-    "isolated_web_apps/register_controlled_frame_partition_command.h",
     "isolated_web_apps/signed_web_bundle_reader.cc",
     "isolated_web_apps/signed_web_bundle_reader.h",
     "locks/all_apps_lock.cc",
@@ -184,6 +186,8 @@ source_set("web_applications") {
     "preinstalled_web_apps/preinstalled_web_app_definition_utils.h",
     "preinstalled_web_apps/preinstalled_web_apps.cc",
     "preinstalled_web_apps/preinstalled_web_apps.h",
+    "remove_web_app_job.cc",
+    "remove_web_app_job.h",
     "scope_extension_info.cc",
     "scope_extension_info.h",
     "user_display_mode.cc",
@@ -260,8 +264,6 @@ source_set("web_applications") {
     "web_app_ui_manager.cc",
     "web_app_ui_manager.h",
     "web_app_uninstall_and_replace_job.h",
-    "web_app_uninstall_job.cc",
-    "web_app_uninstall_job.h",
     "web_app_utils.cc",
     "web_app_utils.h",
     "web_contents/web_app_data_retriever.cc",
@@ -270,6 +272,8 @@ source_set("web_applications") {
     "web_contents/web_app_icon_downloader.h",
     "web_contents/web_app_url_loader.cc",
     "web_contents/web_app_url_loader.h",
+    "web_contents/web_contents_manager.cc",
+    "web_contents/web_contents_manager.h",
   ]
 
   if (is_chromeos) {
@@ -282,6 +286,10 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_policy_constants.h",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
+      "isolated_web_apps/update_manifest/update_manifest.cc",
+      "isolated_web_apps/update_manifest/update_manifest.h",
+      "isolated_web_apps/update_manifest/update_manifest_fetcher.cc",
+      "isolated_web_apps/update_manifest/update_manifest_fetcher.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
       "preinstalled_web_app_window_experiment.cc",
@@ -326,6 +334,7 @@ source_set("web_applications") {
       "os_integration/web_app_shortcut_mac.h",
       "os_integration/web_app_shortcut_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -388,14 +397,7 @@ source_set("web_applications") {
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/resources:components_resources_grit",
-    "//components/services/app_service/public/cpp:app_file_handling",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:app_url_handling",
-    "//components/services/app_service/public/cpp:preferred_apps",
-    "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/services/app_service/public/cpp:run_on_os_login",
-    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service",
     "//components/services/storage:lock_manager",
     "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
@@ -576,12 +578,7 @@ source_set("web_applications_test_support") {
     "//chrome/browser/ui",
     "//components/crx_file:crx_file",
     "//components/keyed_service/content",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:app_url_handling",
-    "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/web_package/test_support",
@@ -625,6 +622,7 @@ source_set("web_applications_unit_tests") {
     "externally_managed_app_manager_unittest.cc",
     "isolated_web_apps/error/uma_logging_unittest.cc",
     "isolated_web_apps/error/unusable_swbn_file_error_unittest.cc",
+    "isolated_web_apps/get_controlled_frame_partition_command_unittest.cc",
     "isolated_web_apps/install_isolated_web_app_command_unittest.cc",
     "isolated_web_apps/install_isolated_web_app_from_command_line_unittest.cc",
     "isolated_web_apps/isolated_web_app_dev_mode_unittest.cc",
@@ -636,8 +634,8 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/isolated_web_app_url_info_unittest.cc",
     "isolated_web_apps/isolated_web_app_url_loader_factory_unittest.cc",
     "isolated_web_apps/isolated_web_app_validator_unittest.cc",
+    "isolated_web_apps/isolated_web_app_version_unittest.cc",
     "isolated_web_apps/pending_install_info_unittest.cc",
-    "isolated_web_apps/register_controlled_frame_partition_command_unittest.cc",
     "isolated_web_apps/signed_web_bundle_reader_unittest.cc",
     "locks/web_app_lock_manager_unittest.cc",
     "os_integration/file_handling_sub_manager_unittest.cc",
@@ -696,6 +694,7 @@ source_set("web_applications_unit_tests") {
       "os_integration/web_app_shortcut_mac_unittest.mm",
       "os_integration/web_app_shortcut_manager_mac_unittest.cc",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux) {
@@ -712,8 +711,10 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos) {
     sources += [
-      "isolated_web_apps/policy/isolated_web_app_exteral_install_options_unittest.cc",
+      "isolated_web_apps/policy/isolated_web_app_external_install_options_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
+      "isolated_web_apps/update_manifest/update_manifest_fetcher_unittest.cc",
+      "isolated_web_apps/update_manifest/update_manifest_unittest.cc",
       "os_integration/web_app_run_on_os_login_chromeos_unittest.cc",
       "web_app_run_on_os_login_manager_unittest.cc",
     ]
@@ -810,6 +811,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/install_isolated_web_app_from_command_line_browsertest.cc",
     "isolated_web_apps/isolated_web_app_browsertest.cc",
     "isolated_web_apps/isolated_web_app_browsing_data_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_dev_tools_browsertest.cc",
     "isolated_web_apps/isolated_web_app_error_page_browsertest.cc",
     "isolated_web_apps/isolated_web_app_url_loader_factory_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
@@ -848,6 +850,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/devtools:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

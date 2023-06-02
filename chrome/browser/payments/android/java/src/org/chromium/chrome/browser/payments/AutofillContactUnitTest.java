@@ -32,7 +32,7 @@ public class AutofillContactUnitTest {
 
     @Test
     public void testIsEqualOrSupersetOf_RequestAllFields() {
-        AutofillProfile dummyProfile = new AutofillProfile();
+        AutofillProfile dummyProfile = AutofillProfile.builder().build();
         Context mockContext = spy(RuntimeEnvironment.application);
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
@@ -73,7 +73,7 @@ public class AutofillContactUnitTest {
 
     @Test
     public void testIsEqualOrSupersetOf_RequestSomeFields() {
-        AutofillProfile dummyProfile = new AutofillProfile();
+        AutofillProfile dummyProfile = AutofillProfile.builder().build();
         Context mockContext = spy(RuntimeEnvironment.application);
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
@@ -99,7 +99,7 @@ public class AutofillContactUnitTest {
 
     @Test
     public void testGetRelevanceScore_RequestAllFields() {
-        AutofillProfile dummyProfile = new AutofillProfile();
+        AutofillProfile dummyProfile = AutofillProfile.builder().build();
         Context mockContext = spy(RuntimeEnvironment.application);
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
@@ -156,7 +156,7 @@ public class AutofillContactUnitTest {
 
     @Test
     public void testGetRelevanceScore_RequestSomeFields() {
-        AutofillProfile dummyProfile = new AutofillProfile();
+        AutofillProfile dummyProfile = AutofillProfile.builder().build();
         Context mockContext = spy(RuntimeEnvironment.application);
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 

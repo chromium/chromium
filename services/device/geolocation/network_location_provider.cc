@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
@@ -254,11 +253,6 @@ void NetworkLocationProvider::RequestPosition() {
 
   const mojom::Geoposition* cached_position =
       position_cache_->FindPosition(wifi_data_);
-
-  UMA_HISTOGRAM_BOOLEAN("Geolocation.PositionCache.CacheHit",
-                        cached_position != nullptr);
-  UMA_HISTOGRAM_COUNTS_100("Geolocation.PositionCache.CacheSize",
-                           position_cache_->GetPositionCacheSize());
 
   if (cached_position) {
     auto position = cached_position->Clone();

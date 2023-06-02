@@ -57,23 +57,25 @@ constexpr char kDryRunLacrosDataSize[] =
     "Ash.BrowserDataMigrator.DryRunLacrosDataSizeMB";
 constexpr char kDryRunCommonDataSize[] =
     "Ash.BrowserDataMigrator.DryRunCommonDataSizeMB";
-constexpr char kDryRunCopyMigrationTotalCopySize[] =
-    "Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Copy";
-constexpr char kDryRunMoveMigrationTotalCopySize[] =
-    "Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Move";
-constexpr char kDryRunMoveMigrationExtraSpaceReserved[] =
-    "Ash.BrowserDataMigrator.DryRunExtraSizeReservedMB.Move";
-constexpr char kDryRunMoveMigrationExtraSpaceRequired[] =
-    "Ash.BrowserDataMigrator.DryRunExtraSizeRequiredMB.Move";
 
-constexpr char kDryRunCopyMigrationHasEnoughDiskSpace[] =
-    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Copy";
-constexpr char kDryRunMoveMigrationHasEnoughDiskSpace[] =
-    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Move";
-constexpr char kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace[] =
-    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndCopy";
-constexpr char kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace[] =
-    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndMove";
+constexpr char kDryRunExtraDiskSpaceOccupiedByMove[] =
+    "Ash.BrowserDataMigrator.DryRunExtraDiskSpaceOccupiedByMove";
+constexpr char kDryRunFreeDiskSpaceAfterDelete[] =
+    "Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterDelete";
+constexpr char kDryRunFreeDiskSpaceAfterMigration[] =
+    "Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterMigration";
+
+// Collect extra info for users with low disk space.
+constexpr char kDryRunExtraDiskSpaceOccupiedByMoveLowDiskUser[] =
+    "Ash.BrowserDataMigrator.DryRunExtraDiskSpaceOccupiedByMove.LowDiskUser";
+constexpr char kDryRunFreeDiskSpaceLowDiskUser[] =
+    "Ash.BrowserDataMigrator.DryRunFreeDiskSpace.LowDiskUser";
+constexpr char kDryRunFreeDiskSpaceAfterDeleteLowDiskUser[] =
+    "Ash.BrowserDataMigrator.DryRunFreeDiskSpaceAfterDelete.LowDiskUser";
+constexpr char kDryRunProfileDirSizeLowDiskUser[] =
+    "Ash.BrowserDataMigrator.DryRunProfileDirSize.LowDiskUser";
+constexpr char kDryRunMyFilesDirSizeLowDiskUser[] =
+    "Ash.BrowserDataMigrator.DryRunMyFilesDirSize.LowDiskUser";
 
 // The base names of files/dirs directly under the original profile
 // data directory that can be deleted if needed because they are temporary

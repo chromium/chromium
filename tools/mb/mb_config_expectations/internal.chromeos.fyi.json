@@ -52,6 +52,18 @@
       "use_remoteexec": true
     }
   },
+  "chromeos-kevin-chrome-skylab-fyi": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "use_remoteexec": true
+    }
+  },
   "chromeos-octopus-chrome-skylab-fyi": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {

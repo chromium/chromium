@@ -10,6 +10,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -28,6 +29,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -52,6 +54,21 @@ constexpr int kButtonContainerTopPadding = 32;
 constexpr int kButtonSpacing = 8;
 constexpr int kMinimumAdditionalButtonPadding = 80;
 
+// Typical sizes of a dialog.
+constexpr int kDialogWidthLarge = 512;
+constexpr int kDialogWidthMedium = 359;
+constexpr int kDialogWidthSmall = 296;
+
+// The host window sizes that will change the resizing rule of the dialog.
+constexpr int kHostWidthLarge = 672;
+constexpr int kHostWidthMedium = 520;
+constexpr int kHostWidthSmall = 424;
+constexpr int kHostWidthXSmall = 400;
+
+// Padding between the dialog and the host window.
+constexpr int kDialogHostPaddingLarge = 80;
+constexpr int kDialogHostPaddingSmall = 32;
+
 // The position of the additional content in the dialog child views.
 constexpr int kAdditionalContentID = 3;
 
@@ -66,6 +83,19 @@ void SetViewLayoutSpecs(
     const views::FlexSpecification flex_spec = views::FlexSpecification()) {
   view->SetProperty(views::kMarginsKey, margins);
   view->SetProperty(views::kFlexBehaviorKey, flex_spec);
+}
+
+// Gets the host window of the dialog.
+aura::Window* GetDialogHostWindow(const views::Widget* dialog_widget) {
+  if (!dialog_widget) {
+    return nullptr;
+  }
+
+  // Return transient parent as the host window if exists. Otherwise, return the
+  // default parent.
+  auto* dialog_window = dialog_widget->GetNativeWindow();
+  auto* transient_parent = wm::GetTransientParent(dialog_window);
+  return transient_parent ? transient_parent : dialog_window->parent();
 }
 
 }  // namespace
@@ -254,12 +284,62 @@ void SystemDialogDelegateView::SetAdditionalContentCrossAxisAlignment(
   }
 }
 
+gfx::Size SystemDialogDelegateView::CalculatePreferredSize() const {
+  auto* host_window = GetDialogHostWindow(GetWidget());
+  // If the delegate view is not added to a widget or parented to a host window,
+  // return the default preferred size.
+  if (!host_window) {
+    return views::WidgetDelegateView::CalculatePreferredSize();
+  }
+
+  // Otherwise, calculate the preferred size according to its host window size.
+  const int host_width = host_window->GetBoundsInScreen().width();
+  // The resizing rules of the dialog are as follows:
+  // - When the host window width is larger than `kHostWidthLarge`, the dialog
+  // width would remain at `kDialogWidthLarge`.
+  // - When the host window width is between `kHostWidthMedium` and
+  // `kHostWidthLarge`, the dialog width will decrease but maintain a padding
+  // of `kDialogHostPaddingLarge` on both sides.
+  // - When the host window width is between `kHostWidthSmall` and
+  // `kHostWidthMedium`, the dialog width would remain at `kDialogWidthMedium`.
+  // - When the host window width is less than `kHostWidthXSmall`, the dialog
+  // width will decrease but maintain a padding of `kDialogHostPaddingSmall` on
+  // both sides.
+  // - The dialog minimum width is `kDialogWidthSmall`.
+  int dialog_width = kDialogWidthSmall;
+  if (host_width >= kHostWidthLarge) {
+    dialog_width = kDialogWidthLarge;
+  } else if (host_width >= kHostWidthMedium) {
+    dialog_width = host_width - kDialogHostPaddingLarge * 2;
+  } else if (host_width >= kHostWidthSmall) {
+    dialog_width = kDialogWidthMedium;
+  } else if (host_width >= kHostWidthXSmall) {
+    dialog_width = host_width - kDialogHostPaddingSmall * 2;
+  }
+
+  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
+}
+
 gfx::Size SystemDialogDelegateView::GetMinimumSize() const {
   return kMinimumDialogSize;
 }
 
 gfx::Size SystemDialogDelegateView::GetMaximumSize() const {
   return kMaximumDialogSize;
+}
+
+void SystemDialogDelegateView::OnWidgetInitialized() {
+  UpdateDialogSize();
+}
+
+void SystemDialogDelegateView::OnWorkAreaChanged() {
+  UpdateDialogSize();
+}
+
+void SystemDialogDelegateView::UpdateDialogSize() {
+  if (auto* widget = GetWidget()) {
+    widget->CenterWindow(GetPreferredSize());
+  }
 }
 
 void SystemDialogDelegateView::SetAdditionalContentInternal(

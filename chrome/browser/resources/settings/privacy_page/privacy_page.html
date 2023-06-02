@@ -1101,4 +1101,30 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
+      <template is="dom-if" if="[[enablePermissionStorageAccessApi_]]">
+        <template is="dom-if" route-path="/content/storageAccess" no-search>
+          <settings-subpage page-title="$i18n{siteSettingsStorageAccess}"
+              search-label="$i18n{siteSettingsAllSitesSearch}"
+              search-term="{{searchFilter_}}">
+            <div class="content-settings-header secondary">
+              $i18n{storageAccessDescription}
+            </div>
+            <!--TODO(b/276716832): Change icon to the final SAA.-->
+            <settings-category-default-radio-group
+                category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
+                allow-option-label="$i18n{storageAccessAllowed}"
+                allow-option-icon="settings:cookie"
+                block-option-label="$i18n{storageAccessBlocked}"
+                block-option-icon="settings:block">
+            </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
+                block-header="$i18n{storageAccessBlockedExceptions}"
+                allow-header="$i18n{storageAccessAllowedExceptions}"
+                search-filter="[[searchFilter_]]"
+                read-only-list>
+            </category-setting-exceptions>
+          </settings-subpage>
+        </template>
+      </template>
     </settings-animated-pages>

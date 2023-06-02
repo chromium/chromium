@@ -24,7 +24,8 @@ ProfileIdService* ProfileIdServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 ProfileIdServiceFactory* ProfileIdServiceFactory::GetInstance() {
-  return base::Singleton<ProfileIdServiceFactory>::get();
+  static base::NoDestructor<ProfileIdServiceFactory> instance;
+  return instance.get();
 }
 
 ProfileIdServiceFactory::ProfileIdServiceFactory()

@@ -23,10 +23,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
-import org.chromium.components.autofill.prefeditor.EditorFieldView;
-import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.DropdownKeyValue;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldView;
+import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -63,7 +63,7 @@ class EditorDropdownField implements EditorFieldView {
      */
     public EditorDropdownField(Context context, ViewGroup root, final EditorFieldModel fieldModel,
             final Runnable changedCallback, boolean hasRequiredIndicator) {
-        assert fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
+        assert fieldModel.isDropdownField();
         mContext = context;
         mFieldModel = fieldModel;
 
@@ -82,17 +82,9 @@ class EditorDropdownField implements EditorFieldView {
         final List<DropdownKeyValue> dropdownKeyValues = mFieldModel.getDropdownKeyValues();
         final List<CharSequence> dropdownValues = getDropdownValues(dropdownKeyValues);
         if (mFieldModel.getHint() != null) {
-            // Pass the hint to be displayed as default. If there is a '+' icon needed, use the
-            // appropriate class to display it.
-            if (mFieldModel.isDisplayPlusIcon()) {
-                mAdapter = new HintedDropDownAdapterWithPlusIcon<CharSequence>(context,
-                        R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
-                        mFieldModel.getHint().toString());
-            } else {
-                mAdapter = new HintedDropDownAdapter<CharSequence>(context,
-                        R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
-                        mFieldModel.getHint().toString());
-            }
+            mAdapter = new HintedDropDownAdapter<CharSequence>(context,
+                    R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
+                    mFieldModel.getHint().toString());
             // Wrap the TextView in the dropdown popup around with a FrameLayout to display the text
             // in multiple lines.
             // Note that the TextView in the dropdown popup is displayed in a DropDownListView for

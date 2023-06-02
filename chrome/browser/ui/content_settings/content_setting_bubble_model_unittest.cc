@@ -748,8 +748,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
       fake_geolocation_manager.get();
-  TestingBrowserProcess::GetGlobal()->SetGeolocationManager(
-      std::move(fake_geolocation_manager));
+  device::GeolocationManager::SetInstance(std::move(fake_geolocation_manager));
 #endif  // BUILDFLAG(IS_MAC)
 
   WebContentsTester::For(web_contents())

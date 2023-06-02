@@ -11,7 +11,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace desks_storage {
@@ -28,7 +28,7 @@ class AdminTemplateServiceFactory : public ProfileKeyedServiceFactory {
   static AdminTemplateServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<AdminTemplateServiceFactory>;
+  friend base::NoDestructor<AdminTemplateServiceFactory>;
 
   AdminTemplateServiceFactory();
   AdminTemplateServiceFactory(const AdminTemplateServiceFactory&) = delete;

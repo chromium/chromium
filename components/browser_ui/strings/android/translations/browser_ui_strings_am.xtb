@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">የሶስተኛ ወገን ኩኪዎችን ፍቀድ</translation>
 <translation id="4428065317363009941">ማስታወቂያን ግላዊነት ማላበስ</translation>
 <translation id="4434045419905280838">ብቅ-ባዮች እና አቅጣጫ ማዞሮች</translation>
-<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" />ን ዘርጋ</translation>
 <translation id="4468959413250150279">በአንድ የተወሰነ ጣቢያ ላይ ድምጸ-ከል አድርግ።</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# ኩኪ}one{# ኩኪ}other{# ኩኪዎች}}</translation>
 <translation id="4478158430052450698">ለተለያዩ ጣቢያዎች ማጉላትን ማበጀትን ቀላል ያድርጉት</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7882806643839505685">ለተወሰነ ጣቢያ ድምፅ ፍቀድ።</translation>
 <translation id="789180354981963912">ማንነትን በማያሳውቅ ላይ የሶስተኛ ወገን ኩኪዎችን ያግዱ፦</translation>
+<translation id="7895868624847501462">ይህ እርምጃ ኩኪዎችን ጨምሮ ሁሉንም የአካባቢ ውሂብ ያጸዳል እና ሁሉንም ፈቃዶች ለ<ph name="DOMAIN" /> እና በእሱ ስር ያሉትን ሁሉንም ጣቢያዎች ዳግም ያስጀምራል</translation>
 <translation id="7940722705963108451">አስታውሰኝ</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{በ<ph name="FPS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="FPS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="FPS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="FPS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="FPS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="FPS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">መግለጫ ጽሑፎች</translation>
 <translation id="8300705686683892304">በመተግበሪያ የሚተዳደር</translation>
 <translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
+<translation id="8338445138528827481">ይህ እርምጃ ኩኪዎችን ጨምሮ ሁሉንም የአካባቢ ውሂብ ያጸዳል እና ሁሉንም ፈቃዶች ለ<ph name="ORIGIN" /> ዳግም ያስጀምራል</translation>
 <translation id="8362795839483915693">እርስዎ በሚገበኟቸው ጣቢያዎች ላይ ማጉላት ወይም ማሳነስ ይችላሉ</translation>
 <translation id="8372893542064058268">ለአንድ የተወሰነ ጣቢያ የጀርባ ስምረትን ይፍቀዱ።</translation>
 <translation id="8376384591331888629">በዚህ ጣቢያ ላይ የሶስተኛ ወገን ኩኪዎችን ጨምሮ</translation>

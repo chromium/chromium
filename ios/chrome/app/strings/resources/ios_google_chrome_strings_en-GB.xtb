@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="2736805085127235148">Chrome notifications are currently turned off in your device settings.</translation>
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
+<translation id="2840432500933227975">Open Chrome Settings in iOS, then tap on 'Browser Default APP' and select Chrome.</translation>
 <translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2957447865124070833">Select <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chrome data will be deleted from this device. Your data will remain in your Google Account.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">This means that Chrome will request the mobile site every time.</translation>
 <translation id="3706101708757577809">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
 <translation id="3720541637541300822">Lock incognito tabs when you close Chrome</translation>
+<translation id="3827545470516145620">You're getting standard security protection on this device</translation>
 <translation id="384394811301901750">Google Chrome can't use your camera at the moment.</translation>
 <translation id="3980220367029651214">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chrome data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Your organisation requires you to stay signed out of Chrome.</translation>
@@ -150,7 +152,6 @@ Things to consider:
   • If Chrome crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">You're getting standard security protection for this Chrome profile</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>
 </translationbundle>

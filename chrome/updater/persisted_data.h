@@ -34,11 +34,6 @@ struct RegistrationRequest;
 
 // PersistedData uses the PrefService to persist updater data that outlives
 // the updater processes.
-//
-// This class has sequence affinity.
-//
-// A mechanism to remove apps or app versions from prefs is needed.
-// TODO(sorin): crbug.com/1056450
 class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
  public:
   // Constructs a provider using the specified |pref_service|.
@@ -158,7 +153,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   SEQUENCE_CHECKER(sequence_checker_);
 
   const UpdaterScope scope_;
-  raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);

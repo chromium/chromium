@@ -9,12 +9,13 @@ create {
       }
     }
     patch_dir: "patches"
-    patch_version: "chromium.1"
+    patch_version: "chromium.3"
   }
   build {
     install: "install.py"
     tool: "chromium/third_party/maven"
-    dep: "chromium/third_party/jdk"
+    # Pin to a JDK version that's known to work.
+    external_dep: "chromium/third_party/jdk@2@jdk-17.0.6+10.f601e9c320"
   }
 }
 

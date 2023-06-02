@@ -21,8 +21,6 @@ const char kTranslateLanguageDetectionContentLength[] =
 const char kTranslateUnsupportedLanguageAtInitiation[] =
     "Translate.UnsupportedLanguageAtInitiation";
 const char kTranslateHrefHintStatus[] = "Translate.HrefHint.Status";
-const char kTranslateHrefHintPrefsFilterStatus[] =
-    "Translate.HrefHint.PrefsFilterStatus";
 const char kTranslateMenuTranslationUnavailableReasons[] =
     "Translate.MenuTranslation.UnavailableReasons";
 
@@ -55,11 +53,6 @@ void ReportUnsupportedLanguageAtInitiation(base::StringPiece language) {
 
 void ReportTranslateHrefHintStatus(HrefTranslateStatus status) {
   base::UmaHistogramEnumeration(kTranslateHrefHintStatus, status);
-}
-
-void ReportTranslateHrefHintPrefsFilterStatus(
-    HrefTranslatePrefsFilterStatus status) {
-  base::UmaHistogramEnumeration(kTranslateHrefHintPrefsFilterStatus, status);
 }
 
 }  // namespace TranslateBrowserMetrics

@@ -9,13 +9,13 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
   const container = readAnythingApp.getElementById('container');
 
-  chrome.readAnything.setThemeForTesting('Poppins', 1.0, 0, 0, 2, 0);
+  chrome.readingMode.setThemeForTesting('Poppins', 1.0, 0, 0, 2, 0);
   const expected = '24px';  // 1.5 times the 1em (16px) font size
   const actual = getComputedStyle(container).lineHeight;
   const isEqual = actual === expected;

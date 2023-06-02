@@ -186,6 +186,19 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
   }
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      std::string debug_label,
+      gfx::GpuMemoryBufferHandle handle) override {
+    NOTREACHED();
+    return nullptr;
+  }
+  std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
+      const gpu::Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,

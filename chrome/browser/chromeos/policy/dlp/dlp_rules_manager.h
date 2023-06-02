@@ -26,10 +26,10 @@ class DlpRulesManager : public policy::DlpRulesManagerBase {
  public:
   // List of all possible component values, used to simplify iterating over all
   // the options.
-  constexpr static const std::array<data_controls::Component, 5> components = {
-      data_controls::Component::kArc, data_controls::Component::kCrostini,
+  constexpr static const std::array<data_controls::Component, 6> components = {
+      data_controls::Component::kArc,      data_controls::Component::kCrostini,
       data_controls::Component::kPluginVm, data_controls::Component::kUsb,
-      data_controls::Component::kDrive};
+      data_controls::Component::kDrive,    data_controls::Component::kOneDrive};
 
   // Represents file metadata.
   struct FileMetadata {

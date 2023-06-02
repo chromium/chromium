@@ -10,6 +10,7 @@
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
@@ -44,6 +45,9 @@ class ASH_EXPORT PrivacyHubController {
   MicrophonePrivacySwitchController& microphone_controller() {
     return microphone_controller_;
   }
+  SpeakOnMuteDetectionPrivacySwitchController& speak_on_mute_controller() {
+    return speak_on_mute_controller_;
+  }
   GeolocationPrivacySwitchController& geolocation_controller() {
     return geolocation_switch_controller_;
   }
@@ -60,6 +64,7 @@ class ASH_EXPORT PrivacyHubController {
  private:
   CameraPrivacySwitchController camera_controller_;
   MicrophonePrivacySwitchController microphone_controller_;
+  SpeakOnMuteDetectionPrivacySwitchController speak_on_mute_controller_;
   GeolocationPrivacySwitchController geolocation_switch_controller_;
   raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
 };

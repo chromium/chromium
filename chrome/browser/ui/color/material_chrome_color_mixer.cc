@@ -42,6 +42,15 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // make themes work with the feature.
   ApplyDefaultChromeRefreshToolbarColors(mixer, key);
 
+  // The colors for the Profile Menu with the material design should be applied
+  // regardless of whether a custom theme is enabled.
+  // TODO(tluk): Factor the always-applied material color definitions into a
+  // separate file.
+  mixer[kColorProfileMenuHeaderBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorProfileMenuHeaderLabel] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorProfileMenuIconButton] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorProfileMenuIconButtonBackground] = {ui::kColorSysTonalContainer};
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
@@ -60,8 +69,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkBarForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorBookmarkBarSeparatorChromeRefresh] = {ui::kColorSysOnBaseDivider};
   mixer[kColorBookmarkButtonIcon] = {kColorBookmarkBarForeground};
-  mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
+  mixer[kColorBookmarkDialogProductImageBorder] = {ui::kColorSysNeutralOutline};
+  mixer[kColorBookmarkDialogTrackPriceIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
+  mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
   mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
       ui::GetResultingPaintColor(ui::kColorSysStateDisabled,
@@ -97,6 +108,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFeaturePromoBubbleDefaultButtonForeground] = {
       kColorFeaturePromoBubbleBackground};
   mixer[kColorFeaturePromoBubbleForeground] = {ui::kColorSysOnPrimary};
+  mixer[kColorFindBarBackground] = {ui::kColorSysSurface};
   mixer[kColorFlyingIndicatorBackground] = {kColorToolbar};
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
@@ -121,9 +133,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabButtonInkDropFrameInactive] = {
       kColorNewTabButtonInkDropFrameActive};
   mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
-  mixer[kColorOmniboxChipForegroundLowVisibility] = {
-      ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxChipForegroundLowVisibility] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysPrimary};
+  mixer[kColorOmniboxChipInkDropHover] = {
+      ui::kColorSysStateHoverDimBlendProtection};
+  mixer[kColorOmniboxChipInkDropRipple] = {
+      ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorToolbar] = {ui::kColorSysBase};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] = {
       ui::kColorSysStateHoverOnSubtle};

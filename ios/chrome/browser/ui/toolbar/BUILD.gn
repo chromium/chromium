@@ -14,8 +14,8 @@ source_set("toolbar") {
     "secondary_toolbar_coordinator.h",
     "secondary_toolbar_coordinator.mm",
     "toolbar_coordinatee.h",
-    "toolbar_coordinator_adaptor.h",
-    "toolbar_coordinator_adaptor.mm",
+    "toolbar_coordinator.h",
+    "toolbar_coordinator.mm",
     "toolbar_mediator.h",
     "toolbar_mediator.mm",
   ]
@@ -93,6 +93,7 @@ source_set("toolbar_ui") {
     "adaptive_toolbar_view_controller+subclassing.h",
     "adaptive_toolbar_view_controller.h",
     "adaptive_toolbar_view_controller.mm",
+    "adaptive_toolbar_view_controller_delegate.h",
     "primary_toolbar_view.h",
     "primary_toolbar_view.mm",
     "primary_toolbar_view_controller.h",

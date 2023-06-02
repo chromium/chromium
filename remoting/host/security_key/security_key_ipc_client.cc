@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 
@@ -83,18 +84,21 @@ bool SecurityKeyIpcClient::SendSecurityKeyRequest(
 
 void SecurityKeyIpcClient::CloseIpcConnection() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  HOST_LOG << "IPC connection closed.";
   security_key_forwarder_.reset();
 }
 
 void SecurityKeyIpcClient::OnQueryVersionResult(uint32_t unused_version) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  HOST_LOG << "IPC channel connected.";
   std::move(connected_callback_).Run();
 }
 
 void SecurityKeyIpcClient::OnChannelError() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  LOG(ERROR) << "IPC channel error.";
   security_key_forwarder_.reset();
   if (connection_error_callback_) {
     std::move(connection_error_callback_).Run();

@@ -36,7 +36,7 @@ class AudioDecoderOpus : public AudioDecoder {
 
   int sampling_rate_;
   int channels_;
-  raw_ptr<OpusDecoder> decoder_;
+  raw_ptr<OpusDecoder, DanglingUntriaged> decoder_;
 };
 
 }  // namespace remoting

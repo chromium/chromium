@@ -462,6 +462,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(type);
     PRINT_FIELD(name);
+    PRINT_FIELD(int64_values);
     PRINT_FIELD(uint64_values);
     EndMessage();
     return *this;

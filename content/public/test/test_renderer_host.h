@@ -146,6 +146,9 @@ class RenderFrameHostTester {
   // RenderFrameHost::AddMessageToConsole in this frame.
   virtual const std::vector<std::string>& GetConsoleMessages() = 0;
 
+  // Clears the console messages logged in this frame.
+  virtual void ClearConsoleMessages() = 0;
+
   // Get a count of the total number of heavy ad issues reported.
   virtual int GetHeavyAdIssueCount(HeavyAdIssueType type) = 0;
 

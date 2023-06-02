@@ -4,7 +4,7 @@
 
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -20,7 +20,8 @@ RemoteSuggestionsService* RemoteSuggestionsServiceFactory::GetForProfile(
 // static
 RemoteSuggestionsServiceFactory*
 RemoteSuggestionsServiceFactory::GetInstance() {
-  return base::Singleton<RemoteSuggestionsServiceFactory>::get();
+  static base::NoDestructor<RemoteSuggestionsServiceFactory> instance;
+  return instance.get();
 }
 
 KeyedService* RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
@@ -41,4 +42,4 @@ RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-RemoteSuggestionsServiceFactory::~RemoteSuggestionsServiceFactory() {}
+RemoteSuggestionsServiceFactory::~RemoteSuggestionsServiceFactory() = default;

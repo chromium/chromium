@@ -182,4 +182,8 @@ BASE_FEATURE(kFeedDynamicColors,
              "FeedDynamicColors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedFollowUiUpdate,
+             "FeedFollowUiUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace feed

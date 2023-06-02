@@ -93,13 +93,6 @@ GetMousePointerDetailsFromMSG(const CHROME_MSG& native_event);
 EVENTS_EXPORT gfx::Vector2d GetMouseWheelOffsetFromMSG(
     const CHROME_MSG& native_event);
 
-// Returns a copy of |native_event|. Depending on the platform, this copy may
-// need to be deleted with ReleaseCopiedMSGEvent().
-EVENTS_EXPORT CHROME_MSG CopyMSGEvent(const CHROME_MSG& native_event);
-
-// Delete a |native_event| previously created by CopyMSGEvent().
-EVENTS_EXPORT void ReleaseCopiedMSGEvent(const CHROME_MSG& native_event);
-
 // Returns the detailed pointer information for touch events.
 EVENTS_EXPORT PointerDetails
 GetTouchPointerDetailsFromMSG(const CHROME_MSG& native_event);

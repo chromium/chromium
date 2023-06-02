@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium senkronizasyonundan veriler</translation>
 <translation id="1722370509450468186">Şifreniz, hesabınıza (<ph name="EMAIL" />) kaydedilir.</translation>
 <translation id="1736662517232558588">Chromium verileri temizlendi</translation>
-<translation id="177102542580335555">Bu Chromium profilinde standart güvenlik korumasına sahipsiniz</translation>
 <translation id="1838412507805038478">Chromium, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="1843424232666537147">Chromium İnternet verilerinizi yönetmenize ve web sayfalarını hızlı yükleyebilmenize yardımcı olacak özelliklere sahiptir.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromium'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chromium'da oturum açın.</translation>
 <translation id="3639997914391704523">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" />, Chromium'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
+<translation id="3661862315467204831">iOS'te Chromium Ayarları'nı açtıktan sonra "Varsayılan Tarayıcı Uygulaması"na dokunup Chromium'u seçin.</translation>
 <translation id="372658070733623520">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="3805899903892079518">Chromium, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
+<translation id="3827545470516145620">Bu cihazda standart güvenlik korumasına sahipsiniz</translation>
 <translation id="3955621079070267756">Chromium'u İstediğiniz Uygulamadan Açın</translation>
 <translation id="4043291146360695975">Şifreler yalnızca bu cihazda Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>

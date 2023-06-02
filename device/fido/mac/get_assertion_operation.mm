@@ -67,8 +67,6 @@ void GetAssertionOperation::Run() {
   }
 
   bool require_uv =
-      !base::FeatureList::IsEnabled(
-          kWebAuthnMacPlatformAuthenticatorOptionalUv) ||
       DeviceHasBiometricsAvailable() ||
       request_.user_verification == UserVerificationRequirement::kRequired ||
       std::any_of(credentials->begin(), credentials->end(),

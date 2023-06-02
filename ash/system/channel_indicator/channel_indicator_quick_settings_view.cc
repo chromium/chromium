@@ -53,6 +53,8 @@ constexpr int kVersionButtonMarginHorizontal = 16;
 constexpr int kVersionButtonLargeCornerRadius = 16;
 constexpr int kVersionButtonSmallCornerRadius = 4;
 
+constexpr float kVersionButtonStrokeWidth = 1.0f;
+
 // Corners for the `VersionButton` contents. If it's shown alongside its
 // "partner" (the `SubmitFeedbackButton`) then only one side is rounded,
 // otherwise both sides are rounded. Calling
@@ -248,18 +250,21 @@ class VersionButton : public views::LabelButton {
   // views::LabelButton:
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
+    gfx::RectF bounds(GetLocalBounds());
     if (features::IsQsRevampEnabled()) {
       flags.setColor(
           GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
+      const float half_stroke_width = kVersionButtonStrokeWidth / 2.0f;
+      bounds.Inset(half_stroke_width);
     } else {
       flags.setColor(channel_indicator_utils::GetBgColor(channel_));
       flags.setStyle(cc::PaintFlags::kFill_Style);
     }
     flags.setAntiAlias(true);
+    flags.setStrokeWidth(kVersionButtonStrokeWidth);
     canvas->DrawPath(
-        SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                              content_corners_, SkPathDirection::kCW),
+        SkPath().addRoundRect(gfx::RectFToSkRect(bounds), content_corners_),
         flags);
   }
 
@@ -345,18 +350,21 @@ class SubmitFeedbackButton : public IconButton {
   // views::LabelButton:
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
+    gfx::RectF bounds(GetLocalBounds());
     if (features::IsQsRevampEnabled()) {
       flags.setColor(
           GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
+      const float half_stroke_width = kVersionButtonStrokeWidth / 2.0f;
+      bounds.Inset(half_stroke_width);
     } else {
       flags.setColor(channel_indicator_utils::GetBgColor(channel_));
       flags.setStyle(cc::PaintFlags::kFill_Style);
     }
     flags.setAntiAlias(true);
+    flags.setStrokeWidth(kVersionButtonStrokeWidth);
     canvas->DrawPath(
-        SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                              content_corners_, SkPathDirection::kCW),
+        SkPath().addRoundRect(gfx::RectFToSkRect(bounds), content_corners_),
         flags);
     IconButton::PaintButtonContents(canvas);
   }

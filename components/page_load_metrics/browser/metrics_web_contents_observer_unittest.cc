@@ -97,6 +97,7 @@ class MetricsWebContentsObserverTest
   }
 
   void TearDown() override {
+    embedder_interface_ = nullptr;
     content::SetBrowserClientForTesting(original_browser_client_);
     RenderViewHostTestHarness::TearDown();
   }

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -884,6 +885,14 @@ void TouchInjector::LoadSystemVersionFromProto(AppDataProto& proto) {
   }
 }
 
+void TouchInjector::AddObserver(TouchInjectorObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TouchInjector::RemoveObserver(TouchInjectorObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 std::unique_ptr<Action> TouchInjector::CreateRawAction(ActionType action_type) {
   std::unique_ptr<Action> action;
   switch (action_type) {
@@ -960,6 +969,31 @@ void TouchInjector::RemoveDefaultActionsAndViews(
     RemoveActionView(action);
   }
   added_default_actions.clear();
+}
+
+void TouchInjector::NotifyActionAdded(const Action& action) {
+  for (auto& observer : observers_) {
+    observer.OnActionAdded(action);
+  }
+}
+
+void TouchInjector::NotifyActionRemoved(const Action& action) {
+  for (auto& observer : observers_) {
+    observer.OnActionRemoved(action);
+  }
+}
+
+void TouchInjector::NotifyActionTypeChanged(const Action& action,
+                                            const Action& new_action) {
+  for (auto& observer : observers_) {
+    observer.OnActionTypeChanged(action, new_action);
+  }
+}
+
+void TouchInjector::NotifyActionUpdated(const Action& action) {
+  for (auto& observer : observers_) {
+    observer.OnActionUpdated(action);
+  }
 }
 
 int TouchInjector::GetNextActionID() {

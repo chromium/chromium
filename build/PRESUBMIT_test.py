@@ -14,7 +14,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from PRESUBMIT_test_mocks import MockAffectedFile
 from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
-USE_PYTHON3 = True
 
 
 def _fails_deps_check(line, filename='BUILD.gn'):

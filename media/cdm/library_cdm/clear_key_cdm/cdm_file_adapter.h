@@ -62,7 +62,7 @@ class CdmFileAdapter : public cdm::FileIOClient {
   FileOpenedCB open_cb_;
   ReadCB read_cb_;
   WriteCB write_cb_;
-  raw_ptr<cdm::FileIO> file_io_ = nullptr;
+  raw_ptr<cdm::FileIO, DanglingUntriaged> file_io_ = nullptr;
 };
 
 }  // namespace media

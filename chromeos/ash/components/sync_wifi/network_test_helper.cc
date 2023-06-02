@@ -4,10 +4,13 @@
 
 #include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -22,12 +25,48 @@
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace ash::sync_wifi {
+namespace {
+
+class FakeBrowserContextHelperDelegate
+    : public ash::BrowserContextHelper::Delegate {
+ public:
+  FakeBrowserContextHelperDelegate() = default;
+  ~FakeBrowserContextHelperDelegate() override = default;
+
+  content::BrowserContext* GetBrowserContextByPath(
+      const base::FilePath& path) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  content::BrowserContext* DeprecatedGetBrowserContext(
+      const base::FilePath& path) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
+      content::BrowserContext* browser_context) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  const base::FilePath* GetUserDataDir() override { return &user_data_dir_; }
+
+ private:
+  const base::FilePath user_data_dir_{"fake_user_data_dir"};
+};
+
+}  // namespace
 
 NetworkTestHelper::NetworkTestHelper()
     : CrosNetworkConfigTestHelper(/*initialize= */ false) {
   LoginState::Initialize();
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
   PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
+
+  auto primary_account_id = AccountId::FromUserEmail("primary@test.com");
+  auto secondary_account_id = AccountId::FromUserEmail("secondary@test.com");
 
   network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
   network_configuration_handler_ =
@@ -48,14 +87,21 @@ NetworkTestHelper::NetworkTestHelper()
       /*userhash=*/std::string(),
       /*network_configs_onc=*/base::Value::List(),
       /*global_network_config=*/base::Value::Dict());
+  managed_network_configuration_handler_->SetPolicy(
+      ::onc::ONC_SOURCE_USER_POLICY,
+      user_manager::FakeUserManager::GetFakeUsernameHash(primary_account_id),
+      /*network_configs_onc=*/base::Value::List(),
+      /*global_network_config=*/base::Value::Dict());
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-  auto primary_account_id = AccountId::FromUserEmail("primary@test.com");
-  auto secondary_account_id = AccountId::FromUserEmail("secondary@test.com");
   primary_user_ = fake_user_manager->AddUser(primary_account_id);
   secondary_user_ = fake_user_manager->AddUser(secondary_account_id);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(fake_user_manager));
+
+  browser_context_helper_ = std::make_unique<BrowserContextHelper>(
+      std::make_unique<FakeBrowserContextHelperDelegate>());
+
   LoginUser(primary_user_);
 
   Initialize(managed_network_configuration_handler_.get());
@@ -68,6 +114,8 @@ NetworkTestHelper::NetworkTestHelper()
 NetworkTestHelper::~NetworkTestHelper() {
   Shutdown();
   network_handler_test_helper_.reset();
+  browser_context_helper_.reset();
+  scoped_user_manager_.reset();
   LoginState::Shutdown();
   ui_proxy_config_service_.reset();
 }
@@ -76,9 +124,10 @@ void NetworkTestHelper::SetUp() {
   network_handler_test_helper_->InitializePrefs(&user_prefs_, &local_state_);
   network_state_helper_.ResetDevicesAndServices();
   network_state_helper_.profile_test()->AddProfile(
-      /*profile_path=*/network_state_helper_.UserHash(),
-      /*userhash=*/std::string());
-
+      BrowserContextHelper::Get()
+          ->GetBrowserContextPathByUserIdHash(primary_user_->username_hash())
+          .AsUTF8Unsafe(),
+      primary_user_->username_hash());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -90,25 +139,30 @@ void NetworkTestHelper::LoginUser(const user_manager::User* user) {
   user_manager->SwitchActiveUser(user->GetAccountId());
 }
 
-std::string NetworkTestHelper::ConfigureWiFiNetwork(const std::string& ssid,
-                                                    bool is_secured,
-                                                    bool in_profile,
-                                                    bool has_connected,
-                                                    bool owned_by_user,
-                                                    bool configured_by_sync,
-                                                    bool is_from_policy,
-                                                    bool is_hidden,
-                                                    bool auto_connect) {
+std::string NetworkTestHelper::ConfigureWiFiNetwork(
+    const std::string& ssid,
+    bool is_secured,
+    const user_manager::User* user,
+    bool has_connected,
+    bool owned_by_user,
+    bool configured_by_sync,
+    bool is_from_policy,
+    bool is_hidden,
+    bool auto_connect) {
   std::string security_entry =
       is_secured ? R"("SecurityClass": "psk", "Passphrase": "secretsauce", )"
                  : R"("SecurityClass": "none", )";
   std::string profile_entry = base::StringPrintf(
       R"("Profile": "%s", )",
-      in_profile ? network_state_helper_.UserHash() : "/profile/default");
+      user ? BrowserContextHelper::Get()
+                 ->GetBrowserContextPathByUserIdHash(user->username_hash())
+                 .AsUTF8Unsafe()
+                 .c_str()
+           : "/profile/default");
   std::string ui_data = "";
   if (is_from_policy) {
     ui_data = base::StringPrintf(R"(, "UIData": "{\"onc_source\": \"%s\"}")",
-                                 in_profile ? "user_policy" : "device_policy");
+                                 user ? "user_policy" : "device_policy");
   }
 
   std::string hidden = "";
@@ -127,7 +181,7 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(const std::string& ssid,
 
   base::RunLoop().RunUntilIdle();
 
-  if (!in_profile) {
+  if (!user) {
     if (owned_by_user) {
       NetworkHandler::Get()->network_metadata_store()->OnConfigurationCreated(
           service_path, guid);

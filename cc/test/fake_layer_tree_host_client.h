@@ -27,7 +27,7 @@ class FakeLayerTreeHostClient : public StubLayerTreeHostClient {
 
  private:
   bool software_comp_ = true;
-  raw_ptr<LayerTreeHost> host_ = nullptr;
+  raw_ptr<LayerTreeHost, DanglingUntriaged> host_ = nullptr;
 };
 
 }  // namespace cc

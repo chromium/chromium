@@ -176,10 +176,10 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   }
 
   std::unique_ptr<Widget> widget_;
-  raw_ptr<View> contents_ = nullptr;
-  raw_ptr<Widget> bubble_widget_ = nullptr;
-  raw_ptr<LabelButton> label_button_ = nullptr;
-  raw_ptr<LabelButton> no_id_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> contents_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> bubble_widget_ = nullptr;
+  raw_ptr<LabelButton, DanglingUntriaged> label_button_ = nullptr;
+  raw_ptr<LabelButton, DanglingUntriaged> no_id_view_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
   ui::SafeElementReference menu_element_;

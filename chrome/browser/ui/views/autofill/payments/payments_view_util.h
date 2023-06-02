@@ -33,6 +33,9 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
  public:
   METADATA_HEADER(TitleWithIconAndSeparatorView);
 
+  // TODO(crbug.com/1433075): This enum is also used by
+  // TitleWithIconAfterLabelView, and should be refactored to be outside of
+  // TitleWithIconAndSeparatorView.
   enum class Icon {
     // Google Pay icon. The "Pay" portion is recolored for light/dark mode.
     GOOGLE_PAY,
@@ -43,6 +46,25 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
   TitleWithIconAndSeparatorView(const std::u16string& window_title,
                                 Icon icon_to_show);
   ~TitleWithIconAndSeparatorView() override;
+
+ private:
+  // views::View:
+  gfx::Size GetMinimumSize() const override;
+};
+
+// Defines a title view with a label and an icon, to be used by dialogs
+// that need to present the Google or Google Pay logo and custom
+// horizontal padding.
+//
+// Unlike TitleWithIconAndSeparatorView, this view has no separator and places
+// the icon after the title rather than before.
+class TitleWithIconAfterLabelView : public views::BoxLayoutView {
+ public:
+  METADATA_HEADER(TitleWithIconAfterLabelView);
+
+  TitleWithIconAfterLabelView(const std::u16string& window_title,
+                              TitleWithIconAndSeparatorView::Icon icon_to_show);
+  ~TitleWithIconAfterLabelView() override;
 
  private:
   // views::View:

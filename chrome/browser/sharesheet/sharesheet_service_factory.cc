@@ -25,7 +25,8 @@ SharesheetService* SharesheetServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 SharesheetServiceFactory* SharesheetServiceFactory::GetInstance() {
-  return base::Singleton<SharesheetServiceFactory>::get();
+  static base::NoDestructor<SharesheetServiceFactory> instance;
+  return instance.get();
 }
 
 SharesheetServiceFactory::SharesheetServiceFactory()

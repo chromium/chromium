@@ -180,7 +180,8 @@ class LeakDetectionDelegateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockPasswordManagerClient> client_;
-  raw_ptr<MockLeakDetectionCheckFactory> mock_factory_ = nullptr;
+  raw_ptr<MockLeakDetectionCheckFactory, DanglingUntriaged> mock_factory_ =
+      nullptr;
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_ =
       base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
   scoped_refptr<MockPasswordStoreInterface> mock_account_store_ =

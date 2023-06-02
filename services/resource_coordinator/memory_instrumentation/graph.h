@@ -180,7 +180,7 @@ class GlobalDumpGraph {
     }
 
    private:
-    raw_ptr<GlobalDumpGraph::Process> dump_graph_;
+    raw_ptr<GlobalDumpGraph::Process, DanglingUntriaged> dump_graph_;
     const raw_ptr<Node> parent_;
     base::trace_event::MemoryAllocatorDumpGuid guid_;
     std::map<std::string, Entry> entries_;
@@ -194,7 +194,7 @@ class GlobalDumpGraph {
     double cumulative_owned_coefficient_ = 1;
     double cumulative_owning_coefficient_ = 1;
 
-    raw_ptr<GlobalDumpGraph::Edge> owns_edge_;
+    raw_ptr<GlobalDumpGraph::Edge, DanglingUntriaged> owns_edge_;
     std::vector<GlobalDumpGraph::Edge*> owned_by_edges_;
   };
 

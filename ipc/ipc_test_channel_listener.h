@@ -38,7 +38,7 @@ class TestChannelListener : public Listener {
   void SendNextMessage();
 
  private:
-  raw_ptr<Sender> sender_;
+  raw_ptr<Sender, DanglingUntriaged> sender_;
   int messages_left_;
 };
 

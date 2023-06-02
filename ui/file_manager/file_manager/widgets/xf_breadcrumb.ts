@@ -470,7 +470,7 @@ function getCSS() {
       display: inline-block;
       position: relative;
 
-      font: var(--cros-title-1-font);;
+      font: var(--cros-title-1-font);
       margin: 0;
 
       /* elide wide text */
@@ -570,7 +570,7 @@ function getCSS() {
 
     :host-context(.focus-outline-visible) #elider-menu button:focus::after {
       border: 2px solid var(--cros-sys-focus_ring);
-      border-radius: 4px;
+      border-radius: 8px;
       content: '';
       height: 32px; /* option height - 2 x border width */
       left: 0;

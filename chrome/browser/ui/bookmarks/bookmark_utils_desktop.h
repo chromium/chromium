@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "ui/base/window_open_disposition.h"
@@ -23,7 +24,6 @@ class BookmarkNode;
 
 namespace content {
 class BrowserContext;
-class PageNavigator;
 class NavigationHandle;
 }
 
@@ -52,30 +52,21 @@ using TabGroupData =
 // value.
 extern size_t kNumBookmarkUrlsBeforePrompting;
 
-// Tries to open all bookmarks in |nodes|. If there are many, prompts
+// Tries to open all bookmarks in `nodes`. If there are many, prompts
 // the user first. Returns immediately, opening the bookmarks
-// asynchronously if prompting the user. |browser| is the browser from
+// asynchronously if prompting the user. `browser` is the browser from
 // which the bookmarks were opened. Its window is used as the anchor for
-// the dialog (if shown). |get_navigator| is used to fetch the
-// PageNavigator used for opening the bookmarks. It may be called
-// arbitrarily later as long as |browser| is alive. If it is not
-// callable or returns null, this will fail gracefully.
-void OpenAllIfAllowed(Browser* browser,
-                      const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                      WindowOpenDisposition initial_disposition,
-                      bool add_to_group);
-
-// Opens all the bookmarks in |nodes| that are of type url and all the child
-// bookmarks that are of type url for folders in |nodes|. |initial_disposition|
-// dictates how the first URL is opened, all subsequent URLs are opened as
-// background tabs.
-//
-// This does not prompt the user. It will open an arbitrary number of
-// bookmarks immediately.
-void OpenAllNow(Browser* browser,
-                const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                WindowOpenDisposition initial_disposition,
-                content::BrowserContext* browser_context);
+// the dialog (if shown).
+// `launch_action` represents the location and time of the bookmark launch
+// action for callsites that support it.
+// TODO(crbug.com/1449016): This should be made non-optional once all callsites
+// have all the information needed to correctly construct the `launch_action`.
+void OpenAllIfAllowed(
+    Browser* browser,
+    const std::vector<const bookmarks::BookmarkNode*>& nodes,
+    WindowOpenDisposition initial_disposition,
+    bool add_to_group,
+    absl::optional<BookmarkLaunchAction> launch_action = absl::nullopt);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If
 // |incognito_context| is set, the function will use it to check if the URLs

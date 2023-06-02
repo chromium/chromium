@@ -263,6 +263,9 @@ chromium-metrics-reviews@google.com.
                list"/>
   <variant name="IPH_ReadingListMessages"
       summary="the Reading List entry point in iOS tools menu"/>
+  <variant name="IPH_ReadingMode"
+      summary="educating users to click the side panel icon to open reading
+               mode"/>
   <variant name="IPH_ReadLaterAppMenuBookmarks" summary="read later app menu"/>
   <variant name="IPH_ReadLaterAppMenuBookmarkThisPage"
       summary="read later app menu"/>
@@ -343,6 +346,8 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="any tutorial"/>
   <variant name=".CustomizeChromeSidePanel"
       summary="the tutorial for the customize chrome side panel"/>
+  <variant name=".PasswordManager"
+      summary="the tutorial for the password manager"/>
   <variant name=".SidePanelReadingList"
       summary="the tutorial for the side panel reading list"/>
   <variant name=".TabGroup" summary="the tutorial for tab groups"/>
@@ -378,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Db.TotalEvents" units="events"
-    expires_after="2023-07-02">
+    expires_after="2023-12-26">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records the total number of event records in the database for in-product
@@ -396,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2023-09-03">
+    enum="InProductHelpDismissalReason" expires_after="2023-11-19">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -410,78 +415,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records if the model is ready when in-product help event happens for
     {IPHFeature}.
-  </summary>
-  <token key="IPHFeature" variants="IPHFeature"/>
-</histogram>
-
-<histogram name="InProductHelp.Promos.IPH_ReopenTab.DismissedAt"
-    enum="ReopenTabPromoStepAtDismissal" expires_after="M76">
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    Last step of in-product help (IPH) for reopening tabs that user followed
-    before finishing the IPH flow or dismissing it early. Recorded when the IPH
-    flow is dismissed, which is at one of three possible times: when the promo
-    bubble times out, when the menu is closed after the user opens it for IPH,
-    or when the user opens the last closed tab. The last is considered a
-    success.
-  </summary>
-</histogram>
-
-<histogram name="InProductHelp.Promos.Snooze.{IPHFeature}" units="SnoozeType"
-    expires_after="2021-11-21">
-  <obsolete>
-    Expired since 2021-11.
-  </obsolete>
-  <owner>kerenzhu@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    Record the number of first-time snoozes and repeating snoozes of an
-    in-product help bubble for {IPHFeature} when the user clicks the snooze
-    button. A snooze of an IPH that has been snoozed before is a repeating
-    snooze.
-  </summary>
-  <token key="IPHFeature" variants="IPHFeature"/>
-</histogram>
-
-<histogram name="InProductHelp.Promos.SnoozeCountAtAcknowledge.{IPHFeature}"
-    units="times" expires_after="2021-11-21">
-  <obsolete>
-    Expired since 2021-11.
-  </obsolete>
-  <owner>kerenzhu@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    Record the number of previous snoozes when an in-product help bubble for
-    {IPHFeature} is dismissed because the acknowledge button is clicked.
-  </summary>
-  <token key="IPHFeature" variants="IPHFeature"/>
-</histogram>
-
-<histogram name="InProductHelp.Promos.SnoozeCountAtFollow.{IPHFeature}"
-    units="times" expires_after="2021-11-21">
-  <obsolete>
-    Expired since 2021-11.
-  </obsolete>
-  <owner>kerenzhu@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    Record the number of previous snoozes when an in-product help bubble for
-    {IPHFeature} is dismissed because the user follows the promo, e.g. a
-    relevant control is clicked.
-  </summary>
-  <token key="IPHFeature" variants="IPHFeature"/>
-</histogram>
-
-<histogram name="InProductHelp.Promos.SnoozeCountAtTrigger.{IPHFeature}"
-    units="times" expires_after="2021-11-21">
-  <obsolete>
-    Expired since 2021-11.
-  </obsolete>
-  <owner>kerenzhu@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>
-    Record the number of previous snoozes when an in-product help bubble for
-    {IPHFeature} is triggered.
   </summary>
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
@@ -512,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.SnoozeAction" enum="InProductHelpSnoozeAction"
-    expires_after="2023-09-03">
+    expires_after="2023-11-19">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -535,30 +468,6 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records if the snooze button was shown on an in-product help bubble.
-  </summary>
-</histogram>
-
-<histogram name="Tutorial.FocusToggleCount.Aborted" units="times"
-    expires_after="2022-12-31">
-  <owner>dpenning@chromium.org</owner>
-  <owner>dfried@chromium.org</owner>
-  <summary>
-    Records the number of times the user toggles focus to the help bubble using
-    the keyboard during a tutorial that the user aborts or fails. Can be
-    cross-referenced with screen reader state to determine if screen reader or
-    non-screen-reader users are using the keyboard to navigate.
-  </summary>
-</histogram>
-
-<histogram name="Tutorial.FocusToggleCount.Completed" units="times"
-    expires_after="2022-12-31">
-  <owner>dpenning@chromium.org</owner>
-  <owner>dfried@chromium.org</owner>
-  <summary>
-    Records the number of times the user toggles focus to the help bubble using
-    the keyboard during a tutorial that the user completes. Can be
-    cross-referenced with screen reader state to determine if screen reader or
-    non-screen-reader users are using the keyboard to navigate.
   </summary>
 </histogram>
 

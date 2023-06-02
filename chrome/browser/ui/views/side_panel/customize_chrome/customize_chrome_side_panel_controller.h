@@ -7,12 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 
 class CustomizeChromeUI;
-
+class SidePanelUI;
 namespace content {
 class WebContents;
 }  // namespace content
@@ -48,7 +47,7 @@ class CustomizeChromeSidePanelController
   // Creates view for side panel entry.
   std::unique_ptr<views::View> CreateCustomizeChromeWebView();
 
-  BrowserView* GetBrowserView() const;
+  SidePanelUI* GetSidePanelUI() const;
 
   const raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<CustomizeChromeUI> customize_chrome_ui_;

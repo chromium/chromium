@@ -167,7 +167,6 @@ bool ShaderTranslator::Init(GLenum shader_type,
 
   compile_options_ = driver_bug_workarounds;
   compile_options_.objectCode = true;
-  compile_options_.variables = true;
   compile_options_.enforcePackingRestrictions = true;
   compile_options_.limitExpressionComplexity = true;
   compile_options_.limitCallStackDepth = true;

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "base/task/bind_post_task.h"
@@ -22,6 +23,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -43,67 +45,8 @@ bool CanUseAudioToolbox(const AudioDecoderConfig& config) {
   return false;
 }
 
-// Descriptors use a variable length size entry. We've fixed the size to
-// 4 bytes to make inline construction simple. The lowest 7 bits encode
-// the actual value, an MSB==1 indicates there's another byte to decode,
-// and an MSB==0 indicates there are no more bytes to decode.
-void EncodeDescriptorSize(size_t size, uint8_t* output) {
-  DCHECK_LT(size, (1u << (4u * 7u)));
-  for (int i = 3; i > 0; i--)
-    output[3 - i] = (size >> (7 * i)) | 0x80;
-  output[3] = size & 0x7F;
-}
-
-std::vector<uint8_t> GenerateEsdsMagicCookie(
-    const std::vector<uint8_t>& aac_extra_data) {
-  // See media/formats/mp4/es_descriptor.h
-#pragma pack(push, 1)
-  struct Descriptor {
-    uint8_t tag;
-    uint8_t size[4];  // Note: Size is variable length, with a 1 in the MSB
-                      // signaling another byte remains. Clamping to 4 here
-                      // just makes it easier to construct the ESDS in place.
-  };
-  struct DecoderConfigDescriptor : Descriptor {
-    uint8_t aot;
-    uint8_t flags;
-    uint8_t unused[11];
-    Descriptor extra_data;
-  };
-  struct ESDescriptor : Descriptor {
-    uint16_t id;
-    uint8_t flags;
-    DecoderConfigDescriptor decoder_config;
-  };
-#pragma pack(pop)
-
-  std::vector<uint8_t> esds_data(sizeof(ESDescriptor) + aac_extra_data.size());
-  auto* esds = reinterpret_cast<ESDescriptor*>(esds_data.data());
-
-  esds->tag = mp4::kESDescrTag;
-  EncodeDescriptorSize(
-      sizeof(ESDescriptor) - sizeof(Descriptor) + aac_extra_data.size(),
-      esds->size);
-
-  esds->decoder_config.tag = mp4::kDecoderConfigDescrTag;
-  EncodeDescriptorSize(sizeof(DecoderConfigDescriptor) - sizeof(Descriptor) +
-                           aac_extra_data.size(),
-                       esds->decoder_config.size);
-  esds->decoder_config.aot = mp4::kISO_14496_3;  // AAC.
-  esds->decoder_config.flags = 0x15;             // AudioStream
-
-  esds->decoder_config.extra_data.tag = mp4::kDecoderSpecificInfoTag;
-  EncodeDescriptorSize(aac_extra_data.size(),
-                       esds->decoder_config.extra_data.size);
-
-  base::ranges::copy(aac_extra_data, esds_data.begin() + sizeof(ESDescriptor));
-
-  DCHECK(mp4::ESDescriptor().Parse(esds_data));
-  return esds_data;
-}
-
 struct InputData {
-  DecoderBuffer* buffer = nullptr;
+  raw_ptr<DecoderBuffer> buffer = nullptr;
   AudioStreamPacketDescription packet = {};
 };
 
@@ -293,7 +236,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
       // Input is xHE-AAC / USAC.
       CHECK_EQ(config.profile(), AudioCodecProfile::kXHE_AAC);
       input_format.mFormatID = kAudioFormatMPEGD_USAC;
-      magic_cookie = GenerateEsdsMagicCookie(config.aac_extra_data());
+      magic_cookie = mp4::ESDescriptor::CreateEsds(config.aac_extra_data());
 
       // Have macOS fill in the rest of the input_format for us.
       UInt32 format_size = sizeof(input_format);

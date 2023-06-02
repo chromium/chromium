@@ -46,6 +46,7 @@ class CookieControlsBridge : public CookieControlsView {
                        int allowed_cookies,
                        int blocked_cookies) override;
   void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
+  void OnStatefulBounceCountChanged(int bounce_count) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;

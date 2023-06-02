@@ -38,6 +38,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -245,7 +246,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                         ViewGroup top = (ViewGroup) getView();
                         boolean link = ((CheckBox) top.findViewById(R.id.qr_link)).isChecked();
                         if (link
-                                && !DeviceFeatureList.isEnabled(
+                                && !DeviceFeatureMap.getInstance().isEnabled(
                                         DeviceFeatureList
                                                 .WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
                             link = NotificationManagerCompat.from(getContext())

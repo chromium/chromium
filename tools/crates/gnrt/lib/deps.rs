@@ -23,8 +23,6 @@ pub use cargo_metadata::PackageId;
 /// for generating build files later.
 #[derive(Clone, Debug)]
 pub struct Package {
-    /// Package ID in a particular set of dependencies.
-    pub id: PackageId,
     /// The package name as used by cargo.
     pub package_name: String,
     /// The package version as used by cargo.
@@ -248,7 +246,6 @@ pub fn collect_dependencies(
         let node: &cargo_metadata::Node = traversal_state.dep_graph.nodes.get(id).unwrap();
         let package: &cargo_metadata::Package = traversal_state.dep_graph.packages.get(id).unwrap();
 
-        dep.id = package.id.clone();
         dep.package_name = package.name.clone();
         dep.description = package.description.clone();
         dep.authors = package.authors.clone();
@@ -373,7 +370,6 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
     // Helper to insert a placeholder `Dependency` into a map. We fill in the
     // fields later.
     let init_dep = |path| Package {
-        id: PackageId { repr: String::new() },
         package_name: String::new(),
         version: Version::new(0, 0, 0),
         description: None,
@@ -542,4 +538,374 @@ impl std::fmt::Display for TargetType {
             Self::BuildScript => f.write_str("custom-build"),
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn collect_dependencies_on_sample_output() {
+        use std::str::FromStr;
+
+        let metadata: cargo_metadata::Metadata =
+            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+        let mut dependencies = collect_dependencies(&metadata, None, None);
+        dependencies.sort_by(|left, right| {
+            left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
+        });
+
+        let empty_str_slice: &'static [&'static str] = &[];
+
+        assert_eq!(dependencies.len(), 17);
+
+        let mut i = 0;
+
+        assert_eq!(dependencies[i].package_name, "autocfg");
+        assert_eq!(dependencies[i].version, Version::new(1, 1, 0));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
+            empty_str_slice
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "bar");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "cc");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 73));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
+            empty_str_slice
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "foo");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 2);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "bar".to_string(),
+                use_name: "baz".to_string(),
+                version: Version::new(0, 1, 0),
+                platform: None,
+            }
+        );
+        assert_eq!(
+            dependencies[i].dependencies[1],
+            DepOfDep {
+                package_name: "time".to_string(),
+                use_name: "time".to_string(),
+                version: Version::new(0, 3, 14),
+                platform: None,
+            }
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "more-asserts");
+        assert_eq!(dependencies[i].version, Version::new(0, 3, 0));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Development).unwrap().features,
+            empty_str_slice
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "num-traits");
+        assert_eq!(dependencies[i].version, Version::new(0, 2, 15));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["std"]
+        );
+        assert_eq!(dependencies[i].build_dependencies.len(), 1);
+        assert_eq!(
+            dependencies[i].build_dependencies[0],
+            DepOfDep {
+                package_name: "autocfg".to_string(),
+                use_name: "autocfg".to_string(),
+                version: Version::new(1, 1, 0),
+                platform: None,
+            }
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "once_cell");
+        assert_eq!(dependencies[i].version, Version::new(1, 13, 0));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["alloc", "race", "std"]
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "proc-macro2");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 40));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["proc-macro"]
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "quote");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 20));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["proc-macro"]
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "serde");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 139));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["derive", "serde_derive", "std"]
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 1);
+        assert_eq!(dependencies[i].build_dependencies.len(), 0);
+        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "serde_derive".to_string(),
+                use_name: "serde_derive".to_string(),
+                version: Version::new(1, 0, 139),
+                platform: None,
+            }
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "serde_derive");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 139));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 3);
+        assert_eq!(dependencies[i].build_dependencies.len(), 0);
+        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "proc-macro2".to_string(),
+                use_name: "proc_macro2".to_string(),
+                version: Version::new(1, 0, 40),
+                platform: None,
+            }
+        );
+        assert_eq!(
+            dependencies[i].dependencies[1],
+            DepOfDep {
+                package_name: "quote".to_string(),
+                use_name: "quote".to_string(),
+                version: Version::new(1, 0, 20),
+                platform: None,
+            }
+        );
+        assert_eq!(
+            dependencies[i].dependencies[2],
+            DepOfDep {
+                package_name: "syn".to_string(),
+                use_name: "syn".to_string(),
+                version: Version::new(1, 0, 98),
+                platform: None,
+            }
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "syn");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 98));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["clone-impls", "derive", "parsing", "printing", "proc-macro", "quote"]
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 3);
+        assert_eq!(dependencies[i].build_dependencies.len(), 0);
+        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "proc-macro2".to_string(),
+                use_name: "proc_macro2".to_string(),
+                version: Version::new(1, 0, 40),
+                platform: None,
+            }
+        );
+        assert_eq!(
+            dependencies[i].dependencies[1],
+            DepOfDep {
+                package_name: "quote".to_string(),
+                use_name: "quote".to_string(),
+                version: Version::new(1, 0, 20),
+                platform: None,
+            }
+        );
+        assert_eq!(
+            dependencies[i].dependencies[2],
+            DepOfDep {
+                package_name: "unicode-ident".to_string(),
+                use_name: "unicode_ident".to_string(),
+                version: Version::new(1, 0, 1),
+                platform: None,
+            }
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "termcolor");
+        assert_eq!(dependencies[i].version, Version::new(1, 1, 3));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 1);
+        assert_eq!(dependencies[i].build_dependencies.len(), 0);
+        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "winapi-util".to_string(),
+                use_name: "winapi_util".to_string(),
+                version: Version::new(0, 1, 5),
+                platform: Some(Platform::from_str("cfg(windows)").unwrap()),
+            }
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "time");
+        assert_eq!(dependencies[i].version, Version::new(0, 3, 14));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["alloc", "std"]
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "unicode-ident");
+        assert_eq!(dependencies[i].version, Version::new(1, 0, 1));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "winapi");
+        assert_eq!(dependencies[i].version, Version::new(0, 3, 9));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &[
+                "consoleapi",
+                "errhandlingapi",
+                "fileapi",
+                "minwindef",
+                "processenv",
+                "std",
+                "winbase",
+                "wincon",
+                "winerror",
+                "winnt"
+            ]
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 0);
+        assert_eq!(dependencies[i].build_dependencies.len(), 0);
+        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "winapi-util");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 5));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            empty_str_slice
+        );
+        assert_eq!(dependencies[i].dependencies.len(), 1);
+        assert_eq!(dependencies[i].build_dependencies.len(), 0);
+        assert_eq!(dependencies[i].dev_dependencies.len(), 0);
+        assert_eq!(
+            dependencies[i].dependencies[0],
+            DepOfDep {
+                package_name: "winapi".to_string(),
+                use_name: "winapi".to_string(),
+                version: Version::new(0, 3, 9),
+                platform: Some(Platform::from_str("cfg(windows)").unwrap()),
+            }
+        );
+    }
+
+    #[test]
+    fn dependencies_for_workspace_member() {
+        let metadata: cargo_metadata::Metadata =
+            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+
+        // Start from "foo" workspace member.
+        let mut dependencies = collect_dependencies(&metadata, Some(vec!["foo".to_string()]), None);
+        dependencies.sort_by(|left, right| {
+            left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
+        });
+
+        assert_eq!(dependencies.len(), 3);
+
+        let mut i = 0;
+
+        assert_eq!(dependencies[i].package_name, "bar");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "foo");
+        assert_eq!(dependencies[i].version, Version::new(0, 1, 0));
+
+        i += 1;
+
+        assert_eq!(dependencies[i].package_name, "time");
+        assert_eq!(dependencies[i].version, Version::new(0, 3, 14));
+        assert_eq!(
+            dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+            &["alloc", "std"]
+        );
+    }
+
+    #[test]
+    fn exclude_dependency() {
+        let metadata: cargo_metadata::Metadata =
+            serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+
+        let deps_with_exclude =
+            collect_dependencies(&metadata, None, Some(vec!["serde_derive".to_string()]));
+        let deps_without_exclude = collect_dependencies(&metadata, None, None);
+
+        let pkgs_with_exclude: HashSet<&str> =
+            deps_with_exclude.iter().map(|dep| dep.package_name.as_str()).collect();
+        let pkgs_without_exclude: HashSet<&str> =
+            deps_without_exclude.iter().map(|dep| dep.package_name.as_str()).collect();
+        let mut diff: Vec<&str> =
+            pkgs_without_exclude.difference(&pkgs_with_exclude).copied().collect();
+        diff.sort_unstable();
+        assert_eq!(diff, ["proc-macro2", "quote", "serde_derive", "syn", "unicode-ident",]);
+    }
+
+    // test_metadata.json contains the output of "cargo metadata" run in
+    // sample_package. The dependency graph is relatively simple but includes
+    // transitive deps and a workspace member.
+    static SAMPLE_CARGO_METADATA: &'static str = include_str!("test_metadata.json");
 }

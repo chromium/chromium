@@ -128,6 +128,9 @@ const char kSystemDnsServers[] = "systemDnsServers";
 // blocking is enabled on the device.
 const char kThirdPartyBlockingEnabled[] = "thirdPartyBlockingEnabled";
 
+// Name of the signal for the trigger which generated the device signals.
+const char kTrigger[] = "trigger";
+
 // Name of the signal for getting information about the managed user's
 // enrollment domain.
 const char kUserEnrollmentDomain[] = "userEnrollmentDomain";

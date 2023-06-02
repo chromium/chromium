@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
@@ -51,7 +51,8 @@ VpnServiceInterface* VpnServiceFactory::GetForBrowserContext(
 
 // static
 VpnServiceFactory* VpnServiceFactory::GetInstance() {
-  return base::Singleton<VpnServiceFactory>::get();
+  static base::NoDestructor<VpnServiceFactory> instance;
+  return instance.get();
 }
 
 VpnServiceFactory::VpnServiceFactory()

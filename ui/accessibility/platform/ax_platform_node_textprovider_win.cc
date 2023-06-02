@@ -95,17 +95,22 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
     std::swap(start, end);
   }
 
+  // Per [1], AddRef is called from SafeArrayPutElement when the data element is a VT_DISPATCH
+  // or VT_UNKNOWN. Since `text_range_provider` is a VT_UNKNOWN, we must not increment the
+  // object's reference count upon creation to avoid leaking it.
+  //
+  // [1]:https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-safearrayputelement
   Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
       AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-          std::move(start), std::move(end));
+          std::move(start), std::move(end), /* add_ref */ false);
   if (&text_range_provider == nullptr)
     return E_OUTOFMEMORY;
 
   // Since we don't support disjoint text ranges, the SAFEARRAY returned
   // will always have one element
   base::win::ScopedSafearray selections_to_return(
-      SafeArrayCreateVector(VT_UNKNOWN /* element type */, 0 /* lower bound */,
-                            1 /* number of elements */));
+      SafeArrayCreateVector(/* element type */ VT_UNKNOWN, /* lower bound */ 0,
+                            /* number of elements */ 1));
 
   if (!selections_to_return.Get())
     return E_OUTOFMEMORY;
@@ -116,7 +121,7 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
   DCHECK(SUCCEEDED(hr));
 
   // Since DCHECK only happens in debug builds, return immediately to ensure
-  // that we're not leaking the SAFEARRAY on release builds
+  // that we're not leaking the SAFEARRAY on release builds.
   if (FAILED(hr))
     return E_FAIL;
 
@@ -173,9 +178,14 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
     // the container bounds, so we check if the bounding rects intersect rather
     // than if it is only contained within.
     if (frame_rect.Intersects(current_rect)) {
+      // Per [1], AddRef is called from SafeArrayPutElement when the data element is a
+      // VT_DISPATCH or VT_UNKNOWN. Since `text_range_provider` is a VT_UNKNOWN, we must not
+      // increment the object's reference count upon creation to avoid leaking it.
+      //
+      // [1]:https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-safearrayputelement
       Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
           AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-              current_line_start->Clone(), current_line_end->Clone());
+              current_line_start->Clone(), current_line_end->Clone(), /* add_ref */ false);
 
       ranges.emplace_back(text_range_provider);
     }
@@ -186,8 +196,8 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
   }
 
   base::win::ScopedSafearray scoped_visible_ranges(
-      SafeArrayCreateVector(VT_UNKNOWN /* element type */, 0 /* lower bound */,
-                            ranges.size() /* number of elements */));
+      SafeArrayCreateVector(/* element type */ VT_UNKNOWN, /* lower bound */ 0,
+                            /* number of elements */ ranges.size()));
 
   if (!scoped_visible_ranges.Get())
     return E_OUTOFMEMORY;
@@ -199,7 +209,7 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
     DCHECK(SUCCEEDED(hr));
 
     // Since DCHECK only happens in debug builds, return immediately to ensure
-    // that we're not leaking the SAFEARRAY on release builds
+    // that we're not leaking the SAFEARRAY on release builds.
     if (FAILED(hr))
       return E_FAIL;
 

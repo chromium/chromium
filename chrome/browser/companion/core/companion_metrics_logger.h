@@ -59,7 +59,7 @@ struct UiSurfaceMetrics {
   size_t child_element_shown_count = kInvalidNumChildren;
 
   // The number of times user clicked on the surface.
-  size_t click_count = 0;
+  uint32_t click_count = 0;
 
   // The position of the clicked UI element within its parent list. Applicable
   // to surfaces that show a list.
@@ -114,6 +114,9 @@ class CompanionMetricsLogger {
 
   // Logging method corresponding to `OnPhFeedback` in companion.mojom.
   void OnPhFeedback(PhFeedback ph_feedback);
+
+  // Logging method recording the status of whether user is opted-in to exps.
+  void OnExpsOptInStatusAvailable(bool is_exps_opted_in) const;
 
  private:
   // Meant to be called at destruction. Flushes the UKM metrics.

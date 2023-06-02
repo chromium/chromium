@@ -1,0 +1,801 @@
+/*
+ * Copyright (C) 2015-2018 Apple Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+body {
+    font-size: initial;
+}
+
+body.showing-intro,
+body.showing-results,
+body.showing-test-graph {
+    background-color: rgb(96, 96, 96);
+    background-image: initial;
+    background-repeat: initial;
+    background-size: initial;
+    animation: initial;
+    will-change: initial;
+
+    color: rgb(235, 235, 235);
+}
+
+section .body {
+    margin-left: 0;
+    max-width: initial;
+    transform: none;
+}
+
+header {
+    margin: 3em 0 1em;
+    text-align: center;
+}
+
+header h1, header h2 {
+    font-size: 3em;
+    margin: 0;
+}
+
+button {
+    transform: none !important;
+    min-width: initial;
+    transition: none;
+    animation: none;
+    will-change: initial;
+
+    display: block;
+    font-size: 1.5em;
+    border: 2px solid rgb(235, 235, 235);
+    color: rgb(235, 235, 235);
+    background: transparent;
+    border-radius: 10px;
+    padding: .5em 2em;
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, .1);
+    cursor: pointer;
+}
+
+button:active {
+    color: inherit;
+    background-color: rgba(255, 255, 255, .2);
+}
+
+button:disabled {
+    border-color: rgba(235, 235, 235, .5);
+    color: rgba(235, 235, 235, .5);
+}
+
+@media screen and (max-device-width: 414px),
+    screen and (max-device-height: 414px) and (orientation: landscape) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    section {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        padding: 0 5px;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Tree                                         */
+/* -------------------------------------------------------------------------- */
+
+.tree {
+    padding: 0;
+    list-style-type: none;
+}
+
+.tree .expand-button {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+}
+
+.tree .expand-button ~ ul {
+    display: none;
+}
+
+.tree .expand-button:checked ~ ul {
+    display: block;
+}
+
+.tree ul {
+    list-style-type:none;
+}
+
+.tree li {
+    position: relative;
+    padding: 0 0 1em 1em;
+}
+
+.tree ul li {
+    list-style:none;
+    padding: 1em 0 0 0em;
+}
+
+.tree > li:last-child {
+    padding-bottom: 0;
+}
+
+.tree-label {
+  position: relative;
+  display: inline-block;
+}
+
+label.tree-label {
+    cursor: pointer;
+}
+
+.tree > li > label.tree-label:before {
+    position: relative;
+    z-index: 1;
+    float: left;
+    margin: 0 0 0 -2em;
+    width: 1em;
+    height: 1em;
+    content: '\25BA';
+    text-align: center;
+    line-height: 2.5em;
+    font-size: .5em;
+}
+
+.tree > li > :checked ~ label.tree-label:before {
+    content: '\25BC';
+}
+
+.tree .link {
+    cursor: pointer;
+    color: #999;
+    font-style: italic;
+    margin-left: 2em;
+}
+
+@media screen and (max-device-width: 414px),
+    screen and (max-device-height: 414px) and (orientation: landscape) {
+    .tree {
+        padding-left: 1em;
+    }
+    .tree > li > label.tree-label:before {
+        font-size: 1em;
+        margin-left: -1.75em;
+        line-height: 1em;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 Intro Section                              */
+/* -------------------------------------------------------------------------- */
+
+#intro {
+    padding: 0;
+    opacity: initial;
+    transition: none;
+}
+
+#intro .body > p {
+    padding: 1em 0;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#intro .start-benchmark {
+    padding: 10vh 0;
+    text-align: center;
+}
+
+#intro .start-benchmark p {
+    color: hsl(11, 72%, 50%);
+    margin-bottom: 1em;
+    -apple-trailing-word: -apple-partially-balanced;
+}
+
+#intro .start-benchmark button {
+    margin: 0 auto;
+}
+
+
+@media screen and (max-device-width: 414px),
+    screen and (max-device-height: 414px) and (orientation: landscape) {
+    #intro.selected {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-flow: column;
+    }
+
+    #intro p {
+        padding-left: 20px;
+        padding-right: 20px;
+        font-size: 1.5em;
+    }
+}
+
+#intro h2 {
+    font-size: 1.2em;
+}
+
+#intro .body > div:first-of-type {
+    width: 100%;
+    margin: 2em 0 0;
+    flex-direction: row;
+    display: flex;
+    align-content: flex-start;
+}
+
+#suites {
+    padding-left: 15vw;
+    padding-right: 3em;
+    flex: 1 1 30%;
+}
+
+#options {
+    flex: 10 1 auto;
+}
+
+#intro input[type="number"] {
+    width: 50px;
+}
+
+#suites input[type="number"] {
+    display: none;
+    float: right;
+}
+
+#suites input[type="number"].selected {
+    display: inline;
+    margin: 0;
+}
+
+#suites ul ul {
+    font-size: .8em;
+    margin: 0;
+    padding: 0 0 0 1em;
+}
+
+#suites > div {
+    margin: 3em 0;
+}
+
+#drop-target {
+    font-size: 1em;
+    border-radius: 10px;
+    padding: .5em 2em;
+    border: 2px solid rgb(235, 235, 235);
+    color: rgb(235, 235, 235);
+}
+
+#drop-target:hover {
+    background-color: rgba(255, 255, 255, .1);
+    cursor: pointer;
+}
+
+#options ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#options h3 {
+    font-size: 1em;
+    font-weight: inherit;
+    margin: 0 0 .3em 0;
+    padding: 0;
+}
+
+#options > form > ul > li {
+    padding: 0 0 1em 0;
+}
+
+#options ul ul {
+    padding: 0;
+}
+
+#options li {
+    padding: .1em 0;
+}
+
+#intro > p {
+    padding: 0 5px 1em;
+    font-size: 1em;
+}
+
+#intro .start-benchmark {
+    padding: 0 0 10vh;
+    margin-top: 0;
+}
+
+#intro .start-benchmark p {
+    color: hsl(11, 100%, 66%);
+}
+
+#frame-rate-detection span {
+    color: red;
+}
+
+@media screen and (max-device-width: 414px),
+    screen and (max-device-height: 414px) and (orientation: landscape) {
+    #intro .body > div:first-of-type {
+        flex-direction: column;
+    }
+
+    #suites,
+    #options {
+        padding: 0 5px;
+        margin: 0;
+        flex: 0 0 auto;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           Running Section                                  */
+/* -------------------------------------------------------------------------- */
+
+#running-test {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#progress {
+    display: none;
+}
+
+.display-progress-bar #progress {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+    background-color: rgb(128, 128, 128);
+}
+
+.display-progress-bar #progress-completed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 0;
+    background-color: rgb(235, 96, 32);
+}
+
+body.showing-test-container.tiles-big {
+    overflow: hidden;
+}
+
+body.showing-test-container.tiles-classic {
+    width: 3000px;
+    height: 3000px;
+    overflow: scroll;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           Results Section                                  */
+/* -------------------------------------------------------------------------- */
+
+#results {
+    text-align: center;
+}
+
+#results h1, #test-graph h1 {
+    font-size: 2em;
+}
+
+#results button.small-button {
+    border: 1px solid rgba(235, 235, 235, .9);
+    color: rgba(235, 235, 235, .9);
+    border-radius: 2px;
+    padding: 1px 4px;
+    margin: 0 0 0 1em;
+    font-size: 9px;
+}
+
+#results button.small-button:active {
+    background-color: rgba(235, 235, 235, .2);
+    color: inherit;
+}
+
+#results .score,
+#test-graph .score {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
+}
+
+#results .confidence,
+#test-graph .confidence {
+    margin-top: 0;
+    margin-bottom: 1em;
+    font-size: 1.5em;
+    font-weight: 400;
+    text-indent: inherit;
+    color: inherit;
+}
+
+#results-tables {
+    direction: rtl;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 3em 0;
+}
+
+#results .table-container > div {
+    margin-left: 0;
+}
+
+#results #results-score {
+    float: initial;
+}
+
+#results #results-header {
+    width: initial;
+    position: initial;
+}
+
+#results table {
+    direction: ltr;
+    min-width: initial;
+}
+
+#results table td.suites-separator {
+    padding: .5em 0;
+}
+
+#results table tr:nth-child(even) {
+    background-color: transparent;
+}
+
+#results th {
+    padding: .5em 0;
+}
+
+#results tr td {
+    padding: .25em 0;
+}
+
+#results-header td, #results-header th {
+    text-align: left;
+}
+#results-header tr td {
+    padding-right: 1em;
+}
+#results-score td, #results-score th {
+    text-align: right;
+}
+#results .body > button {
+    margin: 1.5em auto .5em;
+}
+#results footer {
+    padding-bottom: 10vh;
+}
+
+@media screen and (max-device-width: 414px),
+    screen and (max-device-height: 414px) and (orientation: landscape) {
+    #results.selected {
+        padding: 0 20px;
+    }
+}
+
+#overlay {
+    background: rgba(0, 0, 10, .8);
+}
+
+@supports (-webkit-backdrop-filter: blur(10px)) {
+    #overlay {
+        background: rgba(0, 0, 10, .4);
+    }
+}
+
+#overlay > div div {
+    border: 1px solid rgb(241, 241, 241);
+}
+
+#overlay button {
+    margin: 2em auto;
+    border-color: rgb(241, 241, 241);
+    color: rgb(241, 241, 241);
+}
+
+#overlay button:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+#overlay button:active {
+    background-color: rgba(255, 255, 255, .2);
+}
+
+#results-data .average {
+    padding-left: 1em;
+    text-align: right;
+}
+
+#results-data .stdev {
+    text-align: left;
+    padding-left: .25em;
+}
+
+#results-data .left {
+    text-align: left;
+}
+
+#results-data .right {
+    text-align: right;
+}
+
+#results-data .pad-left {
+    padding-left: 1em;
+}
+
+#results-data .pad-right {
+    padding-right: .25em;
+}
+
+#results-data .small {
+    font-size: .8em;
+}
+
+#results-tables td.noisy-results {
+    color: rgb(255, 104, 104);
+}
+
+#results-tables div {
+    direction: ltr;
+    display: flex;
+    flex-direction: row;
+}
+
+#test-graph {
+    flex: 1 0 calc(100% - 40px);
+}
+
+#test-graph h1 {
+    margin-bottom: 0;
+}
+
+#test-graph header {
+    position: relative;
+    text-align:center;
+}
+
+#test-graph header button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-width: 1px;
+    font-size: 1em;
+    padding: .5em 1em;
+}
+
+#test-graph .score, #test-graph .confidence {
+    margin: 0;
+}
+
+#test-graph nav {
+    position: absolute;
+    top: 1.5em;
+    right: 0;
+    font-size: .7em;
+    width: 28em;
+}
+
+#test-graph nav ul {
+    margin: 0 30px 1em 0;
+    padding: 0;
+    list-style: none;
+}
+
+#test-graph nav li {
+    padding: .1em 0;
+}
+
+#test-graph nav li > span {
+    float: right;
+}
+
+#test-graph nav.hide-data span {
+    display: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           Graph Section                                    */
+/* -------------------------------------------------------------------------- */
+
+#test-graph-data {
+    z-index: 1;
+    font: 10px sans-serif;
+    color: rgb(235, 235, 235);
+}
+
+#test-graph-data > svg {
+    fill: none;
+    overflow: visible;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #999999;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    fill: #999;
+}
+
+.yLeft.axis text {
+    fill: #7add49;
+}
+.yLeft.axis path,
+.yLeft.axis line {
+    stroke: #7add49;
+}
+.yRight.axis text {
+    fill: #fa4925;
+}
+.yRight.axis path,
+.yRight.axis line {
+    stroke: #fa4925;
+}
+
+.axis.complexity .tick line {
+    stroke: rgba(200, 200, 200, .6);
+    stroke-width: 2px;
+}
+
+.axis.complexity .domain,
+.axis.complexity text {
+    stroke: transparent;
+    fill: transparent;
+}
+
+.marker line {
+    stroke: #5493D6;
+}
+
+.marker text {
+    fill: #999;
+}
+
+.mean.complexity line {
+    stroke: hsla(100, 69%, 58%, .8);
+    stroke-width: 2px;
+}
+
+.mean.complexity polygon {
+    fill: hsla(100, 69%, 58%, .05);
+}
+
+.target-fps {
+    stroke: rgba(250, 73, 37, .4);
+    stroke-width: 1px;
+    stroke-dasharray: 10, 10;
+}
+
+.mean.fps line {
+    stroke: hsla(10, 96%, 56%, .8);
+    stroke-width: 2px;
+}
+
+.mean.fps polygon {
+    fill: hsla(10, 96%, 56%, .1);
+}
+
+#regressions line {
+    stroke: rgba(200, 200, 200, .8);
+    stroke-width: 2px;
+}
+
+#regressions line.association {
+    stroke-width: 1px;
+}
+
+#regressions circle {
+    fill: rgba(200, 200, 200, .8);
+}
+
+.cursor line {
+    stroke: rgb(250, 250, 250);
+    stroke-width: 1px;
+}
+
+.cursor circle,
+.cursor text {
+    fill: rgb(250, 250, 250);
+}
+
+#complexity path {
+    stroke: rgba(122, 221, 73, .7);
+    stroke-width: 2px;
+}
+
+#complexity circle {
+    fill: rgb(122, 221, 73);
+}
+
+#filteredFPS path {
+    stroke: hsla(30, 96%, 56%, .7);
+    stroke-width: 1px;
+}
+
+#filteredFPS circle {
+    fill: hsl(30, 96%, 56%);
+}
+
+#rawFPS path {
+    stroke: rgba(250, 73, 37, .7);
+    stroke-width: 1px;
+}
+
+#rawFPS circle {
+    fill: rgb(250, 73, 37);
+}
+
+#complexity-graph .regression line {
+    stroke: rgba(253, 253, 253, .8);
+    stroke-width: 2px;
+}
+
+#complexity-graph .regression circle {
+    fill: rgba(253, 253, 253, .8);
+}
+
+#complexity-graph .regression polygon {
+    fill: rgba(253, 253, 253, .2);
+}
+
+#complexity-graph .raw.series line {
+    stroke: hsla(30, 96%, 56%, .3);
+    stroke-width: 1px;
+}
+
+#complexity-graph .raw.regression line {
+    stroke: rgba(30, 96%, 86%, .6);
+}
+
+#complexity-graph .raw.regression polygon {
+    stroke: rgba(30, 96%, 86%, .05);
+}
+
+#complexity-graph .bootstrap .bar {
+    fill: hsla(260, 56%, 66%, .4);
+}
+
+#complexity-graph .bootstrap .median line {
+    stroke: hsla(300, 56%, 66%, .8);
+    stroke-width: 2px;
+}
+
+#complexity-graph .bootstrap .median circle {
+    fill: hsla(300, 56%, 66%, .8);
+}
+
+#complexity-graph .bootstrap .median polygon {
+    fill: hsla(240, 56%, 66%, .4);
+}

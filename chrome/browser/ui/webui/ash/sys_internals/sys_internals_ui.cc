@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
@@ -25,7 +26,8 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
                                              chrome::kChromeUISysInternalsHost);
-  html_source->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(html_source);
+
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");

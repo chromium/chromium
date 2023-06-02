@@ -78,7 +78,8 @@ os = struct(
     MAC_10_15 = os_enum(os_category.MAC, "Mac-10.15"),
     MAC_12 = os_enum(os_category.MAC, "Mac-12"),
     MAC_13 = os_enum(os_category.MAC, "Mac-13"),
-    MAC_DEFAULT = os_enum(os_category.MAC, "Mac-12"),
+    # TODO(crbug.com/1448262) Remove Mac 12 once builders migrate to Mac 13
+    MAC_DEFAULT = os_enum(os_category.MAC, "Mac-12|Mac-13"),
     MAC_ANY = os_enum(os_category.MAC, "Mac"),
     WINDOWS_10 = os_enum(os_category.WINDOWS, "Windows-10"),
     WINDOWS_11 = os_enum(os_category.WINDOWS, "Windows-11"),
@@ -398,6 +399,7 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
+    siso_config = None,
     siso_project = None,
     siso_enable_cloud_profiler = None,
     siso_enable_cloud_trace = None,
@@ -464,6 +466,7 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
+        siso_config = args.DEFAULT,
         siso_project = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
@@ -646,6 +649,8 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
+        siso_config: a string of siso config. available values are defined in
+            //build/config/siso/config.star.
         siso_project: a string indicating the GCP project hosting the RBE
             instance and other Cloud services. e.g. logging, trace etc.
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
@@ -818,6 +823,7 @@ def builder(
         "project": defaults.get_value("siso_project", siso_project),
         "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
         "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
+        "config": defaults.get_value("siso_config", siso_config),
     }
     if siso["project"]:
         properties["$build/siso"] = siso

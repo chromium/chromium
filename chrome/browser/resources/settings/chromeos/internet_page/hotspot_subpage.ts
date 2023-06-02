@@ -30,7 +30,8 @@ import {getTemplate} from './hotspot_subpage.html.js';
 const SettingsHotspotSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
-class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
+export class SettingsHotspotSubpageElement extends
+    SettingsHotspotSubpageElementBase {
   static get is() {
     return 'settings-hotspot-subpage' as const;
   }

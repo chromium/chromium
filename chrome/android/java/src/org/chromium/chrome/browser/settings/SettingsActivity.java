@@ -34,12 +34,13 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
-import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
+import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -398,12 +399,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (BackPressManager.isSecondaryActivityEnabled()) {
             if (activeFragment instanceof BackPressHandler) {
                 BackPressHelper.create(activeFragment.getViewLifecycleOwner(),
-                        getOnBackPressedDispatcher(), (BackPressHandler) activeFragment);
+                        getOnBackPressedDispatcher(), (BackPressHandler) activeFragment,
+                        SecondaryActivity.SETTINGS);
             }
         } else if (activeFragment instanceof BackPressHelper.ObsoleteBackPressedHandler) {
             BackPressHelper.create(activeFragment.getViewLifecycleOwner(),
                     getOnBackPressedDispatcher(),
-                    (BackPressHelper.ObsoleteBackPressedHandler) activeFragment);
+                    (BackPressHelper.ObsoleteBackPressedHandler) activeFragment,
+                    SecondaryActivity.SETTINGS);
         }
     }
 

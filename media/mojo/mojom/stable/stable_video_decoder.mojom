@@ -95,6 +95,7 @@ interface StableCdmContext {
 
 // Based on |media.mojom.VideoDecoder|.
 // Next min method ID: 5
+// Next min version: 2
 [Stable, Uuid="85611470-3e87-43a9-ac75-a11a63e76415"]
 interface StableVideoDecoder {
   // Returns a list of supported configs as well as the decoder ID for the
@@ -129,6 +130,9 @@ interface StableVideoDecoder {
   // |cdm_context| is required for the first Initialize() call that sets up
   // encryption and is ignored on subsequent calls.
   //
+  // |needs_transcryption| tells the client whether it needs to do transcryption
+  // for encrypted content before sending it to the decoder.
+  //
   // TODO(b/195769334): consider passing |cdm_context| in Construct() instead of
   // Initialize().
   Initialize@2(VideoDecoderConfig config, bool low_delay,
@@ -136,7 +140,8 @@ interface StableVideoDecoder {
       => (Status status,
           bool needs_bitstream_conversion,
           int32 max_decode_requests,
-          VideoDecoderType decoder_type);
+          VideoDecoderType decoder_type,
+          [MinVersion=1] bool needs_transcryption);
 
   // Request decoding of exactly one frame or an EOS buffer. This must not be
   // called while there are pending Initialize(), Reset(), or Decode(EOS)

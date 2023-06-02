@@ -3792,7 +3792,8 @@ TEST_F(AppListPresenterTest, TapAppListThenShelfHidesAutoHiddenShelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
-TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
+// TODO(b/283753290): Deflake and re-enable the test.
+TEST_F(AppListPresenterTest, DISABLED_ClickingShelfArrowDoesNotHideAppList) {
   // Add enough shelf items for the shelf to enter overflow.
   Shelf* const shelf = GetPrimaryShelf();
   ScrollableShelfView* const scrollable_shelf_view =

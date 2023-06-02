@@ -122,8 +122,7 @@ using CreateWebUIControllerFunc = base::RepeatingCallback<std::unique_ptr<
 // Consider the following approaches when registering component
 // WebUIConfigs, in order of preference:
 //   1. Using a Delegate with MakeComponentConfigWithDelegate,
-//   2. Using custom arguments with MakeComponentConfigWithArgs,
-//   3. Using a custom MakeConfig() method (least preferred, avoid if possible).
+//   2. Using a custom MakeConfig() method (least preferred, avoid if possible).
 
 template <class Config, class Controller, class Delegate>
 std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithDelegate() {
@@ -137,33 +136,28 @@ std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithDelegate() {
   return std::make_unique<Config>(create_controller_func);
 }
 
-template <class Config, class Controller, typename... Args>
-std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithArgs(
-    Args&&... args) {
-  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](const std::decay_t<Args>&... args, content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-        return std::make_unique<Controller>(web_ui, args...);
-      },
-      args...);
-
-  return std::make_unique<Config>(create_controller_func);
-}
-
 std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
-  return MakeComponentConfigWithArgs<ConnectivityDiagnosticsUIConfig,
-                                     ConnectivityDiagnosticsUI>(
-      /* BindNetworkDiagnosticsServiceCallback */
-      base::BindRepeating(&network_health::NetworkHealthManager::
-                              NetworkDiagnosticsServiceCallback),
-      /* BindNetworkHealthServiceCallback */
-      base::BindRepeating(
-          &network_health::NetworkHealthManager::NetworkHealthServiceCallback),
-      /* SendFeedbackReportCallback */
-      base::BindRepeating(
-          &chrome::ShowFeedbackDialogForWebUI,
-          chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
-      /*show_feedback_button=*/!chrome::IsRunningInAppMode());
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        return std::make_unique<ConnectivityDiagnosticsUI>(
+            web_ui,
+            /* BindNetworkDiagnosticsServiceCallback */
+            base::BindRepeating(&network_health::NetworkHealthManager::
+                                    NetworkDiagnosticsServiceCallback),
+            /* BindNetworkHealthServiceCallback */
+            base::BindRepeating(&network_health::NetworkHealthManager::
+                                    NetworkHealthServiceCallback),
+            /* SendFeedbackReportCallback */
+            base::BindRepeating(
+                &chrome::ShowFeedbackDialogForWebUI,
+                chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
+            /*show_feedback_button=*/
+            !chrome::IsRunningInAppMode());
+      });
+
+  return std::make_unique<ConnectivityDiagnosticsUIConfig>(
+      create_controller_func);
 }
 
 std::unique_ptr<content::WebUIConfig> MakeDiagnosticsUIConfig() {
@@ -202,6 +196,17 @@ std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
       });
 
   return std::make_unique<eche_app::EcheAppUIConfig>(create_controller_func);
+}
+
+std::unique_ptr<content::WebUIConfig> MakeGuestOSInstallerUIConfig() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        return std::make_unique<GuestOSInstallerUI>(
+            web_ui, base::BindRepeating(&guest_os::InstallerDelegateFactory));
+      });
+
+  return std::make_unique<GuestOSInstallerUIConfig>(create_controller_func);
 }
 
 void RegisterAshChromeWebUIConfigs() {
@@ -250,9 +255,7 @@ void RegisterAshChromeWebUIConfigs() {
                                       file_manager::FileManagerUI,
                                       ChromeFileManagerUIDelegate>());
   map.AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
-  map.AddWebUIConfig(
-      MakeComponentConfigWithArgs<GuestOSInstallerUIConfig, GuestOSInstallerUI>(
-          base::BindRepeating(&guest_os::InstallerDelegateFactory)));
+  map.AddWebUIConfig(MakeGuestOSInstallerUIConfig());
   map.AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<HelpAppUIConfig, HelpAppUI,

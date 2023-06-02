@@ -69,7 +69,6 @@ bool BlockHeader::CreateMapBlock(int size, int* index) {
     return false;
   }
 
-  TimeTicks start = TimeTicks::Now();
   // We are going to process the map on 32-block chunks (32 bits), and on every
   // chunk, iterate through the 8 nibbles where the new block can be located.
   int current = header_->hints[target - 1];
@@ -102,7 +101,6 @@ bool BlockHeader::CreateMapBlock(int size, int* index) {
       if (target != size) {
         header_->empty[target - size - 1]++;
       }
-      LOCAL_HISTOGRAM_TIMES("DiskCache.CreateBlock", TimeTicks::Now() - start);
       return true;
     }
   }
@@ -119,7 +117,6 @@ void BlockHeader::DeleteMapBlock(int index, int size) {
     NOTREACHED();
     return;
   }
-  TimeTicks start = TimeTicks::Now();
   int byte_index = index / 8;
   uint8_t* byte_map = reinterpret_cast<uint8_t*>(header_->allocation_map);
   uint8_t map_block = byte_map[byte_index];
@@ -149,7 +146,6 @@ void BlockHeader::DeleteMapBlock(int index, int size) {
   std::atomic_thread_fence(std::memory_order_seq_cst);
   header_->num_entries--;
   STRESS_DCHECK(header_->num_entries >= 0);
-  LOCAL_HISTOGRAM_TIMES("DiskCache.DeleteBlock", TimeTicks::Now() - start);
 }
 
 // Note that this is a simplified version of DeleteMapBlock().
@@ -523,7 +519,6 @@ MappedFile* BlockFiles::FileForNewBlock(FileType block_type, int block_count) {
   MappedFile* file = block_files_[block_type - 1].get();
   BlockHeader file_header(file);
 
-  TimeTicks start = TimeTicks::Now();
   while (file_header.NeedToGrowBlockFile(block_count)) {
     if (kMaxBlocks == file_header.Header()->max_entries) {
       file = NextFile(file);
@@ -537,8 +532,6 @@ MappedFile* BlockFiles::FileForNewBlock(FileType block_type, int block_count) {
       return nullptr;
     break;
   }
-  LOCAL_HISTOGRAM_TIMES("DiskCache.GetFileForNewBlock",
-                        TimeTicks::Now() - start);
   return file;
 }
 
@@ -605,7 +598,6 @@ bool BlockFiles::RemoveEmptyFile(FileType block_type) {
       block_files_[file_index] = nullptr;
 
       int failure = base::DeleteFile(name) ? 0 : 1;
-      UMA_HISTOGRAM_COUNTS_1M("DiskCache.DeleteFailed2", failure);
       if (failure)
         LOG(ERROR) << "Failed to delete " << name.value() << " from the cache.";
       continue;

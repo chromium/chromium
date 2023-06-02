@@ -147,7 +147,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {
   EXPECT_TRUE(tracker()->GetPendingUpdateById(id));
   base::RunLoop().RunUntilIdle();
   const NetworkState* network = FindLocalNetworkById(id);
-  EXPECT_TRUE(network);
+  ASSERT_TRUE(network);
   EXPECT_FALSE(network->hidden_ssid());
   EXPECT_FALSE(tracker()->GetPendingUpdateById(id));
   EXPECT_TRUE(
@@ -212,9 +212,9 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_TwoNetworks) {
   base::RunLoop().RunUntilIdle();
 
   const NetworkState* fred_network = FindLocalNetworkById(fred_network_id());
+  ASSERT_TRUE(fred_network);
   const NetworkState* mango_network = FindLocalNetworkById(mango_network_id());
-  EXPECT_TRUE(fred_network);
-  EXPECT_TRUE(mango_network);
+  ASSERT_TRUE(mango_network);
   EXPECT_TRUE(
       NetworkHandler::Get()->network_metadata_store()->GetIsConfiguredBySync(
           fred_network->guid()));

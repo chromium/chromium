@@ -78,7 +78,8 @@ class ProfileInteractionManager
   raw_ptr<content::Page> page_ = nullptr;
 
   // Unowned and must outlive this object.
-  raw_ptr<SubresourceFilterProfileContext> profile_context_ = nullptr;
+  raw_ptr<SubresourceFilterProfileContext, DanglingUntriaged> profile_context_ =
+      nullptr;
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
 

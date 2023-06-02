@@ -56,7 +56,9 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetRestoreInfoWithWindowIdSource(int32_t, const std::string&) override;
   void SetSystemModal(bool modal) override;
   bool SupportsScreenCoordinates() const override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   void EnableScreenCoordinates() override;
+#endif
   void SetFloat() override;
   void UnSetFloat() override;
   void SetZOrder(ZOrderLevel z_order) override;

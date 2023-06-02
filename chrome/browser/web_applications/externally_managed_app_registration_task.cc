@@ -35,7 +35,9 @@ ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
     : ExternallyManagedAppRegistrationTaskBase(std::move(install_url)),
       url_loader_(url_loader),
       web_contents_(web_contents),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)) {}
+
+void ExternallyManagedAppRegistrationTask::Start() {
   content::StoragePartition* storage_partition =
       web_contents_->GetBrowserContext()->GetStoragePartition(
           web_contents_->GetSiteInstance());
@@ -79,6 +81,7 @@ void ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(
 }
 
 void ExternallyManagedAppRegistrationTask::CheckHasServiceWorker() {
+  // Note: This can call the callback synchronously
   service_worker_context_->CheckHasServiceWorker(
       install_url(),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(install_url())),
@@ -91,7 +94,11 @@ void ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker(
     content::ServiceWorkerCapability capability) {
   if (capability != content::ServiceWorkerCapability::NO_SERVICE_WORKER) {
     registration_timer_.Stop();
-    std::move(callback_).Run(RegistrationResultCode::kAlreadyRegistered);
+    // This is posted as a task because the serviceworker check can be
+    // synchronous.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  RegistrationResultCode::kAlreadyRegistered));
     return;
   }
 

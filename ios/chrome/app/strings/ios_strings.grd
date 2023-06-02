@@ -246,6 +246,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE" desc="Message when opening a New Incognito Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to create a new Incognito tab.">
        Incognito Search
       </message>
+      <message name="IDS_IOS_APPLICATION_SHORTCUT_LENS_TITLE" desc="Message when opening Lens from springboard force touch static shortcuts. [Length: unlimited] [iOS only].">
+        Search with Lens
+      </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE" desc="Message when opening a New Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to create a new tab.">
         New Search
       </message>
@@ -432,6 +435,11 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_DELETE" desc="Title of button that deletes currently edited bookmark. [Length: 20em.]">
         Delete
       </message>
+      <message name="IDS_IOS_BOOKMARK_DELETED_BOOKMARKS" desc="This confirmation message is intended to help users understand that a bookmark has been deleted. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative. [iOS only]">
+        {count, plural,
+        =1 {1 bookmark deleted}
+        other {{count} bookmarks deleted}}
+      </message>
       <message name="IDS_IOS_BOOKMARK_EDIT_PARENT_FOLDER_BUTTON_HINT" desc="The accessibility hint spoken when hovering over the parent folder of a bookmark in the editor. [iOS only]">
         Double tap to change the parent folder.
       </message>
@@ -536,17 +544,22 @@ locale.  The strings in this file are specific to iOS.
         =1 {Bookmarked}
         other {Bookmarked}}
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="Presented in a snackbar when  bookmark are created. Specifies in which folder the bookmark was added. [Length: 30em.]">
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="This confirmation message is intended to help users understand that a bookmark has been saved in Chrome. These users are not signed in to a Google Account and are not syncing their data, so we do not specify where the bookmark is saved. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
           {count, plural,
-          =1 {Bookmarked to "{title}"}
-          other {Bookmarked to "{title}"}}
+          =1 {Bookmark saved to "{title}"}
+          other {Bookmarks saved to "{title}"}}
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT" desc="Presented in a snackbar when bookmarks are created in an account. Specifies in which folder the bookmark was added. ">
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE" desc="This confirmation message is intended to help users understand that a bookmark has been saved in Chrome. These users are not signed in to a Google Account and are not syncing their data, so we do not specify where the bookmark is saved. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
+          {count, plural,
+          =1 {Bookmark saved to "{title}". It is only saved to this device.}
+          other {Bookmarks saved to "{title}". It is only saved to this device.}}
+      </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT" desc="This confirmation message is intended to help users understand that a bookmark has been saved in their Google Account. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
           {count, plural,
           =1 {Bookmark saved in your Google Account, {email}}
           other {Bookmarks saved in your Google Account, {email}}}
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER" desc="Presented in a snackbar when bookmarks are created in the folder named `TITLE` in an account with `EMAIL`.">
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER" desc="This confirmation message is intended to help users understand that a bookmark has been saved to a particular folder in their Google Account. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
          {count, plural,
          =1 {Bookmark saved to "{title}" in your account, {email}}
          other {Bookmarks saved to "{title}" in your account, {email}}}
@@ -848,9 +861,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_HALF_SCREEN_PROMO_SECONDARY_BUTTON_TEXT" desc="Text of button that will dismiss the half screen default browser promo [iOS only]">
         No, Thanks
-      </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_REMIND_ME_LATER_BUTTON_TEXT" desc="Text of button that will show the default browser modal promo UI again at a later time.  [iOS only]">
-        Remind Me Later
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT" desc="Text of secondary button that will dismiss the default browser modal promo UI [iOS only]">
         No Thanks
@@ -2921,6 +2931,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_CHECKUP" desc="Title for the item in Settings for Password Checkup feature." meaning="Label tells the user about status of Password Checkup [CHAR_LIMIT=25] [iOS only]">
         Password Checkup
       </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Addition to the accessibility label for the Password Checkup cell in the Password Manager page when the Password Checkup resulted with no insecure passwords. Meaning that all saved passwords are safe. [iOS only]">
+        No issues found
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_ONGOING" desc="In Title Case: Title for the item in Settings for Password Checkup feature while the checks are running. [CHAR_LIMIT=25] [iOS only]" meaning="In Title Case.">
         Checking Passwords…
       </message>
@@ -3011,7 +3024,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Entered on a deceptive site and found in a data breach
       </message>
       <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_DISMISSED_WARNINGS_BUTTON_TITLE" desc="Text of the button presenting the password manager screen displaying compromised credential issues dismissed by the user. [iOS only]">
-        Dismissed Warnings (<ph name="COUNT">$1<ex>2</ex></ph>)
+        Dismissed Warnings
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD" desc="Button which is shown on Password Details Screen when password is compromised. [iOS only]" meaning="Telling user to change password on a website since it is compromised.">
         Change Password on Website
@@ -4348,6 +4361,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS" desc="This confirmation message is intended to help users understand that they have signed in to Chrome with their Google Account. The confirmation message appears at the bottom of the Bookmarks page after users choose an account to sign in to. The tone should be informative. [iOS only]">
         Signed in as <ph name="USER_EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
+      <message name="IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK" desc="This string is found on a button that takes the user to the Edit Bookmark screen when the user taps it. The button is on a confirmation message that users see when they save a bookmark to their device or in their Google Account. This text is a verb and is short for the longer phrase 'edit the bookmark.' The tone should be informative. Use Apple-style title case. [CHAR_LIMIT=15]">
+        Edit
+      </message>
       <message name="IDS_IOS_SIGNIN_SNACKBAR_UNDO" desc="This string is found on a button that signs the user out when the user taps it. It is on a confirmation message that users see when they sign in to Chrome with their Google Account. This text is a verb and is short for the longer phrase 'Undo my sign-in.' The tone should be informative. [Length: 15em] [iOS only]">
         Undo
       </message>
@@ -4476,11 +4492,8 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH" desc="Accessibility label for a button that starts a Paste and Search [iOS only]">
         Paste and Search
       </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP" desc="The text of the tip explaining to the user they can use the carousel in the overflow menu.">
-        Your saved bookmarks, passwords, settings, and more are now here
-      </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP_VOICEOVER" desc="The VoiceOver announcement for the tip explaining to the user they can use the carousel in the overflow menu.">
-        Your saved bookmarks, passwords, settings, and more are available from this screen.
+      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user they can use the history item in the overflow menu.">
+        View browsing history.
       </message>
       <message name="IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of address suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has address suggestions available for autofill purposes. According to the number of available addresses, the string goes from singular to plural. [iOS only]">
         {count, plural,
@@ -4589,9 +4602,6 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL" desc="The label of the verify your account action button in the identity error info bar. [iOS only]">
         Verify
-      </message>
-      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining that browsing history can be viewed from the Overflow Menu.">
-        View browsing history
       </message>
     </messages>
   </release>

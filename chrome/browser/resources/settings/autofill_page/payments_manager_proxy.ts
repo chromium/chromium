@@ -93,6 +93,12 @@ export interface PaymentsManagerProxy {
    * toggle is successful.
    */
   authenticateUserAndFlipMandatoryAuthToggle(): void;
+
+  /**
+   * Authenticate the user via device authentication and display the edit dialog
+   * for local card if the auth is successful.
+   */
+  authenticateUserToEditLocalCard(): Promise<boolean>;
 }
 
 /**
@@ -174,6 +180,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   authenticateUserAndFlipMandatoryAuthToggle() {
     chrome.autofillPrivate.authenticateUserAndFlipMandatoryAuthToggle();
+  }
+
+  authenticateUserToEditLocalCard() {
+    return chrome.autofillPrivate.authenticateUserToEditLocalCard();
   }
 
   static getInstance(): PaymentsManagerProxy {

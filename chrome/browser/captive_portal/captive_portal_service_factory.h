@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CAPTIVE_PORTAL_CAPTIVE_PORTAL_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_CAPTIVE_PORTAL_CAPTIVE_PORTAL_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -32,7 +32,7 @@ class CaptivePortalServiceFactory : public ProfileKeyedServiceFactory {
  private:
   friend class CaptivePortalBrowserTest;
   friend class CaptivePortalServiceTest;
-  friend struct base::DefaultSingletonTraits<CaptivePortalServiceFactory>;
+  friend base::NoDestructor<CaptivePortalServiceFactory>;
 
   CaptivePortalServiceFactory();
   ~CaptivePortalServiceFactory() override;

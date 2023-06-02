@@ -71,6 +71,7 @@ class CookieControlsController
 
     // PageSpecificContentSettings::SiteDataObserver:
     void OnSiteDataAccessed(const AccessDetails& access_details) override;
+    void OnStatefulBounceDetected() override;
 
    private:
     raw_ptr<CookieControlsController> cookie_controls_;
@@ -92,6 +93,9 @@ class CookieControlsController
 
   // Returns the number of blocked cookies.
   int GetBlockedCookieCount();
+
+  // Returns the number of stateful bounces leading to this page.
+  int GetStatefulBounceCount();
 
   content::WebContents* GetWebContents();
 

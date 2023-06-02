@@ -157,6 +157,29 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // actually run (i.e. whether an update was scheduled).
   bool RunScheduledUpdateForTest();
 
+ protected:
+  // Fades the view in and animates a vertical transform based on the view's
+  // position in the overall search container view.
+  static void ShowViewWithAnimation(views::View* result_view,
+                                    int position,
+                                    bool use_short_animations);
+
+  // Updates the visibility of this container view and its children result
+  // views. Force hiding all views if `force_hide` is set to true.
+  virtual void UpdateResultsVisibility(bool force_hide) = 0;
+
+  // Returns the title label if there is one, otherwise returns nullptr.
+  virtual views::View* GetTitleLabel() = 0;
+
+  // Returns the views in the container that will be animated to become visible.
+  virtual std::vector<views::View*> GetViewsToAnimate() = 0;
+
+  // A search result list view may be disabled if there are fewer search result
+  // categories than there are search result list views in the
+  // 'productivity_launcher_search_view_'. A disabled view does not query the
+  // search model.
+  bool enabled_ = true;
+
  private:
   // Schedules an Update call using |update_factory_|. Do nothing if there is a
   // pending call.

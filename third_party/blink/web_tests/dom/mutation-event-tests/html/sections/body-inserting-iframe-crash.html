@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+var iframe = null;
+
+function start() {
+    iframe = document.createElement('iframe');
+    iframe.setAttribute('marginwidth', 1);
+    document.body.appendChild(iframe);
+
+    var bodyInFrame = document.createElement('body');
+    bodyInFrame.addEventListener('DOMSubtreeModified', removeIframe);
+    iframe.contentDocument.documentElement.appendChild(bodyInFrame);
+    document.body.innerHTML = 'PASS if not crashed.';
+}
+
+function removeIframe() {
+    iframe.parentNode.removeChild(iframe);
+    iframe = null;
+    gc();
+}
+</script>
+<body onload="start()">
+</body>

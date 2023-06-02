@@ -206,7 +206,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
   void OnSessionBecameActive(const std::string& id);
   // Called by a Session when it becomes inactive.
   void OnSessionBecameInactive(const std::string& id);
-  void HideMediaDialog();
   void OnReceivedAudioFocusRequests(
       std::vector<media_session::mojom::AudioFocusRequestStatePtr> sessions);
   void OnItemUnfrozen(const std::string& id);

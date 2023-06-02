@@ -15,6 +15,8 @@ namespace device_signals {
 class UserPermissionService;
 }  // namespace device_signals
 
+class ConsentRequester;
+
 namespace enterprise_connectors {
 
 class DeviceTrustService;
@@ -53,6 +55,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
+  content::NavigationThrottle::ThrottleCheckResult MayTriggerConsentDialog();
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
   // Not owned, profile-keyed service.
@@ -71,6 +74,12 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
 
   // Invoked when generation of the challenge response timed out.
   void OnResponseTimedOut(base::TimeTicks start_time);
+
+  // Callback function for when kDeviceSignalsConsentReceived is updated
+  // to true.
+  void OnConsentPrefUpdated();
+
+  std::unique_ptr<ConsentRequester> consent_requester_;
 
   // Only set to true when a challenge response (or timeout) resumed the
   // throttled navigation.

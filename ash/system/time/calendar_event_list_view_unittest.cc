@@ -4,10 +4,12 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
+#include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -50,7 +52,8 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
 
 }  // namespace
 
-class CalendarViewEventListViewTest : public AshTestBase {
+class CalendarViewEventListViewTest : public AshTestBase,
+                                      public testing::WithParamInterface<bool> {
  public:
   CalendarViewEventListViewTest() = default;
   CalendarViewEventListViewTest(const CalendarViewEventListViewTest&) = delete;
@@ -59,6 +62,8 @@ class CalendarViewEventListViewTest : public AshTestBase {
   ~CalendarViewEventListViewTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kCalendarJelly,
+                                              IsCalendarJellyEnabled());
     AshTestBase::SetUp();
     controller_ = std::make_unique<CalendarViewController>();
   }
@@ -92,22 +97,34 @@ class CalendarViewEventListViewTest : public AshTestBase {
                                    /*row_index=*/0);
   }
 
+  // The way we send metrics is slightly different for Jelly so we need to
+  // ensure this value is set to true in the controller.
+  void SetEventListIsShowingForMetrics() {
+    controller_->is_event_list_showing_ = true;
+  }
+
   CalendarEventListView* event_list_view() { return event_list_view_.get(); }
   views::View* content_view() { return event_list_view_->content_view_; }
   CalendarViewController* controller() { return controller_.get(); }
 
-  views::Label* GetSummary(int child_index) {
-    return static_cast<views::Label*>(
-        static_cast<CalendarEventListItemView*>(
-            content_view()->children()[child_index])
-            ->summary_);
+  views::View* GetSameDayEventsContainer() {
+    views::View* container =
+        content_view()->GetViewByID(kEventListSameDayEventsContainer);
+    CHECK(container);
+
+    return container;
   }
 
-  views::Label* GetTimeRange(int child_index) {
-    return static_cast<views::Label*>(
-        static_cast<CalendarEventListItemView*>(
-            content_view()->children()[child_index])
-            ->time_range_);
+  views::Label* GetSummary(int child_index) {
+    return features::IsCalendarJellyEnabled()
+               ? static_cast<views::Label*>(
+                     static_cast<CalendarEventListItemViewJelly*>(
+                         GetSameDayEventsContainer()->children()[child_index])
+                         ->GetViewByID(kSummaryLabelID))
+               : static_cast<views::Label*>(
+                     static_cast<CalendarEventListItemView*>(
+                         content_view()->children()[child_index])
+                         ->summary_);
   }
 
   std::u16string GetEmptyLabel() {
@@ -116,27 +133,47 @@ class CalendarViewEventListViewTest : public AshTestBase {
         ->GetText();
   }
 
+  ActionableView* GetActionableView(int child_index) {
+    return features::IsCalendarJellyEnabled()
+               ? static_cast<ActionableView*>(
+                     GetSameDayEventsContainer()->children()[child_index])
+               : static_cast<ActionableView*>(
+                     content_view()->children()[child_index]);
+  }
+
+  size_t GetContentViewSize() {
+    return features::IsCalendarJellyEnabled()
+               ? GetSameDayEventsContainer()->children().size()
+               : content_view()->children().size();
+  }
+
+  size_t GetEmptyContentViewSize() { return content_view()->children().size(); }
+
+  bool IsCalendarJellyEnabled() { return GetParam(); }
+
  private:
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CalendarViewEventListViewTest, ShowEvents) {
+INSTANTIATE_TEST_SUITE_P(All, CalendarViewEventListViewTest, testing::Bool());
+
+TEST_P(CalendarViewEventListViewTest, ShowEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
 
   CreateEventListView(date - base::Days(1));
 
   // No events on 17 Nov 2021, so we see the empty list default.
-  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(1u, GetEmptyContentViewSize());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
             GetEmptyLabel());
 
   SetSelectedDate(date);
 
   // 3 events on 18 Nov 2021. And they should be sorted by the start time.
-  EXPECT_EQ(3u, content_view()->children().size());
+  EXPECT_EQ(3u, GetContentViewSize());
   EXPECT_EQ(u"summary_1", GetSummary(0)->GetText());
   EXPECT_EQ(u"summary_0", GetSummary(1)->GetText());
   EXPECT_EQ(u"summary_2", GetSummary(2)->GetText());
@@ -145,33 +182,33 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
 
   // 1 event on 19 Nov 2021. For no title mettings, shows "No title" as the
   // meeting summary.
-  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(1u, GetContentViewSize());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE),
             GetSummary(0)->GetText());
 
   SetSelectedDate(date + base::Days(2));
 
   // 0 event on 20 Nov 2021.
-  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(1u, GetEmptyContentViewSize());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
             GetEmptyLabel());
 
   SetSelectedDate(date + base::Days(3));
 
   // 2 events on 21 Nov 2021.
-  EXPECT_EQ(2u, content_view()->children().size());
+  EXPECT_EQ(2u, GetContentViewSize());
   EXPECT_EQ(u"summary_4", GetSummary(0)->GetText());
   EXPECT_EQ(u"summary_5", GetSummary(1)->GetText());
 }
 
-TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
+TEST_P(CalendarViewEventListViewTest, LaunchEmptyList) {
   base::HistogramTester histogram_tester;
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date - base::Days(1));
 
   // No events, so we see the empty list by default.
-  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(1u, GetEmptyContentViewSize());
   views::Button* empty_list_button =
       static_cast<views::Button*>(content_view()->children()[0]->children()[0]);
   empty_list_button->AcceleratorPressed(
@@ -184,16 +221,18 @@ TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
             0);
 }
 
-TEST_F(CalendarViewEventListViewTest, LaunchItem) {
+TEST_P(CalendarViewEventListViewTest, LaunchItem) {
   base::HistogramTester histogram_tester;
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date);
-  EXPECT_EQ(3u, content_view()->children().size());
+  if (features::IsCalendarJellyEnabled()) {
+    SetEventListIsShowingForMetrics();
+  }
+  EXPECT_EQ(3u, GetContentViewSize());
 
   // Launch the first item.
-  views::Button* first_item =
-      static_cast<views::Button*>(content_view()->children()[0]);
+  ActionableView* first_item = GetActionableView(0);
   first_item->AcceleratorPressed(
       ui::Accelerator(ui::KeyboardCode::VKEY_SPACE, /*modifiers=*/0));
 
@@ -201,51 +240,13 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
   histogram_tester.ExpectTotalCount("Ash.Calendar.EventListItem.Activated", 1);
   EXPECT_EQ(histogram_tester.GetTotalSum(
-                "Ash.Calendar.EventListView.EventDisplayedCount"),
+                features::IsCalendarJellyEnabled()
+                    ? "Ash.Calendar.EventListViewJelly.EventDisplayedCount"
+                    : "Ash.Calendar.EventListView.EventDisplayedCount"),
             3);
 }
 
-TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
-  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
-
-  // Date of first day which holds a normal event and a multi-day event.
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 10:00 GMT", &date));
-
-  // Date of the second day which holds the second day of the multi-day event.
-  base::Time date_2;
-  ASSERT_TRUE(base::Time::FromString("23 Nov 2021 10:00 GMT", &date_2));
-
-  // Set the time in AM/PM format.
-  Shell::Get()->system_tray_model()->SetUse24HourClock(false);
-
-  CreateEventListView(date);
-
-  SetSelectedDate(date);
-  EXPECT_EQ(u"8:30\u2009–\u20099:30\u202fPM", GetTimeRange(0)->GetText());
-  EXPECT_EQ(u"11:30\u2009–\u200911:59\u202fPM", GetTimeRange(1)->GetText());
-
-  // Select the second day of the multi-day event.
-  SetSelectedDate(date_2);
-  EXPECT_EQ(u"12:00\u2009–\u200912:30\u202fAM", GetTimeRange(0)->GetText());
-
-  // Set the time in 24 hour format.
-  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
-
-  // Regenerate the event list to refresh events time range.
-  CreateEventListView(date);
-
-  SetSelectedDate(date);
-  EXPECT_EQ(u"20:30\u2009–\u200921:30", GetTimeRange(0)->GetText());
-  EXPECT_EQ(u"23:30\u2009–\u200923:59", GetTimeRange(1)->GetText());
-
-  SetSelectedDate(date_2);
-  EXPECT_EQ(u"00:00\u2009–\u200900:30", GetTimeRange(0)->GetText());
-}
-
-TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
-  // Sets the timezone to "America/Los_Angeles".
-  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+TEST_P(CalendarViewEventListViewTest, RefreshEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date);
@@ -253,7 +254,7 @@ TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
   SetSelectedDate(date);
 
   // With the initial event list there should be 3 events on the 18th.
-  EXPECT_EQ(3u, content_view()->children().size());
+  EXPECT_EQ(3u, GetContentViewSize());
 
   base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(
       controller()->selected_date_midnight());
@@ -267,7 +268,7 @@ TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
   RefetchEvents(start_of_month, event_list.get());
 
   // Shows 0 events and shows open in google calendar button after the refresh.
-  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(1u, GetEmptyContentViewSize());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
             GetEmptyLabel());
 
@@ -276,7 +277,7 @@ TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
   RefetchEvents(start_of_month, event_list.get());
 
   // Shows 1 event after the refresh.
-  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(1u, GetContentViewSize());
   EXPECT_EQ(u"summary_0", GetSummary(0)->GetText());
 }
 

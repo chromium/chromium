@@ -24,12 +24,12 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/scoped_set_env.h"
 #include "absl/flags/flag.h"
 #include "absl/flags/internal/parse.h"
 #include "absl/flags/internal/usage.h"
 #include "absl/flags/reflection.h"
+#include "absl/log/log.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
@@ -150,8 +150,7 @@ const std::string& GetTestTempDir() {
     }
 
     if (res->empty()) {
-      ABSL_INTERNAL_LOG(FATAL,
-                        "Failed to make temporary directory for data files");
+      LOG(FATAL) << "Failed to make temporary directory for data files";
     }
 
 #ifdef _WIN32

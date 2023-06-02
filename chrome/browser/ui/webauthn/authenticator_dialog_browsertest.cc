@@ -130,6 +130,15 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
+    } else if (name == "cable_v2_connecting") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableV2Connecting);
+    } else if (name == "cable_v2_connected") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableV2Connected);
+    } else if (name == "cable_v2_error") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableV2Error);
     } else if (name == "phone_aoa") {
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kAndroidAccessory);
@@ -406,6 +415,18 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
 }
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_pair) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_connecting) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_connected) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_error) {
   ShowAndVerifyUi();
 }
 

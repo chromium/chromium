@@ -27,7 +27,8 @@ HashRealTimeService* HashRealTimeServiceFactory::GetForProfile(
 
 // static
 HashRealTimeServiceFactory* HashRealTimeServiceFactory::GetInstance() {
-  return base::Singleton<HashRealTimeServiceFactory>::get();
+  static base::NoDestructor<HashRealTimeServiceFactory> instance;
+  return instance.get();
 }
 
 HashRealTimeServiceFactory::HashRealTimeServiceFactory()
@@ -35,9 +36,6 @@ HashRealTimeServiceFactory::HashRealTimeServiceFactory()
           "HashRealTimeService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(NetworkContextServiceFactory::GetInstance());

@@ -70,7 +70,7 @@ class LevelDBLock {
 
  private:
   raw_ptr<leveldb::Env> env_ = nullptr;
-  raw_ptr<leveldb::FileLock> lock_ = nullptr;
+  raw_ptr<leveldb::FileLock, DanglingUntriaged> lock_ = nullptr;
 };
 
 std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
@@ -439,7 +439,6 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   ForceCloseDBCallbacks(const ForceCloseDBCallbacks&) = delete;
   ForceCloseDBCallbacks& operator=(const ForceCloseDBCallbacks&) = delete;
 
-  void OnSuccess() override {}
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);

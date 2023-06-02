@@ -7,13 +7,10 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
-import static org.chromium.net.CronetTestRule.assertContains;
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
@@ -55,7 +52,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
@@ -248,7 +244,7 @@ public class CronetUrlRequestContextTest {
             }
         };
         // Ensure that test is not running on the main thread.
-        assertTrue(Looper.getMainLooper() != Looper.myLooper());
+        assertThat(Looper.getMainLooper()).isNotEqualTo(Looper.myLooper());
         new Handler(Looper.getMainLooper()).post(blockingTask);
 
         // Create new request context, but its initialization on the main thread
@@ -392,7 +388,7 @@ public class CronetUrlRequestContextTest {
         callback.setAutoAdvance(true);
         callback.startNextRead(urlRequest);
         callback.blockForDone();
-        assertNull(callback.mError);
+        assertThat(callback.mError).isNull();
 
         // The default network should still be active, hence the underlying network-bound context
         // should still be there.
@@ -467,7 +463,7 @@ public class CronetUrlRequestContextTest {
         // we previously set auto advance to false).
         callback.blockForDone();
         // mError should be null due to urlRequest.cancel().
-        assertNull(callback.mError);
+        assertThat(callback.mError).isNull();
         // urlRequest.cancel(); should destroy the underlying network bound context.
         assertFalse(
                 ApiHelper.doesContextExistForNetwork(testFramework.mCronetEngine, defaultNetwork));
@@ -495,7 +491,7 @@ public class CronetUrlRequestContextTest {
         callback.blockForDone();
         cronetEngine.stopNetLog();
         assertTrue(file.exists());
-        assertTrue(file.length() != 0);
+        assertThat(file.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(file));
         assertTrue(file.delete());
         assertTrue(!file.exists());
@@ -526,7 +522,7 @@ public class CronetUrlRequestContextTest {
         callback.blockForDone();
         cronetEngine.stopNetLog();
         assertTrue(logFile.exists());
-        assertTrue(logFile.length() != 0);
+        assertThat(logFile.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(logFile));
         FileUtils.recursivelyDeleteFile(netLogDir);
         assertFalse(netLogDir.exists());
@@ -553,7 +549,7 @@ public class CronetUrlRequestContextTest {
         // Shut down the engine without calling stopNetLog.
         cronetEngine.shutdown();
         assertTrue(file.exists());
-        assertTrue(file.length() != 0);
+        assertThat(file.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(file));
         assertTrue(file.delete());
         assertTrue(!file.exists());
@@ -584,7 +580,7 @@ public class CronetUrlRequestContextTest {
         // Shut down the engine without calling stopNetLog.
         cronetEngine.shutdown();
         assertTrue(logFile.exists());
-        assertTrue(logFile.length() != 0);
+        assertThat(logFile.length()).isNotEqualTo(0);
 
         FileUtils.recursivelyDeleteFile(netLogDir);
         assertFalse(netLogDir.exists());
@@ -973,8 +969,8 @@ public class CronetUrlRequestContextTest {
 
         assertTrue(logFile1.exists());
         assertTrue(logFile2.exists());
-        assertTrue(logFile1.length() != 0);
-        assertTrue(logFile2.length() != 0);
+        assertThat(logFile1.length()).isNotEqualTo(0);
+        assertThat(logFile2.length()).isNotEqualTo(0);
 
         // Make sure both files contain the two requests made separately using
         // different engines.
@@ -1179,7 +1175,7 @@ public class CronetUrlRequestContextTest {
         callback.blockForDone();
         testFramework.mCronetEngine.stopNetLog();
         assertTrue(file.exists());
-        assertTrue(file.length() != 0);
+        assertThat(file.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(file));
         assertTrue(file.delete());
         assertTrue(!file.exists());
@@ -1209,7 +1205,7 @@ public class CronetUrlRequestContextTest {
         callback.blockForDone();
         testFramework.mCronetEngine.stopNetLog();
         assertTrue(logFile.exists());
-        assertTrue(logFile.length() != 0);
+        assertThat(logFile.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(logFile));
         FileUtils.recursivelyDeleteFile(netLogDir);
         assertFalse(netLogDir.exists());
@@ -1236,7 +1232,7 @@ public class CronetUrlRequestContextTest {
         testFramework.mCronetEngine.stopNetLog();
         testFramework.mCronetEngine.stopNetLog();
         assertTrue(file.exists());
-        assertTrue(file.length() != 0);
+        assertThat(file.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(file));
         assertTrue(file.delete());
         assertTrue(!file.exists());
@@ -1267,7 +1263,7 @@ public class CronetUrlRequestContextTest {
         testFramework.mCronetEngine.stopNetLog();
         testFramework.mCronetEngine.stopNetLog();
         assertTrue(logFile.exists());
-        assertTrue(logFile.length() != 0);
+        assertThat(logFile.length()).isNotEqualTo(0);
         assertFalse(hasBytesInNetLog(logFile));
         FileUtils.recursivelyDeleteFile(netLogDir);
         assertFalse(netLogDir.exists());
@@ -1291,7 +1287,7 @@ public class CronetUrlRequestContextTest {
         callback.blockForDone();
         cronetEngine.stopNetLog();
         assertTrue(file.exists());
-        assertTrue(file.length() != 0);
+        assertThat(file.length()).isNotEqualTo(0);
         assertTrue(hasBytesInNetLog(file));
         assertTrue(file.delete());
         assertTrue(!file.exists());
@@ -1320,7 +1316,7 @@ public class CronetUrlRequestContextTest {
         cronetEngine.stopNetLog();
 
         assertTrue(logFile.exists());
-        assertTrue(logFile.length() != 0);
+        assertThat(logFile.length()).isNotEqualTo(0);
         assertTrue(hasBytesInNetLog(logFile));
         FileUtils.recursivelyDeleteFile(netLogDir);
         assertFalse(netLogDir.exists());
@@ -1483,9 +1479,10 @@ public class CronetUrlRequestContextTest {
         urlRequestBuilder.disableCache();
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertNotNull(callback.mError);
-        assertContains("Exception in CronetUrlRequest: net::ERR_CONNECTION_REFUSED",
-                callback.mError.getMessage());
+        assertThat(callback.mError).isNotNull();
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception in CronetUrlRequest: net::ERR_CONNECTION_REFUSED");
         cronetEngine.shutdown();
     }
 
@@ -1611,8 +1608,8 @@ public class CronetUrlRequestContextTest {
         });
         new Thread(task).start();
         byte[] delta2 = task.get();
-        assertTrue(delta2.length != 0);
-        assertFalse(Arrays.equals(delta1, delta2));
+        assertThat(delta2).isNotEmpty();
+        assertThat(delta2).isNotEqualTo(delta1);
     }
 
     @Test
@@ -1698,7 +1695,7 @@ public class CronetUrlRequestContextTest {
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
         builder.setLibraryLoader(loader);
         CronetEngine engine = builder.build();
-        assertNotNull(engine);
+        assertThat(engine).isNotNull();
         assertFalse(loader.wasCalled());
     }
 

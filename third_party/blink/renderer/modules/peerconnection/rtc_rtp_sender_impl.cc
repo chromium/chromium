@@ -302,15 +302,12 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
                             CrossThreadBindOnce(std::move(callback))));
   }
 
-  void GetStats(RTCStatsReportCallback callback,
-                const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
-                bool is_track_stats_deprecation_trial_enabled) {
+  void GetStats(RTCStatsReportCallback callback) {
     PostCrossThreadTask(
         *signaling_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(
             &RTCRtpSenderImpl::RTCRtpSenderInternal::GetStatsOnSignalingThread,
-            WrapRefCounted(this), CrossThreadBindOnce(std::move(callback)),
-            exposed_group_ids, is_track_stats_deprecation_trial_enabled));
+            WrapRefCounted(this), CrossThreadBindOnce(std::move(callback))));
   }
 
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc) {
@@ -382,15 +379,11 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
   using RTCStatsReportCallbackInternal =
       CrossThreadOnceFunction<void(std::unique_ptr<RTCStatsReportPlatform>)>;
 
-  void GetStatsOnSignalingThread(
-      RTCStatsReportCallbackInternal callback,
-      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
-      bool is_track_stats_deprecation_trial_enabled) {
+  void GetStatsOnSignalingThread(RTCStatsReportCallbackInternal callback) {
     native_peer_connection_->GetStats(
         rtc::scoped_refptr<webrtc::RtpSenderInterface>(webrtc_sender_.get()),
         CreateRTCStatsCollectorCallback(
-            main_task_runner_, ConvertToBaseOnceCallback(std::move(callback)),
-            exposed_group_ids, is_track_stats_deprecation_trial_enabled));
+            main_task_runner_, ConvertToBaseOnceCallback(std::move(callback))));
   }
 
   void SetParametersOnSignalingThread(
@@ -538,12 +531,8 @@ void RTCRtpSenderImpl::SetParameters(
       WTF::BindOnce(&OnSetParametersCompleted, WrapPersistent(request)));
 }
 
-void RTCRtpSenderImpl::GetStats(
-    RTCStatsReportCallback callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
-    bool is_track_stats_deprecation_trial_enabled) {
-  internal_->GetStats(std::move(callback), exposed_group_ids,
-                      is_track_stats_deprecation_trial_enabled);
+void RTCRtpSenderImpl::GetStats(RTCStatsReportCallback callback) {
+  internal_->GetStats(std::move(callback));
 }
 
 void RTCRtpSenderImpl::SetStreams(const Vector<String>& stream_ids) {

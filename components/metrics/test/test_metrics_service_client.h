@@ -81,14 +81,14 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   void set_should_reset_client_ids_on_cloned_install(bool state) {
     should_reset_client_ids_on_cloned_install_ = state;
   }
-  void set_max_ongoing_log_size(size_t bytes) {
-    storage_limits_.max_ongoing_log_size = bytes;
+  void set_max_ongoing_log_size_bytes(size_t bytes) {
+    storage_limits_.ongoing_log_queue_limits.max_log_size_bytes = bytes;
   }
   void set_min_ongoing_log_queue_count(size_t log_count) {
-    storage_limits_.min_ongoing_log_queue_count = log_count;
+    storage_limits_.ongoing_log_queue_limits.min_log_count = log_count;
   }
-  void set_min_ongoing_log_queue_size(size_t bytes) {
-    storage_limits_.min_ongoing_log_queue_size = bytes;
+  void set_min_ongoing_log_queue_size_bytes(size_t bytes) {
+    storage_limits_.ongoing_log_queue_limits.min_queue_size_bytes = bytes;
   }
   void set_synthetic_trial_registry(
       variations::SyntheticTrialRegistry* registry) {

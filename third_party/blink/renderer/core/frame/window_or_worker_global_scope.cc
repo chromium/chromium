@@ -33,64 +33,20 @@
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 
 #include "base/containers/span.h"
-#include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/dom_timer.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
-
-static bool IsAllowed(ExecutionContext& execution_context,
-                      bool is_eval,
-                      const String& source) {
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    if (!window->GetFrame())
-      return false;
-    if (is_eval && !window->GetContentSecurityPolicy()->AllowEval(
-                       ReportingDisposition::kReport,
-                       ContentSecurityPolicy::kWillNotThrowException, source)) {
-      return false;
-    }
-    if (PageDismissalScope::IsActive()) {
-      UseCounter::Count(execution_context,
-                        window->document()->ProcessingBeforeUnload()
-                            ? WebFeature::kTimerInstallFromBeforeUnload
-                            : WebFeature::kTimerInstallFromUnload);
-    }
-    return true;
-  }
-  if (auto* worker_global_scope =
-          DynamicTo<WorkerGlobalScope>(execution_context)) {
-    if (!worker_global_scope->ScriptController())
-      return false;
-    ContentSecurityPolicy* policy =
-        worker_global_scope->GetContentSecurityPolicy();
-    if (is_eval && policy &&
-        !policy->AllowEval(ReportingDisposition::kReport,
-                           ContentSecurityPolicy::kWillNotThrowException,
-                           source)) {
-      return false;
-    }
-    return true;
-  }
-  NOTREACHED();
-  return false;
-}
 
 void WindowOrWorkerGlobalScope::reportError(ScriptState* script_state,
                                             ExecutionContext&,
@@ -142,78 +98,6 @@ String WindowOrWorkerGlobalScope::atob(ExecutionContext&,
   }
 
   return String(out.data(), out.size());
-}
-
-int WindowOrWorkerGlobalScope::setTimeout(
-    ScriptState* script_state,
-    ExecutionContext& context,
-    V8Function* handler,
-    int timeout,
-    const HeapVector<ScriptValue>& arguments) {
-  if (!IsAllowed(context, false, g_empty_string)) {
-    return 0;
-  }
-  auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
-                                                       handler, arguments);
-  return DOMTimer::Install(context, action, base::Milliseconds(timeout), true);
-}
-
-int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
-                                          ExecutionContext& context,
-                                          const String& handler,
-                                          int timeout,
-                                          const HeapVector<ScriptValue>&) {
-  if (!IsAllowed(context, true, handler)) {
-    return 0;
-  }
-  // Don't allow setting timeouts to run empty functions.  Was historically a
-  // performance issue.
-  if (handler.empty())
-    return 0;
-  auto* action =
-      MakeGarbageCollected<ScheduledAction>(script_state, context, handler);
-  return DOMTimer::Install(context, action, base::Milliseconds(timeout), true);
-}
-
-int WindowOrWorkerGlobalScope::setInterval(
-    ScriptState* script_state,
-    ExecutionContext& context,
-    V8Function* handler,
-    int timeout,
-    const HeapVector<ScriptValue>& arguments) {
-  if (!IsAllowed(context, false, g_empty_string)) {
-    return 0;
-  }
-  auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
-                                                       handler, arguments);
-  return DOMTimer::Install(context, action, base::Milliseconds(timeout), false);
-}
-
-int WindowOrWorkerGlobalScope::setInterval(ScriptState* script_state,
-                                           ExecutionContext& context,
-                                           const String& handler,
-                                           int timeout,
-                                           const HeapVector<ScriptValue>&) {
-  if (!IsAllowed(context, true, handler)) {
-    return 0;
-  }
-  // Don't allow setting timeouts to run empty functions.  Was historically a
-  // performance issue.
-  if (handler.empty())
-    return 0;
-  auto* action =
-      MakeGarbageCollected<ScheduledAction>(script_state, context, handler);
-  return DOMTimer::Install(context, action, base::Milliseconds(timeout), false);
-}
-
-void WindowOrWorkerGlobalScope::clearTimeout(ExecutionContext& context,
-                                             int timeout_id) {
-  DOMTimer::RemoveByID(context, timeout_id);
-}
-
-void WindowOrWorkerGlobalScope::clearInterval(ExecutionContext& context,
-                                              int timeout_id) {
-  DOMTimer::RemoveByID(context, timeout_id);
 }
 
 bool WindowOrWorkerGlobalScope::crossOriginIsolated(

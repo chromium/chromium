@@ -129,7 +129,7 @@ AccountReconcilorFactory::AccountReconcilorFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-AccountReconcilorFactory::~AccountReconcilorFactory() {}
+AccountReconcilorFactory::~AccountReconcilorFactory() = default;
 
 // static
 AccountReconcilor* AccountReconcilorFactory::GetForProfile(Profile* profile) {
@@ -139,7 +139,8 @@ AccountReconcilor* AccountReconcilorFactory::GetForProfile(Profile* profile) {
 
 // static
 AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
-  return base::Singleton<AccountReconcilorFactory>::get();
+  static base::NoDestructor<AccountReconcilorFactory> instance;
+  return instance.get();
 }
 
 KeyedService* AccountReconcilorFactory::BuildServiceInstanceFor(

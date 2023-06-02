@@ -27,20 +27,54 @@ class BrowserContext;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
-class WebAppRegistrar;
-class OsIntegrationManager;
-class WebAppInstallFinalizer;
 class ExternallyManagedAppManager;
+class OsIntegrationManager;
+class PreinstalledWebAppManager;
+class WebAppCommandManager;
+class WebAppIconManager;
+class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppPolicyManager;
-class WebAppIconManager;
-class WebAppTranslationManager;
+class WebAppRegistrar;
 class WebAppRegistrarMutable;
 class WebAppSyncBridge;
+class WebAppTranslationManager;
 class WebAppUiManager;
-class WebAppCommandManager;
-class PreinstalledWebAppManager;
+class WebContentsManager;
 
+// This is a tool that allows unit tests (enabled by default) and browser tests
+// (disabled by default) to use a 'fake' version of the WebAppProvider system.
+// This means that most of the dependencies are faked out. Specifically:
+// * The database is in-memory.
+// * Integration with Chrome Sync is off.
+// * OS integration (saving shortcuts on disk, etc) doesn't execute, but does
+//   save its 'expected' state to the database.
+// * All access to `WebContents` is redirected to the `FakeWebContentsManager`
+//   (accessible via `GetFakeWebContentsManager()`), which stores & returns
+//   results for any interaction here.
+//
+// Other features & notes:
+// * FakeWebAppProvider is used by default in unit tests, as the
+//   `TestingProfile` hardcodes the usage of this fake version in the
+//   `KeyedServiceFactory` for the profile,
+// * The system in NOT 'started' by default, which means commands and other
+//   operations will not run. This allows tests to do any customization they may
+//   want by calling `FakeWebAppProvider::Get()` and interacting with this
+//   object before the system is started.
+//   * Generally the system is then started by calling
+//     `web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());`, which
+//     waits for the system to be `ready()`, but also for any external install
+//     managers to finish startup as well.
+// * To use this in browser tests, you must use the FakeWebAppProviderCreator
+//   below.
+//
+// Future improvements:
+// * TODO(http://b/257529391): Isolate the extensions system dependency to
+//   allow faking that as well.
+// * TODO(http://b/279198384): Make better default for external manager behavior
+//   in unittests. Perhaps don't start them by default unless they specified.
+// * TODO(http://b/279198562): Create a `FakeWebAppCommandScheduler`, allowing
+//   external systems to fully fake out usage of this system if they desire.
 class FakeWebAppProvider : public WebAppProvider {
  public:
   // Used by the TestingProfile in unit tests.
@@ -101,6 +135,8 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetOriginAssociationManager(
       std::unique_ptr<WebAppOriginAssociationManager>
           origin_association_manager);
+  void SetWebContentsManager(
+      std::unique_ptr<WebContentsManager> web_contents_manager);
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See
@@ -153,6 +189,7 @@ class FakeWebAppProvider : public WebAppProvider {
   // If true, preinstalled apps will be processed & installed (or uninstalled)
   // after the system starts.
   bool synchronize_preinstalled_app_on_startup_ = false;
+
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };
 

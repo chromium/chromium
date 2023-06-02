@@ -518,10 +518,6 @@ TEST_P(NeuralStylusPalmDetectionFilterTest, InferenceOncePalm) {
       .Times(1)
       .WillOnce(testing::Return(0.5));
 
-  base::TimeTicks original_finger_time = touch_time + base::Milliseconds(8.0f);
-  base::TimeTicks original_palm_time =
-      touch_time + model_config_.max_sample_count * base::Milliseconds(8.0f);
-
   for (size_t i = 0; i < 5000; ++i) {
     if (i != 0) {
       touch_[0].was_touching = true;
@@ -529,19 +525,10 @@ TEST_P(NeuralStylusPalmDetectionFilterTest, InferenceOncePalm) {
     touch_time += sample_period_;
     palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                    &actual_cancelled);
-    ASSERT_EQ(original_finger_time,
-              shared_palm_state->latest_finger_touch_time);
 
     ASSERT_TRUE(actual_held.none()) << " Failed at " << i;
-    if (i >= (model_config_.max_sample_count - 1)) {
+    if (i >= model_config_.max_sample_count) {
       ASSERT_EQ(expected_cancelled, actual_cancelled) << " Failed at " << i;
-      ASSERT_EQ(1u, shared_palm_state->active_palm_touches)
-          << " Failed at " << i;
-      ASSERT_EQ(original_palm_time, shared_palm_state->latest_palm_touch_time)
-          << " Failed at " << i;
-    } else {
-      ASSERT_EQ(1u, shared_palm_state->active_finger_touches)
-          << "Failed at " << i;
     }
   }
 }

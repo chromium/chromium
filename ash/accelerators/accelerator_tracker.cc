@@ -4,6 +4,8 @@
 
 #include "ash/accelerators/accelerator_tracker.h"
 
+#include <string>
+
 #include "base/metrics/user_metrics.h"
 #include "ui/events/event.h"
 
@@ -25,7 +27,7 @@ void AcceleratorTracker::OnKeyEvent(ui::KeyEvent* event) {
                           event->key_code(), event->flags());
   const auto it = accelerator_tracker_map_.find(trackerData);
   if (it != accelerator_tracker_map_.end()) {
-    base::RecordAction(base::UserMetricsAction(it->second.data()));
+    base::RecordComputedAction(std::string(it->second));
   }
 }
 

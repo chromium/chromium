@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -437,6 +438,20 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordSuggestionBottomSheetV2)) {
+    // TODO (crbug.com/1448579): Fix the autosubmission and remove the parameter
+    // autofill::mojom::SubmissionReadinessState::kNoInformation.
+    // TODO (crbug.com/1448579): Make ShowTouchToFill to return bool (whether it
+    // was shown or not) and do not call the OnShowPasswordSuggestions on the
+    // password autofill manager if TTF was shown.
+    client_->ShowTouchToFill(
+        this, autofill::mojom::SubmissionReadinessState::kNoInformation);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
       text_direction, typed_username, options,
       TransformToRootCoordinates(render_frame_host_, bounds));

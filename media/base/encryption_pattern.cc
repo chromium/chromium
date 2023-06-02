@@ -28,4 +28,10 @@ bool EncryptionPattern::operator!=(const EncryptionPattern& other) const {
   return !operator==(other);
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const EncryptionPattern& encryption_pattern) {
+  return os << "{" << encryption_pattern.crypt_byte_block() << ", "
+            << encryption_pattern.skip_byte_block() << "}";
+}
+
 }  // namespace media

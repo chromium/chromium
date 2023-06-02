@@ -40,7 +40,6 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/cycleclock.h"
-#include "absl/base/internal/raw_logging.h"
 #include "absl/base/prefetch.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
@@ -1280,7 +1279,7 @@ ExpectedStats XorSeedExpectedStats() {
                 {{0.95, 0}, {0.99, 1}, {0.999, 4}, {0.9999, 10}}};
       }
   }
-  ABSL_RAW_LOG(FATAL, "%s", "Unknown Group width");
+  LOG(FATAL) << "Unknown Group width";
   return {};
 }
 
@@ -1376,7 +1375,7 @@ ExpectedStats LinearTransformExpectedStats() {
                 {{0.95, 0}, {0.99, 1}, {0.999, 6}, {0.9999, 10}}};
       }
   }
-  ABSL_RAW_LOG(FATAL, "%s", "Unknown Group width");
+  LOG(FATAL) << "Unknown Group width";
   return {};
 }
 

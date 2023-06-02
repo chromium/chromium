@@ -12,7 +12,6 @@ import re
 
 PRESUBMIT_VERSION = '2.0.0'
 
-USE_PYTHON3 = True
 CC_SOURCE_FILES=(r'^cc[\\/].*\.(cc|h)$',)
 
 def _CheckChangeLintsClean(input_api, output_api):

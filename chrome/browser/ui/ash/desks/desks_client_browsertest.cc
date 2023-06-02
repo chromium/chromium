@@ -3270,9 +3270,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
   EXPECT_EQ(0u, GetDeskTemplates().size());
 }
 
+// Flakily failing https://crbug.com/1447440
 // Tests that admin templates policy can be set.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
-                       SetAndClearAdminTemplates) {
+                       DISABLED_SetAndClearAdminTemplates) {
   EXPECT_TRUE(DesksClient::Get());
 
   base::Uuid admin_template_uuid =

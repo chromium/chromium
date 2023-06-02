@@ -73,24 +73,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
-<variants name="DIPSCookieMode">
-  <variant name=".Block3PC"
-      summary="in a NON-off-the-record profile, with third-party cookies
-               blocked"/>
-  <variant name=".OffTheRecord"
-      summary="in an off-the-record profile, with third-party cookies enabled"/>
-  <variant name=".OffTheRecord_Block3PC"
-      summary="in an off-the-record profile, with third-party cookies blocked"/>
-  <variant name=".Standard"
-      summary="in a NON-off-the-record profile, with third-party cookies
-               enabled"/>
-</variants>
-
-<variants name="DIPSRedirectType">
-  <variant name="Client" summary="client-side"/>
-  <variant name="Server" summary="server-side"/>
-</variants>
-
 <variants name="GridTabSwitcherMessageTypes">
   <variant name="PriceAlertsMessageCard"
       summary="the promo message for price notifications"/>
@@ -147,27 +129,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".JourneysSidePanel" summary="from Journeys inside Side Panel"/>
   <variant name=".NtpQuests" summary="from the Quests module on the NTP"/>
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
-</variants>
-
-<variants name="ProcessName">
-  <variant name="BrowserProcess" summary=""/>
-  <variant name="GPUProcess" summary=""/>
-  <variant name="NetworkProcess" summary=""/>
-  <variant name="PluginProcess" summary=""/>
-  <variant name="PPAPIFlashProcess" summary="">
-    <obsolete>
-      Ported over from previous suffix based definition where it was removed on
-      2021-03 now that support for Flash has been removed.
-    </obsolete>
-  </variant>
-  <variant name="PPAPIProcess" summary=""/>
-  <variant name="RendererExtensionEventProcess" summary=""/>
-  <variant name="RendererExtensionPersistentProcess" summary=""/>
-  <variant name="RendererProcess" summary=""/>
-<!-- "Total" variant used to exist but was folded into the histogram names and could not be made obsolete. -->
-
-  <variant name="UtilityProcess" summary=""/>
-  <variant name="WorkerProcess" summary=""/>
 </variants>
 
 <variants name="VoiceIntentTargetVariant">
@@ -311,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Ui.AccessCodeNotFoundCount" units="instances"
-    expires_after="2023-07-23">
+    expires_after="2023-11-19">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1573,7 +1534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.NumOfMonitors" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-12-11">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1584,7 +1545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.FilterPatternsPerMinute"
-    units="count" expires_after="2023-06-11">
+    units="count" expires_after="2023-12-11">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1600,7 +1561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.{Operation}.Result"
-    enum="BlueZResultOfAdvertisementMonitor" expires_after="2023-06-11">
+    enum="BlueZResultOfAdvertisementMonitor" expires_after="2023-12-11">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -2091,7 +2052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.RemotePlayback.InitiationLocation"
-    enum="RemotePlaybackInitiationLocation" expires_after="2023-09-17">
+    enum="RemotePlaybackInitiationLocation" expires_after="2023-11-19">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4058,25 +4019,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceRegistration.NavigationType.{RequestType}"
-    enum="AttributionNavigationType" expires_after="M117">
-  <owner>csharrison@chromium.org</owner>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    For any successfully registered {RequestType} navigation sources, records
-    the API surface that initiated the navigation.
-  </summary>
-  <token key="RequestType">
-    <variant name="Background" summary="background"/>
-    <variant name="Foreground" summary="foreground"/>
-  </token>
-</histogram>
-
-<histogram name="Conversions.SourceRegistrationError2"
+<histogram name="Conversions.SourceRegistrationError3"
     enum="ConversionSourceRegistrationError" expires_after="2023-11-12">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often source registration parsing failed and why. Recorded only
@@ -4084,10 +4030,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus2"
+<histogram name="Conversions.SourceStoredStatus3"
     enum="ConversionStorageSourceStatus" expires_after="2023-10-08">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often sources are stored successfully or rejected and why.
@@ -4162,10 +4108,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerRegistrationError5"
+<histogram name="Conversions.TriggerRegistrationError6"
     enum="ConversionTriggerRegistrationError" expires_after="2023-11-12">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often trigger registration parsing failed and why. Recorded
@@ -4459,12 +4405,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataPack.Load" enum="DataPackLoadErrors" expires_after="M87">
-  <owner>grt@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>Errors when trying to load DataPack files.</summary>
-</histogram>
-
 <histogram name="DataSaver.BlockingReadOSSettingCall" units="ms"
     expires_after="2022-05-19">
   <obsolete>
@@ -4603,8 +4543,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.Highlights.FirstInteraction"
-    enum="DemoModeHighlightsAction" expires_after="2023-05-22">
-  <owner>lbowen@google.com</owner>
+    enum="DemoModeHighlightsAction" expires_after="2024-05-24">
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The first interaction (button clicks) after entering the Highlights app. The
@@ -4614,8 +4554,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.Highlights.PageStayDuration.{HighlightsPageName}"
-    units="seconds" expires_after="2023-05-22">
-  <owner>lbowen@google.com</owner>
+    units="seconds" expires_after="2024-05-24">
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The time duration a user stays in each page of the Highlights app, e.g. the
@@ -4731,8 +4671,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.UserClicksAndPresses" units="clicks"
-    expires_after="2023-08-27">
-  <owner>lbowen@google.com</owner>
+    expires_after="2023-11-19">
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Records how many times the user clicks mouse and presses screen in the demo
@@ -4882,15 +4822,6 @@ chromium-metrics-reviews@google.com.
     network-based resolutions induced by this feature. Not all these resolutions
     prove helpful (i.e., the user does not always actually visit the resolved
     hostnames).
-  </summary>
-</histogram>
-
-<histogram name="DnsProbe.ErrorPageUpdateStatus" enum="DnsProbe.ProbeStatus"
-    expires_after="2021-06-04">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Status of DNS diagnostic probe updates sent to a Chrome net error page.
   </summary>
 </histogram>
 
@@ -5174,15 +5105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Downgrade.Type" enum="UserDataDowngradeType"
-    expires_after="2021-08-09">
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The type of User Data downgrade detected, if any. The &quot;none&quot;
-    bucket is not reported.
-  </summary>
-</histogram>
-
 <histogram name="Downgrade.UserDataDirMove.FailureCount" units="count"
     expires_after="2020-12-31">
   <obsolete>
@@ -5454,6 +5376,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.StreamEvent.FromLauncher" enum="StreamState"
+    expires_after="2024-01-31">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is initialized
+    and started after the user clicks on an app from full app list (Launcher) to
+    launch the app streaming window.
+  </summary>
+</histogram>
+
+<histogram name="Eche.StreamEvent.FromNotification" enum="StreamState"
+    expires_after="2024-01-31">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is initialized
+    and started after the user clicks on a PhoneHub notification to launch the
+    app streaming window.
+  </summary>
+</histogram>
+
 <histogram
     name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.ConnectionFail"
     enum="ConnectionFailReason" expires_after="2024-01-31">
@@ -5479,6 +5425,18 @@ chromium-metrics-reviews@google.com.
     and failed in last network connection check. Recorded when the stream is
     initialized in EcheTray or when it starts in EcheStreamStatusChangeHandler.
     Separate from Eche.StreamEvent.
+  </summary>
+</histogram>
+
+<histogram name="Eche.StreamEvent.FromRecentApps" enum="StreamState"
+    expires_after="2024-01-31">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is initialized
+    and started after the user clicks on an app from recent app list to launch
+    the app streaming window.
   </summary>
 </histogram>
 
@@ -5947,7 +5905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.PostSubmitAction"
-    enum="FeedbackAppPostSubmitAction" expires_after="2023-09-17">
+    enum="FeedbackAppPostSubmitAction" expires_after="2023-11-19">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -6234,7 +6192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.GoogleAppsInteraction"
-    enum="NuxGoogleAppsInteractions" expires_after="2023-09-17">
+    enum="NuxGoogleAppsInteractions" expires_after="2023-11-19">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -6248,7 +6206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.GoogleAppsSelection"
-    enum="NuxGoogleAppsSelections" expires_after="2023-09-17">
+    enum="NuxGoogleAppsSelections" expires_after="2023-11-19">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -6312,7 +6270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.SignInInterstitialInteraction"
-    enum="NuxSignInInterstitialInteractions" expires_after="2023-09-17">
+    enum="NuxSignInInterstitialInteractions" expires_after="2023-11-19">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -6355,7 +6313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Stage" enum="FirstRunStageResult"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>tinazwang@chromium.org</owner>
   <owner>bling-get-started@google.com</owner>
   <summary>
@@ -6623,7 +6581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.UnknownGamepadConnected" enum="GamepadSource"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -8098,7 +8056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteQueuePendingMessages" units="count"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>amistry@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
@@ -8727,7 +8685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>cfroussios@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -8904,26 +8862,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ozone.NeuralStylusReport.FingerAgeBeforeStylus"
-    units="duration" expires_after="2023-06-30">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <summary>
-    The time between a finger and a stylus touch. The finger may or may not
-    still be on the touchscreen.
-  </summary>
-</histogram>
-
-<histogram name="Ozone.NeuralStylusReport.PalmAgeBeforeStylus" units="duration"
-    expires_after="2023-06-30">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <summary>
-    The time between a palm and a stylus touch. The palm may or may not still be
-    on the touchscreen.
-  </summary>
-</histogram>
-
 <histogram name="Ozone.TouchEventConverterEvdev.HoldCountAtCancel"
     units="touch event" expires_after="2023-09-03">
   <owner>robsc@chromium.org</owner>
@@ -8941,6 +8879,96 @@ chromium-metrics-reviews@google.com.
     The count of the number of held events released at once for a stroke when we
     decide to release. Only reported if events have been held, and will be
     positive. Events are only held from PalmDetectionFilter.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.PalmTouchCount"
+    enum="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The count of the number of detected palm touches. Reported when a new palm
+    touch is detected by either the firmware or the software palm detection.
+    Consecutive palm touch events will be considered as the same palm touch.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.RepeatedTouchCount"
+    units="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    Whether a repeated touch is detected soon after palm rejection. Reported
+    when users repeated a touch action within 2 seconds after we rejected the
+    first action as palm. This only emits true when we detect a repeated touch
+    but never emits false.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.StylusSessionCount"
+    units="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The count of the number of stylus sessions. A stylus session is a series of
+    stylus events with no more than 5 seconds between them. Reported when a
+    stylus session is concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.StylusSessionLength"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The length of stylus sessions. A stylus session is a series of stylus events
+    with no more than 5 seconds between them. Reported when a stylus session is
+    concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchGapBeforeStylus"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The time between a stylus touch and the last finger touch before it. The
+    finger touch may or may not still be on the touchscreen, and may or may not
+    be detected as a palm. Reported when a stylus touch is started on the
+    touchscreen.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchSessionCount"
+    units="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The count of the number of touch sessions. A touch session is a series of
+    touch events with no more than 5 seconds between them. Reported when a touch
+    session is concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchSessionLength"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The length of touch sessions. A touch session is a series of touch events
+    with no more than 5 seconds between them. Reported when a touch session is
+    concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchTypeBeforeStylus"
+    enum="TouchType" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The type of the last finger touch within 500ms before a stylus touch. It
+    could be finger, palm or none (no touch within 500ms). Reported when a
+    stylus touch is started on the touchscreen.
   </summary>
 </histogram>
 
@@ -9104,7 +9132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend.OptimizationGuide.Result{ClientId}"
-    enum="PageImageServiceOptimizationGuideResult" expires_after="2023-08-08">
+    enum="PageImageServiceResult" expires_after="2023-08-08">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>Internals&gt;OptimizationGuide</component>
@@ -9114,6 +9142,20 @@ chromium-metrics-reviews@google.com.
 
     Recorded for each request to Optimization Guide, so the total count of this
     UMA should match that bucket count in PageImageService.Backend.
+  </summary>
+  <token key="ClientId" variants="PageImageServiceClientId"/>
+</histogram>
+
+<histogram name="PageImageService.Backend.Suggest.Result{ClientId}"
+    enum="PageImageServiceResult" expires_after="2023-08-08">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the result of requests to the Suggest backend.
+
+    Recorded for each request to Suggest, so the total count of this UMA should
+    match that bucket count in PageImageService.Backend.
   </summary>
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>
@@ -9174,10 +9216,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PendingBeaconHost.Action" enum="PendingBeaconHostAction"
-    expires_after="M112">
+    expires_after="M115">
   <owner>mych@chromium.org</owner>
   <owner>pending-beacon-experiment@chromium.org</owner>
   <summary>
+    Warning: this histogram was expired from M113 to M115; data may be missing.
+
     The type of PendingBeacon-related action that the browser has performed.
 
     This is only recorded when the PendingBeacon API is called to create, send,
@@ -9188,10 +9232,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PendingBeaconHost.BatchAction"
-    enum="PendingBeaconHostBatchAction" expires_after="M112">
+    enum="PendingBeaconHostBatchAction" expires_after="M115">
   <owner>mych@chromium.org</owner>
   <owner>pending-beacon-experiment@chromium.org</owner>
   <summary>
+    Warning: this histogram was expired from M113 to M115; data may be missing.
+
     The type of batch PendingBeacon-related action that the browser has
     performed. A batch action means the browser is about to batch process all
     queued pending beacon requests at once.
@@ -10458,7 +10504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.GetFallbackFontTime" units="ms"
-    expires_after="2023-06-04">
+    expires_after="2024-06-04">
   <owner>ccameron@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -11605,7 +11651,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Shutdown.Renderers.Total" units="renderers"
-    expires_after="2023-09-03">
+    expires_after="2023-11-19">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -13409,7 +13455,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
-    expires_after="2023-09-19">
+    expires_after="2023-11-19">
   <owner>eseckler@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <summary>
@@ -13710,7 +13756,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserImage.Changed2" enum="ChromeOSUserImageId2"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -13965,7 +14011,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FailureEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2023-08-20">
+    enum="VoiceInteractionEventSource" expires_after="2023-11-19">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -14160,22 +14206,6 @@ regressions. -->
   <token key="Target" variants="VoiceIntentTargetVariant"/>
 </histogram>
 
-<histogram name="Web.CurrentOriginEqualsLastCommittedOrigin"
-    enum="BooleanEqual" expires_after="2023-11-17">
-  <owner>ajuma@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    [iOS] Reports URL matches between the return value from the WebState's
-    GetLastCommittedURL and GetCurrentURL methods. It is expected the origins
-    will be equal to confirm that GetCurrentURL can now be replaced with
-    GetLastCommittedURL. This will be called each time WebStateImpl::
-    GetCurrentURL(URLVerificationTrustLevel* trust_level) is called, which is an
-    old method of obtaining the url and trust level. The trust level was only
-    relevant with UIWebView, so this method is only called from code which has
-    not yet been updated since UIWebView was removed.
-  </summary>
-</histogram>
-
 <histogram name="WebContentsObserver.{Method}" units="ms"
     expires_after="2023-07-28">
   <owner>cduvall@chromium.org</owner>
@@ -14264,6 +14294,16 @@ regressions. -->
   <owner>asully@chromium.org</owner>
   <summary>
     Records whether WebDatabase::Init succeeds or otherwise a failure reason.
+  </summary>
+</histogram>
+
+<histogram name="WebDatabase.SucceededMigrationToVersion" units="version"
+    expires_after="2023-12-01">
+  <owner>battre@chromium.org</owner>
+  <owner>fleimgruber@google.com</owner>
+  <summary>
+    If a migration to a new WebDatabase schema succeeds, this histogram records
+    the target version to which the migration failed.
   </summary>
 </histogram>
 
@@ -14384,16 +14424,6 @@ regressions. -->
     This metrics is logged when a page that use web fonts is loaded. The value
     is whether we had to wait on at least one web font and ended up showing
     blank text, or not.
-  </summary>
-</histogram>
-
-<histogram base="true" name="WebFont.HttpCacheStatus" enum="HttpCachePattern"
-    expires_after="2021-11-08">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <summary>
-    For each http cache transaction for a font in Google Fonts, record the cache
-    status.
   </summary>
 </histogram>
 
@@ -14813,13 +14843,72 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WrenchMenu.TimeToAction" units="units"
+<histogram name="WrenchMenu.TimeToAction.{Action}" units="units"
     expires_after="2023-10-01">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>
     The time a user takes to select a menu item after opening the menu.
   </summary>
+  <token key="Action">
+    <variant name="About"/>
+    <variant name="AppInfo"/>
+    <variant name="BetaForum"/>
+    <variant name="BookmarkAllTabs"/>
+    <variant name="BookmarkPage"/>
+    <variant name="Cast"/>
+    <variant name="ChromeOSRestart"/>
+    <variant name="ChromeTips"/>
+    <variant name="ClearBrowsingData"/>
+    <variant name="Copy"/>
+    <variant name="CopyUrl"/>
+    <variant name="CreateHostedApp"/>
+    <variant name="CreateQrCode"/>
+    <variant name="Cut"/>
+    <variant name="DevTools"/>
+    <variant name="DevToolsConsole"/>
+    <variant name="DevToolsDevices"/>
+    <variant name="DistillPage"/>
+    <variant name="EnterFullScreen"/>
+    <variant name="Exit"/>
+    <variant name="Feedback"/>
+    <variant name="Find"/>
+    <variant name="HelpPage"/>
+    <variant name="ImportSettings"/>
+    <variant name="InstallPwa"/>
+    <variant name="ManageExtensions"/>
+    <variant name="NewIncognitoWindow"/>
+    <variant name="NewTab"/>
+    <variant name="NewWindow"/>
+    <variant name="OpenBookmark"/>
+    <variant name="OpenInChrome"/>
+    <variant name="OpenInPwaWindow"/>
+    <variant name="OpenRecentTab"/>
+    <variant name="PasswordManager"/>
+    <variant name="Paste"/>
+    <variant name="Print"/>
+    <variant name="ProfilingEnabled"/>
+    <variant name="RequestTabletSite"/>
+    <variant name="RestoreTab"/>
+    <variant name="SavePage"/>
+    <variant name="SendToDevices"/>
+    <variant name="Settings"/>
+    <variant name="ShowBookmarkBar"/>
+    <variant name="ShowBookmarkMgr"/>
+    <variant name="ShowChromeLabs"/>
+    <variant name="ShowDownloads"/>
+    <variant name="ShowHistory"/>
+    <variant name="ShowKaleidoscope"/>
+    <variant name="ShowSyncSetup"/>
+    <variant name="SiteSettings"/>
+    <variant name="TaskManager"/>
+    <variant name="ViewSource"/>
+    <variant name="VisitChromeWebStore"/>
+    <variant name="Win8MetroRestart"/>
+    <variant name="WinDesktopRestart"/>
+    <variant name="ZoomMinus"/>
+    <variant name="ZoomPlus"/>
+  </token>
 </histogram>
 
 <histogram name="WrenchMenu.TouchDuration" units="ms" expires_after="M85">

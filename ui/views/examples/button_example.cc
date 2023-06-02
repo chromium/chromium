@@ -224,11 +224,11 @@ void ButtonExample::CreateExampleView(View* container) {
                                    .SetIsDefault(true),
                                Builder<MdTextButton>()
                                    .CopyAddressTo(&md_tonal_button_)
-                                   .SetStyle(MdTextButton::Style::kTonal)
+                                   .SetStyle(ui::ButtonStyle::kTonal)
                                    .SetText(u"Tonal"),
                                Builder<MdTextButton>()
                                    .CopyAddressTo(&md_text_button_)
-                                   .SetStyle(MdTextButton::Style::kText)
+                                   .SetStyle(ui::ButtonStyle::kText)
                                    .SetText(u"Material Text"),
                                Builder<ImageButton>()
                                    .CopyAddressTo(&image_button_)

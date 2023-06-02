@@ -10,6 +10,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,8 +78,8 @@ INSTANTIATE_TEST_SUITE_P(UpdaterScope,
                                          UpdaterScope::kSystem));
 
 TEST_P(InstallerAPITest, InstallerProgress) {
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(
+      UpdaterScopeToHKeyRoot(updater_scope_)));
 
   ClientStateAppKeyDelete(updater_scope_, kAppId);
   EXPECT_EQ(GetInstallerProgress(updater_scope_, kAppId), -1);
@@ -98,8 +99,8 @@ TEST_P(InstallerAPITest, GetTextForSystemError) {
 }
 
 TEST_P(InstallerAPITest, GetInstallerOutcome) {
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(
+      UpdaterScopeToHKeyRoot(updater_scope_)));
 
   ClientStateAppKeyDelete(updater_scope_, kAppId);
 
@@ -270,6 +271,15 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     EXPECT_TRUE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
   }
+}
+
+TEST_P(InstallerAPITest, ClientStateAppKeyOpen) {
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(
+      UpdaterScopeToHKeyRoot(updater_scope_)));
+  EXPECT_FALSE(
+      ClientStateAppKeyOpen(updater_scope_, "invalid-app-id", KEY_READ));
+  SetInstallerProgressForTesting(updater_scope_, kAppId, 0);
+  EXPECT_TRUE(ClientStateAppKeyOpen(updater_scope_, kAppId, KEY_READ));
 }
 
 }  // namespace updater

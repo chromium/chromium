@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/user_education/chrome_user_education_delegate.h"
 
+#include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/check.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -79,6 +81,18 @@ ChromeUserEducationDelegate::CreateHelpBubble(
   return UserEducationServiceFactory::GetForProfile(profile)
       ->help_bubble_factory_registry()
       .CreateHelpBubble(element, std::move(help_bubble_params));
+}
+
+absl::optional<ui::ElementIdentifier>
+ChromeUserEducationDelegate::GetElementIdentifierForAppId(
+    const std::string& app_id) const {
+  if (!strcmp(web_app::kHelpAppId, app_id.c_str())) {
+    return ash::kExploreAppElementId;
+  }
+  if (!strcmp(web_app::kOsSettingsAppId, app_id.c_str())) {
+    return ash::kSettingsAppElementId;
+  }
+  return absl::nullopt;
 }
 
 void ChromeUserEducationDelegate::RegisterTutorial(

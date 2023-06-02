@@ -29,6 +29,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -995,8 +996,14 @@ void AshNotificationView::PopulateGroupNotifications(
 
   for (auto* notification : notifications) {
     auto notification_view =
-        std::make_unique<AshNotificationView>(*notification,
-                                              /*shown_in_popup=*/false);
+            MessageViewFactory::Create(*notification, /*shown_in_popup=*/false);
+    // The child can either be an AshNotificationView or a custom notification
+    // view.
+    if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM) {
+      auto* ash_notification_view =
+              static_cast<AshNotificationView*>(notification_view.get());
+      ash_notification_view->SetGroupedChildExpanded(IsExpanded());
+    }
 
     if (!total_grouped_notifications_) {
       header_row()->SetTimestamp(notification->timestamp());
@@ -1006,7 +1013,7 @@ void AshNotificationView::PopulateGroupNotifications(
         total_grouped_notifications_ <
             message_center_style::kMaxGroupedNotificationsInCollapsedState ||
         IsExpanded());
-    notification_view->SetGroupedChildExpanded(IsExpanded());
+
     notification_view->set_parent_message_view(this);
     notification_view->set_scroller(
         scroller() ? scroller() : grouped_notifications_scroll_view_);

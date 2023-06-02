@@ -19,7 +19,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_conversions.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -27,7 +26,6 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 #include "base/memory/nonscannable_memory.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
@@ -549,6 +547,7 @@ void EnablePartitionAllocMemoryReclaimer() {
 void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
+    EnableMemoryTagging enable_memory_tagging,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
@@ -612,7 +611,11 @@ void ConfigurePartitions(
                   ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
                   : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           .ref_count_size = ref_count_size,
-      });
+          .memory_tagging =
+              enable_memory_tagging
+                  ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                  : partition_alloc::PartitionOptions::MemoryTagging::
+                        kDisabled});
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
 
   partition_alloc::ThreadSafePartitionRoot* new_aligned_root;
@@ -676,10 +679,18 @@ void ConfigurePartitions(
   }
 }
 
+// No synchronization provided: `PartitionRoot.flags` is only written
+// to in `PartitionRoot::Init()`.
+uint32_t GetMainPartitionRootExtrasSize() {
+#if PA_CONFIG(EXTRAS_REQUIRED)
+  return g_root.Get()->flags.extras_size;
+#else
+  return 0;
+#endif  // PA_CONFIG(EXTRAS_REQUIRED)
+}
+
 #if BUILDFLAG(USE_STARSCAN)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
-  partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
-      &::base::PlatformThread::SetName);
   partition_alloc::internal::PCScan::Initialize(config);
 
   partition_alloc::internal::PCScan::RegisterScannableRoot(Allocator());

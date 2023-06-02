@@ -36,7 +36,8 @@ SupportedLinksInfoBarPrefsServiceFactory::GetForProfile(Profile* profile) {
 // static
 SupportedLinksInfoBarPrefsServiceFactory*
 SupportedLinksInfoBarPrefsServiceFactory::GetInstance() {
-  return base::Singleton<SupportedLinksInfoBarPrefsServiceFactory>::get();
+  static base::NoDestructor<SupportedLinksInfoBarPrefsServiceFactory> instance;
+  return instance.get();
 }
 
 SupportedLinksInfoBarPrefsServiceFactory::

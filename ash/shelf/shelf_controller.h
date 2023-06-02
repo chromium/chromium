@@ -57,8 +57,6 @@ class ASH_EXPORT ShelfController : public SessionObserver,
 
  private:
   // SessionObserver:
-  void OnActiveUserSessionChanged(const AccountId& account_id) override;
-  void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // TabletModeObserver:

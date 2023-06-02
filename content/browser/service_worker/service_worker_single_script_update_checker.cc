@@ -120,6 +120,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
     int64_t writer_resource_id,
     ScriptChecksumUpdateOption script_checksum_update_option,
+    const blink::StorageKey& storage_key,
     ResultCallback callback)
     : script_url_(script_url),
       is_main_script_(is_main_script),
@@ -143,8 +144,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   network::ResourceRequest resource_request =
       service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
-          script_url, url::Origin::Create(main_script_url), is_main_script_,
-          worker_script_type, *fetch_client_settings_object, *browser_context);
+          script_url, storage_key, is_main_script_, worker_script_type,
+          *fetch_client_settings_object, *browser_context);
 
   uint32_t options = network::mojom::kURLLoadOptionNone;
   if (is_main_script_) {

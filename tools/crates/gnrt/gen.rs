@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use gnrt_lib::*;
+use crate::*;
 
 use crates::{Epoch, ThirdPartySource, VendoredCrate};
 use manifest::*;
@@ -18,9 +18,7 @@ use std::process;
 use anyhow::{bail, ensure, format_err, Context, Result};
 
 pub fn generate(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
-    if args.get_flag("for-std") {
-        // This is not fully implemented. Currently, it will print data helpful
-        // for development then quit.
+    if args.get_one::<String>("for-std").is_some() {
         generate_for_std(&args, &paths)
     } else {
         generate_for_third_party(&args, &paths)
@@ -36,36 +34,23 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
 
     let manifest_contents =
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();
-    let mut third_party_manifest: ThirdPartyManifest =
+    let third_party_manifest: ThirdPartyManifest =
         toml::de::from_str(&manifest_contents).context("Could not parse third_party.toml")?;
 
     let mut crates_metadata = HashMap::<VendoredCrate, gn::PerCrateMetadata>::new();
 
-    ensure!(
-        third_party_manifest.dependency_spec.build_dependencies.is_empty(),
-        "[build-dependencies] are not supported in third_party.toml"
-    );
-
     // Collect the Chromium-specific fields from third_party.toml and store them
     // in `crates_metadata`.
     for (dep_name, dep_spec, dep_vis) in [
-        (
-            &third_party_manifest.dependency_spec.dev_dependencies,
-            crates::Visibility::TestOnlyAndThirdParty,
-        ),
-        (&third_party_manifest.dependency_spec.dependencies, crates::Visibility::Public),
+        (&third_party_manifest.testonly_dependencies, crates::Visibility::TestOnlyAndThirdParty),
+        (&third_party_manifest.dependencies, crates::Visibility::Public),
     ]
     .into_iter()
     .flat_map(|(list, vis)| list.iter().map(move |(name, spec)| (name, spec, vis)))
     {
-        let full_dep: FullDependency = dep_spec.clone().into_full();
-        let version_req = semver::VersionReq::parse(
-            &full_dep
-                .version
-                .as_ref()
-                .ok_or_else(|| format_err!("{dep_name} is missing a version in third_party.toml"))?
-                .0,
-        )?;
+        let full_dep: ThirdPartyFullDependency = dep_spec.clone().into_full();
+
+        let version_req = full_dep.version.to_version_req();
         let crate_id = source.find_match(dep_name, &version_req).ok_or_else(|| {
             format_err!(
                 "{dep_name} {version_req} was requested in third_party.toml \
@@ -86,15 +71,6 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             },
         );
     }
-
-    // For crates used in first-party tests, we do not build a separate library from
-    // production (unlike standard Rust tests, and those found in third-party
-    // crates.) So we merge the dev_dependencies from third_party.toml into the
-    // regular dependencies.
-    third_party_manifest
-        .dependency_spec
-        .dependencies
-        .extend(std::mem::take(&mut third_party_manifest.dependency_spec.dev_dependencies));
 
     // Rebind as immutable.
     let (third_party_manifest, crates_metadata) = (third_party_manifest, crates_metadata);
@@ -241,10 +217,39 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     Ok(())
 }
 
-fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
+fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
     let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
     let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+
+    // The Rust source tree, containing the standard library and vendored
+    // dependencies.
+    let rust_src_root = {
+        let for_std_value = args.get_one::<String>("for-std").unwrap();
+        if !for_std_value.is_empty() {
+            for_std_value.clone()
+        } else {
+            paths.rust_src_installed.to_string_lossy().to_string()
+        }
+    };
+    println!("Generating stdlib GN rules from {}", rust_src_root);
+
+    let cargo_config = std::fs::read_to_string(paths.std_fake_root_config_template)
+        .unwrap()
+        .replace("RUST_SRC_ROOT", &rust_src_root);
+    std::fs::write(
+        paths.strip_template(paths.std_fake_root_config_template).unwrap(),
+        cargo_config,
+    )
+    .unwrap();
+
+    let cargo_toml = std::fs::read_to_string(paths.std_fake_root_cargo_template)
+        .unwrap()
+        .replace("RUST_SRC_ROOT", &rust_src_root);
+    std::fs::write(paths.strip_template(paths.std_fake_root_cargo_template).unwrap(), cargo_toml)
+        .unwrap();
+    // Convert the `rust_src_root` to a Path hereafter.
+    let rust_src_root = paths.root.join(Path::new(&rust_src_root));
 
     // Run `cargo metadata` from the std package in the Rust source tree (which
     // is a workspace).
@@ -292,35 +297,57 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> R
     dependencies.sort_unstable_by(|a, b| {
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
     });
+    for dep in dependencies.iter_mut() {
+        // Rehome stdlib deps from the `rust_src_root` to where they will be installed
+        // in the Chromium checkout.
+        let gn_prefix = paths.root.join(paths.rust_src_installed);
+        match dep.lib_target.as_mut() {
+            Some(lib) => {
+                ensure!(
+                    lib.root.canonicalize().unwrap().starts_with(&rust_src_root),
+                    "Found dependency that was not locally available: {} {}\n{:?}",
+                    dep.package_name,
+                    dep.version,
+                    dep
+                );
+
+                if let Ok(remain) = lib.root.canonicalize().unwrap().strip_prefix(&rust_src_root) {
+                    lib.root = gn_prefix.join(remain);
+                }
+            }
+            None => (),
+        }
+        match dep.build_script.as_mut() {
+            Some(path) => {
+                if let Ok(remain) = path.canonicalize().unwrap().strip_prefix(&rust_src_root) {
+                    *path = gn_prefix.join(remain);
+                }
+            }
+            None => (),
+        }
+    }
 
     let third_party_deps = dependencies.iter().filter(|dep| !dep.is_local).collect::<Vec<_>>();
 
     // Check that all resolved third party deps are available. First, collect
     // the set of third-party dependencies vendored in the Rust source package.
     let vendored_crates: HashMap<VendoredCrate, manifest::CargoPackage> =
-        crates::collect_std_vendored_crates(paths.rust_src_vendor).unwrap().into_iter().collect();
+        crates::collect_std_vendored_crates(&rust_src_root.join(paths.rust_src_vendor_subdir))
+            .unwrap()
+            .into_iter()
+            .collect();
 
     // Collect vendored dependencies, and also check that all resolved
     // dependencies point to our Rust source package. Build rules will be
     // generated for these crates separately from std, alloc, and core which
     // need special treatment.
-    let src_prefix = paths.root.join(paths.rust_src);
     for dep in third_party_deps.iter() {
         // Only process deps with a library target: we are producing build rules
         // for the standard library, so transitive binary dependencies don't
         // make sense.
-        let lib = match &dep.lib_target {
-            Some(lib) => lib,
-            None => continue,
-        };
-
-        ensure!(
-            lib.root.canonicalize().unwrap().starts_with(&src_prefix),
-            "Found dependency that was not locally available: {} {}\n{:?}",
-            dep.package_name,
-            dep.version,
-            dep
-        );
+        if dep.lib_target.is_none() {
+            continue;
+        }
 
         vendored_crates
             .get_key_value(&VendoredCrate {

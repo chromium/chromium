@@ -3,7 +3,11 @@
 
 {%- macro declare_array(type, kind) %}
 {%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set maybe_mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-   if kind.kind|is_nullable_kind %}
+{%-     set maybe_mojom_type = kind.kind|to_unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   else %}
+{%-     set maybe_mojom_type = mojom_type %}
+{%-   endif %}
 bool ToProto(
 {%-   if kind.kind|is_move_only_kind %}
   std::vector<{{mojom_type}}>&& input,
@@ -73,7 +77,11 @@ bool ToProto(
 {%- macro define_array(type, kind) %}
 {%-   set maybe_const = "const " if not kind.kind|is_move_only_kind else "" %}
 {%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set maybe_mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-   if kind.kind|is_nullable_kind %}
+{%-     set maybe_mojom_type = kind.kind|to_unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   else %}
+{%-     set maybe_mojom_type = mojom_type %}
+{%-   endif %}
 bool ToProto(
 {%-   if kind.kind|is_move_only_kind %}
   std::vector<{{mojom_type}}>&& input,
@@ -123,7 +131,7 @@ bool ToProto(
 bool ToProto(
     {{maybe_const}}{{mojom_type}} input,
     {{type}}Entry& output) {
-{%-     if kind.kind|is_integral_kind or kind.kind|is_enum_kind or kind.kind|is_float_kind or kind.kind|is_double_kind %}
+{%-     if kind.kind|is_value_kind %}
   bool mojolpm_result;
   {{kind.kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
   mojolpm_result = ToProto(input, value);
@@ -207,7 +215,7 @@ bool ToProto(
 bool ToProto(
     {{mojom_key_type}} input,
     {{type}}Key& output) {
-{%-     if kind.key_kind|is_integral_kind or kind.key_kind|is_enum_kind or kind.key_kind|is_float_kind or kind.key_kind|is_double_kind %}
+{%-     if kind.key_kind|is_value_kind %}
   bool mojolpm_result;
   {{kind.key_kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
   mojolpm_result = ToProto(input, value);
@@ -234,7 +242,7 @@ bool ToProto(
 bool ToProto(
     {{mojom_value_type}} input,
     {{type}}Value& output) {
-{%-     if kind.value_kind|is_integral_kind or kind.value_kind|is_enum_kind or kind.value_kind|is_float_kind or kind.value_kind|is_double_kind %}
+{%-     if kind.value_kind|is_value_kind %}
   bool mojolpm_result;
   {{kind.value_kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
   mojolpm_result = ToProto(input, value);
@@ -317,17 +325,17 @@ bool ToProto(
 {%-       set raw_name = field.name %}
 {%-       set name = field.name|camel_to_under %}
 {%-       set kind = field.kind %}
-{%-       if kind|is_integral_kind or kind|is_enum_kind or kind|is_float_kind or kind|is_double_kind %}
-  {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
-  mojolpm_result &= ToProto(input->{{raw_name}}, tmp_{{name}});
-  new_instance->set_m_{{name}}(tmp_{{name}});
-{%-       elif kind|is_any_interface_kind %}
+{%-       if kind|is_any_interface_kind %}
   {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
   mojolpm_result &= ToProto(std::move(input->{{raw_name}}), tmp_{{name}});
   new_instance->set_m_{{name}}(tmp_{{name}});
 {%-       elif kind|is_nullable_kind %}
   if ({{util.not_null(kind, 'input->' ~ raw_name)}}) {
-{%-         if kind|is_move_only_kind %}
+{%-         if kind|is_value_kind %}
+    {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
+    mojolpm_result &= ToProto(*input->{{raw_name}}, tmp_{{name}});
+    new_instance->set_m_{{name}}(tmp_{{name}});
+{%-         elif kind|is_move_only_kind %}
     mojolpm_result &= ToProto(std::move({{util.value(kind, 'input->' ~ raw_name)}}), *new_instance->mutable_m_{{name}}());
 {%-         else %}
     mojolpm_result &= ToProto({{util.value(kind, 'input->' ~ raw_name)}}, *new_instance->mutable_m_{{name}}());
@@ -335,6 +343,10 @@ bool ToProto(
   }
 {%-       elif kind|is_move_only_kind %}
   mojolpm_result &= ToProto(std::move(input->{{raw_name}}), *new_instance->mutable_m_{{name}}());
+{%-       elif kind|is_value_kind %}
+  {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
+  mojolpm_result &= ToProto(input->{{raw_name}}, tmp_{{name}});
+  new_instance->set_m_{{name}}(tmp_{{name}});
 {%-       else %}
   mojolpm_result &= ToProto(input->{{raw_name}}, *new_instance->mutable_m_{{name}}());
 {%-       endif %}
@@ -368,7 +380,7 @@ bool ToProto(
 {%-       set name = field.name|camel_to_under %}
 {%-       set kind = field.kind %}
     case {{enum_name}}::k{{field.name|under_to_camel}}: {
-{%-       if kind|is_integral_kind or kind|is_enum_kind or kind|is_float_kind or kind|is_double_kind %}
+{%-       if kind|is_value_kind %}
   {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
   mojolpm_result &= ToProto(input->get_{{raw_name}}(), tmp_{{name}});
   new_instance->set_m_{{name}}(tmp_{{name}});

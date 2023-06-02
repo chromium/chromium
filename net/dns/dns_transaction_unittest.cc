@@ -424,7 +424,7 @@ class TransactionHelper {
  private:
   uint16_t qtype_ = 0;
   std::unique_ptr<DnsTransaction> transaction_;
-  raw_ptr<const DnsResponse> response_ = nullptr;
+  raw_ptr<const DnsResponse, DanglingUntriaged> response_ = nullptr;
   int expected_answer_count_;
   bool cancel_in_callback_ = false;
   base::RunLoop transaction_complete_run_loop_;

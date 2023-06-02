@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, CrossOriginIframeAttributionData) {
   });
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameDocNavigation) {
+IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
   ExpectCounts(0, 0, 0, 0);
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
@@ -122,16 +122,29 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameDocNavigation) {
   content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* rfhb = ChildFrameAt(rfha, 0);
 
-  // Execute a same document navigation in the child frame. This causes a
+  // Execute a same site navigation in the child frame. This causes a
   // v8 context to be detached, and new context attached to the execution
-  // context. So there will remain 2 execution contexts, there will be 3
-  // v8 contexts, 1 one of which is detached.
+  // context.
   GURL urlb(embedded_test_server()->GetURL("b.com", "/b.html?foo=bar"));
   ASSERT_TRUE(ExecJs(
       rfhb, base::StringPrintf("location.href = \"%s\"", urlb.spec().c_str())));
   WaitForLoad(contents);
 
-  ExpectCounts(3, 2, 1, 0);
+  if (content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+    // When RenderDocument is enabled, a new RenderFrameHost will be created for
+    // the navigation to `urlb`. Both a new V8 context and ExecutionContext are
+    // created, and the old ExecutionContext is destroyed.
+    ExpectCounts(/*v8_context_count=*/3, /*execution_context_count=*/3,
+                 /*detached_v8_context_count=*/1,
+                 /*destroyed_execution_context_count=*/1);
+  } else {
+    // When RenderDocument is disabled, the same RenderFrameHost will be reused
+    // for the navigation to `urlb`. So only a new V8 context will be created,
+    // not a new ExecutionContext.
+    ExpectCounts(/*v8_context_count=*/3, /*execution_context_count=*/2,
+                 /*detached_v8_context_count=*/1,
+                 /*destroyed_execution_context_count=*/0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {

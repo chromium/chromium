@@ -1258,10 +1258,7 @@ TEST_F(GCMClientImplCheckinTest, LoadGSettingsFromStore) {
 }
 
 // This test only checks that periodic checkin happens.
-TEST_F(GCMClientImplCheckinTest, CheckinWithAccountsEmptyWithFeature) {
-  scoped_feature_list().InitAndDisableFeature(
-      features::kGCMIncludeAccountTokensInCheckinRequest);
-
+TEST_F(GCMClientImplCheckinTest, CheckinWithAccountsEmpty) {
   std::map<std::string, std::string> settings;
   settings["checkin_interval"] = base::NumberToString(kSettingsCheckinInterval);
   settings["checkin_url"] = "http://alternative.url/checkin";

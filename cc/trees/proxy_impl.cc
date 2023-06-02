@@ -496,10 +496,6 @@ void ProxyImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
     scheduler_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
 
-bool ProxyImpl::HasInvalidationAnimation() const {
-  return host_impl_->mutator_host()->HasInvalidationAnimation();
-}
-
 bool ProxyImpl::IsInsideDraw() {
   return inside_draw_;
 }

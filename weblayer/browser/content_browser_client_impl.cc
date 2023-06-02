@@ -1094,7 +1094,8 @@ bool ContentBrowserClientImpl::WillCreateURLLoaderFactory(
         header_client,
     bool* bypass_redirect_checks,
     bool* disable_secure_dns,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   // The navigation API intercepting API only supports main frame navigations.
   if (type != URLLoaderFactoryType::kNavigation || frame->GetParent())
     return false;

@@ -86,7 +86,7 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
   // TODO(gbillock): Get rid of this mock; make something specialized.
   NiceMock<MediaGalleriesDialogControllerMock> controller_;
 
-  raw_ptr<views::Checkbox> checkbox_ = nullptr;
+  raw_ptr<views::Checkbox, DanglingUntriaged> checkbox_ = nullptr;
 };
 
 // Tests that checkboxes are initialized according to the contents of

@@ -1,0 +1,93 @@
+<!--
+  Copyright (C) 2015-2020 Apple Inc. All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <title>About MotionMark</title>
+
+    <link rel="stylesheet" href="resources/runner/motionmark.css">
+
+    <script src="resources/strings.js"></script>
+</head>
+<body class="images-loaded">
+    <main>
+    <section id="about" class="selected">
+        <div class="logo"><svg><use xlink:href="resources/runner/logo.svg#root" /></svg></div>
+
+        <div class="body">
+            <h1>About MotionMark <span class="version"></span></h1>
+
+            <p>MotionMark is a web benchmark that focuses on graphics performance. It draws multiple rendering elements, each of which uses the same set of graphics primitives. An element could be an SVG node, an HTML element with CSS style, or a series of canvas operations. Slight variations among the elements avoid trivial caching optimizations by the browser. Although fairly simple, the effects were chosen to reflect techniques commonly used on the web. Tests are visually rich, being designed to stress the graphics system rather than JavaScript.</p>
+
+            <p>After an initial warm-up, each test runs for a fixed period of time. Based on measurements of the browser’s frame rate, MotionMark adjusts the number of elements to draw, and concentrates around a narrow range where the browser starts to fail animating at 60 frames per second (fps). A piecewise linear regression is applied to the data, and the change point is reported as the test's score. The confidence interval is calculated through <a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">bootstrapping</a>. MotionMark calculates the geometric mean of all of the tests’ scores to report the single score for the run.</p>
+
+            <p>MotionMark can be run on a wide variety of devices. Using the device’s screen dimensions it adjusts the drawing area into one of three sizes:</p>
+
+            <ol>
+                <li>Small (568 x 320), targeted at mobile phones</li>
+                <li>Medium (900 x 600), targeted at tablets and laptops</li>
+                <li>Large (1600 x 800), targeted at desktops</li>
+            </ol>
+
+            <p>The design of the benchmark is modular. This makes it easy to write new tests and use different controllers, which can assist a developer working on improving the performance of a web engine. For the purpose of a public benchmark, the MotionMark main suite tests a variety of drawing operations using techniques including CSS, SVG, and Canvas:</p> <!-- nocheck -->
+
+            <ul>
+                <li><strong>Multiply</strong>: CSS border radius, transforms, opacity</li>
+                <li><strong>Arcs and Fills</strong>: Canvas path fills and arcs</li>
+                <li><strong>Leaves</strong>: CSS-transformed elements, opacity</li>
+                <li><strong>Paths</strong>: Canvas line, quadratic, and Bezier paths</li>
+                <li><strong>Lines</strong>: Canvas line segments</li>
+                <li><strong>Focus</strong>: CSS blur filter, opacity</li>
+                <li><strong>Images</strong>: Canvas <code>getImageData()</code> and <code>putImageData()</code></li>
+                <li><strong>Design</strong>: HTML text rendering</li>
+                <li><strong>Suits</strong>: SVG clip paths, gradients and transforms</li>
+            </ul>
+
+            <p>To achieve consistent results on mobile devices, put the device in landscape orientation. On laptops and desktops, use the default display resolution and make the browser window fullscreen. Make sure that screen automatic display sleep is turned off or set to longer than 8 minutes.</p>
+
+            <h3>Version log</h3>
+
+            <ul id="log">
+                <li><strong>1.3</strong>: Add support for non-60Hz <code>requestAnimationFrame</code> rates to the <a href="developer.html">developer settings</a>.</li>
+                <li><strong>1.2</strong>: Fix <a href="https://bugs.webkit.org/show_bug.cgi?id=220847">bug</a>, <a href="https://bugs.webkit.org/show_bug.cgi?id=221075">bug</a>, and <a href="https://bugs.webkit.org/show_bug.cgi?id=219984">bug</a> to reduce test variance and sensitivity to individual long frames.</li>
+                <li><strong>1.1.1</strong>: Fix <a href="https://bugs.webkit.org/show_bug.cgi?id=210640">bug</a> in the calculation of timestamps used for animation during warm up phase of tests.</li>
+                <li><a href="https://webkit.org/blog/8434/motionmark-1-1/"><strong>1.1</strong></a>: Update Multiply test to increase max capacity and expand methods for hiding elements. Update Leaves test to use range of sizes and opacity.</li>
+                <li><a href="https://webkit.org/blog/6943/motionmark-a-new-graphics-benchmark/"><strong>1.0</strong></a>: Initial release.</li>
+            </ul>
+
+            <center><button onclick="location.href='./'">Return to homepage</button></center>
+        </div>
+        </section>
+    </main>
+
+    <script>
+        document.title = "About MotionMark " + Strings.version;
+        document.querySelector(".version").textContent = Strings.version;
+    </script>
+</body>
+</html>

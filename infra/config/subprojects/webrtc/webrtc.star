@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient", "xcode")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
 
 luci.bucket(
     name = "webrtc",
@@ -147,7 +147,6 @@ builder(
             apply_configs = [
                 "dcheck",
                 "mb",
-                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
@@ -155,7 +154,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    xcode = xcode.x14main,
 )
 
 builder(
@@ -169,14 +167,12 @@ builder(
             apply_configs = [
                 "dcheck",
                 "mb",
-                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-webrtc",
     ),
-    xcode = xcode.x14main,
 )
 
 builder(

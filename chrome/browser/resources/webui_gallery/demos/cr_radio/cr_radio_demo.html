@@ -1,0 +1,47 @@
+<style include="cr-icons demo">
+#segmentedButtonDemo {
+  display: none;
+}
+
+:host-context([chrome-refresh-2023]) #segmentedButtonDemo {
+  display: block;
+}
+</style>
+
+<h1>cr-radio-group and cr-radio-button</h1>
+<div class="demos">
+  <cr-radio-group selected="{{selectedRadioOption_}}">
+    <cr-radio-button name="option1" label="Option 1"></cr-radio-button>
+    <cr-radio-button name="option2" label="Option 2"></cr-radio-button>
+    <cr-radio-button name="option3" label="Option 3">
+      <div>With slotted content</div>
+    </cr-radio-button>
+    <cr-radio-button name="option4" label="Option 4" disabled>
+      <div>Disabled</div>
+    </cr-radio-button>
+  </cr-radio-group>
+
+  Selected option: [[selectedRadioOption_]]
+  <cr-radio-group selected="option5">
+    <cr-radio-button name="option5" label="Disabled selected"
+        disabled></cr-radio-button>
+  </cr-radio-group>
+</div>
+
+<div id="segmentedButtonDemo">
+  <h1>cr-segmented-button</h1>
+  <div class="demos">
+    <cr-segmented-button selected="{{selectedSegmentedButtonOption_}}">
+      <cr-segmented-button-option name="option1" checked>
+        <span slot="prefix-icon" class="cr-icon icon-visibility"></span>
+        Option 1
+      </cr-segmented-button-option>
+      <cr-segmented-button-option name="option2">
+        <span slot="prefix-icon" class="cr-icon icon-visibility-off">
+        </span>
+        Option 2
+      </cr-segmented-button-option>
+    </cr-segmented-button>
+    Selected option: [[selectedSegmentedButtonOption_]]
+  </div>
+</div>

@@ -37,8 +37,8 @@ export enum SafetyCheckParentStatus {
 
 /**
  * States of the safety check updates element.
- * Needs to be kept in sync with UpdatesStatus in
- * chrome/browser/ui/webui/settings/safety_check_handler.h
+ * Needs to be kept in sync with UpdateStatus in
+ * components/safety_check/safety_check.h
  */
 export enum SafetyCheckUpdatesStatus {
   CHECKING = 0,
@@ -49,6 +49,9 @@ export enum SafetyCheckUpdatesStatus {
   FAILED_OFFLINE = 5,
   FAILED = 6,
   UNKNOWN = 7,
+  // Only used in Android but listed here to keep enum in sync.
+  OUTDATED = 8,
+  UPDATE_TO_ROLLBACK_VERSION_DISALLOWED = 9,
 }
 
 /**
@@ -59,6 +62,8 @@ export enum SafetyCheckUpdatesStatus {
 export enum SafetyCheckPasswordsStatus {
   CHECKING = 0,
   SAFE = 1,
+  // Indicates that at least one compromised password exists. Weak, reused or
+  // muted compromised password warnings may exist as well.
   COMPROMISED = 2,
   OFFLINE = 3,
   NO_PASSWORDS = 4,
@@ -66,7 +71,17 @@ export enum SafetyCheckPasswordsStatus {
   QUOTA_LIMIT = 6,
   ERROR = 7,
   FEATURE_UNAVAILABLE = 8,
+  // Indicates that no compromised or reused passwords exist, but there is at
+  // least one weak password.
   WEAK_PASSWORDS_EXIST = 9,
+  // Indicates that no compromised passwords exist, but there is at least one
+  // reused password.
+  // Not yet supported on Desktop.
+  REUSED_PASSWORDS_EXIST = 10,
+  // Indicates no weak or reused passwords exist, but there is
+  // at least one compromised password warning that has been muted by the user.
+  // Not yet supported on Desktop.
+  MUTED_COMPROMISED_EXIST = 11,
 }
 
 /**

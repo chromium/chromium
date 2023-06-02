@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,7 +19,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace supervised_user {
@@ -72,8 +70,6 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin fake_gaia_mixin_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   base::CallbackListSubscription subscription_;
-  base::test::ScopedFeatureList feature_list_{
-      kEnableSupervisionOnDesktopAndIOS};
 
   // Test harness properties.
   signin::ConsentLevel consent_level_;

@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="2736805085127235148">Chrome-meldingen staan momenteel uit in je apparaatinstellingen.</translation>
 <translation id="2767464022270041271">Geen opgeslagen wachtwoorden. Google Wachtwoordmanager kan je wachtwoorden checken als je deze opslaat.</translation>
+<translation id="2840432500933227975">Open de Chrome-instellingen in iOS, tik op Standaard browser-app en selecteer Chrome.</translation>
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
 <translation id="2957447865124070833">Selecteer <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chrome-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Dit betekent dat Chrome altijd de mobiele site opvraagt.</translation>
 <translation id="3706101708757577809">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="3720541637541300822">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
+<translation id="3827545470516145620">Je krijgt standaardbeveiliging op dit apparaat</translation>
 <translation id="384394811301901750">Google Chrome kan je camera momenteel niet gebruiken</translation>
 <translation id="3980220367029651214">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chrome-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Je organisatie vereist dat je uitgelogd blijft bij Chrome.</translation>
@@ -150,7 +152,6 @@ Aandachtspunten:
   • Als Chrome crasht, kunnen details over de crash bepaalde persoonlijke informatie bevatten.
 
   • Als je synchronisatie aanzet, kunnen statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Je krijgt standaardbeveiliging voor dit Chrome-profiel</translation>
 <translation id="9112744793181547300">Chrome instellen als standaard?</translation>
 <translation id="9122931302567044771">Dit betekent dat Chrome altijd de desktopsite opvraagt.</translation>
 </translationbundle>

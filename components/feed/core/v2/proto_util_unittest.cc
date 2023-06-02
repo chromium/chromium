@@ -408,10 +408,10 @@ TEST(ProtoUtilTest, WithDocIds) {
         uint64_values: 456
       }
       columns {
-        type: 4
+        type: 2
         name: "FEED_CARD_VIEW"
-        uint64_values: 1
-        uint64_values: 2
+        int64_values: 1
+        int64_values: 2
       }
     }
   }

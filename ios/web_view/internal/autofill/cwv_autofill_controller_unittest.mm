@@ -159,13 +159,13 @@ class CWVAutofillControllerTest : public web::WebTest {
 
 // Tests CWVAutofillController fetch suggestions for profiles.
 TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
-  FormSuggestion* suggestion =
-      [FormSuggestion suggestionWithValue:kTestFieldValue
-                       displayDescription:kTestDisplayDescription
-                                     icon:nil
-                               identifier:0
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:kTestFieldValue
+       displayDescription:kTestDisplayDescription
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   [autofill_agent_ addSuggestion:suggestion
                      forFormName:kTestFormName
                  fieldIdentifier:kTestFieldIdentifier
@@ -206,13 +206,13 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
 
 // Tests CWVAutofillController fetch suggestions for passwords.
 TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
-  FormSuggestion* suggestion =
-      [FormSuggestion suggestionWithValue:kTestFieldValue
-                       displayDescription:nil
-                                     icon:nil
-                               identifier:0
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:kTestFieldValue
+       displayDescription:nil
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   OCMExpect([password_controller_
       checkIfSuggestionsAvailableForForm:[OCMArg any]
                           hasUserGesture:YES
@@ -256,13 +256,13 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
 
 // Tests CWVAutofillController accepts suggestion.
 TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
-  FormSuggestion* form_suggestion =
-      [FormSuggestion suggestionWithValue:kTestFieldValue
-                       displayDescription:nil
-                                     icon:nil
-                               identifier:0
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* form_suggestion = [FormSuggestion
+      suggestionWithValue:kTestFieldValue
+       displayDescription:nil
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:form_suggestion
                                                    formName:kTestFormName

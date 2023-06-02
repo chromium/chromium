@@ -23,8 +23,7 @@ void CreateNodeChecked(const IpczAPI& ipcz,
                        const IpczDriver& driver,
                        IpczCreateNodeFlags flags,
                        IpczHandle& handle) {
-  const IpczResult result = ipcz.CreateNode(&driver, IPCZ_INVALID_DRIVER_HANDLE,
-                                            flags, nullptr, &handle);
+  const IpczResult result = ipcz.CreateNode(&driver, flags, nullptr, &handle);
   ASSERT_EQ(IPCZ_RESULT_OK, result);
 }
 
@@ -77,20 +76,6 @@ IpczResult TestBase::Put(IpczHandle portal,
                          absl::Span<IpczHandle> handles) {
   return ipcz().Put(portal, message.data(), message.size(), handles.data(),
                     handles.size(), IPCZ_NO_FLAGS, nullptr);
-}
-
-IpczResult TestBase::PutWithLimits(IpczHandle portal,
-                                   const IpczPutLimits& limits,
-                                   std::string_view message,
-                                   absl::Span<IpczHandle> handles) {
-  IpczPutLimits sized_limits = limits;
-  sized_limits.size = sizeof(sized_limits);
-  const IpczPutOptions options = {
-      .size = sizeof(options),
-      .limits = &sized_limits,
-  };
-  return ipcz().Put(portal, message.data(), message.size(), handles.data(),
-                    handles.size(), IPCZ_NO_FLAGS, &options);
 }
 
 IpczResult TestBase::Get(IpczHandle portal,

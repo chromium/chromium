@@ -29,6 +29,7 @@
 #include "extensions/grit/extensions_browser_resources.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -741,11 +742,10 @@ void ArcAppIcon::UpdateImageSkia(
     gfx::ImageSkia& image_skia,
     std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(ui::IsScaleFactorSupported(scale_factor));
 
   gfx::ImageSkiaRep image_rep(bitmap,
                               ui::GetScaleForResourceScaleFactor(scale_factor));
-  DCHECK(ui::IsSupportedScale(image_rep.scale()));
-
   image_skia.RemoveRepresentation(image_rep.scale());
   image_skia.AddRepresentation(image_rep);
   image_skia.RemoveUnsupportedRepresentationsForScale(image_rep.scale());

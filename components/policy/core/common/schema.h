@@ -10,7 +10,6 @@
 
 #include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -199,7 +198,7 @@ class POLICY_EXPORT Schema {
    private:
     scoped_refptr<const InternalStorage> storage_;
     raw_ptr<const internal::PropertyNode, AllowPtrArithmetic> it_;
-    raw_ptr<const internal::PropertyNode> end_;
+    raw_ptr<const internal::PropertyNode, AllowPtrArithmetic> end_;
   };
 
   // These methods should be called only if type() == Type::DICT,
@@ -270,9 +269,7 @@ class POLICY_EXPORT Schema {
   void MaskSensitiveValuesRecursive(base::Value* value) const;
 
   scoped_refptr<const InternalStorage> storage_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const internal::SchemaNode* node_;
+  raw_ptr<const internal::SchemaNode, DanglingUntriaged> node_;
 };
 
 }  // namespace policy

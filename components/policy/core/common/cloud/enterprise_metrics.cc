@@ -208,4 +208,58 @@ const char kUMAHashDanceNetworkErrorCode[] =
 const char kUMASuffixInitialEnrollment[] = ".InitialEnrollment";
 const char kUMASuffixFRE[] = ".ForcedReenrollment";
 
+const char kUMAStateDeterminationDeviceIdentifierStatus[] =
+    "Enterprise.StateDetermination.DeviceIdentifierStatus";
+const char kUMAStateDeterminationEnabled[] =
+    "Enterprise.StateDetermination.Enabled";
+const char kUMAStateDeterminationEmbargoDatePassed[] =
+    "Enterprise.StateDetermination.EmbargoDatePassed";
+const char kUMAStateDeterminationKillSwitchFetchNetworkErrorCode[] =
+    "Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode";
+const char kUMAStateDeterminationKillSwitchFetchNumTries[] =
+    "Enterprise.StateDetermination.KillSwitchFetch.NumTries";
+const char kUMAStateDeterminationOnFlex[] =
+    "Enterprise.StateDetermination.OnFlex";
+const char kUMAStateDeterminationOwnershipStatus[] =
+    "Enterprise.StateDetermination.OwnershipStatus";
+const char kUMAStateDeterminationPsmReportedAvailableState[] =
+    "Enterprise.StateDetermination.PsmReportedAvailableState";
+const char kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode[] =
+    "Enterprise.StateDetermination.PsmRlweOprfRequest.DmStatusCode";
+const char kUMAStateDeterminationPsmRlweOprfRequestNetworkErrorCode[] =
+    "Enterprise.StateDetermination.PsmRlweOprfRequest.NetworkErrorCode";
+const char kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode[] =
+    "Enterprise.StateDetermination.PsmRlweQueryRequest.DmStatusCode";
+const char kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode[] =
+    "Enterprise.StateDetermination.PsmRlweQueryRequest.NetworkErrorCode";
+const char kUMAStateDeterminationStateKeysRetrieved[] =
+    "Enterprise.StateDetermination.StateKeysRetrieved";
+const char kUMAStateDeterminationStateRequestDmStatusCode[] =
+    "Enterprise.StateDetermination.StateRequest.DmStatusCode";
+const char kUMAStateDeterminationStateRequestNetworkErrorCode[] =
+    "Enterprise.StateDetermination.StateRequest.NetworkErrorCode";
+const char kUMAStateDeterminationStateReturned[] =
+    "Enterprise.StateDetermination.StateReturned";
+const char kUMAStateDeterminationStepDuration[] =
+    "Enterprise.StateDetermination.StepDuration";
+const char kUMAStateDeterminationSystemClockSynchronized[] =
+    "Enterprise.StateDetermination.SystemClockSynchronized";
+const char kUMAStateDeterminationTotalDurationByState[] =
+    "Enterprise.StateDetermination.TotalDurationByState";
+const char kUMAStateDeterminationTotalDuration[] =
+    "Enterprise.StateDetermination.TotalDuration";
+
+const char kUMASuffixConnectionError[] = ".ConnectionError";
+const char kUMASuffixDisabled[] = ".Disabled";
+const char kUMASuffixEnrollment[] = ".Enrollment";
+const char kUMASuffixNoEnrollment[] = ".NoEnrollment";
+const char kUMASuffixServerError[] = ".ServerError";
+
+const char kUMASuffixOPRFRequest[] = ".OPRFRequest";
+const char kUMASuffixOwnershipCheck[] = ".OwnershipCheck";
+const char kUMASuffixQueryRequest[] = ".QueryRequest";
+const char kUMASuffixStateKeyRetrieval[] = ".StateKeyRetrieval";
+const char kUMASuffixStateRequest[] = ".StateRequest";
+const char kUMASuffixSystemClockSync[] = ".SystemClockSync";
+
 }  // namespace policy

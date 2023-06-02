@@ -185,14 +185,14 @@ class StorageQueueTest
           .append("/")
           .append(base::NumberToString(generation_id))
           .append(" '")
-          .append(record.data().data(), record.data().size())
+          .append(record.data())
           .append("'\n");
       bool success =
           mock_upload_->UploadRecord(uploader_id, sequencing_id, record.data());
       if (success && possible_record_copy.has_value()) {
         const auto& record_copy = possible_record_copy.value();
         upload_progress_.append("Has unencrypted copy: ")
-            .append(record_copy.data().data(), record_copy.data().size())
+            .append(record_copy.data())
             .append("'\n");
         mock_upload_->HasUnencryptedCopy(uploader_id, record_copy.destination(),
                                          record_copy.data());

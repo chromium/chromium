@@ -34,7 +34,6 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
     case Sandbox::kIconReader:
     case Sandbox::kMediaFoundationCdm:
     case Sandbox::kWindowsSystemProxyResolver:
-    case Sandbox::kFileUtil:
       return false;
 #endif
     case Sandbox::kAudio:
@@ -138,7 +137,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kIconReader:
     case Sandbox::kMediaFoundationCdm:
     case Sandbox::kWindowsSystemProxyResolver:
-    case Sandbox::kFileUtil:
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case Sandbox::kHardwareVideoDecoding:
@@ -310,10 +308,6 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return switches::kLibassistantSandbox;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_WIN)
-    case Sandbox::kFileUtil:
-      return switches::kFileUtilSandbox;
-#endif
       // The following are not utility processes so should not occur.
     case Sandbox::kRenderer:
     case Sandbox::kGpu:
@@ -375,9 +369,6 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kMediaFoundationCdm;
   if (sandbox_string == switches::kWindowsSystemProxyResolverSandbox)
     return Sandbox::kWindowsSystemProxyResolver;
-  if (sandbox_string == switches::kFileUtilSandbox) {
-    return Sandbox::kFileUtil;
-  }
 #endif
 #if BUILDFLAG(IS_MAC)
   if (sandbox_string == switches::kMirroringSandbox)

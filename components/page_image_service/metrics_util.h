@@ -15,6 +15,8 @@ namespace page_image_service {
 constexpr char kBackendHistogramName[] = "PageImageService.Backend";
 constexpr char kBackendOptimizationGuideResultHistogramName[] =
     "PageImageService.Backend.OptimizationGuide.Result";
+constexpr char kBackendSuggestResultHistogramName[] =
+    "PageImageService.Backend.Suggest.Result";
 constexpr char kConsentSuccessHistogramName[] =
     "PageImageService.ConsentSuccess";
 
@@ -27,9 +29,9 @@ enum class PageImageServiceBackend {
 };
 
 // Used in UMA. Must not be renumbered, and must be kept in sync with enums.xml.
-enum class PageImageServiceOptimizationGuideResult {
+enum class PageImageServiceResult {
   kSuccess = 0,
-  kDecisionMissing = 1,
+  kResponseMissing = 1,
   kNoImage = 2,
   kResponseMalformed = 3,
   kMaxValue = kResponseMalformed,

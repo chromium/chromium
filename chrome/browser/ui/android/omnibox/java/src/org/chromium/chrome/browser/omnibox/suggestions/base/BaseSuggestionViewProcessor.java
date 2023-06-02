@@ -33,8 +33,8 @@ import java.util.List;
  * A class that handles base properties and model for most suggestions.
  */
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
-    private final @NonNull Context mContext;
-    private final @NonNull SuggestionHost mSuggestionHost;
+    protected final @NonNull Context mContext;
+    protected final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull ActionChipsProcessor mActionChipsProcessor;
     private final @Nullable FaviconFetcher mFaviconFetcher;
     private final int mDesiredFaviconWidthPx;
@@ -50,13 +50,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             @Nullable FaviconFetcher faviconFetcher) {
         mContext = context;
         mSuggestionHost = host;
+        mFaviconFetcher = faviconFetcher;
         mDesiredFaviconWidthPx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_favicon_size);
-        mDecorationImageSizePx = context.getResources().getDimensionPixelSize(
+        mDecorationImageSizePx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_decoration_image_size);
         mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_content_height);
-        mFaviconFetcher = faviconFetcher;
         mActionChipsProcessor = new ActionChipsProcessor(context, host);
     }
 
@@ -230,12 +230,5 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         model, SuggestionDrawableState.Builder.forBitmap(mContext, icon).build());
             }
         });
-    }
-
-    /**
-     * @return Current context.
-     */
-    protected Context getContext() {
-        return mContext;
     }
 }

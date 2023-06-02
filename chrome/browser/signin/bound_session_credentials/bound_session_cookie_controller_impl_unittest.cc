@@ -136,7 +136,8 @@ class BoundSessionCookieControllerImplTest
   TestSigninClient signin_client_;
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
-  raw_ptr<FakeBoundSessionRefreshCookieFetcher> cookie_fetcher_ = nullptr;
+  raw_ptr<FakeBoundSessionRefreshCookieFetcher, DanglingUntriaged>
+      cookie_fetcher_ = nullptr;
   size_t on_cookie_expiration_date_changed_call_count_ = 0;
 };
 

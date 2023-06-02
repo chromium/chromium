@@ -17,8 +17,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.devui.util.WebViewCrashLogParser;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 

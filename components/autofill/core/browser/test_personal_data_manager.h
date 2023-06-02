@@ -82,6 +82,7 @@ class TestPersonalDataManager : public PersonalDataManager {
       const override;
   const AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase()
       const override;
+  bool IsAutofillPaymentMethodsMandatoryReauthEnabled() override;
 
   // Unique to TestPersonalDataManager:
 
@@ -171,6 +172,10 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   void ClearCreditCardArtImages() { credit_card_art_images_.clear(); }
 
+  void SetAutofillPaymentMethodsMandatoryReauthEnabled(bool val) {
+    autofill_payment_methods_mandatory_reauth_enabled_ = val;
+  }
+
  private:
   std::string timezone_country_code_;
   std::string default_country_code_;
@@ -186,6 +191,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   AutofillSyncSigninState sync_and_signin_state_ =
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   CoreAccountInfo account_info_;
+  bool autofill_payment_methods_mandatory_reauth_enabled_ = false;
 
   TestInMemoryStrikeDatabase inmemory_strike_database_;
   AutofillProfileMigrationStrikeDatabase

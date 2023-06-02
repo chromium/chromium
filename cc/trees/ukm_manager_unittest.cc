@@ -234,7 +234,7 @@ class UkmManagerTest : public testing::Test {
     return breakdown;
   }
 
-  raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
+  raw_ptr<ukm::TestUkmRecorder, DanglingUntriaged> test_ukm_recorder_;
   std::unique_ptr<UkmManager> manager_;
   base::SimpleTestTickClock test_tick_clock_;
 };

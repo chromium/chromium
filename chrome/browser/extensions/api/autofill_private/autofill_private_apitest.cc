@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/extensions/api/autofill_private.h"
+
+#include <memory>
+
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/command_line.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
@@ -10,10 +15,12 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
@@ -24,6 +31,8 @@ namespace extensions {
 
 namespace {
 
+// TODO(crbug.com/1449321): Remove this TestAutofillClient and use the main
+// TestAutofillClient instead.
 class TestChromeAutofillClient : public autofill::ChromeAutofillClient {
  public:
   explicit TestChromeAutofillClient(content::WebContents* web_contents)
@@ -35,13 +44,33 @@ class TestChromeAutofillClient : public autofill::ChromeAutofillClient {
     return mock_device_authenticator_;
   }
 
+  autofill::PersonalDataManager* GetPersonalDataManager() override {
+    return personal_data_manager_;
+  }
+
+  autofill::FormDataImporter* GetFormDataImporter() override {
+    if (!form_data_importer_) {
+      form_data_importer_ = std::make_unique<autofill::FormDataImporter>(
+          /*client=*/this, /*payments_client=*/nullptr,
+          /*personal_data_manager=*/nullptr, /*app_locale=*/"en-US");
+    }
+
+    return form_data_importer_.get();
+  }
+
   void SetDeviceAuthenticator(
       scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_auth) {
     mock_device_authenticator_ = mock_auth;
   }
 
+  void SetPersonalDataManger(autofill::TestPersonalDataManager* mock_pdm) {
+    personal_data_manager_ = mock_pdm;
+  }
+
   scoped_refptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
+  raw_ptr<autofill::TestPersonalDataManager> personal_data_manager_ = nullptr;
+  std::unique_ptr<autofill::FormDataImporter> form_data_importer_;
 #endif
 };
 
@@ -59,6 +88,8 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
+    test_personal_data_manager_ =
+        std::make_unique<autofill::TestPersonalDataManager>();
   }
 
  protected:
@@ -75,6 +106,9 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     return test_autofill_client_injector_
         [browser()->tab_strip_model()->GetActiveWebContents()];
   }
+
+  std::unique_ptr<autofill::TestPersonalDataManager>
+      test_personal_data_manager_;
 
  private:
   autofill::TestAutofillClientInjector<TestChromeAutofillClient>
@@ -185,6 +219,36 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                    "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       authenticateUserToEditLocalCard) {
+  base::UserActionTester user_action_tester;
+  scoped_refptr<device_reauth::MockDeviceAuthenticator>
+      mock_device_authenticator =
+          base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
+  TestChromeAutofillClient* test_client = autofill_client();
+
+  test_personal_data_manager_->SetAutofillPaymentMethodsMandatoryReauthEnabled(
+      true);
+  test_client->SetPersonalDataManger(test_personal_data_manager_.get());
+  test_client->SetDeviceAuthenticator(mock_device_authenticator);
+
+  ON_CALL(*mock_device_authenticator, AuthenticateWithMessage)
+      .WillByDefault(
+          testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(true);
+          }));
+
+  EXPECT_CALL(*mock_device_authenticator,
+              AuthenticateWithMessage(testing::_, testing::_))
+      .Times(1);
+  EXPECT_TRUE(RunAutofillSubtest("authenticateUserToEditLocalCard"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
 }
 #endif
 

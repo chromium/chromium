@@ -4,10 +4,14 @@
 
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 
+#include <string>
+
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -41,6 +45,17 @@ void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
                                     base::Value(!enabled));
   profile->GetPrefs()->SetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions, enabled);
+}
+
+void PopulateAccountInfoWithName(AccountInfo& info,
+                                 const std::string& given_name) {
+  info.given_name = given_name;
+  info.full_name = "fullname";
+  info.hosted_domain = "example.com";
+  info.locale = "en";
+  info.picture_url = "https://example.com";
+
+  CHECK(info.IsValid());
 }
 
 }  // namespace supervised_user_test_util

@@ -135,26 +135,3 @@
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().
 -AccessCodeCastHandlerBrowserTest.ExpectProfileSynErrorWhenNoSync
-
-# Can be enabled once this version skew variant uses Ash >= 114.0.5735.19.
--MenuItemViewTestRemoveWithSubmenu0.RemoveItemWithSubmenu0
--TabDragging/DetachToBrowserTabDragControllerTest.CancelOnNewTabWhenDragging/0
--TabDragging/DetachToBrowserTabDragControllerTest.CancelOnNewTabWhenDragging/2
--TabDragging/DetachToBrowserTabDragControllerTest.CaptureLostDuringDrag/0
--TabDragging/DetachToBrowserTabDragControllerTest.CaptureLostDuringDrag/2
--TabDragging/DetachToBrowserTabDragControllerTest.DeleteBeforeStartedDragging/0
--TabDragging/DetachToBrowserTabDragControllerTest.DeleteBeforeStartedDragging/2
--TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabsWhileDetached/0
--TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabsWhileDetached/2
--TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabWhileAttached/0
--TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabWhileAttached/2
--TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/2
--TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/2
--TabDragging/DetachToBrowserTabDragControllerTest.DragAll/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragAll/2
--TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/0
--TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/2
--TabDragging/DetachToBrowserTabDragControllerTest.RevertDragWhileDetached/0
--TabDragging/DetachToBrowserTabDragControllerTest.RevertDragWhileDetached/2

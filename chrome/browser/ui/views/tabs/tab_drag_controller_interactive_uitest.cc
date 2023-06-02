@@ -1687,8 +1687,13 @@ class MaximizedBrowserWindowWaiter {
 // Drags from browser to separate window and releases mouse.
 // TODO(crbug/1444028): The test is failing. Please re-enable after fixing the
 // failure.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DetachToOwnWindow DISABLED_DetachToOwnWindow
+#else
+#define MAYBE_DetachToOwnWindow DetachToOwnWindow
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DISABLED_DetachToOwnWindow) {
+                       MAYBE_DetachToOwnWindow) {
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2177,11 +2182,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 }
 
-// Flaky on lacros - it appears that the tab close animation sometimes completes
-// before we have a chance to check for ownership during said animation.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TabDragContextOwnsClosingDraggedTabs \
   DISABLED_TabDragContextOwnsClosingDraggedTabs
 #else

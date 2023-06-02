@@ -14,6 +14,9 @@ CAPTURE_EXPORT
 void LogCaptureDeviceMetrics(
     base::span<const media::VideoCaptureDeviceInfo> devices_info);
 
+void LogCaptureDeviceHashedModelId(
+    const media::VideoCaptureDeviceDescriptor& descriptor);
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_METRICS_H_

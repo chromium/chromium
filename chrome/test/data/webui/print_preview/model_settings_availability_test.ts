@@ -20,7 +20,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     document.body.appendChild(model);
 
     model.documentSettings = {
-      hasCssMediaStyles: false,
+      allPagesHaveCustomSize: false,
+      allPagesHaveCustomOrientation: false,
       hasSelection: false,
       isFromArc: false,
       isModifiable: true,
@@ -126,8 +127,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('documentSettings.isFromArc', false);
     assertTrue(model.settings.layout.available);
 
-    // Unavailable if document has CSS media styles.
-    model.set('documentSettings.hasCssMediaStyles', true);
+    // Unavailable if all pages have specified an orientation.
+    model.set('documentSettings.allPagesHaveCustomOrientation', true);
     assertFalse(model.settings.layout.available);
     assertFalse(model.settings.layout.setFromUi);
   });
@@ -250,10 +251,17 @@ suite('ModelSettingsAvailabilityTest', function() {
     // PDF to PDF -> media size is unavailable.
     model.set('documentSettings.isModifiable', false);
     assertFalse(model.settings.mediaSize.available);
+    model.set('documentSettings.isModifiable', true);
 
-    // CSS styles to PDF -> media size is unavailable.
-    model.set('documentSettings.isModfiable', true);
-    model.set('documentSettings.hasCssMediaStyles', true);
+    // Even if all pages have specified their orientation, the size option
+    // should still be available.
+    model.set('documentSettings.allPagesHaveCustomOrientation', true);
+    assertTrue(model.settings.mediaSize.available);
+    model.set('documentSettings.allPagesHaveCustomOrientation', false);
+
+    // If all pages have specified a size, the size option shouldn't be
+    // available.
+    model.set('documentSettings.allPagesHaveCustomSize', true);
     assertFalse(model.settings.mediaSize.available);
     assertFalse(model.settings.color.setFromUi);
   });

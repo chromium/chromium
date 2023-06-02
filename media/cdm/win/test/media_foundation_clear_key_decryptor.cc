@@ -448,59 +448,34 @@ STDMETHODIMP MediaFoundationClearKeyDecryptor::ProcessMessage(
   DVLOG_FUNC(3) << "message=" << MessageTypeToString(message);
   RETURN_IF_FAILED(GetShutdownStatus());
 
-  // TODO(crbug.com/1443014): Remove unused MFT message types here once the
-  // encrypted video playback and rendering is fully working.
   switch (message) {
-    case MFT_MESSAGE_COMMAND_DRAIN:
-      // A synchronous MFT can ignore this message and return S_OK since:
-      //  - The MFT never stores more than one input sample at a time.
-      //  - Each input sample produces a single output sample.
-      break;
-    case MFT_MESSAGE_COMMAND_MARKER:
-      // This message applies only to Asynchronous MFTs.
-      break;
     case MFT_MESSAGE_COMMAND_FLUSH:
       // Flush all stored data. MFT should discard any media samples it is
       // holding.
       FlushAllStoredData();
-      break;
-    case MFT_MESSAGE_NOTIFY_BEGIN_STREAMING:
-      // The streaming is about to start. The MFT can respond by allocating
-      // buffers or other resources before the first call to ProcessInput().
-      break;
-    case MFT_MESSAGE_NOTIFY_END_STREAMING:
-      // The streaming is about to end. The MFT can respond to this message by
-      // releasing buffers and other resources. The MFT does not flush input
-      // data or reset the media types in response to this message.
-      break;
-    case MFT_MESSAGE_NOTIFY_START_OF_STREAM:
-      // The first sample is about to be processed. A synchronous MFT is not
-      // required to respond to the message.
-      break;
-    case MFT_MESSAGE_NOTIFY_END_OF_STREAM:
-      // An input stream has ended.
       break;
     case MFT_MESSAGE_NOTIFY_RELEASE_RESOURCES:
       // When we are told to release resources we need to flush all output
       // samples.
       FlushAllStoredData();
       break;
-    case MFT_MESSAGE_NOTIFY_REACQUIRE_RESOURCES:
-      break;
+    // Message types not required for synchronous MFTs to respond.
+    case MFT_MESSAGE_COMMAND_DRAIN:
+    case MFT_MESSAGE_COMMAND_MARKER:
+    case MFT_MESSAGE_NOTIFY_BEGIN_STREAMING:
+    case MFT_MESSAGE_NOTIFY_END_STREAMING:
+    case MFT_MESSAGE_NOTIFY_START_OF_STREAM:
+    case MFT_MESSAGE_NOTIFY_END_OF_STREAM:
+    // Applies only if `MF_SA_D3D_AWARE` attribute is set to TRUE.
     case MFT_MESSAGE_SET_D3D_MANAGER:
-      // This message applies to video transforms only if the MF_SA_D3D_AWARE
-      // attribute is set to TRUE.
-      break;
+    // Applies only if `MFT_POLICY_SET_AWARE` attribute is set to TRUE.
     case MFT_MESSAGE_NOTIFY_EVENT:
-      // Need to handle initial or dynamic policy notifications when the media
-      // event type is `MEPolicySet` when we set `MFT_POLICY_SET_AWARE`
-      // attribute to TRUE.
-      break;
-    case MFT_MESSAGE_DROP_SAMPLES:                     // fallthrough
-    case MFT_MESSAGE_COMMAND_TICK:                     // fallthrough
-    case MFT_MESSAGE_COMMAND_SET_OUTPUT_STREAM_STATE:  // fallthrough
-    case MFT_MESSAGE_COMMAND_FLUSH_OUTPUT_STREAM:      // fallthrough
-      // An MFT is allowed to ignore message types it doesn't care about.
+    // An MFT is allowed to ignore message types it doesn't care about.
+    case MFT_MESSAGE_NOTIFY_REACQUIRE_RESOURCES:
+    case MFT_MESSAGE_DROP_SAMPLES:
+    case MFT_MESSAGE_COMMAND_TICK:
+    case MFT_MESSAGE_COMMAND_SET_OUTPUT_STREAM_STATE:
+    case MFT_MESSAGE_COMMAND_FLUSH_OUTPUT_STREAM:
       DVLOG_FUNC(3) << "fallthrough!";
       break;
   }

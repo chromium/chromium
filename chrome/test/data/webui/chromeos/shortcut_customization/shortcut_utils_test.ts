@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {Accelerator, AcceleratorCategory, Modifier, MojoAccelerator, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -276,5 +276,13 @@ suite('shortcutUtilsTest', function() {
     ];
     initialOrder.sort(compareAcceleratorInfos);
     areStandardAcceleratorInfosEqual(expectedOrder, initialOrder);
+  });
+
+  test('getSourceAndActionFromAcceleratorId', async () => {
+    const result1 = getSourceAndActionFromAcceleratorId('3-45');
+    assertDeepEquals(result1, {source: 3, action: 45});
+
+    const result2 = getSourceAndActionFromAcceleratorId('0-33');
+    assertDeepEquals(result2, {source: 0, action: 33});
   });
 });

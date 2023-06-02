@@ -111,12 +111,6 @@ AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
     return AlertMenuItem::kNone;
 
   promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
-      feature_engagement::kIPHReopenTabFeature);
-
-  if (promo_handle_.is_valid())
-    return AlertMenuItem::kReopenTabs;
-
-  promo_handle_ = browser_window->CloseFeaturePromoAndContinue(
       feature_engagement::kIPHHighEfficiencyModeFeature);
 
   if (promo_handle_.is_valid())

@@ -40,7 +40,7 @@ class PlaylistTestBuilder {
   template <typename... T>
   void Append(base::StringPiece text1, T&&... rem) {
     for (auto text : {text1, base::StringPiece(rem)...}) {
-      source_.append(text.data(), text.size());
+      source_.append(text);
     }
   }
 

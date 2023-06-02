@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Data o gysoni Chromium</translation>
 <translation id="1722370509450468186">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Cliriwyd data Chromium</translation>
-<translation id="177102542580335555">Rydych yn cael amddiffyniad diogelwch safonol ar gyfer y proffil Chromium hwn</translation>
 <translation id="1838412507805038478">Gwnaeth Chromium ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="1843424232666537147">Mae gan Chromium nodweddion sy'n eich helpu i reoli'ch data rhyngrwyd a pha mor gyflym rydych yn gallu llwytho tudalennau gwe.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">I gael y gorau o Chromium, mewngofnodwch i Chromium â'ch Cyfrif Google.</translation>
 <translation id="3639997914391704523">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
 <translation id="3650632991272923014">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chromium a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
+<translation id="3661862315467204831">Agorwch y Gosodiadau Chromium yn iOS yna tapiwch "Browser Default APP" a dewiswch Chromium.</translation>
 <translation id="372658070733623520">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
+<translation id="3827545470516145620">Rydych yn cael diogelwch safonol ar y ddyfais hon</translation>
 <translation id="3955621079070267756">Agor Chromium o Unrhyw Ap</translation>
 <translation id="4043291146360695975">Mae cyfrineiriau'n cael eu cadw i'r Rheolwr Cyfrineiriau ar y ddyfais hon yn unig.</translation>
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>

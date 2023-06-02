@@ -80,15 +80,25 @@ void CookieControlsIconView::OnCookiesCountChanged(int allowed_cookies,
   }
 }
 
+void CookieControlsIconView::OnStatefulBounceCountChanged(int bounce_count) {
+  if (bounce_count > 0) {
+    has_blocked_cookies_ = true;
+    SetVisible(ShouldBeVisible());
+  }
+}
+
 bool CookieControlsIconView::ShouldBeVisible() const {
-  if (delegate()->ShouldHidePageActionIcons())
+  if (delegate()->ShouldHidePageActionIcons()) {
     return false;
+  }
 
-  if (GetAssociatedBubble())
+  if (GetAssociatedBubble()) {
     return true;
+  }
 
-  if (!delegate()->GetWebContentsForPageActionIconView())
+  if (!delegate()->GetWebContentsForPageActionIconView()) {
     return false;
+  }
 
   switch (status_) {
     case CookieControlsStatus::kDisabledForSite:

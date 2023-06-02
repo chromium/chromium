@@ -110,6 +110,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
@@ -170,6 +171,7 @@
 #include "chrome/browser/metrics/update_engine_metrics_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
@@ -570,6 +572,7 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::PerUserStateManagerChromeOS::RegisterPrefs(registry);
+  metrics::structured::StructuredMetricsService::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -591,6 +594,15 @@ metrics::MetricsService* ChromeMetricsServiceClient::GetMetricsService() {
 
 ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
+}
+
+metrics::structured::StructuredMetricsService*
+ChromeMetricsServiceClient::GetStructuredMetricsService() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return structured_metrics_service_.get();
+#else
+  return nullptr;
+#endif
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(
@@ -701,6 +713,9 @@ void ChromeMetricsServiceClient::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_system_profile_provider_ =
       std::make_unique<ChromeOSSystemProfileProvider>();
+  structured_metrics_service_ =
+      std::make_unique<metrics::structured::StructuredMetricsService>(
+          cros_system_profile_provider_.get(), this, local_state);
 #endif
 
   RegisterMetricsServiceProviders();
@@ -870,22 +885,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) &&                             \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-     BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (base::FeatureList::IsEnabled(
-          kExtendFamilyLinkUserLogSegmentToAllPlatforms)) {
-    metrics_service_->RegisterMetricsProvider(
-        std::make_unique<FamilyLinkUserMetricsProvider>());
-  }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && (BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS) )
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_ASH)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<FamilyLinkUserMetricsProvider>());
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics_service_->RegisterMetricsProvider(
@@ -917,9 +920,13 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ash::PrinterMetricsProvider>());
 
+  // TODO(b/282057109) The StructuredMetricsService owns the recorder. While we
+  // are transitioning from the provider to the service, the provider will be
+  // given a pointer to the recorder. Will be removed when the provider is
+  // deprecated.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::structured::StructuredMetricsProvider>(
-          cros_system_profile_provider_.get()));
+          structured_metrics_service_->recorder()));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AssistantServiceMetricsProvider>());
@@ -1098,8 +1105,9 @@ void ChromeMetricsServiceClient::OnHistogramSynchronizationDone() {
   DCHECK_GT(num_async_histogram_fetches_in_progress_, 0);
 
   // Check if all expected requests finished.
-  if (--num_async_histogram_fetches_in_progress_ > 0)
+  if (--num_async_histogram_fetches_in_progress_ > 0) {
     return;
+  }
 
   waiting_for_collect_final_metrics_step_ = false;
   std::move(collect_final_metrics_done_callback_).Run();
@@ -1143,8 +1151,9 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   // observed or checked, therefore they are whitelisted for the UKM
   // validation that checks consent on all profiles.
   // E.g System Profile consent should be always true.
-  if (!profile->IsRegularProfile())
+  if (!profile->IsRegularProfile()) {
     return true;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore the signin, lock screen app and lock screen profile for sync
@@ -1353,8 +1362,9 @@ ChromeMetricsServiceClient::FilterBrowserMetricsFiles(
     return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
   }
 
-  if (pid == base::GetCurrentProcId())
+  if (pid == base::GetCurrentProcId()) {
     return metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID;
+  }
 
   if (IsProcessRunning(pid))
     return metrics::FileMetricsProvider::FILTER_TRY_LATER;

@@ -19,7 +19,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
   SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
-                       saved_tab_group_id);
+                       saved_tab_group_id, /*position=*/absl::nullopt);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
   return tab;
 }
@@ -44,7 +44,9 @@ content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
 Browser* SavedTabGroupUtils::GetBrowserWithTabGroupId(
     tab_groups::TabGroupId group_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model()->group_model()->ContainsTabGroup(group_id)) {
+    const TabStripModel* const tab_strip_model = browser->tab_strip_model();
+    if (tab_strip_model && tab_strip_model->SupportsTabGroups() &&
+        tab_strip_model->group_model()->ContainsTabGroup(group_id)) {
       return browser;
     }
   }

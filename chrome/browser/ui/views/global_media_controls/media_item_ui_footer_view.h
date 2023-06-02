@@ -51,7 +51,7 @@ class MediaItemUIFooterView : public global_media_controls::MediaItemUIFooter,
 
   SkColor foreground_color_ = gfx::kPlaceholderColor;
 
-  raw_ptr<DeviceEntryButton> overflow_button_ = nullptr;
+  raw_ptr<DeviceEntryButton, DanglingUntriaged> overflow_button_ = nullptr;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 };

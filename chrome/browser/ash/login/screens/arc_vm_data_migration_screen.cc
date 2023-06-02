@@ -179,9 +179,9 @@ void StartArcVmDataMigrator(const std::string& username,
   arc::ConfigureUpstartJobs(std::move(jobs), std::move(callback));
 }
 
-void OnArcVmDataMigratorStartedForGetAndroidDataSize(
+void OnArcVmDataMigratorStartedForGetAndroidDataInfo(
     const std::string& username,
-    chromeos::DBusMethodCallback<int64_t> callback,
+    ArcVmDataMigratorClient::GetAndroidDataInfoCallback callback,
     bool result) {
   if (!result) {
     LOG(ERROR) << "Failed to start arcvm_data_migrator";
@@ -189,16 +189,17 @@ void OnArcVmDataMigratorStartedForGetAndroidDataSize(
     return;
   }
 
-  arc::data_migrator::GetAndroidDataSizeRequest request;
+  arc::data_migrator::GetAndroidDataInfoRequest request;
   request.set_username(username);
-  ArcVmDataMigratorClient::Get()->GetAndroidDataSize(std::move(request),
+  ArcVmDataMigratorClient::Get()->GetAndroidDataInfo(std::move(request),
                                                      std::move(callback));
 }
 
-void GetAndroidDataSize(const std::string& username,
-                        chromeos::DBusMethodCallback<int64_t> callback) {
+void GetAndroidDataInfo(
+    const std::string& username,
+    ArcVmDataMigratorClient::GetAndroidDataInfoCallback callback) {
   StartArcVmDataMigrator(
-      username, base::BindOnce(&OnArcVmDataMigratorStartedForGetAndroidDataSize,
+      username, base::BindOnce(&OnArcVmDataMigratorStartedForGetAndroidDataInfo,
                                username, std::move(callback)));
 }
 
@@ -401,32 +402,38 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
   const uint64_t free_disk_space = reply.value();
   VLOG(1) << "Free disk space is " << free_disk_space;
 
-  GetAndroidDataSize(
+  GetAndroidDataInfo(
       GetChromeOsUsername(profile_),
-      base::BindOnce(&ArcVmDataMigrationScreen::OnGetAndroidDataSizeResponse,
+      base::BindOnce(&ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse,
                      weak_ptr_factory_.GetWeakPtr(), free_disk_space));
 }
 
-void ArcVmDataMigrationScreen::OnGetAndroidDataSizeResponse(
+void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
     uint64_t free_disk_space,
-    absl::optional<int64_t> response) {
+    absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to get the size of Android /data";
     HandleSetupFailure(
-        ArcVmDataMigrationScreenSetupFailure::kGetAndroidDataSizeFailure);
+        ArcVmDataMigrationScreenSetupFailure::kGetAndroidDataInfoFailure);
     return;
   }
 
-  const uint64_t android_data_size = response.value();
-  VLOG(1) << "Size of Android /data is " << android_data_size;
+  const uint64_t android_data_size_dest =
+      response.value().total_allocated_space_dest();
+  const uint64_t android_data_size_src =
+      response.value().total_allocated_space_src();
+  VLOG(1) << "Size of disk space allocated for pre-migration Android /data is "
+          << android_data_size_src;
+  VLOG(1) << "Estimated size of disk space allocated for migrated "
+          << "Android /data is " << android_data_size_dest;
 
   disk_size_ = arc::GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(
-      android_data_size, free_disk_space);
+      android_data_size_dest, free_disk_space);
   VLOG(1) << "Desired disk size for the migration is " << disk_size_;
 
   const uint64_t required_free_disk_space =
       arc::GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
-          android_data_size, free_disk_space);
+          android_data_size_src, android_data_size_dest, free_disk_space);
   VLOG(1) << "Required free disk space for the migration is "
           << required_free_disk_space;
   bool has_enough_free_disk_space = free_disk_space >= required_free_disk_space;

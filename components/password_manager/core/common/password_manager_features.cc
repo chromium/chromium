@@ -137,7 +137,7 @@ BASE_FEATURE(kIOSPasswordBottomSheet,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kMemoryMapWeaknessCheckDictionaries,
              "MemoryMapWeaknessCheckDictionaries",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables new regex for OTP fields.
@@ -200,7 +200,7 @@ BASE_FEATURE(kPasswordsGrouping,
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
 BASE_FEATURE(kRecoverFromNeverSaveAndroid,
-             "RecoverFromNeverSaveAndroid",
+             "RecoverFromNeverSaveAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -239,6 +239,16 @@ BASE_FEATURE(kPasswordGenerationBottomSheet,
              "PasswordGenerationBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the refactored Password Suggestion bottom sheet (Touch-To-Fill).
+// The goal of the refactoring is to transfer the knowledge about the
+// Touch-To-Fill feature to the browser code completely and so to simplify the
+// renderer code. In the refactored version it will be decided inside the the
+// `ContentPasswordManagerDriver::ShowPasswordSuggestions` whether to show the
+// TTF to the user.
+BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
+             "PasswordSuggestionBottomSheetV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.
 BASE_FEATURE(kUnifiedCredentialManagerDryRun,
@@ -248,7 +258,7 @@ BASE_FEATURE(kUnifiedCredentialManagerDryRun,
 // Enables use of Google Mobile Services for password storage. Chrome's local
 // database will be unused but kept in sync for local passwords.
 BASE_FEATURE(kUnifiedPasswordManagerAndroid,
-             "UnifiedPasswordManagerAndroid",
+             "UnifiedPasswordManagerAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables use of Google Mobile services for non-sycned password storage.
@@ -301,17 +311,14 @@ BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
              "UsernameFirstFlowHonorAutocomplete",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables previewing password generation suggestion in the target form in
-// cleartext.
-BASE_FEATURE(kPasswordGenerationPreviewOnHover,
-             "PasswordGenerationPreviewOnHover",
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Show, update, and delete GPM passkeys on the Chrome Password Manager.
+BASE_FEATURE(kPasswordManagerPasskeys,
+             "PasswordManagerPasskeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Current migration version to Google Mobile Services. If version saved in pref
-// is lower than 'kMigrationVersion' passwords will be re-uploaded.
-extern const base::FeatureParam<int> kMigrationVersion = {
-    &kUnifiedPasswordManagerAndroid, "migration_version", 1};
 
 // The string version to use for the save/update password prompts when the user
 // is syncing passwords. Version 1 is outdated, so the only supported versions
@@ -380,23 +387,6 @@ bool RequiresMigrationForUnifiedPasswordManager() {
   return false;
 }
 
-bool ManagesLocalPasswordsInUnifiedPasswordManager() {
-  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid)) {
-    return false;
-  }
-  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case UpmExperimentVariation::kEnableForSyncingUsers:
-    case UpmExperimentVariation::kShadowSyncingUsers:
-    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-      return false;
-    case UpmExperimentVariation::kEnableForAllUsers:
-      return true;
-  }
-  NOTREACHED()
-      << "Define explicitly whether local password management is supported!";
-  return false;
-}
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_IOS)

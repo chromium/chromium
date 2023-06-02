@@ -18,16 +18,13 @@ PageLoadStrategy* PageLoadStrategy::Create(
     std::string strategy,
     DevToolsClient* client,
     WebView* web_view,
-    const BrowserInfo* browser_info,
     const JavaScriptDialogManager* dialog_manager) {
   if (strategy == kNone) {
     return new NonBlockingNavigationTracker();
   } else if (strategy == kNormal) {
-    return new NavigationTracker(client, web_view, browser_info, dialog_manager,
-                                 false);
+    return new NavigationTracker(client, web_view, dialog_manager, false);
   } else if (strategy == kEager) {
-    return new NavigationTracker(client, web_view, browser_info, dialog_manager,
-                                 true);
+    return new NavigationTracker(client, web_view, dialog_manager, true);
   } else {
     NOTREACHED() << "invalid strategy '" << strategy << "'";
     return nullptr;

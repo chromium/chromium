@@ -115,7 +115,7 @@ ThreadableLoader::ThreadableLoader(
 
 void ThreadableLoader::Start(ResourceRequest request) {
   // Back/forward-cache is interested in use of the "Authorization" header.
-  if (request.HttpHeaderField("Authorization")) {
+  if (request.HttpHeaderField(http_names::kAuthorization)) {
     execution_context_->GetScheduler()->RegisterStickyFeature(
         SchedulingPolicy::Feature::kAuthorizationHeader,
         {SchedulingPolicy::DisableBackForwardCache()});

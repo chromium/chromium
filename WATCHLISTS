@@ -1223,6 +1223,17 @@
     'incident_reporting': {
       'filepath': 'chrome/browser/safe_browsing/incident_reporting',
     },
+    'incognito': {
+      'filepath':  'chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabIncognitoManager.java'\
+                   '|chrome/android/java/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabIntentDataProvider.java'\
+                   '|chrome/android/java/src/org/chromium/chrome/browser/incognito'\
+                   '|chrome/android/junit/src/org/chromium/chrome/browser/incognito'\
+                   '|chrome/android/javatests/src/org/chromium/chrome/browser/incognito'\
+                   '|chrome/browser/incognito'\
+                   '|chrome/browser/prefs/incognito_mode_prefs.cc'\
+                   '|chrome/browser/prefs/pref_service_incognito_allowlist.cc'\
+                   '|chrome/browser/profiles/incognito_mode_policy_handler.cc'\
+    },
     'indexed_db': {
       'filepath': 'content/browser/indexed_db|'\
                   'content/public/browser/indexed_db|'\
@@ -2384,7 +2395,7 @@
     'blink_animation': ['alexis.menard@intel.com',
                         'gerchiko@microsoft.com',
                         'blink-reviews-animation@chromium.org'],
-    'blink_audio': ['hongchan@chromium.org', 'mjwilson@chromium.org', 'alvinji@chromium.org'],
+    'blink_audio': ['hongchan@chromium.org', 'mjwilson@chromium.org', 'alvinji@chromium.org', 'sinafirooz@chromium.org'],
     'blink_battery_status': ['raphael.kubo.da.costa@intel.com'],
     'blink_bindings': ['blink-reviews-bindings@chromium.org', 'haraken@chromium.org'],
     'blink_bindings_serialization': ['jbroman+watch@chromium.org'],
@@ -2754,6 +2765,7 @@
                      'kristipark+watch@chromium.org',
                      'tgupta+watch@chromium.org'],
     'incident_reporting': ['grt+watch@chromium.org'],
+    'incognito': ['roagarwal+watch@chromium.org'],
     'indexed_db': ['jsbell+idb@chromium.org',
                    'dmurph+watching-idb@chromium.org',
                    'enne+idb@chromium.org'],

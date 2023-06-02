@@ -111,11 +111,14 @@ class DropdownItemViewInfoListManager {
                 ? SuggestionCommonProperties.FormFactor.TABLET
                 : SuggestionCommonProperties.FormFactor.PHONE;
         DropdownItemViewInfo previousItem = null;
+        boolean useSmallestMargins = OmniboxFeatures.shouldShowSmallestMargins(mContext);
         int groupTopMargin = OmniboxResourceProvider.getSuggestionGroupTopMargin(mContext);
         int groupBottomMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
-        int suggestionVerticalMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_vertical_margin);
+        int suggestionVerticalMargin = useSmallestMargins
+                ? 0
+                : mContext.getResources().getDimensionPixelSize(
+                        R.dimen.omnibox_suggestion_vertical_margin);
 
         GroupSection previousSection = null;
         GroupSection currentSection;
@@ -156,6 +159,7 @@ class DropdownItemViewInfoListManager {
                     previousItem.model.set(
                             DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, applyRounding);
                     previousItem.model.set(DropdownCommonProperties.BOTTOM_MARGIN, bottomMargin);
+                    previousItem.model.set(DropdownCommonProperties.SHOW_DIVIDER, !applyRounding);
                 }
 
                 previousItem = item;
@@ -164,8 +168,7 @@ class DropdownItemViewInfoListManager {
 
             previousItemWasHeader = item.processor.getViewTypeId() == OmniboxSuggestionUiType.HEADER
                     && shouldShowModernizeVisualUpdate
-                    && (OmniboxFeatures.shouldShowSmallestMargins()
-                            || OmniboxFeatures.shouldShowSmallerMargins());
+                    && (useSmallestMargins || OmniboxFeatures.shouldShowSmallerMargins(mContext));
 
             suggestionsList.add(item);
         }
@@ -191,15 +194,16 @@ class DropdownItemViewInfoListManager {
      */
     private @Px int getSuggestionListTopMargin(@OmniboxSuggestionUiType int firstSuggestionUiType) {
         if (firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
-            return OmniboxFeatures.shouldShowSmallerMargins() ? mListActiveOmniboxTopSmallMargin
-                                                              : 0;
+            return OmniboxFeatures.shouldShowSmallerMargins(mContext)
+                    ? mListActiveOmniboxTopSmallMargin
+                    : 0;
         }
 
         if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            if (OmniboxFeatures.shouldShowSmallestMargins()) {
+            if (OmniboxFeatures.shouldShowSmallestMargins(mContext)) {
                 return 0;
             } else if (OmniboxFeatures.shouldShowSmallBottomMargin()
-                    || OmniboxFeatures.shouldShowSmallerMargins()) {
+                    || OmniboxFeatures.shouldShowSmallerMargins(mContext)) {
                 return mListActiveOmniboxTopSmallMargin;
             } else {
                 return mListActiveOmniboxTopBigMargin;

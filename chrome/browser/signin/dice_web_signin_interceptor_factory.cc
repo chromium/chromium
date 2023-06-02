@@ -19,7 +19,8 @@ DiceWebSigninInterceptor* DiceWebSigninInterceptorFactory::GetForProfile(
 //  static
 DiceWebSigninInterceptorFactory*
 DiceWebSigninInterceptorFactory::GetInstance() {
-  return base::Singleton<DiceWebSigninInterceptorFactory>::get();
+  static base::NoDestructor<DiceWebSigninInterceptorFactory> instance;
+  return instance.get();
 }
 
 DiceWebSigninInterceptorFactory::DiceWebSigninInterceptorFactory()

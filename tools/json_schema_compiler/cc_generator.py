@@ -243,13 +243,15 @@ class _Generator(object):
             .Append('out.%(name)s.emplace();')
             .Append('out.%(name)s->reserve(%(name)s->size());')
             .Sblock('for (const auto& element : *%(name)s) {')
-              .Append('out.%(name)s->push_back(element.Clone());')
+              .Append(self._util_cc_helper.AppendToContainer(
+                '*out.%(name)s', 'element.Clone()'))
             .Eblock('}')
           .Eblock('}'))
       else:
         (c.Append('out.%(name)s.reserve(%(name)s.size());')
           .Sblock('for (const auto& element : %(name)s) {')
-            .Append('out.%(name)s.push_back(element.Clone());')
+            .Append(self._util_cc_helper.AppendToContainer(
+              'out.%(name)s', 'element.Clone()'))
           .Eblock('}'))
     elif (underlying_type.property_type == PropertyType.OBJECT or
           underlying_type.property_type == PropertyType.ANY or
@@ -955,7 +957,11 @@ class _Generator(object):
     elif underlying_type.property_type == PropertyType.ARRAY:
       if is_ptr:
         var = '*%s' % var
-      return '%s' % self._util_cc_helper.CreateValueFromArray(var)
+      underlying_item_cpp_type = self._type_helper.GetCppType(underlying_type.item_type)
+      if underlying_item_cpp_type != 'base::Value':
+        return '%s' % self._util_cc_helper.CreateValueFromArray(var)
+      else:
+        return '(%s).Clone()' % var
     elif (underlying_type.property_type.is_fundamental or
               underlying_type.is_serializable_function):
       if is_ptr:
@@ -1200,18 +1206,22 @@ class _Generator(object):
           c.Append('std::u16string array_parse_error;')
           args.append('array_parse_error')
 
-        c.Append('if (!%s(%s)) {' % (
-            self._util_cc_helper.PopulateArrayFromListFunction(is_ptr),
-            self._GenerateArgs(args, generate_error_messages=False)))
-        c.Sblock()
-        if self._generate_error_messages:
-          c.Append(
-            'array_parse_error = u"Error at key \'%(key)s\': " + '
-            'array_parse_error;'
-          )
-          c.Concat(self._AppendError16('array_parse_error'))
-        c.Append('return %(failure_value)s;')
-        c.Eblock('}')
+        item_cpp_type = self._type_helper.GetCppType(item_type)
+        if item_cpp_type != 'base::Value':
+          c.Append('if (!%s(%s)) {' % (
+              self._util_cc_helper.PopulateArrayFromListFunction(is_ptr),
+              self._GenerateArgs(args, generate_error_messages=False)))
+          c.Sblock()
+          if self._generate_error_messages:
+            c.Append(
+              'array_parse_error = u"Error at key \'%(key)s\': " + '
+              'array_parse_error;'
+            )
+            c.Concat(self._AppendError16('array_parse_error'))
+          c.Append('return %(failure_value)s;')
+          c.Eblock('}')
+        else:
+          c.Append('%(dst_var)s = %(src_var)s.GetList().Clone();')
       c.Eblock('}')
     elif underlying_type.property_type == PropertyType.CHOICES:
       if is_ptr:

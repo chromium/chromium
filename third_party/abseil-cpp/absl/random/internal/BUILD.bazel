@@ -601,7 +601,7 @@ cc_test(
     deps = [
         ":explicit_seed_seq",
         ":randen_engine",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
         "//absl/strings",
         "//absl/time",
         "@com_google_googletest//:gtest_main",
@@ -646,7 +646,7 @@ cc_test(
         ":platform",
         ":randen_hwaes",
         ":randen_hwaes_impl",  # build_cleaner: keep
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
         "//absl/strings:str_format",
         "@com_google_googletest//:gtest",
     ],
@@ -707,8 +707,10 @@ cc_test(
     ],
     deps = [
         ":nanobenchmark",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
+        "//absl/log:check",
         "//absl/strings",
+        "//absl/strings:str_format",
     ],
 )
 

@@ -39,6 +39,7 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
   gfx::Size GetSeparatorSize() const override;
+  int GetContentsHorizontalInsetSize() const override;
 };
 
 }  // namespace
@@ -103,6 +104,10 @@ int ChromeRefresh2023TabStyle::GetBottomCornerRadius() const {
 
 gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
   return gfx::Size(kChromeRefreshSeparatorThickness, GetSeparatorHeight());
+}
+
+int ChromeRefresh2023TabStyle::GetContentsHorizontalInsetSize() const {
+  return GetBottomCornerRadius() + 8;
 }
 
 // static

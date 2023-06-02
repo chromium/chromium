@@ -35,6 +35,7 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -47,18 +48,19 @@ constexpr int kTitleTopMargin = 16;
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
 constexpr int kAudioToggleChildSpacing = 8;
 
-void RecordUmaDismissal() {
-  RecordUma(GDMPreferCurrentTabResult::kDialogDismissed);
+void RecordUmaCancellation(base::TimeTicks dialog_open_time) {
+  RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
 }
 
-void RecordUmaCancellation() {
-  RecordUma(GDMPreferCurrentTabResult::kUserCancelled);
-}
-
-void RecordUmaSelection() {
+void RecordUmaSelection(base::TimeTicks dialog_open_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
+  RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab, dialog_open_time);
 }
+
+// The length of the initial delay during which the "Allow"-button is disabled
+// in the share-this-tab dialog.
+const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
+    &kShareThisTabDialog, "activation_delay_ms", 500};
 
 }  // namespace
 
@@ -79,7 +81,8 @@ ShareThisTabDialogView::ShareThisTabDialogView(
               switches::kThisTabCaptureAutoAccept)),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoReject)) {
+              switches::kThisTabCaptureAutoReject)),
+      dialog_open_time_(base::TimeTicks::Now()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!auto_accept_this_tab_capture_ || !auto_reject_this_tab_capture_);
 
@@ -95,7 +98,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
 
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   gfx::Insets dialog_insets = provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kControl);
+      views::DialogContentType::kText, views::DialogContentType::kText);
   dialog_insets.set_top(kTitleTopMargin);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, dialog_insets,
@@ -109,6 +112,9 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetText(
       l10n_util::GetStringFUTF16(IDS_SHARE_THIS_TAB_DIALOG_TITLE, app_name_));
+  // TODO(crbug.com/1448008): Prevent non-initial focus of the title label.
+  title_label->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  SetInitiallyFocusedView(title_label);
 
   views::Label* description_label =
       AddChildView(std::make_unique<views::Label>());
@@ -127,8 +133,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   const base::TimeDelta activation_delay =
       (ShouldAutoAccept() || ShouldAutoReject())
           ? base::Milliseconds(0)
-          : base::Milliseconds(
-                media::kShareThisTabDialogActivationDelayMs.Get());
+          : base::Milliseconds(kShareThisTabDialogActivationDelayMs.Get());
   activation_timer_.Start(FROM_HERE, activation_delay,
                           base::BindOnce(&ShareThisTabDialogView::Activate,
                                          weak_factory_.GetWeakPtr()));
@@ -162,9 +167,17 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+
+  // Simply pressing ENTER without tab-key navigating to the button
+  // must not accept the dialog, or else that'd be a security issue.
+  SetDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE);
 }
 
 ShareThisTabDialogView::~ShareThisTabDialogView() = default;
+
+void ShareThisTabDialogView::RecordUmaDismissal() const {
+  RecordUma(GDMPreferCurrentTabResult::kDialogDismissed, dialog_open_time_);
+}
 
 void ShareThisTabDialogView::DetachParent() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -197,7 +210,7 @@ bool ShareThisTabDialogView::Accept() {
     desktop_media_id.audio_share =
         audio_toggle_button_ && audio_toggle_button_->GetIsOn();
     parent_->NotifyDialogResult(desktop_media_id);
-    RecordUmaSelection();
+    RecordUmaSelection(dialog_open_time_);
   }
 
   // Return true to close the window.
@@ -208,7 +221,7 @@ bool ShareThisTabDialogView::Cancel() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   source_view_->StopRefreshing();
   activation_timer_.Stop();
-  RecordUmaCancellation();
+  RecordUmaCancellation(dialog_open_time_);
   return views::DialogDelegateView::Cancel();
 }
 
@@ -219,6 +232,9 @@ bool ShareThisTabDialogView::ShouldShowCloseButton() const {
 
 void ShareThisTabDialogView::SetupSourceView() {
   View* source_container = AddChildView(std::make_unique<views::View>());
+  source_container->SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(16, 0, 0, 0));
+
   views::BoxLayout* source_layout =
       source_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
@@ -232,6 +248,8 @@ void ShareThisTabDialogView::SetupSourceView() {
 
 void ShareThisTabDialogView::SetupAudioToggle() {
   View* audio_toggle_container = AddChildView(std::make_unique<views::View>());
+  audio_toggle_container->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::TLBR(8, 0, 0, 0));
   audio_toggle_container->SetBackground(
       views::CreateThemedRoundedRectBackground(
           kColorShareThisTabAudioToggleBackground, 4));
@@ -275,7 +293,7 @@ void ShareThisTabDialogView::Activate() {
 
   // In tests.
   if (ShouldAutoAccept()) {
-    Accept();
+    AcceptDialog();
   } else if (ShouldAutoReject()) {
     CancelDialog();
   }
@@ -319,7 +337,7 @@ ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {
 ShareThisTabDialogViews::~ShareThisTabDialogViews() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dialog_) {
-    RecordUmaDismissal();
+    dialog_->RecordUmaDismissal();
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }

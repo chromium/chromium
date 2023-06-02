@@ -142,7 +142,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="1870148520156231997">Kuva parool</translation>
 <translation id="1872096359983322073">Lamp</translation>
 <translation id="1883255238294161206">Ahenda loend</translation>
-<translation id="1891796056033961979">Teie salvestatud järjehoidjad, paroolid, seaded ja muu on nüüd sellelt kuvalt juurdepääsetavad.</translation>
 <translation id="1894023287452300670">Siin saate hinda jälgida</translation>
 <translation id="1910975740091000991">Chrome iOS-ile</translation>
 <translation id="1911619930368729126">Laadi üles Google Drive'i</translation>
@@ -316,6 +315,9 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2975121486251958312">Ainult inkognito režiim on saadaval</translation>
 <translation id="2982481275546140226">Kustuta andmed</translation>
 <translation id="298306318844797842">Makseviisi lisamine …</translation>
+<translation id="2988274366244053197">Google Payst pärinevaid makseviise ja aadresse ei krüpteerita. Sirvimisajalugu Chrome'ist ei sünkroonita.
+
+Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google'ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Ava uuel vahelehel</translation>
 <translation id="3020183492814296499">Otseteed</translation>
 <translation id="3037605927509011580">Ups, ebaõnn!</translation>
@@ -379,8 +381,10 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3464194322481586217">Hinda ei õnnestunud jälgida.</translation>
 <translation id="3469166899695866866">Kas peatada allalaadimine?</translation>
 <translation id="3470502288861289375">Kopeerimine ...</translation>
+<translation id="3471148582064653480">Sünkroonige oma paroolid, ajalugu ja muudki.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} saidi või rakenduse puhul}other{{COUNT} saidi või rakenduse puhul}}</translation>
 <translation id="3474624961160222204">Jätka kasutajana <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Juurdepääs oma paroolidele teistes rakendustes.</translation>
 <translation id="3478058380795961209">Aegumiskuu</translation>
 <translation id="3482959374254649722">Vahelehtede sünkroonimine ...</translation>
 <translation id="3484946776651937681">Ava kaust Allalaadimised</translation>
@@ -399,6 +403,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3551320343578183772">Sule vaheleht</translation>
 <translation id="3565207542107370586">Sirvimisandmete kustutamine …</translation>
 <translation id="3575234738189584619">Otsi Lensiga</translation>
+<translation id="3577555362230509265">Kasutage Chrome'i muudes rakendustes.</translation>
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
 <translation id="3595252146048399851">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
@@ -442,7 +447,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3891414008432200754">Hind</translation>
 <translation id="3892144330757387737">Leiate oma ajaloo siit</translation>
 <translation id="3897092660631435901">Menüü</translation>
-<translation id="3899568514738536144">Vaadake sirvimisajalugu</translation>
 <translation id="3904829425754749514">Teie organisatsioon lülitas sünkroonimise välja. Näete selles seadmes endiselt oma järjehoidjaid, ajalugu, paroole ja muid seadeid. Muudatuste tegemisel neid teie kontoga ei sünkroonita.</translation>
 <translation id="3913386780052199712">Chrome'i sisse logitud</translation>
 <translation id="3915450441834151894">Saiditeave</translation>
@@ -499,7 +503,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="430793432425771671">Sünkrooni kõik</translation>
 <translation id="4309403553630140242">Topeltpuudutage lisateabe saamiseks</translation>
 <translation id="430967081421617822">Algusest</translation>
-<translation id="4324952538601951430">Teie salvestatud järjehoidjad, paroolid, seaded ja muu on nüüd siin</translation>
 <translation id="4334428914252001502">1 lugemata artikkel.</translation>
 <translation id="4338650699862464074">Saadab Google'ile teie külastatud lehtede URL-id.</translation>
 <translation id="4342054591427973606">{count,plural, =1{See aadress kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud.}other{Need aadressid kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud.}}</translation>
@@ -653,6 +656,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5300589172476337783">Kuva</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5318298563956633672">Jälgite juba seda toodet.</translation>
+<translation id="5325595483440111327">Vaadake sirvimisajalugu.</translation>
 <translation id="5339316356165661760">Lülita sünkroonimine sisse</translation>
 <translation id="536067926684072644">Järjehoidjate kuvamine</translation>
 <translation id="5360976571138293719">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotist <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
@@ -751,6 +755,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="595769230373966252">Otsing teenusepakkujaga <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Esiletõstu linki ei saa luua.</translation>
 <translation id="5965679971710331625">Olete sisse logitud</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 järjehoidja kustutati}other{{count} järjehoidjat kustutati}}</translation>
 <translation id="5979837087407522202">Otsi paroole</translation>
 <translation id="5981230843984570095">Sule kõik inaktiivsed</translation>
 <translation id="5982717868370722439">Lisage olemasolevad andmed e-posti aadressile <ph name="USER_EMAIL" />.</translation>
@@ -920,6 +925,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="681368974849482173">Üksus on loodud</translation>
 <translation id="6822587385560699678">Pärast sisselülitamist salvestatakse paroolid kontole <ph name="ACCOUNT" />. Kui see on välja lülitatud, salvestatakse paroolid ainult sellesse seadmesse.</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
+<translation id="6839843088069935119">{count,plural, =1{Järjehoidja salvestati kausta „{title}“. See salvestatakse ainult sellesse seadmesse.}other{Järjehoidjad salvestati kausta „{title}“. Need salvestatakse ainult sellesse seadmesse.}}</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>
 <translation id="6851516051005285358">Taotle arvutisaiti</translation>
 <translation id="6852222216891664518">Sule kinnitatud vaheleht</translation>
@@ -998,6 +1004,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
 <translation id="7438481509621345350">Uue vahelehe avamisel näete nüüd lugusid kanalist <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7446583256109515732">Vaheleht on vabastatud</translation>
+<translation id="7451023311965289370">{count,plural, =1{Järjehoidja salvestati kohta „{title}“}other{Järjehoidjad salvestati kohta „{title}“}}</translation>
 <translation id="7454057999980797137">Osariik/maakond</translation>
 <translation id="7459628154744868585">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="746684838091935575">3. Valige Chrome.</translation>
@@ -1055,7 +1062,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7840771868269352570">Teie valitud üksused eemaldatakse.</translation>
 <translation id="7845466610722898">Lugemisloendi kuvamine</translation>
 <translation id="784551991304901159">Sisu nägemiseks tehke menüüs valik Lülita sisse</translation>
-<translation id="7846158885638438868">{count,plural, =1{Järjehoidja salvestati kausta „{title}“}other{Järjehoidjad salvestati kausta „{title}“}}</translation>
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7856733331829174190">Ei saanud alla laadida</translation>
 <translation id="785938070103630874">Avage paroole, makseviise, aadresse ja muud</translation>
@@ -1135,9 +1141,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8299417921174340354">Paroolide kasutamiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="8299613349954694191">Avage inkognito vaheleht ja sirvige veebi privaatselt.</translation>
 <translation id="8316944564970119719">Sisestage sait ja parool ning seejärel salvestage</translation>
-<translation id="8317835149433843300">Google Payst pärinevaid makseviise ja aadresse ei krüpteerita. Chrome'i sirvimisajalugu ei salvestata teie Google'i kontole.
-
-Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google'ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Uus otsing</translation>
 <translation id="8323906514956095947">Vahelehtede lisavalikute nägemiseks puudutage ja hoidke</translation>
 <translation id="8328777765163860529">Sule kõik</translation>

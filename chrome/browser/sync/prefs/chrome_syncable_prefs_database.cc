@@ -14,6 +14,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"

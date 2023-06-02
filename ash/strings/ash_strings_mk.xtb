@@ -29,8 +29,8 @@
 <translation id="1104084341931202936">Прикажи ги поставките за пристапност</translation>
 <translation id="1104621072296271835">Вашите уреди работат уште подобро заедно</translation>
 <translation id="1111021433905331574">Може да ја промените бојата на заднинското светло на тастатурата во „Поставки &gt; <ph name="APP_TITLE" />“</translation>
-<translation id="1112998165730922436">Емитувањето е паузирано</translation>
-<translation id="112308213915226829">Автоматски сокриј полица</translation>
+<translation id="1117719261843403176">Вклучи/исклучи мобилен интернет. <ph name="STATE" />.</translation>
+<translation id="112308213915226829">Автоматски скриј полица</translation>
 <translation id="1142002900084379065">Неодамнешни фотографии</translation>
 <translation id="1148499908455722006">Отворете го дијалогот со податоци за <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">Центар за известување</translation>
 <translation id="1190678134285018527">Уредот треба да се врати на претходната верзија</translation>
 <translation id="1195412055398077112">прескенирање</translation>
+<translation id="1195667586424773550">Повлечете го линкот до лентата за адреси на картичката</translation>
 <translation id="119944043368869598">Избриши ги сите</translation>
 <translation id="1199716647557067911">Дали сигурно сакате да го исклучите „Пристапот со прекинувачи“?</translation>
 <translation id="1201402288615127009">Следно</translation>
@@ -85,12 +86,14 @@
 <translation id="1294929383540927798">Променете ги поставките за известувања на заклучен екран</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ПРЕПОРАЧАНИ АПЛИКАЦИИ</translation>
+<translation id="1311294419381837540">Емитувате картичка. Емитувањето може да го паузирате или сопрете во секое време.</translation>
 <translation id="1312604459020188865">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Секогаш прикажувај ја полицата</translation>
 <translation id="132346741904777634">Камерата е поставена во горниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> е поврзан</translation>
 <translation id="1340378040547539434">Одзумира на страницата</translation>
 <translation id="1341651618736211726">Прелевање</translation>
+<translation id="1344141078024003905">Го емитувате вашиот екран. Емитувањето на вашиот екран може да го паузирате или сопрете во секое време.</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
 <translation id="1360220746312242196">При пребарувањето страница, оди на претходното совпаѓање за пребарување</translation>
@@ -142,7 +145,6 @@
 <translation id="1604857178818051494">Паузирање аудиовизуелни содржини</translation>
 <translation id="1610778689852195798">„Врати“</translation>
 <translation id="1611993646327628135">Вклучено</translation>
-<translation id="1618835956950524778">Нагласете го копчето за стартерот на полицата</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="163517899691012366">Звукот на известувањата е исклучен кога е вклучено „Не вознемирувај“</translation>
@@ -198,6 +200,7 @@
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Вклучи пристап до локацијата</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
+<translation id="183465528887726323">Поврзете се на мобилен интернет за да користите точка на пристап</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
@@ -219,7 +222,7 @@
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1954252331066828794">Снимањето на екранот заврши</translation>
 <translation id="1957958912175573503">Поставете го вашиот јазик</translation>
-<translation id="1961239773406905488">Сокриен е преглед на камерата</translation>
+<translation id="1961239773406905488">Скриен е преглед на камерата</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Заклучен екран</translation>
 <translation id="1962972976741217487">Поврзан е 1 уред на точката на пристап на вашиот <ph name="DEVICE_NAME" /></translation>
@@ -283,6 +286,7 @@
 <translation id="2269016722240250274">Една апликација го користи микрофонот</translation>
 <translation id="2277103315734023688">Премотај нанапред</translation>
 <translation id="2282073721614284166">Отвора линк во картичка</translation>
+<translation id="2284237890386182187">Вклучено, нема поврзани уреди</translation>
 <translation id="2292698582925480719">Приказ на скала</translation>
 <translation id="229397294990920565">Мобилниот интернет се исклучува...</translation>
 <translation id="2295777434187870477">Микрофонот е вклучен. Ако смените, ќе се исклучи звукот на влезот.</translation>
@@ -302,9 +306,11 @@
 <translation id="2354174487190027830">Се активира <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2360398059912971776">батерија</translation>
+<translation id="2361210043495191221">Вклучи/исклучи Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Не може да се најавите на вашиот Chromebook</translation>
 <translation id="2367972762794486313">Покажи апликации</translation>
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
+<translation id="2382875860893882175">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да го сопрете во секое време.</translation>
 <translation id="2386292613071805067">Избира сѐ на страницата</translation>
 <translation id="2397416548179033562">Прикажи мени на Chrome</translation>
 <translation id="240006516586367791">Контроли за аудиовизуелни содржини</translation>
@@ -336,9 +342,9 @@
 <translation id="2514415433888497495">Сопри <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> е <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Отклучи ги прозорците</translation>
+<translation id="2528111225373402384">Поставки за точка на пристап</translation>
 <translation id="2530896289327917474">Вклучете или исклучете „Прелистување со курсор“</translation>
 <translation id="2531025035050312891">уредот е бавен</translation>
-<translation id="2542089167727451762">Допрете ја сликата на профилот</translation>
 <translation id="254900897760075745">Ги копира избраните содржини во привремената меморија</translation>
 <translation id="2549711466868162843">Подобрување на осветлувањето</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
@@ -389,7 +395,6 @@
 <translation id="2785499565474703580">Поврзан е 1 уред</translation>
 <translation id="2791421900609674576">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да допрете и задржите за да ги отстраните препораките.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
-<translation id="2797741504905337289">Група на полица</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, избрано</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2814448776515246190">Делумно снимање</translation>
@@ -427,7 +432,6 @@
 <translation id="2970920913501714344">Инсталира апликации, екстензии и теми</translation>
 <translation id="2977598380246111477">Следен број</translation>
 <translation id="2985148236010982088">Приказ на сите апликации</translation>
-<translation id="29859347674873492">Отворете „Помош“ во апликацијата Explore</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
 <translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
@@ -441,6 +445,7 @@
 <translation id="3036649622769666520">Отвори датотеки</translation>
 <translation id="3038571455154067151">За да се најавите, внесете го кодот за пристап на родители од Family Link</translation>
 <translation id="3039939407102840004">Нивото на батеријата на пенкалото е <ph name="PERCENTAGE" />.</translation>
+<translation id="304097922505898963">Отвори ја апликацијата „Кратенки од тастатура“</translation>
 <translation id="3045488863354895414">Добар ден,</translation>
 <translation id="3047761520276763270">Обидете се да кажете:</translation>
 <translation id="3055162170959710888">Денес го користевте уредов <ph name="USED_TIME" /></translation>
@@ -507,7 +512,6 @@
 <translation id="334252345105450327">Направи слика од екранот</translation>
 <translation id="334927402682780278">Го избира текстот од курсорот до крајот на линијата</translation>
 <translation id="3349345708646875009">Отворете „Управник со задачи“</translation>
-<translation id="3351879221545518001">Во моментов емитувате екран.</translation>
 <translation id="3354555338129305222">зошто мојот уред е бавен</translation>
 <translation id="3364721542077212959">Алатки за пенкало</translation>
 <translation id="3365977133351922112">Телефонот ви е предалеку. Доближете го.</translation>
@@ -519,11 +523,11 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Дополнителни поставки</translation>
 <translation id="3405101454990027959">Вклучете пристап до микрофонот</translation>
+<translation id="3408735331120433841">Во моментов го емитувате вашиот екран.</translation>
 <translation id="3409584356742878290">Го прикажува или го сокрива инспекторот на „Програмерски алатки“</translation>
 <translation id="3410336247007142655">Прикажи ги поставките за темната тема</translation>
 <translation id="3413817803639110246">Сѐ уште нема што да се види</translation>
 <translation id="3417835166382867856">Пребарајте ги картичките</translation>
-<translation id="3423744722495840645">Отворете/затворете го стартерот</translation>
 <translation id="3428447136709161042">Прекини ја врската со <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Повлечете оддесно за да се вратите назад</translation>
 <translation id="3431517721463707585">Работна површина 14</translation>
@@ -540,7 +544,7 @@
 <translation id="3465356146291925647">Управувана од администраторот</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="348799646910989694">Полицата е автоматски сокриена</translation>
+<translation id="348799646910989694">Полицата е автоматски скриена</translation>
 <translation id="3505066820268455558">Батеријата се полни</translation>
 <translation id="3509391053705095206">Не може да се најде телефонот. Проверете дали ви е вклучен Bluetooth на телефонот.</translation>
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
@@ -550,8 +554,8 @@
 <translation id="3526440770046466733">Отвора линк во нова картичка и останува во тековната картичка</translation>
 <translation id="353086728817903341">Поврзано со <ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="3533126039236445965">Апликации на полица</translation>
+<translation id="3539957339480430241">Точка на пристап на <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да кликнете со десното копче за да ги отстраните препораките.</translation>
-<translation id="3546121235777416274">Нагласување на прозорецот „Слика во слика“</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3554215588514239132">Ја прикажува или ја сокрива таблата со „Програмерски алатки“</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> е прикачена</translation>
@@ -673,6 +677,7 @@
 <translation id="4028481283645788203">Потребна е лозинка за поголема безбедност</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Го споделувате екранот</translation>
+<translation id="4049230407053723315">Брзи поставки</translation>
 <translation id="4057003836560082631">Картичка <ph name="INDEX" /> од <ph name="TOTAL_COUNT" /> во прелистувачот. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Искл. за 1 апл.}one{Искл. за # апл.}other{Искл. за # апл.}}</translation>
 <translation id="4066027111132117168">Вклучено, <ph name="REMAINING_TIME" /></translation>
@@ -710,6 +715,7 @@
 <translation id="4215497585250573029">Поставки за VPN</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
+<translation id="4231053948789591973">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да сопрете со емитување на вашиот екран во секое време.</translation>
 <translation id="423685346499232137">Не може да се копираат или залепат содржини во моментов</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим на преглед</translation>
@@ -760,6 +766,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно известување}one{# важно известување}other{# важни известувања}}</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="4451374464530248585">Кратенката од тастатура Alt + Стрелка надолу се промени. За да го користите копчето Page Down, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надолу.</translation>
+<translation id="4453876312474547652">Ќе ја видите привремената меморија кога ќе притиснете и задржите „Ctrl + V“. Кратенкава може да ја исклучите така што ќе ја оневозможите ознаката #clipboard-history-longpress во chrome://flags (os://flags ако се користи Lacros).</translation>
 <translation id="4455051983450390249">Прегледувајте ги известувањата од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
@@ -839,6 +846,7 @@
 <translation id="4778095205580009397">„Помошникот на Google“ не е достапен во сесија за демонстрација.</translation>
 <translation id="4789348252524569426">Не може да се инсталираат датотеки за говор. Треба да го ажурирате уредот. Рестартирајте го уредот и обидете се повторно.</translation>
 <translation id="478959186716341421">Се емитува</translation>
+<translation id="4798622944000246716">Вашата мобилна мрежа не поддржува точка на пристап</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
 <translation id="4814539958450445987">Екран за најавување</translation>
@@ -1054,7 +1062,6 @@
 <translation id="5760866832697883462">Поврзете: <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Вклучете/исклучете го означувачот. <ph name="STATE_TEXT" /> Користете ги подлогата на допир, допирниот екран или пенкалото за да цртате на екранот.</translation>
 <translation id="576341972084747908">Преземате опасна датотека <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Групата на полица е исклучена.</translation>
 <translation id="576453121877257266">„Ноќното светло“ е вклучено.</translation>
 <translation id="5764569119212455782">Префрлање на последниот избран јазик</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
@@ -1109,6 +1116,7 @@
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Нагласете ја следната ставка на полицата</translation>
 <translation id="6018164090099858612">Се излегува од режим на огледало</translation>
+<translation id="6019566113895157499">Кратенки од тастатура</translation>
 <translation id="602001110135236999">Лизгај налево</translation>
 <translation id="6022924867608035986">Избриши го текстот во полето за пребарување</translation>
 <translation id="602472752137106327">Прикажувај прозорци од сите работни површини, избрано е тркалезно копче</translation>
@@ -1142,6 +1150,7 @@
 <translation id="6129953537138746214">Празно место</translation>
 <translation id="6137566720514957455">Отвори го дијалогот за отстранување за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
+<translation id="6143578372829139382">Споделете на YouTube</translation>
 <translation id="6154006699632741460">Периферните уреди не се поддржани</translation>
 <translation id="6156960295318603523">Поставки за јазикот</translation>
 <translation id="615957422585914272">Покажи тастатура на екран</translation>
@@ -1202,13 +1211,15 @@
 <translation id="6452181791372256707">Отфрли</translation>
 <translation id="6453179446719226835">Јазикот е променет</translation>
 <translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
+<translation id="6464094930452079790">слики</translation>
+<translation id="6469104339369989396">Вклучување/Исклучување на точката на пристап</translation>
 <translation id="6477681113376365978">Датотеката не може да се преземе</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
 <translation id="6483727822843292440">Разгледајте ги прозорците така што ќе започнете од најмалку користениот прозорец</translation>
 <translation id="6490471652906364588">USB-Ц уред (десна порта)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> бара да го ажурирате вашиот <ph name="DEVICE_TYPE" /> пред крајниот рок</translation>
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
-<translation id="6495322433318104734">Се прикажува заштитник на екран, притиснете некое од копчињата за да излезете</translation>
+<translation id="6495322433318104734">Се прикажува штедач на екран, притиснете некое од копчињата за да излезете</translation>
 <translation id="6495400115277918834">Започна „Слика во слика“, притиснете Alt + Shift + V за да фокусирате</translation>
 <translation id="6497418457565568043">„Не вознемирувај“ е вклучено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
@@ -1229,7 +1240,7 @@
 <translation id="6565007273808762236">Поврзувањето со eSIM е недостапно</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ажурирајте го уредот во рок од еден час}one{Ажурирајте го уредот во рок од # час}other{Ажурирајте го уредот во рок од # часа}}</translation>
 <translation id="6570902864550063460">Се полни преку USB</translation>
-<translation id="6574587113394758819">Известувањата од <ph name="APP_TITLE" /> се сокриени бидејќи има вклучено заштита од прикажување</translation>
+<translation id="6574587113394758819">Известувањата од <ph name="APP_TITLE" /> се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6574622320167699133">Отклучено од вашиот телефон. Допрете или кликнете за да влезете.</translation>
 <translation id="6578407462441924264">Неименувана</translation>
 <translation id="6585808820553845416">Сесијата ќе заврши во <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1238,7 +1249,7 @@
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
-<translation id="6625718907317144388">Известувањата од <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други се сокриени бидејќи има вклучено заштита од прикажување</translation>
+<translation id="6625718907317144388">Известувањата од <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
 <translation id="6637729079642709226">Сменете го времето</translation>
 <translation id="6641720045729354415">Вклучете/исклучете „Автоматски титлови“. <ph name="STATE_TEXT" /></translation>
@@ -1260,7 +1271,6 @@
 <translation id="6707693040195709527">Рокот за промена на уредот кон претходната верзија е изминат</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6723839937902243910">Енергија</translation>
-<translation id="6727005317916125192">Претходно окно</translation>
 <translation id="6727969043791803658">Поврзан, <ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
@@ -1278,7 +1288,6 @@
 <translation id="6782182743534150858">Работна површина 13</translation>
 <translation id="6782919488259222803">Ја пребарува тековната страница</translation>
 <translation id="6786750046913594791">Затвори папка</translation>
-<translation id="6787839852456839824">Кратенки на тастатура</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="679368458793552943">Зумирајте кога е вклучена лупата</translation>
 <translation id="6801878137098616817">Изменето неодамна</translation>
@@ -1308,7 +1317,6 @@
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
 <translation id="6920245099716267363">Вклучување/Исклучување на точката на пристап. Точката на пристап е вклучена, поврзан е 1 уред.</translation>
 <translation id="6931576957638141829">Зачувај во</translation>
-<translation id="6941333068993625698">Испраќа повратни информации</translation>
 <translation id="6942518653766415536">Мени за формат на снимање</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6945922087561257829">Вашиот телефон користи мобилна мрежа. Проверете дали телефонот и Chromebook се на истата Wi-Fi мрежа, па обидете се повторно. <ph name="LEARN_MORE" /></translation>
@@ -1328,7 +1336,6 @@
 <translation id="7014684956566476813">Поврзано со уред именуван „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7015766095477679451">Вратете се во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Работна површина 6</translation>
-<translation id="7025325401470358758">Следно окно</translation>
 <translation id="7025533177575372252">Поврзете го вашиот <ph name="DEVICE_NAME" /> со телефонот</translation>
 <translation id="7026338066939101231">Намалување</translation>
 <translation id="7029814467594812963">Излези од сесијата</translation>
@@ -1350,14 +1357,13 @@
 <translation id="709015856939120012">Зумира на страницата</translation>
 <translation id="7098053464892629930">Преземете ја апликацијата за <ph name="NAME" /> на Google Play за да ги видите сите достапни функции</translation>
 <translation id="7098389117866926363">USB-Ц уред (лева порта на задната страна)</translation>
-<translation id="7100906357717321275">Прикажете ги сокриените датотеки во апликацијата „Датотеки“</translation>
+<translation id="7100906357717321275">Прикажувај ги скриените датотеки во апликацијата „Датотеки“</translation>
 <translation id="7116969082764510092">Работна површина 11</translation>
 <translation id="7118268675952955085">слика од екранот</translation>
 <translation id="7119327711295338600">Го избира следниот збор или буква</translation>
 <translation id="7126996685418858413">Отворено во изминатата седмица</translation>
 <translation id="7130207228079676353">ВЕРОЈАТНО ЌЕ ГИ КЛИКНЕТЕ</translation>
 <translation id="7131634465328662194">Автоматски ќе ве одјавиме.</translation>
-<translation id="7138316363520807689">Ја зачувува тековната картичка како обележувач</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144942256906679589">Статус на батеријата</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1382,7 +1388,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Администраторот ја ресетира вашата eSIM. Може да потрае неколку минути.</translation>
 <translation id="7313193732017069507">Прошири ја камерата</translation>
-<translation id="731589979057211264">Вклучена е група на полица.</translation>
 <translation id="7340731148882810149">Мени за автоматски кликнувања</translation>
 <translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="7348093485538360975">Тастатура на екран</translation>
@@ -1451,7 +1456,6 @@
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7609951632080598826">Приказ на календар, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камерата е поврзана повторно.</translation>
-<translation id="7611271430932669992">Го преместува фокусот на појавни програми и дијалози</translation>
 <translation id="761736749114493194">Вклучете врамување на камера. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камерата е поставена во долниот десен агол</translation>
@@ -1504,10 +1508,10 @@
 <translation id="7860671499921112077">Повлечете нагоре со три прста за да влезете во „Преглед“</translation>
 <translation id="7862292329216937261">За да го користите уредот како гостин, треба да се одјавите, па да изберете „Прелистувај како гостин“ најдолу на екранот.</translation>
 <translation id="7866482334467279021">вклучено</translation>
-<translation id="7868900307798234037">Отклучување со отпечаток</translation>
 <translation id="7872786842639831132">Исклучено</translation>
 <translation id="7875575368831396199">Се чини дека Bluetooth е исклучен на вашиот <ph name="DEVICE_TYPE" />. Вклучете го Bluetooth за да користите Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Променете го уредот на претходната верзија сега}=1{Променете го уредот на претходната верзија во рок од 1 секунда}one{Променете го уредот на претходната верзија во рок од # секунда}other{Променете го уредот на претходната верзија во рок од # секунди}}</translation>
+<translation id="7884446017008693258">Поставки за точка на пристап</translation>
 <translation id="7884902759927478774">Го откажува повлекувањето на картичката</translation>
 <translation id="7886169021410746335">ги приспособи поставките за приватност.</translation>
 <translation id="7886277072580235377">Сесијата на интернет ќе се исчисти кога ќе се одјавите. <ph name="LEARN_MORE" /></translation>
@@ -1596,14 +1600,12 @@
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8230305195727960608">Режим за инверзија на боите</translation>
-<translation id="8233140502441622270">Отворете ја апликацијата „Кратенки од тастатура“</translation>
 <translation id="8236042855478648955">Време за пауза</translation>
 <translation id="8239034820133090126">Активирајте работна површина оддесно</translation>
 <translation id="8246282815785366524">Добре дојдовте назад, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
 <translation id="8255234195843591763">Ресетирајте за ажурирање</translation>
-<translation id="826107067893790409">Притиснете Enter за да се отклучи за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8270450402312105425">{0,plural, =1{Променете го уредот на претходната верзија во рок од еден час}one{Променете го уредот на претходната верзија во рок од # час}other{Променете го уредот на претходната верзија во рок од # часа}}</translation>
 <translation id="8277261673056602147">Нагласете текст на екранот</translation>
@@ -1617,7 +1619,6 @@
 <translation id="8345019317483336363">Избран е прозорецот <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Отвора линк во нов прозорец</translation>
 <translation id="8351131234907093545">Создајте белешка</translation>
-<translation id="8364673525741149932">Вклучете група на полица. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> се користи.</translation>
 <translation id="8369166482916924789">Зачувана работна површина, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Напред за една буква</translation>
@@ -1670,7 +1671,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Подредете ги апликациите по име или боја.</translation>
 <translation id="8609384513243082612">Отворете нова картичка</translation>
-<translation id="8614517853887502247">Известувањата од <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> се сокриени бидејќи има вклучено заштита од прикажување</translation>
+<translation id="8614517853887502247">Известувањата од <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="8619138598101195078">Намалување на јачината на звукот</translation>
 <translation id="8627191004499078455">Поврзан со <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Поставки за пристапност</translation>
@@ -1740,7 +1741,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">„Помошникот на Google“ не зборува на овој јазик.</translation>
 <translation id="8924458948354692166">Притиснете Enter за да снимите слика од екранот од прозорецот</translation>
-<translation id="8926951137623668982">Полицата е секогаш сокриена</translation>
+<translation id="8926951137623668982">Полицата е секогаш скриена</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
 <translation id="8940956008527784070">Слаба батерија (<ph name="PERCENTAGE" />%)</translation>
@@ -1809,12 +1810,14 @@
 <translation id="925832987464884575">Скриј ги прегледите</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>
+<translation id="945383118875625837">Повлечете го линкот до лентата со обележувачи</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="953431725143473984">Дали да се исклучи уредот?</translation>
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Одете на крајот од документот</translation>
+<translation id="987589956647469042">Мобилниот интернет е вклучен</translation>
 <translation id="989374776391122812">Контроли за камера и звук</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

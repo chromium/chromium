@@ -340,7 +340,6 @@ source_set("tests") {
     deps += [
       "//device/bluetooth:mocks",
       "//services/device/public/cpp/bluetooth:bluetooth",
-      "//services/device/public/cpp/serial:switches",
       "//services/device/serial",
       "//services/device/serial:test_support",
     ]
@@ -445,7 +444,7 @@ if (is_android) {
   generate_jni("device_service_jni_headers") {
     sources = [
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
-      "public/java/src/org/chromium/device/DeviceFeatureList.java",
+      "public/java/src/org/chromium/device/DeviceFeatureMap.java",
     ]
   }
 

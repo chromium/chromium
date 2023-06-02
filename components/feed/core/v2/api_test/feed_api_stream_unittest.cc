@@ -1383,6 +1383,35 @@ TEST_F(FeedApiTest, ReportFeedViewedUpdatesObservers) {
   EXPECT_EQ(std::vector<bool>({false}), observer2.calls);
 }
 
+TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreIndicatorSliceId) {
+  // The load-more spinner's slice ID must change for each load.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  size_t num_of_updates = surface.all_updates.size();
+  size_t num_of_cards = surface.update->updated_slices().size();
+
+  // Load page 2.
+  response_translator_.InjectResponse(MakeTypicalNextPageState(2));
+  stream_->LoadMore(surface, base::DoNothing());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("load-more-spinner1", surface.all_updates[num_of_updates]
+                                      .updated_slices(num_of_cards)
+                                      .slice()
+                                      .slice_id());
+  num_of_updates = surface.all_updates.size();
+  num_of_cards = surface.update->updated_slices().size();
+
+  // Load page 3.
+  response_translator_.InjectResponse(MakeTypicalNextPageState(3));
+  stream_->LoadMore(surface, base::DoNothing());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("load-more-spinner2", surface.all_updates[num_of_updates]
+                                      .updated_slices(num_of_cards)
+                                      .slice()
+                                      .slice_id());
+}
+
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestSurface surface(stream_.get());
@@ -4137,10 +4166,10 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
         uint64_values: 456
       }
       columns {
-        type: 4
+        type: 2
         name: "FEED_CARD_VIEW"
-        uint64_values: 1
-        uint64_values: 1
+        int64_values: 1
+        int64_values: 1
       }
     }
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 31
+// Next MinVersion: 32
 
 module arc.mojom;
 
@@ -51,10 +51,13 @@ enum ArcNotificationPriority {
   MAX = 2,
 };
 
-// DEPRECATED
-struct DeprecatedArcNotificationButton {
+// Action buttons when the ARC notification is rendered in Chrome
+struct ArcNotificationButton {
   // Title
   string label;
+  // Reply button placeholder, if exist.
+  [MinVersion=31]
+  string? buttonPlaceholder;
 };
 
 [Extensible]
@@ -127,8 +130,9 @@ struct ArcNotificationData {
   int32 deprecated_progress_current;
   // DEPRECATED: The maximum value of progress.
   int32 deprecated_progress_max;
-  // DEPRECATED: Action buttons
-  array<DeprecatedArcNotificationButton>? deprecated_buttons;
+  // Action buttons, provided when the notification is action enabled and
+  // rendered on Chrome.
+  array<ArcNotificationButton>? buttons;
   // Flag if the notification has FLAG_NO_CLEAR.
   [MinVersion=1]
   bool no_clear;
@@ -138,9 +142,9 @@ struct ArcNotificationData {
   // DEPRECATED: Subtexts for list notifications.
   [MinVersion=3]
   array<string>? deprecated_texts;
-  // DEPRECATED: Image for image notifications.
+  // Image for image notifications.
   [MinVersion=3]
-  ArcBitmap? deprecated_big_picture;
+  ArcBitmap? big_picture;
   // Flag if a notification is a custom notification backed by a
   // notification surface.
   [MinVersion=5]

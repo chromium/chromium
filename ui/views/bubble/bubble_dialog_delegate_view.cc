@@ -108,10 +108,18 @@ class BubbleWidget : public Widget {
     return anchor ? anchor->GetNativeTheme() : Widget::GetNativeTheme();
   }
 
+  using Widget::GetPrimaryWindowWidget;
+
   Widget* GetPrimaryWindowWidget() override {
     Widget* const anchor = GetAnchorWidget();
     return anchor ? anchor->GetPrimaryWindowWidget()
                   : Widget::GetPrimaryWindowWidget();
+  }
+
+  const ui::ColorProvider* GetColorProvider() const override {
+    const Widget* const primary = GetPrimaryWindowWidget();
+    return (primary && primary != this) ? primary->GetColorProvider()
+                                        : Widget::GetColorProvider();
   }
 
  private:

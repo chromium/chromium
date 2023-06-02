@@ -8,18 +8,17 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_button.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
 
 class Action;
-class ActionEditButton;
 class DisplayOverlayController;
 
 // Represents the default label index. Default -1 means all the index.
@@ -42,7 +41,6 @@ class ActionView : public views::View {
   virtual void OnBindingToKeyboard() = 0;
   virtual void OnBindingToMouse(std::string mouse_action) = 0;
   // Each type of the actions shows different edit menu.
-  virtual void OnMenuEntryPressed() = 0;
   virtual void AddTouchPoint() = 0;
 
   // TODO(cuicuiruan): Remove virtual for post MVP once edit menu is ready for
@@ -54,9 +52,6 @@ class ActionView : public views::View {
 
   // Set position from its center position.
   void SetPositionFromCenterPosition(const gfx::PointF& center_position);
-  // Get edit menu position in parent's bounds.
-  gfx::Point GetEditMenuPosition(gfx::Size menu_size);
-  void RemoveEditMenu();
   // Show error message for action. If |ax_annouce| is true, ChromeVox
   // annouces the |message| directly. Otherwise, |message| is added as the
   // description of |editing_label|.
@@ -130,16 +125,12 @@ class ActionView : public views::View {
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   // Some types are not supported to edit.
   bool editable_ = false;
-  // Three-dot button to show the |ActionEditMenu|.
-  raw_ptr<ActionEditButton> menu_entry_ = nullptr;
   // Labels for mapping hints.
   std::vector<ActionLabel*> labels_;
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Local center position of the touch point view.
   absl::optional<gfx::Point> touch_point_center_;
-  // TODO(cuicuirunan): Enable or remove this after MVP.
-  bool show_edit_button_ = false;
 
   // Touch point only shows up in the edit mode for users to align the position.
   // This view owns the touch point as one of its children and |touch_point_|
@@ -149,9 +140,9 @@ class ActionView : public views::View {
 
  private:
   friend class ActionViewTest;
+  friend class ViewTestBase;
 
-  void AddEditButton();
-  void RemoveEditButton();
+  void ShowButtonOptionsMenu();
 
   void RemoveTrashButton();
   void OnTrashButtonPressed();

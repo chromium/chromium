@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">angličtina (USA) s klávesnicí Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hostitelský server</translation>
 <translation id="1521655867290435174">Tabulky Google</translation>
-<translation id="1538729222189715449">Otevírání souborů systému Linux...</translation>
 <translation id="1547964879613821194">Kanadská anglická klávesnice</translation>
 <translation id="1556189134700913550">Použít na vše</translation>
 <translation id="1561842594491319104">Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Web Google</translation>
 <translation id="1853795129690976061">Tato složka je sdílena s Linuxem</translation>
 <translation id="1864756863218646478">Soubor se nepodařilo nalézt.</translation>
+<translation id="1877377730633446520">Bude obsazeno přibližně <ph name="REQUIRED_SPACE" />. Aktuálně máte k dispozici <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, připojit</translation>
 <translation id="1920670151694390848">malajálamština (přepis)</translation>
 <translation id="1920798810075583923">Meloun</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Rozbalit panely zpětné vazby k souborům</translation>
 <translation id="1995337122023280937">Přejít do umístění souboru</translation>
 <translation id="2001796770603320721">Spravovat na Disku</translation>
+<translation id="2004942826429452291">Soubory budou uloženy v cloudu a na tomto Chromebooku.</translation>
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="2025955442973426285">tigrinijština</translation>
 <translation id="2037845485764049925">ruština</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Nastavení zařízení</translation>
 <translation id="2084809735218147718">Znakování poděkování</translation>
 <translation id="2088690981887365033">Síť VPN</translation>
+<translation id="2089751716171649322">Získejte snadný přístup ke svým souborům na Disku Google i offline</translation>
 <translation id="2111134541987263231">Zapněte možnost <ph name="BEGIN_BOLD" />Povolit v anonymním režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Položky (<ph name="NUMBER_OF_ITEMS" />) budou smazány bez možnosti obnovy.</translation>
 <translation id="2122305276694332719">Automatické připojování ke skryté síti umožňuje ostatním uživatelům zobrazit vaše zařízení a některá vaše nastavení sítě a nedoporučujeme jej.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Instalovat aplikaci pro Linux</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Mezipaměť Disku Google byla vymazána.</translation>
 <translation id="2239068707900391003">Člověk s kávou</translation>
 <translation id="2251368349685848079">Obnovit z koše</translation>
 <translation id="2278133026967558505">Přístup k souborům ze všech webů a adres URL</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3486821258960016770">mongolština</translation>
 <translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Vaše soubory na Disku Google jsou dostupné offline</translation>
 <translation id="3509680540198371098">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Příprava na synchronizaci položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">portugalština</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Změna tohoto nastavení bude mít dopad na všechny sdílené sítě</translation>
 <translation id="3737576078404241332">Odstranit z postranního panelu</translation>
 <translation id="3749289110408117711">Název souboru</translation>
-<translation id="3780536599611287598">K přesunutí souborů do složky „<ph name="FOLDER_NAME" />“ nemáte oprávnění.</translation>
 <translation id="3786301125658655746">Jste offline</translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="3793469551756281394">Zbývá přibližně: <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Vlastní názvové servery</translation>
 <translation id="4465725236958772856">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, spravováno administrátorem, připojit</translation>
 <translation id="4470564870223067757">Hangul – 2 sady</translation>
+<translation id="4472575034687746823">Začít</translation>
 <translation id="4474142134969976028">Dotazu neodpovídají žádné výsledky</translation>
 <translation id="4477002475007461989">rumunština</translation>
 <translation id="4477219268485577442">Bulharská fonetická klávesnice</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4805966553127040832">Obnovování <ph name="COUNT" /> položek…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{K použití anonymního režimu vaše organizace vyžaduje rozšíření}few{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}many{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}other{K použití anonymního režimu vaše organizace vyžaduje určitá rozšíření}}</translation>
-<translation id="4823651846660089135">Zařízení je pouze pro čtení</translation>
 <translation id="4826849268470072925">tamilština ITRANS</translation>
 <translation id="482932175346970750">Do prohlížeče zadejte adresu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -572,6 +573,7 @@
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5500122897333236901">islandština</translation>
 <translation id="5508696409934741614">Tečky</translation>
+<translation id="5519161320735100193">Nastavení Disku Google</translation>
 <translation id="5522908512596376669">Seznam souborů byl změněn na seznamové zobrazení.</translation>
 <translation id="5524517123096967210">Soubor se nepodařilo načíst.</translation>
 <translation id="5533102081734025921">Obrázek <ph name="IMAGE_TYPE" /></translation>
@@ -618,6 +620,7 @@
 <translation id="5838451609423551646">Z výběru byly odstraněny všechny položky.</translation>
 <translation id="5838825566232597749">Americká mezinárodní klávesnice s rozložením Workman</translation>
 <translation id="5845721951356578987">Zdravotní sestra</translation>
+<translation id="5860491529813859533">Zapnout</translation>
 <translation id="5861477046012235702">Hráč</translation>
 <translation id="5864471791310927901">Vyhledávání serveru DHCP selhalo.</translation>
 <translation id="5896749729057314184">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
@@ -675,7 +678,6 @@
 <translation id="6327785803543103246">Automatické zjišťování webového proxy serveru</translation>
 <translation id="6337014272874260727">Odepnout z rychlých souborů</translation>
 <translation id="6339145975392024142">USA – mezinárodní (PC)</translation>
-<translation id="6346310558342052870">Přístup je omezen</translation>
 <translation id="6356685157277930264">Okno zpětné vazby k souborům</translation>
 <translation id="6358884629796491903">Drak</translation>
 <translation id="636254897931573416">Neplatná hodnota shody přípony domény</translation>
@@ -863,6 +865,7 @@
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7806708061868529807">hebrejština</translation>
 <translation id="78104721049218340">thajština s klávesnicí Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Chyba při konfiguraci sítě</translation>
 <translation id="7839804798877833423">Načtení souborů spotřebuje přibližně <ph name="FILE_SIZE" /> mobilních dat.</translation>
@@ -875,15 +878,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Naformátováním oddílu smažete všechna na něm uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Vaše soubory ve složce Můj disk se automaticky synchronizují s Chromebookem, takže k nim máte přístup bez připojení k internetu.</translation>
 <translation id="7925247922861151263">Selhala bezpečnostní kontrola AAA</translation>
 <translation id="7925686952655276919">Nepoužívat k synchronizaci mobilní datové přenosy</translation>
 <translation id="7928710562641958568">Vysunout zařízení</translation>
+<translation id="7933875256234974853">Příprava k synchronizaci souborů na Disku…</translation>
 <translation id="7943385054491506837">Americká klávesnice Colemak</translation>
 <translation id="7953739707111622108">Toto zařízení nelze otevřít, protože jeho systém souborů nebyl rozpoznán.</translation>
 <translation id="7969525169268594403">slovinština</translation>
 <translation id="7972920761225148017">francouzština (Švýcarsko)</translation>
 <translation id="7973962044839454485">Ověření PPP se nezdařilo kvůli nesprávnému uživatelskému jménu nebo heslu</translation>
 <translation id="7980421588063892270">angličtina (USA) s klávesnicí Colemak</translation>
+<translation id="7985008041109611710">Synchronizace <ph name="NUMBER_OF_FILES_SYNCING" /> souborů</translation>
 <translation id="8000066093800657092">Žádná síť</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Velikost</translation>
@@ -1005,6 +1011,7 @@
 <translation id="8919081441417203123">dánština</translation>
 <translation id="8949925099261528566">Připojeno, není k dispozici internet</translation>
 <translation id="8965697826696209160">Nedostatek místa.</translation>
+<translation id="8971742885766657349">Synchronizace – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">čínština (tradiční) – pchin-jin</translation>
 <translation id="8998871447376656508">K nahrání na Disk Google není dost volného místa.</translation>
 <translation id="9003940392834790328">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
@@ -1038,6 +1045,7 @@
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Měsíční krajina</translation>
+<translation id="937795003075802289">Synchronizace 1 souboru</translation>
 <translation id="938470336146445890">Nainstalujte prosím uživatelský certifikát.</translation>
 <translation id="939736085109172342">Nová složka</translation>
 <translation id="943972244133411984">Upravil(a)</translation>

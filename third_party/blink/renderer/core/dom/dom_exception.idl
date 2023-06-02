@@ -32,8 +32,7 @@
 
 [
     Exposed=(Window,Worker),
-    Serializable,
-    DoNotCheckConstants
+    Serializable
 ] interface DOMException {
     constructor(optional DOMString message = "", optional DOMString name = "Error");
 

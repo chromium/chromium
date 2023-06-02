@@ -91,6 +91,7 @@ class WebAppBrowserController : public AppBrowserController,
   GURL GetAppStartUrl() const override;
   GURL GetAppNewTabUrl() const override;
   bool IsUrlInHomeTabScope(const GURL& url) const override;
+  bool ShouldShowAppIconOnTab(int index) const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;
   bool CanUserUninstall() const override;

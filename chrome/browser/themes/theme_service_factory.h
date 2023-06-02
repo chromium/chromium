@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_THEMES_THEME_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_THEMES_THEME_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -36,7 +36,7 @@ class ThemeServiceFactory : public ProfileKeyedServiceFactory {
   ThemeServiceFactory& operator=(const ThemeServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ThemeServiceFactory>;
+  friend base::NoDestructor<ThemeServiceFactory>;
 
   ThemeServiceFactory();
   ~ThemeServiceFactory() override;
@@ -47,6 +47,8 @@ class ThemeServiceFactory : public ProfileKeyedServiceFactory {
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  void BrowserContextDestroyed(
+      content::BrowserContext* browser_context) override;
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_FACTORY_H_

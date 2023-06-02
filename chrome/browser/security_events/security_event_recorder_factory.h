@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename t>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 class Profile;
@@ -28,7 +28,7 @@ class SecurityEventRecorderFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<SecurityEventRecorderFactory>;
+  friend base::NoDestructor<SecurityEventRecorderFactory>;
 
   SecurityEventRecorderFactory();
   ~SecurityEventRecorderFactory() override;

@@ -2897,7 +2897,7 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsInMemoryCache) {
   provider_->DeleteMatch(provider_->matches()[0]);
 
   // Verify that the entire cache has been cleared.
-  ASSERT_TRUE(cache_svc->IsCacheEmpty());
+  ASSERT_TRUE(cache_svc->IsInMemoryCacheEmptyForTesting());
 }
 
 TEST_F(ZeroSuggestProviderTest, TestDeleteMatchTriggersDeletionRequest) {

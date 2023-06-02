@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description("This test checks that DOMNodeRemovedEvent is emitted once (and only once).");
+
+var div = document.createElement("div");
+document.body.appendChild(div);
+
+var count = 0;
+document.body.addEventListener("DOMNodeRemoved", function () { count++; }, false);
+document.body.removeChild(div);
+
+shouldBe("count", "1");
+</script>
+</body>
+</html>

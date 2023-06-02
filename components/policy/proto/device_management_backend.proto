@@ -93,6 +93,8 @@ message CheckUserAccountRequest {
   // Email address of a user.
   // The user may not exist in GAIA.
   optional string user_email = 1;
+  // If enrollment nudge policy is required.
+  optional bool enrollment_nudge_request = 2 [default = false];
 }
 
 // Request from device to server to register a device, user or browser.
@@ -309,6 +311,19 @@ message CheckUserAccountResponse {
 
   // The account type mapping from the specific user email.
   optional UserAccountType user_account_type = 2;
+
+  // Enum listing the possible enrollment nudge types.
+  enum EnrollmentNudgeType {
+    UNKNOWN_ENROLLMENT_NUDGE_TYPE = 0;
+    // Enrollment is not required.
+    NONE = 1;
+    // Requires the user to complete the enrollment process before they can
+    // login.
+    ENROLLMENT_REQUIRED = 2;
+  }
+
+  // Whether to nudge managed users to enroll unowned devices.
+  optional EnrollmentNudgeType enrollment_nudge_type = 3;
 }
 
 // Response from server to device register request.
@@ -2135,14 +2150,9 @@ message OSReport {
   optional VersionType version_type = 4;
 }
 
-// An enum shows which information a partial CBCM report contains.
-enum PartialReportType {
-  UNSPECIFIED = 0;
-  EXTENSION_REQUEST = 1;
-}
-
 // Report the status of a Chrome installation on non-Chrome OS platform.
 message ChromeDesktopReportRequest {
+  reserved 10;
   // The name of the machine within its local network. The string is a JSON
   // encoded structure with a single computername field.
   // This field is replaced by computer_name and only used by old Chrome
@@ -2176,10 +2186,6 @@ message ChromeDesktopReportRequest {
   // TODO(crbug.com/1105938): This will also replace the computer_name and
   // serial_number fields.
   optional BrowserDeviceIdentifier browser_device_identifier = 9;
-  // A list of flags indicating that the report only contains particular
-  // information. When the list is empty or unset, the report should contain all
-  // information.
-  repeated PartialReportType partial_report_types = 10;
   // Public key that can be used for attesting the machine.
   optional string machine_attestation_key = 11;
   // A string that represents the device model.
@@ -2191,14 +2197,11 @@ message ChromeDesktopReportRequest {
 // Report user level status on Chrome OS platform. Chrome OS equivalent of
 // ChromeDesktopReportRequest.
 message ChromeOsUserReportRequest {
+  reserved 3;
   // Browser related info.
   optional BrowserReport browser_report = 1;
   // Android applications installed in primary profile.
   repeated AndroidAppInfo android_app_infos = 2;
-  // A list of flags indicates that the report only contains particular
-  // information. When list is empty or unset, the report should contains all
-  // information.
-  repeated PartialReportType partial_report_types = 3;
 }
 
 // Report user level status on all platforms. It includes the information of the

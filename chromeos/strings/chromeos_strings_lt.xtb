@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Darbalaukiai</translation>
 <translation id="1018219910092211213">Nepavyko priskirti DNS</translation>
 <translation id="1018656279737460067">Atšaukta</translation>
-<translation id="1022433422498218992">Bendrieji valdikliai</translation>
+<translation id="1020274983236703756">Dabar pasiekiami išskirtiniai „<ph name="PRODUCT_NAME" />“ ištekliai</translation>
 <translation id="1022628058306505708">Žemės srautas</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Tapatybės nustatymo tipas</translation>
 <translation id="1776228893584526149">Ekrano fono tonas</translation>
 <translation id="1782199038061388045">vertimas</translation>
-<translation id="1790209694022261219">„Windows“ ir darbalaukiai</translation>
 <translation id="1792647875738159689">Atšaukiamas nuskaitymas</translation>
 <translation id="1801418420130173017">Išjungti tamsiąją temą</translation>
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
+<translation id="1836553715834333258">Sistemos spalva</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
+<translation id="1840474674287087346">Darbalaukio spalva</translation>
 <translation id="1851218745569890714">Vaizdo konferencijos</translation>
 <translation id="1852934301711881861">Įdiegti „ChromeOS Flex“</translation>
 <translation id="1856388568474281774">Rodyklė žemyn</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Naršyklės naršymas</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
 <translation id="2878387241690264070">Išsikrovė: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
-<translation id="2902312830803030883">Daugiau veiksmų</translation>
 <translation id="2926057806159140518">Įveskite naudotojo vardą ir slaptažodį arba nuskaitykite QR kodą</translation>
 <translation id="2940811910881150316">Nepavyko išbandyti įrenginio. Jei norite išbandyti, iš naujo atidarykite dangtelį.</translation>
-<translation id="2981143481017883351">Išskirtiniai „Chromebook“ ištekliai jau pasiekiami</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3017079585324758401">Fonas</translation>
-<translation id="3020183492814296499">Spartieji klavišai</translation>
 <translation id="3027578600144895987">Uždaryti vaizdo kamerą</translation>
 <translation id="3031560714565892478">Įrenginys yra vaizdo kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
+<translation id="3248223063252096240">Skirta tik „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3275729367986477355">Pseudoportreto vaizdas</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}many{Redaguoti failus}other{Redaguoti failus}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Rakto kryptis</translation>
 <translation id="3294437725009624529">Svečias</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
+<translation id="3305294846493618482">daugiau</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
-<translation id="3386675685417744672">Taikoma tik „Chromebook“</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
 <translation id="3639846061339007994">viršuje</translation>
 <translation id="3651050199673793219">Pasirinkti temperatūros matavimo vienetą</translation>
+<translation id="3663574643422533538">Pasirinkite tik „<ph name="PRODUCT_NAME" />“ skirtą meno kūrinį</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3708186454126126312">Anksčiau susieti</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">ĮSPĖJIMAS</translation>
 <translation id="4054683689023980771">Atsisiunčiamas vaizdas</translation>
 <translation id="4060260348856573701">Naujas APN</translation>
-<translation id="4079743696465895866">Pasirinkite išskirtinius „Chromebook“ kūrinius</translation>
 <translation id="4093865285251893588">Profilio nuotrauka</translation>
 <translation id="409427325554347132">Išsaugoti išsamią testo informaciją</translation>
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
 <translation id="4110686435123617899">Pasirinkti albumą „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB jutiklinė dalis</translation>
+<translation id="4113067922640381334">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamsus režimas</translation>
 <translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Nuskaityti į</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
+<translation id="4500966230243561393">Sąsajos spalva</translation>
 <translation id="4503223151711056411">Rodyklė kairėn</translation>
 <translation id="4507392511610824664">padidinti šviesumą</translation>
 <translation id="4511264077854731334">Portalas</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kai ekranas neaktyvus, rodomos nuotraukos, laikas, orų ir medijos informacija.</translation>
+<translation id="5035083460461104704">Temos spalva</translation>
 <translation id="5038292761217083259">įvairiaspalvė klaviatūra</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Numatytasis ekrano fonas</translation>
 <translation id="6017514345406065928">Žalia</translation>
+<translation id="6019566113895157499">Pagrindiniai šaukiniai</translation>
 <translation id="6034694447310538551">Įgalinti automatinį nustatymą iš naujo kas mėnesį</translation>
 <translation id="6037291330010597344">Skaitytuvo dokumentų tiektuvas tuščias. Pridėkite dokumentų ir bandykite dar kartą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
+<translation id="7633068090678117093">Fono vaizdas</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="765159867434478292">Padalyti</translation>
 <translation id="7656388927906093505">Įrenginys yra pelė.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">Neinicijuota</translation>
 <translation id="8593058461203131755">pristabdyti mediją</translation>
 <translation id="8620617069779373398">Tarptinklinio ryšio būsena</translation>
+<translation id="8626489604350149811">Daugiau veiksmų („<ph name="APN_NAME" />“)</translation>
 <translation id="86356131183441916">Šviesiai violetinė</translation>
 <translation id="8651481478098336970">garsumo nutildymas</translation>
 <translation id="8655295600908251630">Kanalas</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Lygiavertis tinklo mazgas</translation>
 <translation id="8930622219860340959">Belaidis</translation>
 <translation id="8936793075252196307">Kliento IP adresas</translation>
+<translation id="8944651180182756621">Paleidimo priemonės spalva</translation>
 <translation id="894617464444543719">Įrenginys yra telefonas.</translation>
 <translation id="8957423540740801332">dešinėn</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9161276708550942948">tarpo klavišas</translation>
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>
+<translation id="9174334653006917325">NS spalva</translation>
 <translation id="917720651393141712">Bandyti</translation>
 <translation id="9188992814426075118">Klaviatūra gali automatiškai atitikti ekrano foną</translation>
 <translation id="9189000703457422362">Nepavyksta prisijungti prie šio tinklo naudojant automatiškai aptiktus APN. Susisiekite su mobiliojo ryšio operatoriumi, kad gautumėte daugiau informacijos.</translation>

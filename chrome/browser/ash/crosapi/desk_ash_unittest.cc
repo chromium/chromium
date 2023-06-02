@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/wm/desks/desk.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
@@ -14,8 +15,9 @@
 #include "chromeos/crosapi/mojom/desk.mojom-forward.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
 
@@ -29,6 +31,33 @@ class MockDesksClient : public DesksClient {
               (const));
 };
 
+class TestDeskEventObserver : public crosapi::mojom::DeskEventObserver {
+ public:
+  void OnDeskSwitched(const base::Uuid& new_desk_id,
+                      const base::Uuid& previous_desk_id) override {
+    event_future_.AddValue(new_desk_id);
+    event_future_.AddValue(previous_desk_id);
+  }
+  void OnDeskAdded(const base::Uuid& new_desk_id) override {
+    event_future_.AddValue(new_desk_id);
+  }
+  void OnDeskRemoved(const base::Uuid& removed_desk_id) override {
+    event_future_.AddValue(removed_desk_id);
+  }
+
+  mojo::PendingRemote<crosapi::mojom::DeskEventObserver> GetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  mojo::Receiver<crosapi::mojom::DeskEventObserver>& GetReceiver() {
+    return receiver_;
+  }
+  base::Uuid WaitAndGet() { return event_future_.Take(); }
+
+ private:
+  mojo::Receiver<crosapi::mojom::DeskEventObserver> receiver_{this};
+  base::test::RepeatingTestFuture<base::Uuid> event_future_;
+};
+
 class DeskAshTest : public testing::Test {
  public:
   DeskAshTest() = default;
@@ -40,14 +69,16 @@ class DeskAshTest : public testing::Test {
   }
 
   MockDesksClient& mock_desks_client() { return mock_desks_client_; }
+  TestDeskEventObserver& desk_event_observer() { return desk_event_observer_; }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   mojo::Remote<mojom::Desk> desk_ash_remote_;
+  std::unique_ptr<DeskAsh> desk_ash_;
 
  private:
   testing::NiceMock<MockDesksClient> mock_desks_client_;
-  std::unique_ptr<DeskAsh> desk_ash_;
+  TestDeskEventObserver desk_event_observer_;
 };
 
 TEST_F(DeskAshTest, GetDeskByIDWithInvalidIDTest) {
@@ -64,6 +95,42 @@ TEST_F(DeskAshTest, GetDeskByIDWithInvalidIDTest) {
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(crosapi::mojom::DeskCrosApiError::kInvalidIdError,
             result->get_error());
+}
+
+TEST_F(DeskAshTest, NotifyDeskAddedTest) {
+  desk_ash_remote_->AddDeskEventObserver(desk_event_observer().GetRemote());
+  // Flush pipe so that registration shows up.
+  desk_ash_remote_.FlushForTesting();
+  desk_event_observer().GetReceiver().FlushForTesting();
+  auto desk_id(base::Uuid::GenerateRandomV4());
+  desk_ash_->NotifyDeskAdded(desk_id);
+
+  EXPECT_EQ(desk_event_observer().WaitAndGet(), desk_id);
+}
+
+TEST_F(DeskAshTest, NotifyDeskRemovedTest) {
+  desk_ash_remote_->AddDeskEventObserver(desk_event_observer().GetRemote());
+  // Flush pipe so that registration shows up.
+  desk_ash_remote_.FlushForTesting();
+  desk_event_observer().GetReceiver().FlushForTesting();
+  auto desk_id(base::Uuid::GenerateRandomV4());
+  desk_ash_->NotifyDeskRemoved(desk_id);
+
+  EXPECT_EQ(desk_event_observer().WaitAndGet(), desk_id);
+}
+
+TEST_F(DeskAshTest, NotifyDeskSwitchedTest) {
+  desk_ash_remote_->AddDeskEventObserver(desk_event_observer().GetRemote());
+  // Flush pipe so that registration shows up.
+  desk_ash_remote_.FlushForTesting();
+  desk_event_observer().GetReceiver().FlushForTesting();
+  auto old_id(base::Uuid::GenerateRandomV4());
+  auto new_id(base::Uuid::GenerateRandomV4());
+
+  desk_ash_->NotifyDeskSwitched(new_id, old_id);
+
+  EXPECT_EQ(desk_event_observer().WaitAndGet(), new_id);
+  EXPECT_EQ(desk_event_observer().WaitAndGet(), old_id);
 }
 
 }  // namespace crosapi

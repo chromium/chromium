@@ -74,15 +74,7 @@ SVGPatternElement::SVGPatternElement(Document& document)
                              SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
           this,
           svg_names::kPatternContentUnitsAttr,
-          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
-  AddToPropertyMap(x_);
-  AddToPropertyMap(y_);
-  AddToPropertyMap(width_);
-  AddToPropertyMap(height_);
-  AddToPropertyMap(pattern_transform_);
-  AddToPropertyMap(pattern_units_);
-  AddToPropertyMap(pattern_content_units_);
-}
+          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {}
 
 void SVGPatternElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
@@ -308,6 +300,65 @@ bool SVGPatternElement::SelfHasRelativeLengths() const {
   return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
          width_->CurrentValue()->IsRelative() ||
          height_->CurrentValue()->IsRelative();
+}
+
+SVGAnimatedPropertyBase* SVGPatternElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kXAttr) {
+    return x_.Get();
+  } else if (attribute_name == svg_names::kYAttr) {
+    return y_.Get();
+  } else if (attribute_name == svg_names::kWidthAttr) {
+    return width_.Get();
+  } else if (attribute_name == svg_names::kHeightAttr) {
+    return height_.Get();
+  } else if (attribute_name == svg_names::kPatternTransformAttr) {
+    return pattern_transform_.Get();
+  } else if (attribute_name == svg_names::kPatternUnitsAttr) {
+    return pattern_units_.Get();
+  } else if (attribute_name == svg_names::kPatternContentUnitsAttr) {
+    return pattern_content_units_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret;
+    if (ret = SVGURIReference::PropertyFromAttribute(attribute_name); ret) {
+      return ret;
+    }
+    if (ret = SVGFitToViewBox::PropertyFromAttribute(attribute_name); ret) {
+      return ret;
+    }
+    if (ret = SVGTests::PropertyFromAttribute(attribute_name); ret) {
+      return ret;
+    }
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGPatternElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{x_.Get(),
+                                     y_.Get(),
+                                     width_.Get(),
+                                     height_.Get(),
+                                     pattern_transform_.Get(),
+                                     pattern_units_.Get(),
+                                     pattern_content_units_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGURIReference::SynchronizeSVGAttribute(name);
+  SVGTests::SynchronizeSVGAttribute(name);
+  SVGFitToViewBox::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  if (pattern_transform_->HasPresentationAttributeMapping() &&
+      pattern_transform_->IsAnimating()) {
+    CollectStyleForPresentationAttribute(pattern_transform_->AttributeName(),
+                                         g_empty_atom, style);
+  }
+  SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">‏Chromium مطابقت پذیری کا ڈیٹا</translation>
 <translation id="1722370509450468186">آپ کا پاس ورڈ آپ کے اکاؤنٹ (<ph name="EMAIL" />) میں محفوظ ہو جائے گا۔</translation>
 <translation id="1736662517232558588">‏Chromium ڈیٹا کو صاف کر دیا گیا</translation>
-<translation id="177102542580335555">‏اس Chromium پروفائل کے لیے آپ کو معیاری حفاظتی تحفظ مل رہا ہے</translation>
 <translation id="1838412507805038478">‏Chromium نے توثیق کی ہے کہ <ph name="ISSUER" /> نے اس ویب سائٹ کا سرٹیفیکیٹ جاری کیا ہے۔</translation>
 <translation id="1843424232666537147">‏Chromium میں ایسی خصوصیات ہیں جو آپ کے انٹرنیٹ ڈیٹا اور کتنی جلدی آپ ویب صفحات کو لوڈ کرنے کیلئے اہل ہیں اس کا نظم کرنے میں آپ کی مدد کرتی ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">‏Chromium سے بھرپور فائدہ اٹھانے کے لیے اپنے Google اکاؤنٹ کے ساتھ Chromium میں سائن ان کریں۔</translation>
 <translation id="3639997914391704523">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان کرتے ہیں تو Chromium آپ کے پاس ورڈز کو چیک کر سکتا ہے۔</translation>
 <translation id="3650632991272923014">‏<ph name="USER_EMAIL1" /> Chromium استعمال کر رہا تھا اور اس آلہ پر بُک مارکس، پاس ورڈز اور دیگر ترتیبات چھوڑ دی ہیں۔</translation>
+<translation id="3661862315467204831">‏iOS میں Chromium کی ترتیبات کھولیں، پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں اور Chromium منتخب کریں۔</translation>
 <translation id="372658070733623520">‏اپنے Google اکاؤنٹ میں Chromium ڈیٹا کا استعمال اور اسے محفوظ کرنے کیلئے، توثیق کریں کہ یہ آپ ہی ہیں۔</translation>
 <translation id="3805899903892079518">‏Chromium کو آپ کی تصاویر یا ویڈیوز تک رسائی حاصل نہیں ہے۔ iOS ترتیبات &gt; رازداری &gt; تصاویر میں رسائی کو فعال کریں۔</translation>
+<translation id="3827545470516145620">آپ کو اس آلے پر معیاری حفاظتی تحفظ حاصل ہو رہا ہے</translation>
 <translation id="3955621079070267756">‏کسی بھی ایپ سے Chromium کھولیں</translation>
 <translation id="4043291146360695975">پاس ورڈز صرف اس آلہ پر پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں۔</translation>
 <translation id="4099085513035183040">‏Chromium بی ٹا پر تعاون یافتہ نہیں ہے</translation>

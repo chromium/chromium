@@ -1014,10 +1014,11 @@ void Window::SetOcclusionInfo(OcclusionState occlusion_state,
       occluded_region_in_root_ == occluded_region) {
     return;
   }
+  OcclusionState old_occlusion_state = occlusion_state_;
   occlusion_state_ = occlusion_state;
   occluded_region_in_root_ = occluded_region;
   if (delegate_)
-    delegate_->OnWindowOcclusionChanged(occlusion_state);
+    delegate_->OnWindowOcclusionChanged(old_occlusion_state, occlusion_state);
 
   for (WindowObserver& observer : observers_)
     observer.OnWindowOcclusionChanged(this);
@@ -1297,8 +1298,8 @@ std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
   params.pipes.client_receiver = std::move(client_receiver);
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-          nullptr /* context_provider */, nullptr /* worker_context_provider */,
-          &params);
+          /*context_provider=*/nullptr, /*worker_context_provider=*/nullptr,
+          /*shared_image_interface=*/nullptr, &params);
   frame_sink_ = frame_sink->GetWeakPtr();
   AllocateLocalSurfaceId();
   DCHECK(GetLocalSurfaceId().is_valid());

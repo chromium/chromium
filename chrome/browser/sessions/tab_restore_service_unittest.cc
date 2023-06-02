@@ -342,7 +342,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   blink::UserAgentOverride user_agent_override_;
   std::unique_ptr<sessions::LiveTab> live_tab_;
   std::unique_ptr<sessions::TabRestoreServiceImpl> service_;
-  raw_ptr<TabRestoreTimeFactory> time_factory_;
+  raw_ptr<TabRestoreTimeFactory, DanglingUntriaged> time_factory_;
   SessionID window_id_;
   SessionID tab_id_;
 };
@@ -365,7 +365,8 @@ class TabRestoreServiceImplWithMockClientTest
         std::move(service_client), profile()->GetPrefs(), time_factory_);
   }
 
-  raw_ptr<MockTabRestoreServiceClient> mock_tab_restore_service_client_;
+  raw_ptr<MockTabRestoreServiceClient, DanglingUntriaged>
+      mock_tab_restore_service_client_;
 };
 
 TEST_F(TabRestoreServiceImplTest, Basic) {

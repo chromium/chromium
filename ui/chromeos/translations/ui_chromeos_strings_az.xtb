@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Cədvəl</translation>
-<translation id="1538729222189715449">Linux faylları açılır...</translation>
 <translation id="1547964879613821194">Kanada İngiliscəsi</translation>
 <translation id="1556189134700913550">Hamısına tətbiq edin</translation>
 <translation id="1561842594491319104">Chrome cihazları</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1853795129690976061">Bu qovluq Linux ilə paylaşılır</translation>
 <translation id="1864756863218646478">Fayl tapılmadı.</translation>
+<translation id="1877377730633446520">Bunun üçün təxminən <ph name="REQUIRED_SPACE" /> istifadə ediləcək. Hazırda <ph name="FREE_SPACE" /> əlçatandır.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Qoşulun</translation>
 <translation id="1920670151694390848">Malayalam dilində Transliterasiya</translation>
 <translation id="1920798810075583923">Qarpız</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Faylların rəy panelini genişləndirin</translation>
 <translation id="1995337122023280937">Faylın yerinə keçin</translation>
 <translation id="2001796770603320721">Diskdə idarə edin</translation>
+<translation id="2004942826429452291">Fayllar bulud və bu Chromebook-da saxlanacaq.</translation>
 <translation id="2009067268969781306">Formatdan sonra diskdə saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="2025955442973426285">Tiqrin</translation>
 <translation id="2037845485764049925">Rus</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Cihaz ayarları</translation>
 <translation id="2084809735218147718">Təşəkkür edən adam</translation>
 <translation id="2088690981887365033">VPN şəbəkəsi</translation>
+<translation id="2089751716171649322">Oflayn olduqda Google Disk fayllarına asanlıqla daxil olun</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Anonim rejimdə icazə verin<ph name="END_BOLD" /> seçimini aktiv edin</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> element silinəcək və onları bərpa edə bilməyəcəksiniz.</translation>
 <translation id="2122305276694332719">Gizlədilmiş şəbəkəyə avtomatik qoşulduqda başqaları cihaz və şəbəkə ayarlarınızı görəcək. Bu, tövsiyə edilmir.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux ilə quraşdırın</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Google Disk keşiniz silinib.</translation>
 <translation id="2239068707900391003">Kofe içən adam</translation>
 <translation id="2251368349685848079">Zibil qutusundan bərpa edin</translation>
 <translation id="2278133026967558505">Bütün veb-sayt və URL-lər tərəfindən fayla giriş</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3486821258960016770">Monqol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> xətalar.</translation>
+<translation id="3501954296166022751">Google Disk faylları oflayn əlçatandır</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> element sinxronlaşdırma üçün hazırlanır...</translation>
 <translation id="3522708245912499433">Portuqal</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Bu ayarın dəyişdirilməsi bütün paylaşılan şəbəkələrə təsir edəcək</translation>
 <translation id="3737576078404241332">Yan paneldən silin</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
-<translation id="3780536599611287598">Faylları "<ph name="FOLDER_NAME" />" ünvanına köçürmək üçün icazəniz yoxdur.</translation>
 <translation id="3786301125658655746">Oflaynsınız.</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3793469551756281394">Təxminən <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> qalıb</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Fərdi ad serverləri</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Administratorunuz tərəfindən idarə olunur, Qoşulun</translation>
 <translation id="4470564870223067757">Hangul 2 Dəsti</translation>
+<translation id="4472575034687746823">Başlayın</translation>
 <translation id="4474142134969976028">Uyğun nəticə yoxdur</translation>
 <translation id="4477002475007461989">Rumın</translation>
 <translation id="4477219268485577442">Bolqar fonetikası</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> element bərpa edilir</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Anonim rejim istifadə etmək üçün təşkilat artırma tələb edir}other{Anonim rejim istifadə etmək üçün təşkilat bəzi artırmalar tələb edir}}</translation>
-<translation id="4823651846660089135">Cihaz yalnız oxu rejimindədir</translation>
 <translation id="4826849268470072925">Tamil dili (ITRANS)</translation>
 <translation id="482932175346970750">Brauzerə <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yazın</translation>
 <translation id="4843566743023903107">Chromebase cihazları</translation>
@@ -572,6 +573,7 @@
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5500122897333236901">İsland</translation>
 <translation id="5508696409934741614">Nöqtə</translation>
+<translation id="5519161320735100193">Google Disk ayarları</translation>
 <translation id="5522908512596376669">Fayl siyahısı siyahı görünüşünə dəyişdirilib.</translation>
 <translation id="5524517123096967210">Fayl oxunmadı.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> şəkli</translation>
@@ -618,6 +620,7 @@
 <translation id="5838451609423551646">Bütün daxiletmələr seçimdən silindi.</translation>
 <translation id="5838825566232597749">ABŞ Beynəlxalq İşçisi</translation>
 <translation id="5845721951356578987">Tibb bacısı</translation>
+<translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5861477046012235702">Oyunçu</translation>
 <translation id="5864471791310927901">DHCP axtarış uğursuz oldu</translation>
 <translation id="5896749729057314184">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
@@ -675,7 +678,6 @@
 <translation id="6327785803543103246">Veb proksi avtomatik aşkarlama</translation>
 <translation id="6337014272874260727">Sürətli fayllardan çıxarın</translation>
 <translation id="6339145975392024142">ABŞ beynəlxalq (PC) klaviaturası</translation>
-<translation id="6346310558342052870">Giriş məhdudlaşdırılıb</translation>
 <translation id="6356685157277930264">Fayllar üçün rəy pəncərəsi</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
 <translation id="636254897931573416">Domen sonluğunun uyğunluğu dəyəri yanlışdır</translation>
@@ -861,6 +863,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">İvrit</translation>
 <translation id="78104721049218340">Kedmanee klaviaturası ilə Tay dili</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Şəbəkə konfiqurasiya xətası</translation>
 <translation id="7839804798877833423">Bu faylların əldə edilməsi təxminən <ph name="FILE_SIZE" /> mobil data istifadə edəcək.</translation>
@@ -873,15 +876,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Hissənin format edilməsi ilə orada saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Mənim diskim bölməsindəki fayllar avtomatik Chromebook-a sinxronlaşdırılacaq ki, internet bağlantısı olmadan onlara daxil ola biləsiniz.</translation>
 <translation id="7925247922861151263">AAA yoxlanışı uğursuz oldu</translation>
 <translation id="7925686952655276919">Sinxronizasiya üçün mobil data istifadə etməyin</translation>
 <translation id="7928710562641958568">Cihazı çıxarın</translation>
+<translation id="7933875256234974853">Disk fayllarının sinxronlaşdırılması hazırlanır...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Bu fayl açıla bilməz, çünki onun fayl sistemi tanınmadı.</translation>
 <translation id="7969525169268594403">Sloven</translation>
 <translation id="7972920761225148017">Fransız (İsveçrə)</translation>
 <translation id="7973962044839454485">PPP identifikasiyası yanlış istifadəçi adı və ya parol səbəbindən uğursuz oldu</translation>
 <translation id="7980421588063892270">Colemak klaviaturası ilə İngilis dili (ABŞ)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> fayl sinxronlaşdırılır</translation>
 <translation id="8000066093800657092">Şəbəkə yoxdur</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Ölçü</translation>
@@ -1003,6 +1009,7 @@
 <translation id="8919081441417203123">Danimarka</translation>
 <translation id="8949925099261528566">Qoşuludur, internet yoxdur</translation>
 <translation id="8965697826696209160">Yer çatmır.</translation>
+<translation id="8971742885766657349">Sinxronlaşdırılır - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Çin dili (Ənənəvi) Pinyin</translation>
 <translation id="8998871447376656508">Yükləməni tamamlamaq üçün Google Diskinizdə kifayət qədər boş yer yoxdur.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
@@ -1036,6 +1043,7 @@
 <translation id="9213073329713032541">Quraşdırma uğurla başladı.</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
 <translation id="9219908252191632183">Qəməri</translation>
+<translation id="937795003075802289">1 fayl sinxronlaşdırılır</translation>
 <translation id="938470336146445890">İstifadəçi sertifikatını bərpa edin.</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="943972244133411984">Düzəliş edib:</translation>

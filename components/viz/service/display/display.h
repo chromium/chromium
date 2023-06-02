@@ -265,7 +265,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // Points to the viz-global singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;
 
-  raw_ptr<DisplayClient> client_ = nullptr;
+  raw_ptr<DisplayClient, DanglingUntriaged> client_ = nullptr;
   base::ObserverList<DisplayObserver>::Unchecked observers_;
   raw_ptr<SurfaceManager> surface_manager_ = nullptr;
   const FrameSinkId frame_sink_id_;

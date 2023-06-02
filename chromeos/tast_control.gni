@@ -79,6 +79,8 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1282481
   "quicksettings.OpenSettings",
+  "quicksettings.OpenSettings.qs_revamp_disabled",
+  "quicksettings.OpenSettings.qs_revamp_enabled",
 
   # http://b/212644512
   "security.SELinuxFilesDataDir",
@@ -328,6 +330,15 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/281983222
   "inputs.InputMethodShelfInputs",
+
+  # http://b/284464120 until CHROMEOS_LKGM >= 15477.0.0. Due to QsRevamp.
+  # Tests are already fixed in ToT ChromeOS.
+  "audio.CheckingAudioFormats",
+  "audio.UIInput.gain",
+  "audio.UIInput.mute",
+  "inputs.InputMethodShelfInputs.lacros",
+  "inputs.VirtualKeyboardSpeech",
+  "lacros.AudioRecord",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]

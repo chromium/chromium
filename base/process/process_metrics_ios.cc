@@ -62,31 +62,4 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
   return CalculateIdleWakeupsPerSecond(power_info_data.task_interrupt_wakeups);
 }
 
-// The blink code path pulls in process_metrics_posix.cc which
-// is used for the following implementations.
-#if !BUILDFLAG(USE_BLINK)
-
-size_t GetMaxFds() {
-  static const rlim_t kSystemDefaultMaxFds = 256;
-  rlim_t max_fds;
-  struct rlimit nofile;
-  if (getrlimit(RLIMIT_NOFILE, &nofile)) {
-    // Error case: Take a best guess.
-    max_fds = kSystemDefaultMaxFds;
-  } else {
-    max_fds = nofile.rlim_cur;
-  }
-
-  if (max_fds > INT_MAX)
-    max_fds = INT_MAX;
-
-  return static_cast<size_t>(max_fds);
-}
-
-void IncreaseFdLimitTo(unsigned int max_descriptors) {
-  // Unimplemented.
-}
-
-#endif  // !BUILDFLAG(USE_BLINK)
-
 }  // namespace base

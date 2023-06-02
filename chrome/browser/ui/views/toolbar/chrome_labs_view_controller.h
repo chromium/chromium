@@ -46,9 +46,9 @@ class ChromeLabsViewController {
   raw_ptr<const ChromeLabsModel, DanglingUntriaged> model_;
   raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> chrome_labs_bubble_view_;
   base::CallbackListSubscription restart_callback_;
-  raw_ptr<Browser> browser_;
-  raw_ptr<flags_ui::FlagsState> flags_state_;
-  raw_ptr<flags_ui::FlagsStorage> flags_storage_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
+  raw_ptr<flags_ui::FlagsStorage, DanglingUntriaged> flags_storage_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_VIEW_CONTROLLER_H_

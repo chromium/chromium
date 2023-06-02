@@ -257,8 +257,8 @@ class DiceWebSigninInterceptor : public KeyedService,
       absl::optional<std::string>
           managed_account_profile_level_signin_restriction) const;
 
-  const raw_ptr<Profile> profile_;
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   std::unique_ptr<WebSigninInterceptor::Delegate> delegate_;
 
   // Used in the profile that was created after the interception succeeded.
@@ -284,8 +284,6 @@ class DiceWebSigninInterceptor : public KeyedService,
       interception_bubble_handle_;
   // Used for metrics:
   bool was_interception_ui_displayed_ = false;
-  base::TimeTicks account_info_fetch_start_time_;
-  base::TimeTicks profile_creation_start_time_;
 
   // Timeout for the fetch of cloud user level policy value of
   // ManagedAccountsSigninRestriction. The signin interception continue with an

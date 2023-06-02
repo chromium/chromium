@@ -1253,6 +1253,46 @@
       }
     ]
   },
+  "BETWEEN_STREETS": {
+    "en": [
+      {
+        "positive_pattern": "(cross|between).*street",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ],
+    "es": [
+      {
+        "positive_pattern": "entre.*calle",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ]
+  },
+  "ADMIN_LEVEL_2": {
+    "pt": [
+      {
+        "positive_pattern": "municipio",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ],
+    "es": [
+      {
+        "positive_pattern": "municipio|delegación",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ]
+  },
   "SEARCH_TERM": {
     "en": [
       {

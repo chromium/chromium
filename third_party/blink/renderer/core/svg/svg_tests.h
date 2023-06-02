@@ -31,6 +31,7 @@ class QualifiedName;
 class SVGElement;
 class SVGStaticStringList;
 class SVGStringListTearOff;
+class SVGAnimatedPropertyBase;
 
 class CORE_EXPORT SVGTests : public GarbageCollectedMixin {
  public:
@@ -46,6 +47,10 @@ class CORE_EXPORT SVGTests : public GarbageCollectedMixin {
   explicit SVGTests(SVGElement* context_element);
 
   static bool IsKnownAttribute(const QualifiedName&);
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const;
 
  private:
   Member<SVGStaticStringList> required_extensions_;

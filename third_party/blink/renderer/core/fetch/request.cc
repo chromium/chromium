@@ -96,6 +96,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetKeepalive(original->Keepalive());
   request->SetBrowsingTopics(original->BrowsingTopics());
   request->SetAdAuctionHeaders(original->AdAuctionHeaders());
+  request->SetSharedStorageWritable(original->SharedStorageWritable());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
   if (original->URLLoaderFactory()) {
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
@@ -107,6 +108,8 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetTrustTokenParams(original->TrustTokenParams());
   request->SetAttributionReportingEligibility(
       original->AttributionReportingEligibility());
+  request->SetServiceWorkerRaceNetworkRequestToken(
+      original->ServiceWorkerRaceNetworkRequestToken());
 
   // When a new request is created from another the destination is always reset
   // to be `kEmpty`.  In order to facilitate some later checks when a service
@@ -128,9 +131,9 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasTargetAddressSpace() || init->hasCredentials() ||
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
          init->hasKeepalive() || init->hasBrowsingTopics() ||
-         init->hasAdAuctionHeaders() || init->hasPriority() ||
-         init->hasSignal() || init->hasDuplex() || init->hasPrivateToken() ||
-         init->hasAttributionReporting();
+         init->hasAdAuctionHeaders() || init->hasSharedStorageWritable() ||
+         init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
+         init->hasPrivateToken() || init->hasAttributionReporting();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -565,6 +568,16 @@ Request* Request::CreateRequestWithRequestOrString(
     request->SetAdAuctionHeaders(init->adAuctionHeaders());
   }
 
+  if (init->hasSharedStorageWritable()) {
+    if (!execution_context->IsSecureContext()) {
+      exception_state.ThrowTypeError(
+          "sharedStorageWritable: sharedStorage operations are only available"
+          " in secure contexts.");
+      return nullptr;
+    }
+    request->SetSharedStorageWritable(init->sharedStorageWritable());
+  }
+
   // "If |init|'s method member is present, let |method| be it and run these
   // substeps:"
   if (init->hasMethod()) {
@@ -886,8 +899,7 @@ Request::Request(ScriptState* script_state,
                  FetchRequestData* request,
                  Headers* headers,
                  AbortSignal* signal)
-    : ActiveScriptWrappable<Request>({}),
-      Body(ExecutionContext::From(script_state)),
+    : Body(ExecutionContext::From(script_state)),
       request_(request),
       headers_(headers),
       signal_(signal) {}
@@ -1137,7 +1149,6 @@ network::mojom::RequestMode Request::GetRequestMode() const {
 
 void Request::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  ActiveScriptWrappable<Request>::Trace(visitor);
   Body::Trace(visitor);
   visitor->Trace(request_);
   visitor->Trace(headers_);

@@ -70,7 +70,7 @@ bool TryCoalesceString(std::vector<base::Value::Dict>* buffer,
   if (!IsTextNode(last_child))
     return false;
   std::string* old_text = last_child.FindString("value");
-  old_text->append(text.data(), text.size());
+  old_text->append(text);
   return true;
 }
 

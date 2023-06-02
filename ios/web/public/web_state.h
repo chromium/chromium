@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "components/sessions/core/session_id.h"
-#include "ios/web/public/deprecated/url_verification_constants.h"
 #include "ios/web/public/js_messaging/content_world.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -393,12 +392,9 @@ class WebState : public base::SupportsUserData {
   // displayed in this WebState. It represents the current security context.
   virtual const GURL& GetLastCommittedURL() const = 0;
 
-  // Returns the WebState view of the current URL. Moreover, this method
-  // will set the trustLevel enum to the appropriate level from a security point
-  // of view. The caller has to handle the case where `trust_level` is not
-  // appropriate.  Passing `null` will skip the trust check.
-  // TODO(crbug.com/457679): Figure out a clean API for this.
-  virtual GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const = 0;
+  // Returns the last committed URL if the correctness of this URL's origin is
+  // trusted, and absl::nullopt otherwise.
+  virtual absl::optional<GURL> GetLastCommittedURLIfTrusted() const = 0;
 
   // Returns the current CRWWebViewProxy object.
   virtual CRWWebViewProxyType GetWebViewProxy() const = 0;

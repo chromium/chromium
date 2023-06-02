@@ -66,7 +66,8 @@ class ProfileDiscardOptOutListHelperTest : public testing::Test {
   }
 
   TestingPrefServiceSimple prefs_;
-  raw_ptr<FakeProfileDiscardOptOutListHelperDelegate> delegate_;
+  raw_ptr<FakeProfileDiscardOptOutListHelperDelegate, DanglingUntriaged>
+      delegate_;
   std::unique_ptr<ProfileDiscardOptOutListHelper> helper_;
 };
 

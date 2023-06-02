@@ -1519,7 +1519,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
   // in DrawWithImageFinished.
   UnrefImageDecode(draw_image, cache_key);
 
-  sk_sp<SkColorFilter> dark_mode_color_filter = nullptr;
+  sk_sp<ColorFilter> dark_mode_color_filter = nullptr;
   if (draw_image.use_dark_mode()) {
     auto it = image_data->decode.dark_mode_color_filter_cache.find(
         draw_image.src_rect());

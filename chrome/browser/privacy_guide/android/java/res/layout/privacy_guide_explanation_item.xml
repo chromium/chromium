@@ -15,7 +15,7 @@ found in the LICENSE file.
     <TextView
         android:id="@+id/summary"
         android:drawablePadding="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginVertical="@dimen/explanation_marginVertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.TextMedium.Secondary" />

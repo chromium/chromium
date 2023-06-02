@@ -143,7 +143,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
   ui::Clipboard* system_clipboard() { return clipboard_; }
 
  private:
-  raw_ptr<ui::Clipboard> clipboard_;
+  raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -323,10 +323,10 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
 
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  const raw_ptr<ui::Clipboard> clipboard_;
+  const raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
   // `FakeClipboardHostImpl` is a `DocumentService` and manages its own
   // lifetime.
-  raw_ptr<FakeClipboardHostImpl> fake_clipboard_host_impl_;
+  raw_ptr<FakeClipboardHostImpl, DanglingUntriaged> fake_clipboard_host_impl_;
 };
 
 TEST_F(ClipboardHostImplScanTest,

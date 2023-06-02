@@ -1794,6 +1794,17 @@ class AutotestPrivateRemoveBruschettaFunction : public ExtensionFunction {
   void OnRemoveVm(bool success);
 };
 
+class AutotestPrivateIsFeatureEnabledFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateIsFeatureEnabledFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.isFeatureEnabled",
+                             AUTOTESTPRIVATE_ISFEATUREENABLED)
+
+ private:
+  ~AutotestPrivateIsFeatureEnabledFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

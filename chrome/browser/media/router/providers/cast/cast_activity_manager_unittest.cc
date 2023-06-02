@@ -526,8 +526,9 @@ class CastActivityManagerTest : public testing::Test,
   MockCastAppDiscoveryService app_discovery_service_;
   std::unique_ptr<CastActivityManager> manager_;
   std::unique_ptr<CastSessionTracker> session_tracker_;
-  raw_ptr<MockAppActivity> app_activity_ = nullptr;
-  raw_ptr<MockMirroringActivity> mirroring_activity_ = nullptr;
+  raw_ptr<MockAppActivity, DanglingUntriaged> app_activity_ = nullptr;
+  raw_ptr<MockMirroringActivity, DanglingUntriaged> mirroring_activity_ =
+      nullptr;
   MockAppActivityCallback app_activity_callback_ = base::DoNothing();
   MockMirroringActivityCallback mirroring_activity_callback_ =
       base::DoNothing();

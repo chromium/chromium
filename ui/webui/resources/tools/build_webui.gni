@@ -374,7 +374,7 @@ template("build_webui") {
     merge_js_source_maps("merge_source_maps") {
       deps = [ ":build_ts" ]
       manifest_files =
-          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+          filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
       js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
       sources = []
@@ -394,6 +394,7 @@ template("build_webui") {
       host = invoker.optimize_webui_host
       input = rebase_path(ts_out_dir, root_build_dir)
       js_module_in_files = invoker.optimize_webui_in_files
+      out_folder = "$target_gen_dir/bundled"
       if (defined(invoker.optimize_webui_excludes)) {
         excludes = invoker.optimize_webui_excludes
       }
@@ -412,7 +413,7 @@ template("build_webui") {
       in_folder = ts_out_dir
       in_target = ":build_ts"
       if (bundle) {
-        in_folder = target_gen_dir
+        in_folder = "$target_gen_dir/bundled"
         in_target = ":build_bundle"
       }
       out_folder = "$target_gen_dir/minified"
@@ -452,7 +453,8 @@ template("build_webui") {
 
     if (optimize) {
       deps += [ ":build_min_js" ]
-      manifest_files += [ "$target_gen_dir/minify_js_manifest.json" ]
+      manifest_files += filter_include(get_target_outputs(":build_min_js"),
+                                       [ "*_manifest.json" ])
       if (bundle) {
         resource_path_rewrites = []
         foreach(f, invoker.optimize_webui_in_files) {
@@ -464,11 +466,11 @@ template("build_webui") {
     } else if (enable_source_maps) {
       deps += [ ":merge_source_maps" ]
       manifest_files += filter_include(get_target_outputs(":merge_source_maps"),
-                                       [ "*.manifest" ])
+                                       [ "*_manifest__processed.json" ])
     } else {
       deps += [ ":build_ts" ]
       manifest_files +=
-          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+          filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
     }
 
     if (defined(invoker.extra_grdp_deps)) {

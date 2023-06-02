@@ -3,6 +3,30 @@ if (window.testRunner) {
   testRunner.waitUntilDone();
 }
 
+var haveBuffer = false;
+var bufferedOutput = [];
+var bufferedFinished = false;
+
+function ensureBuffer() {
+  if (haveBuffer)
+    return;
+
+  haveBuffer = true;
+  window.addEventListener("load", flushBuffer);
+}
+
+function flushBuffer() {
+  haveBuffer = false;
+  for (let line of bufferedOutput) {
+    log(line);
+  }
+  bufferedOutput = [];
+  if (buferredFinished) {
+    testFinished();
+    bufferedFinished = false;
+  }
+}
+
 function shouldComputedColorOfElementBeEqualToRGBString(element, expectedColor)
 {
   var elementName = "#" + element.id || element.tagName;
@@ -30,7 +54,16 @@ function createStyleElementWithString(stylesheetData)
 
 function log(message)
 {
-  document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
+  let console = document.getElementById("console");
+  if (!console) {
+    ensureBuffer();
+    bufferedOutput.push(message);
+    return;
+  }
+  if (haveBuffer) {
+    flushBuffer();
+  }
+  console.appendChild(document.createTextNode(message + "\n"));
 }
 
 function testPassed(message)
@@ -57,6 +90,10 @@ function testFailedAndNotifyDone(message)
 
 function testFinished()
 {
+  if (haveBuffer) {
+    bufferedFinished = true;
+    return;
+  }
   if (window.testRunner)
     testRunner.notifyDone();
 }

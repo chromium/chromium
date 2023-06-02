@@ -42,16 +42,16 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
 }
 
 void CaptureWindowObserver::SetSelectedWindow(aura::Window* window,
-                                              bool allow_window_change) {
+                                              bool bar_anchored_to_window) {
   if (window_ == window) {
     return;
   }
 
-  if (window_ && !allow_window_change_) {
+  if (window_ && bar_anchored_to_window_) {
     return;
   }
 
-  allow_window_change_ = allow_window_change;
+  bar_anchored_to_window_ = bar_anchored_to_window;
 
   // Don't capture wallpaper window.
   if (window && window->parent() &&
@@ -93,6 +93,13 @@ void CaptureWindowObserver::OnWindowBoundsChanged(
   auto* controller = CaptureModeController::Get();
   if (!controller->is_recording_in_progress())
     controller->camera_controller()->MaybeUpdatePreviewWidget();
+
+  // The bounds of the capture bar should be updated accordingly if the bounds
+  // of the selected window has been updated.
+  if (bar_anchored_to_window_ &&
+      capture_mode_session_->capture_mode_bar_widget()) {
+    capture_mode_session_->RefreshBarWidgetBounds();
+  }
 }
 
 void CaptureWindowObserver::OnWindowVisibilityChanging(aura::Window* window,
@@ -101,7 +108,7 @@ void CaptureWindowObserver::OnWindowVisibilityChanging(aura::Window* window,
   CHECK(!visible);
   StopObserving();
 
-  if (!allow_window_change_ ||
+  if (bar_anchored_to_window_ ||
       capture_mode_session_->IsInCountDownAnimation()) {
     CaptureModeController::Get()->Stop();
     return;
@@ -114,7 +121,7 @@ void CaptureWindowObserver::OnWindowDestroying(aura::Window* window) {
   CHECK_EQ(window, window_);
   StopObserving();
 
-  if (!allow_window_change_ ||
+  if (bar_anchored_to_window_ ||
       capture_mode_session_->IsInCountDownAnimation()) {
     CaptureModeController::Get()->Stop();
     return;

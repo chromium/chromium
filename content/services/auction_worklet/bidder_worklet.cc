@@ -21,6 +21,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -125,6 +126,40 @@ bool SetBiddingLogicUrl(v8::Isolate* isolate,
   }
   return SetDictMember(isolate, object, "biddingLogicURL", v8_value) &&
          SetDictMember(isolate, object, "biddingLogicUrl", v8_value);
+}
+
+bool SetBiddingWasmHelperUrl(v8::Isolate* isolate,
+                             v8::Local<v8::Object> object,
+                             const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "biddingWasmHelperURL", v8_value) &&
+         SetDictMember(isolate, object, "biddingWasmHelperUrl", v8_value);
+}
+
+bool SetUpdateUrl(v8::Isolate* isolate,
+                  v8::Local<v8::Object> object,
+                  const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "updateURL", v8_value) &&
+         SetDictMember(isolate, object, "updateUrl", v8_value) &&
+         SetDictMember(isolate, object, "dailyUpdateUrl", v8_value);
+}
+
+bool SetTrustedBiddingSignalsUrl(v8::Isolate* isolate,
+                                 v8::Local<v8::Object> object,
+                                 const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "trustedBiddingSignalsURL", v8_value) &&
+         SetDictMember(isolate, object, "trustedBiddingSignalsUrl", v8_value);
 }
 
 // Converts a vector of blink::InterestGroup::Ads into a v8 object.
@@ -364,6 +399,7 @@ void BidderWorklet::ReportWin(
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     const std::string& seller_signals_json,
+    mojom::KAnonymityBidMode kanon_mode,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -390,6 +426,7 @@ void BidderWorklet::ReportWin(
   report_win_task->auction_signals_json = auction_signals_json;
   report_win_task->per_buyer_signals_json = per_buyer_signals_json;
   report_win_task->seller_signals_json = seller_signals_json;
+  report_win_task->kanon_mode = kanon_mode;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
   report_win_task->browser_signal_bid = browser_signal_bid;
   report_win_task->browser_signal_bid_currency = browser_signal_bid_currency;
@@ -574,6 +611,7 @@ void BidderWorklet::V8State::ReportWin(
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_auction_signals,
     const std::string& seller_signals_json,
+    mojom::KAnonymityBidMode kanon_mode,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -592,6 +630,7 @@ void BidderWorklet::V8State::ReportWin(
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  base::ElapsedTimer elapsed_timer;
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -614,6 +653,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      base::TimeDelta(),
                                       /*errors=*/std::vector<std::string>());
     return;
   }
@@ -674,10 +714,13 @@ void BidderWorklet::V8State::ReportWin(
            browser_signal_top_level_seller_origin->Serialize())) ||
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
-                                 bidding_signals_data_version.value()))) {
+                                 bidding_signals_data_version.value())) ||
+      !browser_signals_dict.Set(
+          "enforcedKAnon", kanon_mode == mojom::KAnonymityBidMode::kEnforce)) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      base::TimeDelta(),
                                       /*errors=*/std::vector<std::string>());
     return;
   }
@@ -699,6 +742,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      base::TimeDelta(),
                                       /*errors=*/std::move(errors_out));
     return;
   }
@@ -720,7 +764,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/absl::nullopt,
         /*ad_beacon_map=*/{},
-        /*pa_requests=*/{}, std::move(errors_out));
+        /*pa_requests=*/{}, elapsed_timer.Elapsed(), std::move(errors_out));
     return;
   }
 
@@ -753,7 +797,7 @@ void BidderWorklet::V8State::ReportWin(
         /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(errors_out));
+        elapsed_timer.Elapsed(), std::move(errors_out));
     return;
   }
 
@@ -764,7 +808,7 @@ void BidderWorklet::V8State::ReportWin(
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      std::move(errors_out));
+      elapsed_timer.Elapsed(), std::move(errors_out));
 }
 
 void BidderWorklet::V8State::GenerateBid(
@@ -1045,19 +1089,14 @@ BidderWorklet::V8State::GenerateSingleBid(
       !SetBiddingLogicUrl(isolate, interest_group_object,
                           script_source_url_.spec()) ||
       (wasm_helper_url_ &&
-       !interest_group_dict.Set("biddingWasmHelperUrl",
+       !SetBiddingWasmHelperUrl(isolate, interest_group_object,
                                 wasm_helper_url_->spec())) ||
       (bidder_worklet_non_shared_params.update_url &&
-       (!interest_group_dict.Set(
-            "updateUrl", bidder_worklet_non_shared_params.update_url->spec()) ||
-        // TODO(https://crbug.com/1420080) Remove deprecated `dailyUpdateUrl`
-        // alias.
-        !interest_group_dict.Set(
-            "dailyUpdateUrl",
-            bidder_worklet_non_shared_params.update_url->spec()))) ||
+       !SetUpdateUrl(isolate, interest_group_object,
+                     bidder_worklet_non_shared_params.update_url->spec())) ||
       (trusted_bidding_signals_url_ &&
-       !interest_group_dict.Set("trustedBiddingSignalsUrl",
-                                trusted_bidding_signals_url_->spec()))) {
+       !SetTrustedBiddingSignalsUrl(isolate, interest_group_object,
+                                    trusted_bidding_signals_url_->spec()))) {
     return absl::nullopt;
   }
 
@@ -1330,12 +1369,14 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
     const absl::optional<GURL>& report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta reporting_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(report_url),
-                                std::move(ad_beacon_map),
-                                std::move(pa_requests), std::move(errors)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(report_url),
+                     std::move(ad_beacon_map), std::move(pa_requests),
+                     reporting_latency, std::move(errors)));
 }
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
@@ -1778,7 +1819,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->per_buyer_signals_json),
           std::move(task->direct_from_seller_result_per_buyer_signals),
           std::move(task->direct_from_seller_result_auction_signals),
-          std::move(task->seller_signals_json),
+          std::move(task->seller_signals_json), std::move(task->kanon_mode),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_bid),
           std::move(task->browser_signal_bid_currency),
@@ -1854,13 +1895,14 @@ void BidderWorklet::DeliverReportWinOnUserThread(
     absl::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta reporting_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   errors.insert(errors.end(), load_code_error_msgs_.begin(),
                 load_code_error_msgs_.end());
   std::move(task->callback)
       .Run(std::move(report_url), std::move(ad_beacon_map),
-           std::move(pa_requests), std::move(errors));
+           std::move(pa_requests), reporting_latency, std::move(errors));
   report_win_tasks_.erase(task);
 }
 

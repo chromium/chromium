@@ -52,10 +52,13 @@ constexpr char kRpId[] = "example.com";
 
 PasskeyCredential CreatePasskey(std::vector<uint8_t> cred_id,
                                 std::string username) {
-  return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
-                           std::string(kRpId), std::move(cred_id),
-                           device::fido_parsing_utils::Materialize(kUserId),
-                           std::move(username));
+  return PasskeyCredential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId(std::string(kRpId)),
+      PasskeyCredential::CredentialId(std::move(cred_id)),
+      PasskeyCredential::UserId(
+          device::fido_parsing_utils::Materialize(kUserId)),
+      PasskeyCredential::Username(std::move(username)));
 }
 
 }  // namespace
@@ -107,12 +110,13 @@ class ChromeWebAuthnCredentialsDelegateTest
         main_rfh(), creds, /*is_conditional_request=*/true,
         base::BindRepeating(
             &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        /*hybrid_callback=*/base::RepeatingClosure());
 #endif
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model() {
+  AuthenticatorRequestDialogModel* dialog_model() {
     return authenticator_request_delegate_->GetDialogModelForTesting();
   }
 #endif
@@ -128,7 +132,8 @@ class ChromeWebAuthnCredentialsDelegateTest
 #endif
 
  protected:
-  raw_ptr<ChromeWebAuthnCredentialsDelegate> credentials_delegate_;
+  raw_ptr<ChromeWebAuthnCredentialsDelegate, DanglingUntriaged>
+      credentials_delegate_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ChromeAuthenticatorRequestDelegate>
       authenticator_request_delegate_;

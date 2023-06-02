@@ -26,8 +26,7 @@
 // https://www.khronos.org/registry/webgl/extensions/KHR_parallel_shader_compile/
 
 [
-    LegacyNoInterfaceObject,
-    DoNotCheckConstants
+    LegacyNoInterfaceObject
 ] interface KHRParallelShaderCompile {
     const GLenum COMPLETION_STATUS_KHR                = 0x91B1;
 };

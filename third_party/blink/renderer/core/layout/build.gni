@@ -756,6 +756,7 @@ blink_core_tests_layout = [
   "ng/layout_ng_fieldset_test.cc",
   "ng/layout_ng_frame_set_test.cc",
   "ng/layout_ng_text_control_single_line_test.cc",
+  "ng/list/layout_ng_inline_list_item_test.cc",
   "ng/list/layout_ng_list_item_test.cc",
   "ng/ng_absolute_utils_test.cc",
   "ng/ng_anchor_query_test.cc",

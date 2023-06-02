@@ -32,6 +32,7 @@ extern const char kPrivacySandboxM1AdMeasurementEnabled[];
 extern const char kPrivacySandboxM1Restricted[];
 // Un-synced boolean pref indicating if the Privacy Sandbox was ever indicated
 // as unrestricted by account capabilities.
+// TODO(crbug.com/1428506): Deprecate this preference
 extern const char kPrivacySandboxM1Unrestricted[];
 
 // Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is

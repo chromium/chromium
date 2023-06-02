@@ -197,11 +197,7 @@ class UserDataDowngradeBrowserCopyAndCleanTest
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    if (ParentClass::IsPreTest()) {
-      // Verify that the downgrade was detected and that the move took place.
-      histogram_tester_->ExpectUniqueSample(
-          "Downgrade.Type", 1 /* Type::kAdministrativeWipe */, 1);
-    } else {
+    if (!ParentClass::IsPreTest()) {
       // Verify the renamed user data directory has been deleted.
       EXPECT_FALSE(base::DirectoryExists(moved_user_data_dir()));
     }

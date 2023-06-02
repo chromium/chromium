@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests retainers view.
     - Number of retainers of an A object must be 2 (A itself and B).
     - When an object has just one retainer it must be expanded automatically until
       there's an object having two or more retainers.
     - Test the expansion of a long retainment chain is limited by a certain level.\n`);
-  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 25;

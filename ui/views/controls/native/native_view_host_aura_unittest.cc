@@ -44,7 +44,7 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
 
   struct EventDetails {
     EventType type;
-    raw_ptr<aura::Window> window;
+    raw_ptr<aura::Window, DanglingUntriaged> window;
     gfx::Rect bounds;
     bool operator!=(const EventDetails& rhs) {
       return type != rhs.type || window != rhs.window || bounds != rhs.bounds;
@@ -623,7 +623,7 @@ class WidgetDelegateForShouldDescendIntoChildForEventHandling
   }
 
  private:
-  raw_ptr<aura::Window> window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> window_ = nullptr;
 };
 
 TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {

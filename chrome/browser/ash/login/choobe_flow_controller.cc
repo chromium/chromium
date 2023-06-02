@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -43,13 +44,25 @@ bool IsOptionalScreen(OobeScreenId screen_id) {
   return false;
 }
 
+// Returns the last screen in a set, given the order of screens in the
+// `kOptionalScreens` array, if the set is empty, the function will return
+// `OOBE_SCREEN_UNKNOWN`.
+OobeScreenId GetLastOptionalScreenInSet(
+    const base::flat_set<OobeScreenId>& screens) {
+  OobeScreenId last_screen = OOBE_SCREEN_UNKNOWN;
+  for (const auto& screen : kOptionalScreens) {
+    if (screens.find(screen.AsId()) != screens.end()) {
+      last_screen = screen.AsId();
+    }
+  }
+  return last_screen;
+}
+
 }  // namespace
 
 ChoobeFlowController::ChoobeFlowController() {}
 
-ChoobeFlowController::~ChoobeFlowController() {
-  ClearPreferences(*ProfileManager::GetActiveUserProfile()->GetPrefs());
-}
+ChoobeFlowController::~ChoobeFlowController() {}
 
 void ChoobeFlowController::ClearPreferences(PrefService& prefs) {
   prefs.ClearPref(prefs::kChoobeCompletedScreens);
@@ -68,37 +81,45 @@ bool ChoobeFlowController::ShouldStartChoobe() {
 }
 
 bool ChoobeFlowController::ShouldResumeChoobe(const PrefService& prefs) {
-  return prefs.HasPrefPath(prefs::kChoobeSelectedScreens);
+  return prefs.HasPrefPath(prefs::kChoobeSelectedScreens) ||
+         prefs.HasPrefPath(prefs::kChoobeCompletedScreens);
 }
 
 // Resume CHOOBE requires loading `kChoobeSelectedScreens` and
 // `kChoobeCompletedScreens` preferences.
 void ChoobeFlowController::ResumeChoobe(const PrefService& prefs) {
-  // Fill `selected_screens_ids_` with screens stored in
-  // `kChoobeSelectedScreens` preference if it exists in `kOptionalScreens`.
+  EnsureEligibleScreensPopulated();
+
+  // Fill `selected_screens_ids_` with screens stored in the
+  // `kChoobeSelectedScreens` preference. It is necessary to recheck whether the
+  // stored screen exists in `eligible_screens_ids_` because the screen could
+  // have been made ineligible between the storing and the resuming of CHOOBE.
   const auto& selected_screens_ids =
       prefs.GetList(prefs::kChoobeSelectedScreens);
   for (const auto& screen_id : selected_screens_ids) {
     const auto id = OobeScreenId(screen_id.GetString());
-    if (IsOptionalScreen(id)) {
+    if (eligible_screens_ids_.find(id) != eligible_screens_ids_.end()) {
       selected_screens_ids_.insert(id);
     } else {
       LOG(WARNING) << "The selected screen " << screen_id.GetString()
-                   << "was not found during the resuming of CHOOBE.";
+                   << "is not eligible during the resuming of CHOOBE.";
     }
   }
 
-  // Fill `completed_screens_ids_` with screens stored in
-  // `kChoobeCompletedScreens` preference if it exists in `kOptionalScreens`.
+  // Fill `completed_screens_ids_` with screens stored in the
+  // `kChoobeCompletedScreens` preference. It is necessary to recheck whether
+  // the stored screen exists in `eligible_screens_ids_` because the screen
+  // could have been made ineligible between the storing and the resuming of
+  // CHOOBE.
   const auto& completed_screens_ids =
       prefs.GetList(prefs::kChoobeCompletedScreens);
   for (const auto& screen_id : completed_screens_ids) {
     const auto id = OobeScreenId(screen_id.GetString());
-    if (IsOptionalScreen(id)) {
+    if (eligible_screens_ids_.find(id) != eligible_screens_ids_.end()) {
       completed_screens_ids_.insert(id);
     } else {
       LOG(WARNING) << "The completed screen " << screen_id.GetString()
-                   << "was not found during the resuming of CHOOBE.";
+                   << "is not eligible during the resuming of CHOOBE.";
     }
   }
 }
@@ -106,7 +127,12 @@ void ChoobeFlowController::ResumeChoobe(const PrefService& prefs) {
 std::vector<ScreenSummary> ChoobeFlowController::GetEligibleScreensSummaries() {
   EnsureEligibleScreensPopulated();
   std::vector<ScreenSummary> summaries;
-  for (auto screen_id : eligible_screens_ids_) {
+  for (auto id : kOptionalScreens) {
+    const auto screen_id = id.AsId();
+    if (eligible_screens_ids_.find(screen_id) == eligible_screens_ids_.end()) {
+      continue;
+    }
+
     ScreenSummary summary = LoginDisplayHost::default_host()
                                 ->GetWizardController()
                                 ->GetScreen(screen_id)
@@ -121,6 +147,12 @@ std::vector<ScreenSummary> ChoobeFlowController::GetEligibleScreensSummaries() {
 }
 
 bool ChoobeFlowController::ShouldScreenBeSkipped(OobeScreenId screen_id) {
+  // If the CHOOBE Flow Controller has not stared yet, then the
+  // controller will not object to showing the screen.
+  if (!is_choobe_active_) {
+    return false;
+  }
+
   return selected_screens_ids_.find(screen_id) == selected_screens_ids_.end();
 }
 
@@ -144,6 +176,7 @@ void ChoobeFlowController::OnScreensSelected(PrefService& prefs,
 // screen tile is marked as completed in the next time the CHOOBE screen is
 // shown. `completed_screens_ids_` should also be persisted to handle the
 // unexpected shutdown and resuming the onboarding case.
+// If the last selected screen is completed, clear the selected screens.
 void ChoobeFlowController::OnScreenCompleted(PrefService& prefs,
                                              OobeScreenId completed_screen_id) {
   if (!IsOptionalScreen(completed_screen_id)) {
@@ -159,54 +192,65 @@ void ChoobeFlowController::OnScreenCompleted(PrefService& prefs,
     screens_ids.Append(screen_id.name);
   }
   prefs.SetList(prefs::kChoobeCompletedScreens, std::move(screens_ids));
+
+  // If the last optional screen is completed, clear the selected screens.
+  if (completed_screen_id ==
+      GetLastOptionalScreenInSet(selected_screens_ids_)) {
+    selected_screens_ids_.clear();
+    prefs.ClearPref(prefs::kChoobeSelectedScreens);
+  }
+}
+
+bool ChoobeFlowController::IsScreenCompleted(OobeScreenId id) {
+  return completed_screens_ids_.find(id) != completed_screens_ids_.end();
+}
+
+void ChoobeFlowController::OnChoobeFlowExit() {
+  ClearPreferences(*ProfileManager::GetActiveUserProfile()->GetPrefs());
+  is_choobe_active_ = false;
 }
 
 bool ChoobeFlowController::ShouldShowReturnButton(OobeScreenId screen_id) {
   DCHECK(!selected_screens_ids_.empty());
 
-  // Get the last screen in `kOptionalScreens` that exists in
-  // `selected_screen_ids_`
-  OobeScreenId last_selected_screen = OOBE_SCREEN_UNKNOWN;
-  for (auto id : kOptionalScreens) {
-    if (selected_screens_ids_.find(id.AsId()) != selected_screens_ids_.end()) {
-      last_selected_screen = id.AsId();
-    }
-  }
-
+  // The return button should only be shown in the last selected screen.
+  OobeScreenId last_selected_screen =
+      GetLastOptionalScreenInSet(selected_screens_ids_);
   if (screen_id != last_selected_screen) {
     return false;
   }
 
-  // To show the return button, all eligible screens must be completed
+  // To hide the return button, all eligible screens must be completed
   // except for the current one which is still being completed.
-  if (completed_screens_ids_.size() + 1 != eligible_screens_ids_.size()) {
+  if (completed_screens_ids_.size() + !IsScreenCompleted(screen_id) ==
+      eligible_screens_ids_.size()) {
     return false;
   }
 
-  DCHECK(completed_screens_ids_.find(screen_id) ==
-         completed_screens_ids_.end());
   DCHECK(eligible_screens_ids_.find(screen_id) != eligible_screens_ids_.end());
 
   return true;
 }
 
 void ChoobeFlowController::EnsureEligibleScreensPopulated() {
-  if (!eligible_screens_ids_.empty()) {
+  if (is_choobe_active_) {
     return;
   }
+
   for (auto screen_id : kOptionalScreens) {
-    if (completed_screens_ids_.find(screen_id.AsId()) !=
-            completed_screens_ids_.end() ||
-        IsScreenEligible(screen_id.AsId())) {
+    if (IsScreenEligible(screen_id.AsId())) {
       eligible_screens_ids_.insert(screen_id.AsId());
     }
   }
+  is_choobe_active_ = true;
 }
 
 bool ChoobeFlowController::IsScreenEligible(OobeScreenId id) {
   auto* host = LoginDisplayHost::default_host();
   auto* wizard_controller = host->GetWizardController();
   if (!wizard_controller->HasScreen(id)) {
+    LOG(WARNING) << "Screen ID " << id
+                 << " does not exist in wizard controller.";
     return false;
   }
   return !wizard_controller->GetScreen(id)->ShouldBeSkipped(

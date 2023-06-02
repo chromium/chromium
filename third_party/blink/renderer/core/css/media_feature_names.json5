@@ -70,5 +70,6 @@
     "device-posture",
     "horizontal-viewport-segments",
     "vertical-viewport-segments",
+    "stuck",
   ],
 }

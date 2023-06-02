@@ -10,7 +10,7 @@ The pipeline module orchestrates the entire signing process, which includes:
 
 import os.path
 
-from . import commands, model, notarize, parts, signing
+from signing import commands, model, notarize, parts, signing
 
 
 def _sign_app(paths, config, dest_dir):

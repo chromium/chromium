@@ -93,7 +93,7 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
   std::unique_ptr<MockTabDragWithScrollManager> drag_controller_;
   std::unique_ptr<views::ScrollView> scroll_view_;
   std::unique_ptr<TabStripScrollSessionWithTimer> scroll_session_;
-  raw_ptr<views::View> attached_context_;
+  raw_ptr<views::View, DanglingUntriaged> attached_context_;
   raw_ptr<base::MockRepeatingTimer> mock_timer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

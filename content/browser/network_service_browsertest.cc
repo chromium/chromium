@@ -19,11 +19,13 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/network/network_service_util_internal.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,7 +34,6 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -402,8 +403,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceConnectionTypeSyncedBrowserTest,
 class NetworkServiceOutOfProcessBrowserTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceOutOfProcessBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kNetworkServiceInProcess);
+    ForceOutOfProcessNetworkServiceImpl();
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(IsOutOfProcessNetworkService());
   }
 
  private:
@@ -1684,7 +1688,8 @@ class EmptyNetworkServiceTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, Base) {
+// TODO(https://crbug.com/1448414): Reenable this test.
+IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, DISABLED_Base) {
   // This test is only for high-RAM device to create another process.
   if (!IsInProcessNetworkService()) {
     GTEST_SKIP();

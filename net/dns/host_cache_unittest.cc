@@ -1909,7 +1909,7 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
    "flags": 0,
    "host_resolver_source": 2,
    "hostname": "example.com",
-   "network_isolation_key": [  ],
+   "network_anonymization_key": [  ],
    "port": 443,
    "scheme": "https",
    "secure": false
@@ -1940,7 +1940,7 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeHttpsExperimental) {
    "flags": 0,
    "host_resolver_source": 2,
    "hostname": "example.com",
-   "network_isolation_key": [  ],
+   "network_anonymization_key": [  ],
    "port": 443,
    "scheme": "https",
    "secure": false

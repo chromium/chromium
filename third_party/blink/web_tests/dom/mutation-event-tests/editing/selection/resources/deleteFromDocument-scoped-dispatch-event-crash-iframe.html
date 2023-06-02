@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+var count = 0;
+document.addEventListener("DOMNodeRemoved", function () {
+    count++;
+    if (count < 2) {
+        var src = event.srcElement;
+        document.designMode = "on";
+        src.parentNode.replaceChild(document.head, src);
+    }
+}, false);
+
+window.onload = function () {
+    var selection = window.getSelection();
+    document.execCommand("SelectAll", false)
+    selection.deleteFromDocument();
+    window.parent.postMessage("FINISH", "*");
+};
+</script>
+</head>
+<body>
+<div>
+    A
+    <select></select>
+</div>
+</body>
+</html>

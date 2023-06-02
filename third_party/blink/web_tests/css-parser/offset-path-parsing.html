@@ -8,7 +8,7 @@
 assert_valid_value("offset-path", "path('M 0 0 L 100 100 M 100 200 L 200 200 Z L 300 300 Z')",
                                   "path(\"M 0 0 L 100 100 M 100 200 L 200 200 Z L 300 300 Z\")");
 assert_valid_value("offset-path", "none");
-assert_valid_value("offset-path", "path('')", "none");
+assert_invalid_value("offset-path", "path('')");
 assert_invalid_value("offset-path", "path('M 20 30 A 60 70 80')");
 
 assert_valid_value("offset-path", "ray(45deg closest-side)", "ray(45deg)");

@@ -133,9 +133,9 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
       l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
   InitializeApp(*installer_app, shown);
-  installer_app->icon_key =
-      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                    IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+  installer_app->icon_key = apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                                          IDR_LOGO_BOREALIS_STEAM_PENDING_192,
+                                          apps::IconEffects::kNone);
   installer_app->show_in_launcher = false;
   installer_app->show_in_management = false;
   installer_app->show_in_search = false;
@@ -151,7 +151,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
   auto initial_steam_app = apps::AppPublisher::MakeApp(
       apps::AppType::kBorealis, borealis::kLauncherSearchAppId,
       shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
+      l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
   InitializeApp(*initial_steam_app, shown);
   initial_steam_app->icon_key =

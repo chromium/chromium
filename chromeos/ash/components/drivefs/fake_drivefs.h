@@ -23,6 +23,27 @@
 
 namespace drivefs {
 
+struct FakeMetadata {
+  FakeMetadata();
+  ~FakeMetadata();
+
+  FakeMetadata(FakeMetadata&& other);
+  FakeMetadata& operator=(FakeMetadata&& other);
+
+  base::FilePath path;
+  std::string mime_type;
+  std::string original_name;
+  bool pinned = false;
+  bool available_offline = false;
+  bool shared = false;
+  mojom::Capabilities capabilities = {};
+  mojom::FolderFeature folder_feature = {};
+  std::string doc_id;
+  std::string alternate_url;
+  bool shortcut = false;
+  bool can_pin = true;
+};
+
 class FakeDriveFsBootstrapListener : public DriveFsBootstrapListener {
  public:
   explicit FakeDriveFsBootstrapListener(
@@ -56,17 +77,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   std::unique_ptr<drivefs::DriveFsBootstrapListener> CreateMojoListener();
 
-  void SetMetadata(const base::FilePath& path,
-                   const std::string& mime_type,
-                   const std::string& original_name,
-                   bool pinned,
-                   bool available_offline,
-                   bool shared,
-                   const mojom::Capabilities& capabilities,
-                   const mojom::FolderFeature& folder_feature,
-                   const std::string& doc_id,
-                   const std::string& alternate_url,
-                   bool shortcut);
+  void SetMetadata(const FakeMetadata& metadata);
 
   void DisplayConfirmDialog(
       drivefs::mojom::DialogReasonPtr reason,
@@ -115,6 +126,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   absl::optional<bool> IsItemPinned(const std::string& path);
 
+  bool SetCanPin(const std::string& path, bool can_pin);
+
   struct FileMetadata {
     FileMetadata();
     FileMetadata(const FileMetadata&);
@@ -133,6 +146,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
     int64_t stable_id = 0;
     std::string alternate_url;
     bool shortcut = false;
+    bool can_pin = true;
   };
 
   absl::optional<FakeDriveFs::FileMetadata> GetItemMetadata(

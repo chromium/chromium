@@ -51,6 +51,7 @@ source_set("common") {
     "//ipc",
     "//mojo/public/cpp/bindings",
     "//skia",
+    "//third_party/widevine/cdm:buildflags",
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/geometry",

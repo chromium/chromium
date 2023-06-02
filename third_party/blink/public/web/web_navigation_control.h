@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -67,15 +68,18 @@ class WebNavigationControl : public WebLocalFrame {
   virtual void SetIsNotOnInitialEmptyDocument() = 0;
   virtual bool IsOnInitialEmptyDocument() = 0;
 
-  // Notifies that a renderer-initiated navigation to `url` will
-  // potentially start soon. This is fired before the beforeunload event
-  // (if it's needed) gets dispatched in the renderer, so that the
-  // browser can speculatively start service worker before processing
-  // beforeunload event, which might take a long time. Note that the
-  // navigation might not actually start, e.g. if it gets canceled by
-  // beforeunload.
-  virtual void WillPotentiallyStartOutermostMainFrameNavigation(
-      const WebURL&) const = 0;
+  // Notifies that a renderer-initiated navigation to `urls` will
+  // potentially start.
+  // This is fired in the following situations so that the browser can
+  // speculatively warm-up service workers (start the renderer process and
+  // load scripts) or start (warm up + run the service worker script).
+  // - The anchor tag is in the viewport.
+  // - The mouse hovered the anchor tag.
+  // - The mousedown or touchstart event gets dispatched on the anchor tag.
+  // - The beforeunload event gets dispatched.
+  // Note that the navigation might not actually start.
+  virtual void MaybeStartOutermostMainFrameNavigation(
+      const WebVector<WebURL>& urls) const = 0;
 
   // Marks the frame as loading, before WebLocalFrameClient issues a navigation
   // request through the browser process on behalf of the frame.

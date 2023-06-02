@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_WIN_TITLEBAR_CONFIG_H_
 #define CHROME_BROWSER_WIN_TITLEBAR_CONFIG_H_
 
+#include "base/feature_list.h"
+
 class BrowserView;
+
+BASE_DECLARE_FEATURE(kWindows11MicaTitlebar);
 
 // Returns whether we should custom draw the titlebar for a browser window.
 bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view);

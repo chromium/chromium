@@ -409,6 +409,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, MaxLength) {
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 }
 
+// Tests that values exceeding `AutofillTable::kMaxDataLength` are truncated.
+// TODO(crbug.com/1443393): As of the unified table layout, values are already
+// truncated in AutofillTable. No special logic on the Sync-side is necessary.
+// Clean this up.
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
   ASSERT_TRUE(SetupSync());
 
@@ -427,9 +431,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
                 AutofillType(autofill::ADDRESS_HOME_LINE1),
                 exceeds_max_length_string);
+  // The values stored on clients 0 are already truncated.
+  AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
+  for (const auto type :
+       {autofill::NAME_FIRST, autofill::NAME_LAST, autofill::EMAIL_ADDRESS,
+        autofill::ADDRESS_HOME_LINE1}) {
+    EXPECT_EQ(profile->GetRawInfo(type).size(), AutofillTable::kMaxDataLength);
+  }
 
   ASSERT_TRUE(AwaitQuiescence());
-  EXPECT_FALSE(ProfilesMatch(0, 1));
+  // Both clients store the truncated values.
+  EXPECT_TRUE(ProfilesMatch(0, 1));
 }
 
 // Test credit cards don't sync.

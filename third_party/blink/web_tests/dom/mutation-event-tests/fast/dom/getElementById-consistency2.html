@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="../../../../resources/js-test.js"></script>
+<div id=container>
+</div>
+<span id=el>
+</span>
+<script>
+description('Test that DOMSubtreeModified listeners cannot cause TreeOrderedMap to be incorrect');
+
+var counter = 0;
+var container = document.getElementById('container');
+var el = document.getElementById('el');
+function broken() {
+   if (++counter > 2) {
+      document.removeEventListener('DOMSubtreeModified', broken, true);
+      return;
+   }
+   container.appendChild(el);
+}
+
+document.addEventListener("DOMSubtreeModified", broken, true);
+broken();
+shouldBeTrue("document.contains(el)");
+el.parentNode.removeChild(el);
+el = null;
+gc();
+shouldBeNull("document.getElementById('el')");
+</script>

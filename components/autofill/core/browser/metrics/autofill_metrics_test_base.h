@@ -26,6 +26,12 @@ constexpr char kTestProfileId[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kTestLocalCardId[] = "10000000-0000-0000-0000-000000000001";
 constexpr char kTestMaskedCardId[] = "10000000-0000-0000-0000-000000000002";
 constexpr char kTestFullServerCardId[] = "10000000-0000-0000-0000-000000000003";
+// These variables store the GUIDs of a Local and a masked Server card which
+// have the same card attributes, i.e., are duplicates of each other.
+constexpr char kTestDuplicateLocalCardId[] =
+    "10000000-0000-0000-0000-000000000004";
+constexpr char kTestDuplicateMaskedCardId[] =
+    "10000000-0000-0000-0000-000000000005";
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -56,8 +62,8 @@ class AutofillMetricsBaseTest {
   // |is_server| allows creation of |SERVER_PROFILE|.
   void RecreateProfile(bool is_server);
 
-  // Removes all existing credit cards and creates a local, masked server,
-  // full server, and/or virtual credit card, according to the parameters.
+  // Removes all existing credit cards and then invokes CreateCreditCards to
+  // create the cards.
   // TODO(crbug/1216615): Migrate this to a params builder pattern or
   // something.
   void RecreateCreditCards(bool include_local_credit_card,
@@ -65,15 +71,16 @@ class AutofillMetricsBaseTest {
                            bool include_full_server_credit_card,
                            bool masked_card_is_enrolled_for_virtual_card);
 
-  // Creates a local card to existing card deck or clear them all and then add a
-  // new local card.
-  // The GUID for the card created is returned as a string.
-  std::string CreateLocalMasterCard(bool clear_existing_cards = false);
+  // Creates a local, masked server, full server, and/or virtual credit card,
+  // according to the parameters.
+  void CreateCreditCards(bool include_local_credit_card,
+                         bool include_masked_server_credit_card,
+                         bool include_full_server_credit_card,
+                         bool masked_card_is_enrolled_for_virtual_card);
 
   // Creates a local card and then a duplicate server card with the same
   // credentials/info.
-  // The GUIDs for the cards crated are returned as a vector of strings.
-  std::vector<std::string> CreateLocalAndDuplicateServerCreditCard();
+  void CreateLocalAndDuplicateServerCreditCard();
 
   void AddMaskedServerCreditCardWithOffer(std::string guid,
                                           std::string offer_reward_amount,
@@ -168,13 +175,7 @@ class AutofillMetricsBaseTest {
   void FillTestProfile(const FormData& form) {
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, form, form.fields.front(),
-        MakeFrontendId({.profile_id = kTestProfileId}),
-        AutofillTriggerSource::kPopup);
-  }
-
-  Suggestion::FrontendId MakeFrontendId(
-      const TestBrowserAutofillManager::MakeFrontendIdParams& params) {
-    return autofill_manager().MakeFrontendId(params);
+        Suggestion::BackendId(kTestProfileId), AutofillTriggerSource::kPopup);
   }
 
   [[nodiscard]] FormData CreateEmptyForm() {
@@ -218,10 +219,10 @@ class AutofillMetricsBaseTest {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
-  raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
+  raw_ptr<ukm::TestUkmRecorder, DanglingUntriaged> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
-  raw_ptr<AutofillExternalDelegate> external_delegate_;
+  raw_ptr<AutofillExternalDelegate, DanglingUntriaged> external_delegate_;
 
  private:
   void CreateTestAutofillProfiles();

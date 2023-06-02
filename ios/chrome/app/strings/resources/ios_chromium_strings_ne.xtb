@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium सिंकको डेटा</translation>
 <translation id="1722370509450468186">तपाईंको पासवर्ड तपाईंको खाता (<ph name="EMAIL" />) मा सेभ गरिने छ।</translation>
 <translation id="1736662517232558588">Chromium सम्बन्धी डेटा हटाइयो</translation>
-<translation id="177102542580335555">तपाईं यो Chromium प्रोफाइलका हकमा सामान्य सुरक्षा प्राप्त गरिराख्नुभएको छ</translation>
 <translation id="1838412507805038478">Chromium ले <ph name="ISSUER" /> ले यस वेबसाइटको प्रमाणपत्र जारी गरेको हो भन्ने कुरा पुष्टि गरेको छ।</translation>
 <translation id="1843424232666537147">Chromimum मा भएका सुविधाहरूले तपाईंलाई आफ्नो इन्टर्नेट डेटा व्यवस्थित गर्न र तपाईंका वेबपृष्ठहरूलाई द्रुत गतिमा लोड गर्न मद्दत गर्दछन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1867772173333403444">४. Chromium चयन गर्नुहोस्</translation>
@@ -46,8 +45,10 @@
 <translation id="3567399274263440288">Chromium बाट बढीभन्दा बढी फाइदा लिन Chromium मा आफ्नो Google खातामार्फत साइन इन गर्नुहोस्।</translation>
 <translation id="3639997914391704523">तपाईंले आफ्नो Google खातामा साइन इन गरेपछि मात्र Chromium ले तपाईंका पासवर्डहरू जाँच्न सक्छ।</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ले Chromium प्रयोग गर्नुभएको थियो तर यो डिभाइसबाट सेभ गरिएका बुकमार्क, पासवर्ड र अन्य सेटिङ मेटाउनुभएको थिएन।</translation>
+<translation id="3661862315467204831">iOS मा Chromium का सेटिङ खोल्नुहोस्, त्यसपछि "डिफल्ट ब्राउजर एप" मा ट्याप गर्नुहोस् र "Chromium" चयन गर्नुहोस्।</translation>
 <translation id="372658070733623520">तपाईं आफ्नो Google खातामा सेभ गरिएको Chromium डेटा प्रयोग गर्न र Google खातामा थप Chromium डेटा सेभ गर्न चाहनुहुन्छ भने आफ्नो पहिचान पुष्टि गर्नुहोस्।</translation>
 <translation id="3805899903892079518">Chromiumसँग तपाईंको तस्बिर वा भिडियोहरूमा पहुँच छैन। iOS सेटिङहरू &gt; गोपनीयता &gt; तस्बिरहरूमा पहुँच अन गर्नुहोस्।</translation>
+<translation id="3827545470516145620">तपाईं यो डिभाइसमा सामान्य सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
 <translation id="3955621079070267756">जुनसुकै एपबाट Chromium खोल्नुहोस्</translation>
 <translation id="4043291146360695975">पासवर्डहरू यो डिभाइसको पासवर्ड म्यानेजरमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="4099085513035183040">Chromium को बिटा संस्करणमा प्रयोग गर्न मिल्दैन</translation>

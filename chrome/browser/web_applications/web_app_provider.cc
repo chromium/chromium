@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 
@@ -142,6 +143,16 @@ void WebAppProvider::Start() {
   StartImpl();
 }
 
+WebAppCommandScheduler& WebAppProvider::scheduler() {
+  return *command_scheduler_;
+}
+
+WebAppCommandManager& WebAppProvider::command_manager() {
+  // Note: It is OK to access the command manager before connection or start.
+  // Internally it will queue commands to only happen after it has started.
+  return *command_manager_;
+}
+
 WebAppRegistrar& WebAppProvider::registrar_unsafe() {
   CheckIsConnected();
   return *registrar_;
@@ -222,14 +233,8 @@ WebAppOriginAssociationManager& WebAppProvider::origin_association_manager() {
   return *origin_association_manager_;
 }
 
-WebAppCommandManager& WebAppProvider::command_manager() {
-  // Note: It is OK to access the command manager before connection or start.
-  // Internally it will queue commands to only happen after it has started.
-  return *command_manager_;
-}
-
-WebAppCommandScheduler& WebAppProvider::scheduler() {
-  return *command_scheduler_;
+WebContentsManager& WebAppProvider::web_contents_manager() {
+  return *web_contents_manager_;
 }
 
 void WebAppProvider::Shutdown() {
@@ -316,6 +321,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   web_app_run_on_os_login_manager_ =
       std::make_unique<WebAppRunOnOsLoginManager>(command_scheduler_.get());
 #endif
+
+  web_contents_manager_ = std::make_unique<WebContentsManager>();
 }
 
 void WebAppProvider::ConnectSubsystems() {
@@ -333,7 +340,8 @@ void WebAppProvider::ConnectSubsystems() {
                                           registrar_.get(), ui_manager_.get(),
                                           command_scheduler_.get());
   externally_managed_app_manager_->SetSubsystems(
-      ui_manager_.get(), install_finalizer_.get(), command_scheduler_.get());
+      ui_manager_.get(), install_finalizer_.get(), command_scheduler_.get(),
+      web_contents_manager_.get());
   preinstalled_web_app_manager_->SetSubsystems(
       registrar_.get(), ui_manager_.get(),
       externally_managed_app_manager_.get());

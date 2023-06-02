@@ -821,16 +821,18 @@ std::string StructTraits<media::stable::mojom::StatusDataDataView,
 }
 
 // static
-base::span<const base::Value> StructTraits<
-    media::stable::mojom::StatusDataDataView,
-    media::internal::StatusData>::frames(const media::internal::StatusData&
-                                             input) {
+const base::Value::List& StructTraits<media::stable::mojom::StatusDataDataView,
+                                      media::internal::StatusData>::
+    frames(const media::internal::StatusData& input) {
+  // Note that types of `internal::StatusData::frames` and
+  // `mojom::StatusData::frames` do not match -- changing the wire format of
+  // stable mojom requires supporting both the old and new versions and doesn't
+  // improve readability.
   static_assert(
-      std::is_same<decltype(::media::internal::StatusData::frames),
-                   decltype(media::stable::mojom::StatusData::frames)>::value,
+      std::is_same_v<decltype(::media::internal::StatusData::frames),
+                     base::Value::List>,
       "Unexpected type for media::internal::StatusData::frames. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
-
   return input.frames;
 }
 

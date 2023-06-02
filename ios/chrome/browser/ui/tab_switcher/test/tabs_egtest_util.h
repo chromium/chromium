@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol GREYMatcher;
 namespace net {
 namespace test_server {
 class EmbeddedTestServer;
@@ -17,12 +18,26 @@ class EmbeddedTestServer;
 void CreateRegularTab(net::test_server::EmbeddedTestServer* test_server,
                       NSString* title);
 
-// Create `tabs_count` of regular tabs.
+// Creates `tabs_count` of regular tabs.
 void CreateRegularTabs(int tabs_count,
                        net::test_server::EmbeddedTestServer* test_server);
 
-// Create `tabs_count` of pinned tabs.
+// Creates `tabs_count` of pinned tabs.
 void CreatePinnedTabs(int tabs_count,
                       net::test_server::EmbeddedTestServer* test_server);
+
+// Matcher for a tab grid cell.
+id<GREYMatcher> TabGridCell();
+
+// Matcher for a tab grid cell with the given `title`.
+id<GREYMatcher> TabWithTitle(NSString* title);
+
+// Matcher for a tab grid cell with the given `title`, at the given `index`.
+id<GREYMatcher> TabWithTitleAndIndex(NSString* title, unsigned int index);
+
+// Taps on the item defined by `matcher` and waits for a snack bar with the
+// given `snackbarLabel`.
+void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
+                                           id<GREYMatcher> matcher);
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TEST_TABS_EGTEST_UTIL_H_

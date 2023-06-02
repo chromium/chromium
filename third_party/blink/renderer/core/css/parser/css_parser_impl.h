@@ -99,13 +99,13 @@ class CORE_EXPORT CSSParserImpl {
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID,
-      const String&,
+      StringView,
       bool important,
       const CSSParserContext*);
   static MutableCSSPropertyValueSet::SetResult ParseVariableValue(
       MutableCSSPropertyValueSet*,
       const AtomicString& property_name,
-      const String&,
+      StringView,
       bool important,
       const CSSParserContext*,
       bool is_animation_tainted);
@@ -206,9 +206,10 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream& stream,
                                          CSSNestingType,
                                          StyleRule* parent_rule_for_nesting);
-  StyleRuleInitial* ConsumeInitialRule(CSSParserTokenStream& stream,
-                                       CSSNestingType,
-                                       StyleRule* parent_rule_for_nesting);
+  StyleRuleStartingStyle* ConsumeStartingStyleRule(
+      CSSParserTokenStream& stream,
+      CSSNestingType,
+      StyleRule* parent_rule_for_nesting);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
   StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
       CSSParserTokenStream&);

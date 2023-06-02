@@ -15,6 +15,7 @@ namespace autofill::autofill_metrics {
 constexpr char kAmericanExpress[] = "Amex";
 constexpr char kCapitalOne[] = "CapitalOne";
 constexpr char kChase[] = "Chase";
+constexpr char kDiscover[] = "Discover";
 constexpr char kMarqeta[] = "Marqeta";
 
 constexpr char kProductNameAndArtImageBothShownSuffix[] =

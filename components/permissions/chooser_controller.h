@@ -177,7 +177,7 @@ class ChooserController {
 
  private:
   std::u16string title_;
-  raw_ptr<View> view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> view_ = nullptr;
 };
 
 }  // namespace permissions

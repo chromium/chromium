@@ -7,12 +7,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "components/flags_ui/feature_entry_macros.h"
@@ -96,13 +96,13 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   ChromeLabsButton* labs_button =
       browser_view()->toolbar()->chrome_labs_button();
-  ChromeLabsCoordinator* coordinator =
-      labs_button->GetChromeLabsCoordinatorForTesting();
+  ChromeLabsCoordinator* coordinator = labs_button->GetChromeLabsCoordinator();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::OwnerSettingsServiceAsh* service_ =
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(GetProfile());
-  labs_button->SetShouldCircumventDeviceCheckForTesting(true);
+  labs_button->GetChromeLabsCoordinator()
+      ->SetShouldCircumventDeviceCheckForTesting(true);
 #endif
 
   EXPECT_FALSE(coordinator->BubbleExists());

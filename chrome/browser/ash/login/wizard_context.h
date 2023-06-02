@@ -137,6 +137,10 @@ class WizardContext {
   // will show UI enhancements if this quick_start_phone_instance_id is present.
   std::string quick_start_phone_instance_id;
 
+  // Whether the user is currently setting up OOBE using QuickStart.
+  // TODO(b/283724988) - Combine QuickStart fields into a class.
+  bool quick_start_setup_ongoing = false;
+
   // If this is a first login after update from CloudReady to a new version.
   // During such an update show users license agreement and data collection
   // consent.

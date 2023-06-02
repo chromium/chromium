@@ -15,6 +15,7 @@
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/system/sys_info.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -24,8 +25,6 @@ using features::kMacWebContentsOcclusion;
 // Experiment features.
 const base::FeatureParam<bool> kEnhancedWindowOcclusionDetection{
     &kMacWebContentsOcclusion, "EnhancedWindowOcclusionDetection", false};
-const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
-    &kMacWebContentsOcclusion, "DisplaySleepAndAppHideDetection", false};
 
 namespace {
 
@@ -82,6 +81,25 @@ bool IsBrowserProcess() {
   return sharedInstance->get();
 }
 
++ (BOOL)manualOcclusionDetectionSupportedForVersion:(int32_t)major
+                                                   :(int32_t)minor {
+  if (major != 13) {
+    return YES;
+  }
+
+  return minor >= 3;
+}
+
++ (BOOL)manualOcclusionDetectionSupportedForCurrentMacOSVersion {
+  int32_t major_version;
+  int32_t minor_version;
+  int32_t bugfix_version;
+  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
+                                               &bugfix_version);
+  return [self manualOcclusionDetectionSupportedForVersion:
+                                             major_version:minor_version];
+}
+
 + (void)resetSharedInstanceForTesting {
   [self sharedOcclusionChecker]->reset();
 }
@@ -125,6 +143,12 @@ bool IsBrowserProcess() {
   return _windowClassSwizzler.get();
 }
 
+- (BOOL)isManualOcclusionDetectionEnabled {
+  return [WebContentsOcclusionCheckerMac
+             manualOcclusionDetectionSupportedForCurrentMacOSVersion] &&
+         kEnhancedWindowOcclusionDetection.Get();
+}
+
 // Alternative implementation of orderWindow:relativeTo:. Replaces
 // NSWindow's version, allowing the occlusion checker to learn about
 // window ordering events.
@@ -135,8 +159,10 @@ bool IsBrowserProcess() {
       ->InvokeOriginal<void, NSWindowOrderingMode, NSInteger>(
           self, _cmd, orderingMode, otherWindowNumber);
 
-  if (!kEnhancedWindowOcclusionDetection.Get())
+  if (![[WebContentsOcclusionCheckerMac sharedInstance]
+          isManualOcclusionDetectionEnabled]) {
     return;
+  }
 
   [[NSNotificationCenter defaultCenter]
       postNotificationName:kWindowDidChangePositionInWindowList
@@ -148,7 +174,7 @@ bool IsBrowserProcess() {
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
 
-  if (kEnhancedWindowOcclusionDetection.Get()) {
+  if ([self isManualOcclusionDetectionEnabled]) {
     [notificationCenter addObserver:self
                            selector:@selector(windowWillMove:)
                                name:NSWindowWillMoveNotification
@@ -174,6 +200,17 @@ bool IsBrowserProcess() {
            selector:@selector(windowDidChangePositionInWindowList:)
                name:kWindowDidChangePositionInWindowList
              object:nil];
+
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        addObserver:self
+           selector:@selector(displaysDidSleep:)
+               name:NSWorkspaceScreensDidSleepNotification
+             object:nil];
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        addObserver:self
+           selector:@selector(displaysDidWake:)
+               name:NSWorkspaceScreensDidWakeNotification
+             object:nil];
   }
 
   [notificationCenter addObserver:self
@@ -197,19 +234,6 @@ bool IsBrowserProcess() {
                          selector:@selector(fullscreenTransitionComplete:)
                              name:NSWindowDidExitFullScreenNotification
                            object:nil];
-
-  if (kDisplaySleepAndAppHideDetection.Get()) {
-    [[[NSWorkspace sharedWorkspace] notificationCenter]
-        addObserver:self
-           selector:@selector(displaysDidSleep:)
-               name:NSWorkspaceScreensDidSleepNotification
-             object:nil];
-    [[[NSWorkspace sharedWorkspace] notificationCenter]
-        addObserver:self
-           selector:@selector(displaysDidWake:)
-               name:NSWorkspaceScreensDidWakeNotification
-             object:nil];
-  }
 }
 
 - (BOOL)windowCanTriggerOcclusionUpdates:(NSWindow*)window {
@@ -400,9 +424,8 @@ bool IsBrowserProcess() {
     return YES;
   }
 
-  // If manual occlusion detection is disabled in the experiement, return the
-  // answer from macOS.
-  if (!kEnhancedWindowOcclusionDetection.Get()) {
+  // If manual occlusion detection is disabled, return the answer from macOS.
+  if (![self isManualOcclusionDetectionEnabled]) {
     return NO;
   }
 

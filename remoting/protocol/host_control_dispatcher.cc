@@ -54,6 +54,13 @@ void HostControlDispatcher::SetTransportInfo(
   message_pipe()->Send(&message, {});
 }
 
+void HostControlDispatcher::SetActiveDisplay(
+    const ActiveDisplay& active_display) {
+  ControlMessage message;
+  message.mutable_active_display_changed()->CopyFrom(active_display);
+  message_pipe()->Send(&message, {});
+}
+
 void HostControlDispatcher::InjectClipboardEvent(const ClipboardEvent& event) {
   ControlMessage message;
   message.mutable_clipboard_event()->CopyFrom(event);

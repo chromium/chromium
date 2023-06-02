@@ -185,7 +185,6 @@
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/dom_timer.h"
 #include "third_party/blink/renderer/core/frame/dom_visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
@@ -202,6 +201,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -343,6 +343,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/null_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -1120,8 +1121,7 @@ Element* Document::CreateElementForBinding(const AtomicString& name,
                          html_names::xhtmlNamespaceURI);
     return MakeGarbageCollected<HTMLUnknownElement>(q_name, *this);
   }
-  return MakeGarbageCollected<Element>(
-      QualifiedName(g_null_atom, name, g_null_atom), this);
+  return MakeGarbageCollected<Element>(QualifiedName(name), this);
 }
 
 AtomicString GetTypeExtension(
@@ -2382,7 +2382,8 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   }
 }
 
-void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
+void Document::UpdateStyleAndLayoutTreeForNode(const Node* node,
+                                               DocumentUpdateReason) {
   DCHECK(node);
   if (!node->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
@@ -2401,7 +2402,8 @@ void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
   UpdateStyleAndLayoutTree(upgrade);
 }
 
-void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node) {
+void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node,
+                                                  DocumentUpdateReason) {
   DCHECK(node);
   if (!node->InActiveDocument()) {
     DCHECK_EQ(node->ownerDocument(), this);
@@ -3782,6 +3784,14 @@ void Document::ImplicitClose() {
   if (lazy_load_image_observer_) {
     lazy_load_image_observer_->DocumentOnLoadFinished(this);
   }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp)) {
+    if (auto* observer =
+            AnchorElementObserverForServiceWorker::From(TopDocument())) {
+      observer->MaybeSendPendingWarmUpRequests();
+    }
+  }
 }
 
 static bool AllDescendantsAreComplete(Document* document) {
@@ -5119,8 +5129,11 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   if (new_focused_element && new_focused_element->GetDocument() != this)
     return true;
 
-  if (new_focused_element)
-    UpdateStyleAndLayoutTreeForNode(new_focused_element);
+  if (new_focused_element) {
+    UpdateStyleAndLayoutTreeForNode(new_focused_element,
+                                    DocumentUpdateReason::kFocus);
+  }
+
   if (new_focused_element && new_focused_element->IsFocusable()) {
     if (IsRootEditableElement(*new_focused_element) &&
         !AcceptsEditingFocus(*new_focused_element)) {
@@ -5728,8 +5741,13 @@ Event* Document::createEvent(ScriptState* script_state,
 
 void Document::AddMutationEventListenerTypeIfEnabled(
     ListenerType listener_type) {
-  if (ContextFeatures::MutationEventsEnabled(this))
-    AddListenerType(listener_type);
+  // Mutation events can be disabled by the embedder via a ContextFeatures
+  // switch, or via the runtime enabled feature.
+  if (!ContextFeatures::MutationEventsEnabled(this) ||
+      !RuntimeEnabledFeatures::MutationEventsEnabled()) {
+    return;
+  }
+  AddListenerType(listener_type);
 }
 
 void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
@@ -5738,7 +5756,6 @@ void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
   ListenerType listener_type;
   if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
                                          listener_type)) {
-    UseCounter::Count(*this, mutation_event_feature);
     AddMutationEventListenerTypeIfEnabled(listener_type);
   } else if (event_type == event_type_names::kWebkitAnimationStart ||
              event_type == event_type_names::kAnimationstart) {
@@ -5835,10 +5852,6 @@ String Document::cookie(ExceptionState& exception_state) const {
           "Cookies are disabled inside 'data:' URLs.");
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
-      // Count cookie accesses in opaque-origin documents from WebBundles.
-      if (Url().ProtocolIs("uuid-in-package")) {
-        CountUse(WebFeature::kUrnDocumentAccessedCookies);
-      }
     }
     return String();
   } else if (dom_window_->GetSecurityOrigin()->IsLocal()) {
@@ -5864,10 +5877,6 @@ void Document::setCookie(const String& value, ExceptionState& exception_state) {
           "Cookies are disabled inside 'data:' URLs.");
     } else {
       exception_state.ThrowSecurityError("Access is denied for this document.");
-      // Count cookie accesses in opaque-origin documents from WebBundles.
-      if (Url().ProtocolIs("uuid-in-package")) {
-        CountUse(WebFeature::kUrnDocumentAccessedCookies);
-      }
     }
     return;
   } else if (dom_window_->GetSecurityOrigin()->IsLocal()) {
@@ -7238,8 +7247,7 @@ Attr* Document::createAttribute(const AtomicString& name,
     return nullptr;
   }
   return MakeGarbageCollected<Attr>(
-      *this, QualifiedName(g_null_atom, ConvertLocalName(name), g_null_atom),
-      g_empty_atom);
+      *this, QualifiedName(ConvertLocalName(name)), g_empty_atom);
 }
 
 Attr* Document::createAttributeNS(const AtomicString& namespace_uri,
@@ -7671,8 +7679,9 @@ void Document::SupportsReducedMotionMetaChanged() {
                                "supports-reduced-motion")) {
       SpaceSplitString split_content(
           AtomicString(meta_element.Content().GetString().LowerASCII()));
-      if (split_content.Contains("reduce"))
+      if (split_content.Contains(AtomicString("reduce"))) {
         supports_reduced_motion = true;
+      }
       break;
     }
   }

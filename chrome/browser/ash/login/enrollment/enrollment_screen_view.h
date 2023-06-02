@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
 class GoogleServiceAuthError;
@@ -112,7 +112,7 @@ class EnrollmentScreenView
   virtual void ShowAuthError(const GoogleServiceAuthError& error) = 0;
 
   // Show non-authentication error.
-  virtual void ShowOtherError(EnterpriseEnrollmentHelper::OtherError error) = 0;
+  virtual void ShowOtherError(EnrollmentLauncher::OtherError error) = 0;
 
   // Update the UI to report the `status` of the enrollment procedure.
   virtual void ShowEnrollmentStatus(policy::EnrollmentStatus status) = 0;

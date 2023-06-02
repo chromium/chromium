@@ -13,16 +13,15 @@
 
 class Device;
 class DevToolsClient;
-class DevToolsHttpClient;
 
 class ChromeAndroidImpl : public ChromeImpl {
  public:
-  ChromeAndroidImpl(std::unique_ptr<DevToolsHttpClient> http_client,
+  ChromeAndroidImpl(BrowserInfo browser_info,
+                    std::set<WebViewInfo::Type> window_types,
                     std::unique_ptr<DevToolsClient> websocket_client,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
                     absl::optional<MobileDevice> mobile_device,
-                    SyncWebSocketFactory socket_factory,
                     std::string page_load_strategy,
                     std::unique_ptr<Device> device);
   ~ChromeAndroidImpl() override;

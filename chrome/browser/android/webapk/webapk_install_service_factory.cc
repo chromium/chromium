@@ -8,7 +8,8 @@
 
 // static
 WebApkInstallServiceFactory* WebApkInstallServiceFactory::GetInstance() {
-  return base::Singleton<WebApkInstallServiceFactory>::get();
+  static base::NoDestructor<WebApkInstallServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -28,7 +29,7 @@ WebApkInstallServiceFactory::WebApkInstallServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-WebApkInstallServiceFactory::~WebApkInstallServiceFactory() {}
+WebApkInstallServiceFactory::~WebApkInstallServiceFactory() = default;
 
 KeyedService* WebApkInstallServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

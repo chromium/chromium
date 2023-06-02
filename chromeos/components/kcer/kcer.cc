@@ -33,6 +33,14 @@ PublicKey::PublicKey(PublicKey&&) = default;
 PublicKey& PublicKey::operator=(PublicKey&&) = default;
 PublicKey::~PublicKey() = default;
 
+bool PublicKey::operator==(const PublicKey& other) const {
+  return ((token_ == other.token_) && (pkcs11_id_ == other.pkcs11_id_) &&
+          (pub_key_spki_ == other.pub_key_spki_));
+}
+bool PublicKey::operator!=(const PublicKey& other) const {
+  return !operator==(other);
+}
+
 //==================== KeyInfo =================================================
 
 KeyInfo::KeyInfo() = default;

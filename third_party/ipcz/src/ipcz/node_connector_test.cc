@@ -27,13 +27,11 @@ const IpczDriver& kDriver = reference_drivers::kSyncReferenceDriver;
 class NodeConnectorTest : public test::Test {
  protected:
   Ref<Node> CreateBrokerNode() {
-    return MakeRefCounted<Node>(Node::Type::kBroker, kDriver,
-                                IPCZ_INVALID_DRIVER_HANDLE);
+    return MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
   }
 
   Ref<Node> CreateNonBrokerNode() {
-    return MakeRefCounted<Node>(Node::Type::kNormal, kDriver,
-                                IPCZ_INVALID_DRIVER_HANDLE);
+    return MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
   }
 
   Ref<Portal> CreatePortal(Ref<Node> node) {

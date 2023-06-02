@@ -173,7 +173,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Upload) {
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
   ASSERT_TRUE(shared_image_ref);
 
-  VerifyPixelsWithReadback(mailbox, bitmaps);
+  VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
 }
 
 std::string TestParamToString(

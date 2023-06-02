@@ -22,6 +22,9 @@
   <message name="IDS_ACCESS_CODE_CAST_ERROR_ACCESS_CODE" desc="Error message for incorrect access code">
     You've entered an incorrect access code. Try again.
   </message>
+  <message name="IDS_ACCESS_CODE_CAST_ERROR_DIFFERENT_NETWORK" desc="Error when users are on a different network than the Chromecast">
+    Trouble connecting. Make sure your Chromecast and computer are on the same network, and try again.
+  </message>
   <message name="IDS_ACCESS_CODE_CAST_ERROR_NETWORK" desc="Error message for network communication issues">
     Can't connect to the internet. Try again.
   </message>

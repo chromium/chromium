@@ -815,8 +815,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       base_cache_path = disk_cache_dir.Append(base_cache_path.BaseName());
     network_context_params->http_cache_directory =
         base_cache_path.Append(chrome::kCacheDirname);
-    network_context_params->http_cache_max_size =
-        local_state->GetInteger(prefs::kDiskCacheSize);
+    const int disk_cache_size = local_state->GetInteger(prefs::kDiskCacheSize);
+    network_context_params->http_cache_max_size = disk_cache_size;
+    network_context_params->shared_dictionary_cache_max_size = disk_cache_size;
 
     network_context_params->file_paths =
         ::network::mojom::NetworkContextFilePaths::New();
@@ -1001,9 +1002,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->split_auth_cache_by_network_anonymization_key =
       ShouldSplitAuthCacheByNetworkIsolationKey();
 
-  // All consumers of the main NetworkContext must provide NetworkIsolationKeys
-  // / IsolationInfos, so storage can be isolated on a per-site basis.
-  network_context_params->require_network_isolation_key = true;
+  // All consumers of the main NetworkContext must provide
+  // NetworkAnonymizationKeys / IsolationInfos, so storage can be isolated on a
+  // per-site basis.
+  network_context_params->require_network_anonymization_key = true;
 
   ContentSetting anti_abuse_content_setting =
       HostContentSettingsMapFactory::GetForProfile(profile_)

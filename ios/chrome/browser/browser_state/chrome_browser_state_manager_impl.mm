@@ -222,7 +222,8 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
   // to be registered in the ChromeBrowserStateManager.
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state)
-        ->DoFinalInit();
+        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
+            browser_state));
   }
   segmentation_platform::SegmentationPlatformServiceFactory::GetForBrowserState(
       browser_state);

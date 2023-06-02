@@ -88,7 +88,7 @@ class MockClient : public VideoCaptureDevice::Client {
       std::vector<CapturedExternalVideoBuffer> scaled_buffers,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
-      gfx::Rect visible_rect) override {}
+      const gfx::Rect& visible_rect) override {}
 
   MOCK_METHOD4(ReserveOutputBuffer,
                ReserveResult(const gfx::Size&, VideoPixelFormat, int, Buffer*));

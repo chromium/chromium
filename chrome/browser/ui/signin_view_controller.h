@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -156,7 +155,6 @@ class SigninViewController {
       const AccountInfo& account_info,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
-      SkColor profile_color,
       signin::SigninChoiceCallback callback);
 
   // Shows the modal sign-in error dialog as a browser-modal dialog on top of

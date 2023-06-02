@@ -76,9 +76,10 @@ class CONTENT_EXPORT GeolocationServiceImpl
       CreateGeolocationCallback callback,
       blink::mojom::PermissionStatus permission_status);
 
-  raw_ptr<device::mojom::GeolocationContext> geolocation_context_;
+  raw_ptr<device::mojom::GeolocationContext, DanglingUntriaged>
+      geolocation_context_;
   // Note: |render_frame_host_| owns |this| instance.
-  const raw_ptr<RenderFrameHost> render_frame_host_;
+  const raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
   // Along with each GeolocationService, we store a
   // GeolocationServiceImplContext which primarily exists to manage a

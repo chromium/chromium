@@ -6,6 +6,7 @@
 
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/accessibility/buildflags.h"
 
 namespace ax {
 
@@ -39,11 +40,17 @@ void AccessibilityServiceRouter::LaunchIfNotRunning() {
   if (accessibility_service_.is_bound())
     return;
 
+#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
   content::ServiceProcessHost::Launch(
       accessibility_service_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName("Accessibility Service")
           .Pass());
+#else   // !BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+  LOG(ERROR)
+      << "Accessibility service is missing but should have been launched. Have "
+         "you set the buildflag, `enable_accessibility_service=true`?";
+#endif  // !BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 }
 
 }  // namespace ax

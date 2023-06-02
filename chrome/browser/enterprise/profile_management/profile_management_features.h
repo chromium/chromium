@@ -8,11 +8,14 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
-namespace profile_management {
+namespace profile_management::features {
 
 // Controls whether third-party profile management is enabled.
 BASE_DECLARE_FEATURE(kThirdPartyProfileManagement);
 
-}  // namespace profile_management
+// Controls whether token-based profile management is enabled.
+BASE_DECLARE_FEATURE(kEnableProfileTokenManagement);
+
+}  // namespace profile_management::features
 
 #endif  // CHROME_BROWSER_ENTERPRISE_PROFILE_MANAGEMENT_PROFILE_MANAGEMENT_FEATURES_H_

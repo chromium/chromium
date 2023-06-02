@@ -235,11 +235,34 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
     // The fast path failed, e.g. because the property was a longhand,
     // so let the normal string handling deal with it.
   }
+  if (value->IsString()) {
+    // NativeValueTraits::ToBlinkStringView() (called implicitly on conversion)
+    // tries fairly hard to make an AtomicString out of the string,
+    // on the basis that we'd probably like cheaper compares down the line.
+    // However, for our purposes, we never really use that; we mostly tokenize
+    // it or parse it in some other way. So if it's short enough, we try to
+    // construct a simple StringView on our own.
+    const v8::Local<v8::String> string = value.As<v8::String>();
+    if (string->Length() <= 128 && string->IsOneByte()) {
+      LChar buffer[128];
+      int len =
+          string->WriteOneByte(script_state->GetIsolate(), buffer, /*start=*/0,
+                               /*length=*/-1, v8::String::NO_NULL_TERMINATION);
+      SetPropertyInternal(
+          unresolved_property, String(), StringView(buffer, len), false,
+          execution_context->GetSecureContextMode(), exception_state);
+      if (exception_state.HadException()) {
+        return NamedPropertySetterResult::kIntercepted;
+      }
+      return NamedPropertySetterResult::kIntercepted;
+    }
+  }
+
   // Perform a type conversion from ES value to
   // IDL [LegacyNullToEmptyString] DOMString only after we've confirmed that
   // the property name is a valid CSS attribute name (see bug 1310062).
   auto&& string_value =
-      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
+      NativeValueTraits<IDLStringLegacyNullToEmptyString>::NativeValue(
           script_state->GetIsolate(), value, exception_state);
   if (UNLIKELY(exception_state.HadException())) {
     return NamedPropertySetterResult::kIntercepted;
@@ -276,10 +299,10 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
       }
     }
     for (CSSPropertyID property_id : kCSSPropertyAliasList) {
-      const CSSUnresolvedProperty* property_class =
-          CSSUnresolvedProperty::GetAliasProperty(property_id);
-      if (property_class->IsWebExposed(execution_context)) {
-        property_names.push_back(property_class->GetJSPropertyName());
+      const CSSUnresolvedProperty& property_class =
+          *GetPropertyInternal(property_id);
+      if (property_class.IsWebExposed(execution_context)) {
+        property_names.push_back(property_class.GetJSPropertyName());
       }
     }
     std::sort(property_names.begin(), property_names.end(),

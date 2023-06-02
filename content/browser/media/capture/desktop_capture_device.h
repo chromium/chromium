@@ -62,8 +62,13 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   void SetNotificationWindowId(gfx::NativeViewId window_id);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(DesktopCaptureDeviceTest,
+                           RequestRefreshFrameBeforeStart);
+  FRIEND_TEST_ALL_PREFIXES(DesktopCaptureDeviceTest,
+                           RequestRefreshFrameAfterStop);
   friend class DesktopCaptureDeviceTest;
   friend class DesktopCaptureDeviceThrottledTest;
+  friend class DesktopCaptureDeviceRequestRefreshFrameTest;
   class Core;
 
   DesktopCaptureDevice(

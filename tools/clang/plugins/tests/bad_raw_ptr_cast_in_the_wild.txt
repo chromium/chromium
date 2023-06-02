@@ -1,0 +1,26 @@
+bad_raw_ptr_cast_in_the_wild.cpp:18:34: error: [chromium-style] casting 'void *' to 'A * is not allowed.
+  return reinterpret_cast<A*>(buf);  // Should error.
+                                 ^
+bad_raw_ptr_cast_in_the_wild.cpp:18:34: note: [chromium-style] 'A *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_in_the_wild.cpp:14:3: note: [chromium-style] 'A' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_in_the_wild.cpp:29:34: error: [chromium-style] casting 'ThirdPartyA *' to 'A * is not allowed.
+  return reinterpret_cast<A*>(obj);  // Should error.
+                                 ^
+bad_raw_ptr_cast_in_the_wild.cpp:29:34: note: [chromium-style] 'A *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_in_the_wild.cpp:14:3: note: [chromium-style] 'A' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_in_the_wild.cpp:36:37: error: [chromium-style] casting 'raw_ptr<int> *' to 'int ** is not allowed.
+  return reinterpret_cast<int**>(ptr);  // Should error.
+                                    ^
+bad_raw_ptr_cast_in_the_wild.cpp:36:37: note: [chromium-style] 'raw_ptr<int> *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_in_the_wild.cpp:47:13: error: [chromium-style] casting 'A *' to 'void * is not allowed.
+  my_memset(obj_ptr, 0, sizeof(obj_ptr));  // Should error.
+            ^
+bad_raw_ptr_cast_in_the_wild.cpp:47:13: note: [chromium-style] 'A *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_in_the_wild.cpp:14:3: note: [chromium-style] 'A' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+4 errors generated.

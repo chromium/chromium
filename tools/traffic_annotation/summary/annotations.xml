@@ -220,7 +220,6 @@ Refer to README.md for content description and update process.
  <item id="sigined_exchange_cert_fetcher" added_in_milestone="66" content_hash_code="007c2dac" os_list="linux,windows,chromeos,android" file_path="content/browser/web_package/signed_exchange_cert_fetcher.cc" />
  <item id="signed_in_profile_avatar" added_in_milestone="62" content_hash_code="071dd1bf" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_downloader.cc" />
  <item id="socket_bio_adapter" added_in_milestone="66" content_hash_code="014a4058" os_list="linux,windows,chromeos,android" file_path="net/socket/socket_bio_adapter.cc" />
- <item id="spdy_push_stream" added_in_milestone="67" content_hash_code="042048b5" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
  <item id="spdy_session_control" added_in_milestone="66" content_hash_code="01c6f3f0" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
  <item id="speech_recognition_downstream" added_in_milestone="62" content_hash_code="07323e31" os_list="linux,windows,chromeos" file_path="content/browser/speech/speech_recognition_engine.cc" />
  <item id="speech_recognition_upstream" added_in_milestone="62" content_hash_code="0075966b" os_list="linux,windows,chromeos" file_path="content/browser/speech/speech_recognition_engine.cc" />
@@ -293,13 +292,13 @@ Refer to README.md for content description and update process.
  <item id="contextual_search_resolve" added_in_milestone="98" content_hash_code="01a5751f" os_list="linux,windows,chromeos,android" file_path="components/contextual_search/core/browser/contextual_search_delegate_impl.cc" />
  <item id="contextual_search_thumbnail" added_in_milestone="99" content_hash_code="06c5c621" os_list="android" file_path="chrome/browser/android/compositor/scene_layer/contextual_search_scene_layer.cc" />
  <item id="customtabs_parallel_request" added_in_milestone="98" content_hash_code="02c6bf11" os_list="android" file_path="chrome/browser/android/customtabs/detached_resource_request.cc" />
- <item id="explore_sites" added_in_milestone="98" content_hash_code="05256b51" os_list="android" file_path="chrome/browser/android/explore_sites/explore_sites_fetcher.cc" />
  <item id="rlz" added_in_milestone="98" content_hash_code="0839c21d" os_list="android" file_path="chrome/browser/android/rlz/rlz_ping_handler.cc" />
  <item id="download_manager_service_retry" added_in_milestone="98" content_hash_code="01044c58" os_list="android" file_path="chrome/browser/download/android/download_manager_service.cc" />
  <item id="download_bitmap" added_in_milestone="98" content_hash_code="0632ef37" os_list="android" file_path="chrome/browser/share/bitmap_download_request.cc" />
  <item id="permission_request_creator" added_in_milestone="98" content_hash_code="04629d73" os_list="android,chromeos,linux,windows" file_path="chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc" />
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="98" content_hash_code="003a8b30" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/kids_chrome_management_client.cc" />
- <item id="kids_chrome_management_list_family_members" added_in_milestone="106" content_hash_code="023f7fa9" os_list="android,chromeos,windows,linux" file_path="components/supervised_user/core/browser/kids_external_fetcher_config.cc" />
+ <item id="supervised_user_classify_url" added_in_milestone="98" content_hash_code="05877932" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
+ <item id="supervised_user_list_family_members" added_in_milestone="98" content_hash_code="00627698" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
  <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />
  <item id="chrome_cast_discovery_api" added_in_milestone="98" content_hash_code="0502b792" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.cc" />
  <item id="fedcm" added_in_milestone="98" content_hash_code="082197eb" os_list="linux,windows,chromeos,android" file_path="content/browser/webid/idp_network_request_manager.cc" />
@@ -374,7 +373,7 @@ Refer to README.md for content description and update process.
  <item id="k_anonymity_service_query_set" added_in_milestone="108" content_hash_code="00eab10a" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
  <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="109" content_hash_code="05958d4c" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc" />
  <item id="ntp_custom_background" added_in_milestone="109" content_hash_code="08080082" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_custom_background_service.cc" />
- <item id="iwa_policy_update_manifest" added_in_milestone="110" content_hash_code="057bb523" os_list="chromeos" file_path="chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.cc" />
+ <item id="iwa_policy_update_manifest" added_in_milestone="110" second_id="iwa_update_manifest_fetcher" content_hash_code="07d65fe9" os_list="chromeos" file_path="chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.cc" />
  <item id="iwa_policy_signed_web_bundle" added_in_milestone="110" content_hash_code="03a6049c" os_list="chromeos" file_path="chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.cc" />
  <item id="quick_start_challenge_bytes_fetcher" added_in_milestone="110" content_hash_code="050ba600" os_list="chromeos" file_path="chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.cc" />
  <item id="customization_document" added_in_milestone="110" content_hash_code="007a3dda" os_list="chromeos" file_path="chrome/browser/ash/customization/customization_document.cc" />
@@ -383,7 +382,7 @@ Refer to README.md for content description and update process.
  <item id="password_sync_token_fetcher" added_in_milestone="110" content_hash_code="0268c983" os_list="chromeos" file_path="chrome/browser/ash/login/saml/password_sync_token_fetcher.cc" />
  <item id="projector_xhr_loader" added_in_milestone="110" content_hash_code="07e102c2" os_list="chromeos" file_path="ash/webui/projector_app/projector_xhr_sender.cc" />
  <item id="cloud_speech_recognition" added_in_milestone="110" content_hash_code="00d56fd8" os_list="linux,windows,chromeos" file_path="components/live_caption/live_translate_controller.cc" />
- <item id="bruschetta_installer_download" added_in_milestone="110" content_hash_code="073f0263" os_list="chromeos" file_path="chrome/browser/ash/bruschetta/bruschetta_installer_impl.cc" />
+ <item id="bruschetta_installer_download" added_in_milestone="110" content_hash_code="073f0263" os_list="chromeos" file_path="chrome/browser/ash/bruschetta/bruschetta_download.cc" />
  <item id="quick_start_session_auth_requester" added_in_milestone="110" content_hash_code="08353e70" os_list="chromeos" file_path="chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.cc" />
  <item id="network_diagnostics_routines" added_in_milestone="110" content_hash_code="0007b237" os_list="chromeos" file_path="chrome/browser/ash/net/network_diagnostics/http_request_manager.cc" />
  <item id="trial_group_lookup" added_in_milestone="110" content_hash_code="047aeeca" os_list="chromeos" file_path="chromeos/ash/components/trial_group/trial_group_checker.cc" />
@@ -419,4 +418,6 @@ Refer to README.md for content description and update process.
  <item id="unified_state_determination_kill_switch" added_in_milestone="115" content_hash_code="01f51d8e" os_list="chromeos" file_path="chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.cc" />
  <item id="crash_file_uploader" added_in_milestone="115" content_hash_code="05f6902f" os_list="linux" file_path="remoting/host/crash/crash_file_uploader.cc" />
  <item id="glanceables_classroom_integration" added_in_milestone="115" content_hash_code="05bfd7c6" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.cc" />
+ <item id="promise_app_service_download_icon" added_in_milestone="115" content_hash_code="00521032" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_service.cc" />
+ <item id="iwa_update_manifest_fetcher" added_in_milestone="116" type="completing" content_hash_code="06867096" os_list="chromeos" semantics_fields="4,5,7,8,9" policy_fields="-1" file_path="chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.cc" />
 </annotations>

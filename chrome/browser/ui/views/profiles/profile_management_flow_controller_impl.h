@@ -51,8 +51,6 @@ class ProfileManagementFlowControllerImpl
 
   virtual std::unique_ptr<ProfilePickerDiceSignInProvider>
   CreateDiceSignInProvider() = 0;
-
-  virtual absl::optional<SkColor> GetProfileColor();
 #endif
 
  private:

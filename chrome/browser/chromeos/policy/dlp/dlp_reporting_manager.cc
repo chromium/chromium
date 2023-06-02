@@ -205,6 +205,10 @@ void DlpPolicyEventBuilder::SetDestinationComponent(
       event_destination->set_component(
           DlpPolicyEventDestination_Component_DRIVE);
       break;
+    case (data_controls::Component::kOneDrive):
+      event_destination->set_component(
+          DlpPolicyEventDestination_Component_ONEDRIVE);
+      break;
     case (data_controls::Component::kUnknownComponent):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);

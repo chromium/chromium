@@ -108,6 +108,12 @@ class SVGUseElement final : public SVGGraphicsElement,
   String DebugName() const override;
   void UpdateTargetReference();
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet* style) override;
+
   Member<SVGResourceDocumentContent> document_content_;
 
   Member<SVGAnimatedLength> x_;

@@ -235,8 +235,10 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 #endif
 
   if (options.isolated_web_app_location.has_value()) {
+    CHECK(web_app_info.isolated_web_app_version.IsValid());
     web_app->SetIsolationData(
-        WebApp::IsolationData(*options.isolated_web_app_location));
+        WebApp::IsolationData(*options.isolated_web_app_location,
+                              web_app_info.isolated_web_app_version));
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);
@@ -307,13 +309,6 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
 
   UninstallExternalWebApp(app_id.value(), external_install_source,
                           uninstall_source, std::move(callback));
-}
-
-bool WebAppInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
-  DCHECK(started_);
-
-  const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
-  return app ? app->CanUserUninstallWebApp() : false;
 }
 
 void WebAppInstallFinalizer::UninstallWebApp(
@@ -400,11 +395,6 @@ void WebAppInstallFinalizer::Start() {
 
 void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
-}
-
-void WebAppInstallFinalizer::SetRemoveManagementTypeCallbackForTesting(
-    base::RepeatingCallback<void(const AppId&)> callback) {
-  management_type_removed_callback_for_testing_ = std::move(callback);
 }
 
 void WebAppInstallFinalizer::SetSubsystems(
@@ -700,18 +690,18 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
     WebAppManagement::Type source,
     bool is_placeholder,
     GURL install_url,
-    const std::vector<std::string>& additional_policy_ids) {
+    std::vector<std::string> additional_policy_ids) {
   DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
   if (source != WebAppManagement::Type::kSync) {
     web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
                                                             is_placeholder);
     if (install_url.is_valid()) {
-      web_app.AddInstallURLToManagementExternalConfigMap(source, install_url);
+      web_app.AddInstallURLToManagementExternalConfigMap(
+          source, std::move(install_url));
     }
-    if (!additional_policy_ids.empty()) {
-      for (const auto& policy_id : additional_policy_ids) {
-        web_app.AddPolicyIdToManagementExternalConfigMap(source, policy_id);
-      }
+    for (const auto& policy_id : additional_policy_ids) {
+      web_app.AddPolicyIdToManagementExternalConfigMap(source,
+                                                       std::move(policy_id));
     }
   }
 }
@@ -723,12 +713,7 @@ void WebAppInstallFinalizer::ScheduleUninstallCommand(
     UninstallWebAppCallback callback) {
   auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
       app_id, external_install_source, uninstall_source, std::move(callback),
-      profile_);
-
-  if (management_type_removed_callback_for_testing_) {
-    uninstall_command->SetRemoveManagementTypeCallbackForTesting(  // IN-TEST
-        management_type_removed_callback_for_testing_);
-  }
+      *profile_);
 
   command_manager_->ScheduleCommand(std::move(uninstall_command));
 }

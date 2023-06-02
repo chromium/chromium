@@ -42,9 +42,6 @@ class SkiaGoldDemoPixelTest : public InProcessBrowserTest {
 // by Skia Gold. If any pixels differ, the test will fail and output a link
 // for the author to triage the new image.
 IN_PROC_BROWSER_TEST_F(SkiaGoldDemoPixelTest, TestOmnibox) {
-  // Always disable animation for stability.
-  ui::ScopedAnimationDurationScaleMode disable_animation(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   GURL url("chrome://bookmarks");
   ASSERT_TRUE(AddTabAtIndex(0, url, ui::PageTransition::PAGE_TRANSITION_FIRST));
   auto* const browser_view = static_cast<BrowserView*>(browser()->window());

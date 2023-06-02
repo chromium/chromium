@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.Arrays;
 
 /**
  * Test CronetEngine disk storage.
@@ -89,7 +88,7 @@ public class DiskStorageTest {
             byte[] buffer = new byte[] {0, 0, 0, 0};
             int bytesRead = newVersionFile.read(buffer, 0, 4);
             assertThat(bytesRead).isEqualTo(4);
-            assertTrue(Arrays.equals(new byte[] {1, 0, 0, 0}, buffer));
+            assertThat(buffer).isEqualTo(new byte[] {1, 0, 0, 0});
         } finally {
             if (newVersionFile != null) {
                 newVersionFile.close();
@@ -150,7 +149,7 @@ public class DiskStorageTest {
             byte[] buffer = new byte[] {0, 0, 0, 0};
             int bytesRead = newVersionFile.read(buffer, 0, 4);
             assertThat(bytesRead).isEqualTo(4);
-            assertTrue(Arrays.equals(new byte[] {1, 0, 0, 0}, buffer));
+            assertThat(buffer).isEqualTo(new byte[] {1, 0, 0, 0});
         } finally {
             if (newVersionFile != null) {
                 newVersionFile.close();

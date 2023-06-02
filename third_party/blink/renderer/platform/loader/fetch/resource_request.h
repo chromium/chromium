@@ -46,6 +46,7 @@
 #include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
@@ -60,6 +61,7 @@
 namespace blink {
 
 class EncodedFormData;
+class PermissionsPolicy;
 
 // ResourceRequestHead represents request without request body.
 // See ResourceRequest below to see what request is.
@@ -296,6 +298,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool GetAdAuctionHeaders() const { return ad_auction_headers_; }
   void SetAdAuctionHeaders(bool ad_auction_headers) {
     ad_auction_headers_ = ad_auction_headers;
+  }
+
+  // True if the request and any subsequent redirects should have the
+  // `http_names::kSharedStorageWritable` header attached and allow writing to
+  // shared storage via the response headers.
+  bool GetSharedStorageWritable() const { return shared_storage_writable_; }
+  void SetSharedStorageWritable(bool shared_storage_writable) {
+    shared_storage_writable_ = shared_storage_writable;
   }
 
   // True if service workers should not get events for the request.
@@ -590,6 +600,23 @@ class PLATFORM_EXPORT ResourceRequestHead {
     attribution_reporting_runtime_features_ = runtime_features;
   }
 
+  bool SharedDictionaryWriterEnabled() const {
+    return shared_dictionary_writer_enabled_;
+  }
+
+  void SetSharedDictionaryWriterEnabled(bool shared_dictionary_writer_enabled) {
+    shared_dictionary_writer_enabled_ = shared_dictionary_writer_enabled;
+  }
+
+  base::UnguessableToken GetServiceWorkerRaceNetworkRequestToken() const {
+    return service_worker_race_network_request_token_;
+  }
+
+  void SetServiceWorkerRaceNetworkRequestToken(
+      const base::UnguessableToken& token) {
+    service_worker_race_network_request_token_ = token;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -617,6 +644,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool keepalive_ : 1;
   bool browsing_topics_ : 1;
   bool ad_auction_headers_ : 1;
+  bool shared_storage_writable_ : 1;
   bool allow_stale_response_ : 1;
   mojom::blink::FetchCacheMode cache_mode_;
   bool skip_service_worker_ : 1;
@@ -720,6 +748,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features_;
+
+  // Indicate the state of CompressionDictionaryTransport feature. When it is
+  // true, `use-as-dictionary` response HTTP header may be processed.
+  // TODO(crbug.com/1413922): Remove this flag when we launch
+  // CompressionDictionaryTransport feature.
+  bool shared_dictionary_writer_enabled_ = false;
+
+  base::UnguessableToken service_worker_race_network_request_token_;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {
@@ -794,6 +830,16 @@ class PLATFORM_EXPORT ResourceRequest final : public ResourceRequestHead {
   void SetHttpBody(scoped_refptr<EncodedFormData>);
 
   ResourceRequestBody& MutableBody() { return body_; }
+
+  // `PermissionsPolicy` is in blink/public and hence cannot access
+  // `ResourceRequest`. We implement this method here and make `ResourceRequest`
+  // a forward-declared friend class to `PermissionsPolicy` in order to keep
+  // `PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn()`
+  // private for safety.
+  bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+      const PermissionsPolicy* policy,
+      mojom::blink::PermissionsPolicyFeature feature,
+      const url::Origin& origin);
 
  private:
   ResourceRequestBody body_;

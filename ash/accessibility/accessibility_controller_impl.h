@@ -113,9 +113,13 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     bool IsEnterpriseIconVisible() const;
     const std::string& pref_name() const { return pref_name_; }
     const gfx::VectorIcon& icon() const;
+    A11yFeatureType conflicting_feature() const { return conflicting_feature_; }
 
     void UpdateFromPref();
     void SetConflictingFeature(A11yFeatureType feature);
+    // Start observing changes to the conflicting feature's pref, in order to
+    // update own enabled state.
+    void ObserveConflictingFeature();
 
    protected:
     const A11yFeatureType type_;
@@ -123,6 +127,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     // feature is enabled, we cannot enable current feature.
     A11yFeatureType conflicting_feature_ =
         A11yFeatureType::kNoConflictingFeature;
+    // Used to watch for changes in conflicting feature to ensure this updates
+    // enabled state appropriately.
+    std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
     bool enabled_ = false;
     const std::string pref_name_;
     raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;

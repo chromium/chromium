@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/types/strong_alias.h"
 #include "components/services/app_service/public/cpp/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -34,6 +35,8 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   Shortcut(Shortcut&&) = delete;
   Shortcut& operator=(Shortcut&&) = delete;
 
+  bool operator==(const Shortcut&) const;
+
   ~Shortcut();
 
   std::unique_ptr<Shortcut> Clone() const;
@@ -47,9 +50,9 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // - local_id: shortcut_1
   std::string ToString() const;
   // Name of the shortcut.
-  std::string name;
+  absl::optional<std::string> name;
   // Shortcut creation source.
-  ShortcutSource shortcut_source;
+  ShortcutSource shortcut_source = ShortcutSource::kUnknown;
 
   // 'host_app_id' and 'local_id' should not be changeable after creation.
   // The host app of the shortcut.

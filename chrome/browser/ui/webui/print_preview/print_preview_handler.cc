@@ -745,16 +745,15 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   ReportUserActionHistogram(user_action);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  const std::string device_name = *settings.FindString(kSettingDeviceName);
+  std::string device_name = *settings.FindString(kSettingDeviceName);
 
   auto on_verdict =
       base::BindOnce(&PrintPreviewHandler::OnVerdictByEnterprisePolicy,
                      weak_factory_.GetWeakPtr(), user_action,
                      std::move(settings), data, callback_id);
 
-  // TODO(b/283048997): Fix GetWeakPointer usage.
-  auto hide_preview = base::BindOnce(&PrintPreviewUI::OnHidePreviewDialog,
-                                     print_preview_ui()->GetWeakPointer());
+  auto hide_preview = base::BindOnce(&PrintPreviewHandler::OnHidePreviewDialog,
+                                     weak_factory_.GetWeakPtr());
 
   enterprise_connectors::PrintIfAllowedByPolicy(
       data, GetInitiator(), std::move(device_name), std::move(on_verdict),
@@ -777,6 +776,10 @@ void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
   } else {
     OnPrintResult(callback_id, base::Value("NOT_ALLOWED"));
   }
+}
+
+void PrintPreviewHandler::OnHidePreviewDialog() {
+  print_preview_ui()->OnHidePreviewDialog();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
@@ -1073,14 +1076,17 @@ void PrintPreviewHandler::SendPageCountReady(int page_count,
                     base::Value(request_id), base::Value(fit_to_page_scaling));
 }
 
-void PrintPreviewHandler::SendPageLayoutReady(base::Value::Dict layout,
-                                              bool has_custom_page_size_style,
-                                              int request_id) {
+void PrintPreviewHandler::SendPageLayoutReady(
+    base::Value::Dict layout,
+    bool all_pages_have_custom_size,
+    bool all_pages_have_custom_orientation,
+    int request_id) {
   if (!ShouldReceiveRendererMessage(request_id))
     return;
 
   FireWebUIListener("page-layout-ready", std::move(layout),
-                    base::Value(has_custom_page_size_style));
+                    base::Value(all_pages_have_custom_size),
+                    base::Value(all_pages_have_custom_orientation));
 }
 
 void PrintPreviewHandler::SendPagePreviewReady(int page_index,

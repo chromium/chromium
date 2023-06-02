@@ -264,13 +264,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.common_params->referrer->policy);
   new_request->headers.AddHeadersFromString(request_info.begin_params->headers);
   new_request->cors_exempt_headers = request_info.cors_exempt_headers;
-  if (request_info.begin_params->web_bundle_token) {
-    DCHECK(frame_tree_node->parent());
-    int render_process_id = frame_tree_node->parent()->GetProcess()->GetID();
-    new_request->web_bundle_token_params =
-        request_info.begin_params->web_bundle_token;
-    new_request->web_bundle_token_params->render_process_id = render_process_id;
-  }
   new_request->devtools_accepted_stream_types =
       request_info.devtools_accepted_stream_types;
   // For ResourceType purposes, fenced frames are considered a kSubFrame.
@@ -538,9 +531,19 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   }
 
   // Set up an interceptor for prefetch.
+
+  // TODO(crbug.com/1431387): Do not depend on the initiator liveness, e.g. by
+  // plumbing `GlobalRenderFrameHostId` or switching to `LocalFrameToken`. See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4372403/comment/ff141ba3_0ffd99ff/
+  // for more details.
+  GlobalRenderFrameHostId initiator_render_frame_host_id;
+  if (RenderFrameHost* initiator_render_frame_host =
+          initiator_document_.AsRenderFrameHostIfValid()) {
+    initiator_render_frame_host_id = initiator_render_frame_host->GetGlobalId();
+  }
   std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
       content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-          frame_tree_node_id_, request_info_->previous_render_frame_host_id);
+          frame_tree_node_id_, initiator_render_frame_host_id);
   if (prefetch_interceptor) {
     interceptors_.push_back(std::move(prefetch_interceptor));
   }
@@ -723,11 +726,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
   // further refactor the factory getters to avoid this.
   scoped_refptr<network::SharedURLLoaderFactory> factory;
 
-  const bool should_be_handled_by_network_service =
-      network::IsURLHandledByNetworkService(resource_request_->url) ||
-      resource_request_->web_bundle_token_params.has_value();
-
-  if (!should_be_handled_by_network_service) {
+  if (!network::IsURLHandledByNetworkService(resource_request_->url)) {
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
@@ -1364,7 +1363,9 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
         &factory_receiver, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-        /*factory_override=*/nullptr);
+        /*factory_override=*/nullptr,
+        content::GetUIThreadTaskRunner(
+            {content::BrowserTaskType::kNavigationNetworkResponse}));
 
     mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
         CreateWebUIURLLoaderFactory(frame_tree_node->current_frame_host(),
@@ -1461,7 +1462,9 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
       &factory_receiver, &header_client, bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+      content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kNavigationNetworkResponse}));
   if (devtools_instrumentation::WillCreateURLLoaderFactory(
           frame_tree_node->current_frame_host(), /*is_navigation=*/true,
           /*is_download=*/false, &factory_receiver,
@@ -1691,7 +1694,9 @@ void NavigationURLLoaderImpl::
       ukm::SourceIdObj::FromInt64(ukm_source_id_), &factory_receiver,
       /*header_client=*/nullptr,
       /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-      /*factory_override=*/nullptr);
+      /*factory_override=*/nullptr,
+      content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kNavigationNetworkResponse}));
 
   // TODO(lukasza, jam): It is unclear why FileURLLoaderFactory is the only
   // non-http factory that allows DevTools intereception.  For comparison all

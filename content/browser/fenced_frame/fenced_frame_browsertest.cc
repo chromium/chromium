@@ -5940,9 +5940,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(response.http_request()->content, event_data);
   ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
       response.http_request()->headers.at("Attribution-Reporting-Eligible"));
-  EXPECT_EQ(
+  ExpectValidAttributionReportingSupportHeader(
       response.http_request()->headers.at("Attribution-Reporting-Support"),
-      "os, web");
+      /*web_expected=*/true,
+      /*os_expected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -6020,9 +6021,11 @@ IN_PROC_BROWSER_TEST_F(
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         reporting_response.http_request()->headers.at(
             "Attribution-Reporting-Eligible"));
-    EXPECT_EQ(reporting_response.http_request()->headers.at(
-                  "Attribution-Reporting-Support"),
-              "web");
+    ExpectValidAttributionReportingSupportHeader(
+        reporting_response.http_request()->headers.at(
+            "Attribution-Reporting-Support"),
+        /*web_expected=*/true,
+        /*os_expected=*/false);
   }
 }
 

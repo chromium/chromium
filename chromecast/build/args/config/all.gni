@@ -1,0 +1,12 @@
+# Args common to all Chromecast browser builds.
+enable_cast_receiver = true
+
+# Used with streaming application.
+cast_streaming_enable_remoting = true
+proprietary_codecs = true
+
+ffmpeg_branding = "Chrome"
+
+enable_arcore = false
+enable_vr = false
+enable_printing = false

@@ -270,6 +270,10 @@ const std::vector<std::string>& TestRenderFrameHost::GetConsoleMessages() {
   return console_messages_;
 }
 
+void TestRenderFrameHost::ClearConsoleMessages() {
+  console_messages_.clear();
+}
+
 int TestRenderFrameHost::GetHeavyAdIssueCount(
     RenderFrameHostTester::HeavyAdIssueType type) {
   switch (type) {
@@ -428,7 +432,6 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           nullptr /* trust_token_params */, absl::nullopt /* impression */,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
-          absl::nullopt /* web_bundle_token */,
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation,
           false /* is_container_initiated */,

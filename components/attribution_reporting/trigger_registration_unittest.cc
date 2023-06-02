@@ -128,6 +128,32 @@ TEST(TriggerRegistrationTest, Parse) {
               TriggerRegistrationError::kEventTriggerDataWrongType),
       },
       {
+          "event_triggers_data_invalid",
+          R"json({"event_trigger_data":[{"trigger_data":5}]})json",
+          base::unexpected(
+              TriggerRegistrationError::kEventTriggerDataValueInvalid),
+      },
+      {
+          "event_triggers_priority_invalid",
+          R"json({"event_trigger_data": [
+                {
+                  "priority":0
+                }
+              ]})json",
+          base::unexpected(
+              TriggerRegistrationError::kEventPriorityValueInvalid),
+      },
+      {
+          "event_triggers_dedup_keys_invalid",
+          R"json({"event_trigger_data": [
+                {
+                  "deduplication_key": 1
+                }
+              ]})json",
+          base::unexpected(
+              TriggerRegistrationError::kEventDedupKeyValueInvalid),
+      },
+      {
           "aggregatable_trigger_data_valid",
           R"json({
           "aggregatable_trigger_data":[
@@ -214,6 +240,15 @@ TEST(TriggerRegistrationTest, Parse) {
               TriggerRegistrationError::kAggregatableDedupKeyWrongType),
       },
       {
+          "aggregatable_dedup_key_invalid",
+          R"json({"aggregatable_deduplication_keys":[
+              {},
+              {"deduplication_key":5}
+            ]})json",
+          base::unexpected(
+              TriggerRegistrationError::kAggregatableDedupKeyValueInvalid),
+      },
+      {
           "aggregatable_source_registration_time_include",
           R"json({"aggregatable_source_registration_time":"include"})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
@@ -244,7 +279,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError5";
+      "Conversions.TriggerRegistrationError6";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -336,7 +371,7 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError5";
+      "Conversions.TriggerRegistrationError6";
 
   base::test::ScopedFeatureList scoped_feature_list(
       aggregation_service::kAggregationServiceMultipleCloudProviders);

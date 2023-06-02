@@ -50,9 +50,7 @@ void NetLogProxySink::OnCaptureModeUpdated(net::NetLogCaptureModeSet modes) {
 }
 
 void NetLogProxySink::AddEntry(uint32_t type,
-                               uint32_t source_type,
-                               uint32_t source_id,
-                               base::TimeTicks source_start_time,
+                               const net::NetLogSource& net_log_source,
                                net::NetLogEventPhase phase,
                                base::TimeTicks time,
                                base::Value::Dict params) {
@@ -65,16 +63,20 @@ void NetLogProxySink::AddEntry(uint32_t type,
   // TODO(mattm): Remote side could send the capture mode along with the event,
   // and then check here before logging that the current capture mode still is
   // compatible.
-  if (source_type >= static_cast<uint32_t>(net::NetLogSourceType::COUNT) ||
-      source_id == net::NetLogSource::kInvalidId) {
+
+  // In general it is legal to have a NetLogSource that is
+  // unbound (represented by kInvalidId), so it is not checked by the typemap
+  // traits. However, net log events should never be materialized with an
+  // unbound source, so NetLogProxySink expects to only receive a bound
+  // NetLogSource.
+  if (net_log_source.id == net::NetLogSource::kInvalidId) {
     mojo::ReportBadMessage("invalid NetLogSource");
     return;
   }
-  AddEntryAtTimeWithMaterializedParams(
-      static_cast<net::NetLogEventType>(type),
-      net::NetLogSource(static_cast<net::NetLogSourceType>(source_type),
-                        source_id, source_start_time),
-      phase, time, std::move(params));
+
+  AddEntryAtTimeWithMaterializedParams(static_cast<net::NetLogEventType>(type),
+                                       net_log_source, phase, time,
+                                       std::move(params));
 }
 
 }  // namespace network

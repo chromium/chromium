@@ -17,8 +17,6 @@
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chrome/services/file_util/public/cpp/zip_file_creator.h"
-#include "google_apis/common/api_error_codes.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
@@ -36,10 +34,6 @@ struct EntryDefinition;
 typedef std::vector<EntryDefinition> EntryDefinitionList;
 }  // namespace util
 }  // namespace file_manager
-
-namespace google_apis {
-class AuthServiceInterface;
-}  // namespace google_apis
 
 namespace extensions {
 
@@ -69,86 +63,6 @@ class FileManagerPrivateSetPreferencesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-// Implements the chrome.fileManagerPrivate.zipSelection method.
-// Creates a ZIP file for the selected files and folders.
-class FileManagerPrivateInternalZipSelectionFunction
-    : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.zipSelection",
-                             FILEMANAGERPRIVATEINTERNAL_ZIPSELECTION)
-
-  FileManagerPrivateInternalZipSelectionFunction();
-
- private:
-  ~FileManagerPrivateInternalZipSelectionFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
-  // Computes the total number of bytes of all the items to zip.
-  void ComputeSize();
-
-  // Zips the items to zip.
-  void ZipItems();
-
-  // Absolute path of the source directory.
-  base::FilePath src_dir_;
-
-  // Relative paths of the items to zip. These paths are relative to |src_dir_|.
-  std::vector<base::FilePath> src_files_;
-
-  // Absolute path of the ZIP to create.
-  base::FilePath dest_file_;
-
-  // Total number of bytes of all the items to zip.
-  int64_t total_bytes_;
-};
-
-// Implements the chrome.fileManagerPrivate.cancelZip method.
-// Cancels an ongoing ZIP operation.
-class FileManagerPrivateCancelZipFunction : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelZip",
-                             FILEMANAGERPRIVATE_CANCELZIP)
-
-  FileManagerPrivateCancelZipFunction();
-
- private:
-  ~FileManagerPrivateCancelZipFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-// Implements the chrome.fileManagerPrivate.getZipProgress method.
-// Gets the progress of an ongoing ZIP operation.
-class FileManagerPrivateGetZipProgressFunction
-    : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getZipProgress",
-                             FILEMANAGERPRIVATE_GETZIPPROGRESS)
-
-  FileManagerPrivateGetZipProgressFunction();
-
- private:
-  ~FileManagerPrivateGetZipProgressFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
-  // Receives the progress from ZipFileCreator.
-  void OnProgress();
-
-  // Creates the response value.
-  ResponseValue ZipProgressValue(const ZipFileCreator::Progress& progress);
-
-  // Current ZIP task ID.
-  int zip_id_ = 0;
-
-  // Matching ZipFileCreator object.
-  scoped_refptr<ZipFileCreator> creator_;
-};
-
 // Implements the chrome.fileManagerPrivate.zoom method.
 // Changes the zoom level of the file manager by modifying the zoom level of the
 // WebContents.
@@ -163,27 +77,6 @@ class FileManagerPrivateZoomFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-};
-
-class FileManagerPrivateRequestWebStoreAccessTokenFunction
-    : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.requestWebStoreAccessToken",
-                             FILEMANAGERPRIVATE_REQUESTWEBSTOREACCESSTOKEN)
-
-  FileManagerPrivateRequestWebStoreAccessTokenFunction();
-
- protected:
-  ~FileManagerPrivateRequestWebStoreAccessTokenFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  std::unique_ptr<google_apis::AuthServiceInterface> auth_service_;
-
-  void OnAccessTokenFetched(google_apis::ApiErrorCode code,
-                            const std::string& access_token);
 };
 
 class FileManagerPrivateGetProfilesFunction : public ExtensionFunction {
@@ -529,27 +422,6 @@ class FileManagerPrivateInternalGetRecentFilesFunction
   void OnConvertFileDefinitionListToEntryDefinitionList(
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
-};
-
-// Implements the chrome.fileManagerPrivate.getFrameColor method.
-// Returns the Chrome app frame color to launch foreground windows.
-// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
-class FileManagerPrivateGetFrameColorFunction : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getFrameColor",
-                             FILEMANAGERPRIVATE_GETFRAMECOLOR)
-  FileManagerPrivateGetFrameColorFunction() = default;
-
-  FileManagerPrivateGetFrameColorFunction(
-      const FileManagerPrivateGetFrameColorFunction&) = delete;
-  FileManagerPrivateGetFrameColorFunction operator=(
-      const FileManagerPrivateGetFrameColorFunction&) = delete;
-
- protected:
-  ~FileManagerPrivateGetFrameColorFunction() override = default;
-
- private:
-  ResponseAction Run() override;
 };
 
 // Implements the chrome.fileManagerPrivate.isTabletModeEnabled method.

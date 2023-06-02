@@ -735,6 +735,10 @@ ModelTypeSet DataTypeManagerImpl::GetTypesWithPendingDownloadForInitialSync()
   return Difference(GetEnabledTypes(), downloaded_types_);
 }
 
+ModelTypeSet DataTypeManagerImpl::GetDataTypesWithPermanentErrors() const {
+  return data_type_status_table_.GetFatalErrorTypes();
+}
+
 ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   ModelTypeSet purged_types;
 

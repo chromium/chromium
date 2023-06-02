@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+
 (async function() {
   // This test is testing the old breakpoint sidebar pane. Make sure to
   // turn off the new breakpoint pane experiment.
   Root.Runtime.experiments.setEnabled('breakpointView', false);
   TestRunner.addResult(`Tests setting breakpoint when main thread blocks.\n`);
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/blocking-main-thread.html');
 

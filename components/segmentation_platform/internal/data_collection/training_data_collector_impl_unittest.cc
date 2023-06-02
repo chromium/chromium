@@ -375,8 +375,10 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   NiceMock<processing::MockFeatureListQueryProcessor> feature_list_processor_;
   NiceMock<MockHistogramSignalHandler> histogram_signal_handler_;
   NiceMock<MockUserActionSignalHandler> user_action_signal_handler_;
-  raw_ptr<NiceMock<MockSignalStorageConfig>> signal_storage_config_;
-  raw_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;
+  raw_ptr<NiceMock<MockSignalStorageConfig>, DanglingUntriaged>
+      signal_storage_config_;
+  raw_ptr<test::TestSegmentInfoDatabase, DanglingUntriaged>
+      test_segment_info_db_;
   std::unique_ptr<TrainingDataCollectorImpl> collector_;
   TestingPrefServiceSimple prefs_;
   std::vector<std::unique_ptr<Config>> configs_;

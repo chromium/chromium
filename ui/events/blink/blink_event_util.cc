@@ -454,6 +454,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       break;
     case ET_GESTURE_TAP_DOWN:
       gesture.SetType(WebInputEvent::Type::kGestureTapDown);
+      gesture.data.tap_down.tap_down_count = details.tap_down_count();
       gesture.data.tap_down.width =
           IfNanUseMaxFloat(details.bounding_box_f().width());
       gesture.data.tap_down.height =

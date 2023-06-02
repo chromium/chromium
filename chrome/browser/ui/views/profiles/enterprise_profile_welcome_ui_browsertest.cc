@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -114,7 +113,7 @@ class EnterpriseWelcomeStepControllerForTest
         /*browser=*/nullptr,
         EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
         *account_info_, /*profile_creation_required_by_policy=*/false,
-        /*show_link_data_option=*/false, /*profile_color=*/absl::nullopt,
+        /*show_link_data_option=*/false,
         /*proceed_callback*/ base::DoNothing());
 
     if (step_shown_callback) {
@@ -179,7 +178,7 @@ class EnterpriseWelcomeUIWindowPixelTest
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
 
     return VerifyPixelUi(widget, "EnterpriseWelcomeUIWindowPixelTest",
-                         screenshot_name);
+                         screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {
@@ -242,9 +241,7 @@ class EnterpriseWelcomeUIDialogPixelTest
     auto* controller = browser()->signin_view_controller();
     controller->ShowModalEnterpriseConfirmationDialog(
         account_info, GetParam().profile_creation_required_by_policy,
-        GetParam().show_link_data_checkbox,
-        GetDefaultProfileThemeColors().profile_highlight_color,
-        base::DoNothing());
+        GetParam().show_link_data_checkbox, base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();

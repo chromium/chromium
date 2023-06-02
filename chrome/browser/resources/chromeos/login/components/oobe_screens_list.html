@@ -51,8 +51,7 @@
   }
 
   .text-container {
-    align-items: center;
-    display: flex;
+    display: block;
     flex-direction: column;
     justify-content: center;
     margin-inline-end: 16px;
@@ -123,7 +122,8 @@
 </style>
 <div id="screensList">
   <template is="dom-repeat" items="{{screensList_}}" as="screen">
-    <cr-button visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
+    <cr-button id="[[getScreenID(screen.screenID)]]"
+        visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
         disabled="[[isScreenDisabled(screen.is_revisitable , screen.is_completed)]]"
         class="screen-item"
         on-click="onClick_">
@@ -132,11 +132,14 @@
           <iron-icon class="screen-icon" icon="[[screen.icon]]"></iron-icon>
         </div>
         <div class="text-container">
-          <div class="screen-title">[[screen.title]]</div>
-          <div class="screen-subtitle">[[screen.subtitle]]</div>
+          <div class="screen-title"> [[i18nDynamic(locale, screen.title)]]</div>
+          <div class="screen-subtitle">[[getSubtitle_(locale, screen.subtitle,
+                                              screen.screenID )]]</div>
         </div>
         <div class="info-icon">
-          <iron-icon hidden="[[isSyncedIconHidden(screen.synced , screen.selected)]]"
+          <iron-icon hidden="[[isSyncedIconHidden(screen.is_synced ,
+                                            screen.is_completed ,
+                                            screen.selected)]]"
               id="sync" icon="oobe-20:sync"></iron-icon>
           <iron-icon hidden="[[!screen.selected]]"
               id="selected" icon="oobe-20:selected"></iron-icon>

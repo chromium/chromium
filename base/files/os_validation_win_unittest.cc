@@ -225,7 +225,7 @@ class OpenFileTest : public OsValidationTest,
       if (bitfield & bit_name.bit) {
         if (!result->empty())
           result->append(" | ");
-        result->append(bit_name.name.data(), bit_name.name.size());
+        result->append(bit_name.name);
         bitfield &= ~bit_name.bit;
       }
       ++bits_begin;

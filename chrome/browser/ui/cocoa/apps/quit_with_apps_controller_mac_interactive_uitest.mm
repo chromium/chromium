@@ -159,12 +159,10 @@ IN_PROC_BROWSER_TEST_F(QuitWithAppsControllerInteractiveTest, QuitOnPowerOff) {
   // Simulate a terminate triggered by a power off or log out.
   // Cocoa will send an NSWorkspaceWillPowerOffNotification followed by
   // -[NSApplication terminate:].
-  AppController* app_controller =
-      base::mac::ObjCCast<AppController>([NSApp delegate]);
   NSNotification* notification =
       [NSNotification notificationWithName:NSWorkspaceWillPowerOffNotification
                                     object:nil];
-  [app_controller willPowerOff:notification];
+  [AppController.sharedController willPowerOff:notification];
   [NSApp terminate:nil];
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
 }

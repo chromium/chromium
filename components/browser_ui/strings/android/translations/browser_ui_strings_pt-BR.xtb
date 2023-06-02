@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
-<translation id="4440642537584213025">Abrir <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Desativar o som de um site específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Facilitar a personalização do zoom para sites diferentes</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
 <translation id="789180354981963912">Bloquear cookies de terceiros na navegação anônima:</translation>
+<translation id="7895868624847501462">Essa ação vai apagar todos os dados locais, incluindo cookies, e redefinir todas as permissões de <ph name="DOMAIN" /> e sites relacionados</translation>
 <translation id="7940722705963108451">Lembrar</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="FPS_OWNER" />}one{<ph name="FPS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="FPS_OWNER" />}other{<ph name="FPS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="FPS_OWNER" />}}</translation>
 <translation id="7986741934819883144">Selecione um contato</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8300705686683892304">Gerenciados por app</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
+<translation id="8338445138528827481">Essa ação vai apagar todos os dados locais, incluindo cookies, e redefinir todas as permissões de <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Você pode aumentar ou diminuir o zoom nos sites que visita</translation>
 <translation id="8372893542064058268">Permitir a sincronização em segundo plano para um site específico.</translation>
 <translation id="8376384591331888629">Incluir também os cookies de terceiros desse site</translation>

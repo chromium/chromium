@@ -28,7 +28,7 @@ namespace web_app {
 
 class AppBrowserController;
 
-absl::optional<AppId> GetWebAppForActiveTab(Browser* browser);
+absl::optional<AppId> GetWebAppForActiveTab(const Browser* browser);
 
 // Clears navigation history prior to user entering app scope.
 void PrunePreScopeNavigationHistory(const GURL& scope,

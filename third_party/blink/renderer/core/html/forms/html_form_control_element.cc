@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -212,8 +213,9 @@ void HTMLFormControlElement::SetAutofillSection(const WebString& section) {
 
 bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, values,
-                      ({"username", "new-password", "current-password", "url",
-                        "email", "impp"}));
+                      ({AtomicString("username"), AtomicString("new-password"),
+                        AtomicString("current-password"), AtomicString("url"),
+                        AtomicString("email"), AtomicString("impp")}));
   const AtomicString& autocomplete =
       FastGetAttribute(html_names::kAutocompleteAttr);
   if (autocomplete.IsNull())
@@ -371,16 +373,16 @@ AtomicString HTMLFormControlElement::popoverTargetAction() const {
       FastGetAttribute(html_names::kPopovertargetactionAttr).LowerASCII();
   // ReflectEmpty="toggle", ReflectMissing="toggle"
   if (attribute_value.IsNull() || attribute_value.empty()) {
-    return kPopoverTargetActionToggle;
-  } else if (attribute_value == kPopoverTargetActionToggle ||
-             attribute_value == kPopoverTargetActionShow ||
-             attribute_value == kPopoverTargetActionHide) {
+    return keywords::kToggle;
+  } else if (attribute_value == keywords::kToggle ||
+             attribute_value == keywords::kShow ||
+             attribute_value == keywords::kHide) {
     return attribute_value;  // ReflectOnly
   } else if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled() &&
-             attribute_value == kPopoverTargetActionHover) {
+             attribute_value == keywords::kHover) {
     return attribute_value;  // ReflectOnly (with HTMLPopoverHint enabled)
   } else {
-    return kPopoverTargetActionToggle;  // ReflectInvalid = "toggle"
+    return keywords::kToggle;  // ReflectInvalid = "toggle"
   }
 }
 void HTMLFormControlElement::setPopoverTargetAction(const AtomicString& value) {

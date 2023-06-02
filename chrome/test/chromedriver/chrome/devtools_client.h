@@ -47,9 +47,6 @@ class DevToolsClient {
 
   virtual bool IsConnected() const = 0;
 
-  // Connect to DevTools if the DevToolsClient is disconnected.
-  virtual Status Connect() = 0;
-
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;
 
   virtual Status SendCommand(const std::string& method,

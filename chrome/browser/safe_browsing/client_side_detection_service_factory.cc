@@ -34,7 +34,8 @@ ClientSideDetectionService* ClientSideDetectionServiceFactory::GetForProfile(
 // static
 ClientSideDetectionServiceFactory*
 ClientSideDetectionServiceFactory::GetInstance() {
-  return base::Singleton<ClientSideDetectionServiceFactory>::get();
+  static base::NoDestructor<ClientSideDetectionServiceFactory> instance;
+  return instance.get();
 }
 
 ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()

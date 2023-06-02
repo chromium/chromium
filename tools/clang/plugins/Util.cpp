@@ -4,6 +4,8 @@
 
 #include "Util.h"
 
+#include <algorithm>
+
 #include "clang/AST/Decl.h"
 #include "clang/Basic/SourceManager.h"
 #include "llvm/Support/Casting.h"
@@ -48,5 +50,10 @@ std::string GetFilename(const clang::SourceManager& source_manager,
     return "";
   }
 
-  return ploc.getFilename();
+  std::string name = ploc.getFilename();
+
+  // File paths can have separators which differ from ones at this platform.
+  // Make them consistent.
+  std::replace(name.begin(), name.end(), '\\', '/');
+  return name;
 }

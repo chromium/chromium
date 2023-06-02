@@ -1123,6 +1123,10 @@ void V4L2SliceVideoDecodeAccelerator::DecodeBufferTask() {
         InitiateSurfaceSetChange();
         return;
 
+      case AcceleratedVideoDecoder::kColorSpaceChange:
+        NOTIMPLEMENTED_LOG_ONCE();
+        return;
+
       case AcceleratedVideoDecoder::kRanOutOfStreamData:
         decoder_current_bitstream_buffer_.reset();
         if (!TrySetNewBistreamBuffer())

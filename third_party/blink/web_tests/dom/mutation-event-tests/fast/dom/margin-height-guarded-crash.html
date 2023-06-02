@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<body>
+<!--
+Adapted from clusterfuzz case filed in https://crbug.com/778956.
+This bug was a combination of 2 things:
+  - calling appendChild with an iframe's body as the child causes the
+    iframe body to become null
+  - changing a body's margin height in an event handler reacting a
+    change in the same body's margin width causes a method call on the
+    body without checking if it's null. The change in height does not
+    complete immediately, some of the change is applied to the Node
+    _after_ the handler completes by which point the node (body) has
+    become null.
+-->
+<iframe id=html_iframe></iframe>
+<div id=html_div></div>
+<script>
+setup({ allow_uncaught_exception: true });
+
+function reactToWidthChange() {
+  // null the body
+  html_div.appendChild(html_iframe.contentDocument.body);
+  // change the height
+  html_iframe.marginHeight = "0";
+}
+
+test(() => {
+  window[0].addEventListener("DOMSubtreeModified", reactToWidthChange);
+  html_iframe.marginWidth = "0";
+}, 'try-trigger-crash');
+</script>
+</body>

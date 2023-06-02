@@ -25,7 +25,9 @@ StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(Profile* profile) {
 // static
 StandaloneBrowserExtensionAppsFactoryForApp*
 StandaloneBrowserExtensionAppsFactoryForApp::GetInstance() {
-  return base::Singleton<StandaloneBrowserExtensionAppsFactoryForApp>::get();
+  static base::NoDestructor<StandaloneBrowserExtensionAppsFactoryForApp>
+      instance;
+  return instance.get();
 }
 
 // static
@@ -69,8 +71,9 @@ StandaloneBrowserExtensionAppsFactoryForExtension::GetForProfile(
 // static
 StandaloneBrowserExtensionAppsFactoryForExtension*
 StandaloneBrowserExtensionAppsFactoryForExtension::GetInstance() {
-  return base::Singleton<
-      StandaloneBrowserExtensionAppsFactoryForExtension>::get();
+  static base::NoDestructor<StandaloneBrowserExtensionAppsFactoryForExtension>
+      instance;
+  return instance.get();
 }
 
 // static

@@ -142,7 +142,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
 <translation id="1872096359983322073">Llanterna</translation>
 <translation id="1883255238294161206">Redueix la llista</translation>
-<translation id="1891796056033961979">Les adreces d'interès, les contrasenyes, la configuració i altres dades desades estan disponibles en aquesta pantalla.</translation>
 <translation id="1894023287452300670">Fes un seguiment del preu aquí</translation>
 <translation id="1910975740091000991">Chrome per a iOS</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
@@ -316,6 +315,9 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2975121486251958312">Només està disponible el mode d'incògnit</translation>
 <translation id="2982481275546140226">Esborra les dades</translation>
 <translation id="298306318844797842">Afegeix una forma de pagament...</translation>
+<translation id="2988274366244053197">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
+
+Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="3020183492814296499">Dreceres</translation>
 <translation id="3037605927509011580">Vaja!</translation>
@@ -379,8 +381,10 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3464194322481586217">No s'ha pogut fer el seguiment del preu.</translation>
 <translation id="3469166899695866866">Vols aturar la baixada?</translation>
 <translation id="3470502288861289375">S'està copiant...</translation>
+<translation id="3471148582064653480">Sincronitza les contrasenyes, l'historial i altres elements.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{per a {COUNT} lloc web o aplicació}other{per a {COUNT} llocs web i aplicacions}}</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Accedeix a les teves contrasenyes en altres aplicacions.</translation>
 <translation id="3478058380795961209">Mes de caducitat</translation>
 <translation id="3482959374254649722">S'estan sincronitzant les pestanyes...</translation>
 <translation id="3484946776651937681">Obre a Baixades</translation>
@@ -399,6 +403,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3551320343578183772">Tanca la pestanya</translation>
 <translation id="3565207542107370586">Esborra les dades de navegació…</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
+<translation id="3577555362230509265">Utilitza Chrome en altres aplicacions.</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
 <translation id="3595252146048399851">Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
@@ -442,7 +447,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3891414008432200754">Preu</translation>
 <translation id="3892144330757387737">Trobaràs l'historial aquí</translation>
 <translation id="3897092660631435901">Menú</translation>
-<translation id="3899568514738536144">Mostra l'historial de navegació</translation>
 <translation id="3904829425754749514">La teva organització ha desactivat la sincronització. Encara pots veure les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en aquest dispositiu. Si fas canvis, no se sincronitzaran amb el teu compte.</translation>
 <translation id="3913386780052199712">Sessió iniciada a Chrome</translation>
 <translation id="3915450441834151894">Informació del lloc web</translation>
@@ -499,7 +503,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="430793432425771671">Sincronitza-ho tot</translation>
 <translation id="4309403553630140242">Fes doble toc per obtenir més informació</translation>
 <translation id="430967081421617822">Sempre</translation>
-<translation id="4324952538601951430">Les adreces d'interès, les contrasenyes, la configuració i altres dades desades ara són aquí</translation>
 <translation id="4334428914252001502">Un article no llegit.</translation>
 <translation id="4338650699862464074">Envia a Google els URL de les pàgines que visites.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Aquesta adreça se suprimirà d'aquest dispositiu i dels altres en què tinguis la sessió iniciada.}other{Aquestes adreces se suprimiran d'aquest dispositiu i dels altres en què tinguis la sessió iniciada.}}</translation>
@@ -653,6 +656,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318298563956633672">Ja estàs fent el seguiment d'aquest producte.</translation>
+<translation id="5325595483440111327">Mostra l'historial de navegació.</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
 <translation id="536067926684072644">Mostra adreces d'interès</translation>
 <translation id="5360976571138293719">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
@@ -751,6 +755,7 @@ Només qui sàpiga la teva frase de contrasenya pot llegir les dades encriptades
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">No es pot crear un enllaç al text marcat.</translation>
 <translation id="5965679971710331625">Tens la sessió iniciada</translation>
+<translation id="5971872012779224351">{count,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {count} adreces d'interès}}</translation>
 <translation id="5979837087407522202">Cerca contrasenyes</translation>
 <translation id="5981230843984570095">Tanca totes les inactives</translation>
 <translation id="5982717868370722439">Afegeix les dades existents a <ph name="USER_EMAIL" />.</translation>
@@ -920,6 +925,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="681368974849482173">S'ha creat un element.</translation>
 <translation id="6822587385560699678">Quan aquesta opció està activada, les contrasenyes es desen a <ph name="ACCOUNT" />. Quan està desactivada, es desen només en aquest dispositiu.</translation>
 <translation id="6831043979455480757">Tradueix</translation>
+<translation id="6839843088069935119">{count,plural, =1{L'adreça d'interès s'ha desat a {title}. Només es desa en aquest dispositiu.}other{Les adreces d'interès s'han desat a {title}. Només es desen en aquest dispositiu.}}</translation>
 <translation id="6842136130964845393">Per assegurar-te de poder accedir a les contrasenyes desades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="6851516051005285358">Sol·licita el lloc web per a ordinadors</translation>
 <translation id="6852222216891664518">Tanca la pestanya fixada</translation>
@@ -998,6 +1004,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7438481509621345350">Quan obris una pestanya nova, ara veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7446583256109515732">S'ha deixat de fixar la pestanya</translation>
+<translation id="7451023311965289370">{count,plural, =1{L'adreça d'interès s'ha desat a {title}}other{Les adreces d'interès s'han desat a {title}"}}</translation>
 <translation id="7454057999980797137">Província</translation>
 <translation id="7459628154744868585">La protecció millorada està activada</translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
@@ -1055,7 +1062,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7840771868269352570">Els elements seleccionats se suprimiran.</translation>
 <translation id="7845466610722898">Mostra la llista de lectura</translation>
 <translation id="784551991304901159">Per veure contingut, al menú, selecciona Activa</translation>
-<translation id="7846158885638438868">{count,plural, =1{S'ha afegit a les adreces d'interès a "{title}"}other{S'han afegit a les adreces d'interès a "{title}"}}</translation>
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7856733331829174190">No s'ha pogut baixar</translation>
 <translation id="785938070103630874">Obre les contrasenyes, les formes de pagament o l'adreça i altres dades</translation>
@@ -1135,9 +1141,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8299613349954694191">Obre una pestanya d'incògnit per navegar pel web de manera privada.</translation>
 <translation id="8316944564970119719">Introdueix el lloc web i la contrasenya i, a continuació, desa els canvis</translation>
-<translation id="8317835149433843300">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no es desarà al teu Compte de Google.
-
-Només qui sàpiga la teva frase de contrasenya pot llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8323906514956095947">Mantén premut el botó per veure més opcions de pestanyes</translation>
 <translation id="8328777765163860529">Tanca-ho tot</translation>

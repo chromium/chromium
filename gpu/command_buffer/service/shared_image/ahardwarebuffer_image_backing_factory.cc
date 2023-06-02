@@ -23,7 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
@@ -35,7 +35,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_vk_android_image_representation.h"
@@ -771,7 +771,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
       return nullptr;
     }
 
-    int bytes_per_pixel = BitsPerPixel(format) / 8;
+    int bytes_per_pixel = format.BitsPerPixel() / 8;
 
     // NOTE: hwb_info.stride is in pixels
     int dst_stride = bytes_per_pixel * hwb_info.stride;
@@ -867,6 +867,37 @@ AHardwareBufferImageBackingFactory::FormatInfo::~FormatInfo() = default;
 std::unique_ptr<SharedImageBacking>
 AHardwareBufferImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    gfx::GpuMemoryBufferHandle handle) {
+  CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
+  if (!ValidateUsage(usage, size, format)) {
+    return nullptr;
+  }
+
+  auto estimated_size = format.MaybeEstimatedSizeInBytes(size);
+  if (!estimated_size) {
+    LOG(ERROR) << "Failed to calculate SharedImage size";
+    return nullptr;
+  }
+
+  auto backing = std::make_unique<AHardwareBufferImageBacking>(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle.android_hardware_buffer), estimated_size.value(), false,
+      base::ScopedFD(), dawn_procs_, use_passthrough_);
+
+  backing->SetCleared();
+  return backing;
+}
+
+std::unique_ptr<SharedImageBacking>
+AHardwareBufferImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
@@ -876,34 +907,14 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  // TODO(vasilyt): support SHARED_MEMORY_BUFFER?
-  if (handle.type != gfx::ANDROID_HARDWARE_BUFFER) {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
   if (plane != gfx::BufferPlane::DEFAULT) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
     return nullptr;
   }
 
-  auto si_format = viz::GetSharedImageFormat(buffer_format);
-  if (!ValidateUsage(usage, size, si_format)) {
-    return nullptr;
-  }
-
-  auto estimated_size = si_format.MaybeEstimatedSizeInBytes(size);
-  if (!estimated_size) {
-    LOG(ERROR) << "Failed to calculate SharedImage size";
-    return nullptr;
-  }
-
-  auto backing = std::make_unique<AHardwareBufferImageBacking>(
-      mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle.android_hardware_buffer), estimated_size.value(), false,
-      base::ScopedFD(), dawn_procs_, use_passthrough_);
-
-  backing->SetCleared();
-  return backing;
+  return CreateSharedImage(mailbox, viz::GetSharedImageFormat(buffer_format),
+                           size, color_space, surface_origin, alpha_type, usage,
+                           debug_label, std::move(handle));
 }
 
 }  // namespace gpu

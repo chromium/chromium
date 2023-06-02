@@ -16813,7 +16813,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_NoFalseStart) {
   // CertificateRequest is received for the first time, the handshake will
   // be aborted to allow the caller to provide a certificate.
   SSLSocketDataProvider ssl_data1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_data1.cert_request_info = cert_request.get();
+  ssl_data1.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
   StaticSocketDataProvider data1;
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
@@ -16825,7 +16825,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_NoFalseStart) {
   // rather than a Finished message, because it requires a client
   // certificate and none was supplied.
   SSLSocketDataProvider ssl_data2(ASYNC, ERR_SSL_PROTOCOL_ERROR);
-  ssl_data2.cert_request_info = cert_request.get();
+  ssl_data2.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
   StaticSocketDataProvider data2;
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
@@ -16839,7 +16839,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_NoFalseStart) {
   // fail.
   SSLSocketDataProvider ssl_data3(ASYNC, ERR_SSL_PROTOCOL_ERROR);
   ssl_data3.expected_disable_sha1_server_signatures = false;
-  ssl_data3.cert_request_info = cert_request.get();
+  ssl_data3.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data3);
   StaticSocketDataProvider data3;
   session_deps_.socket_factory->AddSocketDataProvider(&data3);
@@ -16917,7 +16917,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
   // the peer, the handshake is aborted during the Connect() call.
   // [ssl_]data1 represents the initial SSL handshake with the peer.
   SSLSocketDataProvider ssl_data1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_data1.cert_request_info = cert_request.get();
+  ssl_data1.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
   StaticSocketDataProvider data1;
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
@@ -16930,7 +16930,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
   // peer sending a handshake_failure because it requires a client
   // certificate.
   SSLSocketDataProvider ssl_data2(ASYNC, OK);
-  ssl_data2.cert_request_info = cert_request.get();
+  ssl_data2.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
   MockRead data2_reads[] = {
       MockRead(ASYNC /* async */, ERR_SSL_PROTOCOL_ERROR),
@@ -16942,7 +16942,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
   // the data for the SSL handshake once the TLSv1.1 connection falls back to
   // TLSv1. It has the same behaviour as [ssl_]data2.
   SSLSocketDataProvider ssl_data3(ASYNC, OK);
-  ssl_data3.cert_request_info = cert_request.get();
+  ssl_data3.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data3);
   StaticSocketDataProvider data3(data2_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data3);
@@ -16950,14 +16950,14 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
   // [ssl_]data4 is the data for the SSL handshake once the TLSv1 connection
   // falls back to SSLv3. It has the same behaviour as [ssl_]data2.
   SSLSocketDataProvider ssl_data4(ASYNC, OK);
-  ssl_data4.cert_request_info = cert_request.get();
+  ssl_data4.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data4);
   StaticSocketDataProvider data4(data2_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data4);
 
   // Need one more if TLSv1.2 is enabled.
   SSLSocketDataProvider ssl_data5(ASYNC, OK);
-  ssl_data5.cert_request_info = cert_request.get();
+  ssl_data5.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data5);
   StaticSocketDataProvider data5(data2_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data5);
@@ -17067,7 +17067,7 @@ TEST_F(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
         // See ClientAuthCertCache_Direct_NoFalseStart for the explanation of
         // [ssl_]data[1-3].
         SSLSocketDataProvider ssl_data1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-        ssl_data1.cert_request_info = cert_request.get();
+        ssl_data1.cert_request_info = cert_request;
         session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
         StaticSocketDataProvider data1;
         session_deps_.socket_factory->AddSocketDataProvider(&data1);
@@ -17180,7 +17180,7 @@ TEST_F(HttpNetworkTransactionTest, CertificateRequestInRenego) {
   // The first connection's handshake succeeds, but we get
   // ERR_SSL_CLIENT_AUTH_CERT_NEEDED instead of an HTTP response.
   SSLSocketDataProvider ssl_data1(ASYNC, OK);
-  ssl_data1.cert_request_info = cert_request.get();
+  ssl_data1.cert_request_info = cert_request;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
   MockWrite data1_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -20252,7 +20252,7 @@ class HttpNetworkTransactionReportingTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<TestReportingContext> test_reporting_context_;
+  raw_ptr<TestReportingContext, DanglingUntriaged> test_reporting_context_;
 };
 
 TEST_P(HttpNetworkTransactionReportingTest,
@@ -20406,7 +20406,8 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
   int reporting_upload_depth_ = 0;
 
  private:
-  raw_ptr<TestNetworkErrorLoggingService> test_network_error_logging_service_;
+  raw_ptr<TestNetworkErrorLoggingService, DanglingUntriaged>
+      test_network_error_logging_service_;
 };
 
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
@@ -22092,7 +22093,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverything) {
   // First, the client connects to the proxy, which requests a client
   // certificate.
   SSLSocketDataProvider ssl_proxy1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_proxy1.cert_request_info = cert_request_info_proxy.get();
+  ssl_proxy1.cert_request_info = cert_request_info_proxy;
   ssl_proxy1.expected_send_client_cert = false;
   StaticSocketDataProvider data1;
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
@@ -22124,7 +22125,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverything) {
   mock_reads2.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   // The origin requests client certificates.
   SSLSocketDataProvider ssl_origin2(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_origin2.cert_request_info = cert_request_info_origin.get();
+  ssl_origin2.cert_request_info = cert_request_info_origin;
   StaticSocketDataProvider data2(mock_reads2, mock_writes2);
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_proxy2);
@@ -22279,7 +22280,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverythingWithConnectClose) {
   // First, the client connects to the proxy, which requests a client
   // certificate.
   SSLSocketDataProvider ssl_proxy1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_proxy1.cert_request_info = cert_request_info_proxy.get();
+  ssl_proxy1.cert_request_info = cert_request_info_proxy;
   ssl_proxy1.expected_send_client_cert = false;
   StaticSocketDataProvider data1;
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
@@ -22321,7 +22322,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverythingWithConnectClose) {
   mock_reads3.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   // The origin requests client certificates.
   SSLSocketDataProvider ssl_origin3(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_origin3.cert_request_info = cert_request_info_origin.get();
+  ssl_origin3.cert_request_info = cert_request_info_origin;
   StaticSocketDataProvider data3(mock_reads3, mock_writes3);
   session_deps_.socket_factory->AddSocketDataProvider(&data3);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_proxy3);
@@ -22531,7 +22532,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyHTTPAndServerTLSAuth) {
   mock_reads1.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   // The origin requests client certificates.
   SSLSocketDataProvider ssl_origin1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl_origin1.cert_request_info = cert_request_info_origin.get();
+  ssl_origin1.cert_request_info = cert_request_info_origin;
   StaticSocketDataProvider data1(mock_reads1, mock_writes1);
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_proxy1);
@@ -22625,7 +22626,7 @@ TEST_F(HttpNetworkTransactionTest, ClientCertSocketReuse) {
   StaticSocketDataProvider data1;
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
   SSLSocketDataProvider ssl1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-  ssl1.cert_request_info = cert_request_info.get();
+  ssl1.cert_request_info = cert_request_info;
   ssl1.expected_send_client_cert = false;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
 
@@ -23831,7 +23832,7 @@ TEST_F(HttpNetworkTransactionTest, PostHandshakeClientCertWithSockets) {
   };
   SequencedSocketData data_auth(kAuthReads, kAuthWrites);
   SSLSocketDataProvider ssl_auth(ASYNC, OK);
-  ssl_auth.cert_request_info = cert_request_info.get();
+  ssl_auth.cert_request_info = cert_request_info;
   session_deps_.socket_factory->AddSocketDataProvider(&data_auth);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_auth);
 

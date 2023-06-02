@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -14,7 +15,8 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/navigation_handle.h"
-#include "net/base/schemeful_site.h"
+#include "content/public/browser/render_frame_host.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -45,8 +47,11 @@ base::Clock* OpenerHeuristicTabHelper::SetClockForTesting(base::Clock* clock) {
   return std::exchange(g_clock, clock);
 }
 
-void OpenerHeuristicTabHelper::InitPopup(const GURL& url) {
-  popup_observer_ = std::make_unique<PopupObserver>(web_contents(), url);
+void OpenerHeuristicTabHelper::InitPopup(
+    const GURL& popup_url,
+    base::WeakPtr<OpenerHeuristicTabHelper> opener) {
+  popup_observer_ =
+      std::make_unique<PopupObserver>(web_contents(), popup_url, opener);
 
   DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
   if (!dips) {
@@ -57,7 +62,7 @@ void OpenerHeuristicTabHelper::InitPopup(const GURL& url) {
 
   dips->storage()
       ->AsyncCall(&DIPSStorage::Read)
-      .WithArgs(url)
+      .WithArgs(popup_url)
       .Then(base::BindOnce(&OpenerHeuristicTabHelper::GotPopupDipsState,
                            weak_factory_.GetWeakPtr()));
 }
@@ -72,6 +77,35 @@ void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
       state.user_interaction_times().value().second);
 }
 
+bool OpenerHeuristicTabHelper::HasSameSiteIframe(const GURL& popup_url) {
+  const auto popup_site = net::SiteForCookies::FromUrl(popup_url);
+  bool found = false;
+
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+      [&](RenderFrameHost* frame) {
+        if (frame->IsInPrimaryMainFrame()) {
+          // Continue to look at children of the main frame.
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        }
+
+        if (popup_site.IsFirstPartyWithSchemefulMode(
+                frame->GetLastCommittedURL(), /*compute_schemefully=*/false)) {
+          // We found a same-site iframe -- break out of the ForEach loop.
+          found = true;
+          return RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        // Not same-site, so skip children and go to the next sibling iframe.
+        return RenderFrameHost::FrameIterationAction::kSkipChildren;
+      });
+
+  return found;
+}
+
+void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
+  page_id_++;
+}
+
 void OpenerHeuristicTabHelper::DidOpenRequestedURL(
     WebContents* new_contents,
     RenderFrameHost* source_render_frame_host,
@@ -81,6 +115,16 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
+  if (!source_render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (source_render_frame_host != web_contents()->GetPrimaryMainFrame()) {
+    // Not sure exactly when this happens, but it seems to involve devtools.
+    // Cf. crbug.com/1448789
+    return;
+  }
+
   if (disposition != WindowOpenDisposition::NEW_POPUP) {
     // Ignore if not a popup.
     return;
@@ -98,15 +142,23 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
   // platforms it seems to happen first). So create it now if it doesn't already
   // exist.
   OpenerHeuristicTabHelper::CreateForWebContents(new_contents);
-  OpenerHeuristicTabHelper::FromWebContents(new_contents)->InitPopup(url);
+  OpenerHeuristicTabHelper::FromWebContents(new_contents)
+      ->InitPopup(url, weak_factory_.GetWeakPtr());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OpenerHeuristicTabHelper);
 
 OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
     WebContents* web_contents,
-    const GURL& url)
-    : content::WebContentsObserver(web_contents), initial_url_(url) {}
+    const GURL& initial_url,
+    base::WeakPtr<OpenerHeuristicTabHelper> opener)
+    : content::WebContentsObserver(web_contents),
+      initial_url_(initial_url),
+      opener_(opener),
+      opener_page_id_(opener->page_id()),
+      opener_source_id_(
+          opener->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
+}
 
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
@@ -135,6 +187,8 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
       .SetHoursSinceLastInteraction(
           BucketizeHoursSinceLastInteraction(time_since_interaction_.value()))
       .Record(ukm::UkmRecorder::Get());
+
+  EmitTopLevel(initial_url_);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
@@ -192,4 +246,18 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
       .Record(ukm::UkmRecorder::Get());
 
   interaction_reported_ = true;
+
+  EmitTopLevel(render_frame_host->GetLastCommittedURL());
+}
+
+void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
+    const GURL& popup_url) {
+  OptionalBool has_iframe = OptionalBool::kUnknown;
+  if (opener_ && opener_->page_id() == opener_page_id_) {
+    has_iframe = ToOptionalBool(opener_->HasSameSiteIframe(popup_url));
+  }
+
+  ukm::builders::OpenerHeuristic_TopLevel(opener_source_id_)
+      .SetHasSameSiteIframe(static_cast<int32_t>(has_iframe))
+      .Record(ukm::UkmRecorder::Get());
 }

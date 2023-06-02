@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <numeric>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -59,6 +60,47 @@ bool WebauthnCredentialSpecificsValid(
          specifics.user_id().length() <= kUserIdMaxLength;
 }
 
+absl::optional<std::string> FindHeadOfShadowChain(
+    const std::map<std::string, sync_pb::WebauthnCredentialSpecifics>& passkeys,
+    const std::string& rp_id,
+    const std::string& user_id) {
+  // Collect all credentials for the user.id, rpid pair.
+  base::flat_map<std::string, const sync_pb::WebauthnCredentialSpecifics*>
+      associated_passkeys;
+  for (const auto& passkey : passkeys) {
+    if (passkey.second.user_id() == user_id &&
+        passkey.second.rp_id() == rp_id) {
+      associated_passkeys[passkey.second.credential_id()] = &passkey.second;
+    }
+  }
+
+  // Remove all credentials that appear on another credential's
+  // |newly_shadowed_credential_ids| field.
+  base::flat_map<std::string, const sync_pb::WebauthnCredentialSpecifics*>
+      shadow_head_candidates = associated_passkeys;
+  for (const auto& it : associated_passkeys) {
+    for (const std::string& shadowed_credential_id :
+         it.second->newly_shadowed_credential_ids()) {
+      shadow_head_candidates.erase(shadowed_credential_id);
+    }
+  }
+
+  if (shadow_head_candidates.empty()) {
+    return absl::nullopt;
+  }
+
+  // Then, pick the credential with the latest creation time.
+  return std::reduce(
+             shadow_head_candidates.begin(), shadow_head_candidates.end(),
+             *shadow_head_candidates.begin(),
+             [](const auto& left, const auto& right) {
+               const auto& creation_time_left = left.second->creation_time();
+               const auto& creation_time_right = right.second->creation_time();
+               return creation_time_left > creation_time_right ? left : right;
+             })
+      .second->sync_id();
+}
+
 }  // namespace
 
 PasskeySyncBridge::PasskeySyncBridge(
@@ -84,15 +126,16 @@ PasskeySyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes,
     syncer::EntityChangeList entity_changes) {
-  // Passkeys are read-only for now.
+  // Passkeys should be deleted when sync is turned off. Therefore, there should
+  // be no local data at this point.
   CHECK(data_.empty());
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
-  // Merge sync to local data. Since passkeys are read-only for now, we don't
-  // actually need to merge anything yet. If we do merge, we need to feed the
-  // changes back to `change_processor()`.
+  // Merge sync to local data. Since there should be no local-only passkeys for
+  // now, we don't actually need to merge anything yet. If we do merge, we need
+  // to feed the changes back to `change_processor()`.
   for (const auto& entity_change : entity_changes) {
     const sync_pb::WebauthnCredentialSpecifics& specifics =
         entity_change->data().specifics.webauthn_credential();
@@ -101,8 +144,7 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
                            specifics.SerializeAsString());
   }
 
-  // All data is read-only for now. No need to write local entries back to sync.
-
+  // No data is local-only for now. No need to write local entries back to sync.
   write_batch->TakeMetadataChangesFrom(std::move(metadata_changes));
   store_->CommitWriteBatch(
       std::move(write_batch),
@@ -208,6 +250,55 @@ PasskeySyncBridge::GetAllPasskeys() const {
   return passkeys;
 }
 
+bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
+  // Find the credential with the given |credential_id|.
+  const auto passkey_it = std::find_if(
+      data_.begin(), data_.end(), [&credential_id](const auto& passkey) {
+        return passkey.second.credential_id() == credential_id;
+      });
+  if (passkey_it == data_.end()) {
+    DVLOG(1) << "Attempted to delete non existent passkey";
+    return false;
+  }
+  std::string rp_id = passkey_it->second.rp_id();
+  std::string user_id = passkey_it->second.user_id();
+  absl::optional<std::string> shadow_head_sync_id =
+      FindHeadOfShadowChain(data_, rp_id, user_id);
+
+  // There must be a head of the shadow chain. Otherwise, something is wrong
+  // with the data. Bail out.
+  if (!shadow_head_sync_id) {
+    DVLOG(1) << "Could not find head of shadow chain";
+    return false;
+  }
+
+  base::flat_set<std::string> sync_ids_to_delete;
+  if (passkey_it->first == *shadow_head_sync_id) {
+    // Remove all credentials for the user.id and rpid.
+    for (const auto& passkey : data_) {
+      if (passkey.second.rp_id() == rp_id &&
+          passkey.second.user_id() == user_id) {
+        sync_ids_to_delete.emplace(passkey.first);
+      }
+    }
+  } else {
+    // Remove only the passed credential.
+    sync_ids_to_delete.emplace(passkey_it->first);
+  }
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  for (const std::string& sync_id : sync_ids_to_delete) {
+    data_.erase(sync_id);
+    change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
+    write_batch->DeleteData(sync_id);
+  }
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+  return true;
+}
+
 std::string PasskeySyncBridge::AddNewPasskeyForTesting(
     sync_pb::WebauthnCredentialSpecifics specifics) {
   CHECK(WebauthnCredentialSpecificsValid(specifics));
@@ -226,23 +317,6 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
                      weak_ptr_factory_.GetWeakPtr()));
   data_[sync_id] = std::move(specifics);
   return sync_id;
-}
-
-bool PasskeySyncBridge::DeletePasskeyForTesting(std::string sync_id) {
-  auto it = data_.find(sync_id);
-  if (it == data_.end()) {
-    return false;
-  }
-  data_.erase(it);
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
-  change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
-  write_batch->DeleteData(sync_id);
-  store_->CommitWriteBatch(
-      std::move(write_batch),
-      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
-                     weak_ptr_factory_.GetWeakPtr()));
-  return true;
 }
 
 void PasskeySyncBridge::OnCreateStore(

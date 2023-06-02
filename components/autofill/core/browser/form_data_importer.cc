@@ -1055,4 +1055,16 @@ void FormDataImporter::OnBrowsingHistoryCleared(
   form_associator_.OnBrowsingHistoryCleared(deletion_info);
 }
 
+void FormDataImporter::SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
+    absl::optional<std::string>
+        guid_of_card_if_no_interactive_authentication_flow_completed) {
+  guid_of_card_if_no_interactive_authentication_flow_completed_ =
+      std::move(guid_of_card_if_no_interactive_authentication_flow_completed);
+}
+
+absl::optional<std::string>&
+FormDataImporter::GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted() {
+  return guid_of_card_if_no_interactive_authentication_flow_completed_;
+}
+
 }  // namespace autofill

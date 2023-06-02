@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"

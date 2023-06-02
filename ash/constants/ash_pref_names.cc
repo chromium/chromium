@@ -47,6 +47,9 @@ const char kESimProfiles[] = "cros_esim.esim_profiles";
 const char kManagedCellularIccidSmdpPair[] =
     "cros_esim.managed_iccid_smdp_pair";
 
+// A boolean pref for whether playing charging sounds is enabled.
+const char kChargingSoundsEnabled[] = "ash.charging_sounds.enabled";
+
 // A dictionary pref to hold the mute setting for all the currently known
 // audio devices.
 const char kAudioDevicesMute[] = "settings.audio.devices.mute";
@@ -1377,6 +1380,10 @@ const char kAutozoomState[] = "ash.camera.autozoom_state";
 // nudge was shown.
 const char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 
+// Boolean pref to record if the DevTools should be opened with the camera app
+// by default.
+const char kCameraAppDevToolsOpen[] = "ash.camera.cca_dev_tools_open";
+
 // An boolean pref that specifies the recovery service activation for user.
 // When the pref is set to `true`, the user data recovery is activated. When the
 // pref is set to `false`, the user data recovery is not activated. The default
@@ -1479,17 +1486,15 @@ const char kOwnerPrimaryPointingStickButtonRight[] =
 // Copy of owner tap-to-click option to use on login screen.
 const char kOwnerTapToClickEnabled[] = "owner.touchpad.enable_tap_to_click";
 
-// A boolean pref set to true if a user simulates a right click using their
-// keyboard and touchpad with either Alt+Click or Search+Click.
-// The value of this pref will be used to set the default behavior for
-// remapping to right click once the setting is added/configurable in device
-// settings.
-// Default setting:
-//  Boolean Pref is false: Off
-//  Boolean Pref is true: Use state of "kUseSearchForRightClick" flag to
-//  determine if Alt+Click or Search+Click should be the default.
-const char kEventRemappedToRightClick[] =
-    "ash.settings.event_remapped_to_right_click";
+// An integer pref that is incremented anytime a user simulates a right click
+// using their keyboard and touchpad with Alt+Click.
+const char kAltEventRemappedToRightClick[] =
+    "ash.settings.alt_event_remapped_to_right_click";
+
+// An integer pref that is incremented anytime a user simulates a right click
+// using their keyboard and touchpad with Search+Click.
+const char kSearchEventRemappedToRightClick[] =
+    "ash.settings.search_event_remapped_to_right_click";
 
 // An integer pref for tracking Alt and Search based key event rewrites for
 // the Delete "six pack" key. The value of this pref will be used to set the
@@ -1535,6 +1540,14 @@ const char kKeyEventRemappedToSixPackPageUp[] =
 //  Pref contains a negative value: Search+Down
 const char kKeyEventRemappedToSixPackPageDown[] =
     "ash.settings.key_event_remapped_to_six_pack_page_down";
+
+// This pref saves the absolute session start time for UMA.
+const char kAshLoginSessionStartedTime[] = "ash.Login.SessionStarted.Time";
+
+// This pref saves the "first user session after user was added to the device"
+// flag for UMA.
+const char kAshLoginSessionStartedIsFirstSession[] =
+    "ash.Login.SessionStarted.IsFirstSession";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

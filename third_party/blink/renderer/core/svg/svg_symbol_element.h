@@ -38,6 +38,10 @@ class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
 };
 
 }  // namespace blink

@@ -450,6 +450,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.AbsTimestampDiffMs" units="ms"
+    expires_after="2024-05-25">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The absolute time difference in milliseconds between a default QPC-based
+    timstamp and a timestamp from TimeTicks::Now(). By default, the difference
+    will be small and correspond to the size of the audio capture buffer which
+    is about 10 milliseconds. It can however be very large on some devices, e.g.
+    when using RDP. If the diffeence is larger than 500 milliseconds, so-called
+    fake audio capture timestamps (based on TimeTicks::Now()) will be utilized.
+    This value is logged once per audio input stream session at the first audio
+    callback.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.FakeTimestamps" enum="Boolean"
+    expires_after="2024-05-25">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logs whether audio capture timestamps on Windows are fake or not. By default
+    QPC-based timestamps provided by native audio APIs are utilized. In some
+    cases the QPC-based timestamps differ a lot compared with TimeTicks::Now()
+    timestamps and this can lead to issues (see http://crbug.com/1439283). If an
+    absolute difference larger than 500 msec between these two types of
+    timestamps is detected, we fall back to using TimeTicks::Now() and these
+    timestams are called fake timestamps. We expect that usage of fake
+    timestamps will be low. This value is logged once per audio input stream
+    session at the first audio callback.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
     expires_after="2023-11-05">
   <owner>olka@chromium.org</owner>
@@ -1332,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioInputDevice.AudioServiceDelay" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2023-11-19">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1690,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioSystem.GetDeviceDescription.Result"
-    enum="BooleanSuccess" expires_after="2023-09-17">
+    enum="BooleanSuccess" expires_after="2023-11-19">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -3462,7 +3497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3475,7 +3510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Result"
-    enum="UserMediaRequestResult" expires_after="2023-09-17">
+    enum="UserMediaRequestResult" expires_after="2023-11-19">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3711,7 +3746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="2023-06-30">
+    expires_after="2023-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -3726,7 +3761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
-    expires_after="2023-06-30">
+    expires_after="2023-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -3737,7 +3772,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2023-06-30">
+<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2023-12-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -4797,15 +4832,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Session.RequestAudioFocusResult" enum="BooleanSuccess"
-    expires_after="2022-05-01">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Indicate whether the native requestAudioFocus() call was successful.
-  </summary>
-</histogram>
-
 <histogram name="Media.Session.Stop" enum="MediaSessionActionSource"
     expires_after="2022-02-06">
   <owner>steimel@chromium.org</owner>
@@ -4823,26 +4849,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of times a media session is suspended and why it has been
     suspended.
-  </summary>
-</histogram>
-
-<histogram name="Media.Session.UserAction" enum="MediaSessionUserAction"
-    expires_after="2020-02-02">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The number of times user interacts with MediaSession sorted by action type.
-  </summary>
-</histogram>
-
-<histogram name="Media.Session.UserAction.Focus" enum="BooleanFocused"
-    expires_after="2020-02-02">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The focused state of the WebContents associated with the MediaSession that
-    the user is interacting with. Recorded when the user interacts with a
-    MediaSession (e.g. by pressing the play/pause key on their keyboard).
   </summary>
 </histogram>
 
@@ -4945,6 +4951,22 @@ chromium-metrics-reviews@google.com.
     which is displayed following a call to getDisplayMedia where
     preferCurrentTab was specified.
   </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.{Flow}.DialogDuration" units="ms"
+    expires_after="2024-05-29">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <summary>
+    The time-duration the DesktopMediaPickerDialog is opened when
+    getDisplayMedia is called with the preferCurrentTab constraint either set to
+    true (PreferCurrentTabFlow) or unspecified/false (BasicFlow). The duration
+    is recorded each time the dialog is closed.
+  </summary>
+  <token key="Flow">
+    <variant name="BasicFlow"/>
+    <variant name="PreferCurrentTabFlow"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Media.UnderflowDuration2" units="ms"
@@ -5212,6 +5234,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Device.Opened.ByModelId" units="usb_id"
+    expires_after="2024-05-23">
+  <owner>atadres@chromium.org</owner>
+  <summary>
+    This metric records an unsigned interger value that corresponds to the USB
+    ID (vendor + device ID) of the webcam that is currently in use by the user.
+    The USB ID is originally a 32-bit hexadecimal number (formatted as
+    XXXX:XXXX) that then is converted to an unsigned integer for metrics
+    purposes. In case of a unknown/invalid USB ID, 0 is logged. This is done
+    when the CreateDevice method is called on the corresponding
+    VideoCaptureDeviceFactory class based on the operating system. For example,
+    on MacOS, this happens when VideoCaptureDeviceFactoryMac::CreateDevice is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2023-03-19">
   <owner>eshr@google.com</owner>
@@ -5437,7 +5475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartErrorCode" enum="VideoCaptureError"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -6567,7 +6605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2023-09-17">
+    enum="PresentationUrlType" expires_after="2023-11-19">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6629,7 +6667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionLoadTime" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-19">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6642,7 +6680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionStartsBeforeTimeout"
-    enum="Boolean" expires_after="2023-08-27">
+    enum="Boolean" expires_after="2023-11-19">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

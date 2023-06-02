@@ -109,6 +109,10 @@ class DataTypeManager {
   // actively ongoing or queued).
   virtual ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
 
+  // Returns the datatypes with datatype errors (e.g. errors while loading from
+  // the disk).
+  virtual ModelTypeSet GetDataTypesWithPermanentErrors() const = 0;
+
   // The current state of the data type manager.
   virtual State state() const = 0;
 };

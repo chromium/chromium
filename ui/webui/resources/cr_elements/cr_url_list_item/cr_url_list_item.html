@@ -83,7 +83,7 @@
   @media (prefers-color-scheme: dark) {
     #iconContainer {
       --cr-icon-color: var(--google-grey-100);
-      background: rgba(var(--google-grey-200-rgb), .11);
+      background: var(--google-grey-800);
     }
   }
 
@@ -186,11 +186,17 @@
   }
 
   .folder {
-    --cr-icon-color: currentColor;
+    --cr-icon-color: var(--google-grey-700);
     --cr-icon-size: 16px;
     height: 16px;
     margin: 0;
     width: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .folder {
+      --cr-icon-color: var(--google-grey-100);
+    }
   }
 
   :host-context([chrome-refresh-2023]) .folder {
@@ -208,6 +214,7 @@
     align-items: center;
     background: var(--google-grey-50);
     border-radius: var(--cr-url-list-item-count-border-radius) 0 0 0;
+    color: var(--google-grey-700);
     display: flex;
     grid-column: 2;
     grid-row: 2;
@@ -234,7 +241,8 @@
 
   @media (prefers-color-scheme: dark) {
     :host([size=large]) .count {
-      background: rgba(var(--google-grey-200-rgb), .11);
+      background: var(--google-grey-800);
+      color: var(--google-grey-500);
     }
   }
 
@@ -277,6 +285,10 @@
     flex-direction: row;
   }
 
+  :host([size=medium]) .metadata {
+    gap: 3px;
+  }
+
   :host-context([chrome-refresh-2023]):host([size=compact]) .metadata,
   :host-context([chrome-refresh-2023]):host([size=medium]) .metadata {
     gap: 4px;
@@ -296,6 +308,7 @@
     border: 0;
     color: var(--cr-primary-text-color);
     display: inline;
+    font-family: inherit;
     font-size: 13px;
     font-weight: 400;
     padding: 0;
@@ -385,6 +398,7 @@
     align-items: center;
     display: flex;
     flex-shrink: 0;
+    margin-inline-end: -4px;
     margin-inline-start: auto;
   }
 

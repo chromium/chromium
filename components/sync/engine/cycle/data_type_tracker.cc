@@ -54,11 +54,12 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return kVeryBigLocalChangeNudgeDelay;
     case SESSIONS:
     case HISTORY:
-    case SAVED_TAB_GROUP:
       // Sessions is the type that causes the most commit traffic. It gets a
       // custom nudge delay, tuned for a reasonable trade-off between traffic
       // and freshness.
       return kDefaultLocalChangeNudgeDelayForSessions;
+    case SAVED_TAB_GROUP:
+      return syncer::kTabGroupsSaveCustomNudgeDelay.Get();
     case SEGMENTATION:
       // There are multiple segmentations computed during start-up within
       // seconds. Applies a custom nudge delay, so that they are batched into

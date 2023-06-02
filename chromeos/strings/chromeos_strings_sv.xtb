@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Skrivbord</translation>
 <translation id="1018219910092211213">Det gick inte att matcha DNS</translation>
 <translation id="1018656279737460067">Avbröts</translation>
-<translation id="1022433422498218992">Allmänna kontroller</translation>
+<translation id="1020274983236703756">Exklusiva <ph name="PRODUCT_NAME" />-tillgångar är nu tillgängliga</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Autentiseringstyp</translation>
 <translation id="1776228893584526149">Bakgrundston</translation>
 <translation id="1782199038061388045">Översätt</translation>
-<translation id="1790209694022261219">Fönster och skrivbord</translation>
 <translation id="1792647875738159689">Skanningen avbryts</translation>
 <translation id="1801418420130173017">Inaktivera mörkt tema</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
+<translation id="1836553715834333258">Systemfärg</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
+<translation id="1840474674287087346">Skrivbordsfärg</translation>
 <translation id="1851218745569890714">Videokonferenser</translation>
 <translation id="1852934301711881861">Installera ChromeOS Flex</translation>
 <translation id="1856388568474281774">Nedåtpiltangenten</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Webbläsarnavigering</translation>
 <translation id="2874939134665556319">Föregående spår</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
-<translation id="2902312830803030883">Fler åtgärder</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
 <translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
-<translation id="2981143481017883351">Nu finns det exklusiva Chromebook-tillgångar</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3017079585324758401">Bakgrund</translation>
-<translation id="3020183492814296499">Genvägar</translation>
 <translation id="3027578600144895987">Stäng kameran</translation>
 <translation id="3031560714565892478">Enheten är en videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">Söker efter skannrar</translation>
 <translation id="3226657629376379887">Layoutåtgärdsmeny</translation>
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
+<translation id="3248223063252096240">Exklusivt för <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Misslyckades – luckan är öppen</translation>
 <translation id="3275729367986477355">Avatarbild</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redigera fil}other{Redigera filer}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Nyckelriktning</translation>
 <translation id="3294437725009624529">Gäst</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
+<translation id="3305294846493618482">mer</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
 <translation id="3328783797891415197">Testet körs</translation>
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">Fönster</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
-<translation id="3386675685417744672">Endast på Chromebook</translation>
 <translation id="3404249063913988450">Aktivera skärmsläckare</translation>
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3639846061339007994">övre</translation>
 <translation id="3651050199673793219">Välj en temperaturenhet</translation>
+<translation id="3663574643422533538">Välj konst som är exklusiv för <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">VARNING</translation>
 <translation id="4054683689023980771">Laddar ned bild …</translation>
 <translation id="4060260348856573701">Nytt APN</translation>
-<translation id="4079743696465895866">Välj konstverk som endast finns på Chromebook</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Spara testinformation</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Välj detta album: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-styrplatta</translation>
+<translation id="4113067922640381334">Du har nu tillgång till nya <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunder<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mörkt läge</translation>
 <translation id="4130035430755296270">Håll muspekaren över för fler layoutalternativ</translation>
 <translation id="4131410914670010031">Svartvitt</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Skanningar sparas i</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
+<translation id="4500966230243561393">Gränssnittsfärg</translation>
 <translation id="4503223151711056411">Vänsterpiltangenten</translation>
 <translation id="4507392511610824664">öka ljusstyrkan</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet.</translation>
+<translation id="5035083460461104704">Temafärg</translation>
 <translation id="5038292761217083259">flerfärgat tangentbord</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
 <translation id="6017514345406065928">Grön</translation>
+<translation id="6019566113895157499">Kortkommandon</translation>
 <translation id="6034694447310538551">Aktivera automatisk månadsåterställning</translation>
 <translation id="6037291330010597344">Skannerns dokumentmatare är tom. Fyll på med dokument och försök igen.</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Neutralt</translation>
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
 <translation id="763165478673169849">Återställdes senast</translation>
+<translation id="7633068090678117093">Bakgrundsbild</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="765159867434478292">Dela upp</translation>
 <translation id="7656388927906093505">Enheten är en mus.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">Inte initierat</translation>
 <translation id="8593058461203131755">pausa media</translation>
 <translation id="8620617069779373398">Dirigeringsstatus</translation>
+<translation id="8626489604350149811">Fler åtgärder för <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ljuslila</translation>
 <translation id="8651481478098336970">ljud av</translation>
 <translation id="8655295600908251630">Kanal</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådlöst</translation>
 <translation id="8936793075252196307">Klientens IP-adress</translation>
+<translation id="8944651180182756621">Färg på appstartaren</translation>
 <translation id="894617464444543719">Enheten är en telefon.</translation>
 <translation id="8957423540740801332">höger</translation>
 <translation id="8968751544471797276">Laddningshastighet</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Kör minnestest</translation>
 <translation id="9161276708550942948">blanksteg</translation>
 <translation id="9173638680043580060">Mindre än en minut kvar</translation>
+<translation id="9174334653006917325">Färg på användargränssnitt</translation>
 <translation id="917720651393141712">Testa</translation>
 <translation id="9188992814426075118">Tangentbordet kan matcha bakgrunden automatiskt</translation>
 <translation id="9189000703457422362">Det gick inte att ansluta till det här nätverket med automatiskt identifierade APN. Kontakta mobiloperatören för mer information.</translation>

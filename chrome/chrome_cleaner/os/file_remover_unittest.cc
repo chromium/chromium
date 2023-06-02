@@ -630,7 +630,7 @@ TEST_P(FileRemoverQuarantineTest, LongFileName) {
   size_t long_filename_length =
       MAX_PATH - temp_dir_.GetPath().value().size() - 1 - kExtension.size() - 1;
   base::FilePath::StringType long_filename(long_filename_length, 'a');
-  long_filename.append(kExtension.data(), kExtension.size());
+  long_filename.append(kExtension);
 
   const base::FilePath path = temp_dir_.GetPath().Append(long_filename);
   ASSERT_NO_FATAL_FAILURE(

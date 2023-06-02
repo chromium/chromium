@@ -121,6 +121,12 @@ bool LoadingPredictor::PrepareForPageLoad(
     return true;
   }
 
+  if (origin == HintOrigin::BOOKMARK_BAR) {
+    // Bookmark hints are lightweight and need a special treatment.
+    HandleBookmarkBarHint(url, preconnectable);
+    return true;
+  }
+
   PreconnectPrediction prediction;
   bool has_local_preconnect_prediction = false;
   if (features::ShouldUseLocalPredictions()) {
@@ -338,6 +344,36 @@ void LoadingPredictor::HandleOmniboxHint(const GURL& url, bool preconnectable) {
   if (is_new_origin || now - last_omnibox_preresolve_time_ >=
                            kMinDelayBetweenPreresolveRequests) {
     last_omnibox_preresolve_time_ = now;
+    preconnect_manager()->StartPreresolveHost(url, network_anonymization_key);
+  }
+}
+
+void LoadingPredictor::HandleBookmarkBarHint(const GURL& url,
+                                             bool preconnectable) {
+  if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_)) {
+    return;
+  }
+
+  url::Origin origin = url::Origin::Create(url);
+  bool is_new_origin = origin != last_bookmark_bar_origin_;
+  last_bookmark_bar_origin_ = origin;
+  net::SchemefulSite site = net::SchemefulSite(origin);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (preconnectable && url.SchemeIs("https")) {
+    if (is_new_origin || now - last_bookmark_bar_preconnect_time_ >=
+                             kMinDelayBetweenPreconnectRequests) {
+      last_bookmark_bar_preconnect_time_ = now;
+      preconnect_manager()->StartPreconnectUrl(url, true,
+                                               network_anonymization_key);
+    }
+    return;
+  }
+
+  if (is_new_origin || now - last_bookmark_bar_preresolve_time_ >=
+                           kMinDelayBetweenPreresolveRequests) {
+    last_bookmark_bar_preresolve_time_ = now;
     preconnect_manager()->StartPreresolveHost(url, network_anonymization_key);
   }
 }

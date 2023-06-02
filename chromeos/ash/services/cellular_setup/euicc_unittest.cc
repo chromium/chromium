@@ -332,7 +332,9 @@ TEST_F(EuiccTest, GetEidQRCode) {
 TEST_F(EuiccTest, RequestAvailableProfiles) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport}, {});
+      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
+       ash::features::kSmdsSupportEuiccUpload},
+      {});
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
@@ -373,7 +375,9 @@ TEST_F(EuiccTest, RequestAvailableProfiles) {
 TEST_F(EuiccTest, RequestAvailableProfiles_FailToInhibit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport}, {});
+      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
+       ash::features::kSmdsSupportEuiccUpload},
+      {});
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());

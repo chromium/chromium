@@ -9,19 +9,25 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
 
-class ChromeBrowserState;
+class AuthenticationService;
 @protocol FeedTopSectionConsumer;
 @protocol NewTabPageDelegate;
+class PrefService;
 @class SigninPromoViewMediator;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // Mediator for the NTP Feed top section, handling the interactions.
 @interface FeedTopSectionMediator
     : NSObject <FeedTopSectionViewControllerDelegate, SigninPromoViewConsumer>
 
-// TODO(crbug.com/1331010): Mediators shouldn't know about browser state. We
-// should have the coordinator provide any necessary information.
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
-                    browserState:(ChromeBrowserState*)browserState
+                 identityManager:(signin::IdentityManager*)identityManager
+                     authService:(AuthenticationService*)authService
+                     isIncognito:(BOOL)isIncognito
+                     prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

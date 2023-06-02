@@ -2,7 +2,7 @@ Tests that "Show Function Definition" jumps to the correct location.
 
 
 Running: testRevealFunctionDefinition
-Function location revealed: [10:24]
+Function location revealed: [13:24]
 
 Running: testDumpFunctionDefinition
 jumpToMe

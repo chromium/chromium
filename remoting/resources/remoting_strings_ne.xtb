@@ -11,7 +11,7 @@
 <translation id="1520828917794284345">फिट गर्नको लागि डेस्कटपलाई रिसाइज गर्नुहोस्</translation>
 <translation id="1546934824884762070">एक अनपेक्षित त्रुटि भयो। कृपया यस समस्यालाई विकासकर्तालाई प्रतिवेदन गर्नुहोस्।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
-<translation id="1742469581923031760">जडान हुँदै...</translation>
+<translation id="1742469581923031760">कनेक्ट गरिँदै छ...</translation>
 <translation id="177040763384871009">रिमोट डिभाइसमा क्लिक गरिएका लिंकहरू क्लाइन्ट ब्राउजरमा खोल्ने अनुमति दिन तपाईंले "<ph name="URL_FORWARDER_NAME" />" लाई सिस्टमको वेब ब्राउजर बनाउनु पर्ने हुन्छ।</translation>
 <translation id="177096447311351977">ग्राहकको लागि च्यानल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip= ' <ph name="CLIENT_IP_ADDRESS_AND_PORT" /> 'host_ip =' <ph name="HOST_IP_ADDRESS_AND_PORT" /> 'च्यानल =' <ph name="CHANNEL_TYPE" /> 'जडान =' <ph name="CONNECTION_TYPE" /> '।</translation>
 <translation id="1897488610212723051">मेट्नुहोस्</translation>
@@ -119,7 +119,7 @@
 <translation id="6099500228377758828">Chrome दूर डेस्कटप सेवा</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
 <translation id="6178645564515549384">दुर सहायताका लागि मूल सन्देश होस्ट</translation>
-<translation id="618120821413932081">विन्डोसँग मिल्नसकोस् भन्नका खातिर रिमोट डेस्कटपको रिजोल्युसन अपडेट गर्नुहोस्</translation>
+<translation id="618120821413932081">विन्डोसँग मिल्नसकोस् भन्नका लागि रिमोट डेस्कटपको रिजोल्युसन अपडेट गर्नुहोस्</translation>
 <translation id="6223301979382383752">स्क्रिनको रेकर्डिङसम्बन्धी प्राथमिकताहरू खोल्नुहोस्</translation>
 <translation id="6284412385303060032">प्रयोगकर्ता-विशेष सत्रमा चलिरहेको होस्टलाई स्विच गरेर कर्टेन मोडलाई समर्थन गर्न कन्सोल लजिक स्क्रिनमा रहेको चलिरहेको होस्ट बन्द भएको छ।</translation>
 <translation id="6542902059648396432">एउटा समस्या रिपोर्ट गर्नुहोस्...</translation>
@@ -161,7 +161,7 @@
 <translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8060029310790625334">मद्दत केन्द्र</translation>
-<translation id="806699900641041263"><ph name="HOSTNAME" /> मा जडान हुँदै</translation>
+<translation id="806699900641041263"><ph name="HOSTNAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="8073845705237259513">Chrome दूर डेस्कटप प्रयोग गर्नको लागि, तपाइँले तपाइँको यन्त्रमा एउटा Google खाता थप्न आवश्यक छ।</translation>
 <translation id="809687642899217504">मेरा कम्प्युटरहरू</translation>
 <translation id="8116630183974937060">नेटवर्क त्रुटि देखापर्यो । कृपया तपाईंको उपकरण अनलाईनमा भएको जाँच गरी पुनः प्रयास गर्नुहोस् ।</translation>

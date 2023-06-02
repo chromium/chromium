@@ -7,22 +7,15 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 
 #include <webgpu/webgpu.h>
-
-namespace {
-// This should match the texture usage set by GetGraphiteTextureInfo() - Dawn
-// will validate this on dcheck builds.
-constexpr WGPUTextureUsage kDefaultTextureUsage = static_cast<WGPUTextureUsage>(
-    WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding |
-    WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst);
-}
 
 namespace gpu {
 
@@ -70,31 +63,14 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      kDefaultTextureUsage, AllowUnclearedAccess::kYes);
+      GetSupportedWGPUTextureUsage(format()), AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
   }
 
-  // TODO(crbug.com/1430206): Add multiplanar format support.
-  if (!format().is_single_plane()) {
-    DLOG(ERROR) << "BeginWriteAccess called for unsupported format = "
-                << format().ToString();
-    return {};
-  }
-
-  viz::SharedImageFormat actual_format = format();
-#if BUILDFLAG(IS_MAC)
-  // IOSurfaces are allocated as BGRA_8888 if the requested format is RGBA_8888,
-  // so adjust the format to create the correct color type.
-  // TODO(crbug.com/1423576): Rationalize RGBA vs BGRA logic for IOSurfaces.
-  if (actual_format == viz::SinglePlaneFormat::kRGBA_8888) {
-    actual_format = viz::SinglePlaneFormat::kBGRA_8888;
-  }
-#endif
-
   SkColorType sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, actual_format);
+      /*gpu_compositing=*/true, format());
   // Gray is not a renderable single channel format, but alpha is.
   if (sk_color_type == kGray_8_SkColorType) {
     sk_color_type = kAlpha_8_SkColorType;
@@ -119,15 +95,9 @@ std::vector<skgpu::graphite::BackendTexture>
 SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
-  // TODO(crbug.com/1430206): Add multiplanar format support.
-  if (!format().is_single_plane()) {
-    DLOG(ERROR) << "BeginWriteAccess called for unsupported format = "
-                << format().ToString();
-    return {};
-  }
 
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      kDefaultTextureUsage, AllowUnclearedAccess::kYes);
+      GetSupportedWGPUTextureUsage(format()), AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
@@ -146,15 +116,10 @@ std::vector<skgpu::graphite::BackendTexture>
 SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
-  // TODO(crbug.com/1430206): Add multiplanar format support.
-  if (!format().is_single_plane()) {
-    DLOG(ERROR) << "BeginReadAccess called for unsupported format = "
-                << format().ToString();
-    return {};
-  }
 
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      kDefaultTextureUsage, AllowUnclearedAccess::kNo);
+      GetSupportedWGPUTextureUsage(format()), AllowUnclearedAccess::kNo);
+
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};

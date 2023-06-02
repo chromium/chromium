@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkFontArguments.h"
 
 namespace blink {
@@ -44,7 +45,46 @@ unsigned FontPalette::GetHash() const {
   return computed_hash;
 }
 
+String FontPalette::ToString() const {
+  switch (palette_keyword_) {
+    case kNormalPalette:
+      return "normal";
+    case kLightPalette:
+      return "light";
+    case kDarkPalette:
+      return "dark";
+    case kCustomPalette:
+      return palette_values_name_.GetString();
+    case kInterpolablePalette:
+      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+      DCHECK(operation_.hasValue());
+      StringBuilder builder;
+      builder.Append(operation_.ToString());
+      builder.Append("(");
+      builder.Append(start_->ToString());
+      if (operation_.type != kScalePalette) {
+        builder.Append(", ");
+        builder.Append(end_->ToString());
+      }
+      if (operation_.type != kAddPalettes) {
+        builder.Append(", ");
+        builder.Append(String::Number(operation_.param));
+      }
+      builder.Append(")");
+      return builder.ToString();
+  }
+}
+
 bool FontPalette::operator==(const FontPalette& other) const {
+  if (IsInterpolablePalette() != other.IsInterpolablePalette()) {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    return false;
+  }
+  if (IsInterpolablePalette() && other.IsInterpolablePalette()) {
+    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+    return *start_.get() == *other.start_.get() &&
+           *end_.get() == *other.end_.get() && operation_ == other.operation_;
+  }
   return palette_keyword_ == other.palette_keyword_ &&
          palette_values_name_ == other.palette_values_name_ &&
          match_font_family_ == other.match_font_family_ &&

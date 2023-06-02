@@ -111,6 +111,34 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
   }
 }
 
+void SavedTabGroupModelListener::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() != TabStripModelChange::kMoved) {
+    return;
+  }
+
+  absl::optional<tab_groups::TabGroupId> local_id =
+      tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
+
+  // Do nothing if the tab is no longer in a group.
+  if (!local_id.has_value()) {
+    return;
+  }
+
+  // Do nothing if the tab is not part of a saved group.
+  if (!local_tab_group_listeners_.contains(local_id.value())) {
+    return;
+  }
+
+  LocalTabGroupListener& local_tab_group_listener =
+      local_tab_group_listeners_.at(local_id.value());
+
+  local_tab_group_listener.MoveWebContentsFromLocal(
+      tab_strip_model, change.GetMove()->contents, change.GetMove()->to_index);
+}
+
 void SavedTabGroupModelListener::WillCloseAllTabs(
     TabStripModel* tab_strip_model) {
   CHECK(tab_strip_model);
@@ -192,12 +220,7 @@ void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
     return;
   }
 
-  if (base::Contains(observed_browsers_, browser)) {
-    return;
-  }
-
   browser->tab_strip_model()->AddObserver(this);
-  observed_browsers_.insert(browser);
 }
 
 void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
@@ -206,6 +229,4 @@ void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
   }
 
   browser->tab_strip_model()->RemoveObserver(this);
-  CHECK(base::Contains(observed_browsers_, browser));
-  observed_browsers_.erase(browser);
 }

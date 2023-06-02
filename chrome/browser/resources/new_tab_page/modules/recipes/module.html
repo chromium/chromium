@@ -6,19 +6,34 @@
     width: 100%;
   }
 
-  #moduleContent {
+  :host([overflow-scroll_]) #container {
+    overflow-x: auto;
+  }
+
+  :host([overflow-scroll_]) #content {
+    padding-top: 2px;
+    /* 561px - 2px to account for module wrapper border. */
+    width: 559px;
+  }
+
+  :host([overflow-scroll_][wide-modules-enabled_]) #content {
+    /* 768px - 2px to account for module wrapper border. */
+    width: 766px;
+  }
+
+  #content {
     box-sizing: border-box;
     display: block;
     flex-grow: 1;
     padding-bottom: 16px;
     padding-inline-end: 16px;
     padding-inline-start: 16px;
-    width: 100%;
   }
 
   #recipes {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
   }
 
   .recipe {
@@ -175,30 +190,32 @@
     icon-src="modules/recipes/icons/recipes_logo.svg">
   [[title_]]
 </ntp-module-header>
-<div id="moduleContent">
-  <div id="recipes">
-    <template is="dom-repeat" id="recipesRepeat" items="[[task.recipes]]"
-        on-dom-change="onDomChange_">
-      <a class="recipe" href="[[item.targetUrl.url]]"
-          on-click="onRecipeClick_" on-auxclick="onRecipeClick_">
-        <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
-            draggable="false">
-        </img>
-        <div class="tag" title="[[item.info]]">[[item.info]]</div>
-        <div class="name" title="[[item.name]]">[[item.name]]</div>
-        <div class="secondary">[[item.siteName]]</div>
-      </a>
-    </template>
-  </div>
-  <div hidden$="{{!showRelatedSearches_}}" id="relatedSearches">
-    <template is="dom-repeat" id="relatedSearchesRepeat"
-        items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
-      <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
-          on-auxclick="onPillClick_">
-        <div class="clock"></div>
-        <div class="search-text">[[item.text]]</div>
-      </a>
-    </template>
+<div id="container">
+  <div id="content">
+    <div id="recipes">
+      <template is="dom-repeat" id="recipesRepeat" on-dom-change="onDomChange_"
+          items="[[getRecipes_(task, wideModulesLoaded_)]]">
+        <a class="recipe" href="[[item.targetUrl.url]]"
+            on-click="onRecipeClick_" on-auxclick="onRecipeClick_">
+          <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+              draggable="false">
+          </img>
+          <div class="tag" title="[[item.info]]">[[item.info]]</div>
+          <div class="name" title="[[item.name]]">[[item.name]]</div>
+          <div class="secondary">[[item.siteName]]</div>
+        </a>
+      </template>
+    </div>
+    <div hidden$="{{!showRelatedSearches_}}" id="relatedSearches">
+      <template is="dom-repeat" id="relatedSearchesRepeat"
+          items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
+        <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
+            on-auxclick="onPillClick_">
+          <div class="clock"></div>
+          <div class="search-text">[[item.text]]</div>
+        </a>
+      </template>
+    </div>
   </div>
 </div>
 <cr-lazy-render id="infoDialogRender">

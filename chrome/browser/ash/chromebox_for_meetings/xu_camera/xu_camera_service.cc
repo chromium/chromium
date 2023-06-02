@@ -133,8 +133,8 @@ bool XuCameraService::ServiceRequestReceived(
   return true;
 }
 
-void XuCameraService::OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe,
-                                    const absl::optional<std::string>&) {
+void XuCameraService::OnBindService(
+    mojo::ScopedMessagePipeHandle receiver_pipe) {
   receivers_.Add(
       this, mojo::PendingReceiver<mojom::XuCamera>(std::move(receiver_pipe)));
 }

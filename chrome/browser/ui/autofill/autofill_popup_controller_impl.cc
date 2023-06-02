@@ -397,7 +397,9 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
     std::u16string* body) {
   return delegate_->GetDeletionConfirmationText(
       suggestions_[list_index].main_text.value,
-      suggestions_[list_index].frontend_id, title, body);
+      suggestions_[list_index].frontend_id,
+      suggestions_[list_index].GetPayload<Suggestion::BackendId>(), title,
+      body);
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
@@ -411,8 +413,10 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
   // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
   if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
     return false;
-  if (!delegate_->RemoveSuggestion(suggestions_[list_index].main_text.value,
-                                   suggestions_[list_index].frontend_id)) {
+  if (!delegate_->RemoveSuggestion(
+          suggestions_[list_index].main_text.value,
+          suggestions_[list_index].frontend_id,
+          suggestions_[list_index].GetPayload<Suggestion::BackendId>())) {
     return false;
   }
 
@@ -462,7 +466,7 @@ bool AutofillPopupControllerImpl::HasSuggestions() const {
     return false;
   }
   Suggestion::FrontendId id = suggestions_[0].frontend_id;
-  return id.as_int() > 0 || base::Contains(kItemsTriggeringFieldFilling, id) ||
+  return base::Contains(kItemsTriggeringFieldFilling, id) ||
          id == PopupItemId::kScanCreditCard;
 }
 

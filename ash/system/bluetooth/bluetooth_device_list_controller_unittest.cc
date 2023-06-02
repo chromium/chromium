@@ -8,12 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
@@ -33,9 +35,13 @@ const char kDeviceNickname[] = "mau5";
 
 }  // namespace
 
-class BluetoothDeviceListControllerTest : public AshTestBase {
+class BluetoothDeviceListControllerTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kQsRevamp,
+                                              IsQsRevampEnabled());
     AshTestBase::SetUp();
 
     fake_bluetooth_detailed_view_ =
@@ -103,22 +109,27 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
       const TriView* connected_sub_header = FindConnectedSubHeader();
       const TriView* previously_connected_sub_header =
           FindPreviouslyConnectedSubHeader();
-      const views::Separator* device_list_separator = FindSeparator();
 
       EXPECT_TRUE(connected_sub_header);
       EXPECT_TRUE(previously_connected_sub_header);
-      EXPECT_TRUE(device_list_separator);
 
       const size_t connected_index =
           device_list()->GetIndexOf(connected_sub_header).value();
-      const size_t previously_connected_index =
-          device_list()->GetIndexOf(previously_connected_sub_header).value();
-      const size_t separator_index =
-          device_list()->GetIndexOf(device_list_separator).value();
-
       EXPECT_EQ(0u, connected_index);
-      EXPECT_EQ(connected_device_count + 1, separator_index);
-      EXPECT_EQ(separator_index + 1, previously_connected_index);
+
+      // QsRevamp does not use a separator.
+      if (!features::IsQsRevampEnabled()) {
+        const views::Separator* device_list_separator = FindSeparator();
+        EXPECT_TRUE(device_list_separator);
+
+        const size_t previously_connected_index =
+            device_list()->GetIndexOf(previously_connected_sub_header).value();
+        const size_t separator_index =
+            device_list()->GetIndexOf(device_list_separator).value();
+        EXPECT_EQ(connected_device_count + 1, separator_index);
+        EXPECT_EQ(separator_index + 1, previously_connected_index);
+      }
+
       return;
     }
 
@@ -152,6 +163,8 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
                               ->notify_device_list_changed_call_count());
   }
 
+  bool IsQsRevampEnabled() { return GetParam(); }
+
   views::View* device_list() {
     return static_cast<BluetoothDetailedView*>(
                fake_bluetooth_detailed_view_.get())
@@ -184,9 +197,16 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
   std::unique_ptr<BluetoothDeviceListControllerImpl>
       bluetooth_device_list_controller_impl_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(BluetoothDeviceListControllerTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         BluetoothDeviceListControllerTest,
+                         testing::Bool());
+
+TEST_P(BluetoothDeviceListControllerTest,
        HasCorrectSubHeaderWithNoPairedDevices) {
   CheckNotifyDeviceListChangedCount(/*call_count=*/0u);
 
@@ -203,8 +223,8 @@ TEST_F(BluetoothDeviceListControllerTest,
   EXPECT_TRUE(no_device_connected_sub_header);
 }
 
-TEST_F(BluetoothDeviceListControllerTest,
-       HasCorrectDeviceListOrderWithPairedDevices) {
+TEST_P(BluetoothDeviceListControllerTest,
+       HasCorrectDeviceListOrderWithPairedAndPreviouslyPairedDevices) {
   CheckNotifyDeviceListChangedCount(/*call_count=*/0u);
 
   bluetooth_device_list_controller()->UpdateBluetoothEnabledState(true);
@@ -256,14 +276,31 @@ TEST_F(BluetoothDeviceListControllerTest,
 
   CheckNotifyDeviceListChangedCount(/*call_count=*/4u);
 
-  EXPECT_EQ(5u, device_list()->children().size());
+  // This is confusing but `device_list()` is actually the scroll contents of
+  // the bluetooth detailed view, rather than a list of devices. So the count
+  // here is a combination of the following views (all are optional):
+  // *  Connected device header
+  // *  Connected device list
+  // *  Separator
+  // *  Previously connected device header
+  // *  Previously connected device list
+  const int connected_header_count = FindConnectedSubHeader() ? 1 : 0;
+  const int previously_connected_header_count =
+      FindPreviouslyConnectedSubHeader() ? 1 : 0;
+  const int separator_count = FindSeparator() ? 1 : 0;
+  const size_t device_count =
+      connected_list.size() + previously_connected_list.size();
+  const auto expected_device_list_size = connected_header_count +
+                                         previously_connected_header_count +
+                                         separator_count + device_count;
+  EXPECT_EQ(expected_device_list_size, device_list()->children().size());
 
   CheckDeviceListOrdering(
       /*connected_device_count=*/connected_list.size(),
       /*previously_connected_device_count=*/previously_connected_list.size());
 }
 
-TEST_F(BluetoothDeviceListControllerTest, ExistingDeviceViewsAreUpdated) {
+TEST_P(BluetoothDeviceListControllerTest, ExistingDeviceViewsAreUpdated) {
   CheckNotifyDeviceListChangedCount(/*call_count=*/0u);
 
   bluetooth_device_list_controller()->UpdateBluetoothEnabledState(true);
@@ -296,7 +333,7 @@ TEST_F(BluetoothDeviceListControllerTest, ExistingDeviceViewsAreUpdated) {
                first_item->device_properties()->nickname.value().c_str());
 }
 
-TEST_F(BluetoothDeviceListControllerTest,
+TEST_P(BluetoothDeviceListControllerTest,
        DeviceListIsClearedWhenBluetoothBecomesDisabled) {
   CheckNotifyDeviceListChangedCount(/*call_count=*/0u);
 

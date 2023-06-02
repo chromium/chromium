@@ -64,15 +64,15 @@ void EmitErrorBlocked(const String& url, Document& document) {
 
 void AddWarningHeader(FetchParameters* params) {
   params->MutableResourceRequest().AddHttpHeaderField(
-      "Intervention",
-      "<https://www.chromestatus.com/feature/5718547946799104>; "
-      "level=\"warning\"");
+      AtomicString("Intervention"),
+      AtomicString("<https://www.chromestatus.com/feature/5718547946799104>; "
+                   "level=\"warning\""));
 }
 
 void AddHeader(FetchParameters* params) {
   params->MutableResourceRequest().AddHttpHeaderField(
-      "Intervention",
-      "<https://www.chromestatus.com/feature/5718547946799104>");
+      AtomicString("Intervention"),
+      AtomicString("<https://www.chromestatus.com/feature/5718547946799104>"));
 }
 
 bool IsConnectionEffectively2G(WebEffectiveConnectionType effective_type) {

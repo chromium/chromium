@@ -84,14 +84,15 @@ void MediaDocumentParser::CreateDocumentStructure() {
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());
   auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument(),
                                                      CreateElementFlags());
-  meta->setAttribute(html_names::kNameAttr, "viewport");
-  meta->setAttribute(html_names::kContentAttr, "width=device-width");
+  meta->setAttribute(html_names::kNameAttr, AtomicString("viewport"));
+  meta->setAttribute(html_names::kContentAttr,
+                     AtomicString("width=device-width"));
   head->AppendChild(meta);
 
   auto* media = MakeGarbageCollected<HTMLVideoElement>(*GetDocument());
-  media->setAttribute(html_names::kControlsAttr, "");
-  media->setAttribute(html_names::kAutoplayAttr, "");
-  media->setAttribute(html_names::kNameAttr, "media");
+  media->setAttribute(html_names::kControlsAttr, g_empty_atom);
+  media->setAttribute(html_names::kAutoplayAttr, g_empty_atom);
+  media->setAttribute(html_names::kNameAttr, AtomicString("media"));
 
   auto* source = MakeGarbageCollected<HTMLSourceElement>(*GetDocument());
   source->setAttribute(html_names::kSrcAttr,

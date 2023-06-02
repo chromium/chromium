@@ -1460,7 +1460,8 @@ void InterceptionJob::NotifyClient(
     std::unique_ptr<InterceptedRequestInfo> request_info) {
   DCHECK(!waiting_for_resolution_);
   FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
-                              base::Unretained(this), std::move(request_info)));
+                              base::UnsafeDanglingUntriaged(this),
+                              std::move(request_info)));
 }
 
 void InterceptionJob::NotifyClientWithCookies(

@@ -266,8 +266,8 @@ class PreinstalledWebAppManagerTest : public testing::Test,
 
   base::test::ScopedCommandLine command_line_;
 #endif
-  raw_ptr<FakeWebAppProvider> provider_ = nullptr;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   // To support context of browser threads.

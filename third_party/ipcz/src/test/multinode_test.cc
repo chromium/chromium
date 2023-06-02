@@ -324,8 +324,7 @@ void TestNode::Initialize(TestDriver* test_driver) {
       GetDetails().is_broker ? IPCZ_CREATE_NODE_AS_BROKER : IPCZ_NO_FLAGS;
   ABSL_ASSERT(node_ == IPCZ_INVALID_HANDLE);
   const IpczResult result =
-      ipcz().CreateNode(&test_driver_->GetIpczDriver(),
-                        IPCZ_INVALID_DRIVER_HANDLE, flags, nullptr, &node_);
+      ipcz().CreateNode(&test_driver_->GetIpczDriver(), flags, nullptr, &node_);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
 }
 

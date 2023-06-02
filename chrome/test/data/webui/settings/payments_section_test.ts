@@ -10,8 +10,11 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 
 import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
-import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations} from './payments_section_utils.js';
+import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+import {isVisible} from 'chrome://webui-test/test_util.js';
+
 
 // clang-format on
 
@@ -478,4 +481,35 @@ suite('PaymentsSection', function() {
         }
         paymentsManagerProxy.assertExpectations(expectations);
       });
+
+  test('verifyEditLocalCardTriggersUserAuth', async function() {
+    loadTimeData.overrideValues({deviceAuthAvailable: true});
+
+    const section = await createPaymentsSection(
+        [createCreditCardEntry()], /*ibans=*/[], /*upiIds=*/[], {
+          credit_card_enabled: {value: true},
+          payment_methods_mandatory_reauth: {value: true},
+        });
+
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    assertTrue(isVisible(section.$.menuEditCreditCard));
+    section.$.menuEditCreditCard.click();
+    flush();
+
+    const paymentsManagerProxy =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    const expectations = getDefaultExpectations();
+    expectations.authenticateUserToEditLocalCard = 1;
+    paymentsManagerProxy.assertExpectations(expectations);
+  });
 });

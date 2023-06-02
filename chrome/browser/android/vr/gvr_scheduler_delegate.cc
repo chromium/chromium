@@ -276,10 +276,12 @@ void GvrSchedulerDelegate::CreateOrResizeWebXrSurface(const gfx::Size& size) {
                               weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
-  if (mailbox_bridge_)
-    mailbox_bridge_->ResizeSurface(size.width(), size.height());
-  else
+  if (!mailbox_bridge_) {
     CreateSurfaceBridge(graphics_->webxr_surface_texture());
+  } else if (graphics_->webxr_surface_texture()) {
+    // Need to resize only if we have surface.
+    mailbox_bridge_->ResizeSurface(size.width(), size.height());
+  }
 }
 
 void GvrSchedulerDelegate::OnGpuProcessConnectionReady() {

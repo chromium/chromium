@@ -6,6 +6,7 @@
 #define NET_CERT_PKI_VERIFY_NAME_MATCH_H_
 
 #include <string>
+#include <vector>
 
 #include "net/base/net_export.h"
 

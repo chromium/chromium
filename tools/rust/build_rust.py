@@ -568,50 +568,50 @@ def BuildLLVMLibraries(skip_build, build_mac_arm, gcc_toolchain):
         target_llvm_build_dir = RUST_HOST_LLVM_BUILD_DIR
         target_llvm_install_dir = RUST_HOST_LLVM_INSTALL_DIR
 
-    print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
-    build_cmd = [
-        sys.executable,
-        os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
-        '--disable-asserts',
-        '--no-tools',
-        # PIC needed for Rust build (links LLVM into shared object)
-        '--pic',
-        '--with-ml-inliner-model=',
-    ]
-    if sys.platform.startswith('linux'):
-        build_cmd.append('--without-android')
-        build_cmd.append('--without-fuchsia')
-    if sys.platform == 'darwin':
-        build_cmd.append('--without-fuchsia')
-    if gcc_toolchain:
-        build_cmd.extend(['--gcc-toolchain', gcc_toolchain])
     if not skip_build:
+        print(f'Building the host LLVM in {RUST_HOST_LLVM_BUILD_DIR}...')
+        build_cmd = [
+            sys.executable,
+            os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
+            '--disable-asserts',
+            '--no-tools',
+            # PIC needed for Rust build (links LLVM into shared object)
+            '--pic',
+            '--with-ml-inliner-model=',
+        ]
+        if sys.platform.startswith('linux'):
+            build_cmd.append('--without-android')
+            build_cmd.append('--without-fuchsia')
+        if sys.platform == 'darwin':
+            build_cmd.append('--without-fuchsia')
+        if gcc_toolchain:
+            build_cmd.extend(['--gcc-toolchain', gcc_toolchain])
         RunCommand(build_cmd + [
             '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
             RUST_HOST_LLVM_INSTALL_DIR
         ])
 
-    # Build target compiler.
-    if build_mac_arm:
-        print(f'Building the target cross-compile LLVM in '
-              f'{target_llvm_build_dir}...')
-        build_cmd.append('--build-mac-arm')
-        if not skip_build:
-            RunCommand(build_cmd + [
-                '--build-dir', target_llvm_build_dir, '--install-dir',
-                target_llvm_install_dir
-            ])
+        # Build target compiler.
+        if build_mac_arm:
+            print(f'Building the target cross-compile LLVM in '
+                  f'{target_llvm_build_dir}...')
+            build_cmd.append('--build-mac-arm')
+            if not skip_build:
+                RunCommand(build_cmd + [
+                    '--build-dir', target_llvm_build_dir, '--install-dir',
+                    target_llvm_install_dir
+                ])
 
-        print(
-            f'Copying the target-but-native llvm-config to LLVM install dir...'
-        )
-        shutil.copy(
-            os.path.join(target_llvm_install_dir, 'bin', 'llvm-config'),
-            os.path.join(target_llvm_install_dir, 'bin', 'llvm-config.bak'))
-        shutil.copy(
-            os.path.join(target_llvm_build_dir, 'NATIVE', 'bin',
-                         'llvm-config'),
-            os.path.join(target_llvm_install_dir, 'bin', 'llvm-config'))
+            print(f'Copying the target-but-native llvm-config to LLVM '
+                  f'install dir...')
+            shutil.copy(
+                os.path.join(target_llvm_install_dir, 'bin', 'llvm-config'),
+                os.path.join(target_llvm_install_dir, 'bin',
+                             'llvm-config.bak'))
+            shutil.copy(
+                os.path.join(target_llvm_build_dir, 'NATIVE', 'bin',
+                             'llvm-config'),
+                os.path.join(target_llvm_install_dir, 'bin', 'llvm-config'))
 
     # Default to pointing all architectures at the host machine on the
     # assumption we are not cross-compiling.
@@ -650,6 +650,9 @@ def main():
     parser.add_argument('--skip-checkout',
                         action='store_true',
                         help='do not create or update any checkouts')
+    parser.add_argument('--update-deps',
+                        action='store_true',
+                        help='update dependencies and exit.')
     parser.add_argument('--skip-clean',
                         action='store_true',
                         help='skip x.py clean step')
@@ -683,16 +686,22 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
+    if args.update_deps:
+        args.skip_checkout = True
+        args.skip_llvm_build = True
+
+    if sys.platform == 'win32':
+        # Use curl to prime Windows's root cert store (crbug.com/1448442).
+        RunCommand(['curl', '-I', 'https://static.rust-lang.org'])
+
     if args.rust_force_head_revision:
+        assert not args.skip_checkout
         checkout_revision = GetLatestRustCommit()
     else:
         checkout_revision = RUST_REVISION
 
-    building_on_host_triple = RustTargetTriple(False)
-    building_for_host_triple = RustTargetTriple(args.build_mac_arm)
-
     args.gcc_toolchain = None
-    if sys.platform.startswith('linux'):
+    if sys.platform.startswith('linux') and not args.update_deps:
         # Fetch GCC package here and pass it to build.py to avoid it doing the
         # same again. Used for the LLVM build and for any C/C++ targets inside
         # the Rust toolchain build.
@@ -730,8 +739,9 @@ def main():
     # TODO(crbug.com/1271215): OpenSSL is somehow already present on the Windows
     # builder, but we should change to using a package from 3pp when it is
     # available.
-    if sys.platform != 'win32' and not args.build_mac_arm:
-        # Cargo depends on OpenSSL.
+    if (sys.platform != 'win32' and not args.build_mac_arm
+            and not args.update_deps):
+        # Building cargo depends on OpenSSL.
         AddOpenSSLToEnv(args.build_mac_arm)
 
     xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, args.gcc_toolchain,
@@ -740,13 +750,16 @@ def main():
     # Set up config.toml in Rust source tree.
     xpy.configure(args.build_mac_arm, x86_64_llvm_config, aarch64_llvm_config)
 
-    if not args.skip_checkout or True:
-        path = FetchBetaPackage('cargo', checkout_revision)
-        if sys.platform == 'win32':
-            cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
-        else:
-            cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
-        CargoVendor(cargo_bin)
+    path = FetchBetaPackage('cargo', checkout_revision)
+    if sys.platform == 'win32':
+        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
+    else:
+        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
+    CargoVendor(cargo_bin)
+
+    # Deps are updated, so we're done now.
+    if args.update_deps:
+        return 0
 
     if args.run_xpy:
         if rest[0] == '--':
@@ -755,6 +768,9 @@ def main():
         return 0
     else:
         assert not rest
+
+    building_on_host_triple = RustTargetTriple(False)
+    building_for_host_triple = RustTargetTriple(args.build_mac_arm)
 
     xpy_args = ['--build', building_on_host_triple]
     if args.build_mac_arm:

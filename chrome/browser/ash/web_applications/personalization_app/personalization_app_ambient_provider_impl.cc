@@ -20,6 +20,7 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/shell.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -162,9 +164,11 @@ void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
 
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
-  AmbientUiSettings(to_theme,
-                    orig_settings.video().value_or(kDefaultAmbientVideo))
-      .WriteToPrefService(*pref_service);
+  AmbientVideo video = orig_settings.video().value_or(kDefaultAmbientVideo);
+  if (to_theme == AmbientTheme::kVideo) {
+    LogAmbientModeVideo(video);
+  }
+  AmbientUiSettings(to_theme, video).WriteToPrefService(*pref_service);
 
   // `kVideo` theme is special and automatically means a switch to the `kVideo`
   // topic source. None of the other topic sources are possible with this theme.
@@ -295,6 +299,7 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       DCHECK(pref_service);
       AmbientUiSettings(GetCurrentUiSettings().theme(), *video)
           .WriteToPrefService(*pref_service);
+      LogAmbientModeVideo(*video);
       break;
   }
 
@@ -703,7 +708,13 @@ void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
 
 void PersonalizationAppAmbientProviderImpl::ShouldShowTimeOfDayBanner(
     ShouldShowTimeOfDayBannerCallback callback) {
+  // Time of day banner should not display for the users with policy managed
+  // wallpapers who cannot change their wallpapers. Note that although
+  // enterprise users are not able to access screen saver, some of them are able
+  // to access wallpaper subpage and change wallpapers.
   std::move(callback).Run(
+      !WallpaperController::Get()->IsWallpaperControlledByPolicy(
+          GetAccountId(profile_)) &&
       features::IsTimeOfDayScreenSaverEnabled() &&
       contextual_tooltip::ShouldShowNudge(
           profile_->GetPrefs(),

@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation_layout_providing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol ApplicationCommands;
@@ -94,7 +94,7 @@ enum class TabGridPageConfiguration {
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and remote tabs.
 @interface TabGridViewController
-    : UIViewController <GridTransitionAnimationLayoutProviding,
+    : UIViewController <LegacyGridTransitionAnimationLayoutProviding,
                         IncognitoReauthObserver,
                         KeyCommandActions,
                         LayoutSwitcherProvider,

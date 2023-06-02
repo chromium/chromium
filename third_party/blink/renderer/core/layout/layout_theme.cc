@@ -216,9 +216,10 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
                                                            : auto_appearance;
 
     case kTextFieldPart:
-      if (IsA<HTMLInputElement>(*element) &&
-          To<HTMLInputElement>(*element).type() == input_type_names::kSearch)
+      if (const auto* input_element = DynamicTo<HTMLInputElement>(*element);
+          input_element && input_element->type() == input_type_names::kSearch) {
         return part;
+      }
       return auto_appearance;
   }
 
@@ -282,18 +283,6 @@ void LayoutTheme::AdjustStyle(const Element* element,
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
-  if (RuntimeEnabledFeatures::LayoutMediaChildPaintContainmentEnabled()) {
-    return R"CSS(
-audio::-webkit-media-controls,
-video::-webkit-media-controls {
-    contain: paint !important;
-}
-video::-webkit-media-text-track-container {
-    contain: paint !important;
-    position: relative !important;
-}
-)CSS";
-  }
   return g_empty_string;
 }
 

@@ -1,7 +1,12 @@
 <style include="history-clusters-shared-style">
   #actionMenuButton {
-    --cr-icon-button-icon-size: 24px;
+    --cr-icon-button-icon-size: 20px;
     --cr-icon-button-margin-end: 8px;
+  }
+
+  :host([in-side-panel_]) #actionMenuButton {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
   }
 </style>
 
@@ -16,6 +21,10 @@
       <button id="openAllButton" class="dropdown-item"
           on-click="onOpenAllButtonClick_">
         [[i18n('openAllInTabGroup')]]
+      </button>
+      <button id="hideAllButton" class="dropdown-item"
+          on-click="onHideAllButtonClick_">
+        [[i18n('hideAllVisits')]]
       </button>
       <button id="removeAllButton" class="dropdown-item"
           on-click="onRemoveAllButtonClick_"

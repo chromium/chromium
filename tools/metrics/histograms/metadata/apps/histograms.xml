@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AppDisplayModes">
+<!-- Should be kept in sync with variants DisplayModes in
+  tools/metrics/histograms/metadata/ash/histograms.xml.
+-->
+
+  <variant name="ClamshellMode" summary="Clamshell mode"/>
+  <variant name="TabletMode" summary="Tablet mode"/>
+</variants>
+
 <variants name="AppType">
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
@@ -986,7 +995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.Actions"
-    enum="AppListFederatedActions" expires_after="2023-07-01">
+    enum="AppListFederatedActions" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -1009,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.InitStatus"
-    enum="AppListFederatedInitStatus" expires_after="2023-07-01">
+    enum="AppListFederatedInitStatus" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -1019,7 +1028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.ReportStatus"
-    enum="AppListFederatedReportStatus" expires_after="2023-07-01">
+    enum="AppListFederatedReportStatus" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -1029,7 +1038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.SearchSessionConclusion"
-    enum="AppListFederatedSearchSessionConclusion" expires_after="2023-09-01">
+    enum="AppListFederatedSearchSessionConclusion" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1218,7 +1227,7 @@ chromium-metrics-reviews@google.com.
     sort nudge shows initially in tablet (or clamshell), then the discovery
     duration is reported using the histogram for tablet (or clamshell).
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
@@ -1229,7 +1238,7 @@ chromium-metrics-reviews@google.com.
     The app list sort order preserved in the pref service. Triggered when the
     pref service for the new session is ready.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2021,7 +2030,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ContextMenuShowSourceV2{AppUIComponent}{TabletOrClamshellMode}"
-    enum="MenuSourceType" expires_after="2023-06-01">
+    enum="MenuSourceType" expires_after="2023-12-01">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2035,7 +2044,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ContextMenuUserJourneyTimeV2{AppUIComponent}{TabletOrClamshellMode}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2023-12-01">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2223,7 +2232,7 @@ chromium-metrics-reviews@google.com.
     The events that reset the app list pref sort order. Triggered when the pref
     sort order is reset.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2236,7 +2245,7 @@ chromium-metrics-reviews@google.com.
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
@@ -2249,19 +2258,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.Launcher.InstallLocallyShortcutsCreated" enum="Boolean"
-    expires_after="2022-07-03">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of locally installed an app on the chrome://apps page,
-    which involves hooking up Os integration. Specifically, this records if the
-    shortcuts were created successfully. This happens whena user right-clicks on
-    a greyed out webapp icon in the chrome://apps page and clicks
-    &quot;Install&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
     enum="AppListSortOrder" expires_after="M112">
   <owner>andrewxu@chromium.org</owner>
@@ -2270,7 +2266,7 @@ chromium-metrics-reviews@google.com.
     The user-set sort order of the productivity launcher. Triggered when the
     launcher is set with a new order.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2283,7 +2279,7 @@ chromium-metrics-reviews@google.com.
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"
@@ -2540,7 +2536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.MediaApp.Load.OtherOpenWindowCount" units="windows"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>tapted@chromium.org</owner>
   <owner>patricialor@chromium.org</owner>
   <summary>

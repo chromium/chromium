@@ -198,7 +198,8 @@ cc_test(
     deps = [
         ":graphcycles_internal",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
+        "//absl/log:check",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -247,7 +248,8 @@ cc_test(
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
+        "//absl/log:check",
         "//absl/memory",
         "//absl/time",
         "@com_google_googletest//:gtest_main",
@@ -376,6 +378,6 @@ cc_test(
     deps = [
         ":synchronization",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
+        "//absl/log:check",
     ],
 )

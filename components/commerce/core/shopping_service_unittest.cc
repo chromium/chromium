@@ -23,6 +23,7 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -777,6 +778,65 @@ TEST_F(ShoppingServiceTest,
   // specific countries and locales. The fake country and locale below should
   // be blocked.
   ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+}
+
+class ShoppingServiceReadyTest : public ShoppingServiceTest {
+ public:
+  ShoppingServiceReadyTest() = default;
+  ShoppingServiceReadyTest(const ShoppingServiceReadyTest&) = delete;
+  ShoppingServiceReadyTest operator=(const ShoppingServiceReadyTest&) = delete;
+  ~ShoppingServiceReadyTest() override = default;
+
+  void SetUp() override {
+    sync_service_->SetTransportState(
+        syncer::SyncService::TransportState::INITIALIZING);
+    ShoppingServiceTest::SetUp();
+  }
+};
+
+TEST_F(ShoppingServiceReadyTest, TestServiceReadyDelaysForSync) {
+  test_features_.InitWithFeatures({kShoppingList}, {});
+
+  bool service_ready = false;
+  shopping_service_->WaitForReady(
+      base::BindOnce([](bool* service_ready,
+                        ShoppingService* service) { *service_ready = true; },
+                     &service_ready));
+
+  base::RunLoop().RunUntilIdle();
+
+  // The ready check should not have run since sync is not ready.
+  ASSERT_FALSE(service_ready);
+
+  sync_service_->SetHasSyncConsent(true);
+  sync_service_->SetInitialSyncFeatureSetupComplete(true);
+  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->FireStateChanged();
+
+  base::RunLoop().RunUntilIdle();
+
+  // The run loop should be finished now.
+  ASSERT_TRUE(service_ready);
+}
+
+TEST_F(ShoppingServiceReadyTest, TestServiceReadyDelaysForSync_SyncActive) {
+  test_features_.InitWithFeatures({kShoppingList}, {});
+
+  sync_service_->SetHasSyncConsent(true);
+  sync_service_->SetInitialSyncFeatureSetupComplete(true);
+  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->FireStateChanged();
+
+  bool service_ready = false;
+  shopping_service_->WaitForReady(
+      base::BindOnce([](bool* service_ready,
+                        ShoppingService* service) { *service_ready = true; },
+                     &service_ready));
+
+  base::RunLoop().RunUntilIdle();
+
+  // The ready check should complete since sync was already active.
+  ASSERT_TRUE(service_ready);
 }
 
 }  // namespace commerce

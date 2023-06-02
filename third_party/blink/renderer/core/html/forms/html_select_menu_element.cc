@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -152,8 +153,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartInserted(
     select_->SelectedValuePartInserted(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartInserted(element);
-  } else if (IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartInserted(DynamicTo<HTMLOptionElement>(element));
+  } else if (auto* options_element = DynamicTo<HTMLOptionElement>(element)) {
+    select_->OptionPartInserted(options_element);
   }
 }
 
@@ -167,8 +168,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartRemoved(
     select_->SelectedValuePartRemoved(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartRemoved(element);
-  } else if (IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartRemoved(DynamicTo<HTMLOptionElement>(element));
+  } else if (auto* options_element = DynamicTo<HTMLOptionElement>(element)) {
+    select_->OptionPartRemoved(options_element);
   }
 }
 
@@ -219,8 +220,8 @@ HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
     return PartType::kButton;
   } else if (node == listbox_part_) {
     return PartType::kListBox;
-  } else if (IsA<HTMLOptionElement>(node) &&
-             option_parts_.Contains(DynamicTo<HTMLOptionElement>(node))) {
+  } else if (auto* option_element = DynamicTo<HTMLOptionElement>(node);
+             option_element && option_parts_.Contains(option_element)) {
     return PartType::kOption;
   }
 
@@ -242,44 +243,48 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   Document& document = GetDocument();
 
+  AtomicString button_part(kButtonPartName);
   button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
-  button_slot_->setAttribute(html_names::kNameAttr, kButtonPartName);
+  button_slot_->setAttribute(html_names::kNameAttr, button_part);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
-  button_part_->setAttribute(html_names::kPartAttr, kButtonPartName);
-  button_part_->setAttribute(html_names::kBehaviorAttr, kButtonPartName);
+  button_part_->setAttribute(html_names::kPartAttr, button_part);
+  button_part_->setAttribute(html_names::kBehaviorAttr, button_part);
   button_part_->SetShadowPseudoId(AtomicString("-internal-selectmenu-button"));
   button_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::ButtonPartEventListener>(
           this);
   button_part_listener_->AddEventListeners(button_part_);
 
+  AtomicString selected_value_part(kSelectedValuePartName);
   selected_value_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   selected_value_slot_->setAttribute(html_names::kNameAttr,
-                                     kSelectedValuePartName);
+                                     selected_value_part);
 
   selected_value_part_ = MakeGarbageCollected<HTMLDivElement>(document);
   selected_value_part_->setAttribute(html_names::kPartAttr,
-                                     kSelectedValuePartName);
+                                     selected_value_part);
   selected_value_part_->setAttribute(html_names::kBehaviorAttr,
-                                     kSelectedValuePartName);
+                                     selected_value_part);
 
+  AtomicString marker_part(kMarkerPartName);
   marker_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
-  marker_slot_->setAttribute(html_names::kNameAttr, kMarkerPartName);
+  marker_slot_->setAttribute(html_names::kNameAttr, marker_part);
 
   auto* marker_icon = MakeGarbageCollected<HTMLDivElement>(document);
   marker_icon->SetShadowPseudoId(
       AtomicString("-internal-selectmenu-button-icon"));
-  marker_icon->setAttribute(html_names::kPartAttr, kMarkerPartName);
+  marker_icon->setAttribute(html_names::kPartAttr, marker_part);
 
+  AtomicString listbox_part(kListboxPartName);
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
-  listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
+  listbox_slot_->setAttribute(html_names::kNameAttr, listbox_part);
 
   HTMLElement* new_popover;
   new_popover = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popover->setAttribute(html_names::kPopoverAttr, kPopoverTypeValueAuto);
-  new_popover->setAttribute(html_names::kPartAttr, kListboxPartName);
-  new_popover->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
+  new_popover->setAttribute(html_names::kPopoverAttr, keywords::kAuto);
+  new_popover->setAttribute(html_names::kPartAttr, listbox_part);
+  new_popover->setAttribute(html_names::kBehaviorAttr, listbox_part);
   new_popover->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
   SetListboxPart(new_popover);
 

@@ -71,8 +71,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     std::u16string button_labels[ui::DIALOG_BUTTON_LAST + 1];
 
     // Styles of each button on this dialog. If empty a style will be derived.
-    absl::optional<MdTextButton::Style>
-        button_styles[ui::DIALOG_BUTTON_LAST + 1];
+    absl::optional<ui::ButtonStyle> button_styles[ui::DIALOG_BUTTON_LAST + 1];
 
     // A bitmask of buttons (from ui::DialogButton) that are enabled in this
     // dialog. It's legal for a button to be marked enabled that isn't present
@@ -131,7 +130,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   std::u16string GetDialogButtonLabel(ui::DialogButton button) const;
 
   // Returns the style of the specific dialog button.
-  MdTextButton::Style GetDialogButtonStyle(ui::DialogButton button) const;
+  ui::ButtonStyle GetDialogButtonStyle(ui::DialogButton button) const;
 
   // Returns true if `button` should be the default button.
   bool GetIsDefault(ui::DialogButton button) const;
@@ -229,7 +228,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // interval from when the protection is started as well as any following
   // clicks that happen in shorter succession than the user's double click
   // interval. Refer to InputEventActivationProtector for more information.
-  void TriggerInputProtection();
+  void TriggerInputProtection(bool force_early = false);
 
   void set_use_round_corners(bool round) { params_.round_corners = round; }
   void set_corner_radius(int corner_radius) {
@@ -249,7 +248,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void SetButtons(int buttons);
   void SetButtonLabel(ui::DialogButton button, std::u16string label);
   void SetButtonStyle(ui::DialogButton button,
-                      absl::optional<MdTextButton::Style> style);
+                      absl::optional<ui::ButtonStyle> style);
   void SetButtonEnabled(ui::DialogButton button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog

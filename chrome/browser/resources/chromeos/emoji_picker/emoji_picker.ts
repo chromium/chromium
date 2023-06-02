@@ -328,13 +328,13 @@ export class EmojiPicker extends PolymerElement {
     );
 
     if (this.gifSupport) {
-      this.fetchAndProcessGifData(prevFetchPromise, prevRenderPromise);
+      await this.fetchAndProcessGifData(prevFetchPromise, prevRenderPromise);
     }
   }
 
   private fetchAndProcessGifData(
       prevFetchPromise: Promise<EmojiGroupData> = Promise.resolve([]),
-      prevRenderPromise = Promise.resolve()) {
+      prevRenderPromise = Promise.resolve()): Promise<void> {
     this.validateRecentlyUsedGifs();
 
     // Set Recently Used and Trending in the GIF tabs first before fetching
@@ -375,7 +375,8 @@ export class EmojiPicker extends PolymerElement {
             });
     const featuredGifFetchPromise =
         categoriesFetchPromise.then(() => this.apiProxy.getFeaturedGifs());
-    Promise.all([categoriesRenderPromise, featuredGifFetchPromise])
+
+    return Promise.all([categoriesRenderPromise, featuredGifFetchPromise])
         .then((values) => {
           const {status, featuredGifs} = values[1];
           this.status = status;
@@ -397,7 +398,12 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onClickTryAgain() {
-    this.fetchAndProcessGifData();
+    // The network error illustration only displays in GIF panel under offline
+    // mode; in this case, after reloading data, we should switch back to GIF
+    // panel (if it is successful).
+    this.fetchAndProcessGifData().then(() => {
+      this.onCategoryButtonClick(CategoryEnum.GIF);
+    });
   }
 
   private canScrollToGroup(category: CategoryEnum, groupId: string): boolean {

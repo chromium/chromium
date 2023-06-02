@@ -77,8 +77,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     public PowerBookmarkShoppingItemRow(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mPreferredImageSize = getResources().getDimensionPixelSize(
-                R.dimen.bookmark_refresh_preferred_start_icon_size);
+        mPreferredImageSize =
+                getResources().getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact);
     }
 
     // FrameLayout implementation.
@@ -220,7 +220,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
                                              : PriceTrackingState.PRICE_TRACKING_DISABLED);
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModel, mBookmarkId,
                     !mIsPriceTrackingEnabled, mSnackbarManager, getContext().getResources(),
-                    subscriptionCallback);
+                    mProfile, subscriptionCallback);
         });
     }
 

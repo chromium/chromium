@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
+import("//components/signin/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -17,7 +18,10 @@ import("//tools/grit/repack.gni")
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 group("resources") {
-  public_deps = [ "segmentation_internals:resources" ]
+  public_deps = [
+    "accessibility:resources",
+    "segmentation_internals:resources",
+  ]
 
   if (!is_android) {
     public_deps += [
@@ -46,6 +50,7 @@ group("resources") {
       "settings:resources",
       "settings_shared:resources",
       "side_panel/bookmarks:resources",
+      "side_panel/commerce:resources",
       "side_panel/companion:resources",
       "side_panel/customize_chrome:resources",
       "side_panel/history_clusters:resources",
@@ -98,7 +103,7 @@ group("resources") {
     public_deps += [
       "app_home:resources",
       "app_settings:resources",
-      "ntp4:apps_resources",
+      "ntp4:resources",
     ]
   }
 
@@ -112,6 +117,10 @@ group("resources") {
       "signin/profile_picker:resources",
       "welcome:resources",
     ]
+  }
+
+  if (enable_waffle_desktop) {
+    public_deps += [ "waffle:resources" ]
   }
 
   if (enable_extensions) {
@@ -268,11 +277,13 @@ repack("dev_ui_paks") {
   output = "$root_gen_dir/chrome/dev_ui_resources.pak"
 
   sources = [
+    "$root_gen_dir/chrome/accessibility_resources.pak",
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/browsing_topics_internals_resources.pak",
     "$root_gen_dir/chrome/dev_ui_browser_resources.pak",
     "$root_gen_dir/chrome/internals_resources.pak",
     "$root_gen_dir/chrome/invalidations_resources.pak",
+    "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",
     "$root_gen_dir/chrome/net_internals_resources.pak",
     "$root_gen_dir/chrome/omnibox_resources.pak",
@@ -294,10 +305,12 @@ repack("dev_ui_paks") {
   ]
   deps = [
     "//chrome/browser:dev_ui_browser_resources",
+    "//chrome/browser/resources/accessibility:resources",
     "//chrome/browser/resources/bluetooth_internals:resources",
     "//chrome/browser/resources/browsing_topics:resources",
     "//chrome/browser/resources/internals:resources",
     "//chrome/browser/resources/invalidations:resources",
+    "//chrome/browser/resources/location_internals:resources",
     "//chrome/browser/resources/media:resources",
     "//chrome/browser/resources/net_internals:resources",
     "//chrome/browser/resources/omnibox:resources",

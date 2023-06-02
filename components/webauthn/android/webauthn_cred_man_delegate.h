@@ -31,7 +31,7 @@ class WebAuthnCredManDelegate : public base::SupportsUserData::Data {
   void OnCredManConditionalRequestPending(
       content::RenderFrameHost* render_frame_host,
       bool has_results,
-      base::RepeatingClosure full_assertion_request);
+      base::RepeatingCallback<void(bool)> full_assertion_request);
 
   // Called when the CredMan UI is closed.
   void OnCredManUiClosed(bool success);
@@ -61,7 +61,7 @@ class WebAuthnCredManDelegate : public base::SupportsUserData::Data {
 
  private:
   bool has_results_ = false;
-  base::RepeatingClosure full_assertion_request_;
+  base::RepeatingCallback<void(bool)> full_assertion_request_;
   base::RepeatingCallback<void(bool)> request_completion_callback_;
 };
 

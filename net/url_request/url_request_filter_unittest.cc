@@ -48,7 +48,7 @@ class TestURLRequestInterceptor : public URLRequestInterceptor {
   }
 
  private:
-  mutable raw_ptr<URLRequestTestJob> job_ = nullptr;
+  mutable raw_ptr<URLRequestTestJob, DanglingUntriaged> job_ = nullptr;
 };
 
 TEST(URLRequestFilter, BasicMatching) {

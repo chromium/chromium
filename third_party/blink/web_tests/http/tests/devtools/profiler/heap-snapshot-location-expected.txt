@@ -1,6 +1,6 @@
 Test that objects have source links in heap snapshot view.
 
-source: my-test-script.js:33
-source: my-test-script.js:36
-source: my-test-script.js:39
+source: my-test-script.js:35
+source: my-test-script.js:38
+source: my-test-script.js:41
 

@@ -1227,4 +1227,8 @@ String Color::SerializeInterpolationSpace(
   return result.ReleaseString();
 }
 
+std::ostream& operator<<(std::ostream& os, const Color& color) {
+  return os << color.SerializeAsCSSColor();
+}
+
 }  // namespace blink

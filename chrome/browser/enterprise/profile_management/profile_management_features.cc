@@ -6,10 +6,14 @@
 
 #include "build/build_config.h"
 
-namespace profile_management {
+namespace profile_management::features {
 
 BASE_FEATURE(kThirdPartyProfileManagement,
              "ThirdPartyProfileManagement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace profile_management
+BASE_FEATURE(kEnableProfileTokenManagement,
+             "EnableProfileTokenManagement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace profile_management::features

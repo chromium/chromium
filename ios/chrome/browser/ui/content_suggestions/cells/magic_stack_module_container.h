@@ -8,12 +8,16 @@
 #import <UIKit/UIKit.h>
 
 enum class ContentSuggestionsModuleType;
+@protocol MagicStackModuleContainerDelegate;
 
 // Container View for a module in the Magic Stack.
 @interface MagicStackModuleContainer : UIView
 
-// Initialize and configure for `type`.
-- (instancetype)initWithType:(ContentSuggestionsModuleType)type;
+// Initialize and configure with `contentView` for `type`.
+- (instancetype)initWithContentView:(UIView*)contentView
+                               type:(ContentSuggestionsModuleType)type
+                           delegate:
+                               (id<MagicStackModuleContainerDelegate>)delegate;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

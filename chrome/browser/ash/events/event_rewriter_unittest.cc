@@ -3190,11 +3190,17 @@ TEST_F(EventRewriterTest,
 
 TEST_F(EventRewriterTest, RecordEventRemappedToRightClick) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  BooleanPrefMember remap_to_right_click;
-  remap_to_right_click.Init(prefs::kEventRemappedToRightClick, prefs());
-  remap_to_right_click.SetValue(false);
-  delegate_->RecordEventRemappedToRightClick();
-  EXPECT_EQ(true, prefs()->GetBoolean(prefs::kEventRemappedToRightClick));
+  IntegerPrefMember alt_remap_to_right_click;
+  IntegerPrefMember search_remap_to_right_click;
+  alt_remap_to_right_click.Init(prefs::kAltEventRemappedToRightClick, prefs());
+  alt_remap_to_right_click.SetValue(0);
+  search_remap_to_right_click.Init(prefs::kSearchEventRemappedToRightClick,
+                                   prefs());
+  search_remap_to_right_click.SetValue(0);
+  delegate_->RecordEventRemappedToRightClick(/*alt_based_right_click=*/false);
+  EXPECT_EQ(1, prefs()->GetInteger(prefs::kSearchEventRemappedToRightClick));
+  delegate_->RecordEventRemappedToRightClick(/*alt_based_right_click=*/true);
+  EXPECT_EQ(1, prefs()->GetInteger(prefs::kAltEventRemappedToRightClick));
 }
 
 TEST_F(
@@ -5410,7 +5416,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
   }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  void RecordEventRemappedToRightClick() override {}
+  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
 

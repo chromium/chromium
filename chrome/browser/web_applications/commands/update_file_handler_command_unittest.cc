@@ -63,7 +63,7 @@ class UpdateFileHandlerCommandTest
   WebAppProvider* provider() { return provider_; }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

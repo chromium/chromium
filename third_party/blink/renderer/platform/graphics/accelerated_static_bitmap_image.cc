@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -377,7 +378,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat = viz::TextureStorageFormat(
-      viz::SkColorTypeToResourceFormat(sk_image_info_.colorType()),
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_image_info_.colorType())
+          .resource_format(),
       capabilities.angle_rgbx_internal_format);
   GrBackendTexture backend_texture(sk_image_info_.width(),
                                    sk_image_info_.height(), GrMipMapped::kNo,

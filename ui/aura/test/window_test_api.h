@@ -27,7 +27,7 @@ class WindowTestApi {
   void SetOcclusionState(aura::Window::OcclusionState state);
 
  private:
-  raw_ptr<Window> window_;
+  raw_ptr<Window, DanglingUntriaged> window_;
 };
 
 }  // namespace test

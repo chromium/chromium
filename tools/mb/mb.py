@@ -1733,6 +1733,8 @@ class MetaBuildWrapper:
     msan = 'is_msan=true' in vals['gn_args']
     tsan = 'is_tsan=true' in vals['gn_args']
     cfi_diag = 'use_cfi_diag=true' in vals['gn_args']
+    # Treat sanitizer warnings as test case failures (crbug/1442587).
+    fail_on_san_warnings = 'fail_on_san_warnings=true' in vals['gn_args']
     clang_coverage = 'use_clang_coverage=true' in vals['gn_args']
     java_coverage = 'use_jacoco_coverage=true' in vals['gn_args']
     javascript_coverage = 'use_javascript_coverage=true' in vals['gn_args']
@@ -1821,6 +1823,9 @@ class MetaBuildWrapper:
           '--cfi-diag=%d' % cfi_diag,
       ]
 
+      if fail_on_san_warnings:
+        cmdline += ['--fail-san=1']
+
       if javascript_coverage:
         cmdline += ['--devtools-code-coverage=${ISOLATED_OUTDIR}']
     elif test_type in ('windowed_test_launcher', 'console_test_launcher'):
@@ -1841,6 +1846,9 @@ class MetaBuildWrapper:
           '--tsan=%d' % tsan,
           '--cfi-diag=%d' % cfi_diag,
       ]
+
+      if fail_on_san_warnings:
+        cmdline += ['--fail-san=1']
     elif test_type == 'script':
       # If we're testing a CrOS simplechrome build, assume we need to prepare a
       # DUT for testing. So prepend the command to run with the test wrapper.

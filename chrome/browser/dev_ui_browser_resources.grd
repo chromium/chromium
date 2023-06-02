@@ -18,9 +18,6 @@ This file specifies browser resources for developer-facing chrome:// pages
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_ACCESSIBILITY_HTML" file="resources\accessibility\accessibility.html" type="BINDATA" />
-      <include name="IDR_ACCESSIBILITY_CSS" file="resources\accessibility\accessibility.css" type="BINDATA" />
-      <include name="IDR_ACCESSIBILITY_JS" file="${root_gen_dir}\chrome\browser\resources\accessibility\tsc\accessibility.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_COMPONENTS_COMPONENTS_HTML" file="resources\components\components.html" preprocess="true" type="BINDATA" />
       <include name="IDR_COMPONENTS_COMPONENTS_CSS" file="resources\components\components.css" type="BINDATA" />
       <include name="IDR_COMPONENTS_COMPONENTS_JS" file="${root_gen_dir}\chrome\browser\resources\components\tsc\components.js" use_base_dir="false" type="BINDATA" />

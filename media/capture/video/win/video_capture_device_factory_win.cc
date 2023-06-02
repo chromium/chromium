@@ -133,7 +133,9 @@ const char* const kModelIdsBlockedForMediaFoundation[] = {
     // Elgato Camlink 4k
     "0fd9:0066",
     // ACER Aspire VN7-571G. See https://crbug.com/1327948.
-    "04f2:b469"};
+    "04f2:b469",
+    // Hauppauge USB-Live2. See https://crbug.com/1447113.
+    "2040:c200"};
 
 // Use this list only for USB webcams.
 const char* const kModelIdsBlockedForMediaFoundationD3D11VideoCapture[] = {

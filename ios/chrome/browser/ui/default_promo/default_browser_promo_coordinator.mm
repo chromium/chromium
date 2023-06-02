@@ -84,18 +84,9 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  if (IsInRemindMeLaterGroup()) {
-    if (self.defaultBrowerPromoViewController.tertiaryActionString) {
-      [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-                IOSDefaultBrowserFullscreenPromoAction::kActionButton];
-    } else {
-      [self logDefaultBrowserFullscreenRemindMeSecondPromoHistogramForAction:
-                IOSDefaultBrowserFullscreenPromoAction::kActionButton];
-    }
-  } else {
-    [self logDefaultBrowserFullscreenPromoHistogramForAction:
-              IOSDefaultBrowserFullscreenPromoAction::kActionButton];
-  }
+  [self logDefaultBrowserFullscreenPromoHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::kActionButton];
+
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped"));
   LogUserInteractionWithFullscreenPromo();
@@ -118,21 +109,9 @@
   [self.handler hidePromo];
 }
 
-- (void)confirmationAlertTertiaryAction {
-  DCHECK(IsInRemindMeLaterGroup());
-  [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kRemindMeLater];
-  base::RecordAction(base::UserMetricsAction(
-      "IOS.DefaultBrowserFullscreenPromo.RemindMeTapped"));
-  LogRemindMeLaterPromoActionInteraction();
-  [self NotifyFETRemindMeLater];
-  [self recordDefaultBrowserPromoShown];
-  [self.handler hidePromo];
-}
-
 - (void)confirmationAlertLearnMoreAction {
   base::RecordAction(base::UserMetricsAction(
-      "IOS.DefaultBrowserFullscreen.PromoMoreInfoTapped"));
+      "IOS.DefaultBrowserFullscreenPromo.MoreInfoTapped"));
   [self recordDefaultBrowserPromoShown];
   NSString* message = GetDefaultBrowserLearnMoreText();
   self.learnMoreViewController =
@@ -154,41 +133,9 @@
   base::UmaHistogramEnumeration("IOS.DefaultBrowserFullscreenPromo", action);
 }
 
-- (void)logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-    (IOSDefaultBrowserFullscreenPromoAction)action {
-  base::UmaHistogramEnumeration("IOS.DefaultBrowserFullscreenPromoRemindMe",
-                                action);
-}
-
-- (void)logDefaultBrowserFullscreenRemindMeSecondPromoHistogramForAction:
-    (IOSDefaultBrowserFullscreenPromoAction)action {
-  base::UmaHistogramEnumeration(
-      "IOS.DefaultBrowserFullscreenPromoRemindMeSecondPromo", action);
-}
-
 #pragma mark - Private
 
-// Notifies the FET that the user has clicked "remind me later" on the default
-// browser promo, which is an eligibility criterion for the default browser blue
-// dot promo.
-- (void)NotifyFETRemindMeLater {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (!browserState || browserState->IsOffTheRecord()) {
-    return;
-  }
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-  tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-  tracker->NotifyEvent(
-      feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
-}
-
-// Records that a default browser promo has been shown. This needs to be called
-// for any action the user takes other than "remind me later", since this event
-// is used by the FET to block the blue dot default browser promo, and clicking
-// "remind me later" should not block that promo. This is why this method isn't
-// simply called in something more generic like `start`.
+// Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   LogToFETDefaultBrowserPromoShown(

@@ -19,10 +19,13 @@ component("impl") {
     "//chromeos/ash/components/login/auth/public:authpublic",
   ]
   sources = [
+    "auth_hub_common.h",
     "auth_hub_impl.cc",
     "auth_hub_impl.h",
     "auth_hub_mode_lifecycle.cc",
     "auth_hub_mode_lifecycle.h",
+    "auth_hub_vector_lifecycle.cc",
+    "auth_hub_vector_lifecycle.h",
     "auth_parts_impl.cc",
     "auth_parts_impl.h",
     "auth_session_storage_impl.cc",
@@ -47,6 +50,7 @@ source_set("unit_tests") {
   sources = [
     "auth_hub_impl_test.cc",
     "auth_hub_mode_lifecycle_unittest.cc",
+    "auth_hub_vector_lifecycle_unittest.cc",
     "auth_session_storage_impl_unittest.cc",
   ]
 }

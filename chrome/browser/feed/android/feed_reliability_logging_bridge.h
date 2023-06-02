@@ -56,7 +56,6 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
   void LogLaunchFinishedAfterStreamUpdate(
       feedwire::DiscoverLaunchResult result) override;
   void LogLoadMoreStarted() override;
-  void LogLoadMoreIndicatorShown() override;
   void LogLoadMoreActionUploadRequestStarted() override;
   void LogLoadMoreRequestSent() override;
   void LogLoadMoreResponseReceived(int64_t server_receive_timestamp_ns,

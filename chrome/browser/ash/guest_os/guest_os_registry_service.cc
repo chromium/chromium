@@ -191,6 +191,8 @@ void PopulatePrefRegistrationFromApp(base::Value::Dict& pref_registration,
                         LocaleStringsProtoToDictionary(app.keywords()));
   pref_registration.Set(guest_os::prefs::kAppNoDisplayKey,
                         base::Value(app.no_display()));
+  pref_registration.Set(guest_os::prefs::kAppTerminalKey,
+                        base::Value(app.terminal()));
   pref_registration.Set(guest_os::prefs::kAppStartupWMClassKey,
                         base::Value(app.startup_wm_class()));
   pref_registration.Set(guest_os::prefs::kAppStartupNotifyKey,
@@ -291,6 +293,7 @@ static std::string ToString(const vm_tools::apps::App& app) {
          ", comment: " + ToString(app.comment()) +
          ", mime_types: " + ToString(app.mime_types()) +
          ", no_display: " + ToString(app.no_display()) +
+         ", terminal: " + ToString(app.terminal()) +
          ", startup_wm_class: " + ToString(app.startup_wm_class()) +
          ", startup_notify: " + ToString(app.startup_notify()) +
          ", keywords: " + ToString(app.keywords()) +
@@ -405,6 +408,9 @@ bool GuestOsRegistryService::Registration::NoDisplay() const {
   return GetBool(guest_os::prefs::kAppNoDisplayKey);
 }
 
+bool GuestOsRegistryService::Registration::Terminal() const {
+  return GetBool(guest_os::prefs::kAppTerminalKey);
+}
 std::string GuestOsRegistryService::Registration::PackageId() const {
   return GetString(guest_os::prefs::kAppPackageIdKey);
 }

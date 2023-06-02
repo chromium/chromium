@@ -77,8 +77,8 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // |source_| and |encoder_| are owned by the |pump_|.
-  raw_ptr<FakeAudioSource> source_;
-  raw_ptr<FakeAudioEncoder> encoder_;
+  raw_ptr<FakeAudioSource, DanglingUntriaged> source_;
+  raw_ptr<FakeAudioEncoder, DanglingUntriaged> encoder_;
 
   std::unique_ptr<AudioPump> pump_;
 

@@ -138,7 +138,8 @@ class CastMediaNotificationItemTest : public testing::Test {
   TestingProfile profile_;
   testing::NiceMock<global_media_controls::test::MockMediaItemManager>
       item_manager_;
-  raw_ptr<MockSessionController> session_controller_ = nullptr;
+  raw_ptr<MockSessionController, DanglingUntriaged> session_controller_ =
+      nullptr;
   // This needs to be a NiceMock, because the uninteresting mock function calls
   // slow down the tests enough to make
   // CastMediaNotificationItemTest.MediaPositionUpdate flaky.

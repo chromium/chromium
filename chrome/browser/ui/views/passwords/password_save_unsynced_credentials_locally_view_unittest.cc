@@ -37,7 +37,7 @@ class PasswordSaveUnsyncedCredentialsLocallyViewTest
   void TearDown() override;
 
  protected:
-  raw_ptr<PasswordSaveUnsyncedCredentialsLocallyView> view_;
+  raw_ptr<PasswordSaveUnsyncedCredentialsLocallyView, DanglingUntriaged> view_;
   std::vector<password_manager::PasswordForm> unsynced_credentials_;
 };
 

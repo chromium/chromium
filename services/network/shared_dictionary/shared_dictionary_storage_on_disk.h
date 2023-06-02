@@ -47,6 +47,11 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       base::TimeDelta expiration,
       const std::string& match) override;
 
+  // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
+  // deleted.
+  void OnDictionaryDeleted(
+      const std::set<base::UnguessableToken>& disk_cache_key_tokens);
+
  protected:
   ~SharedDictionaryStorageOnDisk() override;
 

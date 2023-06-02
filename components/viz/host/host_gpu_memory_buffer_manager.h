@@ -132,7 +132,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   using AllocatedBuffers =
       std::unordered_map<gfx::GpuMemoryBufferId,
-                         AllocatedBufferInfo,
+                         gpu::AllocatedBufferInfo,
                          std::hash<gfx::GpuMemoryBufferId>>;
 
   mojom::GpuService* GetGpuService();

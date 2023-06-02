@@ -4,22 +4,44 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties defined here reflect the visible state of the local passwords migration warning.
  */
 class PasswordMigrationWarningProperties {
-    static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey("visible");
-    static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
-            new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
+    /**
+     * The different screens that can be shown on the sheet.
+     */
+    @IntDef({ScreenType.INTRO_SCREEN, ScreenType.OPTIONS_SCREEN})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ScreenType {
+        int INTRO_SCREEN = 0;
+        int OPTIONS_SCREEN = 1;
+    }
 
-    static PropertyModel createDefaultModel(Callback<Integer> dismissHandler) {
-        return new PropertyModel.Builder(VISIBLE, DISMISS_HANDLER)
-                .with(VISIBLE, false)
+    static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
+    static final ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
+            new ReadableObjectPropertyKey<>("dismiss_handler");
+    static final ReadableObjectPropertyKey<PasswordMigrationWarningOnClickHandler>
+            ON_CLICK_HANDLER = new ReadableObjectPropertyKey<>("on_click_handler");
+    public static final WritableIntPropertyKey CURRENT_SCREEN =
+            new WritableIntPropertyKey("current_screen");
+
+    static PropertyModel createDefaultModel(Callback<Integer> dismissHandler,
+            PasswordMigrationWarningOnClickHandler onClickHandler) {
+        return new PropertyModel.Builder(VISIBLE, DISMISS_HANDLER, ON_CLICK_HANDLER, CURRENT_SCREEN)
                 .with(DISMISS_HANDLER, dismissHandler)
+                .with(ON_CLICK_HANDLER, onClickHandler)
                 .build();
     }
 

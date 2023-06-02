@@ -366,7 +366,8 @@ class VideoRendererImplTest : public testing::Test {
   // Fixture members.
   std::unique_ptr<VideoRendererImpl> renderer_;
   base::SimpleTestTickClock tick_clock_;
-  raw_ptr<NiceMock<MockVideoDecoder>> decoder_;  // Owned by |renderer_|.
+  raw_ptr<NiceMock<MockVideoDecoder>, DanglingUntriaged>
+      decoder_;  // Owned by |renderer_|.
   NiceMock<MockDemuxerStream> demuxer_stream_;
   bool simulate_decode_delay_;
 

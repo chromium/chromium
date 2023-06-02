@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -87,11 +88,8 @@ void UserNoteUICoordinator::StartNoteCreation() {
 }
 
 void UserNoteUICoordinator::Show() {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  if (!browser_view) {
-    return;
-  }
-  browser_view->side_panel_coordinator()->Show(SidePanelEntry::Id::kUserNote);
+  SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+      SidePanelEntry::Id::kUserNote);
 }
 
 void UserNoteUICoordinator::CreateAndRegisterEntry(

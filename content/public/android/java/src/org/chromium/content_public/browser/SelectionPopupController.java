@@ -78,11 +78,10 @@ public interface SelectionPopupController {
     void setActionModeCallback(ActionMode.Callback2 callback);
 
     /**
-     * Set {@link ActionMode.Callback} used by {@link SelectionPopupController} when no text is
-     * selected.
-     * @param callback ActionMode.Callback instance.
+     * Sets the {@link AdditionalSelectionMenuItemProvider} used by {@link SelectionPopupController}
+     * when no text is selected.
      */
-    void setNonSelectionActionModeCallback(ActionMode.Callback callback);
+    void setNonSelectionAdditionalMenuItemProvider(AdditionalSelectionMenuItemProvider provider);
 
     /**
      * @return {@link SelectionClient.ResultCallback} instance.

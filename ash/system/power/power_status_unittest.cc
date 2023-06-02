@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -49,6 +50,7 @@ class PowerStatusTest : public AshTestBase {
   ~PowerStatusTest() override = default;
 
   void SetUp() override {
+    chromeos::PowerManagerClient::InitializeFake();
     AshTestBase::SetUp();
     power_status_ = PowerStatus::Get();
     test_observer_ = std::make_unique<TestObserver>();
@@ -59,6 +61,7 @@ class PowerStatusTest : public AshTestBase {
     power_status_->RemoveObserver(test_observer_.get());
     test_observer_.reset();
     AshTestBase::TearDown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
@@ -294,6 +297,42 @@ TEST_F(PowerStatusTest, PreferredMinimumExternalPower) {
   power_status_->SetProtoForTesting(prop);
 
   EXPECT_EQ(23.45, power_status_->GetPreferredMinimumPower());
+}
+
+// Tests that toggling battery saver state sends notifications to observers and
+// updates the value returned from IsBatterySaverActive().
+TEST_F(PowerStatusTest, BatterySaver) {
+  // Let any callbacks queued in initialization run.
+  base::RunLoop().RunUntilIdle();
+
+  const int initial_power_changed_count = test_observer_->power_changed_count();
+
+  // Check that we default to off.
+  ASSERT_FALSE(power_status_->IsBatterySaverActive());
+
+  // Turn battery saver on.
+  {
+    power_manager::SetBatterySaverModeStateRequest request;
+    request.set_enabled(true);
+    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_EQ(initial_power_changed_count + 1,
+            test_observer_->power_changed_count());
+  EXPECT_TRUE(power_status_->IsBatterySaverActive());
+
+  // Turn battery saver off.
+  {
+    power_manager::SetBatterySaverModeStateRequest request;
+    request.set_enabled(false);
+    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_EQ(initial_power_changed_count + 2,
+            test_observer_->power_changed_count());
+  EXPECT_FALSE(power_status_->IsBatterySaverActive());
 }
 
 }  // namespace ash

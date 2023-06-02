@@ -113,12 +113,6 @@ void FieldTrialTest::SetFeatureParams(
     case NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES:
       num_clock_drift_samples = "2";
       break;
-    case NetworkTimeTracker::ClockDriftSamples::FOUR_SAMPLES:
-      num_clock_drift_samples = "4";
-      break;
-    case NetworkTimeTracker::ClockDriftSamples::SIX_SAMPLES:
-      num_clock_drift_samples = "6";
-      break;
   }
   params["ClockDriftSamples"] = num_clock_drift_samples;
 

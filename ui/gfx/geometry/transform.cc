@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/sin_cos_degrees.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -32,27 +33,6 @@ const double kEpsilon = std::numeric_limits<float>::epsilon();
 
 double TanDegrees(double degrees) {
   return std::tan(DegToRad(degrees));
-}
-
-struct SinCos {
-  double sin;
-  double cos;
-  bool IsZeroAngle() const { return sin == 0 && cos == 1; }
-};
-
-SinCos SinCosDegrees(double degrees) {
-  double n90degrees = degrees / 90.0;
-  int n = static_cast<int>(n90degrees);
-  if (n == n90degrees) {
-    n %= 4;
-    if (n < 0)
-      n += 4;
-    constexpr SinCos kSinCosN90[] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    return kSinCosN90[n];
-  }
-  // fmod is to reduce errors of DegToRad() with large |degrees|.
-  double rad = DegToRad(std::fmod(degrees, 360.0));
-  return SinCos{std::sin(rad), std::cos(rad)};
 }
 
 inline bool ApproximatelyZero(double x, double tolerance) {

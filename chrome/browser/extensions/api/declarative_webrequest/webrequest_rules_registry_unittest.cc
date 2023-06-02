@@ -134,12 +134,12 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId1;
     rule.priority = 100;
-    rule.actions.emplace_back(action_dict.Clone());
+    rule.actions.Append(std::move(action_dict));
     http_condition_dict.Set(keys2::kSchemesKey, std::move(scheme_http));
     http_condition_url_filter.Set(keys::kUrlKey,
                                   std::move(http_condition_dict));
-    rule.conditions.emplace_back(http_condition_url_filter.Clone());
-    rule.conditions.emplace_back(https_condition_url_filter.Clone());
+    rule.conditions.Append(std::move(http_condition_url_filter));
+    rule.conditions.Append(std::move(https_condition_url_filter));
     return rule;
   }
 
@@ -154,8 +154,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId2;
     rule.priority = 100;
-    rule.actions.emplace_back(action_dict.Clone());
-    rule.conditions.emplace_back(condition_dict.Clone());
+    rule.actions.Append(std::move(action_dict));
+    rule.conditions.Append(std::move(condition_dict));
     return rule;
   }
 
@@ -170,8 +170,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId3;
     rule.priority = 100;
-    rule.actions.emplace_back(action_dict.Clone());
-    rule.conditions.emplace_back(condition_dict.Clone());
+    rule.actions.Append(std::move(action_dict));
+    rule.conditions.Append(std::move(condition_dict));
     return rule;
   }
 
@@ -191,8 +191,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId4;
     rule.priority = 200;
-    rule.actions.emplace_back(action_dict.Clone());
-    rule.conditions.emplace_back(condition_dict.Clone());
+    rule.actions.Append(std::move(action_dict));
+    rule.conditions.Append(std::move(condition_dict));
     return rule;
   }
 
@@ -220,9 +220,9 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = rule_id;
     rule.priority = 1;
-    rule.actions.emplace_back(action_dict.Clone());
+    rule.actions.Append(std::move(action_dict));
     for (auto* attribute : attributes)
-      rule.conditions.push_back(CreateCondition(*attribute));
+      rule.conditions.Append(CreateCondition(*attribute));
     return rule;
   }
 
@@ -728,8 +728,8 @@ TEST(WebRequestRulesRegistrySimpleTest, HostPermissionsChecker) {
       "}                                                             ";
   base::Value action_value = base::test::ParseJson(kAction);
 
-  WebRequestActionSet::Values actions;
-  actions.push_back(std::move(action_value));
+  base::Value::List actions;
+  actions.Append(std::move(action_value));
 
   std::string error;
   bool bad_message = false;

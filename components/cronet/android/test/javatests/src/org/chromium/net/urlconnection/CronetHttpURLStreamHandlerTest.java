@@ -6,7 +6,6 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -73,9 +72,8 @@ public class CronetHttpURLStreamHandlerTest {
         URL url = new URL("https://example.com");
         CronetHttpURLStreamHandler streamHandler =
                 new CronetHttpURLStreamHandler(mTestFramework.mCronetEngine);
-        HttpURLConnection connection =
-                (HttpURLConnection) streamHandler.openConnection(url);
-        assertNotNull(connection);
+        HttpURLConnection connection = (HttpURLConnection) streamHandler.openConnection(url);
+        assertThat(connection).isNotNull();
     }
 
     @Test

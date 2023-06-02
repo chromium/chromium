@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
@@ -23,22 +22,15 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_management_mixin.h"
+#include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
+#include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/device_signals/test/signals_contract.h"
-#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#include "components/enterprise/browser/enterprise_switches.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/policy_constants.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
@@ -51,27 +43,25 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment_win.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif  // #if BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #else
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #endif
 
 using content::NavigationHandle;
 using content::TestNavigationManager;
 
 namespace enterprise_connectors {
-
-using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
 namespace {
 
@@ -108,17 +98,6 @@ constexpr char kChallengeV1[] =
     "}"
     "}";
 
-constexpr char kFakeCustomerId[] = "fake-customer-id";
-constexpr char kDifferentCustomerId[] = "different-customer-id";
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
-constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
-constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-constexpr char kAllowedHost[] = "allowed.google.com";
-constexpr char kOtherHost[] = "notallowed.google.com";
-
 // Const headers used in the handshake flow.
 constexpr char kDeviceTrustHeader[] = "X-Device-Trust";
 constexpr char kDeviceTrustHeaderValue[] = "VerifiedAccess";
@@ -143,12 +122,25 @@ constexpr int kHardFailureCode = 400;
 
 }  // namespace
 
-class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
+class DeviceTrustBrowserTestBase : public MixinBasedInProcessBrowserTest {
  protected:
-  DeviceTrustBrowserTestBase() { ResetState(); }
+  DeviceTrustBrowserTestBase() {
+    ResetState();
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    // Enabled at both levels.
+    test::DeviceTrustConnectorState state;
+    state.affiliated = true;
+    state.cloud_user_management_level.is_managed = true;
+    state.cloud_user_management_level.is_inline_policy_enabled = true;
+    state.cloud_machine_management_level.is_managed = true;
+    state.cloud_machine_management_level.is_inline_policy_enabled = true;
+
+    device_trust_mixin_ = std::make_unique<test::DeviceTrustManagementMixin>(
+        &mixin_host_, this, std::move(state));
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &DeviceTrustBrowserTestBase::HandleRequest, base::Unretained(this)));
@@ -157,49 +149,10 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
                     embedded_test_server()->StartAndReturnHandle());
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-  }
-
   void TearDownOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InProcessBrowserTest::TearDownOnMainThread();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
-
-  void SetPolicy(bool as_empty_list = false,
-                 Browser* active_browser = nullptr) {
-    policy::PolicyMap policy_map;
-    base::Value::List list;
-
-    if (!as_empty_list) {
-      list.Append(kAllowedHost);
-    }
-
-    policy_map.Set(policy::key::kContextAwareAccessSignalsAllowlist,
-                   policy::POLICY_LEVEL_MANDATORY, GetPolicyScope(),
-                   policy::POLICY_SOURCE_CLOUD, base::Value(std::move(list)),
-                   nullptr);
-
-    EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map));
-    base::RunLoop().RunUntilIdle();
-
-    if (!active_browser) {
-      active_browser = browser();
-    }
-
-    EXPECT_EQ(GetProfilePrefs(*active_browser)
-                  ->GetList(kContextAwareAccessSignalsAllowlistPref)
-                  .empty(),
-              as_empty_list);
-    EXPECT_TRUE(
-        GetProfilePrefs(*active_browser)
-            ->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref));
-  }
-
-  virtual policy::PolicyScope GetPolicyScope() = 0;
 
   void SetChallengeHeader(const std::string& new_challenge_header) {
     test_header_ = new_challenge_header;
@@ -212,15 +165,16 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
   }
 
   GURL GetRedirectUrl() {
-    return embedded_test_server()->GetURL(kAllowedHost, kRedirectPath);
+    return embedded_test_server()->GetURL(test::kAllowedHost, kRedirectPath);
   }
 
   GURL GetRedirectLocationUrl() {
-    return embedded_test_server()->GetURL(kAllowedHost, kRedirectLocationPath);
+    return embedded_test_server()->GetURL(test::kAllowedHost,
+                                          kRedirectLocationPath);
   }
 
   GURL GetDisallowedUrl() {
-    return embedded_test_server()->GetURL(kOtherHost, "/simple.html");
+    return embedded_test_server()->GetURL(test::kOtherHost, "/simple.html");
   }
 
   void ExpectFunnelStep(DTAttestationFunnelStep step) {
@@ -332,7 +286,6 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     TestNavigationManager first_navigation(web_contents(), redirect_url);
 
     // Add allowed domain to Prefs and trigger a navigation to it.
-    SetPolicy();
     NavigateToUrl(redirect_url);
 
     ASSERT_TRUE(first_navigation.WaitForNavigationFinished());
@@ -344,7 +297,7 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     challenge_response_request_.reset();
   }
 
-  void VerifyDisabledFeatureFlow() {
+  void VerifyNoInlineFlowOccurred() {
     // If the feature flag is disabled, the attestation flow should not have
     // been triggered (and that is the end of the test);
     EXPECT_FALSE(initial_attestation_request_);
@@ -360,26 +313,11 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
   std::string test_header_ = kChallenge;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   absl::optional<const net::test_server::HttpRequest>
       initial_attestation_request_;
   absl::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
-
-  void SetPolicyValues(enterprise_management::PolicyData* machine_policy_data,
-                       enterprise_management::PolicyData* user_policy_data,
-                       bool is_affiliated = true) {
-    if (machine_policy_data) {
-      machine_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
-      machine_policy_data->add_device_affiliation_ids(kFakeCustomerId);
-    }
-
-    if (user_policy_data) {
-      user_policy_data->add_user_affiliation_ids(
-          is_affiliated ? kFakeCustomerId : kDifferentCustomerId);
-    }
-  }
+  std::unique_ptr<test::DeviceTrustManagementMixin> device_trust_mixin_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -391,35 +329,6 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
     mock_challenge_key->EnableFake();
     ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_challenge_key));
-
-    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
-  }
-
-  void SetUpOnMainThread() override {
-    DeviceTrustBrowserTestBase::SetUpOnMainThread();
-
-    auto* device_policy_manager = g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash()
-                                      ->GetDeviceCloudPolicyManager();
-    auto* profile_policy_manager =
-        browser()->profile()->GetUserCloudPolicyManagerAsh();
-    profile_policy_manager->core()->client()->SetupRegistration(
-        "dm_token", "client_id", {});
-
-    auto device_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-    auto user_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-    SetPolicyValues(device_policy_data.get(), user_policy_data.get());
-
-    device_policy_manager->core()->store()->set_policy_data_for_testing(
-        std::move(device_policy_data));
-    profile_policy_manager->core()->store()->set_policy_data_for_testing(
-        std::move(user_policy_data));
-
-    // Fake that the device is managed.
-    management_service()->SetManagementAuthoritiesForTesting(
-        static_cast<int>(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
   }
 
   void TearDownOnMainThread() override {
@@ -427,14 +336,8 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
     DeviceTrustBrowserTestBase::TearDownOnMainThread();
   }
 
-  policy::PolicyScope GetPolicyScope() override {
-    return policy::POLICY_SCOPE_USER;
-  }
-
   void ManagementAddedAfterFirstCreationTry(bool is_enabled) {
     content::MockNavigationHandle mock_nav_handle(web_contents());
-
-    SetPolicy(false);
 
     // Make the current context unmanaged.
     management_service()->SetManagementAuthoritiesForTesting(
@@ -465,25 +368,16 @@ using DeviceTrustBrowserTest = DeviceTrustAshBrowserTest;
 class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
  protected:
   explicit DeviceTrustDesktopBrowserTest(bool create_preexisting_key = true)
-      : create_preexisting_key_(create_preexisting_key) {
-    browser_dm_token_storage_ =
-        std::make_unique<policy::FakeBrowserDMTokenStorage>();
-    browser_dm_token_storage_->SetEnrollmentToken(kFakeEnrollmentToken);
-    browser_dm_token_storage_->SetClientId(kFakeBrowserClientId);
-    browser_dm_token_storage_->EnableStorage(true);
-    browser_dm_token_storage_->SetDMToken(kFakeBrowserDMToken);
-    policy::BrowserDMTokenStorage::SetForTesting(
-        browser_dm_token_storage_.get());
-  }
+      : create_preexisting_key_(create_preexisting_key) {}
 
-  void SetUpOnMainThread() override {
-    DeviceTrustBrowserTestBase::SetUpOnMainThread();
-
+  void SetUpInProcessBrowserTestFixture() override {
+    DeviceTrustBrowserTestBase::SetUpInProcessBrowserTestFixture();
 #if BUILDFLAG(IS_WIN)
     device_trust_test_environment_win_.emplace();
-    device_trust_test_environment_win_->SetExpectedDMToken(kFakeBrowserDMToken);
+    device_trust_test_environment_win_->SetExpectedDMToken(
+        test::kBrowserDmToken);
     device_trust_test_environment_win_->SetExpectedClientID(
-        kFakeBrowserClientId);
+        test::kBrowserClientId);
 
     if (create_preexisting_key_) {
       device_trust_test_environment_win_->SetUpExistingKey();
@@ -492,37 +386,7 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
     scoped_persistence_delegate_factory_.emplace();
     scoped_rotation_command_factory_.emplace();
 #endif
-
-    safe_browsing::SetProfileDMToken(browser()->profile(), "dm_token");
-
-    auto browser_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-    auto user_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-    SetPolicyValues(browser_policy_data.get(), user_policy_data.get());
-
-    auto* browser_policy_manager =
-        g_browser_process->browser_policy_connector()
-            ->machine_level_user_cloud_policy_manager();
-    browser_policy_manager->core()->store()->set_policy_data_for_testing(
-        std::move(browser_policy_data));
-
-    auto* profile_policy_manager =
-        browser()->profile()->GetUserCloudPolicyManager();
-    profile_policy_manager->core()->store()->set_policy_data_for_testing(
-        std::move(user_policy_data));
   }
-
-  policy::PolicyScope GetPolicyScope() override {
-    return policy::POLICY_SCOPE_MACHINE;
-  }
-
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
-  }
-#endif
 
   // If set to true, will fake as if a key was already persisted on the device
   // before the browser starts.
@@ -566,7 +430,7 @@ class DeviceTrustDisabledBrowserTest : public DeviceTrustBrowserTest {
 IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledBrowserTest,
                        AttestationFullFlowKeyExists) {
   AttestationFullFlowTest();
-  VerifyDisabledFeatureFlow();
+  VerifyNoInlineFlowOccurred();
 }
 
 // Tests that the attestation flow does not get triggered when navigating to a
@@ -576,19 +440,12 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
   // Add allowed domain to Prefs and trigger a navigation to another domain.
-  SetPolicy();
   NavigateToUrl(navigation_url);
 
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Requests with attestation flow headers should not have been recorded.
-  EXPECT_FALSE(initial_attestation_request_);
-  EXPECT_FALSE(challenge_response_request_);
-
-  histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  VerifyNoInlineFlowOccurred();
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list is
@@ -597,40 +454,14 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   GURL navigation_url = GetRedirectUrl();
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
-  // Set the allow-list Pref to an empty list and trigger a navigation.
-  SetPolicy(/*as_empty_list=*/true);
+  // Clear the allow-list Pref and trigger a navigation.
+  device_trust_mixin_->DisableAllInlinePolicies();
   NavigateToUrl(navigation_url);
 
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Requests with attestation flow headers should not have been recorded.
-  EXPECT_FALSE(initial_attestation_request_);
-  EXPECT_FALSE(challenge_response_request_);
-
-  histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
-}
-
-// Tests that the attestation flow does not get triggered when the allow-list
-// pref was never populate.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefNotSet) {
-  GURL navigation_url = GetRedirectUrl();
-  TestNavigationManager navigation_manager(web_contents(), navigation_url);
-
-  NavigateToUrl(navigation_url);
-
-  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
-
-  // Requests with attestation flow headers should not have been recorded.
-  EXPECT_FALSE(initial_attestation_request_);
-  EXPECT_FALSE(challenge_response_request_);
-
-  histogram_tester_->ExpectTotalCount(kFunnelHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kResultHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kLatencySuccessHistogramName, 0);
-  histogram_tester_->ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  VerifyNoInlineFlowOccurred();
 }
 
 // Tests that the device trust navigation throttle does not get created for a
@@ -642,12 +473,9 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   content::MockNavigationHandle mock_nav_handle(
       web_contents(incognito_browser));
 
-  // Add allowed domain to Prefs.
-  SetPolicy(false, incognito_browser);
-
   // Try to create the device trust navigation throttle.
-  EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::
-                  MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
+  EXPECT_FALSE(enterprise_connectors::DeviceTrustNavigationThrottle::
+                   MaybeCreateThrottleFor(&mock_nav_handle));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -693,6 +521,8 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 }
 
 #if BUILDFLAG(IS_WIN)
+
+using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
 // To test "create key" flows, there should be no pre-existing persisted key.
 class DeviceTrustCreateKeyBrowserTest : public DeviceTrustDesktopBrowserTest {
@@ -811,7 +641,7 @@ class DeviceTrustDisabledCreateKeyBrowserTest
 IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreation) {
   AttestationFullFlowTest();
-  VerifyDisabledFeatureFlow();
+  VerifyNoInlineFlowOccurred();
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
 }
 

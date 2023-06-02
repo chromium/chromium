@@ -101,6 +101,7 @@ class StyleBuilderConverterBase {
       FontDescription::Size parent_size,
       const Document*);
   static FontSizeAdjust ConvertFontSizeAdjust(const CSSValue&);
+  static scoped_refptr<FontPalette> ConvertFontPalette(const CSSValue&);
 };
 
 // Note that we assume the parser only allows valid CSSValue types.
@@ -224,6 +225,8 @@ class StyleBuilderConverter {
   static LengthPoint ConvertPosition(StyleResolverState&, const CSSValue&);
   static LengthPoint ConvertPositionOrAuto(StyleResolverState&,
                                            const CSSValue&);
+  static LengthPoint ConvertOffsetPosition(StyleResolverState&,
+                                           const CSSValue&);
   static float ConvertPerspective(StyleResolverState&, const CSSValue&);
   static Length ConvertQuirkyLength(StyleResolverState&, const CSSValue&);
   static scoped_refptr<QuotesData> ConvertQuotes(StyleResolverState&,
@@ -330,6 +333,10 @@ class StyleBuilderConverter {
 
   static RubyPosition ConvertRubyPosition(StyleResolverState& state,
                                           const CSSValue& value);
+
+  static absl::optional<StyleScrollbarColor> ConvertScrollbarColor(
+      StyleResolverState& state,
+      const CSSValue& value);
 
   static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
                                                 const CSSValue& value);

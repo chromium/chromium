@@ -20,11 +20,9 @@ namespace base {
 class TimeDelta;
 }
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class URLLoaderFactory;
-}
-}  // namespace network
+}  // namespace network::mojom
 
 class Status;
 
@@ -76,8 +74,7 @@ class WebViewsInfo {
 class DevToolsHttpClient {
  public:
   DevToolsHttpClient(const DevToolsEndpoint& endpoint,
-                     network::mojom::URLLoaderFactory* factory,
-                     std::unique_ptr<std::set<WebViewInfo::Type>> window_types);
+                     network::mojom::URLLoaderFactory* factory);
 
   DevToolsHttpClient(const DevToolsHttpClient&) = delete;
   DevToolsHttpClient& operator=(const DevToolsHttpClient&) = delete;
@@ -89,8 +86,6 @@ class DevToolsHttpClient {
   Status GetWebViewsInfo(WebViewsInfo* views_info);
 
   const BrowserInfo* browser_info();
-  bool IsBrowserWindow(const WebViewInfo& view) const;
-  const DevToolsEndpoint& endpoint() const;
 
  private:
   virtual bool FetchUrlAndLog(const std::string& url, std::string* response);

@@ -130,7 +130,8 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kDeferredCookies = 14,
     kSharedStorage = 15,
     kPreflightCache = 16,
-    kMaxValue = kPreflightCache,
+    kSharedDictionary = 17,
+    kMaxValue = kSharedDictionary,
   };
 
   // Returns the suffix for the History.ClearBrowsingData.Duration.Task.{Task}

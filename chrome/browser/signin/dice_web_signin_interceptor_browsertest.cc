@@ -158,8 +158,9 @@ class BrowserCloseObserver : public BrowserListObserver {
 
   // BrowserListObserver implementation.
   void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_)
+    if (browser == browser_) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -184,48 +185,9 @@ Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
 
 // Checks that the interception histograms were correctly recorded.
 void CheckHistograms(const base::HistogramTester& histogram_tester,
-                     SigninInterceptionHeuristicOutcome outcome,
-                     bool reauth = false,
-                     bool declined = false) {
-  int profile_switch_count =
-      outcome == SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch ||
-              outcome == SigninInterceptionHeuristicOutcome::
-                             kInterceptEnterpriseForcedProfileSwitch
-          ? 1
-          : 0;
-  int profile_creation_count = reauth ? 0 : 1 - profile_switch_count;
-  int fetched_account_count =
-      std::max(profile_switch_count, profile_creation_count);
-
-  if (declined) {
-    histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
-                                        outcome, 1);
-    histogram_tester.ExpectTotalCount(
-        "Signin.Intercept.AccountInfoFetchDuration",
-        base::FeatureList::IsEnabled(
-            policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)
-            ? 1
-            : fetched_account_count);
-    histogram_tester.ExpectTotalCount(
-        "Signin.Intercept.ProfileCreationDuration", 0);
-    histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileSwitchDuration",
-                                      0);
-
-    return;
-  }
-
+                     SigninInterceptionHeuristicOutcome outcome) {
   histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                       outcome, 1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.AccountInfoFetchDuration",
-      base::FeatureList::IsEnabled(
-          policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)
-          ? 1
-          : fetched_account_count);
-  histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileCreationDuration",
-                                    profile_creation_count);
-  histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileSwitchDuration",
-                                    profile_switch_count);
 }
 
 }  // namespace
@@ -828,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
       intercepted_url);
 
   CheckHistograms(histogram_tester,
-                  SigninInterceptionHeuristicOutcome::kInterceptEnterprise,
-                  /*reauth=*/false, /*declined=*/true);
+                  SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
 }
 
 // Tests the complete interception flow including profile and browser creation.
@@ -982,8 +943,7 @@ IN_PROC_BROWSER_TEST_F(
 
   CheckHistograms(
       histogram_tester,
-      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced,
-      /*reauth=*/false, /*declined=*/true);
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
 // Tests the complete interception flow including profile and browser creation.
@@ -1050,8 +1010,7 @@ IN_PROC_BROWSER_TEST_F(
 
   CheckHistograms(
       histogram_tester,
-      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced,
-      /*reauth=*/false, /*declined=*/true);
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
 // Tests the complete interception flow including profile and browser creation.
@@ -1201,8 +1160,7 @@ IN_PROC_BROWSER_TEST_F(
 
   CheckHistograms(
       histogram_tester,
-      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced,
-      /*reauth=*/true);
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
 // Tests the complete interception flow for a reauth of the primary account of a
@@ -1268,8 +1226,7 @@ IN_PROC_BROWSER_TEST_F(
       intercepted_url);
 
   CheckHistograms(histogram_tester,
-                  SigninInterceptionHeuristicOutcome::kAbortAccountNotNew,
-                  /*reauth=*/true);
+                  SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.

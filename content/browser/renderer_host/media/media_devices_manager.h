@@ -323,7 +323,8 @@ class CONTENT_EXPORT MediaDevicesManager
 #endif
 
   bool use_fake_devices_;
-  const raw_ptr<media::AudioSystem> audio_system_;  // not owned
+  const raw_ptr<media::AudioSystem, DanglingUntriaged>
+      audio_system_;  // not owned
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
   StopRemovedInputDeviceCallback stop_removed_input_device_cb_;
   UIInputDeviceChangeCallback ui_input_device_change_cb_;

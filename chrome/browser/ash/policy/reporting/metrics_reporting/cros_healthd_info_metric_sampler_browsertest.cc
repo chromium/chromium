@@ -16,22 +16,11 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/mock_clock.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::reporting {
-
-// Helper for setting up CrosHealthdInfoMetrics tests.
-class CrosHealthdInfoMetricsHelper {
- public:
-  CrosHealthdInfoMetricsHelper() {
-    // Don't allow delay in initialization. We don't use
-    // |ScopedMockTimeMessageLoopTaskRunner| here because we are not able to
-    // make it work with mojom.
-    ::reporting::metrics::InitDelayParam::SetForTesting(base::Seconds(0));
-  }
-};
-
+namespace reporting {
 namespace {
 
 namespace cros_healthd = ::ash::cros_healthd::mojom;
@@ -79,13 +68,13 @@ class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
       delete;
 
  protected:
-  BusInfoSamplerBrowserTest() = default;
+  BusInfoSamplerBrowserTest() { test::MockClock::Get(); }
   ~BusInfoSamplerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceSecurityStatus, true);
+        ::ash::kReportDeviceSecurityStatus, true);
   }
 
   // Is the given record about Bus info metric?
@@ -96,8 +85,7 @@ class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
  private:
-  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(BusInfoSamplerBrowserTest, Thunderbolt) {
@@ -112,9 +100,10 @@ IN_PROC_BROWSER_TEST_F(BusInfoSamplerBrowserTest, Thunderbolt) {
           cros_healthd::ThunderboltSecurityLevel::kSecureLevel};
   auto thunderbolt_bus_result =
       ::reporting::test::CreateThunderboltBusResult(kHealthdSecurityLevels);
-  ash::cros_healthd::FakeCrosHealthd::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(thunderbolt_bus_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordBusInfo));
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   auto [priority, record] = observer.GetNextEnqueuedRecord();
   auto info_data = AssertInfo(priority, record).info_data();
   ASSERT_THAT(
@@ -136,13 +125,13 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
       delete;
 
  protected:
-  CpuInfoSamplerBrowserTest() = default;
+  CpuInfoSamplerBrowserTest() { test::MockClock::Get(); }
   ~CpuInfoSamplerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceCpuInfo, true);
+        ::ash::kReportDeviceCpuInfo, true);
   }
 
   // Is the given record about CPU info metric?
@@ -153,15 +142,15 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
  private:
-  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
   auto cpu_result = ::reporting::test::CreateCpuResult(nullptr);
-  ash::cros_healthd::FakeCrosHealthd::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(cpu_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordCpuInfo));
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   auto [priority, record] = observer.GetNextEnqueuedRecord();
   auto info_data = AssertInfo(priority, record).info_data();
   ASSERT_TRUE(info_data.cpu_info().has_keylocker_info());
@@ -172,9 +161,10 @@ IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
 IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerConfigured) {
   auto cpu_result = ::reporting::test::CreateCpuResult(
       ::reporting::test::CreateKeylockerInfo(true));
-  ash::cros_healthd::FakeCrosHealthd::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(cpu_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordCpuInfo));
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   auto [priority, record] = observer.GetNextEnqueuedRecord();
   auto info_data = AssertInfo(priority, record).info_data();
   ASSERT_TRUE(info_data.cpu_info().has_keylocker_info());
@@ -198,13 +188,13 @@ class MemoryInfoSamplerBrowserTest
       delete;
 
  protected:
-  MemoryInfoSamplerBrowserTest() = default;
+  MemoryInfoSamplerBrowserTest() { test::MockClock::Get(); }
   ~MemoryInfoSamplerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceMemoryInfo, true);
+        ::ash::kReportDeviceMemoryInfo, true);
   }
 
   // Is the given record about memory info metric?
@@ -221,8 +211,7 @@ class MemoryInfoSamplerBrowserTest
   }
 
  private:
-  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_P(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
@@ -232,9 +221,10 @@ IN_PROC_BROWSER_TEST_P(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
           test_case.healthd_encryption_state, test_case.max_keys,
           test_case.key_length, test_case.healthd_encryption_algorithm));
 
-  ash::cros_healthd::FakeCrosHealthd::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(memory_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordMemoryInfo));
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   AssertMemoryInfo(&observer);
 }
 
@@ -264,13 +254,13 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
       delete;
 
  protected:
-  InputInfoSamplerBrowserTest() = default;
+  InputInfoSamplerBrowserTest() { test::MockClock::Get(); }
   ~InputInfoSamplerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceGraphicsStatus, true);
+        ::ash::kReportDeviceGraphicsStatus, true);
   }
 
   // Is the given record about touchscreen info metric?
@@ -281,8 +271,7 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
  private:
-  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest,
@@ -311,10 +300,11 @@ IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest,
   touchscreen_devices.push_back(std::move(input_device_second));
   auto input_result = ::reporting::test::CreateInputResult(
       kSampleLibrary, std::move(touchscreen_devices));
-  ash::cros_healthd::FakeCrosHealthd::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(input_result);
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordTouchScreenInfo));
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
 
   // Assertions
   auto [priority, record] = observer.GetNextEnqueuedRecord();
@@ -352,13 +342,13 @@ class DisplayInfoSamplerBrowserTest
       const DisplayInfoSamplerBrowserTest&) = delete;
 
  protected:
-  DisplayInfoSamplerBrowserTest() = default;
+  DisplayInfoSamplerBrowserTest() { test::MockClock::Get(); }
   ~DisplayInfoSamplerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceGraphicsStatus, true);
+        ::ash::kReportDeviceGraphicsStatus, true);
   }
 
   // Is the given record about display info metric?
@@ -369,8 +359,7 @@ class DisplayInfoSamplerBrowserTest
   }
 
  private:
-  CrosHealthdInfoMetricsHelper cros_healthd_info_metrics_helper_;
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
@@ -401,9 +390,10 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
           kDisplayManufacture, kDisplayModelId, kDisplayManufactureYear,
           kInternalDisplayName),
       std::move(external_displays));
-  ash::cros_healthd::FakeCrosHealthd::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(display_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordDisplayInfo));
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
 
   // assertions
   auto [priority, record] = observer.GetNextEnqueuedRecord();
@@ -438,4 +428,4 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(external_display_2.model_id(), kDisplayModelId);
   EXPECT_EQ(external_display_2.manufacture_year(), kDisplayManufactureYear);
 }
-}  // namespace ash::reporting
+}  // namespace reporting

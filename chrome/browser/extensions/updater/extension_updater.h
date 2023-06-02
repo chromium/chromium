@@ -327,11 +327,11 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   base::TimeDelta frequency_;
   bool will_check_soon_ = false;
 
-  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
-  raw_ptr<PrefService> prefs_ = nullptr;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
-  raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
 
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_ = 0;
@@ -340,7 +340,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   // when OnInstallerDone is called.
   std::map<base::UnguessableToken, FetchedCRXFile> running_crx_installs_;
 
-  raw_ptr<ExtensionCache> extension_cache_ = nullptr;
+  raw_ptr<ExtensionCache, DanglingUntriaged> extension_cache_ = nullptr;
 
   base::RepeatingClosure updating_started_callback_;
 

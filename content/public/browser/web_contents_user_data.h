@@ -88,7 +88,8 @@ class WebContentsUserData : public base::SupportsUserData::Data {
  private:
   // This is a pointer (rather than a reference) to ensure that go/miracleptr
   // can cover this field (see also //base/memory/raw_ptr.md).
-  const raw_ptr<content::WebContents> web_contents_ = nullptr;
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ =
+      nullptr;
 };
 
 // This macro declares a static variable inside the class that inherits from

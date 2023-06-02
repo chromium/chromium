@@ -211,6 +211,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1442987760062738829">Perfurar</translation>
 <translation id="1446396933673057385">Verificação de precisão</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">As configurações que sua família escolheu garantem sua segurança on-line</translation>
 <translation id="1453974140256777690">O texto colado ou anexado é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, ele pode ser verificado em busca de dados confidenciais.</translation>
 <translation id="1455413310270022028">Borracha</translation>
 <translation id="1459693405370120464">Clima</translation>
@@ -268,6 +269,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1569487616857761740">Informar data de validade</translation>
 <translation id="1569694109004336106">O Google Chrome está tentando ativar o Windows Hello para preencher senhas.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.</translation>
+<translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Algo deu errado ao exibir esta página da Web.</translation>
 <translation id="1584492003828271317">Enquanto você navega, a personalização de um anúncio depende desta configuração, dos anúncios sugeridos pelo site, das configurações de cookies e da confirmação se o site aberto personaliza os anúncios ou não</translation>
@@ -1103,7 +1105,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3676592649209844519">Código do dispositivo:</translation>
 <translation id="3677008721441257057">Você quis dizer &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Não foi possível assinar a solicitação</translation>
-<translation id="3678342917559046352">Extensão inválida: o valor esperado precisa estar no formato &lt;extension_id&gt; ou &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abrir página em uma nova janela anônima (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3681421644246505351">O Chrome registra temas do seu interesse com base no seu histórico de navegação recente.</translation>
@@ -1133,6 +1134,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3740319564441798148">Ônibus e trens de longa distância</translation>
 <translation id="3743765582345153106">Sempre confirmar ao usar o preenchimento automático</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
+<translation id="3744212718085287312">Aumentar a segurança usando um cartão virtual na próxima vez?</translation>
 <translation id="3744286742364977428">Os arquivos transferidos por download são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
 <translation id="3748148204939282805">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem levar você a fazer algo perigoso, como instalar software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1241,6 +1243,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4040350669425716613">Faculdades e universidades</translation>
 <translation id="4047351652147966654">18 x 24 pol.</translation>
+<translation id="404831776305217138">O URL de atualização da extensão com o ID "<ph name="EXTENSION_ID" />" é inválido ou usa um esquema sem suporte. Os esquemas com suporte são: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ele poderá ser usado em todos os produtos do Google</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -1252,7 +1255,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4072193657607981494">Carregando políticas</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar seu pedido. Tente novamente.</translation>
 <translation id="4073376909608563327">Não foi possível usar o desbloqueio do dispositivo</translation>
-<translation id="4073797364926776829">Ver cartão</translation>
+<translation id="4073797364926776829">Mostrar cartão</translation>
 <translation id="4075732493274867456">O cliente e o servidor não são compatíveis com uma versão do protocolo SSL comum ou com o pacote de criptografia.</translation>
 <translation id="4079302484614802869">A configuração do proxy definida utiliza um URL de script .pac, e não servidores proxy fixos.</translation>
 <translation id="4082393374666368382">Configurações: gerenciamento</translation>
@@ -1268,6 +1271,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="410148943680000050">Editoração eletrônica</translation>
 <translation id="4103249731201008433">O número de série do dispositivo é inválido</translation>
 <translation id="4106133539597032659">Botão para criar site. Pressione Enter para criar rapidamente um novo site no Google Sites</translation>
+<translation id="4106887816571530227">Não é permitido incorporar conteúdo</translation>
 <translation id="4110652170750985508">Analisar seu pagamento</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Voltar</translation>
@@ -1347,7 +1351,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="425582637250725228">É possível que as alterações feitas não sejam salvas.</translation>
-<translation id="425869179292622354">Aumentar a segurança com um cartão virtual?</translation>
 <translation id="4258748452823770588">Assinatura inválida</translation>
 <translation id="4261046003697461417">Não é possível fazer anotações em documentos protegidos</translation>
 <translation id="4265872034478892965">Permitido pelo administrador</translation>
@@ -1606,6 +1609,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4876305945144899064">Sem nome de usuário</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Nenhuma}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Pesquisa sobre <ph name="TEXT" /></translation>
+<translation id="4877521229462766300">Permitir incorporação de conteúdo?</translation>
 <translation id="4879491255372875719">Automático (padrão)</translation>
 <translation id="4880827082731008257">Histórico de pesquisa</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -1803,6 +1807,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5314967030527622926">Criador de folhetos</translation>
 <translation id="5316812925700871227">Girar no sentido anti-horário</translation>
 <translation id="5317780077021120954">Salvar</translation>
+<translation id="5323043727018853753">É permitido incorporar conteúdo</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Seu navegador não é gerenciado</translation>
 <translation id="5332219387342487447">Forma de envio</translation>
@@ -2180,6 +2185,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6306713302480826305">Esse endereço vai ser excluído deste e de outros dispositivos conectados</translation>
 <translation id="6312113039770857350">Página da Web não disponível</translation>
 <translation id="6316226860534107313">Scooters e mobiletes</translation>
+<translation id="6316723751983724988">Novidade: as opções do Family Link para o Chrome se aplicam aqui</translation>
 <translation id="63172326633386613">Gerenciar configurações de acessibilidade</translation>
 <translation id="6319249456820053699">Câmeras e filmadoras</translation>
 <translation id="6321917430147971392">Verifique suas configurações do DNS</translation>
@@ -2287,6 +2293,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6569060085658103619">Você está vendo uma página de extensões</translation>
 <translation id="6569366777234823130">Filmes de drama</translation>
 <translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
+<translation id="6576181918031900030">Começar a transmissão</translation>
+<translation id="6578434528542148658">ID de extensão inválido.</translation>
 <translation id="657902945730878902">Desenho e pintura</translation>
 <translation id="6579630537141957243">Conectar dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa-claro</translation>
@@ -2731,6 +2739,7 @@ Mais detalhes:
 <translation id="7598391785903975535">Menos de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue atender a esta solicitação no momento.</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">A conexão com este site costuma ser segura, mas o Chrome não conseguiu garantir isso desta vez. Um invasor pode estar tentando espionar ou modificar sua conexão de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Data de expiração: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para ver e gerenciar suas senhas nas configurações do Chrome</translation>
@@ -2831,6 +2840,7 @@ Mais detalhes:
 <translation id="7822320754433038727">Caça e tiro</translation>
 <translation id="782886543891417279">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a uma página de login.</translation>
 <translation id="7840103971441592723">A captura de tela foi iniciada</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhum}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Os sites que você visitar vão poder pedir seus temas ao Chrome para personalizar os anúncios mostrados a você. O Chrome compartilha até três temas, protegendo seu histórico de navegação e sua identidade.</translation>
@@ -2964,7 +2974,6 @@ Mais detalhes:
 <translation id="8190193880870196235">Gerenciada por uma extensão</translation>
 <translation id="8194797478851900357">&amp;Desfazer mover</translation>
 <translation id="8200772114523450471">Retomar</translation>
-<translation id="8201077131113104583">URL de atualização inválido para extensão com ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Resumo do pedido</translation>
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
@@ -2976,6 +2985,7 @@ Mais detalhes:
 <translation id="8217748145574471584">Recursos humanos</translation>
 <translation id="8218327578424803826">Local designado:</translation>
 <translation id="8228419419708659934">Visualização de duas páginas</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> quer acessar um dispositivo na sua rede:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Jogos de esportes</translation>
@@ -3024,7 +3034,6 @@ Mais detalhes:
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="830498451218851433">Dobra simples</translation>
-<translation id="8307888238279532626">Os apps instalados e a frequência de uso deles</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
 <translation id="8329068931308448247">Envelope 14</translation>

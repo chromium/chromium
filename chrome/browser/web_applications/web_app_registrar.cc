@@ -481,11 +481,13 @@ absl::optional<AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
   for (const AppId& app_id : GetAppIds()) {
     // TODO(crbug.com/910016): Treat shortcuts as PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
-    if (app_is_shortcut && !best_app_is_shortcut)
+    if (app_is_shortcut && !best_app_is_shortcut) {
       continue;
+    }
 
-    if (!IsLocallyInstalled(app_id))
+    if (!IsLocallyInstalled(app_id)) {
       continue;
+    }
 
     if (window_only &&
         GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
@@ -503,6 +505,26 @@ absl::optional<AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
   }
 
   return best_app_id;
+}
+
+bool WebAppRegistrar::IsNonLocallyInstalledAppWithUrlInScope(
+    const GURL& url) const {
+  std::string scope_str = url.spec();
+
+  for (const auto& app_id : GetAppIds()) {
+    std::string app_scope = GetAppScope(app_id).spec();
+    CHECK(!app_scope.empty());
+
+    if (!base::StartsWith(scope_str, app_scope, base::CompareCase::SENSITIVE)) {
+      continue;
+    }
+
+    if (!IsLocallyInstalled(app_id)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool WebAppRegistrar::IsShortcutApp(const AppId& app_id) const {
@@ -795,6 +817,11 @@ bool WebAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
 bool WebAppRegistrar::WasInstalledBySubApp(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->IsSubAppInstalledApp();
+}
+
+bool WebAppRegistrar::CanUserUninstallWebApp(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->CanUserUninstallWebApp();
 }
 
 bool WebAppRegistrar::IsAllowedLaunchProtocol(
@@ -1158,6 +1185,18 @@ std::vector<AppId> WebAppRegistrar::GetAllSubAppIds(
   }
 
   return sub_app_ids;
+}
+
+base::flat_map<AppId, AppId> WebAppRegistrar::GetSubAppToParentMap() const {
+  base::flat_map<AppId, AppId> parent_app_ids;
+
+  for (const WebApp& app : GetApps()) {
+    if (app.parent_app_id().has_value()) {
+      parent_app_ids[app.app_id()] = *app.parent_app_id();
+    }
+  }
+
+  return parent_app_ids;
 }
 
 ValueWithPolicy<RunOnOsLoginMode> WebAppRegistrar::GetAppRunOnOsLoginMode(

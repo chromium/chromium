@@ -23,6 +23,12 @@ class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
 
   GPUPipelineLayout(const GPUPipelineLayout&) = delete;
   GPUPipelineLayout& operator=(const GPUPipelineLayout&) = delete;
+
+ private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().pipelineLayoutSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

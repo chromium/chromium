@@ -49,8 +49,8 @@ class CanvasStyle final {
   DISALLOW_NEW();
 
  public:
-  CanvasStyle();
-  CanvasStyle(const CanvasStyle& other);
+  CanvasStyle() : type_(kColor), color_(Color::kBlack) {}
+  CanvasStyle(const CanvasStyle& other) = default;
 
   String GetColorAsString() const {
     DCHECK_EQ(type_, kColor);

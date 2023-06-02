@@ -344,13 +344,13 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
            /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
            /*bucket=*/1, /*value=*/2)},
-       .api_identifier = PrivateAggregationBudgetKey::Api::kFledge,
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_1.json",
        .cleartext_payloads_file = "report_1_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
            /*bucket==*/1, /*value=*/2)},
-       .api_identifier = PrivateAggregationBudgetKey::Api::kFledge,
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_2.json",
        .cleartext_payloads_file = "report_2_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(
@@ -376,13 +376,13 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
            /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/123u)),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
            /*bucket==*/1, /*value=*/2)},
-       .api_identifier = PrivateAggregationBudgetKey::Api::kFledge,
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_5.json",
        .cleartext_payloads_file = "report_5_cleartext_payloads.json"},
       {.debug_details = blink::mojom::DebugModeDetails::New(),
        .contributions = {blink::mojom::AggregatableReportHistogramContribution(
            /*bucket==*/1, /*value=*/2)},
-       .api_identifier = PrivateAggregationBudgetKey::Api::kFledge,
+       .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_6.json",
        .cleartext_payloads_file = "report_6_cleartext_payloads.json"},
   };

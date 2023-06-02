@@ -62,13 +62,13 @@ void AshTestSuite::LoadTestResources() {
       path.AppendASCII("ash_test_resources_unscaled.pak"),
       ui::kScaleFactorNone);
 
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
+  if (ui::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath ash_test_resources_100 =
         path.AppendASCII("ash_test_resources_100_percent.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         ash_test_resources_100, ui::k100Percent);
   }
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
+  if (ui::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath ash_test_resources_200 =
         path.Append(FILE_PATH_LITERAL("ash_test_resources_200_percent.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

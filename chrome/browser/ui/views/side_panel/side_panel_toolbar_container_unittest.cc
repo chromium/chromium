@@ -49,7 +49,8 @@ class SidePanelToolbarContainerTest : public TestWithBrowserView {
         ui::ImageModel::FromVectorIcon(search_companion_coordinator->icon()),
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
-    browser_view()->side_panel_coordinator()->SetNoDelaysForTesting(true);
+    SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+        ->SetNoDelaysForTesting(true);
   }
 
   void WaitForAnimation() {
@@ -85,6 +86,11 @@ class SidePanelToolbarContainerTest : public TestWithBrowserView {
     return result;
   }
 
+ protected:
+  SidePanelCoordinator* GetSidePanelCoordinator() {
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -104,8 +110,9 @@ TEST_F(SidePanelToolbarContainerTest, ClickingPinnedEntryOpensSidePanel) {
   auto* search_companion_button = GetPinnedEntryButtons()[0];
   ClickButton(search_companion_button);
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
-  ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
+  ASSERT_EQ(
+      SidePanelUI::GetSidePanelUIForBrowser(browser())->GetCurrentEntryId(),
+      SidePanelEntry::Id::kSearchCompanion);
   ASSERT_TRUE(views::InkDrop::Get(search_companion_button)->GetHighlighted());
 }
 
@@ -116,10 +123,9 @@ TEST_F(SidePanelToolbarContainerTest,
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, false);
   search_companion_button->SetVisible(false);
-  browser_view()->side_panel_coordinator()->Show(
-      SidePanelEntry::Id::kSearchCompanion);
+  GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
-  ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
+  ASSERT_EQ(GetSidePanelCoordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
   ASSERT_TRUE(views::InkDrop::Get(side_panel_button)->GetHighlighted());
 }
@@ -128,11 +134,11 @@ TEST_F(SidePanelToolbarContainerTest, PinButtonOnlyVisibleForCompanion) {
   auto* side_panel_button = browser_view()->toolbar()->GetSidePanelButton();
   ClickButton(side_panel_button);
   views::ImageButton* header_pin_button =
-      browser_view()->side_panel_coordinator()->GetHeaderPinButtonForTesting();
+      GetSidePanelCoordinator()->GetHeaderPinButtonForTesting();
   // Verify that the pin button is not visible for entries other than the
   // companion.
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
-  ASSERT_NE(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
+  ASSERT_NE(GetSidePanelCoordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
   ASSERT_FALSE(header_pin_button->GetVisible());
 
@@ -141,7 +147,7 @@ TEST_F(SidePanelToolbarContainerTest, PinButtonOnlyVisibleForCompanion) {
   auto* search_companion_button = GetPinnedEntryButtons()[0];
   ClickButton(search_companion_button);
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
-  ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
+  ASSERT_EQ(GetSidePanelCoordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
   ASSERT_TRUE(header_pin_button->GetVisible());
 }

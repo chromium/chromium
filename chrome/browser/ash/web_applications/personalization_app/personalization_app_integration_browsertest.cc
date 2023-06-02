@@ -29,6 +29,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -324,7 +325,7 @@ class PersonalizationAppIntegrationPixelBrowserTest
 
   bool IsExperimentalBrowserPixelTestEnabled() {
     return base::CommandLine::ForCurrentProcess()->HasSwitch(
-        "browser-ui-tests-verify-pixels");
+        switches::kVerifyPixels);
   }
 
   void PrepareUi() {

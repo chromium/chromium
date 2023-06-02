@@ -289,7 +289,7 @@ class TestingOmniboxEditModelDelegate : public ChromeOmniboxEditModelDelegate {
   }
 
   raw_ptr<LocationBarModel> location_bar_model_;
-  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
+  raw_ptr<OmniboxViewViews, DanglingUntriaged> omnibox_view_ = nullptr;
 };
 
 // OmniboxViewViewsTest -------------------------------------------------------
@@ -389,7 +389,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by |widget_|.
-  raw_ptr<TestingOmniboxView> omnibox_view_;
+  raw_ptr<TestingOmniboxView, DanglingUntriaged> omnibox_view_;
 
   std::unique_ptr<views::TextfieldTestApi> test_api_;
 };

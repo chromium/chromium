@@ -3,91 +3,91 @@ Tests asynchronous call stacks for IndexedDB.
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) onSuccessCursorRequest (async-callstack-indexed-db.js:81)
+    0) onSuccessCursorRequest (async-callstack-indexed-db.js:84)
     [IndexedDB]
-    0) getAllItems (async-callstack-indexed-db.js:74)
-    1) onSuccessStorePut (async-callstack-indexed-db.js:66)
+    0) getAllItems (async-callstack-indexed-db.js:77)
+    1) onSuccessStorePut (async-callstack-indexed-db.js:69)
     [IndexedDB]
-    0) populateDB (async-callstack-indexed-db.js:58)
-    1) onSuccessOpenDB (async-callstack-indexed-db.js:51)
+    0) populateDB (async-callstack-indexed-db.js:61)
+    1) onSuccessOpenDB (async-callstack-indexed-db.js:54)
     [IndexedDB]
-    0) openDB (async-callstack-indexed-db.js:29)
+    0) openDB (async-callstack-indexed-db.js:32)
     [setTimeout]
-    0) testFunction (async-callstack-indexed-db.js:18)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Call stack:
-    0) onSuccessDeleteDatabase (async-callstack-indexed-db.js:110)
-    [IndexedDB]
-    0) deleteDB (async-callstack-indexed-db.js:103)
-    1) onSuccessDeleteItem (async-callstack-indexed-db.js:97)
-    [IndexedDB]
-    0) deleteItem (async-callstack-indexed-db.js:89)
-    1) onSuccessCursorRequest (async-callstack-indexed-db.js:82)
-    [IndexedDB]
-    0) getAllItems (async-callstack-indexed-db.js:74)
-    1) onSuccessStorePut (async-callstack-indexed-db.js:66)
-    [IndexedDB]
-    0) populateDB (async-callstack-indexed-db.js:58)
-    1) onSuccessOpenDB (async-callstack-indexed-db.js:51)
-    [IndexedDB]
-    0) openDB (async-callstack-indexed-db.js:29)
-    [setTimeout]
-    0) testFunction (async-callstack-indexed-db.js:18)
+    0) testFunction (async-callstack-indexed-db.js:21)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onSuccessDeleteItem (async-callstack-indexed-db.js:96)
+    0) onSuccessDeleteDatabase (async-callstack-indexed-db.js:113)
     [IndexedDB]
-    0) deleteItem (async-callstack-indexed-db.js:89)
-    1) onSuccessCursorRequest (async-callstack-indexed-db.js:82)
+    0) deleteDB (async-callstack-indexed-db.js:106)
+    1) onSuccessDeleteItem (async-callstack-indexed-db.js:100)
     [IndexedDB]
-    0) getAllItems (async-callstack-indexed-db.js:74)
-    1) onSuccessStorePut (async-callstack-indexed-db.js:66)
+    0) deleteItem (async-callstack-indexed-db.js:92)
+    1) onSuccessCursorRequest (async-callstack-indexed-db.js:85)
     [IndexedDB]
-    0) populateDB (async-callstack-indexed-db.js:58)
-    1) onSuccessOpenDB (async-callstack-indexed-db.js:51)
+    0) getAllItems (async-callstack-indexed-db.js:77)
+    1) onSuccessStorePut (async-callstack-indexed-db.js:69)
     [IndexedDB]
-    0) openDB (async-callstack-indexed-db.js:29)
+    0) populateDB (async-callstack-indexed-db.js:61)
+    1) onSuccessOpenDB (async-callstack-indexed-db.js:54)
+    [IndexedDB]
+    0) openDB (async-callstack-indexed-db.js:32)
     [setTimeout]
-    0) testFunction (async-callstack-indexed-db.js:18)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Call stack:
-    0) onSuccessOpenDB (async-callstack-indexed-db.js:49)
-    [IndexedDB]
-    0) openDB (async-callstack-indexed-db.js:29)
-    [setTimeout]
-    0) testFunction (async-callstack-indexed-db.js:18)
+    0) testFunction (async-callstack-indexed-db.js:21)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onSuccessStorePut (async-callstack-indexed-db.js:65)
+    0) onSuccessDeleteItem (async-callstack-indexed-db.js:99)
     [IndexedDB]
-    0) populateDB (async-callstack-indexed-db.js:58)
-    1) onSuccessOpenDB (async-callstack-indexed-db.js:51)
+    0) deleteItem (async-callstack-indexed-db.js:92)
+    1) onSuccessCursorRequest (async-callstack-indexed-db.js:85)
     [IndexedDB]
-    0) openDB (async-callstack-indexed-db.js:29)
+    0) getAllItems (async-callstack-indexed-db.js:77)
+    1) onSuccessStorePut (async-callstack-indexed-db.js:69)
+    [IndexedDB]
+    0) populateDB (async-callstack-indexed-db.js:61)
+    1) onSuccessOpenDB (async-callstack-indexed-db.js:54)
+    [IndexedDB]
+    0) openDB (async-callstack-indexed-db.js:32)
     [setTimeout]
-    0) testFunction (async-callstack-indexed-db.js:18)
+    0) testFunction (async-callstack-indexed-db.js:21)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onUpgradeNeeded (async-callstack-indexed-db.js:37)
+    0) onSuccessOpenDB (async-callstack-indexed-db.js:52)
     [IndexedDB]
-    0) openDB (async-callstack-indexed-db.js:29)
+    0) openDB (async-callstack-indexed-db.js:32)
     [setTimeout]
-    0) testFunction (async-callstack-indexed-db.js:18)
+    0) testFunction (async-callstack-indexed-db.js:21)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) onSuccessStorePut (async-callstack-indexed-db.js:68)
+    [IndexedDB]
+    0) populateDB (async-callstack-indexed-db.js:61)
+    1) onSuccessOpenDB (async-callstack-indexed-db.js:54)
+    [IndexedDB]
+    0) openDB (async-callstack-indexed-db.js:32)
+    [setTimeout]
+    0) testFunction (async-callstack-indexed-db.js:21)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) onUpgradeNeeded (async-callstack-indexed-db.js:40)
+    [IndexedDB]
+    0) openDB (async-callstack-indexed-db.js:32)
+    [setTimeout]
+    0) testFunction (async-callstack-indexed-db.js:21)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

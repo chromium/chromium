@@ -165,7 +165,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   int GetNavigationItemCount() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
-  GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const;
+  absl::optional<GURL> GetLastCommittedURLIfTrusted() const;
   id<CRWWebViewProxy> GetWebViewProxy() const;
   void DidChangeVisibleSecurityState();
   WebState::InterfaceBinder* GetInterfaceBinderForMainFrame();
@@ -207,6 +207,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
                                bool has_user_gesture) final;
   void RemoveWebView() final;
   NavigationItemImpl* GetPendingItem() final;
+  GURL GetCurrentURL() const final;
 
  private:
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns

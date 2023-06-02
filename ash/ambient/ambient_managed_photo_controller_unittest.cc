@@ -13,12 +13,14 @@
 #include "ash/ambient/test/mock_ambient_backend_model_observer.h"
 #include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,8 +51,15 @@ MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
 
 class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
  public:
-  AmbientManagedPhotoControllerTest()
-      : photo_source_(std::make_unique<TestAmbientManagedPhotoSource>()) {}
+  AmbientManagedPhotoControllerTest() {
+    CreateTestData();
+
+    // Required as otherwise the PathService::CheckedGet fails in the
+    // screensaver images policy handler.
+    device_policy_screensaver_folder_override_ =
+        std::make_unique<base::ScopedPathOverride>(
+            ash::DIR_DEVICE_POLICY_SCREENSAVER_DATA, temp_dir_.GetPath());
+  }
 
   void CreateTestData() {
     bool success = temp_dir_.CreateUniqueTempDir();
@@ -73,10 +82,7 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
     image_file_paths_.push_back(image_4);
   }
 
-  void CleanUpTestData() {
-    ASSERT_TRUE(temp_dir_.Delete());
-    image_file_paths_.clear();
-  }
+  void CleanUpTestData() { image_file_paths_.clear(); }
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -86,7 +92,6 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
     photo_controller_ = std::make_unique<AmbientManagedPhotoController>(
         *ambient_controller()->ambient_view_delegate(),
         CreateAmbientManagedSlideshowPhotoConfig());
-    CreateTestData();
   }
 
   void TearDown() override {
@@ -158,7 +163,8 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestAmbientManagedPhotoSource> photo_source_;
+  std::unique_ptr<base::ScopedPathOverride>
+      device_policy_screensaver_folder_override_;
   std::unique_ptr<AmbientManagedPhotoController> photo_controller_;
 };
 

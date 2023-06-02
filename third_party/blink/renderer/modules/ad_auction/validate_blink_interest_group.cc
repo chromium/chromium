@@ -180,21 +180,21 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
 
   if (group.bidding_url) {
     if (!IsUrlAllowed(*group.bidding_url, group)) {
-      error_field_name = "biddingUrl";
+      error_field_name = "biddingLogicURL";
       error_field_value = group.bidding_url->GetString();
       error =
-          "biddingUrl must have the same origin as the InterestGroup owner "
-          "and have no fragment identifier or embedded credentials.";
+          "biddingLogicURL must have the same origin as the InterestGroup "
+          "owner and have no fragment identifier or embedded credentials.";
       return false;
     }
   }
 
   if (group.bidding_wasm_helper_url) {
     if (!IsUrlAllowed(*group.bidding_wasm_helper_url, group)) {
-      error_field_name = "biddingWasmHelperUrl";
+      error_field_name = "biddingWasmHelperURL";
       error_field_value = group.bidding_wasm_helper_url->GetString();
       error =
-          "biddingWasmHelperUrl must have the same origin as the InterestGroup "
+          "biddingWasmHelperURL must have the same origin as the InterestGroup "
           "owner and have no fragment identifier or embedded credentials.";
       return false;
     }
@@ -202,10 +202,10 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
 
   if (group.update_url) {
     if (!IsUrlAllowed(*group.update_url, group)) {
-      error_field_name = "updateUrl";
+      error_field_name = "updateURL";
       error_field_value = group.update_url->GetString();
       error =
-          "updateUrl must have the same origin as the InterestGroup owner "
+          "updateURL must have the same origin as the InterestGroup owner "
           "and have no fragment identifier or embedded credentials.";
       return false;
     }
@@ -217,10 +217,10 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     // query parameter needs to be set as part of running an auction.
     if (!IsUrlAllowed(*group.trusted_bidding_signals_url, group) ||
         !group.trusted_bidding_signals_url->Query().empty()) {
-      error_field_name = "trustedBiddingSignalsUrl";
+      error_field_name = "trustedBiddingSignalsURL";
       error_field_value = group.trusted_bidding_signals_url->GetString();
       error =
-          "trustedBiddingSignalsUrl must have the same origin as the "
+          "trustedBiddingSignalsURL must have the same origin as the "
           "InterestGroup owner and have no query string, fragment identifier "
           "or embedded credentials.";
       return false;

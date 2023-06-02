@@ -35,6 +35,10 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // win:pe_image target that uses this file does not depend on base/.
     "base/no_destructor.h",
 
+    // Can't depend on //base, pointers/references under this directory can't be
+    // rewritten.
+    "testing/rust_gtest_interop/",
+
     // Exclude - deprecated and contains legacy C++ and pre-C++11 code.
     "ppapi/",
 
@@ -46,10 +50,12 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     "net/tools/",
     "chrome/chrome_elf/",
     "chrome/installer/mini_installer/",
+    "testing/platform_test.h",
 
     // DEPS prohibits includes from base/
     "chrome/install_static",
     "net/cert/pki",
+    "sandbox/mac/",
 
     // Exclude pocdll.dll as it doesn't depend on //base and only used for
     // testing.
@@ -121,7 +127,9 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
 //      grep -v third_party | \
 //      grep -v '^$' | \
 //      sort | uniq > ~/scratch/git-paths
+    // TODO(crbug.com/1447924): remove buildtools path
     "buildtools/clang_format/script/",
+    "third_party/clang-format/script/",
     "chrome/app/theme/default_100_percent/google_chrome/",
     "chrome/app/theme/default_200_percent/google_chrome/",
     "chrome/app/theme/google_chrome/",

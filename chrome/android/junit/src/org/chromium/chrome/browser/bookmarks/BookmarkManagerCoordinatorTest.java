@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -61,25 +63,27 @@ public class BookmarkManagerCoordinatorTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
-    SnackbarManager mSnackbarManager;
+    private SnackbarManager mSnackbarManager;
     @Mock
-    Profile mProfile;
+    private Profile mProfile;
     @Mock
-    LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    private LargeIconBridge.Natives mMockLargeIconBridgeJni;
     @Mock
-    SyncService mSyncService;
+    private SyncService mSyncService;
     @Mock
-    IdentityServicesProvider mIdentityServicesProvider;
+    private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
-    SigninManager mSigninManager;
+    private SigninManager mSigninManager;
     @Mock
-    AccountManagerFacade mAccountManagerFacade;
+    private AccountManagerFacade mAccountManagerFacade;
     @Mock
-    IdentityManager mIdentityManager;
+    private IdentityManager mIdentityManager;
     @Mock
-    BookmarkModel mBookmarkModel;
+    private BookmarkModel mBookmarkModel;
     @Mock
-    BookmarkUiPrefs mBookmarkUiPrefs;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock
+    private ShoppingService mShoppingService;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -96,6 +100,7 @@ public class BookmarkManagerCoordinatorTest {
         Mockito.doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
 
         mActivityScenarioRule.getScenario().onActivity((activity) -> {
             mActivity = activity;
@@ -129,5 +134,6 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(BookmarkManagerCoordinator.buildShoppingFilterView(parent));
         assertNotNull(mCoordinator.buildAndInitCompactImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildAndInitVisualImprovedBookmarkRow(parent));
+        assertNotNull(mCoordinator.buildSearchBoxRow(parent));
     }
 }

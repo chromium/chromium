@@ -13,6 +13,7 @@ import unittest.mock as mock
 
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
+from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import expectations
 from flake_suppressor_common import unittest_utils as uu
 
@@ -311,19 +312,22 @@ class IterateThroughResultsWithThresholdsUnittest(
 
 
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
-class CreateFailureExpectationsForAllResultsUnittest(
-    fake_filesystem_unittest.TestCase):
+class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
+                                              ):
   def setUp(self) -> None:
     self.setUpPyfakefs()
     self._expectations = uu.UnitTestExpectationProcessor()
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
-                tuple(['win']): ['a'],
-                tuple(['mac']): ['b'],
+                tuple(['win']): [ct.ResultTupleType(ct.ResultStatus.FAIL, 'a')],
+                tuple(['mac']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'b'),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'd')
+                ],
             },
             'bar_test': {
-                tuple(['win']): ['c'],
+                tuple(['win']): [ct.ResultTupleType(ct.ResultStatus.FAIL, 'c')],
             },
         },
     }
@@ -347,8 +351,8 @@ class CreateFailureExpectationsForAllResultsUnittest(
 
   def testGroupByTags(self) -> None:
     """Tests that threshold-based expectations work when grouping by tags."""
-    self._expectations.CreateFailureExpectationsForAllResults(
-        self.result_map, True, True)
+    self._expectations.CreateExpectationsForAllResults(self.result_map, True,
+                                                       True)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] foo_test [ Failure ]
@@ -362,8 +366,8 @@ class CreateFailureExpectationsForAllResultsUnittest(
 
   def testNoGroupByTags(self) -> None:
     """Tests that threshold-based expectations work when not grouping by tags"""
-    self._expectations.CreateFailureExpectationsForAllResults(
-        self.result_map, False, True)
+    self._expectations.CreateExpectationsForAllResults(self.result_map, False,
+                                                       True)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -380,16 +384,21 @@ class CreateFailureExpectationsForAllResultsUnittest(
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
-                tuple(['win', 'win10']): ['a'],
-                tuple(['mac']): ['b'],
+                tuple(['win', 'win10']):
+                [ct.ResultTupleType(ct.ResultStatus.FAIL, 'a')],
+                tuple(['mac']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'b'),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'd')
+                ],
             },
             'bar_test': {
-                tuple(['win', 'win10']): ['c'],
+                tuple(['win', 'win10']):
+                [ct.ResultTupleType(ct.ResultStatus.FAIL, 'c')],
             },
         },
     }
-    self._expectations.CreateFailureExpectationsForAllResults(
-        self.result_map, False, False)
+    self._expectations.CreateExpectationsForAllResults(self.result_map, False,
+                                                       False)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]

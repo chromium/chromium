@@ -76,6 +76,7 @@
 #include "ppapi/shared_impl/ppapi_nacl_plugin_args.h"
 #include "ppapi/shared_impl/ppapi_preferences.h"
 #include "ppapi/shared_impl/ppb_device_ref_shared.h"
+#include "ppapi/shared_impl/ppb_graphics_3d_shared.h"
 #include "ppapi/shared_impl/ppb_input_event_shared.h"
 #include "ppapi/shared_impl/ppb_tcp_socket_shared.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
@@ -397,6 +398,17 @@ IPC_STRUCT_TRAITS_MEMBER(max_resolution)
 IPC_STRUCT_TRAITS_MEMBER(max_framerate_numerator)
 IPC_STRUCT_TRAITS_MEMBER(max_framerate_denominator)
 IPC_STRUCT_TRAITS_MEMBER(hardware_accelerated)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ppapi::Graphics3DContextAttribs)
+IPC_STRUCT_TRAITS_MEMBER(offscreen_framebuffer_size)
+IPC_STRUCT_TRAITS_MEMBER(alpha_size)
+IPC_STRUCT_TRAITS_MEMBER(depth_size)
+IPC_STRUCT_TRAITS_MEMBER(stencil_size)
+IPC_STRUCT_TRAITS_MEMBER(samples)
+IPC_STRUCT_TRAITS_MEMBER(sample_buffers)
+IPC_STRUCT_TRAITS_MEMBER(buffer_preserved)
+IPC_STRUCT_TRAITS_MEMBER(single_buffer)
 IPC_STRUCT_TRAITS_END()
 
 // These are from the browser to the plugin.
@@ -721,14 +733,15 @@ IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBCore_ReleaseResource,
                     ppapi::HostResource)
 
 // PPB_Graphics3D.
-IPC_SYNC_MESSAGE_ROUTED3_4(PpapiHostMsg_PPBGraphics3D_Create,
-                           PP_Instance /* instance */,
-                           ppapi::HostResource /* share_context */,
-                           gpu::ContextCreationAttribs /* attrib_helper */,
-                           ppapi::HostResource /* result */,
-                           gpu::Capabilities /* capabilities */,
-                           ppapi::proxy::SerializedHandle /* shared_state */,
-                           gpu::CommandBufferId /* command_buffer_id */)
+IPC_SYNC_MESSAGE_ROUTED3_4(
+    PpapiHostMsg_PPBGraphics3D_Create,
+    PP_Instance /* instance */,
+    ppapi::HostResource /* share_context */,
+    ppapi::Graphics3DContextAttribs /* context_attribs */,
+    ppapi::HostResource /* result */,
+    gpu::Capabilities /* capabilities */,
+    ppapi::proxy::SerializedHandle /* shared_state */,
+    gpu::CommandBufferId /* command_buffer_id */)
 IPC_SYNC_MESSAGE_ROUTED2_0(PpapiHostMsg_PPBGraphics3D_SetGetBuffer,
                            ppapi::HostResource /* context */,
                            int32_t /* transfer_buffer_id */)

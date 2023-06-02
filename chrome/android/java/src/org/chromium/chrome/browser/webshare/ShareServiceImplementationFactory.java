@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webshare;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -44,8 +45,11 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<Share
 
             @Override
             public void share(ShareParams params) {
-                getShareDelegate().share(
-                        params, new ChromeShareExtras.Builder().build(), ShareOrigin.WEBSHARE_API);
+                getShareDelegate().share(params,
+                        new ChromeShareExtras.Builder()
+                                .setDetailedContentType(DetailedContentType.WEB_SHARE)
+                                .build(),
+                        ShareOrigin.WEBSHARE_API);
             }
 
             /**

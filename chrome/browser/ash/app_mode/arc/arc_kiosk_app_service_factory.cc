@@ -19,7 +19,8 @@ ArcKioskAppService* ArcKioskAppServiceFactory::GetForBrowserContext(
 
 // static
 ArcKioskAppServiceFactory* ArcKioskAppServiceFactory::GetInstance() {
-  return base::Singleton<ArcKioskAppServiceFactory>::get();
+  static base::NoDestructor<ArcKioskAppServiceFactory> instance;
+  return instance.get();
 }
 
 ArcKioskAppServiceFactory::ArcKioskAppServiceFactory()

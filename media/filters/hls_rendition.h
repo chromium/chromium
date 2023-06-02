@@ -51,8 +51,8 @@ class MEDIA_EXPORT HlsRendition {
   // Cancels any outstanding pending network requests.
   virtual void CancelPendingNetworkRequests() = 0;
 
-  // Is this Live content or VOD content?
-  virtual absl::optional<base::TimeDelta> DurationOrLive() = 0;
+  // Live renditions should return a nullopt for duration.
+  virtual absl::optional<base::TimeDelta> GetDuration() = 0;
 
   static HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,

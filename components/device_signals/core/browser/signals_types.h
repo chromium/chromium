@@ -19,6 +19,13 @@
 
 namespace device_signals {
 
+// Possible values for the trigger which generated the device signals.
+enum class Trigger {
+  kUnspecified = 0,
+  kBrowserNavigation = 1,
+  kLoginScreen = 2,
+};
+
 // Enum of names representing signals bundles that can be aggregated via the
 // SignalsAggregator.
 // These values are persisted to logs and should not be renumbered. Please

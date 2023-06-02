@@ -165,8 +165,8 @@ class LearningTaskControllerImplTest : public testing::Test {
   const TargetValue predicted_target_;
   const TargetValue not_predicted_target_;
 
-  raw_ptr<FakeDistributionReporter> reporter_raw_ = nullptr;
-  raw_ptr<FakeTrainer> trainer_raw_ = nullptr;
+  raw_ptr<FakeDistributionReporter, DanglingUntriaged> reporter_raw_ = nullptr;
+  raw_ptr<FakeTrainer, DanglingUntriaged> trainer_raw_ = nullptr;
 
   LearningTask task_;
   std::unique_ptr<LearningTaskControllerImpl> controller_;

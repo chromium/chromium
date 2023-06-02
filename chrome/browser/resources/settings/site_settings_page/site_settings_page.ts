@@ -305,6 +305,17 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsSoundBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_STORAGE_ACCESS,
+      id: Id.STORAGE_ACCESS,
+      label: 'siteSettingsStorageAccess',
+      // TODO(b/276716832): Change icon to the final SAA.
+      icon: 'settings:cookie',
+      enabledLabel: 'storageAccessAllowed',
+      disabledLabel: 'storageAccessBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
+    },
+    {
       route: routes.SITE_SETTINGS_USB_DEVICES,
       id: Id.USB_DEVICES,
       label: 'siteSettingsUsbDevices',
@@ -391,6 +402,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.MIC,
               Id.NOTIFICATIONS,
               Id.BACKGROUND_SYNC,
+              Id.STORAGE_ACCESS,
             ]),
             permissionsAdvanced: buildItemListFromIds([
               Id.SENSORS,

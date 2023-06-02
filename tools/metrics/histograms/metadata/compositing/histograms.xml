@@ -30,6 +30,31 @@ chromium-metrics-reviews@google.com.
       summary="In web pages where device scale factor is less than 1.5."/>
 </variants>
 
+<variants name="SmoothnessSequence">
+  <variant name="AllAnimations"
+      summary="its animations (e.g. comositor-driven animations, main-thread
+               driven animations, and raf-driven animations, etc.)"/>
+  <variant name="AllInteractions"
+      summary="its supported combinations of interaction types (e.g.
+               scrolling, pinching, etc.) and input device types (e.g.
+               touchscreen, touchpad, mousewheel, etc.)"/>
+  <variant name="CanvasAnimation" summary="canvas animations"/>
+  <variant name="CompositorAnimation"
+      summary="compositor thread driven animations"/>
+  <variant name="JSAnimation" summary="JS driven animations"/>
+  <variant name="MainThreadAnimation" summary="main thread driven animations"/>
+  <variant name="PinchZoom" summary="pinch to zoom interctions"/>
+  <variant name="RAF" summary="raf driven animations"/>
+  <variant name="ScrollbarScroll" summary="scrollbar scrolling"/>
+  <variant name="SETCompositorAnimation"
+      summary="compositor animations during a view transition"/>
+  <variant name="SETMainThreadAnimation"
+      summary="main thread animations during a view transition"/>
+  <variant name="TouchScroll" summary="touch scrolling"/>
+  <variant name="Video" summary="video playback"/>
+  <variant name="WheelScroll" summary="wheel scrolling"/>
+</variants>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2023-10-01">
   <owner>pdr@chromium.org</owner>
@@ -439,7 +464,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesAttemptingRequiredOverlays"
-    units="boolean" expires_after="2023-09-17">
+    units="boolean" expires_after="2023-11-19">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -450,7 +475,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesScalingRequiredOverlays"
-    units="boolean" expires_after="2023-06-30">
+    units="boolean" expires_after="2023-09-30">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -504,7 +529,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.WorkingScaleFactorForRequiredOverlays"
-    units="scale_factor" expires_after="2023-06-30">
+    units="scale_factor" expires_after="2023-09-30">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -652,7 +677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.CommitHung" units="boolean"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>skobes@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1100,6 +1125,57 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Smoothness.Checkerboarding3.AllSequences" units="%"
+    expires_after="2024-05-08">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of checkerboarded frames for a sequence by aggregating
+    all its animations and interactions, where a sequence is a series of frames
+    produced which contain at least one of the animations/interactions. Such
+    animations and interactions encompass: Compositor-thread animations;
+    Main-thread animations; JS animations; scrolling; and pinch-gestures.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+
+    This is a new implementation of the older
+    Graphics.Smoothness.Checkerboarding metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Checkerboarding3.{Sequence}" units="%"
+    expires_after="2024-05-08">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of checkerboarded frames for a sequence by aggregating
+    all {Sequence}, where a sequence is a series of frames produced which
+    contain at least one of the aforementioned effects.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+
+    This is a new implementation of the older
+    Graphics.Smoothness.Checkerboarding metric.
+  </summary>
+  <token key="Sequence" variants="SmoothnessSequence"/>
+</histogram>
+
 <histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2023-10-08">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
@@ -1121,7 +1197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Jank.All{Type}" units="%"
-    expires_after="2023-06-01">
+    expires_after="2024-06-01">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1251,32 +1327,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CompositorThread."/>
     <variant name="MainThread."/>
   </token>
-  <token key="Sequence">
-    <variant name="AllAnimations"
-        summary="its animations (e.g. comositor-driven animations,
-                 main-thread driven animations, and raf-driven animations,
-                 etc.)"/>
-    <variant name="AllInteractions"
-        summary="its supported combinations of interaction types (e.g.
-                 scrolling, pinching, etc.) and input device types (e.g.
-                 touchscreen, touchpad, mousewheel, etc.)"/>
-    <variant name="CanvasAnimation" summary="canvas animations"/>
-    <variant name="CompositorAnimation"
-        summary="compositor thread driven animations"/>
-    <variant name="JSAnimation" summary="JS driven animations"/>
-    <variant name="MainThreadAnimation"
-        summary="main thread driven animations"/>
-    <variant name="PinchZoom" summary="pinch to zoom interctions"/>
-    <variant name="RAF" summary="raf driven animations"/>
-    <variant name="ScrollbarScroll" summary="scrollbar scrolling"/>
-    <variant name="SETCompositorAnimation"
-        summary="compositor animations during a view transition"/>
-    <variant name="SETMainThreadAnimation"
-        summary="main thread animations during a view transition"/>
-    <variant name="TouchScroll" summary="touch scrolling"/>
-    <variant name="Video" summary="video playback"/>
-    <variant name="WheelScroll" summary="wheel scrolling"/>
-  </token>
+  <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
 <histogram

@@ -443,8 +443,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
   EXPECT_FALSE(access_token_fetch_delegate()->has_received_request());
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
-                       NoAccessTokenFetchInRealTimeUrlLookupsUnlessEnabled) {
+// Disabled due to https://crbug.com/1448377.
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBrowserTest,
+    DISABLED_NoAccessTokenFetchInRealTimeUrlLookupsUnlessEnabled) {
   SetRealTimeURLLookupsEnabled(true);
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
@@ -468,9 +470,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
 // Tests that even if the embedder does not respond to an access token fetch
 // that is made by safe browsing as part of a navigation, the navigation
 // completes due to Safe Browsing's timing out the access token fetch.
+// Disabled due to https://crbug.com/1448377.
 IN_PROC_BROWSER_TEST_F(
     SafeBrowsingBrowserTest,
-    UnfulfilledAccessTokenFetchTimesOutAndNavigationCompletes) {
+    DISABLED_UnfulfilledAccessTokenFetchTimesOutAndNavigationCompletes) {
   SetRealTimeURLLookupsEnabled(true);
   EnableSafeBrowsingAccessTokenFetches();
   access_token_fetch_delegate()->set_should_respond_to_request(false);

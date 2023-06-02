@@ -8,7 +8,6 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
-struct BrowserInfo;
 class DevToolsClient;
 class JavaScriptDialogManager;
 class Status;
@@ -22,13 +21,12 @@ class PageLoadStrategy {
     kNotLoading,
   };
 
-  virtual ~PageLoadStrategy() {}
+  virtual ~PageLoadStrategy() = default;
 
   static PageLoadStrategy* Create(
       std::string strategy,
       DevToolsClient* client,
       WebView* web_view,
-      const BrowserInfo* browser_info,
       const JavaScriptDialogManager* dialog_manager);
 
   virtual Status IsPendingNavigation(const Timeout* timeout,

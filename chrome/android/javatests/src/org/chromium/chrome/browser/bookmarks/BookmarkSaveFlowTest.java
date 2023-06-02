@@ -80,16 +80,11 @@ public class BookmarkSaveFlowTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    ShoppingService mShoppingService;
-
+    private ShoppingService mShoppingService;
     @Mock
-    PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
-
+    private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock
     private UserEducationHelper mUserEducationHelper;
-
-    @Mock
-    private Profile mProfile;
 
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
     private BottomSheetController mBottomSheetController;
@@ -101,6 +96,8 @@ public class BookmarkSaveFlowTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                 mActivityTestRule.getActivity());
+
+        // Setup price-tracking.
         mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -108,9 +105,10 @@ public class BookmarkSaveFlowTest {
             mBottomSheetController =
                     cta.getRootUiCoordinatorForTesting().getBottomSheetController();
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-            mBookmarkSaveFlowCoordinator = new BookmarkSaveFlowCoordinator(
-                    cta, mBottomSheetController, mShoppingService, mUserEducationHelper, mProfile);
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
+            mBookmarkSaveFlowCoordinator =
+                    new BookmarkSaveFlowCoordinator(cta, mBottomSheetController, mShoppingService,
+                            mUserEducationHelper, Profile.getLastUsedRegularProfile());
         });
 
         loadBookmarkModel();

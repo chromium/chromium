@@ -1,4 +1,3 @@
-#
 # Copyright 2022 The Abseil Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -679,7 +678,7 @@ absl_cc_test(
     absl_check_test
   SRCS
     "absl_check_test.cc"
-    "check_test_impl.h"
+    "check_test_impl.inc"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
@@ -699,7 +698,7 @@ absl_cc_test(
     absl_log_basic_test
   SRCS
     "log_basic_test.cc"
-    "log_basic_test_impl.h"
+    "log_basic_test_impl.inc"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
@@ -723,7 +722,7 @@ absl_cc_test(
     check_test
   SRCS
     "check_test.cc"
-    "check_test_impl.h"
+    "check_test_impl.inc"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
@@ -759,7 +758,7 @@ absl_cc_test(
     log_basic_test
   SRCS
     "log_basic_test.cc"
-    "log_basic_test_impl.h"
+    "log_basic_test_impl.inc"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
@@ -906,7 +905,6 @@ absl_cc_test(
     absl::log_sink
     absl::log_sink_registry
     absl::log_severity
-    absl::raw_logging_internal
     absl::scoped_mock_log
     absl::strings
     GTest::gtest_main

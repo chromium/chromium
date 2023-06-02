@@ -209,6 +209,8 @@ static_library("test_support") {
     "../public/test/hit_test_region_observer.h",
     "../public/test/javascript_test_observer.cc",
     "../public/test/javascript_test_observer.h",
+    "../public/test/keep_alive_url_loader_utils.cc",
+    "../public/test/keep_alive_url_loader_utils.h",
     "../public/test/local_frame_host_interceptor.cc",
     "../public/test/local_frame_host_interceptor.h",
     "../public/test/local_network_access_util.cc",
@@ -318,6 +320,8 @@ static_library("test_support") {
     "../public/test/test_renderer_host.cc",
     "../public/test/test_renderer_host.h",
     "../public/test/test_select_url_fenced_frame_config_observer.h",
+    "../public/test/test_shared_storage_header_observer.cc",
+    "../public/test/test_shared_storage_header_observer.h",
     "../public/test/test_storage_partition.cc",
     "../public/test/test_storage_partition.h",
     "../public/test/test_utils.cc",
@@ -1296,6 +1300,7 @@ test("content_browsertests") {
     "../browser/browsing_topics/browsing_topics_browsertest.cc",
     "../browser/child_process_launcher_browsertest.cc",
     "../browser/child_process_security_policy_browsertest.cc",
+    "../browser/code_cache/generated_code_cache_browsertest.cc",
     "../browser/compute_pressure/compute_pressure_origin_trial_browsertest.cc",
     "../browser/content_index/content_index_browsertest.cc",
     "../browser/content_security_policy_browsertest.cc",
@@ -1505,7 +1510,6 @@ test("content_browsertests") {
     "../browser/site_per_process_sad_frame_browsertest.cc",
     "../browser/site_per_process_scroll_browsertest.cc",
     "../browser/site_per_process_unload_browsertest.cc",
-    "../browser/site_per_process_web_bundle_browsertest.cc",
     "../browser/sms/sms_browsertest.cc",
     "../browser/snapshot_browsertest.cc",
     "../browser/storage_partition_impl_browsertest.cc",
@@ -1742,23 +1746,24 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
+  data_deps = [
+    "//content/shell:pak",
+    "//third_party/mesa_headers",
+  ]
+
   if (is_ios) {
     bundle_deps = [
       ":content_test_bundle_data",
       "//media/test:media_bundle_data",
+      "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
   } else {
     data = [
       "data/",
       "//media/test/data/",
     ]
+    data_deps += [ "//testing/buildbot/filters:content_browsertests_filters" ]
   }
-
-  data_deps = [
-    "//content/shell:pak",
-    "//testing/buildbot/filters:content_browsertests_filters",
-    "//third_party/mesa_headers",
-  ]
 
   if (enable_plugins) {
     sources += [ "../browser/plugin_service_impl_browsertest.cc" ]
@@ -2201,7 +2206,6 @@ test("content_unittests") {
     "../browser/accessibility/browser_accessibility_state_impl_unittest.cc",
     "../browser/accessibility/browser_accessibility_unittest.cc",
     "../browser/accessibility/one_shot_accessibility_tree_search_unittest.cc",
-    "../browser/accessibility/touch_passthrough_manager_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_assembler_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_scheduler_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_sender_unittest.cc",
@@ -2358,6 +2362,7 @@ test("content_unittests") {
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.cc",
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h",
     "../browser/interest_group/ad_auction_service_impl_unittest.cc",
+    "../browser/interest_group/ad_auction_url_loader_interceptor_unittest.cc",
     "../browser/interest_group/auction_metrics_recorder_unittest.cc",
     "../browser/interest_group/auction_process_manager_unittest.cc",
     "../browser/interest_group/auction_runner_unittest.cc",
@@ -2403,7 +2408,6 @@ test("content_unittests") {
     "../browser/media/session/media_session_controller_unittest.cc",
     "../browser/media/session/media_session_controllers_manager_unittest.cc",
     "../browser/media/session/media_session_impl_service_routing_unittest.cc",
-    "../browser/media/session/media_session_impl_uma_unittest.cc",
     "../browser/media/session/media_session_impl_unittest.cc",
     "../browser/media/session/media_session_uma_helper_unittest.cc",
     "../browser/media/system_media_controls_notifier_unittest.cc",
@@ -2593,6 +2597,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_updated_script_loader_unittest.cc",
     "../browser/service_worker/service_worker_version_unittest.cc",
     "../browser/shareable_file_reference_unittest.cc",
+    "../browser/shared_storage/shared_storage_header_observer_unittest.cc",
     "../browser/shared_storage/shared_storage_url_loader_factory_proxy_unittest.cc",
     "../browser/site_instance_group_unittest.cc",
     "../browser/site_instance_impl_unittest.cc",
@@ -2685,6 +2690,7 @@ test("content_unittests") {
     "../common/input/gesture_event_stream_validator_unittest.cc",
     "../common/input/touch_event_stream_validator_unittest.cc",
     "../common/pseudonymization_salt_unittest.cc",
+    "../common/service_worker/service_worker_router_evaluator_unittest.cc",
     "../common/url_utils_unittest.cc",
     "../common/user_agent_unittest.cc",
     "../common/webid/identity_url_loader_throttle_unittest.cc",
@@ -2767,6 +2773,7 @@ test("content_unittests") {
       "../browser/accessibility/browser_accessibility_android_unittest.cc",
       "../browser/android/nfc_host_unittest.cc",
       "../browser/attribution_reporting/attribution_input_event_tracker_android_unittest.cc",
+      "../browser/attribution_reporting/attribution_os_level_manager_android_unittest.cc",
       "../browser/renderer_host/input/web_input_event_builders_android_unittest.cc",
       "../browser/web_contents/color_chooser_unittest.cc",
       "../common/android/cpu_time_metrics_unittest.cc",
@@ -2973,6 +2980,7 @@ test("content_unittests") {
 
   if (is_mac) {
     data_deps += [ "//device/fido/strings:fido_test_strings" ]
+    deps += [ "//base:base_arc" ]
   }
 
   if (is_posix) {
@@ -3082,6 +3090,7 @@ test("content_unittests") {
   }
   if (is_mac) {
     deps += [
+      "//device/fido:icloud_keychain_test_support",
       "//sandbox/mac:seatbelt",
       "//third_party/ocmock",
       "//ui/accelerated_widget_mac",
@@ -3090,6 +3099,7 @@ test("content_unittests") {
     frameworks = [
       "Carbon.framework",
       "IOSurface.framework",
+      "AuthenticationServices.framework",
     ]
   }
   if (is_chromeos_ash) {

@@ -108,9 +108,12 @@ class CONTENT_EXPORT IsolatedOriginUtil {
 
  private:
   // Used to implement both IsValidIsolatedOrigin and
-  // IsValidOriginForOptInIsolation.
+  // IsValidOriginForOptInIsolation. The legacy isolated origin case performs
+  // some additional checks that don't apply to the opt-in case: it verifies the
+  // origin has a registry domain (for subdomain matching) and disallows
+  // trailing dots in the domain.
   static bool IsValidIsolatedOriginImpl(const url::Origin& origin,
-                                        bool check_has_registry_domain);
+                                        bool is_legacy_isolated_origin_check);
 };
 
 }  // namespace content

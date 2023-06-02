@@ -186,26 +186,40 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
 }
 
 void UninstallExtension(const base::FilePath& profile_dir,
-                        const base::FilePath& extensions_dir,
-                        const std::string& id) {
+                        const base::FilePath& extensions_install_dir,
+                        const base::FilePath& extension_dir_to_delete) {
+  // The below conditions are asserting that we should only be deleting
+  // directories that are inside the `extensions_install_dir` which should be
+  // inside the profile directory. Anything outside of that would be considered
+  // invalid and dangerous since this is effectively an `rm -rf
+  // <extension_delete_path>`.
+
+  // Confirm that all the directories involved are not empty and are absolute so
+  // that the subsequent comparisons have some value.
+  if (profile_dir.empty() || extensions_install_dir.empty() ||
+      extension_dir_to_delete.empty() || !profile_dir.IsAbsolute() ||
+      !extensions_install_dir.IsAbsolute() ||
+      !extension_dir_to_delete.IsAbsolute()) {
+    return;
+  }
+
+  // Confirm the directory where we install extensions is a direct subdir of the
+  // profile dir.
+  if (extensions_install_dir.DirName() != profile_dir) {
+    return;
+  }
+
+  // Confirm the directory we are obliterating is a direct subdir of the
+  // extensions install directory.
+  if (extension_dir_to_delete.DirName() != extensions_install_dir) {
+    return;
+  }
+
+  base::DeletePathRecursively(extension_dir_to_delete);
+
   // We don't care about the return value. If this fails (and it can, due to
   // plugins that aren't unloaded yet), it will get cleaned up by
   // ExtensionGarbageCollector::GarbageCollectExtensions.
-
-  // Confirm the profile directory, extensions directory, and the id are not
-  // empty and that the directories are absolute so that the subsequent
-  // comparison has some value.
-  if (profile_dir.empty() || extensions_dir.empty() || id.empty() ||
-      !profile_dir.IsAbsolute() || !extensions_dir.IsAbsolute()) {
-    return;
-  }
-  // Confirm the directory we are deleting from is a direct subdirectory of
-  // the extensions's subdirectory inside the profile directory.
-  if (extensions_dir.DirName() != profile_dir) {
-    return;
-  }
-
-  base::DeletePathRecursively(extensions_dir.AppendASCII(id));
 }
 
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,

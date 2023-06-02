@@ -1,4 +1,10 @@
-<style include="mwb-shared-style mwb-element-shared-style cr-hidden-style">
+<style include="mwb-element-shared-style cr-hidden-style sp-shared-style">
+  #content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
   #header {
     align-items: center;
     color: var(--cr-primary-text-color);
@@ -29,13 +35,12 @@
   }
 
   #readingListList {
-    margin-block-start: 8px;
     max-height: none;
     overflow: auto;
   }
 
-  #currentPageActionButton {
-    margin: 16px 16px 0 16px;
+  :host-context([chrome-refresh-2023]) #readingListList {
+    padding-block-start: var(--sp-body-padding);
   }
 
   :host-context(html:not([chrome-refresh-2023])) #currentPageActionButton {
@@ -47,12 +52,6 @@
     font-size: var(--mwb-primary-text-font-size);
     padding: 8px;
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  sp-empty-state:not([hidden]) ~ #currentPageActionButton {
-    display: flex;
-    margin: 0 auto 16px auto;
-    width: fit-content;
   }
 
   .mwb-list-item:focus-within {
@@ -87,44 +86,49 @@
       heading="$i18n{emptyStateHeader}"
       body="[[getEmptyStateSubheaderText_()]]">
   </sp-empty-state>
-  <cr-button id="currentPageActionButton" class="floating-button"
-      aria-label="[[getCurrentPageActionButtonText_(
-          currentPageActionButtonState_)]]"
-      on-click="onCurrentPageActionButtonClick_"
-      disabled="[[getCurrentPageActionButtonDisabled_(
-          currentPageActionButtonState_)]]">
-    <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
-        slot="prefix-icon"
-        icon="[[getCurrentPageActionButtonIcon_(
-            currentPageActionButtonState_)]]">
-    </iron-icon>
-    <div id="currentPageActionButtonText" aria-hidden="true">
-      [[getCurrentPageActionButtonText_(currentPageActionButtonState_)]]
-    </div>
-  </cr-button>
-  <div id="readingListList">
-    <iron-selector id="selector" on-keydown="onItemKeyDown_"
-        attr-for-selected="data-url" selectable="reading-list-item">
-      <sp-heading hidden="[[!unreadItems_.length]]" compact hide-back-button>
+  <div id="readingListList" class="sp-scroller" on-keydown="onItemKeyDown_"
+      hidden$="[[!shouldShowList_(unreadItems_, readItems_)]]">
+    <div class="sp-card" hidden="[[!unreadItems_.length]]">
+      <sp-heading compact hide-back-button>
         <h2 slot="heading">$i18n{unreadHeader}</h2>
       </sp-heading>
       <template id="unreadItemsList" is="dom-repeat" items="[[unreadItems_]]">
         <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item unread-item"
-            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+            aria-label="[[ariaLabel_(item)]]" class="unread-item"
+            data="[[item]]" button-ripples="[[buttonRipples]]">
         </reading-list-item>
       </template>
-      <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
-      </div>
-      <sp-heading compact hidden="[[!readItems_.length]]" hide-back-button>
+    </div>
+    <div class="hr sp-cards-separator"
+        hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
+    </div>
+    <div class="sp-card" hidden="[[!readItems_.length]]">
+      <sp-heading compact hide-back-button>
         <h2 slot="heading">$i18n{readHeader}</h2>
       </sp-heading>
       <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
         <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
-            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+            aria-label="[[ariaLabel_(item)]]"
+            data="[[item]]" button-ripples="[[buttonRipples]]">
         </reading-list-item>
       </template>
-    </iron-selector>
+    </div>
   </div>
+  <sp-footer pinned="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
+    <cr-button id="currentPageActionButton" class="floating-button"
+        aria-label="[[getCurrentPageActionButtonText_(
+            currentPageActionButtonState_)]]"
+        on-click="onCurrentPageActionButtonClick_"
+        disabled="[[getCurrentPageActionButtonDisabled_(
+            currentPageActionButtonState_)]]">
+      <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
+          slot="prefix-icon"
+          icon="[[getCurrentPageActionButtonIcon_(
+              currentPageActionButtonState_)]]">
+      </iron-icon>
+      <div id="currentPageActionButtonText" aria-hidden="true">
+        [[getCurrentPageActionButtonText_(currentPageActionButtonState_)]]
+      </div>
+    </cr-button>
+  </sp-footer>
 </div>

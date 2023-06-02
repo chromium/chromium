@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_notifier.h"
 
+#include "ash/bluetooth_devices_observer.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -12,6 +13,8 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
+#include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -28,12 +31,14 @@ DeviceId ExtractDeviceIdFromInputDevice(const ui::InputDevice& device) {
 }
 
 template <class DeviceMojomPtr>
-bool IsDeviceASuspectedImposter(const ui::InputDevice& device) {
-  return device.suspected_imposter;
+bool IsDeviceASuspectedImposter(BluetoothDevicesObserver* bluetooth_observer,
+                                const ui::InputDevice& device) {
+  return false;
 }
 
 template <>
 bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
+    BluetoothDevicesObserver* bluetooth_observer,
     const ui::InputDevice& device) {
   // If the device is a keyboard that is known to pretend to have mouse-like
   // functionality, do not use the `suspected_imposter` field.
@@ -41,11 +46,31 @@ bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
     return false;
   }
 
-  return device.type != ui::INPUT_DEVICE_BLUETOOTH && device.suspected_imposter;
+  // If the device is bluetooth, check the bluetooth device to see if it is a
+  // keyboard or keyboard/mouse combo.
+  if (device.type == ui::INPUT_DEVICE_BLUETOOTH) {
+    const auto* bluetooth_device =
+        bluetooth_observer->GetConnectedBluetoothDevice(device);
+    if (!bluetooth_device) {
+      return false;
+    }
+
+    if (bluetooth_device->GetDeviceType() ==
+            device::BluetoothDeviceType::KEYBOARD ||
+        bluetooth_device->GetDeviceType() ==
+            device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return device.suspected_imposter;
 }
 
 template <>
 bool IsDeviceASuspectedImposter<mojom::MousePtr>(
+    BluetoothDevicesObserver* bluetooth_observer,
     const ui::InputDevice& device) {
   // If the device is a keyboard that is known to pretend to have mouse-like
   // functionality, the device should always be considered an imposter.
@@ -53,7 +78,26 @@ bool IsDeviceASuspectedImposter<mojom::MousePtr>(
     return true;
   }
 
-  return device.type != ui::INPUT_DEVICE_BLUETOOTH && device.suspected_imposter;
+  // If the device is bluetooth, check the bluetooth device to see if it is a
+  // mouse or mouse/keyboard combo.
+  if (device.type == ui::INPUT_DEVICE_BLUETOOTH) {
+    const auto* bluetooth_device =
+        bluetooth_observer->GetConnectedBluetoothDevice(device);
+    if (!bluetooth_device) {
+      return false;
+    }
+
+    if (bluetooth_device->GetDeviceType() ==
+            device::BluetoothDeviceType::MOUSE ||
+        bluetooth_device->GetDeviceType() ==
+            device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 template <typename T>
@@ -67,6 +111,7 @@ DeviceId ExtractDeviceIdFromDeviceMapPair(
 // `devices_to_remove` will be cleared before being filled with the result.
 template <class DeviceMojomPtr, typename InputDeviceType>
 void GetAddedAndRemovedDevices(
+    BluetoothDevicesObserver* bluetooth_observer,
     std::vector<InputDeviceType> updated_device_list,
     const base::flat_map<DeviceId, DeviceMojomPtr>& connected_devices,
     std::vector<InputDeviceType>* devices_to_add,
@@ -80,8 +125,10 @@ void GetAddedAndRemovedDevices(
   // Remove any devices marked as imposters as well.
   base::ranges::sort(updated_device_list, base::ranges::less(),
                      ExtractDeviceIdFromInputDevice);
-  base::EraseIf(updated_device_list,
-                IsDeviceASuspectedImposter<DeviceMojomPtr>);
+  base::EraseIf(updated_device_list, [&](const ui::InputDevice& device) {
+    return IsDeviceASuspectedImposter<DeviceMojomPtr>(bluetooth_observer,
+                                                      device);
+  });
 
   // Generate a vector with only the device ids from the connected_devices
   // map. Guaranteed to be sorted as flat_map is always in sorted order by
@@ -112,6 +159,7 @@ void GetAddedAndRemovedDevices(
                                /*Proj1=*/base::identity(),
                                /*Proj2=*/ExtractDeviceIdFromInputDevice);
 }
+
 }  // namespace
 
 template <typename MojomDevicePtr, typename InputDeviceType>
@@ -122,6 +170,11 @@ InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::InputDeviceNotifier(
       device_lists_updated_callback_(callback) {
   DCHECK(connected_devices_);
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
+  bluetooth_devices_observer_ =
+      std::make_unique<BluetoothDevicesObserver>(base::BindRepeating(
+          &InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
+              OnBluetoothAdapterOrDeviceChanged,
+          base::Unretained(this)));
   RefreshDevices();
 }
 
@@ -135,7 +188,8 @@ void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::RefreshDevices() {
   std::vector<InputDeviceType> devices_to_add;
   std::vector<DeviceId> device_ids_to_remove;
 
-  GetAddedAndRemovedDevices(GetUpdatedDeviceList(), *connected_devices_,
+  GetAddedAndRemovedDevices(bluetooth_devices_observer_.get(),
+                            GetUpdatedDeviceList(), *connected_devices_,
                             &devices_to_add, &device_ids_to_remove);
 
   device_lists_updated_callback_.Run(std::move(devices_to_add),
@@ -152,6 +206,15 @@ template <typename MojomDevicePtr, typename InputDeviceType>
 void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
     OnInputDeviceConfigurationChanged(uint8_t input_device_type) {
   RefreshDevices();
+}
+
+template <typename MojomDevicePtr, typename InputDeviceType>
+void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
+    OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device) {
+  // Do nothing as OnBluetoothAdapterOrDeviceChanged is very noisy and causes
+  // updates to happen many times per second. We expect
+  // OnInputDeviceConfigurationChanged to include all devices including
+  // bluetooth devices, so refreshing devices here is unnecessary.
 }
 
 // Template specialization for retrieving the updated device lists for each

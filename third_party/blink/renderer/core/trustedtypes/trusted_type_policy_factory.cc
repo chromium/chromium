@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -47,24 +48,24 @@ struct AttributeTypeEntry {
 typedef Vector<AttributeTypeEntry> AttributeTypeVector;
 
 AttributeTypeVector BuildAttributeVector() {
+  const QualifiedName any_element(g_null_atom, g_star_atom, g_null_atom);
   const struct {
-    const char* element;
-    const char* attribute;
-    const char* element_namespace;
-    const char* attribute_namespace;
+    const QualifiedName& element;
+    const AtomicString attribute;
     SpecificTrustedType type;
   } kTypeTable[] = {
-      {"embed", "src", kHtmlNamespace, nullptr,
+      {html_names::kEmbedTag, html_names::kSrcAttr.LocalName(),
        SpecificTrustedType::kScriptURL},
-      {"iframe", "srcdoc", kHtmlNamespace, nullptr, SpecificTrustedType::kHTML},
-      {"object", "codebase", kHtmlNamespace, nullptr,
+      {html_names::kIFrameTag, html_names::kSrcdocAttr.LocalName(),
+       SpecificTrustedType::kHTML},
+      {html_names::kObjectTag, html_names::kCodebaseAttr.LocalName(),
        SpecificTrustedType::kScriptURL},
-      {"object", "data", kHtmlNamespace, nullptr,
+      {html_names::kObjectTag, html_names::kDataAttr.LocalName(),
        SpecificTrustedType::kScriptURL},
-      {"script", "src", kHtmlNamespace, nullptr,
+      {html_names::kScriptTag, html_names::kSrcAttr.LocalName(),
        SpecificTrustedType::kScriptURL},
 #define FOREACH_EVENT_HANDLER(name) \
-  {"*", #name, nullptr, nullptr, SpecificTrustedType::kScript},
+  {any_element, AtomicString(#name), SpecificTrustedType::kScript},
       EVENT_HANDLER_LIST(FOREACH_EVENT_HANDLER)
 #undef FOREACH_EVENT_HANDLER
   };
@@ -73,11 +74,11 @@ AttributeTypeVector BuildAttributeVector() {
   for (const auto& entry : kTypeTable) {
     // Attribute comparisons are case-insensitive, for both element and
     // attribute name. We rely on the fact that they're stored as lowercase.
-    DCHECK_EQ(String(entry.element).LowerASCII(), entry.element);
-    DCHECK_EQ(String(entry.attribute).LowerASCII(), entry.attribute);
-    table.push_back(AttributeTypeEntry{entry.element, entry.attribute,
-                                       entry.element_namespace,
-                                       entry.attribute_namespace, entry.type});
+    DCHECK(entry.element.LocalName().IsLowerASCII());
+    DCHECK(entry.attribute.IsLowerASCII());
+    table.push_back(AttributeTypeEntry{
+        entry.element.LocalName(), entry.attribute,
+        entry.element.NamespaceURI(), g_null_atom, entry.type});
   }
   return table;
 }
@@ -89,31 +90,31 @@ const AttributeTypeVector& GetAttributeTypeVector() {
 }
 
 AttributeTypeVector BuildPropertyVector() {
+  const QualifiedName any_element(g_null_atom, g_star_atom, g_null_atom);
   const struct {
-    const char* element;
+    const QualifiedName& element;
     const char* property;
-    const char* element_namespace;
     SpecificTrustedType type;
   } kTypeTable[] = {
-      {"embed", "src", kHtmlNamespace, SpecificTrustedType::kScriptURL},
-      {"iframe", "srcdoc", kHtmlNamespace, SpecificTrustedType::kHTML},
-      {"object", "codeBase", kHtmlNamespace, SpecificTrustedType::kScriptURL},
-      {"object", "data", kHtmlNamespace, SpecificTrustedType::kScriptURL},
-      {"script", "innerText", kHtmlNamespace, SpecificTrustedType::kScript},
-      {"script", "src", kHtmlNamespace, SpecificTrustedType::kScriptURL},
-      {"script", "text", kHtmlNamespace, SpecificTrustedType::kScript},
-      {"script", "textContent", kHtmlNamespace, SpecificTrustedType::kScript},
-      {"*", "innerHTML", nullptr, SpecificTrustedType::kHTML},
-      {"*", "outerHTML", nullptr, SpecificTrustedType::kHTML},
+      {html_names::kEmbedTag, "src", SpecificTrustedType::kScriptURL},
+      {html_names::kIFrameTag, "srcdoc", SpecificTrustedType::kHTML},
+      {html_names::kObjectTag, "codeBase", SpecificTrustedType::kScriptURL},
+      {html_names::kObjectTag, "data", SpecificTrustedType::kScriptURL},
+      {html_names::kScriptTag, "innerText", SpecificTrustedType::kScript},
+      {html_names::kScriptTag, "src", SpecificTrustedType::kScriptURL},
+      {html_names::kScriptTag, "text", SpecificTrustedType::kScript},
+      {html_names::kScriptTag, "textContent", SpecificTrustedType::kScript},
+      {any_element, "innerHTML", SpecificTrustedType::kHTML},
+      {any_element, "outerHTML", SpecificTrustedType::kHTML},
   };
   AttributeTypeVector table;
   for (const auto& entry : kTypeTable) {
     // Elements are case-insensitive, but property names are not.
     // Properties don't have a namespace, so we're leaving that blank.
-    DCHECK_EQ(String(entry.element).LowerASCII(), entry.element);
-    table.push_back(AttributeTypeEntry{entry.element, entry.property,
-                                       entry.element_namespace, AtomicString(),
-                                       entry.type});
+    DCHECK(entry.element.LocalName().IsLowerASCII());
+    table.push_back(AttributeTypeEntry{
+        entry.element.LocalName(), AtomicString(entry.property),
+        entry.element.NamespaceURI(), AtomicString(), entry.type});
   }
   return table;
 }

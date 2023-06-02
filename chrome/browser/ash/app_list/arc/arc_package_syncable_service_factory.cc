@@ -23,7 +23,8 @@ ArcPackageSyncableServiceFactory::GetForBrowserContext(
 // static
 ArcPackageSyncableServiceFactory*
 ArcPackageSyncableServiceFactory::GetInstance() {
-  return base::Singleton<ArcPackageSyncableServiceFactory>::get();
+  static base::NoDestructor<ArcPackageSyncableServiceFactory> instance;
+  return instance.get();
 }
 
 ArcPackageSyncableServiceFactory::ArcPackageSyncableServiceFactory()
@@ -40,7 +41,7 @@ ArcPackageSyncableServiceFactory::ArcPackageSyncableServiceFactory()
   DependsOn(ArcAppListPrefsFactory::GetInstance());
 }
 
-ArcPackageSyncableServiceFactory::~ArcPackageSyncableServiceFactory() {}
+ArcPackageSyncableServiceFactory::~ArcPackageSyncableServiceFactory() = default;
 
 KeyedService* ArcPackageSyncableServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_MODEL_FACTORY_H_
 #define CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_MODEL_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -19,7 +19,7 @@ class ToolbarActionsModelFactory : public ProfileKeyedServiceFactory {
   static ToolbarActionsModelFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ToolbarActionsModelFactory>;
+  friend base::NoDestructor<ToolbarActionsModelFactory>;
 
   ToolbarActionsModelFactory();
   ~ToolbarActionsModelFactory() override;

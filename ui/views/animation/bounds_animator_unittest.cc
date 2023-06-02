@@ -199,7 +199,7 @@ class BoundsAnimatorTest : public testing::Test {
 
  private:
   TestView parent_;
-  raw_ptr<TestView> child_;  // Owned by |parent_|.
+  raw_ptr<TestView, DanglingUntriaged> child_;  // Owned by |parent_|.
   std::unique_ptr<BoundsAnimator> animator_;
 };
 

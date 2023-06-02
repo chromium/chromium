@@ -106,10 +106,20 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
                                ? PartitionOptions::BackupRefPtr::kEnabled
                                : PartitionOptions::BackupRefPtr::kDisabled;
 
+  const bool enable_memory_tagging = base::allocator::PartitionAllocSupport::
+      ShouldEnableMemoryTaggingInRendererProcess();
+  const auto memory_tagging =
+      enable_memory_tagging
+          ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+          : partition_alloc::PartitionOptions::MemoryTagging::kDisabled;
+  // No need to call ChangeMemoryTaggingModeForAllThreadsPerProcess() as it will
+  // be handled in ReconfigureAfterFeatureListInit().
+
   return PartitionOptions{
       .quarantine = PartitionOptions::Quarantine::kAllowed,
       .cookie = PartitionOptions::Cookie::kAllowed,
       .backup_ref_ptr = brp_setting,
+      .memory_tagging = memory_tagging,
   };
 }
 
@@ -176,14 +186,6 @@ bool Partitions::InitializeOnce() {
   }
 #endif  // BUILDFLAG(USE_STARSCAN)
 
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    fast_malloc_root_->SwitchToDenserBucketDistribution();
-#endif
-    buffer_root_->SwitchToDenserBucketDistribution();
-  }
-
   initialized_ = true;
   return initialized_;
 }
@@ -211,6 +213,8 @@ void Partitions::InitializeArrayBufferPartition() {
       // so we'll use the default Pool).
       .use_configurable_pool =
           partition_alloc::PartitionOptions::UseConfigurablePool::kIfAvailable,
+      .memory_tagging =
+          partition_alloc::PartitionOptions::MemoryTagging::kDisabled,
   });
 
   array_buffer_root_ = array_buffer_allocator->root();
@@ -223,10 +227,6 @@ void Partitions::InitializeArrayBufferPartition() {
         array_buffer_root_);
   }
 #endif  // BUILDFLAG(USE_STARSCAN)
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)) {
-    array_buffer_root_->SwitchToDenserBucketDistribution();
-  }
 }
 
 // static

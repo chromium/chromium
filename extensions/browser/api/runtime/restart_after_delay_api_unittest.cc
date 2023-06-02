@@ -97,7 +97,8 @@ class DelayedRestartExtensionsBrowserClient
   }
 
  private:
-  raw_ptr<DelayedRestartTestApiDelegate> api_delegate_ = nullptr;  // Not owned.
+  raw_ptr<DelayedRestartTestApiDelegate, DanglingUntriaged> api_delegate_ =
+      nullptr;  // Not owned.
 
   sync_preferences::TestingPrefServiceSyncable testing_pref_service_;
 };

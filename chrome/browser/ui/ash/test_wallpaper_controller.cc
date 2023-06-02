@@ -154,6 +154,13 @@ bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
   return true;
 }
 
+void TestWallpaperController::SetTimeOfDayWallpaper(
+    const AccountId& account_id,
+    SetWallpaperCallback callback) {
+  ++set_default_time_of_day_wallpaper_count_;
+  std::move(callback).Run(/*success=*/true);
+}
+
 void TestWallpaperController::SetDefaultWallpaper(
     const AccountId& account_id,
     bool show_wallpaper,

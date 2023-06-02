@@ -81,7 +81,7 @@ constexpr size_t kPartitionCachelineSize = 64;
 // other constant values, we pack _all_ `PartitionRoot::Alloc` sizes perfectly
 // up against the end of a system page.
 
-#if defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONG64)
+#if defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONGARCH64)
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionPageShift() {
   return 16;  // 64 KiB
@@ -314,8 +314,6 @@ static_assert(kThreadIsolatedPoolHandle == kNumPools,
 // for allocations larger than this constant should not be backed with PROT_MTE
 // (which saves shadow tag memory). We also save CPU cycles by skipping tagging
 // of large areas which are less likely to benefit from MTE protection.
-// TODO(Richard.Townsend@arm.com): adjust RecommitSystemPagesForData to skip
-// PROT_MTE.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)

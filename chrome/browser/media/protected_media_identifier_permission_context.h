@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
 
@@ -35,6 +36,12 @@ class ProtectedMediaIdentifierPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 
+  // Returns whether "Protected content" is enabled based on factors other than
+  // what 'ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER' is set to. For
+  // example, it can be disabled by a switch in the content settings page, in
+  // incognito or guest mode, or by the device policy.
+  static bool IsProtectedMediaIdentifierEnabled(Profile* profile = nullptr);
+
  private:
   friend class ProtectedMediaIdentifierPermissionContextTest;
   static bool IsOriginAllowed(const GURL& origin);
@@ -43,18 +50,12 @@ class ProtectedMediaIdentifierPermissionContext
                         const GURL& requesting_frame,
                         bool allowed) override;
 
-  // Returns whether "Protected content" is enabled based on factors other
-  // than the protected media identifier content setting itself. For example,
-  // it can be disabled by a switch in content settings, in incognito or guest
-  // mode, or by the device policy.
-  bool IsProtectedMediaIdentifierEnabled() const;
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnAttestationEnabledChanged(base::Value value);
   // We synchronize this property with ash-chrome so that we can check it
   // synchronously and not disturb the existing flow here.
   std::unique_ptr<CrosapiPrefObserver> attestation_enabled_observer_;
-  bool attestation_enabled_{true};
+  inline static bool attestation_enabled_ = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 

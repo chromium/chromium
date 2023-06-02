@@ -265,7 +265,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
+// TODO(crbug.com/1446968): The service worker version is flaky.
+using ExtensionManagementApiBackgroundPageTest =
+    ExtensionManagementApiTestWithBackgroundType;
+
+INSTANTIATE_TEST_SUITE_P(BackgroundPage,
+                         ExtensionManagementApiBackgroundPageTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiBackgroundPageTest,
                        SelfUninstall) {
   // Wait for the helper script to finish before loading the primary
   // extension. This ensures that the onUninstall event listener is
@@ -280,15 +288,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
   ASSERT_TRUE(listener2.WaitUntilSatisfied());
 }
 
-#if BUILDFLAG(IS_MAC)
-// Flaky on Mac: https://crbug.com/1132581
-#define MAYBE_SelfUninstallNoPermissions DISABLED_SelfUninstallNoPermissions
-#else
-#define MAYBE_SelfUninstallNoPermissions SelfUninstallNoPermissions
-#endif
-
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
-                       MAYBE_SelfUninstallNoPermissions) {
+// TODO(crbug.com/1446968): The service worker version is flaky.
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiBackgroundPageTest,
+                       SelfUninstallNoPermissions) {
   // Wait for the helper script to finish before loading the primary
   // extension. This ensures that the onUninstall event listener is
   // added before we proceed to the uninstall step.

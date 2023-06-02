@@ -45,6 +45,9 @@ group("deps") {
       deps += [ "//third_party/instrumented_libraries:deps" ]
     }
   }
+  if (fail_on_san_warnings) {
+    data += [ "//tools/memory/sanitizer/escalate_sanitizer_warnings.py" ]
+  }
   if (is_asan) {
     if (is_win || is_apple) {
       data_deps = [ ":copy_asan_runtime" ]
@@ -57,7 +60,7 @@ group("deps") {
     # For executables which aren't actual fuzzers, we need stubs for
     # the sanitizer coverage symbols, because we'll still be generating
     # .o files which depend on them.
-    deps += [ "//third_party/centipede:centipede_weak_sancov_stubs" ]
+    deps += [ "//third_party/fuzztest:centipede_weak_sancov_stubs" ]
   }
 }
 
@@ -315,9 +318,13 @@ config("cfi_flags") {
     ]
 
     # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
-    # behaviour.
+    # behaviour.  Rust needs to know the linker will be doing LTO in this case
+    # or it rejects the Zsplit-lto-unit flag.
     # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
-    rustflags += [ "-Zsplit-lto-unit" ]
+    rustflags += [
+      "-Zsplit-lto-unit",
+      "-Clinker-plugin-lto=yes",
+    ]
 
     if (use_cfi_cast) {
       cflags += [

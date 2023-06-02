@@ -94,7 +94,6 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
             DataToSign data,
             Kcer::SignCallback callback) override;
   void SignRsaPkcs1Raw(PrivateKeyHandle key,
-                       SigningScheme signing_scheme,
                        DigestWithPrefix digest_with_prefix,
                        Kcer::SignCallback callback) override;
   void GetTokenInfo(Kcer::GetTokenInfoCallback callback) override;
@@ -133,9 +132,13 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
   void HandleInitializationFailed(
       base::OnceCallback<void(base::expected<T, Error>)> callback);
 
-  // Sends a notification about changed certs (if needed) and forwards the
-  // result.
+  // Used by operations that may modify the set of certificates on the token. If
+  // `did_modify` is true, dispatches a notification that the certificate store
+  // changed. Then forwards `result` to `callback`. Note that `did_modify` may
+  // be true even if `result` contains an error, because some operations can be
+  // partially successful.
   void OnCertsModified(Kcer::StatusCallback callback,
+                       bool did_modify,
                        base::expected<void, Error> result);
 
   // These methods return PKCS#11 attribute IDs that should be passed to NSS,

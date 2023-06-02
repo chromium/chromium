@@ -36,10 +36,6 @@ class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
 
  private:
   // AuthenticatorSheetModelBase:
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override {
-    return gfx::kNoneIcon;
-  }
   std::u16string GetStepTitle() const override { return std::u16string(); }
   std::u16string GetStepDescription() const override {
     return std::u16string();
@@ -208,6 +204,18 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kCableV2QRCode:
       sheet_view = std::make_unique<AuthenticatorQRSheetView>(
           std::make_unique<AuthenticatorQRSheetModel>(dialog_model));
+      break;
+    case Step::kCableV2Connecting:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorConnectingSheetModel>(dialog_model));
+      break;
+    case Step::kCableV2Connected:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorConnectedSheetModel>(dialog_model));
+      break;
+    case Step::kCableV2Error:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorCableErrorSheetModel>(dialog_model));
       break;
     case Step::kClientPinChange:
       sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(

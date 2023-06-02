@@ -67,8 +67,8 @@ class ZeroSuggestCacheService : public KeyedService {
   // Remove all zero suggest cache entries.
   void ClearCache();
 
-  // Returns whether or not the zero suggest cache is empty.
-  bool IsCacheEmpty() const;
+  // Returns whether or not the in-memory zero suggest cache is empty.
+  bool IsInMemoryCacheEmptyForTesting() const;
 
   // Add/remove observer.
   void AddObserver(Observer* observer);

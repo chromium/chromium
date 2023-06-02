@@ -5,6 +5,8 @@
 import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.mojom-webui.js';
 import * as InputDeviceSettingsProviderTypes from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
+import * as SimulateRightClickModifierTypes from '../mojom-webui/simulate_right_click_modifier.mojom-webui.js';
+import * as SixPackShortcutModifierTypes from '../mojom-webui/six_pack_shortcut_modifier.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -15,6 +17,18 @@ export type MetaKey = InputDeviceSettingsTypes.MetaKey;
 export const MetaKey = InputDeviceSettingsTypes.MetaKey;
 export type ModifierKey = ModifierKeyTypes.ModifierKey;
 export const ModifierKey = ModifierKeyTypes.ModifierKey;
+
+export type SimulateRightClickModifier =
+    SimulateRightClickModifierTypes.SimulateRightClickModifier;
+export const SimulateRightClickModifier =
+    SimulateRightClickModifierTypes.SimulateRightClickModifier;
+
+export type SixPackShortcutModifier =
+    SixPackShortcutModifierTypes.SixPackShortcutModifier;
+export const SixPackShortcutModifier =
+    SixPackShortcutModifierTypes.SixPackShortcutModifier;
+
+export type SixPackKeyInfo = InputDeviceSettingsTypes.SixPackKeyInfo;
 
 export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
@@ -59,6 +73,7 @@ export interface PointingStickObserverInterface {
 
 interface FakeInputDeviceSettingsProviderInterface extends
     InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {
+  RestoreDefaultKeyboardModifierRemappings(id: number): void;
   setKeyboardSettings(id: number, settings: KeyboardSettings): void;
   setMouseSettings(id: number, settings: MouseSettings): void;
   setTouchpadSettings(id: number, settings: TouchpadSettings): void;

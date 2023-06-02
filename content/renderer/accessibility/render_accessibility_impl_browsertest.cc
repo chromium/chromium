@@ -65,18 +65,6 @@ using blink::WebAXObject;
 using blink::WebDocument;
 using testing::ElementsAre;
 
-namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-bool IsSelected(const WebAXObject& obj) {
-  ui::AXNodeData node_data;
-  obj.Serialize(&node_data, ui::kAXModeComplete);
-  return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-}  // namespace
-
 class TestAXImageAnnotator : public AXImageAnnotator {
  public:
   TestAXImageAnnotator(
@@ -1127,15 +1115,6 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_EQ(offset_to_set, scroller_action_target->GetScrollOffset());
   EXPECT_EQ(gfx::Point(0, 0), scroller_action_target->MinimumScrollOffset());
   EXPECT_GE(scroller_action_target->MaximumScrollOffset().y(), 900);
-
-  // Android does not produce accessible items for option elements.
-#if !BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(IsSelected(option));
-  EXPECT_TRUE(option_action_target->SetSelected(true));
-  // Selecting option requires layout to be clean.
-  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
-  EXPECT_TRUE(IsSelected(option));
-#endif
 
   std::string value_to_set("test-value");
   {

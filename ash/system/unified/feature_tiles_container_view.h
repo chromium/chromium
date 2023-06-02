@@ -49,6 +49,10 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   // container can have.
   void SetRowsFromHeight(int max_height);
 
+  // Caps the number of rows of feature tiles when media view is shown, based on
+  // the `max_height` the container can have.
+  void AdjustRowsForMediaViewVisibility(bool visible, int max_height);
+
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override;
   void TransitionChanged() override;
@@ -111,6 +115,8 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   // Number of rows that can be displayed based on the available
   // max height.
   int displayable_rows_ = 0;
+
+  bool is_media_view_shown_ = false;
 
   // Used for preventing reentrancy issue in ChildVisibilityChanged. Should be
   // always false if FeatureTilesContainerView is not in the call stack.

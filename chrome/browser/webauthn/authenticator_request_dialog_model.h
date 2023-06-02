@@ -109,6 +109,9 @@ class AuthenticatorRequestDialogModel {
     kCableActivate,
     kAndroidAccessory,
     kCableV2QRCode,
+    kCableV2Connecting,
+    kCableV2Connected,
+    kCableV2Error,
 
     // Authenticator Client PIN.
     kClientPinChange,
@@ -182,16 +185,18 @@ class AuthenticatorRequestDialogModel {
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
+    using ICloudKeychain =
+        base::StrongAlias<class iCloudKeychainTag, absl::monostate>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
     using AddPhone = base::StrongAlias<class AddPhoneTag, absl::monostate>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone, AddPhone>;
+    using Type =
+        absl::variant<Transport, WindowsAPI, Phone, AddPhone, ICloudKeychain>;
 
     Mechanism(Type type,
               std::u16string name,
               std::u16string short_name,
               const gfx::VectorIcon& icon,
-              base::RepeatingClosure callback,
-              bool is_priority);
+              base::RepeatingClosure callback);
     ~Mechanism();
     Mechanism(Mechanism&&);
     Mechanism(const Mechanism&) = delete;
@@ -202,9 +207,6 @@ class AuthenticatorRequestDialogModel {
     const std::u16string short_name;
     const raw_ref<const gfx::VectorIcon> icon;
     const base::RepeatingClosure callback;
-    // priority is true if this mechanism should be activated immediately.
-    // Only a single Mechanism in a list should have priority.
-    const bool priority;
   };
 
   // PairedPhone represents a paired caBLEv2 device.
@@ -318,12 +320,11 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted.
   void StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
 
-  // Hides the modal Chrome UI dialog and shows the native Windows WebAuthn
-  // UI instead.
-  void HideDialogAndDispatchToNativeWindowsApi();
-
-  // Proceeds straight to the platform authenticator prompt.
-  void HideDialogAndDispatchToPlatformAuthenticator();
+  // Proceeds straight to the platform authenticator prompt. If `type` is
+  // `nullopt` then it actives the default platform authenticator. Otherwise it
+  // actives the platform authenticator of the given type.
+  void HideDialogAndDispatchToPlatformAuthenticator(
+      absl::optional<device::AuthenticatorType> type = absl::nullopt);
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -481,6 +482,9 @@ class AuthenticatorRequestDialogModel {
   // disallows an attestation permission request.
   void OnAttestationPermissionResponse(bool attestation_permission_granted);
 
+  // Adds or removes an authenticator to the list of known authenticators. The
+  // first authenticator added with transport `kInternal` (or without a
+  // transport) is considered to be the default platform authenticator.
   void AddAuthenticator(const device::FidoAuthenticator& authenticator);
   void RemoveAuthenticator(base::StringPiece authenticator_id);
 
@@ -668,6 +672,8 @@ class AuthenticatorRequestDialogModel {
   // |HideDialogAndDispatchToNativeWindowsApi|.
   void StartWinNativeApi(size_t mechanism_index);
 
+  void StartICloudKeychain(size_t mechanism_index);
+
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
@@ -676,7 +682,6 @@ class AuthenticatorRequestDialogModel {
   void StartConditionalMediationRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
-  void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
   void ContactNextPhoneByName(const std::string& name);
 

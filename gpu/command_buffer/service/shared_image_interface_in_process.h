@@ -89,6 +89,14 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             base::StringPiece debug_label,
                             base::span<const uint8_t> pixel_data) override;
 
+  // |usage| is a combination of |SharedImageUsage| bits that describes which
+  // API(s) the image will be used with. |buffer_handle| is the
+  // GpuMemoryBufferHandle derived from the GpuMemoryBuffer created on the
+  // client side. If valid, |color_space| will be applied to the shared image
+  // (possibly overwriting the one set on the GpuMemoryBuffer). The
+  // |SharedImageInterface| keeps ownership of the image until
+  // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
+  // the GPU channel is lost).
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -224,7 +232,17 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                             std::string debug_label,
                                             const SyncToken& sync_token,
                                             std::vector<uint8_t> pixel_data);
-
+  void CreateSharedImageWithBufferOnGpuThread(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      std::string debug_label,
+      const SyncToken& sync_token);
   void CreateGMBSharedImageOnGpuThread(const Mailbox& mailbox,
                                        gfx::GpuMemoryBufferHandle handle,
                                        gfx::BufferFormat format,

@@ -27,11 +27,9 @@
         <div class="horizontal-align">
           <iron-icon id="icon" icon="cr:help-outline"></iron-icon>
           <template is="dom-if" if="[[isMainApp_(app_.*)]]" restamp>
-            <!-- TODO(b/194640944): Add link to borealis learn more page -->
             <localized-link
                 id="mainLink"
-                localized-string="$i18n{borealisMainPermissionText}"
-                link-url=https://www.youtube.com/watch?v=dQw4w9WgXcQ>
+                localized-string="$i18n{borealisMainPermissionText}">
             </localized-link>
           </template>
           <template is="dom-if" if="[[!isMainApp_(app_.*)]]" restamp>

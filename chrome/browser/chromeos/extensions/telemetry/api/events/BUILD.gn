@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/chromeos/extensions/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -24,7 +25,15 @@ source_set("events") {
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
+    "//url",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+    ]
+  }
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
@@ -92,6 +101,7 @@ source_set("event_converters") {
     "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -99,7 +109,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "events_api_browsertests.cc",
+    "events_api_browsertest.cc",
     "fake_events_service.cc",
     "fake_events_service.h",
   ]
@@ -113,6 +123,7 @@ source_set("browser_tests") {
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
+    "//url",
   ]
 
   data = [ "//chrome/test/data" ]
@@ -123,7 +134,11 @@ source_set("browser_tests") {
       "fake_events_service_factory.h",
     ]
 
-    deps += [ "//chrome/browser/ash/telemetry_extension/events" ]
+    deps += [
+      "//chrome/browser/ash/telemetry_extension/events",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+    ]
   }
 
   if (is_chromeos_lacros) {
@@ -139,6 +154,7 @@ source_set("unit_tests") {
     ":event_converters",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

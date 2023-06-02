@@ -8,10 +8,10 @@
 ; Media Patent License 1.0 was not distributed with this source code in the
 ; PATENTS file, you can obtain it at www.aomedia.org/license/patent.
 ;
-ARCH_ARM equ 1
-ARCH_PPC equ 0
-ARCH_X86 equ 0
-ARCH_X86_64 equ 0
+AOM_ARCH_ARM equ 1
+AOM_ARCH_PPC equ 0
+AOM_ARCH_X86 equ 0
+AOM_ARCH_X86_64 equ 0
 CONFIG_ACCOUNTING equ 0
 CONFIG_ANALYZER equ 0
 CONFIG_AV1_DECODER equ 1

@@ -4,6 +4,7 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
+#import "ios/web/public/session/proto/session.pb.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/test/cert_test_util.h"
@@ -15,32 +16,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Checks for equality between `cert_storage1` and `cert_storage2`.
-bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
-                          CRWSessionCertificateStorage* cert_storage2) {
-  return net::x509_util::CryptoBufferEqual(
-             cert_storage1.certificate->cert_buffer(),
-             cert_storage2.certificate->cert_buffer()) &&
-         cert_storage1.host == cert_storage2.host &&
-         cert_storage1.status == cert_storage2.status;
-}
-// Checks for equality between `cache_storage1` and `cache_storage2`.
-bool CacheStoragesAreEqual(
-    CRWSessionCertificatePolicyCacheStorage* cache_storage1,
-    CRWSessionCertificatePolicyCacheStorage* cache_storage2) {
-  NSArray* certs1 = [cache_storage1.certificateStorages allObjects];
-  NSArray* certs2 = [cache_storage2.certificateStorages allObjects];
-  if (certs1.count != certs2.count)
-    return false;
-  for (NSUInteger i = 0; i < certs1.count; ++i) {
-    if (!CertStoragesAreEqual(certs1[i], certs2[i]))
-      return false;
-  }
-  return true;
-}
-}  // namespace
 
 class CRWSessionCertificatePolicyCacheStorageTest : public PlatformTest {
  protected:
@@ -71,7 +46,19 @@ TEST_F(CRWSessionCertificatePolicyCacheStorageTest, EncodeDecode) {
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
   id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-  EXPECT_TRUE(CacheStoragesAreEqual(cache_storage_, decoded));
+  EXPECT_NSEQ(cache_storage_, decoded);
+}
+
+// Tests that converting CRWSessionCertificatePolicyCacheStorage to proto and
+// back results in an equivalent storage.
+TEST_F(CRWSessionCertificatePolicyCacheStorageTest, EncodeDecodeToProto) {
+  web::proto::CertificatesCacheStorage storage;
+  [cache_storage_ serializeToProto:storage];
+
+  CRWSessionCertificatePolicyCacheStorage* decoded =
+      [[CRWSessionCertificatePolicyCacheStorage alloc] initWithProto:storage];
+
+  EXPECT_NSEQ(cache_storage_, decoded);
 }
 
 using CRWSessionCertificateStorageTest = PlatformTest;
@@ -93,5 +80,18 @@ TEST_F(CRWSessionCertificateStorageTest, InvalidCertData) {
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
   id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  EXPECT_FALSE(decoded);
+}
+
+// Tests that unarchiving a CRWSessionCertificateStorage from proto returns nil
+// if the certificate data does not correctly decode to a certificate.
+TEST_F(CRWSessionCertificateStorageTest, InvalidCertDataFromProto) {
+  web::proto::CertificateStorage storage;
+  storage.set_certificate("not a  cert");
+  storage.set_host("host");
+  storage.set_status(net::CERT_STATUS_INVALID);
+
+  CRWSessionCertificateStorage* decoded =
+      [[CRWSessionCertificateStorage alloc] initWithProto:storage];
   EXPECT_FALSE(decoded);
 }

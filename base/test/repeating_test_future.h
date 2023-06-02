@@ -219,6 +219,45 @@ class RepeatingTestFuture {
   base::WeakPtrFactory<RepeatingTestFuture<Types...>> weak_ptr_factory_{this};
 };
 
+// Specialization so you can use `RepeatingTestFuture` to wait for a no-args
+// callback.
+template <>
+class RepeatingTestFuture<void> {
+ public:
+  void AddValue() { implementation_.AddValue(true); }
+
+  // Waits until the callback or `AddValue()` is invoked.
+  // Returns immediately if one or more invocations have already happened.
+  //
+  // Returns true if an invocation arrived, or false if a timeout happens.
+  //
+  // Directly calling Wait() is not required as Take() will also wait for
+  // the invocation to arrive, however you can use a direct call to Wait() to
+  // improve the error reported:
+  //
+  //   ASSERT_TRUE(queue.Wait()) << "Detailed error message";
+  //
+  [[nodiscard]] bool Wait() { return implementation_.Wait(); }
+
+  // Returns a callback that when invoked will unblock any waiters.
+  base::RepeatingClosure GetCallback() {
+    return base::BindRepeating(implementation_.GetCallback(), true);
+  }
+
+  // Returns true if no elements are currently present. Note that consuming all
+  // elements through Take() will cause this method to return true after the
+  // last available element has been consumed.
+  bool IsEmpty() const { return implementation_.IsEmpty(); }
+
+  // Waits until the callback or `AddValue()` is invoked.
+  //
+  // Will DCHECK if a timeout happens.
+  void Take() { implementation_.Take(); }
+
+ private:
+  RepeatingTestFuture<bool> implementation_;
+};
+
 }  // namespace base::test
 
 #endif  // BASE_TEST_REPEATING_TEST_FUTURE_H_

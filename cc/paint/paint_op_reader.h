@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct SkGainmapInfo;
+struct SkHighContrastConfig;
 class SkColorSpace;
 
 namespace gpu {
@@ -82,6 +83,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkYUVAInfo::PlaneConfig* plane_config);
   void Read(SkYUVAInfo::Subsampling* subsampling);
   void Read(gpu::Mailbox* mailbox);
+  void Read(SkHighContrastConfig* config);
 
   void Read(scoped_refptr<SkottieWrapper>* skottie);
 
@@ -225,6 +227,8 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
   void SetInvalid(DeserializationError error);
+
+  void Read(sk_sp<ColorFilter>* filter);
 
   // The main entry point is Read(sk_sp<PaintFilter>* filter) which calls one of
   // the following functions depending on read type.

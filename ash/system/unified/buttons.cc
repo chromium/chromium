@@ -43,9 +43,8 @@ namespace ash {
 namespace {
 
 // Constants used with QsRevamp.
-constexpr int kManagedStateHighlightRadius = 16;
-constexpr SkScalar kManagedStateCornerRadii[] = {16, 16, 16, 16,
-                                                 16, 16, 16, 16};
+constexpr int kManagedStateCornerRadius = 16;
+constexpr float kManagedStateStrokeWidth = 1.0f;
 constexpr auto kManagedStateBorderInsets = gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr gfx::Size kManagedStateImageSize(20, 20);
 
@@ -111,7 +110,7 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
   if (features::IsQsRevampEnabled()) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kManagedStateHighlightRadius);
+                                                  kManagedStateCornerRadius);
   } else {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   }
@@ -150,11 +149,12 @@ void ManagedStateView::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(kManagedStateStrokeWidth);
   flags.setAntiAlias(true);
-  canvas->DrawPath(
-      SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                            kManagedStateCornerRadii, SkPathDirection::kCW),
-      flags);
+  const float half_stroke_width = kManagedStateStrokeWidth / 2.0f;
+  gfx::RectF bounds(GetLocalBounds());
+  bounds.Inset(half_stroke_width);
+  canvas->DrawRoundRect(bounds, kManagedStateCornerRadius, flags);
 }
 
 BEGIN_METADATA(ManagedStateView, views::Button)

@@ -101,6 +101,11 @@ class CORE_EXPORT WorkerGlobalScope
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return !url_.IsNull(); }
   CodeCacheHost* GetCodeCacheHost() override;
+  absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+  FindRaceNetworkRequestURLLoaderFactory(
+      const base::UnguessableToken& token) override {
+    return absl::nullopt;
+  }
 
   void ExceptionUnhandled(int exception_id);
 

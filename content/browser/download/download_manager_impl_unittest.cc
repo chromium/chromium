@@ -902,6 +902,8 @@ TEST_F(DownloadManagerTest,
 TEST_F(DownloadManagerTest, BlockingShutdownCount) {
   download::MockDownloadItemImpl& item(AddItemToManager());
 
+  EXPECT_CALL(item, IsInsecure()).WillRepeatedly(Return(false));
+
   EXPECT_CALL(item, GetState())
       .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
   EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
@@ -926,6 +928,10 @@ TEST_F(DownloadManagerTest, BlockingShutdownCount) {
     EXPECT_CALL(item, GetDangerType()).WillRepeatedly(Return(danger_type));
     EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
   }
+
+  SCOPED_TRACE(testing::Message() << "Failed for insecure" << std::endl);
+  EXPECT_CALL(item, IsInsecure()).WillRepeatedly(Return(true));
+  EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
 }
 
 class DownloadManagerWithExpirationTest : public DownloadManagerTest {

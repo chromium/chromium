@@ -117,8 +117,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
       base::win::ScopedCOMInitializer::kMTA);
   if (!com_initializer.Succeeded()) {
     PLOG(ERROR) << "Failed to initialize COM";
-
-    // TODO(crbug.com/1294543) - is there a more specific error needed?
     return kErrorComInitializationFailed;
   }
 
@@ -131,7 +129,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
@@ -226,7 +224,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
 }
 
 constexpr const char* BuildFlavor() {
-#if defined(NBEDUG)
+#if defined(NDEBUG)
   return "opt";
 #else
   return "debug";

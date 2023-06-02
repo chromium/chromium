@@ -42,15 +42,16 @@ class CommercePushNotificationClient
   UIBackgroundFetchResult HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
-  void OnBrowserReady() override;
+  void OnSceneActiveForegroundBrowserReady() override;
 
  private:
   friend class ::CommercePushNotificationClientTest;
 
   commerce::ShoppingService* GetShoppingService();
   bookmarks::BookmarkModel* GetBookmarkModel();
-  // Returns the first active browser found
-  Browser* GetActiveBrowser();
+  // Returns the first active browser found with scene level
+  // SceneActivationLevelForegroundActive.
+  Browser* GetSceneLevelForegroundActiveBrowser();
 
   std::vector<const std::string> urls_delayed_for_loading_;
 

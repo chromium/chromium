@@ -6,7 +6,6 @@
 # chromium-policy-owners@google.com.
 
 PRESUBMIT_VERSION = '2.0.0'
-USE_PYTHON3 = True
 
 import glob
 import os

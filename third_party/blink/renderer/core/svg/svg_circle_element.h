@@ -54,6 +54,12 @@ class SVGCircleElement final : public SVGGeometryElement {
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet* style) override;
+
   Member<SVGAnimatedLength> cx_;
   Member<SVGAnimatedLength> cy_;
   Member<SVGAnimatedLength> r_;

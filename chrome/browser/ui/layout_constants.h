@@ -10,6 +10,9 @@
 #include "ui/gfx/geometry/size.h"
 
 enum LayoutConstant {
+  // The size of the avatar icon in the profile row of the app menu.
+  APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE,
+
   // The height of Bookmarks Bar when attached to the toolbar. The height of the
   // Bookmarks Bar is larger than the BOOKMARK_BAR_BUTTON_HEIGHT by a fixed
   // amount.
@@ -17,6 +20,13 @@ enum LayoutConstant {
 
   // The height of a button within the Bookmarks Bar.
   BOOKMARK_BAR_BUTTON_HEIGHT,
+
+  // The horizontal padding between buttons within the Bookmarks Bar.
+  BOOKMARK_BAR_BUTTON_PADDING,
+
+  // The horizontal padding between the image and the title of the bookmark
+  // button.
+  BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING,
 
   // The size of icons used in Download bubbles.
   // TODO(crbug/1296323): We should be sourcing the size of the file icon from

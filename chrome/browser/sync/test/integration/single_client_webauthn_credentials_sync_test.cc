@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -25,8 +26,8 @@
 
 namespace {
 
-using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 using webauthn_credentials_helper::EntityHasSyncId;
 using webauthn_credentials_helper::LocalPasskeysMatchChecker;
@@ -99,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
   EXPECT_TRUE(
-      ServerPasskeysMatchChecker(ElementsAre(EntityHasSyncId(sync_id))).Wait());
+      ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
+          .Wait());
 }
 
 // Adding a remote passkey should sync to the client.
@@ -108,9 +110,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
-  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile,
-                                        ElementsAre(PasskeyHasSyncId(sync_id)))
-                  .Wait());
+  EXPECT_TRUE(
+      LocalPasskeysMatchChecker(kSingleProfile,
+                                UnorderedElementsAre(PasskeyHasSyncId(sync_id)))
+          .Wait());
 }
 
 // Deleting a local passkey should remove from the server.
@@ -118,11 +121,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UploadLocalPasskeyDeletion) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  const std::string sync_id = GetModel().AddNewPasskeyForTesting(passkey);
   ASSERT_TRUE(
-      ServerPasskeysMatchChecker(ElementsAre(EntityHasSyncId(sync_id))).Wait());
+      ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
+          .Wait());
 
-  GetModel().DeletePasskeyForTesting(sync_id);
+  GetModel().DeletePasskey(passkey.credential_id());
   EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
 }
 
@@ -133,10 +138,162 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
   const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
   ASSERT_TRUE(
-      ServerPasskeysMatchChecker(ElementsAre(EntityHasSyncId(sync_id))).Wait());
+      ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
+          .Wait());
 
   DeletePasskeyFromFakeServer(sync_id);
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
+}
+
+// Attempting to delete a passkey that does not exist should return false.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeleteNonExistingPasskey) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
+  ASSERT_TRUE(
+      ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
+          .Wait());
+
+  EXPECT_FALSE(GetModel().DeletePasskey("non existing id"));
+  EXPECT_TRUE(
+      ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
+          .Wait());
+}
+
+// Deleting a passkey should also delete its shadowed credentials.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeleteShadowedPasskeys) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Set up the following chain:
+  // id6 (latest)
+  // id5 (older) --shadows--> id4 --shadows--> id3 +-shadows--> id2
+  //                                               |
+  //                                               +-shadows--> id1
+  sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey3 = NewPasskey();
+  passkey3.add_newly_shadowed_credential_ids(passkey1.credential_id());
+  passkey3.add_newly_shadowed_credential_ids(passkey2.credential_id());
+  sync_pb::WebauthnCredentialSpecifics passkey4 = NewPasskey();
+  passkey4.add_newly_shadowed_credential_ids(passkey3.credential_id());
+  sync_pb::WebauthnCredentialSpecifics passkey5 = NewPasskey();
+  passkey5.add_newly_shadowed_credential_ids(passkey4.credential_id());
+  sync_pb::WebauthnCredentialSpecifics passkey6 = NewPasskey();
+
+  GetModel().AddNewPasskeyForTesting(passkey1);
+  GetModel().AddNewPasskeyForTesting(passkey2);
+  GetModel().AddNewPasskeyForTesting(passkey3);
+  GetModel().AddNewPasskeyForTesting(passkey4);
+  GetModel().AddNewPasskeyForTesting(passkey5);
+  GetModel().AddNewPasskeyForTesting(passkey6);
+
+  ASSERT_TRUE(
+      ServerPasskeysMatchChecker(testing::BeginEndDistanceIs(6)).Wait());
+
+  // Delete passkey 4. This should result in only passkey 4 being deleted.
+  ASSERT_TRUE(GetModel().DeletePasskey(passkey4.credential_id()));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey1.sync_id()),
+                                       EntityHasSyncId(passkey2.sync_id()),
+                                       EntityHasSyncId(passkey3.sync_id()),
+                                       EntityHasSyncId(passkey5.sync_id()),
+                                       EntityHasSyncId(passkey6.sync_id())))
+                  .Wait());
+
+  // Delete passkey 5. This should also result in only passkey 5 being deleted.
+  ASSERT_TRUE(GetModel().DeletePasskey(passkey5.credential_id()));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey1.sync_id()),
+                                       EntityHasSyncId(passkey2.sync_id()),
+                                       EntityHasSyncId(passkey3.sync_id()),
+                                       EntityHasSyncId(passkey6.sync_id())))
+                  .Wait());
+
+  // Delete passkey 6. All credentials should be deleted.
+  ASSERT_TRUE(GetModel().DeletePasskey(passkey6.credential_id()));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
+}
+
+// Deleting a passkey should not delete passkeys for a different rp id or user
+// id.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DoNotDeleteCredentialsForDifferentRpIdOrUserId) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics different_rp_id_passkey = NewPasskey();
+  different_rp_id_passkey.set_rp_id("another-rpid.com");
+  GetModel().AddNewPasskeyForTesting(different_rp_id_passkey);
+
+  sync_pb::WebauthnCredentialSpecifics different_user_id_passkey = NewPasskey();
+  different_user_id_passkey.set_user_id(base::RandBytesAsString(16));
+  GetModel().AddNewPasskeyForTesting(different_user_id_passkey);
+
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().AddNewPasskeyForTesting(passkey);
+
+  ASSERT_EQ(passkey.rp_id(), different_user_id_passkey.rp_id());
+  ASSERT_EQ(passkey.user_id(), different_rp_id_passkey.user_id());
+  ASSERT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(
+                      EntityHasSyncId(passkey.sync_id()),
+                      EntityHasSyncId(different_rp_id_passkey.sync_id()),
+                      EntityHasSyncId(different_user_id_passkey.sync_id())))
+                  .Wait());
+
+  ASSERT_TRUE(GetModel().DeletePasskey(passkey.credential_id()));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(
+                      EntityHasSyncId(different_rp_id_passkey.sync_id()),
+                      EntityHasSyncId(different_user_id_passkey.sync_id())))
+                  .Wait());
+}
+
+// Attempt deleting a passkey that is part of a shadow chain circle.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeletePasskeyFromShadowChainCircle) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  passkey1.add_newly_shadowed_credential_ids(passkey2.credential_id());
+  passkey2.add_newly_shadowed_credential_ids(passkey1.credential_id());
+  GetModel().AddNewPasskeyForTesting(passkey1);
+  GetModel().AddNewPasskeyForTesting(passkey2);
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey1.sync_id()),
+                                       EntityHasSyncId(passkey2.sync_id())))
+                  .Wait());
+
+  ASSERT_FALSE(GetModel().DeletePasskey(passkey1.credential_id()));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey1.sync_id()),
+                                       EntityHasSyncId(passkey2.sync_id())))
+                  .Wait());
+}
+
+// Tests that deleting a passkey is persisted across browser restarts.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       PRE_DeletingPasskeysPersistsOverRestarts) {
+  ASSERT_TRUE(SetupSync());
+
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().AddNewPasskeyForTesting(passkey);
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey.sync_id())))
+                  .Wait());
+  EXPECT_THAT(GetModel().GetAllPasskeys(),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey.sync_id())));
+  GetModel().DeletePasskey(passkey.credential_id());
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeletingPasskeysPersistsOverRestarts) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
@@ -226,9 +383,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   password_manager::features_util::OptInToAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
   PasskeySyncActiveChecker(GetSyncService(0)).Wait();
-  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile,
-                                        ElementsAre(PasskeyHasSyncId(sync_id)))
-                  .Wait());
+  EXPECT_TRUE(
+      LocalPasskeysMatchChecker(kSingleProfile,
+                                UnorderedElementsAre(PasskeyHasSyncId(sync_id)))
+          .Wait());
 
   // Opt out. The passkey should be removed.
   password_manager::features_util::OptOutOfAccountStorageAndClearSettings(

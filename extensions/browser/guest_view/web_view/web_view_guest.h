@@ -21,7 +21,12 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/script_executor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
+
+namespace content {
+class StoragePartitionConfig;
+}
 
 namespace extensions {
 
@@ -310,6 +315,12 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ApplyAttributes(const base::Value::Dict& params);
 
   void SetTransparency(content::RenderFrameHost* render_frame_host);
+
+  void CreateWebContentsWithStoragePartition(
+      std::unique_ptr<GuestViewBase> owned_this,
+      const base::Value::Dict& create_params,
+      WebContentsCreatedCallback callback,
+      absl::optional<content::StoragePartitionConfig> storage_partition_config);
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;

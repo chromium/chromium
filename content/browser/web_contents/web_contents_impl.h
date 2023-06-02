@@ -340,6 +340,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const GURL& GetURL() override;
   const GURL& GetVisibleURL() override;
   const GURL& GetLastCommittedURL() override;
+  const RenderFrameHostImpl* GetPrimaryMainFrame() const override;
   RenderFrameHostImpl* GetPrimaryMainFrame() override;
   PageImpl& GetPrimaryPage() override;
   RenderFrameHostImpl* GetFocusedFrame() override;
@@ -788,6 +789,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void UpdateWindowPreferredSize(const gfx::Size& pref_size) override;
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
+      RenderFrameHostImpl* render_frame_host) override;
+  std::vector<RenderFrameHostImpl*>
+  GetActiveTopLevelDocumentsInCoopRelatedGroup(
       RenderFrameHostImpl* render_frame_host) override;
   PrerenderHostRegistry* GetPrerenderHostRegistry() override;
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -1881,6 +1885,16 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // A scope that disallows custom cursors has expired.
   void DisallowCustomCursorScopeExpired();
+
+  // Describes the different types of groups we can be interested in when
+  // looking for scriptable frames.
+  enum class GroupType { kBrowsingContextGroup, kCoopRelatedGroup };
+
+  // Returns a vector of all the top-level active frames in the same group type
+  // specified by `group_type`.
+  std::vector<RenderFrameHostImpl*> GetActiveTopLevelDocumentsInGroup(
+      RenderFrameHostImpl* render_frame_host,
+      GroupType group_type);
 
   // Data for core operation ---------------------------------------------------
 

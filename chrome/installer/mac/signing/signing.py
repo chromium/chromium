@@ -9,7 +9,34 @@ bundle that need to be signed, as well as providing utilities to sign them.
 import os.path
 import re
 
-from . import commands
+from signing import commands, invoker
+
+
+class Invoker(invoker.Base):
+
+    def codesign(self, config, product, path, replace_existing_signature=False):
+        command = ['codesign', '--sign', config.identity]
+        if replace_existing_signature:
+            command.append('--force')
+        if config.notarize.should_notarize():
+            # If the products will be notarized, the signature requires a secure
+            # timestamp.
+            command.append('--timestamp')
+        if product.sign_with_identifier:
+            command.extend(['--identifier', product.identifier])
+        reqs = product.requirements_string(config)
+        if reqs:
+            command.extend(['--requirements', '=' + reqs])
+        if product.options:
+            command.extend(
+                ['--options',
+                 product.options.to_comma_delimited_string()])
+        if product.entitlements:
+            command.extend(
+                ['--entitlements',
+                 os.path.join(path, product.entitlements)])
+        command.append(os.path.join(path, product.path))
+        commands.run_command(command)
 
 
 def _linker_signed_arm64_needs_force(path):
@@ -69,27 +96,10 @@ def sign_part(paths, config, part):
         part: The |model.CodeSignedProduct| to sign. The product's |path| must
             be in |paths.work|.
     """
-    command = ['codesign', '--sign', config.identity]
-    path = os.path.join(paths.work, part.path)
-    if _linker_signed_arm64_needs_force(path):
-        command.append('--force')
-    if config.notarize.should_notarize():
-        # If the products will be notarized, the signature requires a secure
-        # timestamp.
-        command.append('--timestamp')
-    if part.sign_with_identifier:
-        command.extend(['--identifier', part.identifier])
-    reqs = part.requirements_string(config)
-    if reqs:
-        command.extend(['--requirements', '=' + reqs])
-    if part.options:
-        command.extend(['--options', part.options.to_comma_delimited_string()])
-    if part.entitlements:
-        command.extend(
-            ['--entitlements',
-             os.path.join(paths.work, part.entitlements)])
-    command.append(path)
-    commands.run_command(command)
+    replace_existing_signature = _linker_signed_arm64_needs_force(
+        os.path.join(paths.work, part.path))
+    config.invoker.signer.codesign(config, part, paths.work,
+                                   replace_existing_signature)
 
 
 def verify_part(paths, part):

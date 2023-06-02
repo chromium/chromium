@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
 
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -30,22 +31,21 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
 
   // Validate and create different kinds of operand if there are no errors.
   // Otherwise return nullptr and set the corresponding error message.
-  static MLOperand* ValidateAndCreateInput(MLGraphBuilder* builder,
-                                           const V8MLOperandType::Enum type,
-                                           Vector<uint32_t> dimensions,
-                                           String name,
-                                           String& error_message);
-  static MLOperand* ValidateAndCreateConstant(
+  static base::expected<MLOperand*, String> ValidateAndCreateInput(
       MLGraphBuilder* builder,
       const V8MLOperandType::Enum type,
       Vector<uint32_t> dimensions,
-      const DOMArrayBufferView* array_buffer_view,
-      String& error_message);
-  static MLOperand* ValidateAndCreateOutput(MLGraphBuilder* builder,
-                                            const V8MLOperandType::Enum type,
-                                            Vector<uint32_t> dimensions,
-                                            const MLOperator* ml_operator,
-                                            String& error_message);
+      String name);
+  static base::expected<MLOperand*, String> ValidateAndCreateConstant(
+      MLGraphBuilder* builder,
+      const V8MLOperandType::Enum type,
+      Vector<uint32_t> dimensions,
+      const DOMArrayBufferView* array_buffer_view);
+  static base::expected<MLOperand*, String> ValidateAndCreateOutput(
+      MLGraphBuilder* builder,
+      const V8MLOperandType::Enum type,
+      Vector<uint32_t> dimensions,
+      const MLOperator* ml_operator);
 
   // The constructor shouldn't be called directly. The callers should use
   // Create* methods instead.

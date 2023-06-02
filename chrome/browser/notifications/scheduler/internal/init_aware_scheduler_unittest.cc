@@ -70,7 +70,7 @@ class InitAwareNotificationSchedulerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockNotificationScheduler> scheduler_impl_;
+  raw_ptr<MockNotificationScheduler, DanglingUntriaged> scheduler_impl_;
   std::unique_ptr<NotificationScheduler> init_aware_scheduler_;
 };
 

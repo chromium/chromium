@@ -152,3 +152,16 @@ source_set("unit_tests") {
     sources -= [ "password_form_helper_unittest.mm" ]
   }
 }
+
+source_set("fake_bulk_leak_check_service") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fake_bulk_leak_check_service.h",
+    "fake_bulk_leak_check_service.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+  ]
+}

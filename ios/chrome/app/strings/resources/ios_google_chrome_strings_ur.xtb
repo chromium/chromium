@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ کل دوبارہ کوشش کریں۔</translation>
 <translation id="2736805085127235148">‏Chrome کی اطلاعات فی الحال آپ کے آلے کی ترتیبات میں آف ہیں۔</translation>
 <translation id="2767464022270041271">‏کوئی محفوظ کردہ پاس ورڈز نہیں۔ جب آپ اپنے پاس ورڈز کو محفوظ کرتے ہیں تو Google پاس ورڈ مینیجر انہیں چیک کر سکتا ہے۔</translation>
+<translation id="2840432500933227975">‏iOS میں Chrome کی ترتیبات کھولیں، پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں اور Chrome منتخب کریں۔</translation>
 <translation id="2869959624320573933">‏Chrome میں سائن ان کریں</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> منتخب کریں</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">‏اس کا مطلب ہے کہ Chrome ہر بار موبائل سائٹ کی درخواست کرے گا۔</translation>
 <translation id="3706101708757577809">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome استعمال کرسکتے ہیں۔</translation>
 <translation id="3720541637541300822">‏جب آپ Chrome بند کرتے ہیں تب پوشیدگی ٹیبز کو مقفل کریں</translation>
+<translation id="3827545470516145620">آپ کو اس آلے پر معیاری حفاظتی تحفظ حاصل ہو رہا ہے</translation>
 <translation id="384394811301901750">‏Google Chrome ابھی آپ کا کیمرا استعمال نہیں کر سکتا ہے</translation>
 <translation id="3980220367029651214">‏آپ مطابقت پذیری اکاؤنٹس کو <ph name="USER_EMAIL1" /> سے <ph name="USER_EMAIL2" /> پر سوئچ کر رہے ہیں۔ آپ کا موجودہ Chrome ڈیٹا <ph name="DOMAIN" /> کے زیر انتظام ہے۔ اس سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن آپ کا ڈیٹا <ph name="USER_EMAIL1" /> میں باقی رہے گا۔</translation>
 <translation id="3984746313391923992">‏آپ کی تنظیم کا تقاضہ ہے کہ آپ Chrome سے سائن آؤٹ رہیں۔</translation>
@@ -148,7 +150,6 @@
 <ph name="BEGIN_INDENT" />  • آپ کے Chrome کے استعمال کے بارے میں معلومات Google کو بھیجی جاتی ہے، لیکن یہ آپ سے منسلک نہیں ہے۔
   • اگر Chrome کریش ہو جاتا ہے تو کریش کی تفصیلات میں کچھ ذاتی معلومات شامل ہو سکتی ہیں۔
   • اگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں ان URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں جنہیں آپ ملاحظہ کرتے ہیں۔<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">‏اس Chrome پروفائل کے لیے آپ کو معیاری حفاظتی تحفظ مل رہا ہے</translation>
 <translation id="9112744793181547300">‏Chrome کو ڈیفالٹ کے بطور سیٹ کریں؟</translation>
 <translation id="9122931302567044771">‏اس کا مطلب ہے کہ Chrome ہر بار ڈیسک ٹاپ سائٹ کی درخواست کرے گا۔</translation>
 </translationbundle>

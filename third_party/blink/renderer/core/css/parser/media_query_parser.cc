@@ -36,6 +36,7 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
         feature == media_feature_names::kBlockSizeMediaFeature ||
         feature == media_feature_names::kMinBlockSizeMediaFeature ||
         feature == media_feature_names::kMaxBlockSizeMediaFeature ||
+        feature == media_feature_names::kStuckMediaFeature ||
         CSSVariableParser::IsValidVariableName(feature)) {
       return false;
     }

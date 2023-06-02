@@ -463,3 +463,23 @@ source_set("test_support") {
     configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
+
+# This is split from `test_support` because it requires the
+# AuthenticationServices framework to be linked in, and that can't just be done
+# as a dep/framework here.
+if (is_mac) {
+  static_library("icloud_keychain_test_support") {
+    testonly = true
+    sources = [
+      "mac/fake_icloud_keychain_sys.h",
+      "mac/fake_icloud_keychain_sys.mm",
+      "mac/scoped_icloud_keychain_test_environment.h",
+      "mac/scoped_icloud_keychain_test_environment.mm",
+    ]
+    deps = [
+      "//base",
+      "//device/fido",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+}

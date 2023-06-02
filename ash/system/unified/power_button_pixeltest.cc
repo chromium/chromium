@@ -61,8 +61,8 @@ class PowerButtonPixelTest : public NoSessionAshTestBase {
 
 TEST_F(PowerButtonPixelTest, NoSession) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "check_button",
-      /*revision_number=*/1, GetPowerButton()));
+      "check_power_button",
+      /*revision_number=*/2, GetPowerButton()));
 
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

@@ -120,6 +120,11 @@ class CORE_EXPORT GestureManager final
   // firing for the current gesture sequence (i.e. until next GestureTapDown).
   bool suppress_mouse_events_from_gestures_;
 
+  // Set on GestureTap if the default mouse down behaviour was suppressed. When
+  // this happens, we also suppress the default selection behaviour of the
+  // subsequent GestureTapDown if it occurs in the same gesture sequence.
+  bool suppress_selection_on_repeated_tap_down_ = true;
+
   bool gesture_context_menu_deferred_;
 
   gfx::PointF long_press_position_in_root_frame_;

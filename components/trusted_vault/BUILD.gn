@@ -5,10 +5,16 @@
 if (!is_android) {
   static_library("trusted_vault") {
     sources = [
+      "command_line_switches.cc",
+      "command_line_switches.h",
       "download_keys_response_handler.cc",
       "download_keys_response_handler.h",
+      "features.cc",
+      "features.h",
       "proto_string_bytes_conversion.cc",
       "proto_string_bytes_conversion.h",
+      "proto_time_conversion.cc",
+      "proto_time_conversion.h",
       "securebox.cc",
       "securebox.h",
       "standalone_trusted_vault_backend.cc",
@@ -44,7 +50,6 @@ if (!is_android) {
     deps = [
       "//components/os_crypt/sync",
       "//components/signin/public/identity_manager",
-      "//components/sync/base",
       "//components/trusted_vault/proto",
       "//crypto",
       "//google_apis",
@@ -59,6 +64,7 @@ if (!is_android) {
     sources = [
       "download_keys_response_handler_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
+      "proto_time_conversion_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",

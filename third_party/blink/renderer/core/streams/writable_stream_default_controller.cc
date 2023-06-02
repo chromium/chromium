@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.h"
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
@@ -104,9 +104,9 @@ void WritableStreamDefaultController::SetUp(
   // Step not needed because queue is initialised during construction.
   //  5. Perform ! ResetQueue(controller).
 
-  //  6. Set controller.[[signal]] to a new AbortSignal.
-  controller->signal_ =
-      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+  //  6. Set controller.[[abortController]] to a new AbortController.
+  controller->abort_controller_ =
+      AbortController::Create(ExecutionContext::From(script_state));
 
   //  7. Set controller.[[started]] to false.
   controller->started_ = false;
@@ -502,7 +502,7 @@ void WritableStreamDefaultController::Trace(Visitor* visitor) const {
   visitor->Trace(close_algorithm_);
   visitor->Trace(controlled_writable_stream_);
   visitor->Trace(queue_);
-  visitor->Trace(signal_);
+  visitor->Trace(abort_controller_);
   visitor->Trace(strategy_size_algorithm_);
   visitor->Trace(write_algorithm_);
   visitor->Trace(resolve_function_);
@@ -706,6 +706,15 @@ void WritableStreamDefaultController::Error(
 
   //  4. Perform ! WritableStreamStartErroring(stream, error).
   WritableStream::StartErroring(script_state, stream, error);
+}
+
+AbortSignal* WritableStreamDefaultController::signal() const {
+  return abort_controller_->signal();
+}
+
+void WritableStreamDefaultController::Abort(ScriptState* script_state,
+                                            ScriptValue reason) {
+  abort_controller_->abort(script_state, reason);
 }
 
 }  // namespace blink

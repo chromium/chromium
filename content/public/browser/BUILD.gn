@@ -268,6 +268,8 @@ source_set("browser_sources") {
     "network_context_client_base.h",
     "network_quality_observer_factory.h",
     "network_service_instance.h",
+    "network_service_util.cc",
+    "network_service_util.h",
     "notification_database_data.cc",
     "notification_database_data.h",
     "notification_details.h",
@@ -589,6 +591,7 @@ source_set("browser_sources") {
       "android/compositor_client.h",
       "android/devtools_auth.h",
       "android/gpu_video_accelerator_factories_provider.h",
+      "android/impression_android.h",
       "android/java_interfaces.h",
       "android/media_url_interceptor_register.cc",
       "android/media_url_interceptor_register.h",
@@ -606,6 +609,10 @@ source_set("browser_sources") {
 
   if (use_aura || is_mac) {
     sources += [ "context_factory.h" ]
+  }
+
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

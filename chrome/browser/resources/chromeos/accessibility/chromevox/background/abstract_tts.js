@@ -251,7 +251,7 @@ export class AbstractTts {
       }
     }
 
-    if (!SettingsManager.get('usePitchChanges')) {
+    if (!SettingsManager.getBoolean('usePitchChanges')) {
       delete properties.relativePitch;
     }
 

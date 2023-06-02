@@ -1657,8 +1657,10 @@ bool Node::NeedsLayoutSubtreeUpdate() const {
 // FIXME: Shouldn't these functions be in the editing code?  Code that asks
 // questions about HTML in the core DOM class is obviously misplaced.
 bool Node::CanStartSelection() const {
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this))
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
+    GetDocument().UpdateStyleAndLayoutTreeForNode(
+        this, DocumentUpdateReason::kSelection);
+  }
   if (IsEditable(*this))
     return true;
 
@@ -3008,16 +3010,15 @@ void Node::DefaultEventHandler(Event& event) {
       if (EnclosingLinkEventParentOrSelf())
         return;
 
-      // Avoid that canBeScrolledAndHasScrollableArea changes layout tree
-      // structure.
+      // Avoid that IsUserScrollable changes layout tree structure.
       // FIXME: We should avoid synchronous layout if possible. We can
       // remove this synchronous layout if we avoid synchronous layout in
       // LayoutTextControlSingleLine::scrollHeight
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInput);
       LayoutObject* layout_object = GetLayoutObject();
-      while (layout_object && (!layout_object->IsBox() ||
-                               !To<LayoutBox>(layout_object)
-                                    ->CanBeScrolledAndHasScrollableArea())) {
+      while (layout_object &&
+             (!layout_object->IsBox() ||
+              !To<LayoutBox>(layout_object)->IsUserScrollable())) {
         if (auto* document = DynamicTo<Document>(layout_object->GetNode())) {
           Element* owner = document->LocalOwner();
           layout_object = owner ? owner->GetLayoutObject() : nullptr;

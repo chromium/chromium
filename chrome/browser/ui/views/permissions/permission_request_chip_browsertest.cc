@@ -372,16 +372,11 @@ class PermissionRequestChipDialogBrowserTest : public UiBrowserTest {
     if (!chip)
       return false;
 
-// TODO(olesiamrukhno): VerifyPixelUi works only for these platforms, revise
-// this if supported platforms change.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
-    return VerifyPixelUi(chip, "BrowserUi", screenshot_name);
-#else
-    return true;
-#endif
+    return VerifyPixelUi(chip, "BrowserUi", screenshot_name) !=
+           ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {

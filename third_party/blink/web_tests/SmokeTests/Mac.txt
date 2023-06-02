@@ -373,7 +373,6 @@ external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html
 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html
 external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html
 external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm
-external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html
 external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html
 external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html
@@ -927,7 +926,6 @@ http/tests/devtools/indexeddb/live-update-indexeddb-list.js
 http/tests/devtools/service-workers/sw-navigate-useragent.js
 http/tests/devtools/tracing/frame-model-instrumentation.js
 http/tests/devtools/tracing/timeline-js/timeline-gc-event.js
-http/tests/devtools/tracing/timeline-js/timeline-microtasks.js
 http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js
 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js
 http/tests/devtools/tracing/timeline-paint/timeline-paint.js
@@ -1884,7 +1882,6 @@ virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html
 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html
 virtual/threaded/external/wpt/scroll-animations/scroll-timelines/current-time-nan.html
 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html
-virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js
 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js
 virtual/threaded/printing/absolute-position-headers-and-footers.html
 virtual/threaded/printing/fixed-positioned-headers-and-footers-inside-transform.html

@@ -42,6 +42,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/startup/silent_sync_enabler.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -144,9 +145,16 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
     return PolicyEffect::kSilenced;
   }
 
+  if (chromeos::BrowserParamsProxy::Get()->IsCurrentUserEphemeral()) {
+    return PolicyEffect::kSilenced;
+  }
+
+  // TODO(b/273237511): Remove direct usage of DeviceEphemeralUsersEnabled
+  // policy in branch M118 in favor of newly added function
+  // `BrowserParamsProxy::Get()->IsCurrentUserEphemeral()`.
   crosapi::mojom::DeviceSettings* device_settings =
       g_browser_process->browser_policy_connector()->GetDeviceSettings();
-  if (device_settings->device_ephemeral_users_enabled ==
+  if (device_settings->deprecated_device_ephemeral_users_enabled ==
       crosapi::mojom::DeviceSettings::OptionalBool::kTrue) {
     // Corresponding policy: DeviceEphemeralUsersEnabled=true
     return PolicyEffect::kSilenced;

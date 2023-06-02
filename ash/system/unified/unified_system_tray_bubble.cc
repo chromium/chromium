@@ -42,24 +42,18 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
       tray_(tray) {
   time_opened_ = base::TimeTicks::Now();
 
-  TrayBubbleView::InitParams init_params;
-  init_params.shelf_alignment = tray_->shelf()->alignment();
-  init_params.preferred_width =
-      features::IsQsRevampEnabled() ? kRevampedTrayMenuWidth : kTrayMenuWidth;
-  init_params.delegate = tray->GetWeakPtr();
-  init_params.parent_window = tray->GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = tray->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets();
+  TrayBubbleView::InitParams init_params =
+      CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
+  if (features::IsQsRevampEnabled()) {
+    init_params.preferred_width = kRevampedTrayMenuWidth;
+  }
   init_params.close_on_deactivate = false;
-  init_params.reroute_event_handler = true;
-  init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
 
   // Max height calculated from the maximum available height of the screen.
-  int max_height = CalculateMaxTrayBubbleHeight();
+  int max_height =
+      CalculateMaxTrayBubbleHeight(tray_->GetBubbleWindowContainer());
 
   if (features::IsQsRevampEnabled()) {
     auto quick_settings_view = controller_->CreateQuickSettingsView(max_height);
@@ -373,7 +367,8 @@ void UnifiedSystemTrayBubble::UpdateBubbleHeight(bool is_showing_detiled_view) {
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
-  int max_height = CalculateMaxTrayBubbleHeight();
+  int max_height =
+      CalculateMaxTrayBubbleHeight(tray_->GetBubbleWindowContainer());
   if (bubble_view_->ShouldUseFixedHeight()) {
     DCHECK(features::IsQsRevampEnabled());
     max_height = std::min(max_height, kDetailedViewHeight);

@@ -28,19 +28,28 @@ aggregate_vector_icons("omnibox_vector_icons") {
   sources = [
     "answer_calculator.icon",
     "answer_currency.icon",
+    "answer_currency_chrome_refresh.icon",
     "answer_default.icon",
     "answer_dictionary.icon",
+    "answer_dictionary_chrome_refresh.icon",
     "answer_finance.icon",
+    "answer_finance_chrome_refresh.icon",
     "answer_sunrise.icon",
+    "answer_sunrise_chrome_refresh.icon",
     "answer_translation.icon",
+    "answer_translation_chrome_refresh.icon",
     "answer_when_is.icon",
+    "answer_when_is_chrome_refresh.icon",
     "arrow_down_chrome_refresh.icon",
     "arrow_up_chrome_refresh.icon",
     "bookmark.icon",
+    "bookmark_chrome_refresh.icon",
     "calculator.icon",
+    "calculator_chrome_refresh.icon",
     "chevron.icon",
     "clear.icon",
     "clock.icon",
+    "clock_chrome_refresh.icon",
     "cookie_chrome_refresh.icon",
     "cookie_crossed_chrome_refresh.icon",
     "dino.icon",
@@ -62,9 +71,11 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "incognito.icon",
     "install_desktop.icon",
     "journeys.icon",
+    "journeys_chrome_refresh.icon",
     "keyword_search.icon",
     "offline_pin.icon",
     "page.icon",
+    "page_chrome_refresh.icon",
     "pedal.icon",
     "price_tracking_disabled.icon",
     "price_tracking_enabled_filled.icon",
@@ -80,6 +91,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "switch.icon",
     "tab.icon",
     "trending_up.icon",
+    "trending_up_chrome_refresh.icon",
   ]
 
   if (is_mac) {
@@ -374,6 +386,10 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
+
   if (use_blink) {
     sources += [
       "actions/history_clusters_action.cc",
@@ -620,6 +636,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",
     ]
   }

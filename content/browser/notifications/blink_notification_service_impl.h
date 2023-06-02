@@ -110,7 +110,8 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
   bool IsValidForNonPersistentNotification();
 
   // The notification context that owns this service instance.
-  raw_ptr<PlatformNotificationContextImpl> notification_context_;
+  raw_ptr<PlatformNotificationContextImpl, DanglingUntriaged>
+      notification_context_;
 
   raw_ptr<BrowserContext> browser_context_;
 

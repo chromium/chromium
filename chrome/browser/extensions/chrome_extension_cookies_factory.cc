@@ -20,7 +20,8 @@ ChromeExtensionCookies* ChromeExtensionCookiesFactory::GetForBrowserContext(
 
 // static
 ChromeExtensionCookiesFactory* ChromeExtensionCookiesFactory::GetInstance() {
-  return base::Singleton<ChromeExtensionCookiesFactory>::get();
+  static base::NoDestructor<ChromeExtensionCookiesFactory> instance;
+  return instance.get();
 }
 
 ChromeExtensionCookiesFactory::ChromeExtensionCookiesFactory()
@@ -34,7 +35,7 @@ ChromeExtensionCookiesFactory::ChromeExtensionCookiesFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-ChromeExtensionCookiesFactory::~ChromeExtensionCookiesFactory() {}
+ChromeExtensionCookiesFactory::~ChromeExtensionCookiesFactory() = default;
 
 KeyedService* ChromeExtensionCookiesFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

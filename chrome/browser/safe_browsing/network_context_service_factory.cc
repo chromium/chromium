@@ -11,7 +11,8 @@ namespace safe_browsing {
 
 // static
 NetworkContextServiceFactory* NetworkContextServiceFactory::GetInstance() {
-  return base::Singleton<NetworkContextServiceFactory>::get();
+  static base::NoDestructor<NetworkContextServiceFactory> instance;
+  return instance.get();
 }
 
 // static

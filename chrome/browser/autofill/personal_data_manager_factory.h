@@ -8,7 +8,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
-template <typename T> struct DefaultSingletonTraits;
+template <typename T>
+class NoDestructor;
 }
 
 class KeyedService;
@@ -39,7 +40,7 @@ class PersonalDataManagerFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<PersonalDataManagerFactory>;
+  friend base::NoDestructor<PersonalDataManagerFactory>;
 
   PersonalDataManagerFactory();
   ~PersonalDataManagerFactory() override;

@@ -23,7 +23,9 @@ SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
 // static
 SafeBrowsingNavigationObserverManagerFactory*
 SafeBrowsingNavigationObserverManagerFactory::GetInstance() {
-  return base::Singleton<SafeBrowsingNavigationObserverManagerFactory>::get();
+  static base::NoDestructor<SafeBrowsingNavigationObserverManagerFactory>
+      instance;
+  return instance.get();
 }
 
 SafeBrowsingNavigationObserverManagerFactory::

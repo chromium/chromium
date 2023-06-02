@@ -55,16 +55,17 @@ export interface OriginInfo {
 }
 
 /**
- * Represents a list of sites, grouped under the same eTLD+1. For example, an
- * origin "https://www.example.com" would be grouped together with
- * "https://login.example.com" and "http://example.com" under a common eTLD+1 of
- * "example.com".
+ * Represents a list of related sites, grouped by 'groupingKey', which will be
+ * an eTLD+1 for HTTP(S) sites, or an origin for other schemes. 'groupingKey'
+ * will be unique for each SiteGroup, but should be treated as an opaque token
+ * in UI code.
  */
 export interface SiteGroup {
-  etldPlus1: string;
+  groupingKey: string;
   displayName: string;
   numCookies: number;
   origins: OriginInfo[];
+  etldPlus1?: string;
   fpsOwner?: string;
   fpsNumMembers?: number;
   fpsEnterpriseManaged?: boolean;
@@ -451,10 +452,10 @@ export interface SiteSettingsPrefsBrowserProxy {
   fetchBlockAutoplayStatus(): void;
 
   /**
-   * Clears all the web storage data and cookies for a given etld+1.
-   * @param etldPlus1 The etld+1 to clear data from.
+   * Clears all the web storage data and cookies for a given site group.
+   * @param groupingKey The group to clear data from.
    */
-  clearEtldPlus1DataAndCookies(etldPlus1: string): void;
+  clearSiteGroupDataAndCookies(groupingKey: string): void;
 
   /**
    * Clears all the unpartitioned web storage data and cookies for a given
@@ -464,11 +465,12 @@ export interface SiteSettingsPrefsBrowserProxy {
   clearUnpartitionedOriginDataAndCookies(origin: string): void;
 
   /**
-   * Clears all the storage for |origin| which is partitioned on |etldPlus1|.
+   * Clears all the storage for |origin| which is partitioned on |groupingKey|.
    * @param origin The origin to clear data from.
-   * @param etldPlus1 The etld+1 which the data is partitioned for.
+   * @param groupingKey The groupingKey which the data is partitioned for.
    */
-  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string): void;
+  clearPartitionedOriginDataAndCookies(origin: string, groupingKey: string):
+      void;
 
   /**
    * Record All Sites Page action for metrics.
@@ -658,16 +660,16 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('fetchBlockAutoplayStatus');
   }
 
-  clearEtldPlus1DataAndCookies(etldPlus1: string) {
-    chrome.send('clearEtldPlus1DataAndCookies', [etldPlus1]);
+  clearSiteGroupDataAndCookies(groupingKey: string) {
+    chrome.send('clearSiteGroupDataAndCookies', [groupingKey]);
   }
 
   clearUnpartitionedOriginDataAndCookies(origin: string) {
     chrome.send('clearUnpartitionedUsage', [origin]);
   }
 
-  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string) {
-    chrome.send('clearPartitionedUsage', [origin, etldPlus1]);
+  clearPartitionedOriginDataAndCookies(origin: string, groupingKey: string) {
+    chrome.send('clearPartitionedUsage', [origin, groupingKey]);
   }
 
   recordAction(action: number) {

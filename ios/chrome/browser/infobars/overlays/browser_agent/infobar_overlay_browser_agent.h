@@ -32,6 +32,13 @@ class InfobarOverlayBrowserAgent
   void AddInfobarInteractionHandler(
       std::unique_ptr<InfobarInteractionHandler> interaction_handler);
 
+  // Adds an InfobarInteractionHandler that corresponds to the given
+  // `infobar_type`to make model-layer updates for interactions with infobars.
+  // This method calls `AddInfobarInteractionHandler:` to create the
+  // InfobarInteractionHandler.
+  void AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType infobar_type);
+
  private:
   friend class BrowserUserData<InfobarOverlayBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();

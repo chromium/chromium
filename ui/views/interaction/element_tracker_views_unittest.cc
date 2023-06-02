@@ -106,7 +106,7 @@ class ElementEventWatcher {
   const ElementEventType event_type_;
   ui::ElementTracker::Subscription subscription_;
   int event_count_ = 0;
-  raw_ptr<View> last_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> last_view_ = nullptr;
 };
 
 ElementTrackerViews::ViewList ElementsToViews(

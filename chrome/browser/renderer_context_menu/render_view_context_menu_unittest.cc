@@ -79,6 +79,18 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif
+
 using extensions::Extension;
 using extensions::MenuItem;
 using extensions::MenuManager;
@@ -532,6 +544,9 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
   }
 
   PrefService* local_state() { return testing_local_state_->Get(); }
+  ScopedTestingLocalState* testing_local_state() {
+    return testing_local_state_.get();
+  }
 
   Browser* GetBrowser() {
     if (!browser_) {
@@ -557,7 +572,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   std::unique_ptr<Browser> browser_;
 };
 
@@ -1129,6 +1144,50 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Verify that the Lens Image Search menu item is disabled on image content in
+// Ash, if Lacros is the only browser.
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensImageSearchDisabledIfAshBrowserIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate,
+       ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
+      {});
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ash::ProfileHelper::Get();
+
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal(), testing_local_state());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Verify that the Lens Image Search menu item is enabled for Progressive Web
 // Apps
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
@@ -1304,6 +1363,45 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Verify that the Lens Region Search menu item is not displayed even when the
+// feature is enabled if Lacros is the only browser.
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensRegionSearchDisabledIfAshBrowserIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {lens::features::kLensStandalone, ash::features::kLacrosSupport,
+       ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
+      {});
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ash::ProfileHelper::Get();
+
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal(), testing_local_state());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfEnabled) {
   base::test::ScopedFeatureList features;

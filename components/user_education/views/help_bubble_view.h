@@ -22,10 +22,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 
-namespace ui {
-class MouseEvent;
-}  // namespace ui
-
 namespace views {
 class ImageView;
 class Label;
@@ -85,7 +81,6 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
 
  protected:
   // BubbleDialogDelegateView:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnThemeChanged() override;

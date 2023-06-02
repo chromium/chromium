@@ -77,11 +77,6 @@ void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
                      }));
 }
 
-bool FakeInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void FakeInstallFinalizer::UninstallWebApp(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
@@ -98,10 +93,6 @@ void FakeInstallFinalizer::ReparentTab(const AppId& app_id,
                                        bool shortcut_created,
                                        content::WebContents* web_contents) {
   ++num_reparent_tab_calls_;
-}
-void FakeInstallFinalizer::SetRemoveManagementTypeCallbackForTesting(
-    base::RepeatingCallback<void(const AppId&)>) {
-  NOTIMPLEMENTED();
 }
 
 void FakeInstallFinalizer::SetNextFinalizeInstallResult(

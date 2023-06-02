@@ -279,6 +279,29 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
     return;
   }
+
+  // If the flag is disabled, clear the new touchpad and keyboard settings from
+  // all settings dictionaries.
+  if (!features::IsAltClickAndSixPackCustomizationEnabled() && pref_service) {
+    base::Value::Dict updated_touchpad_dict =
+        pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
+    for (auto [key, dict] : updated_touchpad_dict) {
+      CHECK(dict.is_dict());
+      dict.GetDict().Remove(prefs::kTouchpadSettingSimulateRightClick);
+    }
+
+    base::Value::Dict updated_keyboard_dict =
+        pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
+
+    for (auto [key, dict] : updated_keyboard_dict) {
+      CHECK(dict.is_dict());
+      dict.GetDict().Remove(prefs::kKeyboardSettingSixPackKeyRemappings);
+    }
+    pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
+                          std::move(updated_touchpad_dict));
+    pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
+                          std::move(updated_keyboard_dict));
+  }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
   InitializePolicyHandler();

@@ -15,7 +15,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/buildflags.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_player/decoder_listener.h"
 #include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
@@ -331,7 +331,7 @@ class VideoDecoderTest : public ::testing::Test {
   // simulated. The |vsync_rate| is used during simulated rendering, if 0 Vsync
   // is disabled.
   std::unique_ptr<DecoderListener> CreateDecoderListener(
-      const Video* video,
+      const VideoBitstream* video,
       uint32_t render_frame_rate = 0,
       uint32_t vsync_rate = 0) {
     LOG_ASSERT(video);
@@ -364,7 +364,7 @@ class VideoDecoderTest : public ::testing::Test {
 
     // Make sure the event timeout is at least as long as the video's duration.
     video_player->SetEventWaitTimeout(
-        std::max(kDefaultEventWaitTimeout, g_env->Video()->GetDuration()));
+        std::max(kDefaultEventWaitTimeout, g_env->Video()->Duration()));
     return video_player;
   }
 
@@ -447,7 +447,7 @@ TEST_F(VideoDecoderTest, MeasureUncappedPerformance_TenConcurrentDecoders) {
 
 int main(int argc, char** argv) {
   // Set the default test data path.
-  media::test::Video::SetTestDataPath(media::GetTestDataPath());
+  media::test::VideoBitstream::SetTestDataPath(media::GetTestDataPath());
 
   // Print the help message if requested. This needs to be done before
   // initializing gtest, to overwrite the default gtest help message.

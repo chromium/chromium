@@ -178,7 +178,7 @@ generate_grd("build_grd") {
   public_deps = [ "//third_party/d3:build_grdp" ]
   grdp_files = [ "$root_gen_dir/third_party/d3/d3_resources.grdp" ]
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   grd_prefix = "ash_diagnostics_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

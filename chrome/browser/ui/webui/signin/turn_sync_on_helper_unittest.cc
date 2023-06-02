@@ -878,10 +878,11 @@ class TurnSyncOnHelperTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  raw_ptr<FakeUserPolicySigninService> user_policy_signin_service_ = nullptr;
+  raw_ptr<FakeUserPolicySigninService, DanglingUntriaged>
+      user_policy_signin_service_ = nullptr;
   std::string initial_device_id_;
   testing::NiceMock<syncer::SyncUserSettingsMock> mock_sync_settings_;
 
@@ -903,7 +904,7 @@ class TurnSyncOnHelperTest : public testing::Test {
   std::string merge_data_previous_email_;
   std::string merge_data_new_email_;
   bool switched_to_new_profile_ = false;
-  raw_ptr<Profile> new_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> new_profile_ = nullptr;
   bool sync_confirmation_shown_ = false;
   SyncDisabledConfirmation sync_disabled_confirmation_ = kNotShown;
   bool sync_settings_shown_ = false;

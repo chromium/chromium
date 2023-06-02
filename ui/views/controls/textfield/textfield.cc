@@ -54,6 +54,9 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/focusable_border.h"
@@ -241,6 +244,20 @@ Textfield::Textfield()
                                                 GetCornerRadius());
   FocusRing::Install(this);
   FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+  if (::features::IsChromeRefresh2023()) {
+    InkDropHost* ink_drop_host =
+        InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
+    ink_drop_host->SetMode(InkDropHost::InkDropMode::ON);
+    ink_drop_host->SetLayerRegion(LayerRegion::kAbove);
+    ink_drop_host->SetHighlightOpacity(1.0f);
+    ink_drop_host->SetBaseColorCallback(base::BindRepeating(
+        [](Textfield* host) {
+          return host->HasFocus() ? SK_ColorTRANSPARENT
+                                  : host->GetColorProvider()->GetColor(
+                                        ui::kColorTextfieldHover);
+        },
+        this));
+  }
 
 #if !BUILDFLAG(IS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom
@@ -606,6 +623,11 @@ bool Textfield::GetUseDefaultBorder() const {
 }
 void Textfield::SetUseDefaultBorder(bool use_default_border) {
   use_default_border_ = use_default_border;
+}
+
+void Textfield::RemoveHoverEffect() {
+  // If no Inkdrop has been installed, this will no-op.
+  InkDrop::Remove(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2587,9 +2609,9 @@ void Textfield::UpdateDefaultBorder() {
       extra_insets_.right() + provider->GetDistanceMetric(
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
   if (invalid_) {
-    border->SetColorId(ui::kColorTextfieldInvalidOutline);
+    border->SetColorId(ui::kColorTextfieldOutlineInvalid);
   } else if (!GetEnabled() || GetReadOnly()) {
-    border->SetColorId(ui::kColorTextfieldDisabledOutline);
+    border->SetColorId(ui::kColorTextfieldOutlineDisabled);
   }
   border->SetCornerRadius(GetCornerRadius());
   View::SetBorder(std::move(border));

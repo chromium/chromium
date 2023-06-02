@@ -115,6 +115,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                                 AutocompleteMatchType::Type match_type,
                                 base::TimeTicks match_selection_timestamp,
                                 bool destination_url_entered_without_scheme,
+                                bool destination_url_entered_with_http_scheme,
                                 const std::u16string&,
                                 const AutocompleteMatch&,
                                 const AutocompleteMatch&,
@@ -168,6 +169,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 #if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
+
+  void RecordActionShown(JNIEnv* env, int position, bool executed) {
+    RecordActionShown(position, executed);
+  }
 #endif
 
  protected:
@@ -181,6 +186,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 
   // For navigation Actions, this holds the destination URL. Otherwise, empty.
   GURL url_;
+
+#if BUILDFLAG(IS_ANDROID)
+  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_H_

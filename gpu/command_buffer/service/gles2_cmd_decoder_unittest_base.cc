@@ -498,9 +498,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   ClearSharedMemory();
 
   ContextCreationAttribs attribs;
-  attribs.alpha_size = normalized_init.request_alpha ? 8 : 0;
-  attribs.depth_size = normalized_init.request_depth ? 24 : 0;
-  attribs.stencil_size = normalized_init.request_stencil ? 8 : 0;
   attribs.lose_context_when_out_of_memory =
       normalized_init.lose_context_when_out_of_memory;
   attribs.context_type = init.context_type;
@@ -2429,13 +2426,6 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  context_creation_attribs_.offscreen_framebuffer_size = gfx::Size(4, 4);
-  context_creation_attribs_.alpha_size = 8;
-  context_creation_attribs_.blue_size = 8;
-  context_creation_attribs_.green_size = 8;
-  context_creation_attribs_.red_size = 8;
-  context_creation_attribs_.depth_size = 24;
-  context_creation_attribs_.stencil_size = 8;
   context_creation_attribs_.bind_generates_resource = true;
 
   gl::init::InitializeStaticGLBindingsImplementation(
@@ -2457,8 +2447,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       nullptr /* progress_reporter */, GpuFeatureInfo(), &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_);
 
-  surface_ = gl::init::CreateOffscreenGLSurface(
-      display_, context_creation_attribs_.offscreen_framebuffer_size);
+  surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));
   context_ = gl::init::CreateGLContext(
       nullptr, surface_.get(),
       GenerateGLContextAttribs(context_creation_attribs_, group_.get()));

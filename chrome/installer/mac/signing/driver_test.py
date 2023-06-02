@@ -5,14 +5,17 @@
 import unittest
 from unittest import mock
 
-from . import driver, model, test_config
+from signing import driver, model, test_config
 
 
 def _config_factory():
     return test_config.TestConfig
 
+def _invoker_factory():
+    return test_config.TestInvoker
 
 @mock.patch('signing.config_factory.get_class', _config_factory)
+@mock.patch('signing.config_factory.get_invoker_class', _invoker_factory)
 @mock.patch('signing.pipeline.sign_all')
 @mock.patch('signing.commands.run_command')
 class TestDriverExecution(unittest.TestCase):
@@ -67,6 +70,7 @@ class TestDriverExecution(unittest.TestCase):
 
 @mock.patch('signing.commands.file_exists', lambda s: True)
 @mock.patch('signing.config_factory.get_class', _config_factory)
+@mock.patch('signing.config_factory.get_invoker_class', _invoker_factory)
 @mock.patch.multiple('signing.driver', _show_tool_versions=mock.DEFAULT)
 @mock.patch('signing.pipeline.sign_all')
 class TestCommandLine(unittest.TestCase):
@@ -162,8 +166,9 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
         self.assertEquals(model.NotarizeAndStapleLevel.STAPLE, config.notarize)
-        self.assertEquals('Notary-User', config.notary_user)
-        self.assertEquals('@env:NOTARY', config.notary_password)
+        self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
+        self.assertEquals('@env:NOTARY',
+                          config.invoker.notarizer._notary_password)
 
     def test_notarize_specific(self, sign_all, **kwargs):
         driver.main([
@@ -174,8 +179,9 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
         self.assertEquals(model.NotarizeAndStapleLevel.NOWAIT, config.notarize)
-        self.assertEquals('Notary-User', config.notary_user)
-        self.assertEquals('@env:NOTARY', config.notary_password)
+        self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
+        self.assertEquals('@env:NOTARY',
+                          config.invoker.notarizer._notary_password)
 
     def test_notarize_missing_args(self, sign_all, **kwargs):
         with self.assertRaises(SystemExit):
@@ -210,8 +216,10 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
         self.assertEquals(model.NotarizeAndStapleLevel.STAPLE, config.notarize)
-        self.assertEquals('Notary-User', config.notary_user)
-        self.assertEquals('@env:NOTARY', config.notary_password)
-        self.assertEquals('Team1', config.notary_team_id)
+        self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
+        self.assertEquals('@env:NOTARY',
+                          config.invoker.notarizer._notary_password)
+        self.assertEquals('Team1',
+                          config.invoker.notarizer._notarizer._notary_team_id)
         self.assertEquals(model.NotarizationTool.NOTARYTOOL,
-                          config.notarization_tool)
+                          config.invoker.notarizer.notarization_tool)

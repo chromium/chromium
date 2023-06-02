@@ -24,7 +24,8 @@ VerdictCacheManager* VerdictCacheManagerFactory::GetForProfile(
 
 // static
 VerdictCacheManagerFactory* VerdictCacheManagerFactory::GetInstance() {
-  return base::Singleton<VerdictCacheManagerFactory>::get();
+  static base::NoDestructor<VerdictCacheManagerFactory> instance;
+  return instance.get();
 }
 
 VerdictCacheManagerFactory::VerdictCacheManagerFactory()

@@ -111,8 +111,6 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
 }
 
 // Gets the mandatory integrity level of a process.
-// TODO(crbug.com/1233748): consider reusing
-// base::GetCurrentProcessIntegrityLevel().
 HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, false, process_id);
   if (!process)
@@ -448,7 +446,6 @@ HResultOr<bool> IsTokenAdmin(HANDLE token) {
   return base::ok(is_member);
 }
 
-// TODO(crbug.com/1212187): maybe handle filtered tokens.
 HResultOr<bool> IsUserAdmin() {
   return IsTokenAdmin(NULL);
 }
@@ -472,8 +469,6 @@ HResultOr<bool> IsUserNonElevatedAdmin() {
 }
 
 HResultOr<bool> IsCOMCallerAdmin() {
-  ScopedKernelHANDLE token;
-
   HRESULT hr = ::CoImpersonateClient();
   if (hr == RPC_E_CALL_COMPLETE) {
     // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
@@ -484,17 +479,23 @@ HResultOr<bool> IsCOMCallerAdmin() {
     return base::unexpected(hr);
   }
 
-  {
+  HResultOr<ScopedKernelHANDLE> token = []() -> decltype(token) {
+    ScopedKernelHANDLE token;
     absl::Cleanup co_revert_to_self = [] { ::CoRevertToSelf(); };
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
-      hr = HRESULTFromLastError();
+      HRESULT hr = HRESULTFromLastError();
       LOG(ERROR) << "::OpenThreadToken failed: " << std::hex << hr;
       return base::unexpected(hr);
     }
+    return token;
+  }();
+
+  if (!token.has_value()) {
+    return base::unexpected(token.error());
   }
 
-  return IsTokenAdmin(token.get()).transform_error([](HRESULT error) {
+  return IsTokenAdmin(token.value().get()).transform_error([](HRESULT error) {
     CHECK(FAILED(error));
     LOG(ERROR) << "IsTokenAdmin failed: " << std::hex << error;
     return error;

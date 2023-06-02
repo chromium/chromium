@@ -234,9 +234,12 @@ TEST_P(UnifiedSystemTrayTest, GetAccessibleNameForQuickSettingsBubble) {
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
 
-  EXPECT_EQ(tray->GetAccessibleNameForQuickSettingsBubble(),
-            l10n_util::GetStringUTF16(
-                IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION));
+  EXPECT_EQ(
+      tray->GetAccessibleNameForQuickSettingsBubble(),
+      l10n_util::GetStringUTF16(
+          IsQsRevampEnabled()
+              ? IDS_ASH_REVAMPED_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION
+              : IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION));
 }
 
 TEST_P(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
@@ -961,17 +964,10 @@ class UnifiedSystemTrayPrivacyIndicatorsTest
   ~UnifiedSystemTrayPrivacyIndicatorsTest() override = default;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kPrivacyIndicators};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kVideoConference};
-    if (IsQsRevampEnabled()) {
-      enabled_features.push_back(features::kQsRevamp);
-    } else {
-      disabled_features.push_back(features::kQsRevamp);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kPrivacyIndicators, true},
+         {features::kVideoConference, false},
+         {features::kQsRevamp, IsQsRevampEnabled()}});
 
     AshTestBase::SetUp();
   }

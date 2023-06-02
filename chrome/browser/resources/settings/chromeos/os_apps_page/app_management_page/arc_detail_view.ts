@@ -124,12 +124,6 @@ class AppManagementArcDetailViewElement extends
     }
     return true;
   }
-
-  private getMorePermissionsLabel_(): string {
-    return this.hasReadOnlyPermissions_ ?
-        this.i18n('appManagementArcManagePermissionsLabel') :
-        this.i18n('appManagementMorePermissionsLabel');
-  }
 }
 
 declare global {

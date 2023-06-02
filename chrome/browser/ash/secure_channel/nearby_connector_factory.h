@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
 #define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -22,7 +22,7 @@ class NearbyConnectorFactory : public ProfileKeyedServiceFactory {
   static NearbyConnectorFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<NearbyConnectorFactory>;
+  friend base::NoDestructor<NearbyConnectorFactory>;
 
   NearbyConnectorFactory();
   NearbyConnectorFactory(const NearbyConnectorFactory&) = delete;

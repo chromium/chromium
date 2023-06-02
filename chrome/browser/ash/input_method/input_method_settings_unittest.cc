@@ -756,6 +756,8 @@ TEST(CreateSettingsFromPrefsTest, CreateVietnameseVniSettings) {
   const auto settings = CreateSettingsFromPrefs(prefs, kVietnameseVniEngineId);
 
   ASSERT_TRUE(settings->is_vietnamese_vni_settings());
+  const auto& vni_settings = *settings->get_vietnamese_vni_settings();
+  EXPECT_TRUE(vni_settings.allow_flexible_diacritics);
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateVietnameseTelexSettings) {
@@ -767,6 +769,8 @@ TEST(CreateSettingsFromPrefsTest, CreateVietnameseTelexSettings) {
       CreateSettingsFromPrefs(prefs, kVietnameseTelexEngineId);
 
   ASSERT_TRUE(settings->is_vietnamese_telex_settings());
+  const auto& telex_settings = *settings->get_vietnamese_telex_settings();
+  EXPECT_TRUE(telex_settings.allow_flexible_diacritics);
 }
 
 TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {

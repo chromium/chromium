@@ -54,11 +54,18 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
     // in decoding; in future it could perhaps be possible to fall back
     // to software decoding instead.
     // kStreamError,  // Error in stream.
-    kConfigChange,        // This is returned when some configuration (e.g.
-                          // profile or picture size) is changed. A client may
-                          // need to apply the client side the configuration
-                          // properly (e.g. allocate buffers with the new
-                          // resolution).
+    kConfigChange,      // This is returned when some configuration (e.g.
+                        // profile or picture size) is changed. A client may
+                        // need to apply the client side the configuration
+                        // properly (e.g. allocate buffers with the new
+                        // resolution).
+    kColorSpaceChange,  // This is returned if the video color space is changed.
+                        // Color space changes off of key frames are discarded
+                        // only for VP9 decoder. When both ConfigChange and
+                        // ColorSpaceChange occur together, ConfigChange is
+                        // preferred over ColorSpaceChange. When triggered, it
+                        // is used for creating new shared images for the
+                        // D3D11VideoDecoder.
     kRanOutOfStreamData,  // Need more stream data to proceed.
     kRanOutOfSurfaces,    // Waiting for the client to free up output surfaces.
     kNeedContextUpdate,   // Waiting for the client to update decoding context
@@ -84,6 +91,11 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   virtual VideoCodecProfile GetProfile() const = 0;
   virtual uint8_t GetBitDepth() const = 0;
   virtual VideoChromaSampling GetChromaSampling() const = 0;
+  // Returns the video color space for the in-band metadata / stream
+  // configuration. The returned color space may vary between in-band metadata
+  // and stream config based on video decoder's internal
+  // preferences.
+  virtual VideoColorSpace GetVideoColorSpace() const = 0;
   // Returns in-band HDR metadata if it exists. Clients must prefer in-band
   // metadata over container metadata to support dynamic HDR metadata.
   virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const = 0;

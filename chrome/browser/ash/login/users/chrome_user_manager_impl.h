@@ -47,7 +47,6 @@ namespace ash {
 
 class MultiProfileUserController;
 class SessionLengthLimiter;
-class SupervisedUserManagerImpl;
 
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
@@ -73,7 +72,6 @@ class ChromeUserManagerImpl
   // UserManagerInterface implementation:
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;
-  SupervisedUserManager* GetSupervisedUserManager() override;
 
   // UserManager implementation:
   void Shutdown() override;
@@ -85,20 +83,16 @@ class ChromeUserManagerImpl
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
   bool CanCurrentUserLock() const override;
-  bool IsUserNonCryptohomeDataEphemeral(
-      const AccountId& account_id) const override;
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
   bool IsEphemeralAccountId(const AccountId& account_id) const override;
   const AccountId& GetGuestAccountId() const override;
-  bool IsFirstExecAfterBoot() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
   bool IsStubAccountId(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  bool HasBrowserRestarted() const override;
   const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
   std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
@@ -156,7 +150,6 @@ class ChromeUserManagerImpl
       const user_manager::UserType user_type) override;
 
  private:
-  friend class SupervisedUserManagerImpl;
   friend class UserManagerTest;
   friend class WallpaperManager;
   friend class WallpaperManagerTest;
@@ -231,9 +224,6 @@ class ChromeUserManagerImpl
 
   // TODO(b/278643115): Move this out from ChromeUserManagerImpl.
   UserImageManagerRegistry user_image_manager_registry_;
-
-  // Supervised user manager.
-  std::unique_ptr<SupervisedUserManagerImpl> supervised_user_manager_;
 
   // Session length limiter.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;

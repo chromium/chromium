@@ -108,8 +108,6 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
       capture_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       camera_device_ipc_thread_(std::string("CameraDeviceIpcThread") +
                                 device_descriptor.device_id),
-      screen_observer_delegate_(
-          ScreenObserverDelegate::Create(this, ui_task_runner)),
       lens_facing_(device_descriptor.facing),
       // External cameras have lens_facing as MEDIA_VIDEO_FACING_NONE.
       // We don't want to rotate the frame even if the device rotates.
@@ -122,20 +120,21 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
       power_manager_client_proxy_(
           base::MakeRefCounted<PowerManagerClientProxy>()) {
   power_manager_client_proxy_->Init(weak_ptr_factory_.GetWeakPtr(),
-                                    capture_task_runner_,
-                                    std::move(ui_task_runner));
+                                    capture_task_runner_, ui_task_runner);
+  screen_observer_delegate_ = ScreenObserverDelegate::Create(
+      weak_ptr_factory_.GetWeakPtr(), ui_task_runner);
 }
 
-VideoCaptureDeviceChromeOSDelegate::~VideoCaptureDeviceChromeOSDelegate() =
-    default;
+VideoCaptureDeviceChromeOSDelegate::~VideoCaptureDeviceChromeOSDelegate() {
+  screen_observer_delegate_->RemoveObserver();
+  power_manager_client_proxy_->Shutdown();
+  camera_hal_delegate_->DisableAllVirtualDevices();
+}
 
 void VideoCaptureDeviceChromeOSDelegate::Shutdown() {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   if (!HasDeviceClient()) {
     DCHECK(!camera_device_ipc_thread_.IsRunning());
-    screen_observer_delegate_->RemoveObserver();
-    power_manager_client_proxy_->Shutdown();
-    camera_hal_delegate_->DisableAllVirtualDevices();
     capture_task_runner_->PostTask(FROM_HERE, std::move(cleanup_callback_));
   }
 }

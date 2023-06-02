@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Presubmit script for changes affecting //build/lacros"""
 
-USE_PYTHON3 = True
 
 
 def _CommonChecks(input_api, output_api):
@@ -11,12 +10,7 @@ def _CommonChecks(input_api, output_api):
   if input_api.is_windows:
     return []
   tests = input_api.canned_checks.GetUnitTestsInDirectory(
-      input_api,
-      output_api,
-      '.', [r'^.+_test\.py$'],
-      run_on_python2=False,
-      run_on_python3=True,
-      skip_shebang_check=True)
+      input_api, output_api, '.', [r'^.+_test\.py$'])
   return input_api.RunTests(tests)
 
 

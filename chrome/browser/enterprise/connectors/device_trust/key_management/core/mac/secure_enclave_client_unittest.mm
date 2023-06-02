@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
@@ -88,7 +89,7 @@ class SecureEnclaveClientTest : public testing::Test {
                             query, kSecAttrKeyType)));
   }
 
-  MockSecureEnclaveHelper* mock_secure_enclave_helper_ = nullptr;
+  raw_ptr<MockSecureEnclaveHelper> mock_secure_enclave_helper_ = nullptr;
   std::unique_ptr<SecureEnclaveClient> secure_enclave_client_;
   base::ScopedCFTypeRef<SecKeyRef> test_key_;
   bool data_protection_keychain_ = false;

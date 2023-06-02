@@ -578,7 +578,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           header_client,
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override) override;
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
+      override;
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
@@ -743,6 +745,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool get_topics,
       bool observe,
       std::vector<blink::mojom::EpochTopicPtr>& topics) override;
+
+  int NumVersionsInTopicsEpochs(
+      content::RenderFrameHost* main_frame) const override;
 
   bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
                                   const url::Origin& requesting_origin,

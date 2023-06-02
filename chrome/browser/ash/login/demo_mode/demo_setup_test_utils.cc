@@ -9,11 +9,16 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace {
@@ -28,32 +33,27 @@ MATCHER(ConfigIsAttestation, "") {
 
 namespace test {
 
-void SetupMockDemoModeNoEnrollmentHelper() {
-  std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-      std::make_unique<EnterpriseEnrollmentHelperMock>();
+void SetupDemoModeNoEnrollment(MockEnrollmentLauncher* mock) {
   EXPECT_CALL(*mock, Setup(_, _, _)).Times(0);
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
 }
 
-void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
-  std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-      std::make_unique<EnterpriseEnrollmentHelperMock>();
-  auto* mock_ptr = mock.get();
+void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
+                                   DemoModeSetupResult result) {
   EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _, _));
 
   EXPECT_CALL(*mock, EnrollUsingAttestation())
-      .WillRepeatedly(testing::Invoke([mock_ptr, result]() {
+      .WillRepeatedly(testing::Invoke([mock, result]() {
         switch (result) {
           case DemoModeSetupResult::SUCCESS:
-            mock_ptr->status_consumer()->OnDeviceEnrolled();
+            mock->status_consumer()->OnDeviceEnrolled();
             break;
           case DemoModeSetupResult::ERROR_POWERWASH_REQUIRED:
-            mock_ptr->status_consumer()->OnEnrollmentError(
+            mock->status_consumer()->OnEnrollmentError(
                 policy::EnrollmentStatus::ForLockError(
                     InstallAttributes::LOCK_ALREADY_LOCKED));
             break;
           case DemoModeSetupResult::ERROR_DEFAULT:
-            mock_ptr->status_consumer()->OnEnrollmentError(
+            mock->status_consumer()->OnEnrollmentError(
                 policy::EnrollmentStatus::ForRegistrationError(
                     policy::DeviceManagementStatus::
                         DM_STATUS_TEMPORARY_UNAVAILABLE));
@@ -62,7 +62,6 @@ void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
             NOTREACHED();
         }
       }));
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
 }
 
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,

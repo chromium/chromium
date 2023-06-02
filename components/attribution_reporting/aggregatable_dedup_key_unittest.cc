@@ -45,12 +45,14 @@ TEST(AggregatableDedupKeyTest, FromJSON) {
       {
           "dedup_key_wrong_type",
           R"json({"deduplication_key":123})json",
-          AggregatableDedupKey(),
+          base::unexpected(
+              TriggerRegistrationError::kAggregatableDedupKeyValueInvalid),
       },
       {
           "dedup_key_invalid",
           R"json({"deduplication_key":"abc"})json",
-          AggregatableDedupKey(),
+          base::unexpected(
+              TriggerRegistrationError::kAggregatableDedupKeyValueInvalid),
       },
       {
           "filters_valid",

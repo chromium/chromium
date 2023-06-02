@@ -235,6 +235,10 @@ source_set("tests") {
     "//third_party/sqlite",
   ]
 
+  if (is_ios) {
+    deps += [ "//components/test:service_worker_test_bundle_data" ]
+  }
+
   data = [ "//components/services/storage/test_data/" ]
 }
 

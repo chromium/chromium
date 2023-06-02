@@ -86,9 +86,8 @@ class GCM_EXPORT CheckinRequest {
                          std::unique_ptr<std::string> body);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest, CheckinWithAccounts);
-  FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest,
-                           CheckinWithAccountsEmptyWithFeature);
+  FRIEND_TEST_ALL_PREFIXES(GCMClientImplCheckinTest, CheckinWithAccountsEmpty);
+
   // Schedules a retry attempt with a backoff.
   void RetryWithBackoff();
 

@@ -779,7 +779,7 @@ public class FeedStream implements Stream {
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
         mSliceViewTracker = new FeedSliceViewTracker(rootView, mActivity, manager,
-                renderer.getListLayoutHelper(), /* watchForBarelyVisibleChange= */
+                renderer.getListLayoutHelper(), /* watchForUserInteractionReliabilityReport= */
                 (mReliabilityLogger != null
                         && mReliabilityLogger.getUserInteractionLogger() != null),
                 new FeedStream.ViewTrackerObserver());
@@ -1358,6 +1358,12 @@ public class FeedStream implements Stream {
         public void reportViewFirstRendered(View view) {
             if (mReliabilityLogger != null) {
                 mReliabilityLogger.onViewFirstRendered(view);
+            }
+        }
+        @Override
+        public void reportLoadMoreIndicatorVisible() {
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onPaginationIndicatorShown();
             }
         }
     }

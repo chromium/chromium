@@ -48,7 +48,6 @@ class SVGFECompositeElement final
   SVGAnimatedEnumeration<CompositeOperationType>* svgOperator() {
     return svg_operator_.Get();
   }
-
   void Trace(Visitor*) const override;
 
  private:
@@ -56,6 +55,10 @@ class SVGFECompositeElement final
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override { return false; }
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
 
   Member<SVGAnimatedNumber> k1_;
   Member<SVGAnimatedNumber> k2_;

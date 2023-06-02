@@ -105,19 +105,12 @@ class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
 
 }  // namespace
 
-class ProcessedLocalAudioSourceTest
-    : public SimTest,
-      public testing::WithParamInterface<ProcessingLocation> {
+class ProcessedLocalAudioSourceBase : public SimTest {
  protected:
-  ProcessedLocalAudioSourceTest() = default;
+  ProcessedLocalAudioSourceBase() = default;
+  ~ProcessedLocalAudioSourceBase() override = default;
 
-  ~ProcessedLocalAudioSourceTest() override = default;
-
-  void SetUp() override {
-    SimTest::SetUp();
-    std::tie(expected_source_buffer_size_, expected_output_buffer_size_) =
-        ComputeExpectedSourceAndOutputBufferSizes(GetParam());
-  }
+  void SetUp() override { SimTest::SetUp(); }
 
   void TearDown() override {
     SimTest::TearDown();
@@ -149,18 +142,6 @@ class ProcessedLocalAudioSourceTest
         std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
   }
 
-  void CheckSourceFormatMatches(const media::AudioParameters& params) {
-    EXPECT_EQ(kSampleRate, params.sample_rate());
-    EXPECT_EQ(kChannelLayout, params.channel_layout());
-    EXPECT_EQ(expected_source_buffer_size_, params.frames_per_buffer());
-  }
-
-  void CheckOutputFormatMatches(const media::AudioParameters& params) {
-    EXPECT_EQ(kSampleRate, params.sample_rate());
-    EXPECT_EQ(kChannelLayout, params.channel_layout());
-    EXPECT_EQ(expected_output_buffer_size_, params.frames_per_buffer());
-  }
-
   media::AudioCapturerSource::CaptureCallback* capture_source_callback() const {
     return static_cast<media::AudioCapturerSource::CaptureCallback*>(
         ProcessedLocalAudioSource::From(audio_source()));
@@ -176,14 +157,37 @@ class ProcessedLocalAudioSourceTest
     return webrtc_audio_device_platform_support_->mock_audio_capturer_source();
   }
 
-  int expected_source_buffer_size_;
-  int expected_output_buffer_size_;
-
  private:
   ScopedTestingPlatformSupport<AudioCapturerSourceTestingPlatformSupport>
       webrtc_audio_device_platform_support_;
   Persistent<MediaStreamSource> audio_source_;
   Persistent<MediaStreamComponent> audio_component_;
+};
+
+class ProcessedLocalAudioSourceTest
+    : public ProcessedLocalAudioSourceBase,
+      public testing::WithParamInterface<ProcessingLocation> {
+ public:
+  void SetUp() override {
+    ProcessedLocalAudioSourceBase::SetUp();
+    std::tie(expected_source_buffer_size_, expected_output_buffer_size_) =
+        ComputeExpectedSourceAndOutputBufferSizes(GetParam());
+  }
+
+  void CheckSourceFormatMatches(const media::AudioParameters& params) {
+    EXPECT_EQ(kSampleRate, params.sample_rate());
+    EXPECT_EQ(kChannelLayout, params.channel_layout());
+    EXPECT_EQ(expected_source_buffer_size_, params.frames_per_buffer());
+  }
+
+  void CheckOutputFormatMatches(const media::AudioParameters& params) {
+    EXPECT_EQ(kSampleRate, params.sample_rate());
+    EXPECT_EQ(kChannelLayout, params.channel_layout());
+    EXPECT_EQ(expected_output_buffer_size_, params.frames_per_buffer());
+  }
+
+  int expected_source_buffer_size_;
+  int expected_output_buffer_size_;
 };
 
 // Tests a basic end-to-end start-up, track+sink connections, audio flow, and
@@ -264,6 +268,94 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ProcessedLocalAudioSourceTest,
     testing::Values(ProcessingLocation::kProcessedLocalAudioSource));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+enum AgcState {
+  AGC_DISABLED,
+  BROWSER_AGC,
+  SYSTEM_AGC,
+};
+
+class ProcessedLocalAudioSourceIgnoreUiGainsTest
+    : public ProcessedLocalAudioSourceBase,
+      public testing::WithParamInterface<testing::tuple<bool, AgcState>> {
+ public:
+  bool IsIgnoreUiGainsEnabled() { return std::get<0>(GetParam()); }
+
+  void SetUp() override {
+    if (IsIgnoreUiGainsEnabled()) {
+      feature_list_.InitAndEnableFeature(media::kIgnoreUiGains);
+    } else {
+      feature_list_.InitAndDisableFeature(media::kIgnoreUiGains);
+    }
+
+    ProcessedLocalAudioSourceBase::SetUp();
+  }
+
+  void SetUpAudioProcessingProperties(AudioProcessingProperties* properties) {
+    switch (std::get<1>(GetParam())) {
+      case AGC_DISABLED:
+        properties->goog_auto_gain_control = false;
+        break;
+      case BROWSER_AGC:
+        properties->goog_auto_gain_control = true;
+        properties->system_gain_control_activated = false;
+        break;
+      case SYSTEM_AGC:
+        properties->goog_auto_gain_control = true;
+        properties->system_gain_control_activated = true;
+        break;
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+MATCHER_P2(AudioEffectsAsExpected, flag, agc_state, "") {
+  if (flag) {
+    switch (agc_state) {
+      case AGC_DISABLED:
+        return (arg.effects() & media::AudioParameters::IGNORE_UI_GAINS) == 0;
+        break;
+      case BROWSER_AGC:
+      case SYSTEM_AGC:
+        return (arg.effects() & media::AudioParameters::IGNORE_UI_GAINS) != 0;
+        break;
+    }
+  } else {
+    return (arg.effects() & media::AudioParameters::IGNORE_UI_GAINS) == 0;
+  }
+}
+
+TEST_P(ProcessedLocalAudioSourceIgnoreUiGainsTest,
+       VerifyIgnoreUiGainsStateAsExpected) {
+  AudioProcessingProperties properties;
+  SetUpAudioProcessingProperties(&properties);
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
+
+  // Connect the track, and expect the MockAudioCapturerSource to be initialized
+  // and started by ProcessedLocalAudioSource.
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(AudioEffectsAsExpected(std::get<0>(GetParam()),
+                                                std::get<1>(GetParam())),
+                         capture_source_callback()));
+  EXPECT_CALL(*mock_audio_capturer_source(), SetAutomaticGainControl(true));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    IgnoreUiGainsTest,
+    ProcessedLocalAudioSourceIgnoreUiGainsTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::ValuesIn({AgcState::AGC_DISABLED,
+                                            AgcState::BROWSER_AGC,
+                                            AgcState::SYSTEM_AGC})));
 #endif
 
 }  // namespace blink

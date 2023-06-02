@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Definitions for chrome.readAnything API */
+/** @fileoverview Definitions for chrome.readingMode API */
 
 declare namespace chrome {
-  export namespace readAnything {
+  export namespace readingMode {
     /////////////////////////////////////////////////////////////////////
     // Implemented in read_anything_app_controller.cc and consumed by ts.
     /////////////////////////////////////////////////////////////////////
@@ -63,6 +63,13 @@ declare namespace chrome {
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.
     function onConnected(): void;
+
+    // Called when a user tries to copy text from reading mode with keyboard
+    // shortcuts.
+    function onCopy(): void;
+
+    // Called when the Read Anything panel is scrolled.
+    function onScroll(onSelection: boolean): void;
 
     // Called when a user clicks a link. NodeID is an AXNodeID which identifies
     // the link's corresponding AXNode in the main pane.

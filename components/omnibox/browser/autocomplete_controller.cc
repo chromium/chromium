@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <numeric>
 #include <set>
@@ -39,6 +40,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/config.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -86,6 +88,8 @@
 #endif
 
 namespace {
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
@@ -387,7 +391,7 @@ AutocompleteController::AutocompleteController(
 #endif
 
   // Create URL scoring signal annotators.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       OmniboxFieldTrial::AreScoringSignalsAnnotatorsEnabled()) {
     url_scoring_signals_annotators_.push_back(
         std::make_unique<HistoryScoringSignalsAnnotator>(
@@ -794,16 +798,25 @@ void AutocompleteController::
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
-  const TemplateURL* template_url =
-      match->GetTemplateURL(template_url_service_, false);
-  if (!template_url)
-    return;
-
-  match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
-      *match->search_terms_args, template_url_service_->search_terms_data()));
+  auto url = ComputeURLFromSearchTermsArgs(
+      match->GetTemplateURL(template_url_service_, false),
+      *match->search_terms_args);
+  if (url.is_valid()) {
+    match->destination_url = std::move(url);
+  }
 #if BUILDFLAG(IS_ANDROID)
   match->UpdateJavaDestinationUrl();
 #endif
+}
+
+GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
+    TemplateURL* template_url,
+    const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
+  if (!template_url) {
+    return GURL::EmptyGURL();
+  }
+  return GURL(template_url->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service_->search_terms_data()));
 }
 
 const AutocompleteResult& AutocompleteController::result() const {
@@ -984,7 +997,7 @@ void AutocompleteController::UpdateResult(
   // The additional signals in `result_` will be lost when `UpdateResult()` is
   // called again. Currently, `result_` is updated in each `UpdateResult()`
   // call.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       OmniboxFieldTrial::AreScoringSignalsAnnotatorsEnabled()) {
     for (const auto& annotator : url_scoring_signals_annotators_) {
       annotator->AnnotateResult(input_, &result_);
@@ -1030,15 +1043,17 @@ void AutocompleteController::UpdateResult(
         default_match_to_preserve = *result_.default_match();
       }
     } else {
-      // Ensure `stripped_destination_url` is computed for all matches. If that
-      // is already the case, `ComputeStrippedDestinationURL()` will do nothing.
-      // This step is not needed if `SortAndCull()` is called before the model
-      // is executed as it ensures `stripped_destination_url` is computed
-      // before deduping.
+      // Ensure `stripped_destination_url` is computed for the eligible matches.
+      // If that is already the case, `ComputeStrippedDestinationURL()` does
+      // nothing. This step is not needed if `SortAndCull()` is called before
+      // the model is executed as it ensures `stripped_destination_url` is
+      // computed before deduping.
       // TODO(crbug.com/1446725): Instead deduplicate the matches before running
       //  the model
       for (auto& match : result_) {
-        match.ComputeStrippedDestinationURL(input_, template_url_service_);
+        if (match.scoring_signals.has_value()) {
+          match.ComputeStrippedDestinationURL(input_, template_url_service_);
+        }
       }
     }
 
@@ -1153,7 +1168,7 @@ void AutocompleteController::AttachActions() {
                                  result_);
 #endif
   }
-  result_.TrimOmniboxActions();
+  result_.TrimOmniboxActions(input_.IsZeroSuggest());
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(
@@ -1337,6 +1352,32 @@ void AutocompleteController::UpdateAssistedQueryStats(
     }
     match->search_terms_args->assisted_query_stats = base::StringPrintf(
         "chrome.%s.%s", selected_index.c_str(), autocompletions.c_str());
+
+    // Duplicate AQS/SBS for eligible ActionsInSuggest.
+    // TODO(1418077): rather than computing the `action_uri`, keep the
+    // updated search_terms_args, and apply the query formulation time the
+    // moment the action is selected.
+    for (auto& scoped_action : match->actions) {
+      auto* action_in_suggest =
+          OmniboxActionInSuggest::FromAction(scoped_action.get());
+
+      if (action_in_suggest == nullptr ||
+          !action_in_suggest->search_terms_args.has_value()) {
+        continue;
+      }
+      auto& search_terms_args = action_in_suggest->search_terms_args.value();
+      search_terms_args.searchbox_stats.mutable_assisted_query_info()
+          ->MergeFrom(
+              match->search_terms_args->searchbox_stats.assisted_query_info());
+      search_terms_args.assisted_query_stats =
+          match->search_terms_args->assisted_query_stats;
+
+      action_in_suggest->action_info.set_action_uri(
+          ComputeURLFromSearchTermsArgs(
+              match->GetTemplateURL(template_url_service_, false),
+              search_terms_args)
+              .spec());
+    }
   }
 }
 
@@ -1563,7 +1604,7 @@ void AutocompleteController::RunUrlScoringModel(
       result_.matches_,
       [](const auto& match) { return match.scoring_signals.has_value(); });
 
-  // If `eligible_matches_count` is 0, `completion_callback` is executed
+  // If `eligible_matches_count` is 0, `completion_callback` is called
   // immediately.
   auto barrier_callback =
       base::BarrierCallback<AutocompleteScoringModelService::Result>(
@@ -1588,10 +1629,21 @@ void AutocompleteController::RunBatchUrlScoringModel(
     base::OnceClosure completion_callback) {
   TRACE_EVENT0("omnibox", "AutocompleteController::RunBatchUrlScoringModel");
 
-  std::vector<const metrics::OmniboxEventProto::Suggestion::ScoringSignals*>
-      batch_scoring_signals;
-  std::vector<std::string> stripped_destination_urls;
+  size_t eligible_matches_count = base::ranges::count_if(
+      result_.matches_,
+      [](const auto& match) { return match.scoring_signals.has_value(); });
+
+  // If `eligible_matches_count` is 0, call `completion_callback` immediately.
+  if (eligible_matches_count == 0) {
+    std::move(completion_callback).Run();
+    return;
+  }
+
   // Run the model for the eligible matches.
+  std::vector<const ScoringSignals*> batch_scoring_signals;
+  batch_scoring_signals.reserve(eligible_matches_count);
+  std::vector<std::string> stripped_destination_urls;
+  stripped_destination_urls.reserve(eligible_matches_count);
   for (auto& match : result_) {
     if (!match.scoring_signals.has_value()) {
       continue;
@@ -1599,17 +1651,10 @@ void AutocompleteController::RunBatchUrlScoringModel(
     batch_scoring_signals.push_back(&match.scoring_signals.value());
     stripped_destination_urls.push_back(match.stripped_destination_url.spec());
   }
-
-  // If no eligible matches to score, call `completion_callback` immediately.
-  if (batch_scoring_signals.empty()) {
-    std::move(completion_callback).Run();
-    return;
-  }
-
   provider_client_->GetAutocompleteScoringModelService()
       ->BatchScoreAutocompleteUrlMatches(
-          &scoring_model_task_tracker_, batch_scoring_signals,
-          stripped_destination_urls,
+          &scoring_model_task_tracker_, std::move(batch_scoring_signals),
+          std::move(stripped_destination_urls),
           base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
                          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                          std::move(completion_callback)));
@@ -1621,31 +1666,49 @@ void AutocompleteController::OnUrlScoringModelDone(
     std::vector<AutocompleteScoringModelService::Result> results) {
   TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
 
-  // Group the matches by `stripped_destination_url`.
-  // TODO(crbug.com/1446688): `stripped_destination_url` is necessarily unique.
-  //  A more unique way to identify the matches will be needed before ML scoring
-  //  can be applied to the search suggestions.
+  // If the model has no predictions, call `completion_callback` immediately.
+  if (results.empty()) {
+    std::move(completion_callback).Run();
+    return;
+  }
+
+  // Group the eligible matches by `stripped_destination_url`.
+  // TODO(crbug.com/1446688): `stripped_destination_url` is not necessarily
+  //  non-empty or unique. A more reliable way to identify the matches will be
+  //  needed before ML scoring can be applied to the search suggestions.
   std::map<std::string, ACMatches::iterator> url_to_match_map;
   for (auto match_itr = result_.begin(); match_itr != result_.end();
        ++match_itr) {
-    // `stripped_destination_url` is computed for all the matches before
-    // executing the model and no new matches are added since the model is
-    // executed only when all the providers are done. However not all matches
-    // have a stripped destination url. One known type is `SEARCH_OTHER_ENGINE`.
-    // TODO(crbug.com/1446688): Find a more unique way to identify the matches.
-    if (!match_itr->stripped_destination_url.is_empty()) {
-      url_to_match_map[match_itr->stripped_destination_url.spec()] = match_itr;
+    if (!match_itr->scoring_signals.has_value()) {
+      continue;
     }
+
+    // Verify the eligible match or one of its duplicates has an expected type.
+    DCHECK(match_itr->MatchOrDuplicateMeets([](const auto& match) {
+      return AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match);
+    })) << "Ineligible "
+        << AutocompleteMatchType::ToString(match_itr->type)
+        << " match receiving model scoring.";
+
+    // Verify the eligible match has a `stripped_destination_url`. This is
+    // computed for the eligible matches before executing the model. No new
+    // matches are added since then as the model is executed after all the
+    // providers are done.
+    DCHECK(!match_itr->stripped_destination_url.is_empty())
+        << "ACMatch::stripped_destination_url expected but not present for "
+        << AutocompleteMatchType::ToString(match_itr->type);
+
+    url_to_match_map[match_itr->stripped_destination_url.spec()] = match_itr;
   }
 
   // The goal is to redistribute the existing relevance scores among the
-  // eligible matches according to the model output values. Construct two max
-  // heaps for the (legacy) relevance score and the model output values.
+  // eligible matches according to the model prediction scores. Construct two
+  // max heaps for the (legacy) relevance score and the model prediction scores.
   std::priority_queue<int> relevance_heap;
   std::priority_queue<std::pair<float, AutocompleteResult::iterator>>
-      output_and_match_itr_heap;
-  for (auto& [output, stripped_destination_url] : results) {
-    if (!output.has_value()) {
+      prediction_and_match_itr_heap;
+  for (auto& [prediction, stripped_destination_url] : results) {
+    if (!prediction.has_value()) {
       continue;
     }
 
@@ -1657,15 +1720,8 @@ void AutocompleteController::OnUrlScoringModelDone(
 
     auto match_itr = url_to_match_map.at(stripped_destination_url);
 
-    // Verify the match is eligible for model scoring.
-    DCHECK(match_itr->MatchOrDuplicateMeets([](const auto& match) {
-      return AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match);
-    })) << "Ineligible "
-        << AutocompleteMatchType::ToString(match_itr->type)
-        << " match receiving model scoring.";
-
     relevance_heap.emplace(match_itr->relevance);
-    output_and_match_itr_heap.emplace(output.value(), match_itr);
+    prediction_and_match_itr_heap.emplace(prediction.value(), match_itr);
   }
 
   if (!relevance_heap.empty()) {
@@ -1684,14 +1740,14 @@ void AutocompleteController::OnUrlScoringModelDone(
 
   while (!relevance_heap.empty()) {
     // If not in the counterfactual treatment, assign the highest relevance
-    // score to the match with the highest respective model output.
+    // score to the match with the highest respective model prediction score.
     if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
-      auto match_itr = output_and_match_itr_heap.top().second;
+      auto match_itr = prediction_and_match_itr_heap.top().second;
       match_itr->RecordAdditionalInfo("legacy_relevance", match_itr->relevance);
       match_itr->relevance = relevance_heap.top();
     }
     relevance_heap.pop();
-    output_and_match_itr_heap.pop();
+    prediction_and_match_itr_heap.pop();
   }
 
   std::move(completion_callback).Run();

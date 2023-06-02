@@ -27,6 +27,7 @@ namespace {
 
 using ::blink_testing::ParseFilter;
 using ::cc::ClipPathOp;
+using ::cc::ClipRectOp;
 using ::cc::PaintOpEq;
 using ::cc::RestoreOp;
 using ::cc::SaveLayerAlphaOp;
@@ -838,32 +839,11 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
   context->restore();
   context->restore();
 
-  // TODO(crbug.com/1445686), there shouldn't be extra SetMatrixOp here.
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveOp>(),
+                          PaintOpEq<SaveOp>(), PaintOpEq<SaveOp>(),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
@@ -873,15 +853,19 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
 
   context->translate(10.0, 0.0);
   context->translate(0.0, 20.0);
+  context->save();  // No transforms to restore on that level.
   context->save();
   context->translate(15.0, 15.0);
 
   EXPECT_THAT(
       context->getRecording(),
-      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<TranslateOp>(10.0, 0.0),
-                  PaintOpEq<TranslateOp>(0.0, 20.0), PaintOpEq<SaveOp>(),
+      ElementsAre(PaintOpEq<SaveOp>(),  // Root state with transforms.
+                  PaintOpEq<TranslateOp>(10.0, 0.0),
+                  PaintOpEq<TranslateOp>(0.0, 20.0),
+                  PaintOpEq<SaveOp>(),  // Nested state without transform.
+                  PaintOpEq<SaveOp>(),  // Nested state with transform.
                   PaintOpEq<TranslateOp>(15.0, 15.0), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>()));
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 
   // `getRecording()` flushed the recording canvas, leaving it empty.
   EXPECT_THAT(context->getRecording(), ElementsAre());
@@ -889,21 +873,18 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
   context->RestoreMatrixClipStack(context->GetPaintCanvas());
   context->restore();
 
-  // TODO(crbug.com/1445686), there shouldn't be extra SetMatrixOp here.
   EXPECT_THAT(
       context->getRecording(),
       ElementsAre(
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
+          PaintOpEq<SaveOp>(),  // Root state with transforms.
           PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 10.f, 0.f, 1.f, 0.f, 20.f,
                                        0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
+          PaintOpEq<SaveOp>(),  // Nested state without transform.
+          PaintOpEq<SaveOp>(),  // Nested state with transform.
           PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 25.f, 0.f, 1.f, 0.f, 35.f,
                                        0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
@@ -911,21 +892,28 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
 
-  context->translate(10.0, 0.0);
+  // Clipping from an empty matrix stack. Clip can be restored without having
+  // to reset the transform.
+  context->beginPath();
+  context->rect(0, 0, 100, 100);
+  context->clip();
 
+  // Clipping from a nested identity transform. Clip can be restored without
+  // having to reset the transform.
+  context->save();
+  context->translate(10.0, 0.0);
   context->beginPath();
   context->moveTo(100, 100);
   context->lineTo(200, 100);
   context->translate(0.0, 20.0);
   context->lineTo(150, 200);
   context->clip();
-
   context->translate(15.0, 15.0);
 
+  // Clip nested in a parent transform, restoring clip will require resetting
+  // the transform to identity.
   context->save();
-
   context->translate(3.0, 0.0);
-
   context->beginPath();
   context->moveTo(150, 50);
   context->lineTo(200, 200);
@@ -936,7 +924,11 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
   EXPECT_THAT(
       context->getRecording(),
       ElementsAre(
-          PaintOpEq<SaveOp>(),  // Top level save.
+          PaintOpEq<SaveOp>(),  // Root state with clip but no transform.
+          PaintOpEq<ClipRectOp>(SkRect::MakeLTRB(0, 0, 100, 100),
+                                SkClipOp::kIntersect,
+                                /*antialias=*/false),
+          PaintOpEq<SaveOp>(),  // Nested state with clip and transforms.
           PaintOpEq<TranslateOp>(10.0, 0.0), PaintOpEq<TranslateOp>(0.0, 20.0),
           PaintOpEq<ClipPathOp>(
               SkPath::Polygon({{100, 80}, {200, 80}, {150, 200}},
@@ -944,14 +936,15 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
               SkClipOp::kIntersect, /*antialias=*/false,
               /*use_paint_cache=*/UsePaintCache::kDisabled),
           PaintOpEq<TranslateOp>(15.0, 15.0),
-          PaintOpEq<SaveOp>(),  // Nested clip.
+          PaintOpEq<SaveOp>(),  // Second nested clip.
           PaintOpEq<TranslateOp>(3.0, 0.0), PaintOpEq<TranslateOp>(0.0, 3.0),
           PaintOpEq<ClipPathOp>(
               SkPath::Polygon({{150, 47}, {200, 197}, {100, 200}},
                               /*isClosed=*/false),
               SkClipOp::kIntersect, /*antialias=*/false,
               /*use_paint_cache=*/UsePaintCache::kDisabled),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>()));
 
   // `getRecording()` flushed the recording canvas, leaving it empty.
   EXPECT_THAT(context->getRecording(), ElementsAre());
@@ -959,13 +952,16 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
   context->RestoreMatrixClipStack(context->GetPaintCanvas());
   context->restore();
 
-  // TODO(crbug.com/1445686), there shouldn't be extra SetMatrixOp here.
   EXPECT_THAT(
       context->getRecording(),
       ElementsAre(
+          // Empty matrix stack, no need to reset matrix before setting clip.
           PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
+          PaintOpEq<ClipRectOp>(SkRect::MakeLTRB(0, 0, 100, 100),
+                                SkClipOp::kIntersect,
+                                /*antialias=*/false),
+          // Current transform is identity, no need to reset matrix either.
+          PaintOpEq<SaveOp>(),
           PaintOpEq<ClipPathOp>(
               SkPath::Polygon({{110, 100}, {210, 100}, {160, 220}},
                               /*isClosed=*/false),
@@ -973,6 +969,7 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
               /*use_paint_cache=*/UsePaintCache::kDisabled),
           PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 25.f, 0.f, 1.f, 0.f, 35.f,
                                        0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
+          // Current transform is not identity, need to reset matrix.
           PaintOpEq<SaveOp>(),
           PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
                                        0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
@@ -983,7 +980,8 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
               /*use_paint_cache=*/UsePaintCache::kDisabled),
           PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 28.f, 0.f, 1.f, 0.f, 38.f,
                                        0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresLayers) {
@@ -1023,23 +1021,11 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresLayers) {
   context->RestoreMatrixClipStack(context->GetPaintCanvas());
   context->endLayer();
 
-  // TODO(crbug.com/1445686), there shouldn't be extra SetMatrixOp here.
   EXPECT_THAT(
       context->getRecording(),
-      ElementsAre(
-          PaintOpEq<SaveOp>(),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SaveLayerOp>(shadow_flags),
-          PaintOpEq<SaveLayerOp>(filter_flags),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<SetMatrixOp>(SkM44(1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f,
-                                       0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f)),
-          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>()));
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 }  // namespace

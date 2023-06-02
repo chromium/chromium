@@ -73,7 +73,8 @@ class MockAudioOutputStream : public AudioOutputStream {
   }
 
  private:
-  raw_ptr<AudioOutputStream::AudioSourceCallback> provided_callback_ = nullptr;
+  raw_ptr<AudioOutputStream::AudioSourceCallback, DanglingUntriaged>
+      provided_callback_ = nullptr;
   double volume_ = 0;
 };
 
@@ -202,7 +203,7 @@ class OutputDeviceMixerImplTestBase {
   // Helper.
   struct StreamUnderTest {
     // MixableOutputStream produced by OutputMixerImpl.
-    raw_ptr<AudioOutputStream> mixable_stream;
+    raw_ptr<AudioOutputStream, DanglingUntriaged> mixable_stream;
     // All the mocks associated with it.
     raw_ptr<MixTrackMock> mix_track_mock;
   };
@@ -422,7 +423,7 @@ class OutputDeviceMixerImplTestBase {
         OutputDeviceMixerImpl::kSwitchToUnmixedPlaybackDelay * 2);
   }
 
-  raw_ptr<MockMixingGraph> mock_mixing_graph_ = nullptr;
+  raw_ptr<MockMixingGraph, DanglingUntriaged> mock_mixing_graph_ = nullptr;
   StrictMock<MockAudioOutputStream> mock_mixing_graph_output_stream_;
 
   const media::AudioParameters mixer_output_params_{

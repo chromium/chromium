@@ -14,12 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/common/pref_names.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/family_preferences_service.h"
+#include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
@@ -84,20 +85,13 @@ class ChildAccountService
       const base::RepeatingCallback<void()>& callback);
 
  private:
-  // Groups attributes of a custodian.
-  struct Custodian {
-    const char* display_name;
-    const char* email;
-    const char* user_id;
-    const char* profile_url;
-    const char* profile_image_url;
-  };
-
-  friend class ChildAccountServiceTest;
   friend class ChildAccountServiceFactory;
   // Use |ChildAccountServiceFactory::GetForProfile(...)| to get an instance of
   // this service.
-  explicit ChildAccountService(Profile* profile);
+  ChildAccountService(
+      Profile* profile,
+      supervised_user::FamilyPreferencesService* family_preferences_service,
+      supervised_user::ListFamilyMembersService* list_family_members_service);
 
   // SupervisedUserService::Delegate implementation.
   void SetActive(bool active) override;
@@ -112,25 +106,10 @@ class ChildAccountService
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
-  // Handles all responses from ListFamilyMembers service.
-  void OnResponse(
-      KidsExternalFetcherStatus status,
-      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
-          response);
-
-  void OnSuccess(
-      const kids_chrome_management::ListFamilyMembersResponse& response);
-  // Handles failed responses and schedules next fetch.
-  void OnFailure(KidsExternalFetcherStatus status);
-
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
-
-  void StartFetchingFamilyInfo();
-  void CancelFetchingFamilyInfo();
-  void ScheduleNextFamilyInfoUpdate(base::TimeDelta delay);
 
   // Asserts that `is_child` matches the child status of the primary user.
   // Terminates user session in case of status mismatch in order to prevent
@@ -138,25 +117,22 @@ class ChildAccountService
   // of the user.
   void AssertChildStatusOfTheUser(bool is_child);
 
-  bool IsSubjectToParentalControls() const;
-  void SetIsChildAccountStatusKnown();
-  void SetIsSubjectToParentalControls(bool is_subject_to_parental_controls);
-  void SetCustodianPrefs(const Custodian& custodian,
-                         const kids_chrome_management::FamilyMember& member);
-  void ClearCustodianPrefs(const Custodian& custodian);
-
   // Owns us via the KeyedService mechanism.
   raw_ptr<Profile> profile_;
 
   bool active_{false};
 
-  std::unique_ptr<
-      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
-                          kids_chrome_management::ListFamilyMembersResponse>>
-      list_family_members_fetcher_;
-  // If fetching the family info fails, retry with exponential backoff.
-  base::OneShotTimer family_fetch_timer_;
-  net::BackoffEntry family_fetch_backoff_;
+  // Reads or writes preferences related to user supervision.
+  raw_ptr<supervised_user::FamilyPreferencesService>
+      family_preferences_service_;
+
+  // Enables or disables scheduled fetch of family members list.
+  raw_ptr<supervised_user::ListFamilyMembersService>
+      list_family_members_service_;
+
+  // Subscription to binding between list_family_members_service_ and
+  // family_preferences_service_.
+  base::CallbackListSubscription set_family_members_subscription_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 
@@ -164,19 +140,6 @@ class ChildAccountService
 
   // Callbacks to run when the user status becomes known.
   std::vector<base::OnceClosure> status_received_callback_list_;
-
-  // Structured preference keys of custodians.
-  const Custodian first_custodian{
-      prefs::kSupervisedUserCustodianName, prefs::kSupervisedUserCustodianEmail,
-      prefs::kSupervisedUserCustodianObfuscatedGaiaId,
-      prefs::kSupervisedUserCustodianProfileURL,
-      prefs::kSupervisedUserCustodianProfileImageURL};
-  const Custodian second_custodian{
-      prefs::kSupervisedUserSecondCustodianName,
-      prefs::kSupervisedUserSecondCustodianEmail,
-      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
-      prefs::kSupervisedUserSecondCustodianProfileURL,
-      prefs::kSupervisedUserSecondCustodianProfileImageURL};
 
   base::WeakPtrFactory<ChildAccountService> weak_ptr_factory_{this};
 };

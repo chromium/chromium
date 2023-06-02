@@ -9,6 +9,7 @@
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
 #if defined(USE_AURA)
@@ -23,11 +24,19 @@
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "content/public/common/content_switches.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/widget/widget.h"
+#endif
+
+// TODO(https://crbug.com/958242) support Mac for pixel tests.
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#define SUPPORTS_PIXEL_TEST
 #endif
 
 namespace {
@@ -75,8 +84,7 @@ TestBrowserUi::TestBrowserUi() {
   SetPixelMatchAlgorithm(
       std::make_unique<ui::test::FuzzySkiaGoldMatchingAlgorithm>(
           /*max_different_pixels=*/1000, /*pixel_delta_threshold=*/255 * 3));
-#elif BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#elif defined(SUPPORTS_PIXEL_TEST)
   // Default to fuzzy diff. The magic number is chosen based on
   // past experiments.
   SetPixelMatchAlgorithm(
@@ -86,31 +94,36 @@ TestBrowserUi::TestBrowserUi() {
 
 TestBrowserUi::~TestBrowserUi() = default;
 
-// TODO(https://crbug.com/958242) support Mac for pixel tests.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-bool TestBrowserUi::VerifyPixelUi(views::Widget* widget,
-                                  const std::string& screenshot_prefix,
-                                  const std::string& screenshot_name) {
+ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
+    views::Widget* widget,
+    const std::string& screenshot_prefix,
+    const std::string& screenshot_name) {
   return VerifyPixelUi(widget->GetContentsView(), screenshot_prefix,
                        screenshot_name);
 }
 
-bool TestBrowserUi::VerifyPixelUi(views::View* view,
-                                  const std::string& screenshot_prefix,
-                                  const std::string& screenshot_name) {
+ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
+    views::View* view,
+    const std::string& screenshot_prefix,
+    const std::string& screenshot_name) {
+#ifdef SUPPORTS_PIXEL_TEST
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "browser-ui-tests-verify-pixels"))
-    return true;
+          switches::kVerifyPixels)) {
+    return ui::test::ActionResult::kNotAttempted;
+  }
 
   // Disable and hide cursor to prvent any interference with the
   // screenshots.
   ScopedMouseDisabler disable(view);
 
-  // Clear widget focus to avoid flakiness caused by some widgets having focus
-  // and some not due to tests being run in parallel.
-  view->GetWidget()->GetFocusManager()->ClearFocus();
+  // If there is a focused view, clear it to avoid flakiness caused by
+  // unpredictable widget focus (due to test parallelism). It's important to not
+  // do this unless necessary, since it will close transient UI like menus,
+  // which interferes with tests attempting to verify such UI.
+  if (auto* const focus_manager = view->GetWidget()->GetFocusManager();
+      focus_manager->GetFocusedView()) {
+    focus_manager->ClearFocus();
+  }
 
   // Request that the compositor perform a frame and then wait for it to
   // complete. Because there might not be anything left to draw after waiting
@@ -120,23 +133,34 @@ bool TestBrowserUi::VerifyPixelUi(views::View* view,
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
   views::ViewSkiaGoldPixelDiff pixel_diff;
-  pixel_diff.Init(screenshot_prefix);
-  return pixel_diff.CompareViewScreenshot(screenshot_name, view,
-                                          GetPixelMatchAlgorithm());
+  pixel_diff.Init(
+      // For the CR2023 screenshots add a "CR2023" prefix so that they are
+      // compared exclusively with previous CR2023 screenshots. We would like
+      // Skia Gold to catch regressions in both CR2023 and non-CR2023.
+      // TODO(crbug.com/1444466): remove this after CR2023 launch.
+      features::IsChromeRefresh2023() ? "CR2023_" + screenshot_prefix
+                                      : screenshot_prefix);
+  bool success = pixel_diff.CompareViewScreenshot(screenshot_name, view,
+                                                  GetPixelMatchAlgorithm());
+  return success ? ui::test::ActionResult::kSucceeded
+                 : ui::test::ActionResult::kFailed;
+#else
+  return ui::test::ActionResult::kKnownIncompatible;
+#endif
 }
 
 void TestBrowserUi::SetPixelMatchAlgorithm(
     std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm) {
   algorithm_ = std::move(algorithm);
 }
-#endif
 
 void TestBrowserUi::ShowAndVerifyUi() {
   PreShow();
 #if BUILDFLAG(IS_WIN)
   // Gold files for pixel tests are for light mode, so if dark mode is not
   // forced, and host is in dark mode, skip test.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (!IsInteractiveUi() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode) &&
       ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";

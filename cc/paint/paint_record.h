@@ -25,6 +25,8 @@ class CC_PAINT_EXPORT PaintRecord {
  public:
   PaintRecord();
   ~PaintRecord();
+  // After move, the source is invalid (with nullptr buffer_) and can't be
+  // used anymore.
   PaintRecord(PaintRecord&&);
   PaintRecord& operator=(PaintRecord&&);
   PaintRecord(const PaintRecord&);
@@ -34,7 +36,10 @@ class CC_PAINT_EXPORT PaintRecord {
     return buffer_->EqualsForTesting(*other.buffer_);
   }
 
-  const PaintOpBuffer& buffer() const { return *buffer_; }
+  const PaintOpBuffer& buffer() const {
+    CHECK(buffer_);
+    return *buffer_;
+  }
 
   size_t size() const { return buffer_->size(); }
   bool empty() const { return buffer_->empty(); }

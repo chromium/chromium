@@ -39,7 +39,7 @@ class TestZcrTextInputExtensionV1 : public GlobalObject {
   }
 
  private:
-  raw_ptr<MockZcrExtendedTextInput> extended_text_input_;
+  raw_ptr<MockZcrExtendedTextInput, DanglingUntriaged> extended_text_input_;
 };
 
 }  // namespace wl

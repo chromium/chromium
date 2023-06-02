@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
 <translation id="1103142993930332957">Aidez à améliorer Chrome?</translation>
 <translation id="1105960400813249514">Capture d'écran</translation>
+<translation id="1108214977745280468">Afficher les statistiques au sujet de la page</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1110914759170138831">La mise en évidence a été raccourcie</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'afficheront ici.</translation>
@@ -56,6 +57,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269129608791067105">Vous trouverez votre historique ici</translation>
 <translation id="1273937721055267968">Bloquer <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Toucher pour développer</translation>
 <translation id="1291207594882862231">Effacer l'historique, les témoins, les données de site, le cache…</translation>
@@ -65,6 +67,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Envoyé par <ph name="DEVICE_NAME" /></translation>
 <translation id="1311657260431405215">Ce code QR ne correspond pas à une URL : <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">mise_en_évidence_stylisée_chrome_</translation>
+<translation id="131655401280401879">Vos informations enregistrées seront effacées si vous supprimez le verrouillage du profil ultérieurement.</translation>
 <translation id="1320912611264252795">Dossiers de flux d'enregistrement des favoris ouverts à pleine hauteur</translation>
 <translation id="1327257854815634930">L'historique de navigation est ouvert</translation>
 <translation id="1331212799747679585">Impossible de mettre à jour Chrome. Autres options</translation>
@@ -85,7 +88,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez les <ph name="BEGIN_LINK1" />conditions d'utilisation<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Vous pouvez changer d'avis à tout moment dans les paramètres de Chrome. Comme les essais se déroulent parallèlement à la méthode de diffusion actuelle des annonces, vous ne verrez pas de changements dans l'immédiat.</translation>
-<translation id="1406000523432664303">« Ne pas faire le suivi »</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1409879593029778104">Le téléchargement de <ph name="FILE_NAME" /> n'a pas pu être effectué, car ce fichier existe déjà.</translation>
@@ -140,6 +142,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglet(s)</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1754404134430936718">Texte copié</translation>
+<translation id="1757620656501361327">Mise à jour du gestionnaire de mots de passe Google</translation>
 <translation id="1778457539567749232">Marquer comme non lu</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1791662854739702043">Module installé</translation>
@@ -179,6 +182,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1995884366040846621">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez la <ph name="BEGIN_LINK1" />politique de confidentialité<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
 <translation id="2009341475524975924">Pour mesurer la performance d'une annonce, seulement certains types de données peuvent être partagés entre les sites, comme l'heure de la journée à laquelle une annonce vous a été présentée.</translation>
+<translation id="201060170519281460">Votre verrouillage de profil protège vos informations dans la voiture, y compris les mots de passe synchronisés, les paiements et plus encore.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
@@ -256,6 +260,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, vos données de navigation et vos données de site dans Chrome</translation>
 <translation id="2510106555128151389">Installation de <ph name="WEBAPK_NAME" /> en cours…</translation>
 <translation id="2513403576141822879">Pour plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, voir <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" /></translation>
+<translation id="2517113738956581680">Feuille grand format</translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
 <translation id="2527209463677295330">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats</translation>
@@ -280,6 +285,7 @@ Un site peut envoyer un jeton de confiance à votre navigateur en fonction de vo
 Les jetons de confiance valides améliorent la confidentialité sur le Web et ne peuvent pas être utilisés pour savoir qui vous êtes.</translation>
 <translation id="2581165646603367611">Cette action entraînera la suppression de tous les témoins, caches et autres données provenant de sites que Chrome estime ne pas être importants.</translation>
 <translation id="2587052924345400782">Version plus récente dispo</translation>
+<translation id="2589302627584222634">Créer un verrouillage de profil</translation>
 <translation id="2593272815202181319">Espace simple</translation>
 <translation id="2603212228005142861">Connectez-vous pour gérer vos préférences</translation>
 <translation id="260403163289591229">Suivi</translation>
@@ -541,6 +547,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="4035877632587724847">Ne pas autoriser</translation>
 <translation id="4036177530563778041">Reprenez facilement là où vous en étiez</translation>
 <translation id="4042941173059740150">Continuer jusqu'à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4044708993631234325">Page de contenu en bas de l'écran</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="405399507749852140">Obtenez des alertes si le prix est réduit sur un site</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -747,6 +754,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="504456571576643789">Points à prendre en compte</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />D'autres formes d'activités<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
+<translation id="5062960805900435602">La mise à jour sur la fusion des mots de passe est fermée</translation>
 <translation id="5091199029769593641">Vous verrez bientôt des histoires de <ph name="SITE_NAME" /> lorsque vous ouvrez un nouvel onglet. Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
 <translation id="5091249083535528968">Données d'utilisation étendues</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
@@ -787,7 +795,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
 <translation id="5321849971085220133">Chrome trouve continuellement de nouvelles façons de réduire le suivi et d'encore mieux vous protéger lors de votre navigation. En outre, Chrome <ph name="BEGIN_LINK" />estime vos centres d'intérêt<ph name="END_LINK" /> tout en vous permettant de les gérer. Ainsi, les sites que vous visitez peuvent demander à Chrome vos centres d'intérêt pour vous montrer des annonces adaptées.</translation>
-<translation id="5324858694974489420">Contrôle parental</translation>
 <translation id="5326921373682845375">Comme les pages préchargées sont chiffrées et que le site qui renvoie à ces pages est un site Google, les serveurs de Google ne reçoivent pas de nouveaux renseignements lors du préchargement privé de ces pages.</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5339031667684712858">Sites que vous avez retirés</translation>
@@ -797,8 +804,8 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5361107212971249203">texte</translation>
 <translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
 <translation id="5375577065097716013">Rechercher l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Mot de passe fort suggéré. Clavier masqué.</translation>
 <translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site.</translation>
-<translation id="5403644198645076998">Autoriser uniquement certains sites</translation>
 <translation id="5409881200985013443">Envoyez <ph name="ONE_TIME_CODE" /> à <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vérification...</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici</translation>
@@ -840,15 +847,16 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
 <translation id="5635091213277904818">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d’empêcher un site de vous suggérer des annonces.</translation>
-<translation id="5639724618331995626">Autoriser tous les sites</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />L'historique de recherches<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />les autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrées dans votre compte Google</translation>
 <translation id="564667659802381754"><ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /> Guide sur la confidentialité</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5655963694829536461">Rechercher vos téléchargements</translation>
+<translation id="5657871969392618475">Vos informations sont sécurisées avec un verrouillage de profi</translation>
 <translation id="5659593005791499971">Courriel</translation>
 <translation id="5665379678064389456">Créer un événement dans <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ne peut pas vérifier la présence de mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
+<translation id="569435661099256888">Vous pouvez voir les pages que vous avez visitées ou les effacer de votre historique</translation>
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires</translation>
 <translation id="570347048394355941">Passer à l'onglet</translation>
@@ -873,7 +881,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5797949256525811424">Sujet bloqué</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
-<translation id="5813552293717797987">Ce navigateur est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814749351757353073">Suivez l'actualité de vos sites favoris</translation>
 <translation id="5822875253699806474">Pour revenir rapidement aux sites déjà visités, synchronisez vos onglets et votre historique</translation>
 <translation id="583281660410589416">Inconnu</translation>
@@ -907,6 +914,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
 <translation id="5966233851250124270">Chrome se souviendra de votre choix</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
+<translation id="5985186846584605773">Créez un verrouillage de profil pour votre voiture</translation>
 <translation id="5995726099713306770">Télécharger la page de nouveau?</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
@@ -937,7 +945,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6138832295072039549">Modifier les paramètres de votre site ici</translation>
 <translation id="6140709049082532940">Protection renforcée :</translation>
 <translation id="6140912465461743537">Pays/région</translation>
-<translation id="6148266338772765473">Exclure le lien</translation>
 <translation id="6150320133806434356">Favori enregistré</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans Paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
 <translation id="6159729262978459665">Efface l'historique de tous les appareils synchronisés.</translation>
@@ -1135,6 +1142,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7105047059074518658">Connectez-vous pour naviguer plus facilement sur vos appareils</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
+<translation id="7116420572655804716">Pour synchroniser vos informations et protéger vos données dans la voiture, vous devez créer un verrouillage de profil dans vos paramètres de sécurité. Vous utiliserez un code ou un mot de passe chaque fois que vous entrerez dans la voiture.</translation>
 <translation id="7116588989735740310">Pour revenir aux sites visités sur d'autres appareils, synchronisez vos onglets et votre historique</translation>
 <translation id="7130504491556983216">Une liste de centres d'intérêt sera affichée ici au fur et à mesure que vous naviguez sur le Web</translation>
 <translation id="7138678301420049075">Autre</translation>
@@ -1154,6 +1162,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7217781228893594884">Les onglets de navigation privée se verrouilleront lorsque vous quitterez Chrome</translation>
 <translation id="7222235798733126207">Partage limité entre les sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
+<translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
 <translation id="7242755609445462077">Mise en évidence stylisée <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation dans Chrome est activée sur <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Placez votre téléphone près de l'ordinateur</translation>
@@ -1240,7 +1249,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7655900163790317559">Activation du Bluetooth en cours…</translation>
 <translation id="7656862631699126784">Activer le verrouillage en navigation privée</translation>
 <translation id="7658239707568436148">Annuler</translation>
-<translation id="7663313374500954251">Ce navigateur est géré par <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>
 <translation id="768232549260819724">GIF copié</translation>
@@ -1349,13 +1357,13 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8130309322784422030">Vos données de connexion enregistrées peuvent être obsolètes</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
 <translation id="8156139159503939589">Quelles langues lisez-vous?</translation>
-<translation id="8168435359814927499">Contenu</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8189750580333936930">Bac à sable de confidentialité</translation>
 <translation id="8190358571722158785">Il reste 1 jour</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8209050860603202033">Ouvrir l'image</translation>
+<translation id="8215740705341534369">Feuille latérale</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8221401890884589479">Vous pouvez bloquer les annonces des sites de votre choix. En outre, Chrome supprime automatiquement les sites de la liste datant de plus de 30 jours. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Menu de la carte du flux</translation>
@@ -1440,7 +1448,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8617240290563765734">Ouvrir l'URL suggérée du contenu téléchargé?</translation>
 <translation id="8621068256433641644">téléphone</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
-<translation id="8641930654639604085">Essayer de bloquer les sites pour adultes</translation>
 <translation id="864544049772947936">Gérer les fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent</translation>
 <translation id="8646467750715887511">Les pages se chargent uniquement lorsque vous les ouvrez.</translation>
@@ -1488,7 +1495,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
 <translation id="8909135823018751308">Partager...</translation>
 <translation id="8912362522468806198">Compte Google</translation>
-<translation id="8920114477895755567">En attente de détails sur les parents.</translation>
 <translation id="8921980840204105660">Synchronisez vos données pour ajouter vos favoris de vos autres appareils</translation>
 <translation id="8922289737868596582">Téléchargez des pages à partir du bouton Plus d'options pour les utiliser hors connexion</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -1558,6 +1564,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="932327136139879170">Accueil</translation>
 <translation id="938850635132480979">Erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Entrer la phrase de passe</translation>
+<translation id="950679278154734362">Pour synchroniser vos informations et protéger vos données dans la voiture, vous devez créer un verrouillage de profil. Vous utiliserez un code ou un mot de passe chaque fois que vous entrerez dans la voiture.</translation>
 <translation id="95817756606698420">Google Chrome peut faire appel à <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour effectuer des recherches en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Installer cette application</translation>
 <translation id="96681097142096641">Affichez la page simplifiée?</translation>

@@ -43,9 +43,9 @@ class TestSeat : public GlobalObject {
   TestTouch* touch() const { return touch_; }
 
  private:
-  raw_ptr<MockPointer> pointer_;
-  raw_ptr<TestKeyboard> keyboard_;
-  raw_ptr<TestTouch> touch_;
+  raw_ptr<MockPointer, DanglingUntriaged> pointer_;
+  raw_ptr<TestKeyboard, DanglingUntriaged> keyboard_;
+  raw_ptr<TestTouch, DanglingUntriaged> touch_;
 };
 
 }  // namespace wl

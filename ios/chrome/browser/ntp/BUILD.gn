@@ -71,6 +71,7 @@ source_set("set_up_list") {
   deps = [
     ":features",
     ":set_up_list_item_type",
+    ":set_up_list_metrics",
     ":set_up_list_prefs",
     "//base",
     "//components/password_manager/core/browser",
@@ -86,6 +87,18 @@ source_set("set_up_list_item_type") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("set_up_list_metrics") {
+  sources = [
+    "set_up_list_metrics.h",
+    "set_up_list_metrics.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":set_up_list_item_type",
+    "//base",
+  ]
+}
+
 source_set("set_up_list_prefs") {
   sources = [
     "set_up_list_prefs.h",
@@ -94,6 +107,7 @@ source_set("set_up_list_prefs") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":set_up_list_item_type",
+    ":set_up_list_metrics",
     "//base",
     "//components/pref_registry",
     "//components/prefs",

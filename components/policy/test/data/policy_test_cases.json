@@ -3248,7 +3248,7 @@
             {
               "principal": "user1@realm",
               "password": "password1",
-              "remember_password": true
+              "remember_password_from_policy": true
             },
             {
               "principal": "${LOGIN_EMAIL}"
@@ -7865,6 +7865,50 @@
       }
     ]
   },
+  "RSAKeyUsageForLocalAnchorsEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ssl.rsa_key_usage_for_local_anchors_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "RSAKeyUsageForLocalAnchorsEnabled": false
+        },
+        "prefs": {
+          "ssl.rsa_key_usage_for_local_anchors_enabled": {
+            "value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "RSAKeyUsageForLocalAnchorsEnabled": true
+        },
+        "prefs": {
+          "ssl.rsa_key_usage_for_local_anchors_enabled": {
+            "value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  },
   "TripleDESEnabled": {
     "reason_for_missing_test": "Policy was removed"
   },
@@ -11592,7 +11636,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11618,7 +11663,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11644,7 +11690,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11674,7 +11721,8 @@
                   "enabled": true,
                   "policy_update_action": 0
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11704,7 +11752,8 @@
                   "enabled": true,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11734,7 +11783,8 @@
                   "enabled": true,
                   "policy_update_action": 2
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11767,7 +11817,8 @@
                 "oem_strings": [
                   "oem string 1",
                   "oem string 2"
-                ]
+                ],
+                "display_order": 0
               }
             }
           }
@@ -11816,7 +11867,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11850,7 +11902,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11906,7 +11959,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11962,7 +12016,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11996,7 +12051,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -12019,7 +12075,8 @@
               },
               "vtpm": {
                 "enabled": true
-              }
+              },
+              "display_order": 0
             },
             "another-vm-type": {
               "name": "Weird Virtual Machine",
@@ -12038,7 +12095,8 @@
               },
               "oem_strings": [
                 "some weird config"
-              ]
+              ],
+              "display_order": 2
             },
             "old-vm-type": {
               "name": "Legacy VM",
@@ -12058,7 +12116,8 @@
             },
             "vulnerable-vm-type": {
               "name": "Forbidden VM",
-              "enabled_state": "BLOCKED"
+              "enabled_state": "BLOCKED",
+              "display_order": 1
             }
           }
         },
@@ -12080,7 +12139,8 @@
                   "enabled": true,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               },
               "another-vm-type": {
                 "name": "Weird Virtual Machine",
@@ -12099,7 +12159,8 @@
                 },
                 "oem_strings": [
                   "some weird config"
-                ]
+                ],
+                "display_order": 2
               },
               "old-vm-type": {
                 "name": "Legacy VM",
@@ -12108,7 +12169,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               },
               "old-vm-type-2": {
                 "name": "Legacy VM",
@@ -12117,7 +12179,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               },
               "vulnerable-vm-type": {
                 "name": "Forbidden VM",
@@ -12126,7 +12189,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 1
               }
             }
           }
@@ -14390,6 +14454,10 @@
           "enterprise_connectors.device_trust.origins": {
             "default_value": [],
             "location": "signin_profile"
+          },
+          "enterprise_connectors.device_trust_user.origins": {
+            "default_value": [],
+            "location": "signin_profile"
           }
         }
       },
@@ -14404,6 +14472,14 @@
         },
         "prefs": {
           "enterprise_connectors.device_trust.origins": {
+            "value": [
+              "https://example1.com",
+              "https://[*.]example2.com",
+              "https://foo.example3.com/path"
+            ],
+            "location": "signin_profile"
+          },
+          "enterprise_connectors.device_trust_user.origins": {
             "value": [
               "https://example1.com",
               "https://[*.]example2.com",
@@ -21022,6 +21098,46 @@
       }
     ]
   },
+  "PolicyTestPageEnabled":{
+    "os":  [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": { "PolicyTestPageEnabled": true},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": { "PolicyTestPageEnabled": false},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "value": false,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
   "CalendarIntegrationEnabled": {
     "os": ["chromeos_ash"],
     "policy_pref_mapping_tests": [
@@ -21116,45 +21232,7 @@
     ]
   },
   "EventPathEnabled": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "EventPathEnabled": true
-        },
-        "prefs": {
-          "policy.event_path_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "EventPathEnabled": false
-        },
-        "prefs": {
-          "policy.event_path_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "policy.event_path_enabled": {
-            "default_value": false
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy is not supported as of M116"
   },
   "OffsetParentNewSpecBehaviorEnabled": {
     "os": [
@@ -21232,6 +21310,47 @@
         "policies": {},
         "prefs": {
           "policy.send_mouse_events_disabled_form_controls_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  },
+  "BeforeunloadEventCancelByPreventDefaultEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BeforeunloadEventCancelByPreventDefaultEnabled": true
+        },
+        "prefs": {
+          "policy.beforeunload_event_cancel_by_prevent_default_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "BeforeunloadEventCancelByPreventDefaultEnabled": false
+        },
+        "prefs": {
+          "policy.beforeunload_event_cancel_by_prevent_default_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.beforeunload_event_cancel_by_prevent_default_enabled": {
             "default_value": true
           }
         }
@@ -21327,7 +21446,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_ash"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -21354,7 +21474,8 @@
           }
         }
       }
-    ]
+    ],
+    "reason_for_missing_test": "Policy does not cover Lacros"
   },
   "PersistentQuotaEnabled": {
     "reason_for_missing_test": "Policy was removed"

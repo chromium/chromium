@@ -11,7 +11,8 @@
 
 // static
 AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
-  return base::Singleton<AcceptLanguagesServiceFactory>::get();
+  static base::NoDestructor<AcceptLanguagesServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -32,7 +33,7 @@ AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() {}
+AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() = default;
 
 KeyedService* AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {

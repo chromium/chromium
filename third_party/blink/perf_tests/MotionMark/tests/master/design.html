@@ -1,0 +1,106 @@
+<!--
+  Copyright (C) 2015-2017 Apple Inc. All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../resources/stage.css">
+    <style type="text/css">
+
+        #stage {
+            font-family: Helvetica;
+            font-size: 52px;
+            background-color: #313534;
+        }
+        @media (max-width: 900px) {
+            #stage {
+                font-size: 40px;
+            }
+        }
+        @media (max-width: 568px) {
+            #stage {
+                font-size: 28px;
+            }
+        }
+
+        #stage div {
+            width: 80%;
+            height: 90%;
+            position: absolute;
+            text-align: center;
+        }
+        #template {
+            color: #FCFCFC;
+        }
+        table {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        td {
+            width: 33%;
+        }
+        tr {
+            height: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div id="stage">
+        <div id="template">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>σχέδιο</td>
+                        <td>设计</td>
+                        <td>suunnittelu</td>
+                    </tr>
+                    <tr>
+                        <td>design</td>
+                        <td>дизайн</td>
+                        <td class="rtl">تصميم</td>
+                    </tr>
+                    <tr>
+                        <td>디자인</td>
+                        <td>conception</td>
+                        <td>デザイン</td>
+                    </tr>
+                    <tr>
+                        <td>konstruktion</td>
+                        <td class="rtl">עיצוב</td>
+                        <td>diseño</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="../../resources/strings.js"></script>
+    <script src="../../resources/extensions.js"></script>
+    <script src="../../resources/statistics.js"></script>
+    <script src="../resources/math.js"></script>
+    <script src="../resources/main.js"></script>
+    <script src="resources/design.js"></script>
+</body>
+</html>

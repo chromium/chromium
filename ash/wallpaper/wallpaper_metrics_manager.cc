@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
 
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -12,8 +13,25 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 
 namespace ash {
+
+namespace {
+
+// NOTE: These strings are persisted to metric logs.
+std::string ToResultHistogram(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kOnline:
+      return "Ash.Wallpaper.Online.Result";
+    default:
+      // TODO(b/285387348): Implement other WallpaperType.
+      NOTIMPLEMENTED_LOG_ONCE();
+      return "";
+  }
+}
+
+}  // namespace
 
 WallpaperMetricsManager::WallpaperMetricsManager() {
   wallpaper_controller_observation_.Observe(WallpaperController::Get());
@@ -45,6 +63,16 @@ void WallpaperMetricsManager::OnWallpaperChanged() {
 
 void WallpaperMetricsManager::OnWallpaperPreviewStarted() {
   base::UmaHistogramBoolean("Ash.Wallpaper.Preview.Show", true);
+}
+
+void WallpaperMetricsManager::LogSettingTimeOfDayWallpaperAfterOobe(
+    bool success) {
+  base::UmaHistogramBoolean("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe", success);
+}
+
+void WallpaperMetricsManager::LogWallpaperResult(WallpaperType type,
+                                                 SetWallpaperResult result) {
+  UMA_HISTOGRAM_ENUMERATION(ToResultHistogram(type), result);
 }
 
 }  // namespace ash

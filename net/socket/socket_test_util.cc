@@ -1443,8 +1443,8 @@ void MockSSLClientSocket::GetSSLCertRequestInfo(
     cert_request_info->is_proxy = data_->cert_request_info->is_proxy;
     cert_request_info->cert_authorities =
         data_->cert_request_info->cert_authorities;
-    cert_request_info->cert_key_types =
-        data_->cert_request_info->cert_key_types;
+    cert_request_info->signature_algorithms =
+        data_->cert_request_info->signature_algorithms;
   } else {
     cert_request_info->Reset();
   }

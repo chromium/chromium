@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Permitir cookies de terceros</translation>
 <translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="4434045419905280838">Ventanas emergentes y redirecciones</translation>
-<translation id="4440642537584213025">Mostrar <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Silencia el sonido de un sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Facilita la personalización del zoom en diferentes sitios</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7882806643839505685">Permite que se reproduzcan sonidos en un sitio específico.</translation>
 <translation id="789180354981963912">Bloquea cookies de terceros en incógnito:</translation>
+<translation id="7895868624847501462">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="DOMAIN" /> y de todos los sitios que incluya</translation>
 <translation id="7940722705963108451">Recuérdamelo</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sitio incluido en el grupo de sitios de <ph name="FPS_OWNER" /> que puede ver tu actividad en el grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sitios incluidos en el grupo de sitios de <ph name="FPS_OWNER" /> que pueden ver tu actividad en el grupo}}</translation>
 <translation id="7986741934819883144">Selecciona un contacto</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una aplicación</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
+<translation id="8338445138528827481">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Puedes ampliar o reducir el tamaño de los sitios que visitas</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano de un sitio específico.</translation>
 <translation id="8376384591331888629">Incluir cookies de terceros en este sitio</translation>

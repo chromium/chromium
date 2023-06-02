@@ -859,11 +859,12 @@ void CameraDeviceDelegate::Initialize() {
   const VendorTagInfo* info =
       camera_hal_delegate_->GetVendorTagInfoByName(kIntelPowerMode);
   if (info != nullptr) {
-    bool is_cca =
+    // TODO(b/284403009): Currently we cannot check which device_id opens CCA
+    bool is_cca_open =
         CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
             device_descriptor_.device_id) != nullptr;
     uint8_t power_mode =
-        is_cca ? kIntelPowerModeHighQuality : kIntelPowerModeLowPower;
+        is_cca_open ? kIntelPowerModeHighQuality : kIntelPowerModeLowPower;
     request_manager_->SetRepeatingCaptureMetadata(
         info->tag, info->type, 1, std::vector<uint8_t>{power_mode});
   }

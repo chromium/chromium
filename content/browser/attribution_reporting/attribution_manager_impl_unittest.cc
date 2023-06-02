@@ -61,6 +61,7 @@
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/global_routing_id.h"
@@ -226,9 +227,9 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
 
   MOCK_METHOD(void,
               Register,
-              (const OsRegistration&,
+              (OsRegistration,
                bool is_debug_key_allowed,
-               base::OnceCallback<void(bool success)> callback),
+               RegisterCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -1050,6 +1051,31 @@ TEST_F(AttributionManagerImplTest, ClearAllDataFromBrowserAndOs) {
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
+TEST_F(AttributionManagerImplTest, RemoveDataKeyFromBrowserAndOs) {
+  const auto origin = *SuitableOrigin::Deserialize("https://example.test");
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetReportingOrigin(origin).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin).Build(), kFrameId);
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  AttributionManager::DataKey data_key(*origin);
+  EXPECT_CALL(*os_level_manager_,
+              ClearData(/*delete_begin=*/base::Time::Min(),
+                        /*delete_end=*/base::Time::Max(),
+                        /*origins=*/std::set<url::Origin>({*origin}),
+                        /*domain*/ std::set<std::string>(),
+                        /*mode=*/BrowsingDataFilterBuilder::Mode::kDelete,
+                        /*delete_rate_limit_data=*/true, _));
+
+  base::RunLoop run_loop;
+  attribution_manager_->RemoveAttributionDataByDataKey(data_key,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_THAT(StoredReports(), IsEmpty());
+}
+
 TEST_F(AttributionManagerImplTest, HandleOsSource) {
   AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state(
       AttributionOsLevelManager::ApiState::kEnabled);
@@ -1072,17 +1098,17 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
   {
     InSequence seq;
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
-                                        AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/true, _))
-        .WillOnce(base::test::RunOnceCallback<2>(true));
+    const OsRegistration registration1(kRegistrationUrl1, kTopLevelOrigin1,
+                                       AttributionInputEvent());
+    EXPECT_CALL(*os_level_manager_, Register(registration1,
+                                             /*is_debug_key_allowed=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
-                                        AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/false, _))
-        .WillOnce(base::test::RunOnceCallback<2>(false));
+    const OsRegistration registration2(kRegistrationUrl2, kTopLevelOrigin2,
+                                       AttributionInputEvent());
+    EXPECT_CALL(*os_level_manager_, Register(registration2,
+                                             /*is_debug_key_allowed=*/false, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
   }
 
   // Dropped due to the URL being opaque.
@@ -1155,17 +1181,17 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
   {
     InSequence seq;
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
-                                        /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/true, _))
-        .WillOnce(base::test::RunOnceCallback<2>(true));
+    const OsRegistration registration1(kRegistrationUrl1, kTopLevelOrigin1,
+                                       /*input_event=*/absl::nullopt);
+    EXPECT_CALL(*os_level_manager_, Register(registration1,
+                                             /*is_debug_key_allowed=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
-                                        /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/false, _))
-        .WillOnce(base::test::RunOnceCallback<2>(false));
+    const OsRegistration registration2(kRegistrationUrl2, kTopLevelOrigin2,
+                                       /*input_event=*/absl::nullopt);
+    EXPECT_CALL(*os_level_manager_, Register(registration2,
+                                             /*is_debug_key_allowed=*/false, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
   }
 
   // Dropped due to the URL being opaque.
@@ -1384,7 +1410,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   task_environment_.RunUntilIdle();
-  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus2",
+  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus3",
                                 StorableSource::Result::kSuccess, 1);
 }
 
@@ -1580,7 +1606,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), IsEmpty());
 
   histograms.ExpectUniqueSample(
-      "Conversions.SourceStoredStatus2",
+      "Conversions.SourceStoredStatus3",
       StorableSource::Result::kProhibitedByBrowserPolicy, 1);
 }
 
@@ -2246,6 +2272,112 @@ TEST_F(AttributionManagerImplTest,
 }
 
 TEST_F(AttributionManagerImplTest,
+       HandleSource_DestinationThrottleReportingLimitReached) {
+  base::HistogramTester histograms;
+
+  // Current reporting limit for Destination Throttle
+  int max_per_reporting_source_site = 50;
+
+  for (int i = 0; i < max_per_reporting_source_site; i++) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build(),
+        kFrameId);
+  }
+  EXPECT_THAT(StoredSources(), SizeIs(max_per_reporting_source_site));
+
+  // Should fail due to limit
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(max_per_reporting_source_site));
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus3",
+                               StorableSource::Result::kSuccess, 50);
+  histograms.ExpectBucketCount(
+      "Conversions.SourceStoredStatus3",
+      StorableSource::Result::kDestinationReportingLimitReached, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_DestinationThrottleGlobalLimitReached) {
+  base::HistogramTester histograms;
+
+  // Current global limit for Destination Throttle
+  int max_global_source_site = 200;
+  for (int i = 0; i < max_global_source_site; i++) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                "https://r" + base::NumberToString(i) + ".test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build(),
+        kFrameId);
+  }
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+
+  // Should fail due to limit
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus3",
+                               StorableSource::Result::kSuccess, 200);
+  histograms.ExpectBucketCount(
+      "Conversions.SourceStoredStatus3",
+      StorableSource::Result::kDestinationGlobalLimitReached, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_DestinationThrottleBothLimitsReached) {
+  base::HistogramTester histograms;
+
+  int max_global_source_site = 200;
+  for (int i = 0; i < max_global_source_site; i += 4) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build(),
+        kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 1) + ".test")})
+            .Build(),
+        kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 2) + ".test")})
+            .Build(),
+        kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r4.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 3) + ".test")})
+            .Build(),
+        kFrameId);
+  }
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+
+  // Should fail due to limit
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+          .Build(),
+      kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus3",
+                               StorableSource::Result::kSuccess, 200);
+  histograms.ExpectBucketCount(
+      "Conversions.SourceStoredStatus3",
+      StorableSource::Result::kDestinationBothLimitsReached, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
        AggregateReportAssemblySucceeded_ReportSent) {
   base::HistogramTester histograms;
 
@@ -2392,13 +2524,15 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
 }
 
 TEST_F(AttributionManagerImplTest,
-       AggregateReportAssemblyFailed_ReportNotSent) {
+       AggregateReportAssemblyFailed_RetriedAndReportNotSent) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
       TestAggregatableSourceProvider().GetBuilder().Build(), kFrameId);
   attribution_manager_->HandleTrigger(
-      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+      DefaultAggregatableTriggerBuilder().Build(
+          /*generate_event_trigger_data=*/false),
+      kFrameId);
 
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
@@ -2410,13 +2544,30 @@ TEST_F(AttributionManagerImplTest,
       OnReportSent(
           ReportTypeIs(AttributionReport::Type::kAggregatableAttribution),
           /*is_debug_report=*/false,
-          Field(&SendResult::status, SendResult::Status::kFailedToAssemble)));
+          Field(&SendResult::status,
+                SendResult::Status::kTransientAssemblyFailure)));
 
   Checkpoint checkpoint;
   {
     InSequence seq;
     EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(
+              std::move(request), absl::nullopt,
+              AggregationService::AssemblyStatus::kAssemblyFailed);
+        });
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(
+              std::move(request), absl::nullopt,
+              AggregationService::AssemblyStatus::kAssemblyFailed);
+        });
+    EXPECT_CALL(checkpoint, Call(3));
     EXPECT_CALL(*aggregation_service_, AssembleReport)
         .WillOnce([](AggregatableReportRequest request,
                      AggregationService::AssemblyCallback callback) {
@@ -2432,17 +2583,24 @@ TEST_F(AttributionManagerImplTest,
 
   checkpoint.Call(1);
 
-  // Event-level report was sent.
-  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
-
   task_environment_.FastForwardBy(base::Microseconds(1));
+
+  checkpoint.Call(2);
+
+  // First report delay.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(3);
+
+  // Second report delay.
+  task_environment_.FastForwardBy(base::Minutes(15));
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
-      AssembleAggregatableReportStatus::kAssembleReportFailed, 1);
+      AssembleAggregatableReportStatus::kAssembleReportFailed, 3);
   histograms.ExpectUniqueTimeSample(
       "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
-      kFirstReportingWindow, 1);
+      kFirstReportingWindow, 3);
   histograms.ExpectTotalCount(
       "Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully",
       0);
@@ -2731,6 +2889,24 @@ TEST_F(AttributionManagerImplTest, PendingReportsMetrics_OverLimits) {
   EXPECT_EQ(
       histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeSinceCreation),
       (base::Seconds(10) * kMaxPendingReportsTimings).InMilliseconds());
+}
+
+TEST_F(AttributionManagerImplTest,
+       RemoveAttributionDataByDataKey_NotifiesObservers) {
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnSourcesChanged);
+  EXPECT_CALL(observer, OnReportsChanged);
+
+  base::RunLoop run_loop;
+  attribution_manager_->RemoveAttributionDataByDataKey(
+      AttributionDataModel::DataKey(
+          url::Origin::Create(GURL("https://x.test"))),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 class AttributionManagerImplDebugReportTest

@@ -137,7 +137,8 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     const network::ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client)
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
     : factory_(factory),
       request_(request),
       original_initiator_(request.request_initiator),
@@ -148,13 +149,16 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       options_(options),
       ukm_source_id_(ukm_source_id),
       traffic_annotation_(traffic_annotation),
-      proxied_loader_receiver_(this, std::move(loader_receiver)),
+      proxied_loader_receiver_(this,
+                               std::move(loader_receiver),
+                               navigation_response_task_runner),
       target_client_(std::move(client)),
       current_response_(network::mojom::URLResponseHead::New()),
       has_any_extra_headers_listeners_(
           network_service_request_id_ != 0 &&
           ExtensionWebRequestEventRouter::GetInstance()
-              ->HasAnyExtraHeadersListener(factory_->browser_context_)) {
+              ->HasAnyExtraHeadersListener(factory_->browser_context_)),
+      navigation_response_task_runner_(navigation_response_task_runner) {
   TRACE_EVENT_WITH_FLOW1(
       "extensions",
       "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
@@ -825,9 +829,11 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     if (has_any_extra_headers_listeners_)
       options |= network::mojom::kURLLoadOptionUseHeaderClient;
     factory_->target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(),
+        target_loader_.BindNewPipeAndPassReceiver(
+            navigation_response_task_runner_),
         network_service_request_id_, options, request_,
-        proxied_client_receiver_.BindNewPipeAndPassRemote(),
+        proxied_client_receiver_.BindNewPipeAndPassRemote(
+            navigation_response_task_runner_),
         traffic_annotation_);
   }
 
@@ -1427,7 +1433,8 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
         header_client_receiver,
     WebRequestAPI::ProxySet* proxies,
-    content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type)
+    content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
     : browser_context_(browser_context),
       render_process_id_(render_process_id),
       frame_routing_id_(frame_routing_id),
@@ -1437,7 +1444,9 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
       navigation_id_(std::move(navigation_id)),
       proxies_(proxies),
       loader_factory_type_(loader_factory_type),
-      ukm_source_id_(ukm_source_id) {
+      ukm_source_id_(ukm_source_id),
+      navigation_response_task_runner_(
+          std::move(navigation_response_task_runner)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // base::Unretained is safe here because the callback will be
   // canceled when |shutdown_notifier_subscription_| is destroyed, and
@@ -1452,13 +1461,17 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
   target_factory_.set_disconnect_handler(
       base::BindOnce(&WebRequestProxyingURLLoaderFactory::OnTargetFactoryError,
                      base::Unretained(this)));
-  proxy_receivers_.Add(this, std::move(loader_receiver));
+
+  proxy_receivers_.Add(this, std::move(loader_receiver),
+                       navigation_response_task_runner_);
   proxy_receivers_.set_disconnect_handler(base::BindRepeating(
       &WebRequestProxyingURLLoaderFactory::OnProxyBindingError,
       base::Unretained(this)));
 
-  if (header_client_receiver)
-    url_loader_header_client_receiver_.Bind(std::move(header_client_receiver));
+  if (header_client_receiver) {
+    url_loader_header_client_receiver_.Bind(std::move(header_client_receiver),
+                                            navigation_response_task_runner_);
+  }
 }
 
 void WebRequestProxyingURLLoaderFactory::StartProxying(
@@ -1475,7 +1488,8 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
     mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
         header_client_receiver,
     WebRequestAPI::ProxySet* proxies,
-    content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type) {
+    content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto proxy = std::make_unique<WebRequestProxyingURLLoaderFactory>(
@@ -1483,7 +1497,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
       request_id_generator, std::move(navigation_ui_data),
       std::move(navigation_id), ukm_source_id, std::move(loader_receiver),
       std::move(target_factory_remote), std::move(header_client_receiver),
-      proxies, loader_factory_type);
+      proxies, loader_factory_type, std::move(navigation_response_task_runner));
 
   proxies->AddProxy(std::move(proxy));
 }
@@ -1523,11 +1537,11 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   }
 
   auto result = requests_.emplace(
-      web_request_id,
-      std::make_unique<InProgressRequest>(
-          this, web_request_id, request_id, view_routing_id_, frame_routing_id_,
-          options, ukm_source_id_, request, traffic_annotation,
-          std::move(loader_receiver), std::move(client)));
+      web_request_id, std::make_unique<InProgressRequest>(
+                          this, web_request_id, request_id, view_routing_id_,
+                          frame_routing_id_, options, ukm_source_id_, request,
+                          traffic_annotation, std::move(loader_receiver),
+                          std::move(client), navigation_response_task_runner_));
   result.first->second->Restart();
 }
 

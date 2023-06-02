@@ -324,7 +324,7 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
   ASSERT_TRUE(registered_task_source);
   static_cast<ThreadGroup*>(thread_group_.get())
       ->PushTaskSourceAndWakeUpWorkers(
-          TransactionWithRegisteredTaskSource::FromTaskSource(
+          RegisteredTaskSourceAndTransaction::FromTaskSource(
               std::move(registered_task_source)));
 
   threads_running.Wait();

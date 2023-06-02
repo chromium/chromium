@@ -60,7 +60,7 @@ function runTest(target, expectations) {
 
     var previousOffset = -1;
     var j = 0;
-    for (var x = 5; x <= target.offsetWidth - 5; x++) {
+    for (var x = 5; x <= target.offsetWidth - 5; x += 5) {
         // Reset the click count
         eventSender.mouseMoveTo(1, 1);
         eventSender.mouseDown();

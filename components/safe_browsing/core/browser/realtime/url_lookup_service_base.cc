@@ -127,9 +127,11 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     VerdictCacheManager* cache_manager,
     base::RepeatingCallback<ChromeUserPopulation()>
         get_user_population_callback,
-    ReferrerChainProvider* referrer_chain_provider)
+    ReferrerChainProvider* referrer_chain_provider,
+    PrefService* pref_service)
     : url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
+      pref_service_(pref_service),
       get_user_population_callback_(get_user_population_callback),
       referrer_chain_provider_(referrer_chain_provider),
       backoff_operator_(std::make_unique<BackoffOperator>(
@@ -381,6 +383,15 @@ void RealTimeUrlLookupServiceBase::SendRequest(
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
                                     GetMetricSuffix(),
                                     !access_token_string.empty());
+  // `pref_service_` can be null in tests or in the Chrome Enterprise version of
+  // the lookup service.
+  if (pref_service_ && IsEnhancedProtectionEnabled(*pref_service_)) {
+    pref_service_->SetTime(
+        access_token_string.empty()
+            ? prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime
+            : prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime,
+        base::Time::Now());
+  }
 
   // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
   // just below.

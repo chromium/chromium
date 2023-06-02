@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_FACTORY_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -49,7 +49,7 @@ class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
       const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
 
  private:
-  friend struct base::DefaultSingletonTraits<OwnerSettingsServiceAshFactory>;
+  friend base::NoDestructor<OwnerSettingsServiceAshFactory>;
 
   OwnerSettingsServiceAshFactory();
   ~OwnerSettingsServiceAshFactory() override;

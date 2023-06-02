@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -35,8 +35,7 @@ class SafeBrowsingNavigationObserverManagerFactory
   static SafeBrowsingNavigationObserverManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      SafeBrowsingNavigationObserverManagerFactory>;
+  friend base::NoDestructor<SafeBrowsingNavigationObserverManagerFactory>;
 
   SafeBrowsingNavigationObserverManagerFactory();
   ~SafeBrowsingNavigationObserverManagerFactory() override = default;

@@ -11,7 +11,9 @@
 #include <mferror.h>
 #include <stddef.h>
 #include <wincodec.h>
+#include <wrl/implements.h>
 
+#include <d3d11.h>
 #include <memory>
 #include <thread>
 #include <utility>
@@ -32,6 +34,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/color_space_util_win.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -39,6 +42,7 @@
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_utils_win.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using base::Location;
 using base::win::ScopedCoMem;
@@ -58,6 +62,15 @@ namespace media {
 #endif
 
 namespace {
+
+// Provide an unique GUID for reusing |handle| and |token| by
+// SetPrivateDataInterface/GetPrivateData.
+// {79BFE1AB-CE47-4C3D-BDB2-06E6B886368C}
+constexpr GUID DXGIHandlePrivateDataGUID = {
+    0x79bfe1ab,
+    0xce47,
+    0x4c3d,
+    {0xbd, 0xb2, 0x6, 0xe6, 0xb8, 0x86, 0x36, 0x8c}};
 
 // How many times we try to restart D3D11 path.
 constexpr int kMaxD3DRestarts = 2;
@@ -555,9 +568,10 @@ HRESULT GetTextureFromMFBuffer(IMFMediaBuffer* mf_buffer,
   return hr;
 }
 
-void GetTextureSizeAndFormat(ID3D11Texture2D* texture,
-                             gfx::Size& size,
-                             VideoPixelFormat& format) {
+void GetTextureInfo(ID3D11Texture2D* texture,
+                    gfx::Size& size,
+                    VideoPixelFormat& format,
+                    bool& is_cross_process_shared_texture) {
   D3D11_TEXTURE2D_DESC desc;
   texture->GetDesc(&desc);
   size.set_width(desc.Width);
@@ -574,19 +588,19 @@ void GetTextureSizeAndFormat(ID3D11Texture2D* texture,
       break;
   }
 
-  // Log this in an UMA histogram to determine what proportion of frames might
-  // actually benefit from zero-copy.
-
   // According to
   // https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_resource_misc_flag,
   // D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE and
   // D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE_DRIVER only support shared
   // texture on same process.
-  bool is_cross_process_shared_texture =
+  is_cross_process_shared_texture =
       (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED) &&
       (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) &&
       !(desc.MiscFlags & D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE) &&
       !(desc.MiscFlags & D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE_DRIVER);
+
+  // Log this in an UMA histogram to determine what proportion of frames might
+  // actually benefit from zero-copy.
   base::UmaHistogramBoolean("Media.VideoCapture.Win.Device.IsSharedTexture",
                             is_cross_process_shared_texture);
 }
@@ -636,6 +650,23 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
 
 // Destruction helper. Can't use base::DoNothingAs<> since ComPtr isn't POD.
 void DestroyCaptureEngine(Microsoft::WRL::ComPtr<IMFCaptureEngine>) {}
+
+class DXGIHandlePrivateData
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IUnknown> {
+ public:
+  explicit DXGIHandlePrivateData(base::win::ScopedHandle texture_handle)
+      : texture_handle_(std::move(texture_handle)) {}
+
+  gfx::DXGIHandleToken GetDXGIToken() { return dxgi_token_; }
+  HANDLE GetTextureHandle() { return texture_handle_.get(); }
+
+ private:
+  gfx::DXGIHandleToken dxgi_token_;
+  const base::win::ScopedHandle texture_handle_;
+  ~DXGIHandlePrivateData() override = default;
+};
 
 }  // namespace
 
@@ -1947,10 +1978,18 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
 
   gfx::Size texture_size;
   VideoPixelFormat pixel_format;
-  GetTextureSizeAndFormat(texture, texture_size, pixel_format);
+  bool is_cross_process_shared_texture;
+  GetTextureInfo(texture, texture_size, pixel_format,
+                 is_cross_process_shared_texture);
 
   if (pixel_format != PIXEL_FORMAT_NV12) {
     return MF_E_UNSUPPORTED_FORMAT;
+  }
+
+  if (base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCaptureZeroCopy) &&
+      is_cross_process_shared_texture) {
+    return DeliverExternalBufferToClient(texture, texture_size, pixel_format,
+                                         reference_time, timestamp);
   }
 
   VideoCaptureDevice::Client::Buffer capture_buffer;
@@ -2017,6 +2056,72 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
       color_space_, reference_time, timestamp, gfx::Rect(texture_size),
       frame_metadata);
 
+  return hr;
+}
+
+HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
+    ID3D11Texture2D* texture,
+    const gfx::Size& texture_size,
+    const VideoPixelFormat& pixel_format,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  UINT private_data_size;
+  Microsoft::WRL::ComPtr<DXGIHandlePrivateData> private_data;
+  HRESULT hr =
+      texture->GetPrivateData(DXGIHandlePrivateDataGUID, &private_data_size,
+                              static_cast<void**>(&private_data));
+
+  if (SUCCEEDED(hr) && private_data) {
+    DCHECK_EQ(private_data_size, static_cast<UINT>(sizeof(&private_data)));
+  } else {
+    // It's failed to get valid |private_data|, create and set a new value.
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    hr = texture->QueryInterface(IID_PPV_ARGS(&dxgi_resource));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+    HANDLE texture_handle;
+    hr = dxgi_resource->CreateSharedHandle(
+        nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+        nullptr, &texture_handle);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+    private_data = Microsoft::WRL::Make<DXGIHandlePrivateData>(
+        base::win::ScopedHandle(texture_handle));
+
+    hr = texture->SetPrivateDataInterface(DXGIHandlePrivateDataGUID,
+                                          private_data.Get());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "failed to set private data to texture, "
+                  << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+  }
+
+  // Set reused |token| and |share_handle| to gmb handle.
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+  HANDLE texture_handle_duplicated = nullptr;
+  CHECK(::DuplicateHandle(GetCurrentProcess(), private_data->GetTextureHandle(),
+                          GetCurrentProcess(), &texture_handle_duplicated, 0,
+                          FALSE, DUPLICATE_SAME_ACCESS))
+      << "failed to reuse handle.";
+
+  gmb_handle.dxgi_handle.Set(texture_handle_duplicated);
+  gmb_handle.dxgi_token = private_data->GetDXGIToken();
+
+  client_->OnIncomingCapturedExternalBuffer(
+      media::CapturedExternalVideoBuffer(
+          std::move(gmb_handle),
+          VideoCaptureFormat(
+              texture_size,
+              selected_video_capability_->supported_format.frame_rate,
+              pixel_format),
+          gfx::ColorSpace()),
+      {}, reference_time, timestamp, gfx::Rect(texture_size));
   return hr;
 }
 

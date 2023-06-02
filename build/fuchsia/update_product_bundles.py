@@ -84,7 +84,7 @@ def remove_repositories(repo_names_to_remove):
     repo_names_to_remove: List of repo names (as strings) to remove.
   """
   for repo_name in repo_names_to_remove:
-    common.run_ffx_command(('repository', 'remove', repo_name), check=True)
+    common.run_ffx_command(cmd=('repository', 'remove', repo_name), check=True)
 
 
 def get_repositories():
@@ -106,7 +106,7 @@ def get_repositories():
   """
 
   repos = json.loads(
-      common.run_ffx_command(('--machine', 'json', 'repository', 'list'),
+      common.run_ffx_command(cmd=('--machine', 'json', 'repository', 'list'),
                              check=True,
                              capture_output=True).stdout.strip())
   to_prune = set()
@@ -134,7 +134,7 @@ def update_repositories_list():
 
 def remove_product_bundle(product_bundle):
   """Removes product-bundle given."""
-  common.run_ffx_command(('product-bundle', 'remove', '-f', product_bundle))
+  common.run_ffx_command(cmd=('product-bundle', 'remove', '-f', product_bundle))
 
 
 def get_product_bundle_urls():
@@ -149,7 +149,7 @@ def get_product_bundle_urls():
     }
   """
   # TODO(fxb/115328): Replaces with JSON API when available.
-  bundles = common.run_ffx_command(('product-bundle', 'list'),
+  bundles = common.run_ffx_command(cmd=('product-bundle', 'list'),
                                    capture_output=True).stdout.strip()
   urls = [
       line.strip() for line in bundles.splitlines() if 'gs://fuchsia' in line
@@ -216,9 +216,9 @@ def download_product_bundle(product_bundle, download_config):
   update_repositories_list()
 
   try:
-    common.run_ffx_command(
-        ('product-bundle', 'get', product_bundle, '--force-repo'),
-        configs=download_config)
+    common.run_ffx_command(cmd=('product-bundle', 'get', product_bundle,
+                                '--force-repo'),
+                           configs=download_config)
   except subprocess.CalledProcessError as cpe:
     logging.error('Product bundle download has failed. ' +
                   _PRODUCT_BUNDLE_FIX_INSTRUCTIONS)
@@ -288,8 +288,8 @@ def main():
 
     # Re-set the directory to which product bundles are downloaded so that
     # these bundles are located inside the Chromium codebase.
-    common.run_ffx_command(
-        ('config', 'set', 'pbms.storage.path', common.IMAGES_ROOT))
+    common.run_ffx_command(cmd=('config', 'set', 'pbms.storage.path',
+                                common.IMAGES_ROOT))
 
     logging.debug('Checking for override file')
 

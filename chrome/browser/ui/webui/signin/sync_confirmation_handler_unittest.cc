@@ -206,7 +206,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SyncConfirmationUI> sync_confirmation_ui_;
-  raw_ptr<TestingSyncConfirmationHandler> handler_;  // Not owned.
+  raw_ptr<TestingSyncConfirmationHandler, DanglingUntriaged>
+      handler_;  // Not owned.
   base::UserActionTester user_action_tester_;
   std::unordered_map<std::string, int> string_to_grd_id_map_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>

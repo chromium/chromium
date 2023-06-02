@@ -31,7 +31,8 @@ const size_t kMaxReportCountInQueue = 5;
 // static
 CertificateReportingServiceFactory*
 CertificateReportingServiceFactory::GetInstance() {
-  return base::Singleton<CertificateReportingServiceFactory>::get();
+  static base::NoDestructor<CertificateReportingServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -90,7 +91,8 @@ CertificateReportingServiceFactory::CertificateReportingServiceFactory()
       max_queued_report_count_(kMaxReportCountInQueue),
       service_reset_callback_(base::DoNothing()) {}
 
-CertificateReportingServiceFactory::~CertificateReportingServiceFactory() {}
+CertificateReportingServiceFactory::~CertificateReportingServiceFactory() =
+    default;
 
 KeyedService* CertificateReportingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {

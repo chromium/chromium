@@ -40,8 +40,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -467,14 +465,6 @@ void BrowserTabStripController::OnDropIndexUpdate(
 }
 
 void BrowserTabStripController::CreateNewTab() {
-  // This must be called before AddTabAt() so that OmniboxFocused is called
-  // after NewTabOpened. TODO(collinbaker): remove omnibox focusing from
-  // triggering conditions (since it is always focused for new tabs) and move
-  // this after AddTabAt() call.
-  auto* reopen_tab_iph = ReopenTabInProductHelpFactory::GetForProfile(
-      browser_view_->browser()->profile());
-  reopen_tab_iph->NewTabOpened();
-
   model_->delegate()->AddTabAt(GURL(), -1, true);
 }
 

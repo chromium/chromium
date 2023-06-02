@@ -27,6 +27,7 @@ namespace ash {
 namespace file_system_provider {
 
 class RequestDispatcher;
+class ODFSMetrics;
 
 class ExtensionProvider : public ProviderInterface,
                           public apps::AppRegistryCache::Observer {
@@ -73,6 +74,7 @@ class ExtensionProvider : public ProviderInterface,
   std::string name_;
   IconSet icon_set_;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
+  std::unique_ptr<ODFSMetrics> odfs_metrics_;
   std::unique_ptr<RequestManager> request_manager_;
 
   base::WeakPtrFactory<ExtensionProvider> weak_ptr_factory_{this};

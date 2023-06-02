@@ -135,8 +135,8 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<FakePartialTranslateBubbleModel> mock_model_;
-  raw_ptr<PartialTranslateBubbleView> bubble_;
+  raw_ptr<FakePartialTranslateBubbleModel, DanglingUntriaged> mock_model_;
+  raw_ptr<PartialTranslateBubbleView, DanglingUntriaged> bubble_;
 };
 
 TEST_F(PartialTranslateBubbleViewTest,

@@ -30,6 +30,13 @@ void WebNNContextProviderImpl::Create(
       std::make_unique<WebNNContextProviderImpl>(), std::move(receiver));
 }
 
+void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
+  auto it =
+      base::ranges::find(impls_, impl, &std::unique_ptr<WebNNContextImpl>::get);
+  CHECK(it != impls_.end());
+  impls_.erase(it);
+}
+
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
@@ -37,7 +44,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // The remote sent to the renderer.
   mojo::PendingRemote<mojom::WebNNContext> blink_remote;
   // The receiver bound to WebNNContextImpl.
-  WebNNContextImpl::Create(blink_remote.InitWithNewPipeAndPassReceiver());
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new WebNNContextImpl(
+      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
   std::move(callback).Run(mojom::CreateContextResult::kOk,
                           std::move(blink_remote));
 #else

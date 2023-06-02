@@ -145,8 +145,10 @@ export class CardsElement extends PolymerElement {
     const id: string = e.model.item.id;
     const checked: boolean = e.detail;
     this.pageHandler_.setModuleDisabled(id, !checked);
+    const metricBase = `NewTabPage.Modules.${checked ? 'Enabled' : 'Disabled'}`;
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(metricBase, id);
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        'NewTabPage.Modules.' + (checked ? 'Enabled' : 'Disabled'), id);
+        `${metricBase}.Customize`, id);
   }
 
   private showDiscountOptionCheckbox_(

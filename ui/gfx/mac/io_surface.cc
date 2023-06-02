@@ -83,14 +83,12 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
       NOTREACHED();
       return 0;
   }
-
-  NOTREACHED();
-  return 0;
 }
 
 }  // namespace
 
-uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
+uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format,
+                                            bool override_rgba_to_bgra) {
   switch (format) {
     case gfx::BufferFormat::R_8:
       return 'L008';
@@ -104,11 +102,10 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
       return 'l10r';  // little-endian ARGB2101010 full-range ARGB
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
+      return 'BGRA';
     case gfx::BufferFormat::RGBA_8888:
     case gfx::BufferFormat::RGBX_8888:
-      // MacOS and iOS use ANGLE and do the conversion themselves and BGRA is
-      // the most optimal format.
-      return 'BGRA';
+      return override_rgba_to_bgra ? 'BGRA' : 'RGBA';
     case gfx::BufferFormat::RGBA_F16:
       return 'RGhA';
     case gfx::BufferFormat::YUV_420_BIPLANAR:
@@ -125,9 +122,6 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::YVU_420:
       return 0;
   }
-
-  NOTREACHED();
-  return 0;
 }
 
 namespace internal {
@@ -236,7 +230,8 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 IOSurfaceRef CreateIOSurface(const gfx::Size& size,
                              gfx::BufferFormat format,
-                             bool should_clear) {
+                             bool should_clear,
+                             bool override_rgba_to_bgra) {
   TRACE_EVENT0("ui", "CreateIOSurface");
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -246,8 +241,9 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
                                 &kCFTypeDictionaryValueCallBacks));
   AddIntegerValue(properties, kIOSurfaceWidth, size.width());
   AddIntegerValue(properties, kIOSurfaceHeight, size.height());
-  AddIntegerValue(properties, kIOSurfacePixelFormat,
-                  BufferFormatToIOSurfacePixelFormat(format));
+  AddIntegerValue(
+      properties, kIOSurfacePixelFormat,
+      BufferFormatToIOSurfacePixelFormat(format, override_rgba_to_bgra));
 
   // Don't specify plane information unless there are indeed multiple planes
   // because DisplayLink drivers do not support this.

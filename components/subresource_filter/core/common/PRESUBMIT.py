@@ -8,8 +8,6 @@ See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
-
 def CheckIndexedRulesetVersion(input_api, output_api):
   """ Checks that IndexedRuleset format version is modified when necessary.
 

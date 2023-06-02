@@ -137,33 +137,6 @@ class VectorComboboxModel : public ui::ComboboxModel {
   const raw_ptr<std::vector<std::string>> values_;
 };
 
-// A combobox model which uses a custom font.
-class CustomFontComboboxModel : public ui::ComboboxModel {
- public:
-  CustomFontComboboxModel() = default;
-
-  CustomFontComboboxModel(const CustomFontComboboxModel&) = delete;
-  CustomFontComboboxModel& operator=(const CustomFontComboboxModel&) = delete;
-
-  ~CustomFontComboboxModel() override = default;
-
-  // ui::ComboboxModel:
-  size_t GetItemCount() const override { return 2; }
-  std::u16string GetItemAt(size_t index) const override {
-    return ASCIIToUTF16(index % 2 == 0 ? "EVEN" : "ODD");
-  }
-
-  std::vector<std::string> GetLabelFontNameAt(size_t index) override {
-    return {font_, "Arial"};
-  }
-
-  absl::optional<int> GetLabelFontSize() override { return 25; }
-
-  void SetFontString(std::string font) { font_ = font; }
-
-  std::string font_ = "Arial";
-};
-
 class EvilListener {
  public:
   EvilListener() {
@@ -294,7 +267,7 @@ class ComboboxTest : public ViewsTestBase {
   UniqueWidgetPtr widget_;
 
   // |combobox_| will be allocated InitCombobox() and then owned by |widget_|.
-  raw_ptr<TestCombobox> combobox_ = nullptr;
+  raw_ptr<TestCombobox, DanglingUntriaged> combobox_ = nullptr;
   std::unique_ptr<ComboboxTestApi> test_api_;
 
   // Combobox does not take ownership of the model, hence it needs to be scoped.
@@ -728,8 +701,7 @@ TEST_F(ComboboxTest, ConsumingPressKeyEvents) {
 // between indices of different label lengths.
 TEST_F(ComboboxTest, ContentSizeUpdateOnSetSelectedIndex) {
   const gfx::FontList& font_list =
-      style::GetFont(Combobox::kDefaultComboboxTextContext,
-                     Combobox::kDefaultComboboxTextStyle);
+      style::GetFont(Combobox::kContext, Combobox::kStyle);
   InitCombobox(nullptr);
   combobox_->SetSizeToLargestLabel(false);
   test_api_->PerformActionAt(1);
@@ -1034,47 +1006,6 @@ TEST_F(ComboboxDefaultTest, SetOwnedModelOverwriteOwned) {
     ASSERT_FALSE(destroyed_second);
   }
   EXPECT_TRUE(destroyed_second);
-}
-
-TEST_F(ComboboxDefaultTest, DefaultFontUsedBeforeUpdateFont) {
-  auto combobox = std::make_unique<Combobox>();
-  ASSERT_TRUE(combobox->GetModel()->GetLabelFontNameAt(0).empty());
-
-  const gfx::FontList font_list1 = combobox->GetFontList();
-  combobox->UpdateFont();
-  const gfx::FontList font_list2 = combobox->GetFontList();
-
-  // Test that the default font used is the same after UpdateFont is explicitly
-  // called.
-  EXPECT_EQ(font_list1.GetPrimaryFont().GetFontName(),
-            font_list2.GetPrimaryFont().GetFontName());
-}
-
-TEST_F(ComboboxDefaultTest, UpdateFontUsesCustomFont) {
-  CustomFontComboboxModel model;
-  Combobox combobox(&model);
-  ASSERT_FALSE(combobox.GetModel()->GetLabelFontNameAt(0).empty());
-  ASSERT_FALSE(combobox.GetModel()->GetLabelFontNameAt(1).empty());
-
-  // Default font from the model is used.
-  combobox.UpdateFont();
-  // Instead of asserting that "Arial" == the primary font, assert that a font
-  // created with the "Arial" font string == the primary font. This is because
-  // some platforms, such as fuchsia, don't support all fonts.
-  EXPECT_EQ(gfx::Font("Arial", 15).GetFontName(),
-            combobox.GetFontList().GetPrimaryFont().GetFontName());
-
-  // Update Font isn't called so the combobox font isn't updated.
-  model.SetFontString("Comic Sans");
-  EXPECT_NE("Comic Sans",
-            combobox.GetFontList().GetPrimaryFont().GetFontName());
-
-  model.SetFontString("Times New Roman");
-  combobox.UpdateFont();
-  // Wrap Times New Roman in a gfx::Font in case it is not supported on a
-  // platform (i.e. fuchsia).
-  EXPECT_EQ(gfx::Font("Times New Roman", 15).GetFontName(),
-            combobox.GetFontList().GetPrimaryFont().GetFontName());
 }
 
 }  // namespace views

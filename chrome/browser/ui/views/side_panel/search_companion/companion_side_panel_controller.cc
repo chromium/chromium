@@ -7,6 +7,8 @@
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -70,11 +72,15 @@ void CompanionSidePanelController::ShowCompanionSidePanel(
 void CompanionSidePanelController::UpdateNewTabButton(GURL url_to_open) {
   open_in_new_tab_url_ = url_to_open;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  BrowserView* browser_view =
-      browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
-  if (browser_view) {
-    browser_view->side_panel_coordinator()->UpdateNewTabButtonState();
+  if (!browser) {
+    return;
   }
+  SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser)
+      ->UpdateNewTabButtonState();
+}
+
+void CompanionSidePanelController::OnCompanionSidePanelClosed() {
+  open_in_new_tab_url_ = GURL();
 }
 
 content::WebContents*
@@ -138,14 +144,24 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   }
 
   // Open the url in the desired tab.
-  content::WebContents* new_tab_web_contents = browser->OpenURL(params);
+  content::WebContents* tab_web_contents = browser->OpenURL(params);
+
+  if (open_in_current_tab) {
+    // Add metrics to record the open trigger for the companion page as a link
+    // click from side panel. Note, the user can click on links even before the
+    // metrics is consumed, e.g. a double click. Either way, just overwrite the
+    // metrics if it already exists.
+    auto* tab_helper =
+        companion::CompanionTabHelper::FromWebContents(tab_web_contents);
+    tab_helper->SetMostRecentSidePanelOpenTrigger(
+        SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
+  }
 
   // If a new tab was opened, open companion side panel in it.
-  if (new_tab_web_contents && !open_in_current_tab) {
-    BrowserView::GetBrowserViewForBrowser(browser)
-        ->side_panel_coordinator()
-        ->Show(SidePanelEntry::Id::kSearchCompanion,
-               SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
+  if (tab_web_contents && !open_in_current_tab) {
+    SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
+        SidePanelEntry::Id::kSearchCompanion,
+        SidePanelOpenTrigger::kOpenedInNewTabFromSidePanel);
   }
 }
 

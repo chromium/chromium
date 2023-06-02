@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
 <translation id="1722370509450468186">Heslo bude uložené do vášho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Vymazanie údajov prehliadača Chromium</translation>
-<translation id="177102542580335555">Pre tento profil prehliadača Chromium dostávate štandardnú ochranu zabezpečenia</translation>
 <translation id="1838412507805038478">Prehliadač Chromium overil, že certifikát tohto webu bol vydaný vydavateľom <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Prehliadač Chromium obsahuje funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Ak chcete využívať Chromium naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> používal(a) Chromium a zanechal(a) záložky, heslá a ďalšie nastavenia v tomto zariadení.</translation>
+<translation id="3661862315467204831">V zariadení so systémom iOS otvorte Nastavenia prehliadača Chromium, klepnite na položku Predvolená aplikácia na prehliadanie a vyberte Chromium.</translation>
 <translation id="372658070733623520">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
+<translation id="3827545470516145620">V tomto zariadení máte štandardnú bezpečnostnú ochranu</translation>
 <translation id="3955621079070267756">Otvárajte Chromium z ľubovoľnej aplikácie</translation>
 <translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>

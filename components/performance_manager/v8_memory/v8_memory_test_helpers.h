@@ -214,8 +214,8 @@ class V8MemoryPerformanceManagerTestHarness
       override;
 
  private:
-  raw_ptr<content::RenderFrameHost> main_frame_ = nullptr;
-  raw_ptr<content::RenderFrameHost> child_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> main_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> child_frame_ = nullptr;
   RenderProcessHostId main_process_id_;
   RenderProcessHostId child_process_id_;
 };

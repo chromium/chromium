@@ -979,6 +979,7 @@
 <translation id="3380864720620200369">Numéro de client :</translation>
 <translation id="3381668585148405088">Vérifier votre achat</translation>
 <translation id="3383566085871012386">Ordre de préséance actuel</translation>
+<translation id="3384522979010096022">Votre organisation ne vous permet pas d'accéder à ce site</translation>
 <translation id="3387261909427947069">Modes de paiement</translation>
 <translation id="3391030046425686457">Adresse de livraison</translation>
 <translation id="3391482648489541560">Modification des fichiers</translation>
@@ -1095,13 +1096,13 @@
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3664782872746246217">Mots clés :</translation>
 <translation id="3667704023705708645">Capital de risque</translation>
+<translation id="3671117652518853176">Lorsqu'elle est désactivée, il peut vous être demandé occasionnellement de vérifier pour des raisons de sécurité</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement?</translation>
 <translation id="3672568546897166916">Erreur à <ph name="ERROR_PATH" /> : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Troisième rouleau</translation>
 <translation id="3676592649209844519">Identifiant de l'appareil :</translation>
 <translation id="3677008721441257057">Vouliez-vous dire &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La demande n'a pas pu être signée</translation>
-<translation id="3678342917559046352">Extension non valide : la valeur devait correspondre à l'une des formes suivantes : &lt;extension_id&gt; ou &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3681007416295224113">Information relative au certificat</translation>
 <translation id="3681421644246505351">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent.</translation>
@@ -1129,7 +1130,9 @@
 <translation id="3736520371357197498">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />visiter ce site dangereux<ph name="END_LINK" /> avant que les programmes dangereux aient été supprimés.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
 <translation id="3740319564441798148">Bus et train longue distance</translation>
+<translation id="3743765582345153106">Toujours vérifier lors de l'utilisation de la saisie automatique</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
+<translation id="3744212718085287312">Augmenter la sécurité avec une carte virtuelle la prochaine fois?</translation>
 <translation id="3744286742364977428">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="3744899669254331632">Vous ne pas présentement consulter le site <ph name="SITE" />, car il a renvoyé des authentifiants brouillés que Chromium ne peut pas traiter. Les erreurs et attaques réseau étant généralement temporaires, cette page sera peut-être à nouveau accessible plus tard.</translation>
 <translation id="3748148204939282805">Les cyberpirates à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1238,6 +1241,7 @@
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
 <translation id="4040350669425716613">Collèges et universités</translation>
 <translation id="4047351652147966654">18 po x 24 po</translation>
+<translation id="404831776305217138">L'URL de mise à jour de l'extension avec l'ID « <ph name="EXTENSION_ID" /> » n'est pas valide ou utilise un schéma non compatible. Les schémas compatibles sont: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> et <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Vous serez en mesure de l'utiliser dans tous les produits Google</translation>
 <translation id="405399507749852140">Obtenez des alertes si le prix est réduit sur un site</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -1344,7 +1348,6 @@
 <translation id="4250716950689692560">A4 x 4</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="425582637250725228">Il est possible que les modifications que vous avez effectuées ne soient pas enregistrées.</translation>
-<translation id="425869179292622354">Augmenter la sécurité avec une carte virtuelle?</translation>
 <translation id="4258748452823770588">Signature incorrecte</translation>
 <translation id="4261046003697461417">Les documents protégés ne peuvent pas être annotés</translation>
 <translation id="4265872034478892965">Autorisée par votre administrateur</translation>
@@ -1735,6 +1738,7 @@
 <translation id="5171045022955879922">Effectuez une recherche ou entrez une adresse URL</translation>
 <translation id="5172758083709347301">Machine</translation>
 <translation id="5177076414499237632">En savoir plus sur la source et le sujet de cette page</translation>
+<translation id="5179490652562926740">Paramètres de vérification des paiements enregistrés</translation>
 <translation id="5179510805599951267">Cette page n'est pas rédigée en <ph name="ORIGINAL_LANGUAGE" />? Signaler l'erreur.</translation>
 <translation id="518639307526414276">Aliments et accessoires pour animaux</translation>
 <translation id="5190072300954988691">Accès à l'appareil photo et au microphone non autorisé</translation>
@@ -2283,6 +2287,8 @@
 <translation id="6569060085658103619">Vous consultez une page d'extension</translation>
 <translation id="6569366777234823130">Films dramatiques</translation>
 <translation id="6573200754375280815">Double perforation à droite</translation>
+<translation id="6576181918031900030">Commencer la diffusion</translation>
+<translation id="6578434528542148658">ID d'extension non valide.</translation>
 <translation id="657902945730878902">Dessin et coloriage</translation>
 <translation id="6579630537141957243">Connecter un appareil MIDI?</translation>
 <translation id="6579990219486187401">Rose clair</translation>
@@ -2960,7 +2966,6 @@ Détails supplémentaires :
 <translation id="8190193880870196235">Gérée par une extension</translation>
 <translation id="8194797478851900357">&amp;Annuler le déplacement</translation>
 <translation id="8200772114523450471">Reprendre</translation>
-<translation id="8201077131113104583">URL de mise à jour non valide pour l'extension avec l'identifiant « ᠎<ph name="EXTENSION_ID" /> ».</translation>
 <translation id="8202097416529803614">Résumé de la commande</translation>
 <translation id="8202370299023114387">Conflit</translation>
 <translation id="8208363704094329105">300 mm x 400 mm</translation>
@@ -3020,7 +3025,6 @@ Détails supplémentaires :
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Section « <ph name="SECTION" /> » affichée</translation>
 <translation id="830498451218851433">Plier en deux</translation>
-<translation id="8307888238279532626">Les applications installées et leur fréquence d'utilisation</translation>
 <translation id="831997045666694187">Soirée</translation>
 <translation id="8321476692217554900">Notifications</translation>
 <translation id="8329068931308448247">Enveloppe nᵒ 14</translation>

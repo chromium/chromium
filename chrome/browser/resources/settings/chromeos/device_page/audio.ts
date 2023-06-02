@@ -14,12 +14,16 @@ import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {AudioDevice, AudioDeviceType, AudioEffectState, AudioSystemProperties, AudioSystemPropertiesObserverReceiver, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -33,7 +37,8 @@ function clampPercent(percent: number): number {
   return Math.max(0, Math.min(percent, 100));
 }
 
-const SettingsAudioElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
+const SettingsAudioElementBase =
+    DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 const VOLUME_ICON_OFF_LEVEL = 0;
 // TODO(b/271871947): Match volume icon logic to QS revamp sliders.
 // Matches level calculated in unified_volume_view.cc.
@@ -82,6 +87,24 @@ class SettingsAudioElement extends SettingsAudioElementBase {
       outputVolume_: {
         type: Number,
       },
+
+      systemSoundsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('areSystemSoundsEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kChargingSounds,
+        ]),
+      },
     };
   }
 
@@ -94,6 +117,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   private isNoiseCancellationEnabled_: boolean;
   private isNoiseCancellationSupported_: boolean;
   private outputVolume_: number;
+  private systemSoundsEnabled_: boolean;
 
   constructor() {
     super();

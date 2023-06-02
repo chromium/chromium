@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
@@ -32,26 +33,28 @@ namespace ash {
 //    complete;
 //  * Destroying all engine instances;
 //  * Switching to another mode if necessary.
+// `AuthHubModeLifecycle` correctly handles attempt mode
+// initialization/shutdown, even if request to switch mode/shut down  was
+// requested in the middle of ongoing init/shutdown sequence.
+
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubModeLifecycle {
  public:
-  using EnginesMap =
-      base::flat_map<AshAuthFactor, base::raw_ptr<AuthFactorEngine>>;
-
   // Interface to interact with owning AuthHub:
-  class Owner {
+  class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) Owner {
    public:
+    virtual ~Owner();
     virtual void OnReadyForMode(AuthHubMode mode,
-                                EnginesMap available_engines) = 0;
+                                AuthEnginesMap available_engines) = 0;
     virtual void OnExitedMode(AuthHubMode mode) = 0;
     virtual void OnModeShutdown() = 0;
-    virtual ~Owner() = default;
   };
 
   explicit AuthHubModeLifecycle(Owner* owner);
   ~AuthHubModeLifecycle();
 
   bool IsReady();
-  EnginesMap GetAvailableEngines();
+  AuthEnginesMap GetAvailableEngines();
+  AuthHubMode GetCurrentMode() const;
 
   void SwitchToMode(AuthHubMode mode);
   void Shutdown();

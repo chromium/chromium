@@ -143,15 +143,13 @@ class ASH_EXPORT CaptureModeController
   // recordings (cannot be set mid recording), or to a future capture mode
   // session when Start() is called. The effective enabled state takes into
   // account the `AudioCaptureAllowed` policy.
-  void SetAudioRecordingMode(AudioRecordingMode mode) {
-    audio_recording_mode_ = mode;
-  }
+  void SetAudioRecordingMode(AudioRecordingMode mode);
 
   // Sets the flag to enable the demo tools feature, which will be applied to
   // any future recordings (cannot be set mid recording), or to a future capture
   // mode session when Start() is called. Currently the demo tools feature is
   // behind the feature flag.
-  void EnableDemoTools(bool enable) { enable_demo_tools_ = enable; }
+  void EnableDemoTools(bool enable);
 
   // Starts a new capture session with the most-recently used `type_` and
   // `source_`. Also records what `entry_type` that started capture mode. The
@@ -437,10 +435,12 @@ class ASH_EXPORT CaptureModeController
                         const CaptureModeBehavior* behavior);
 
   // Shows a preview notification of the newly taken screenshot or screen
-  // recording.
+  // recording. Customized notification view will be decided based on the
+  // `behavior`.
   void ShowPreviewNotification(const base::FilePath& screen_capture_path,
                                const gfx::Image& preview_image,
-                               const CaptureModeType type);
+                               const CaptureModeType type,
+                               const CaptureModeBehavior* behavior);
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
                                  absl::optional<int> button_index);

@@ -16,6 +16,13 @@ namespace exo::test {
 class TestSecurityDelegate : public SecurityDelegate {
  public:
   bool CanLockPointer(aura::Window* toplevel) const override;
+  SetBoundsPolicy CanSetBounds(aura::Window* window) const override;
+
+  // Choose the return value of |CanSetBounds()|.
+  void SetCanSetBounds(SetBoundsPolicy policy);
+
+ protected:
+  SetBoundsPolicy policy_ = SetBoundsPolicy::IGNORE;
 };
 
 }  // namespace exo::test

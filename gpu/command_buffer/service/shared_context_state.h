@@ -76,7 +76,8 @@ class GPU_GLES2_EXPORT SharedContextState
       public base::RefCounted<SharedContextState>,
       public GrContextOptions::ShaderErrorHandler {
  public:
-  using ContextLostCallback = base::OnceCallback<void(bool)>;
+  using ContextLostCallback =
+      base::OnceCallback<void(bool, error::ContextLostReason)>;
 
   // TODO(vikassoni): Refactor code to have seperate constructor for GL and
   // Vulkan and not initialize/use GL related info for vulkan and vice-versa.
@@ -131,23 +132,23 @@ class GPU_GLES2_EXPORT SharedContextState
       absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
       int32_t client_id) const;
 
-  gl::GLShareGroup* share_group() { return share_group_.get(); }
-  gl::GLContext* context() { return context_.get(); }
-  gl::GLContext* real_context() { return real_context_.get(); }
-  gl::GLSurface* surface() { return surface_.get(); }
-  gl::GLDisplay* display();
-  viz::VulkanContextProvider* vk_context_provider() {
+  gl::GLShareGroup* share_group() const { return share_group_.get(); }
+  gl::GLContext* context() const { return context_.get(); }
+  gl::GLContext* real_context() const { return real_context_.get(); }
+  gl::GLSurface* surface() const { return surface_.get(); }
+  gl::GLDisplay* display();  // non const since it calls GLSurface::GetGLDisplay
+  viz::VulkanContextProvider* vk_context_provider() const {
     return vk_context_provider_;
   }
-  viz::MetalContextProvider* metal_context_provider() {
+  viz::MetalContextProvider* metal_context_provider() const {
     return metal_context_provider_;
   }
-  viz::DawnContextProvider* dawn_context_provider() {
+  viz::DawnContextProvider* dawn_context_provider() const {
     return dawn_context_provider_;
   }
   gl::ProgressReporter* progress_reporter() const { return progress_reporter_; }
   // Ganesh/Graphite contexts may only be used on the GPU main thread.
-  GrDirectContext* gr_context() { return gr_context_; }
+  GrDirectContext* gr_context() const { return gr_context_; }
   skgpu::graphite::Context* graphite_context() const {
     return graphite_context_;
   }
@@ -247,6 +248,8 @@ class GPU_GLES2_EXPORT SharedContextState
   bool device_needs_reset() { return device_needs_reset_; }
 
   void ScheduleGrContextCleanup();
+
+  int32_t GetMaxTextureSize() const;
 
  private:
   friend class base::RefCounted<SharedContextState>;

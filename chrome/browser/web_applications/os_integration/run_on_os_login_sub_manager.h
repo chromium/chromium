@@ -63,9 +63,9 @@ class RunOnOsLoginSubManager : public OsIntegrationSubManager {
       std::unique_ptr<ShortcutInfo> shortcut_info);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<WebAppRegistrar> registrar_;
-  const raw_ref<WebAppSyncBridge> sync_bridge_;
-  const raw_ref<WebAppIconManager> icon_manager_;
+  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
+  const raw_ref<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
+  const raw_ref<WebAppIconManager, DanglingUntriaged> icon_manager_;
 
   base::WeakPtrFactory<RunOnOsLoginSubManager> weak_ptr_factory_{this};
 };

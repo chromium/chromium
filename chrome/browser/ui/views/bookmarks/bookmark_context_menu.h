@@ -91,7 +91,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   raw_ptr<views::Widget> parent_widget_;
 
   // The menu itself. This is owned by |menu_runner_|.
-  raw_ptr<views::MenuItemView> menu_;
+  raw_ptr<views::MenuItemView, DanglingUntriaged> menu_;
 
   // Responsible for running the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

@@ -118,9 +118,15 @@ void VideoCaptureBufferPoolImpl::RelinquishProducerReservation(int buffer_id) {
   tracker->SetHeldByProducer(false);
 }
 
-int VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
-    const gfx::GpuMemoryBufferHandle& handle,
-    int* buffer_id_to_drop) {
+VideoCaptureDevice::Client::ReserveResult
+VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
+    gfx::GpuMemoryBufferHandle handle,
+    VideoPixelFormat format,
+    const gfx::Size& dimensions,
+    int* buffer_id_to_drop,
+    int* buffer_id) {
+  DCHECK(buffer_id);
+  DCHECK(buffer_id_to_drop);
   base::AutoLock lock(lock_);
 
   // Look for a tracker that matches this buffer and is not in use. While
@@ -129,12 +135,14 @@ int VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
   auto lru_tracker_it = trackers_.end();
   for (auto it = trackers_.begin(); it != trackers_.end(); ++it) {
     VideoCaptureBufferTracker* const tracker = it->second.get();
-    if (tracker->IsHeldByProducerOrConsumer())
+    if (tracker->IsHeldByProducerOrConsumer()) {
       continue;
+    }
 
     if (tracker->IsSameGpuMemoryBuffer(handle)) {
       tracker->SetHeldByProducer(true);
-      return it->first;
+      *buffer_id = it->first;
+      return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
     }
 
     if (lru_tracker_it == trackers_.end() ||
@@ -154,10 +162,20 @@ int VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
   // Create the new tracker.
   const int new_buffer_id = next_buffer_id_++;
   auto tracker =
-      buffer_tracker_factory_->CreateTrackerForExternalGpuMemoryBuffer(handle);
+      buffer_tracker_factory_->CreateTrackerForExternalGpuMemoryBuffer(
+          std::move(handle));
+#if BUILDFLAG(IS_WIN)
+  // Windows needs to create buffer from external handle, but not on mac.
+  if (!tracker || !tracker->Init(dimensions, format, nullptr)) {
+    DLOG(ERROR) << "Error initializing VideoCaptureBufferTracker";
+    *buffer_id = kInvalidId;
+    return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
+  }
+#endif
   tracker->SetHeldByProducer(true);
   trackers_[new_buffer_id] = std::move(tracker);
-  return new_buffer_id;
+  *buffer_id = new_buffer_id;
+  return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
 }
 
 void VideoCaptureBufferPoolImpl::HoldForConsumers(int buffer_id,

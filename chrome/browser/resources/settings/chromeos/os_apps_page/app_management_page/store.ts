@@ -19,6 +19,9 @@ export type AppMap = Record<string, App>;
 export interface AppManagementPageState {
   apps: AppMap;
   selectedAppId: string|null;
+  // Maps all apps to their parent's app ID. Apps without a parent are
+  // not listed in this map.
+  subAppToParentAppId: Record<string, string>;
 }
 
 let instance: AppManagementStore|null = null;

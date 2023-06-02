@@ -244,7 +244,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
                         uint32_t usage,
                         GLenum gl_target,
                         bool framebuffer_attachment_angle,
-                        bool is_cleared);
+                        bool is_cleared,
+                        bool retain_gl_texture);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;

@@ -185,6 +185,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
     ];
 
     if (this.isInputEnabled) {
+      pages.push(this.createInputSelector());
       const devices: ConnectedDevices =
           await this.inputDataProvider.getConnectedDevices();
       // Check the existing value of |numKeyboards| if |GetConnectedDevices|
@@ -194,8 +195,8 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
       const isTouchPadOrTouchScreenEnabled =
           loadTimeData.getBoolean('isTouchpadEnabled') ||
           loadTimeData.getBoolean('isTouchscreenEnabled');
-      if (this.numKeyboards > 0 || isTouchPadOrTouchScreenEnabled) {
-        pages.push(this.createInputSelector());
+      if (this.numKeyboards === 0 && !isTouchPadOrTouchScreenEnabled) {
+        pages.pop();
       }
     }
 

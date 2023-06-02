@@ -231,6 +231,14 @@ class BetweenStreetsNode : public AddressComponent {
   ~BetweenStreetsNode() override;
 };
 
+// Stores administrative area level 2. A sub-division of a state, e.g. a
+// Municipio in Brazil or Mexico.
+class AdminLevel2Node : public AddressComponent {
+ public:
+  explicit AdminLevel2Node(AddressComponent* parent);
+  ~AdminLevel2Node() override;
+};
+
 // Stores the overall Address that contains the StreetAddress, the PostalCode
 // the City, the State and the CountryCode.
 class AddressNode : public AddressComponent {
@@ -254,6 +262,7 @@ class AddressNode : public AddressComponent {
   DependentLocalityNode dependent_locality_{this};
   CityNode city_{this};
   StateNode state_{this};
+  AdminLevel2Node admin_level_2_{this};
   CountryCodeNode country_code_{this};
   BetweenStreetsNode between_streets_{this};
   LandmarkNode landmark_code_{this};

@@ -56,7 +56,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // concurrently.
     kUpdateInProgress = 1,
 
-    // Not used. TODO(crbug.com/1014591).
+    // Not used. TODO(crbug.com/1290331).
     kUpdateCanceled = 2,
 
     // The function failed because of a throttling policy such as load shedding.

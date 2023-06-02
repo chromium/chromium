@@ -134,7 +134,8 @@ class BaseScrollbarLayerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeResourceTrackingUIResourceManager> fake_ui_resource_manager_;
+  raw_ptr<FakeResourceTrackingUIResourceManager, DanglingUntriaged>
+      fake_ui_resource_manager_;
   FakeLayerTreeHostClient fake_client_;
   StubLayerTreeHostSingleThreadClient single_thread_client_;
   TestTaskGraphRunner task_graph_runner_;

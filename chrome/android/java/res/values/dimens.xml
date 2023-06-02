@@ -129,13 +129,9 @@ found in the LICENSE file.
     <!-- ModalDialogView dimensions -->
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
 
-    <!-- Full Screen Dimensions -->
-    <dimen name="fullscreen_toast_elevation">@dimen/custom_tabs_elevation</dimen>
-
     <!-- Should match toolbar_height_no_shadow -->
     <dimen name="control_container_height">56dp</dimen>
     <dimen name="custom_tabs_control_container_height">56dp</dimen>
-    <dimen name="fullscreen_notification_max_width">320dp</dimen>
 
     <!-- The combined height of the tab strip and toolbar. -->
     <dimen name="tab_strip_and_toolbar_height">56dp</dimen>
@@ -163,17 +159,19 @@ found in the LICENSE file.
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
     <dimen name="mvt_container_to_ntp_right_extra_margin_two_feed_tablet">16dp</dimen>
     <dimen name="mvt_container_bottom_margin_tablet">48dp</dimen>
-    <dimen name="tile_grid_layout_landscape_edge_margin_tablet">48dp</dimen>
-    <dimen name="tile_grid_layout_portrait_edge_margin_tablet">32dp</dimen>
-    <dimen name="tile_carousel_layout_max_interval_margin_tablet">64dp</dimen>
-    <dimen name="single_tab_card_top_and_bottom_margin_carousel_mvt_tablet">48dp</dimen>
-    <dimen name="single_tab_card_top_and_bottom_margin_grid_mvt_tablet">36dp</dimen>
+    <dimen name="tile_grid_layout_landscape_edge_margin_tablet">100dp</dimen>
+    <dimen name="tile_grid_layout_portrait_edge_margin_tablet">84dp</dimen>
+    <dimen name="tile_carousel_layout_max_interval_margin_tablet">48dp</dimen>
+    <dimen name="tile_carousel_layout_min_interval_margin_tablet">16dp</dimen>
+    <dimen name="single_tab_card_top_margin_tablet">48dp</dimen>
+    <dimen name="single_tab_card_bottom_margin_tablet">40dp</dimen>
     <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="ntp_logo_margin_bottom">23dp</dimen>
-    <dimen name="ntp_logo_height_shrink">85dp</dimen>
-    <dimen name="ntp_logo_vertical_margin_tablet">24dp</dimen>
+    <dimen name="ntp_logo_height_shrink">72dp</dimen>
+    <dimen name="ntp_logo_vertical_top_margin_tablet">36dp</dimen>
+    <dimen name="ntp_logo_vertical_bottom_margin_tablet">24dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_start_margin">44dp</dimen>
@@ -193,6 +191,7 @@ found in the LICENSE file.
     <dimen name="feed_header_icon_size">20dp</dimen>
     <dimen name="feed_header_tab_layout_height">40dp</dimen>
     <dimen name="feed_v2_header_menu_width">20dp</dimen>
+    <dimen name="feed_header_tab_list_view_top_bottom_margin">8dp</dimen>
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
@@ -230,19 +229,22 @@ found in the LICENSE file.
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
+     <dimen name="bookmark_favicon_display_size">20dp</dimen>
 
      <!-- Improved bookmark row properties. -->
      <!-- The size of the start image for compact rows.. -->
     <dimen name="improved_bookmark_start_image_size_compact">48dp</dimen>
      <!-- The size of the start image for visual rows.. -->
     <dimen name="improved_bookmark_start_image_size_visual">80dp</dimen>
-    <!-- The size of displayed favicons for each row. -->
-    <dimen name="improved_bookmark_favicon_display_size">24dp</dimen>
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
+    <dimen name="bookmark_search_hint_horizontal_padding">30dp</dimen>
 
+    <!-- Improved bookamrk save flow properties-->
+    <dimen name="improved_bookmark_save_flow_outer_radius">8dp</dimen>
+    <dimen name="improved_bookmark_save_flow_inner_radius">4dp</dimen>
+    <dimen name="improved_bookmark_save_flow_image_size">75dp</dimen>
 
     <!-- Bookmark visual refresh dimensions. -->
-     <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
      <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
 
     <!-- Bookmark widget dimensions -->

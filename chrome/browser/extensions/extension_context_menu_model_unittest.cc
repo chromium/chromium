@@ -90,6 +90,9 @@ const MenuEntries kPermissionsPage =
     ExtensionContextMenuModel::PAGE_ACCESS_PERMISSIONS_PAGE;
 const MenuEntries kLearnMore =
     ExtensionContextMenuModel::PAGE_ACCESS_LEARN_MORE;
+const MenuEntries kUninstall = ExtensionContextMenuModel::UNINSTALL;
+const MenuEntries kPolicyInstalled =
+    ExtensionContextMenuModel::POLICY_INSTALLED;
 
 namespace {
 
@@ -400,7 +403,8 @@ ExtensionContextMenuModelTest::GetPageAccessCommandState(
     int command) const {
   // Check this method is called only for submenu page access commands.
   DCHECK(command == kOnClick || command == kOnSite || command == kOnAllSites ||
-         command == kLearnMore || command == kPermissionsPage);
+         command == kLearnMore || command == kPermissionsPage ||
+         command == kPolicyInstalled);
 
   // Every page access command is absent if there is no page access submenu.
   if (!HasPageAccessSubmenu(menu))
@@ -467,31 +471,35 @@ TEST_F(ExtensionContextMenuModelTest, RequiredInstallationsDisablesItems) {
       AddExtension("extension", manifest_keys::kPageAction,
                    ManifestLocation::kExternalPolicy);
 
-  ExtensionContextMenuModel menu(extension, GetBrowser(),
-                                 ExtensionContextMenuModel::PINNED, nullptr,
-                                 true, ContextMenuSource::kToolbarAction);
-
   ExtensionSystem* system = ExtensionSystem::Get(profile());
   system->management_policy()->UnregisterAllProviders();
 
-  // Uninstallation should be, by default, enabled.
-  EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::UNINSTALL),
-            CommandState::kEnabled);
+  {
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+
+    // Uninstallation should be enabled when all policy provider were
+    // unregistered.
+    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kEnabled);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kAbsent);
+  }
 
   TestManagementPolicyProvider policy_provider(
       TestManagementPolicyProvider::PROHIBIT_MODIFY_STATUS);
   system->management_policy()->RegisterProvider(&policy_provider);
 
-  // If there's a policy provider that requires the extension stay enabled, then
-  // uninstallation should be disabled.
-  EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::UNINSTALL),
-            CommandState::kDisabled);
-  size_t uninstall_index =
-      menu.GetIndexOfCommandId(ExtensionContextMenuModel::UNINSTALL).value();
-  // There should also be an icon to visually indicate why uninstallation is
-  // forbidden.
-  ui::ImageModel icon = menu.GetIconAt(uninstall_index);
-  EXPECT_FALSE(icon.IsEmpty());
+  {
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+
+    // If there's a policy provider that requires the extension stay enabled,
+    // the uninstall item should be hidden and instead should display the
+    // policy install disabled item.
+    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
+  }
 
   // Don't leave |policy_provider| dangling.
   system->management_policy()->UnregisterProvider(&policy_provider);
@@ -1971,6 +1979,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
        PageAccessItemsVisibilityBasedOnSiteSettings) {
+  bool is_feature_enabled = GetParam();
   InitializeEmptyExtensionService();
 
   const Extension* extension =
@@ -1983,8 +1992,8 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
 
   {
     // By default, the site permission is set to "customize by extension".
-    // Verify page access submenu is visible and enabled, and the "learn more"
-    // item is in in the submenu.
+    // Verify "page access" submenu item and "permissions page" item are visible
+    // and enabled.
     ExtensionContextMenuModel menu(extension, GetBrowser(),
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
@@ -1994,16 +2003,16 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
               CommandState::kAbsent);
     EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
               CommandState::kEnabled);
-    EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kAbsent);
-    EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
-              CommandState::kEnabled);
-    // The "permissions page" item is in the submenu only if the feature is
-    // enabled.
-    EXPECT_EQ(GetCommandState(menu, kPermissionsPage), CommandState::kAbsent);
-    CommandState permission_page_state =
-        GetParam() ? CommandState::kEnabled : CommandState::kAbsent;
-    EXPECT_EQ(GetPageAccessCommandState(menu, kPermissionsPage),
-              permission_page_state);
+    if (is_feature_enabled) {
+      EXPECT_EQ(GetCommandState(menu, kPermissionsPage),
+                CommandState::kEnabled);
+      EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+                CommandState::kAbsent);
+    } else {
+      EXPECT_EQ(GetCommandState(menu, kPermissionsPage), CommandState::kAbsent);
+      EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+                CommandState::kEnabled);
+    }
   }
 
   // User site settings are only taken into account for site access computations
@@ -2022,21 +2031,19 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
 
-    if (GetParam()) {
-      // Verify "block all extensions" item is
-      // visible and disabled, and the "learn more" and "permissions page" item
-      // are in the context menu.
+    if (is_feature_enabled) {
+      // Verify "block all extensions" item is visible and disabled, and
+      // "permissions page" is enabled in the context menu. "learn more" is
+      // never visible.
       EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions),
                 CommandState::kAbsent);
       EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions),
                 CommandState::kDisabled);
       EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
                 CommandState::kAbsent);
-      EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kEnabled);
-      EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
-                CommandState::kAbsent);
       EXPECT_EQ(GetCommandState(menu, kPermissionsPage),
                 CommandState::kEnabled);
+      EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kAbsent);
       EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
                 CommandState::kAbsent);
     } else {
@@ -2057,6 +2064,58 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
       EXPECT_EQ(GetPageAccessCommandState(menu, kPermissionsPage),
                 CommandState::kAbsent);
     }
+  }
+}
+
+TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
+       PageAccessItemsVisibility_PolicyInstalled) {
+  bool is_feature_enabled = GetParam();
+  InitializeEmptyExtensionService();
+
+  const Extension* enterprise_extension = AddExtensionWithHostPermission(
+      "extension", manifest_keys::kBrowserAction,
+      ManifestLocation::kExternalPolicy, "<all_urls>");
+
+  // Add a tab to the browser.
+  const GURL url("http://www.example.com/");
+  AddTab(url);
+
+  ExtensionContextMenuModel menu(enterprise_extension, GetBrowser(),
+                                 ExtensionContextMenuModel::PINNED, nullptr,
+                                 true, ContextMenuSource::kToolbarAction);
+
+  // By default, user can customize site access by extension and the 'grant all
+  // extensions' and 'block all extensions' are not visible.
+  EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions), CommandState::kAbsent);
+  EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions), CommandState::kAbsent);
+
+  if (is_feature_enabled) {
+    // Page access submenu is enabled and has all its items disabled, since
+    // the policy installed extension has site access but user cannot change it.
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
+              CommandState::kEnabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnClick),
+              CommandState::kDisabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnSite),
+              CommandState::kDisabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnAllSites),
+              CommandState::kDisabled);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
+    // Policy item is in the page access submenu.
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kDisabled);
+  } else {
+    // Page access submenu is hidden since user cannot change the site access of
+    // the policy installed extension.
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnClick), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnSite), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnAllSites),
+              CommandState::kAbsent);
+    // Policy item is in the context menu.
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
   }
 }
 
@@ -2093,8 +2152,7 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
     return;
   }
 
-  EXPECT_EQ(GetPageAccessCommandState(menu, kPermissionsPage),
-            CommandState::kEnabled);
+  EXPECT_EQ(GetCommandState(menu, kPermissionsPage), CommandState::kEnabled);
   menu.ExecuteCommand(kPermissionsPage, 0);
 
   EXPECT_EQ(browser->tab_strip_model()->count(), 2);
@@ -2131,6 +2189,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest,
        PageAccessItemsVisibilityBasedOnSiteSettings) {
+  bool is_feature_enabled = GetParam();
   InitializeEmptyExtensionService();
 
   const Extension* extension =
@@ -2143,8 +2202,7 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest,
 
   {
     // By default, the site permission is set to "customize by extension".
-    // Verify page access submenu is visible and enabled, and the "learn more"
-    // item is in in the submenu.
+    // Verify "page access" submenu item is visible and enabled.
     ExtensionContextMenuModel menu(extension, GetBrowser(),
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
@@ -2154,16 +2212,16 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest,
               CommandState::kAbsent);
     EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
               CommandState::kEnabled);
-    EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kAbsent);
-    EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
-              CommandState::kEnabled);
-    // The "permissions page" item is in the submenu only if the feature is
-    // enabled.
-    EXPECT_EQ(GetCommandState(menu, kPermissionsPage), CommandState::kAbsent);
-    CommandState permission_page_state =
-        GetParam() ? CommandState::kEnabled : CommandState::kAbsent;
-    EXPECT_EQ(GetPageAccessCommandState(menu, kPermissionsPage),
-              permission_page_state);
+    if (is_feature_enabled) {
+      EXPECT_EQ(GetCommandState(menu, kPermissionsPage),
+                CommandState::kEnabled);
+      EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+                CommandState::kAbsent);
+    } else {
+      EXPECT_EQ(GetCommandState(menu, kPermissionsPage), CommandState::kAbsent);
+      EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+                CommandState::kEnabled);
+    }
   }
 
   // User site settings are only taken into account for site access computations
@@ -2182,20 +2240,19 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsAndPermittedSitesTest,
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
 
-    if (GetParam()) {
-      // Verify "grant all extensions" item is visible and disabled, and the
-      // "learn more" and "permissions page" item are in the context menu.
+    if (is_feature_enabled) {
+      // Verify "grant all extensions" item is visible and disabled, and
+      // "permissions page" is enabled in the context menu. "learn more" is
+      // never visible.
       EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions),
                 CommandState::kDisabled);
       EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions),
                 CommandState::kAbsent);
       EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
                 CommandState::kAbsent);
-      EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kEnabled);
-      EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
-                CommandState::kAbsent);
       EXPECT_EQ(GetCommandState(menu, kPermissionsPage),
                 CommandState::kEnabled);
+      EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kAbsent);
       EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
                 CommandState::kAbsent);
     } else {

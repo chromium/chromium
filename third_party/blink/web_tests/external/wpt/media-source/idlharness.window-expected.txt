@@ -17,6 +17,7 @@ PASS MediaSource interface object name
 PASS MediaSource interface: existence and properties of interface prototype object
 PASS MediaSource interface: existence and properties of interface prototype object's "constructor" property
 PASS MediaSource interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaSource interface: member handle
 PASS MediaSource interface: attribute sourceBuffers
 PASS MediaSource interface: attribute activeSourceBuffers
 PASS MediaSource interface: attribute readyState
@@ -30,10 +31,10 @@ PASS MediaSource interface: operation removeSourceBuffer(SourceBuffer)
 PASS MediaSource interface: operation endOfStream(optional EndOfStreamError)
 PASS MediaSource interface: operation setLiveSeekableRange(double, double)
 PASS MediaSource interface: operation clearLiveSeekableRange()
-PASS MediaSource interface: operation getHandle()
 PASS MediaSource interface: operation isTypeSupported(DOMString)
 PASS MediaSource must be primary interface of mediaSource
 PASS Stringification of mediaSource
+PASS MediaSource interface: mediaSource must not have property "handle"
 PASS MediaSource interface: mediaSource must inherit property "sourceBuffers" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "activeSourceBuffers" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "readyState" with the proper type
@@ -51,7 +52,6 @@ PASS MediaSource interface: calling endOfStream(optional EndOfStreamError) on me
 PASS MediaSource interface: mediaSource must inherit property "setLiveSeekableRange(double, double)" with the proper type
 PASS MediaSource interface: calling setLiveSeekableRange(double, double) on mediaSource with too few arguments must throw TypeError
 PASS MediaSource interface: mediaSource must inherit property "clearLiveSeekableRange()" with the proper type
-PASS MediaSource interface: mediaSource must inherit property "getHandle()" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "isTypeSupported(DOMString)" with the proper type
 PASS MediaSource interface: calling isTypeSupported(DOMString) on mediaSource with too few arguments must throw TypeError
 PASS MediaSourceHandle interface: existence and properties of interface object

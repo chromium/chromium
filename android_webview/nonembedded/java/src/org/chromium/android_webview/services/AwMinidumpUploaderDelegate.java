@@ -10,7 +10,7 @@ import android.net.ConnectivityManager;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
+import org.chromium.android_webview.nonembedded.crash.SystemWideCrashDirectories;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;

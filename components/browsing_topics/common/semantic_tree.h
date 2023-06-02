@@ -18,10 +18,21 @@ namespace browsing_topics {
 // message ids to use to get the topic names.
 class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
  public:
-  static constexpr int kHighestSupportedTaxonomyVersion = 1;
+  static constexpr int kNumTopics = 349;
+
   SemanticTree();
   SemanticTree(const SemanticTree& other) = delete;
   ~SemanticTree();
+
+  // Get a topic in taxonomy `taxonomy_version`. The result is deterministic.
+  // `random_topic_index_decision` % the taxonomy size is used to select
+  // the index of the topic in the taxonomy.
+  Topic GetRandomTopic(int taxonomy_version,
+                       uint64_t random_topic_index_decision);
+
+  // Get whether the `taxonomy_version` is supported by the semantic tree.
+  bool IsTaxonomySupported(int taxonomy_version);
+
   std::vector<Topic> GetDescendantTopics(const Topic& topic);
   std::vector<Topic> GetAncestorTopics(const Topic& topic);
   // Get the most recent localized name message id as of the version in

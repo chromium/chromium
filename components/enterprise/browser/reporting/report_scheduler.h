@@ -180,7 +180,7 @@ class ReportScheduler {
   // Policy value watcher
   PrefChangeRegistrar pref_change_registrar_;
 
-  raw_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> cloud_policy_client_;
 
   base::WallClockTimer request_timer_;
 

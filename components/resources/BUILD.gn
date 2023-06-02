@@ -23,6 +23,7 @@ group("resources") {
     ":components_resources",
     ":components_scaled_resources",
     ":dev_ui_components_resources",
+    "../flags_ui/resources:resources",
   ]
 }
 
@@ -54,7 +55,6 @@ grit("components_resources") {
 
   deps = [
     ":about_credits",
-    "//components/flags_ui/resources:build_ts",
     "//components/security_interstitials/content/resources:build_ts",
     "//components/version_ui/resources:build_ts",
   ]

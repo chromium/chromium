@@ -194,6 +194,11 @@ class CSSStyleGenerator(BaseGenerator):
 
     def CSSColorVar(self, name, color, mode, unscoped=False):
         '''Returns the CSS color representation given a color name and color'''
+        if unscoped:
+            var_name = self.ToCSSVarNameUnscoped(name)
+        else:
+            var_name = self.ToCSSVarName(name)
+
         if isinstance(color, ColorVar):
             return 'var(%s)' % self.ToCSSVarName(color.var)
 
@@ -202,14 +207,10 @@ class CSSStyleGenerator(BaseGenerator):
 
         if isinstance(color,
                       ((ColorRGB, ColorRGBVar))) and color.opacity.a != 1:
-            if unscoped:
-                var_name = self.ToCSSVarNameUnscoped(name)
-            else:
-                var_name = self.ToCSSVarName(name)
             return 'rgba(var(%s-rgb), %s)' % (var_name,
                                               self._CSSOpacity(color.opacity))
 
-        return 'rgb(var(%s-rgb))' % self.ToCSSVarName(name)
+        return 'rgb(var(%s-rgb))' % var_name
 
     def NeedsRGBVariant(self, color):
         return not isinstance(color, ColorBlend)

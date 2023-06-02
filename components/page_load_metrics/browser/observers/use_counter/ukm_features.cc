@@ -116,6 +116,12 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
            WebFeature::kLazyLoadFrameLoadingAttributeEager,
            WebFeature::kLazyLoadImageLoadingAttributeLazy,
            WebFeature::kLazyLoadImageLoadingAttributeEager,
+           WebFeature::kDOMSubtreeModifiedEvent,
+           WebFeature::kDOMNodeInsertedEvent,
+           WebFeature::kDOMNodeRemovedEvent,
+           WebFeature::kDOMNodeRemovedFromDocumentEvent,
+           WebFeature::kDOMNodeInsertedIntoDocumentEvent,
+           WebFeature::kDOMCharacterDataModifiedEvent,
            WebFeature::kWebOTP,
            WebFeature::kBaseWithCrossOriginHref,
            WebFeature::kWakeLockAcquireScreenLock,
@@ -291,6 +297,9 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
            WebFeature::kServiceWorkerBypassFetchHandlerForMainResource,
            WebFeature::
                kServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial,
-           WebFeature::kCascadedCSSZoomNotEqualToOne}));
+           WebFeature::kCascadedCSSZoomNotEqualToOne,
+           WebFeature::kV8Window_QueryLocalFonts_Method,
+           WebFeature::kHiddenUntilFoundAttribute,
+           WebFeature::kDanglingMarkupInWindowName}));
   return *opt_in_features;
 }

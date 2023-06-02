@@ -82,24 +82,16 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  const LegalMessageLines message_lines = controller->GetLegalMessageLines();
 
-  if (!message_lines.empty()) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableNewSaveCardBubbleUi)) {
-      legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
-          message_lines, base::UTF8ToUTF16(controller->GetAccountInfo().email),
-          GetProfileAvatar(controller->GetAccountInfo()),
-          base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
-                              base::Unretained(this))));
-    } else {
-      legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
-          message_lines, /*user_email=*/absl::nullopt,
-          /*user_avatar=*/absl::nullopt,
-          base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
-                              base::Unretained(this))));
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+    std::unique_ptr<LegalMessageView> legal_message_view =
+        CreateLegalMessageView();
+
+    if (legal_message_view != nullptr) {
+      legal_message_view_ = SetFootnoteView(std::move(legal_message_view));
+      InitFootnoteView(legal_message_view_);
     }
-    InitFootnoteView(legal_message_view_);
   }
 
   Profile* profile =
@@ -233,7 +225,7 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
             views::style::CONTEXT_DIALOG_BODY_TEXT,
             views::style::STYLE_SECONDARY);
     cardholder_name_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    cardholder_name_label_row->AddChildView(cardholder_name_label.release());
+    cardholder_name_label_row->AddChildView(std::move(cardholder_name_label));
 
     // Prepare the prefilled cardholder name.
     std::u16string prefilled_name =
@@ -256,7 +248,7 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
           views::BubbleBorder::Arrow::TOP_LEFT);
       cardholder_name_tooltip->SetID(DialogViewId::CARDHOLDER_NAME_TOOLTIP);
       cardholder_name_label_row->AddChildView(
-          cardholder_name_tooltip.release());
+          std::move(cardholder_name_tooltip));
     }
 
     // Set up cardholder name textfield.
@@ -278,15 +270,51 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     cardholder_name_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-    cardholder_name_view->AddChildView(cardholder_name_label_row.release());
+    cardholder_name_view->AddChildView(std::move(cardholder_name_label_row));
     cardholder_name_view->AddChildView(cardholder_name_textfield_.get());
-    view->AddChildView(cardholder_name_view.release());
+    view->AddChildView(std::move(cardholder_name_view));
   }
 
-  if (controller()->ShouldRequestExpirationDateFromUser())
-    view->AddChildView(CreateRequestExpirationDateView().release());
+  if (controller()->ShouldRequestExpirationDateFromUser()) {
+    view->AddChildView(CreateRequestExpirationDateView());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+    std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView();
+
+    if (legal_message_view != nullptr) {
+      legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
+      view->AddChildView(std::move(legal_message_view));
+    }
+  }
 
   return view;
+}
+
+std::unique_ptr<LegalMessageView>
+SaveCardOfferBubbleViews::CreateLegalMessageView() {
+  const LegalMessageLines message_lines = controller()->GetLegalMessageLines();
+
+  if (message_lines.empty()) {
+    return nullptr;
+  }
+
+  LegalMessageView::LinkClickedCallback LegalMessageCallBack =
+      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                          base::Unretained(this));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewSaveCardBubbleUi)) {
+    return (std::make_unique<LegalMessageView>(
+        message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
+        GetProfileAvatar(controller()->GetAccountInfo()),
+        LegalMessageCallBack));
+  }
+
+  return (std::make_unique<LegalMessageView>(
+      message_lines, /*user_email=*/absl::nullopt,
+      /*user_avatar=*/absl::nullopt, LegalMessageCallBack));
 }
 
 std::unique_ptr<views::View>
@@ -342,8 +370,8 @@ SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   expiration_date_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  expiration_date_view->AddChildView(expiration_date_label.release());
-  expiration_date_view->AddChildView(input_row.release());
+  expiration_date_view->AddChildView(std::move(expiration_date_label));
+  expiration_date_view->AddChildView(std::move(input_row));
 
   return expiration_date_view;
 }

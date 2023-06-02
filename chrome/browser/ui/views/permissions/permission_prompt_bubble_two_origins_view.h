@@ -9,6 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/favicon_base/favicon_types.h"
+#include "ui/views/controls/styled_label.h"
 
 // Bubble that prompts the user to grant or deny a permission request from from
 // a pair of origins.
@@ -19,7 +20,7 @@
 // | ------------------------------------------ |
 // | Favicons from the two origins              |
 // | ------------------------------------------ |
-// | Extra text                                 |
+// | Optional description with an optional link |
 // | ------------------------------------------ |
 // |                        [ Block ] [ Allow ] |
 // ----------------------------------------------
@@ -50,6 +51,26 @@ class PermissionPromptBubbleTwoOriginsView
       const favicon_base::FaviconRawBitmapResult& favicon_result);
   void OnRequestingOriginFaviconLoaded(
       const favicon_base::FaviconRawBitmapResult& favicon_result);
+
+  void MaybeAddDescription();
+
+  /**
+   * Returns a string for the description associated with the request in
+   * |delegate|. The description can have a link which is stylized via
+   * |link_range| and |link_style|.
+   */
+  absl::optional<std::u16string> GetDescription(
+      gfx::Range& link_range,
+      views::StyledLabel::RangeStyleInfo& link_style);
+
+  /**
+   * Returns a string for the description for a |RequestType::kStorageAccess|.
+   * The link in the description is stylized via |link_range| and |link_style|.
+   */
+  std::u16string GetDescriptionStorageAccess(
+      gfx::Range& link_range,
+      views::StyledLabel::RangeStyleInfo& link_style);
+  void HelpCenterLinkClicked(const ui::Event& event);
 
   void MaybeShow();
 

@@ -15,6 +15,7 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/ambient_weather_controller.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
@@ -377,6 +378,24 @@ class ASH_EXPORT AmbientController
   bool is_receiving_pretarget_events_ = false;
 
   std::unique_ptr<AmbientSessionMetricsRecorder> session_metrics_recorder_;
+
+  // The policy handler for downloading policy set images. This lives in the
+  // ambient controller because it needs to outlive the disable policy update
+  // so that it is able to actually clean up the images when the policy is
+  // disabled.
+  //
+  // The sequence of operations are as follows which happen on policy update
+  // 1. Admin sets ambient mode policy to disabled
+  // 2. Ambient mode is dismissed
+  // 3. ManagedSlideshowUiLauncher is destroyed
+  // 4. Other policy values (photo interval, inactivity time, images) are unset
+  //    and sent as part of the policy update.
+  //
+  // Now at point 4 the policy handler needs to be alive so that it can react to
+  // the unset images call and clean up the images from disk.
+  std::unique_ptr<ScreensaverImagesPolicyHandler>
+      screensaver_images_policy_handler_;
+
   std::unique_ptr<AmbientUiLauncher> ambient_ui_launcher_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};

@@ -6,11 +6,26 @@ module ash.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "ui/events/ash/mojom/modifier_key.mojom";
+import "ui/events/ash/mojom/simulate_right_click_modifier.mojom";
+import "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom";
 
 // The current status of the enterprise policy for the stated setting.
 enum PolicyStatus {
   kManaged,
   kRecommended
+};
+
+// Contains each of the 6-pack keys as well as which shortcut modifier each key
+// maps to. Each key defaults to the `kSearch` modifier to avoid Alt-based
+// issues (e.g. Any application that tries to use Alt+Down is broken on
+// ChromeOS).
+struct SixPackKeyInfo {
+  ui.mojom.SixPackShortcutModifier home = kSearch;
+  ui.mojom.SixPackShortcutModifier page_up = kSearch;
+  ui.mojom.SixPackShortcutModifier page_down = kSearch;
+  ui.mojom.SixPackShortcutModifier del = kSearch;
+  ui.mojom.SixPackShortcutModifier insert = kSearch;
+  ui.mojom.SixPackShortcutModifier end = kSearch;
 };
 
 // Represents an enterprise policy that has a status via `PolicyStatus` and a
@@ -69,6 +84,7 @@ struct KeyboardSettings {
   map<ui.mojom.ModifierKey, ui.mojom.ModifierKey> modifier_remappings;
   bool top_row_are_fkeys;
   bool suppress_meta_fkey_rewrites;
+  SixPackKeyInfo? six_pack_key_remappings;
 };
 
 // Contains all information needed to display, apply, and update mouse
@@ -147,6 +163,8 @@ struct TouchpadSettings {
   uint8 haptic_sensitivity;
   // Toggles whether haptic feedback is enabled for the touchpad at all.
   bool haptic_enabled;
+  // The modifier used to simulate right-click with keyboard and touchpad.
+  ui.mojom.SimulateRightClickModifier simulate_right_click;
 };
 
 // Contains all information needed to display, apply, and update pointing stick

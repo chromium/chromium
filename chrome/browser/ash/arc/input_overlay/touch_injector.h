@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -30,6 +31,7 @@ namespace arc::input_overlay {
 
 class Action;
 class ArcInputOverlayManagerTest;
+class TouchInjectorObserver;
 
 // If the following touch move sent immediately, the touch move event is not
 // processed correctly by apps. This is a delayed time to send touch move
@@ -116,6 +118,9 @@ class TouchInjector : public ui::EventRewriter {
   void RemoveAction(Action* action);
   // Remove action view for |action|.
   void RemoveActionView(Action* action);
+
+  void AddObserver(TouchInjectorObserver* observer);
+  void RemoveObserver(TouchInjectorObserver* observer);
 
   // UMA stats.
   void RecordMenuStateOnLaunch();
@@ -250,6 +255,12 @@ class TouchInjector : public ui::EventRewriter {
   void RemoveDefaultActionsAndViews(
       std::vector<Action*>& added_default_actions);
 
+  // For observers.
+  void NotifyActionAdded(const Action& action);
+  void NotifyActionRemoved(const Action& action);
+  void NotifyActionTypeChanged(const Action& action, const Action& new_action);
+  void NotifyActionUpdated(const Action& action);
+
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
@@ -307,6 +318,8 @@ class TouchInjector : public ui::EventRewriter {
   // Default actions wont be removed from |actions_|.
   std::vector<Action*> pending_add_default_actions_;
   std::vector<Action*> pending_delete_default_actions_;
+
+  base::ReentrantObserverList<TouchInjectorObserver> observers_;
 
   // Callback when saving proto file.
   OnSaveProtoFileCallback save_file_callback_;

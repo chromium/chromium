@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin.</translation>
 <translation id="2736805085127235148">Hazırda Chrome bildirişləri cihaz ayarlarında deaktivdir.</translation>
 <translation id="2767464022270041271">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Google Parol Meneceri onları yoxlaya bilər.</translation>
+<translation id="2840432500933227975">iOS-da Chrome ayarlarını açın, sonra "Defolt Brauzer TƏTBİQİ" üzərinə toxunun və Chrome seçin.</translation>
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> seçin</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chrome datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Yəni, Chrome hər dəfə masaüstü saytını tələb edəcək.</translation>
 <translation id="3706101708757577809">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="3720541637541300822">Chrome bağlandıqda Anonim Tablar kilidlənsin</translation>
+<translation id="3827545470516145620">Bu cihazda standart təhlükəsizlik qoruması əldə edirsiniz</translation>
 <translation id="384394811301901750">Google Chrome indi kameranızı istifadə edə bilməz</translation>
 <translation id="3980220367029651214">Sinxronizasiya hesablarını <ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına keçirirsiniz. Mövcud Chrome datanız <ph name="DOMAIN" /> tərəfindən idarə olunur. Datanızı bu cihazdan siləcək, lakin data <ph name="USER_EMAIL1" /> hesabında qalacaq.</translation>
 <translation id="3984746313391923992">Təşkilatınız Chrome'dan çıxmış vəziyyətdə qalmağınızı tələb edir.</translation>
@@ -150,7 +152,6 @@ Bunları nəzərə alın:
   • Chrome xəta ilə üzləşərsə, xəta haqqında təfərrüatlar bəzi şəxsi məlumatları ehtiva edə bilər.
 
   • Sinxronizasiyanı aktiv etsəniz, göstəricilərə ziyarət etdiyiniz keçidlər haqqında məlumat da daxil ola bilər.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Bu Chrome profili üçün standart qoruma əldə edirsiniz</translation>
 <translation id="9112744793181547300">Chrome defolt olaraq ayarlansın?</translation>
 <translation id="9122931302567044771">Yəni, Chrome hər dəfə mobil saytı tələb edəcək.</translation>
 </translationbundle>

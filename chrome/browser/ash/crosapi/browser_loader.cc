@@ -76,16 +76,12 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
   return true;
 }
 
-void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
-                                       bool load_stateful_lacros) {
+void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback) {
   LOG(WARNING) << "rootfs lacros is selected";
 
   rootfs_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), LacrosSelection::kRootfs));
-  if (load_stateful_lacros) {
-    stateful_lacros_loader_->Load({});
-  }
 }
 
 void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback) {
@@ -116,8 +112,6 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           ash::switches::kLacrosChromePath);
   if (!lacros_chrome_path.empty()) {
-    // TODO(cbug.com/1429137): LacrosSelection::kStateful is not appropriate
-    // here. We should introduce unknown state and set it here.
     OnLoadComplete(std::move(callback), LacrosSelection::kDeployedLocally,
                    base::Version(), lacros_chrome_path);
     return;
@@ -132,8 +126,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     // too.
     switch (lacros_selection.value()) {
       case browser_util::LacrosSelection::kRootfs:
-        SelectRootfsLacros(std::move(callback),
-                           /*load_stateful_lacros=*/false);
+        SelectRootfsLacros(std::move(callback));
         return;
       case browser_util::LacrosSelection::kStateful:
         SelectStatefulLacros(std::move(callback));
@@ -219,7 +212,7 @@ void BrowserLoader::OnLoadVersions(
 
   switch (selected->selection) {
     case LacrosSelection::kRootfs: {
-      SelectRootfsLacros(std::move(callback), /*load_stateful_lacros=*/true);
+      SelectRootfsLacros(std::move(callback));
       break;
     }
     case LacrosSelection::kStateful: {

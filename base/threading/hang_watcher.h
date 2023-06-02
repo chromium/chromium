@@ -24,7 +24,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/template_util.h"
@@ -99,9 +98,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] WatchHangsInScope {
 
 #if DCHECK_IS_ON()
   // The previous WatchHangsInScope created on this thread.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION WatchHangsInScope* previous_watch_hangs_in_scope_;
+  raw_ptr<WatchHangsInScope> previous_watch_hangs_in_scope_;
 #endif
 };
 

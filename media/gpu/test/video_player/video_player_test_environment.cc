@@ -13,7 +13,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_player/decoder_wrapper.h"
 
 namespace media {
@@ -34,10 +34,10 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     const FrameOutputConfig& frame_output_config,
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features) {
-  auto video = std::make_unique<media::test::Video>(
+  auto video = VideoBitstream::Create(
       video_path.empty() ? base::FilePath(kDefaultTestVideoPath) : video_path,
       video_metadata_path);
-  if (!video->Load()) {
+  if (!video) {
     LOG(ERROR) << "Failed to load " << video_path;
     return nullptr;
   }
@@ -67,7 +67,7 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
 }
 
 VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
-    std::unique_ptr<media::test::Video> video,
+    std::unique_ptr<media::test::VideoBitstream> video,
     ValidatorType validator_type,
     const DecoderImplementation implementation,
     bool linear_output,
@@ -85,7 +85,7 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
 
 VideoPlayerTestEnvironment::~VideoPlayerTestEnvironment() = default;
 
-const media::test::Video* VideoPlayerTestEnvironment::Video() const {
+const media::test::VideoBitstream* VideoPlayerTestEnvironment::Video() const {
   return video_.get();
 }
 

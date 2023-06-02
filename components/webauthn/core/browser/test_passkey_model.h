@@ -1,0 +1,32 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_TEST_PASSKEY_MODEL_H_
+#define COMPONENTS_WEBAUTHN_CORE_BROWSER_TEST_PASSKEY_MODEL_H_
+
+#include <string>
+
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_model.h"
+
+class TestPasskeyModel : public PasskeyModel {
+ public:
+  TestPasskeyModel();
+  ~TestPasskeyModel() override;
+
+  // PasskeyModel:
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetModelTypeControllerDelegate() override;
+  base::flat_set<std::string> GetAllSyncIds() const override;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
+      const override;
+  std::string AddNewPasskeyForTesting(
+      sync_pb::WebauthnCredentialSpecifics passkey) override;
+  bool DeletePasskey(const std::string& credential_id) override;
+
+ private:
+  std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_;
+};
+
+#endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER__TEST_PASSKEY_MODEL_H_

@@ -60,7 +60,6 @@
 <translation id="1499943022354839699">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Κεντρικός υπολογιστής</translation>
 <translation id="1521655867290435174">Υπολογιστικά φύλλα Google</translation>
-<translation id="1538729222189715449">Άνοιγμα αρχείων Linux…</translation>
 <translation id="1547964879613821194">Αγγλικά Καναδά</translation>
 <translation id="1556189134700913550">Εφαρμογή σε όλα</translation>
 <translation id="1561842594491319104">Συσκευές Chrome</translation>
@@ -109,6 +108,7 @@
 <translation id="1838709767668011582">Ιστότοπος Google</translation>
 <translation id="1853795129690976061">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux.</translation>
 <translation id="1864756863218646478">Δεν ήταν δυνατή η εύρεση του αρχείου.</translation>
+<translation id="1877377730633446520">Θα χρησιμοποιηθούν περίπου <ph name="REQUIRED_SPACE" />. Προς το παρόν, ο διαθέσιμος χώρος ανέρχεται στα <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Σύνδεση</translation>
 <translation id="1920670151694390848">Μεταγραφή στα Μαλαγιαλαμικά</translation>
 <translation id="1920798810075583923">Καρπούζι</translation>
@@ -121,6 +121,7 @@
 <translation id="1972984168337863910">Ανάπτυξη πλαισίων σχολίων αρχείων</translation>
 <translation id="1995337122023280937">Μετάβαση στην τοποθεσία αρχείου</translation>
 <translation id="2001796770603320721">Διαχείριση στο Drive</translation>
+<translation id="2004942826429452291">Τα αρχεία θα αποθηκευτούν στο cloud και σε αυτό το Chromebook.</translation>
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="2025955442973426285">Τιγκρίνια</translation>
 <translation id="2037845485764049925">Ρωσικά</translation>
@@ -131,6 +132,7 @@
 <translation id="2084108471225856927">Ρυθμίσεις συσκευής</translation>
 <translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
+<translation id="2089751716171649322">Εύκολη πρόσβαση στα αρχεία σας στο Google Drive όταν είστε εκτός σύνδεσης</translation>
 <translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> στοιχεία θα διαγραφούν και δεν θα είστε σε θέση να τα επαναφέρετε.</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
@@ -149,7 +151,6 @@
 <translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Η κρυφή μνήμη του Google Drive διαγράφηκε.</translation>
 <translation id="2239068707900391003">Άτομο με καφέ</translation>
 <translation id="2251368349685848079">Επαναφορά από τον κάδο</translation>
 <translation id="2278133026967558505">Πρόσβαση στο αρχείο από όλους τους ιστοτόπους και τα URL</translation>
@@ -304,6 +305,7 @@
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3486821258960016770">Μογγολικά</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> σφάλματα.</translation>
+<translation id="3501954296166022751">Τα αρχεία σας στο Google Drive είναι διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="3509680540198371098">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="3511705761158917664">Προετοιμασία για συγχρονισμό <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="3522708245912499433">Πορτογαλικά</translation>
@@ -337,7 +339,6 @@
 <translation id="3727148787322499904">Η αλλαγή αυτής της ρύθμισης θα επηρεάσει όλα τα κοινόχρηστα δίκτυα</translation>
 <translation id="3737576078404241332">Κατάργηση από την πλευρική γραμμή</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
-<translation id="3780536599611287598">Δεν έχετε άδεια για τη μετακίνηση αρχείων στον φάκελο "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Είστε εκτός σύνδεσης</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="3793469551756281394">Απομένουν περίπου <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />.</translation>
@@ -427,6 +428,7 @@
 <translation id="4462159676511157176">Προσαρμοσμένοι διακομιστές ονομάτων</translation>
 <translation id="4465725236958772856">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Διαχειριζόμενο από τον διαχειριστή σας, Σύνδεση</translation>
 <translation id="4470564870223067757">Σύνολο Χανγκίλ 2</translation>
+<translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4474142134969976028">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4477002475007461989">Ρουμανικά</translation>
 <translation id="4477219268485577442">Φωνητικό Βουλγαρικά</translation>
@@ -477,7 +479,6 @@
 <translation id="4804827417948292437">Αβοκάντο</translation>
 <translation id="4805966553127040832">Επαναφορά <ph name="COUNT" /> στοιχείων</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Ο οργανισμός σας απαιτεί μια επέκταση για να χρησιμοποιήσετε την ανώνυμη περιήγηση}other{Ο οργανισμός σας απαιτεί ορισμένες επεκτάσεις για να χρησιμοποιήσετε την ανώνυμη περιήγηση.}}</translation>
-<translation id="4823651846660089135">Η συσκευή είναι μόνο για ανάγνωση</translation>
 <translation id="4826849268470072925">Ταμίλ ITRANS</translation>
 <translation id="482932175346970750">Πληκτρολογήστε <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> στο πρόγραμμα περιήγησης</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -586,6 +587,7 @@
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5500122897333236901">Ισλανδικά</translation>
 <translation id="5508696409934741614">Τελείες</translation>
+<translation id="5519161320735100193">Ρυθμίσεις Google Drive</translation>
 <translation id="5522908512596376669">Η λίστα αρχείων έχει αλλάξει σε προβολή λίστας.</translation>
 <translation id="5524517123096967210">Δεν ήταν δυνατή η ανάγνωση του αρχείου.</translation>
 <translation id="5533102081734025921">Εικόνα <ph name="IMAGE_TYPE" /></translation>
@@ -632,6 +634,7 @@
 <translation id="5838451609423551646">Καταργήθηκαν όλες οι καταχωρίσεις από την επιλογή.</translation>
 <translation id="5838825566232597749">Διεθνές ΗΠΑ Workman</translation>
 <translation id="5845721951356578987">Νοσοκόμος</translation>
+<translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Αποτυχία αναζήτησης DHCP</translation>
 <translation id="5896749729057314184">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
@@ -689,7 +692,6 @@
 <translation id="6327785803543103246">Αυτόματη ανακάλυψη διακομιστή μεσολάβησης ιστού</translation>
 <translation id="6337014272874260727">Ξεκαρφίτσωμα από τα γρήγορα αρχεία</translation>
 <translation id="6339145975392024142">Διεθνές ΗΠΑ (PC)</translation>
-<translation id="6346310558342052870">Περιορισμένη πρόσβαση</translation>
 <translation id="6356685157277930264">Παράθυρο πληροφοριών αρχείων</translation>
 <translation id="6358884629796491903">Δράκος</translation>
 <translation id="636254897931573416">Μη έγκυρη τιμή αντιστοιχίας επιθήματος τομέα</translation>
@@ -881,6 +883,7 @@
 <translation id="7805768142964895445">Κατάσταση</translation>
 <translation id="7806708061868529807">Εβραϊκά</translation>
 <translation id="78104721049218340">Ταϊλανδικά με πληκτρολόγιο Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Σφάλμα κατά τη διαμόρφωση του δικτύου</translation>
 <translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
@@ -893,15 +896,18 @@
 <translation id="7903984238293908205">Κατακάνα</translation>
 <translation id="7908793776359722643">Η μορφοποίηση ενός διαμερίσματος θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτό. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Τα αρχεία στην ενότητα Το Drive μου θα συγχρονίζονται αυτόματα στο Chromebook, για να μπορείτε να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="7925247922861151263">Ο έλεγχος ΑΑΑ απέτυχε</translation>
 <translation id="7925686952655276919">Μη χρησιμοποιείτε δεδομένα για κινητά για συγχρονισμό</translation>
 <translation id="7928710562641958568">Εξαγωγή συσκευής</translation>
+<translation id="7933875256234974853">Προετοιμασία για συγχρονισμό αρχείων Drive…</translation>
 <translation id="7943385054491506837">Colemak ΗΠΑ</translation>
 <translation id="7953739707111622108">Δεν είναι δυνατό το άνοιγμα αυτής της συσκευής επειδή δεν αναγνωρίστηκε το σύστημα αρχείων της.</translation>
 <translation id="7969525169268594403">Σλοβενικά</translation>
 <translation id="7972920761225148017">Γαλλικά (Ελβετία)</translation>
 <translation id="7973962044839454485">Αποτυχία ελέγχου ταυτότητας PPP λόγω εσφαλμένου ονόματος χρήστη ή κωδικού πρόσβασης</translation>
 <translation id="7980421588063892270">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Colemak</translation>
+<translation id="7985008041109611710">Γίνεται συγχρονισμός <ph name="NUMBER_OF_FILES_SYNCING" /> αρχείων</translation>
 <translation id="8000066093800657092">Κανένα δίκτυο</translation>
 <translation id="8008366997883261463">Τεριέ Τζακ Ράσελ</translation>
 <translation id="8028993641010258682">Μέγεθος</translation>
@@ -1029,6 +1035,7 @@
 </translation>
 <translation id="8949925099261528566">Συνδέθηκε, χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
+<translation id="8971742885766657349">Συγχρονισμός - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Κινεζικά (Παραδοσιακά) Pinyin</translation>
 <translation id="8998871447376656508">Ο ελεύθερος χώρος στο Google Drive δεν επαρκεί για την ολοκλήρωση της μεταφόρτωσης.</translation>
 <translation id="9003940392834790328">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή, Λεπτομέρειες</translation>
@@ -1062,6 +1069,7 @@
 <translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="9219908252191632183">Σεληνιακό τοπίο</translation>
+<translation id="937795003075802289">Γίνεται συγχρονισμός 1 αρχείου</translation>
 <translation id="938470336146445890">Εγκαταστήστε ένα πιστοποιητικό χρήστη.</translation>
 <translation id="939736085109172342">Νέος φάκελος</translation>
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>

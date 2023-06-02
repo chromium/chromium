@@ -545,7 +545,12 @@ void AssistiveSuggester::ProcessExternalSuggestions(
   if (IsTopResultMultiWord(suggestions)) {
     current_suggester_ = &multi_word_suggester_;
     current_suggester_->OnExternalSuggestionsUpdated(suggestions, context);
-    RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
+    // The multi word suggester may not show the suggestions we pass to it. The
+    // suggestions received here may be stale and not valid given the current
+    // internal state of the multi word suggester.
+    if (current_suggester_->HasSuggestions()) {
+      RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
+    }
   }
 }
 

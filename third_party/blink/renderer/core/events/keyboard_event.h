@@ -101,6 +101,7 @@ class CORE_EXPORT KeyboardEvent final : public UIEventWithKeyState {
 
  private:
   void InitLocationModifiers(unsigned location);
+  void SetCharCode(base::StringPiece16 str);
 
   std::unique_ptr<WebKeyboardEvent> key_event_;
   String code_;

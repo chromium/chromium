@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/sessions/core/session_id.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace sync_pb {
 class SessionSpecifics;
@@ -27,12 +27,10 @@ class SessionSyncTestHelper {
   // Builds an instance of a SessionHeader, wrapped in SessionSpecifics, without
   // any windows. The caller may later add windows via `AddWindowSpecifics()` or
   // otherwise.
-  // TODO(crbug.com/1434959): Replace `device_type` by `device_form_factor`
-  // after fix.
   static sync_pb::SessionSpecifics BuildHeaderSpecificsWithoutWindows(
       const std::string& tag,
-      sync_pb::SyncEnums_DeviceType device_type =
-          sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_UNSET);
+      const syncer::DeviceInfo::FormFactor& device_form_factor =
+          syncer::DeviceInfo::FormFactor::kUnknown);
 
   // Adds window to a SessionSpecifics object.
   static void AddWindowSpecifics(SessionID window_id,

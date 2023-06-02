@@ -532,7 +532,7 @@ void AutocompleteResult::SortAndCull(
 #endif
 }
 
-void AutocompleteResult::TrimOmniboxActions() {
+void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   // Platform rules:
   // Android:
   // - First two positions allow all types of OmniboxActionId
@@ -542,7 +542,9 @@ void AutocompleteResult::TrimOmniboxActions() {
   // - In every case, HISTORY_CLUSTERS is preferred over PEDALs.
   // - TAB_SWITCH actions are not considered because they're never attached.
   if constexpr (is_android) {
-    static constexpr size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD = 2;
+    const size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD =
+        OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.Get() ? 1
+                                                                          : 2;
     static constexpr size_t PEDALS_CUTOFF_THRESHOLD = 3;
     std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
                                              OmniboxActionId::HISTORY_CLUSTERS,
@@ -554,8 +556,9 @@ void AutocompleteResult::TrimOmniboxActions() {
 
     for (size_t index = 0u; index < matches_.size(); ++index) {
       matches_[index].FilterOmniboxActions(
-          index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD ? include_all
-          : index < PEDALS_CUTOFF_THRESHOLD           ? include_at_most_pedals
+          (!is_zero_suggest && index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD)
+              ? include_all
+          : index < PEDALS_CUTOFF_THRESHOLD ? include_at_most_pedals
                                             : include_at_most_history_clusters);
       if (index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD) {
         matches_[index].FilterAndSortActionsInSuggest();
@@ -1393,13 +1396,9 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
     if (AutocompleteMatch::IsStarterPackType(m.type))
       return 0;
 #if !BUILDFLAG(IS_IOS)
-    // Group history cluster suggestions above or with searches.
-    if (m.type == AutocompleteMatchType::HISTORY_CLUSTER) {
-      return history_clusters::GetConfig()
-                     .omnibox_history_cluster_provider_rank_above_searches
-                 ? 0
-                 : 1;
-    }
+    // Group history cluster suggestions with searches.
+    if (m.type == AutocompleteMatchType::HISTORY_CLUSTER)
+      return 1;
 #endif  // !BUILDFLAG(IS_IOS)
     if (AutocompleteMatch::IsSearchType(m.type))
       return 1;

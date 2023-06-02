@@ -5,6 +5,7 @@
 #include "puffin/src/puff_reader.h"
 
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <vector>

@@ -9,11 +9,9 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/lock_unlock_event.pb.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
@@ -56,39 +54,30 @@ class LockUnlockTestHelper {
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
-
-    reporting_user_tracker_ =
-        std::make_unique<policy::ReportingUserTracker>(user_manager_);
   }
 
-  void Shutdown() {
-    reporting_user_tracker_.reset();
-    user_manager_enabler_.reset();
-    SessionManagerClient::Shutdown();
-    chromeos::PowerManagerClient::Shutdown();
-  }
+  void Shutdown() { chromeos::PowerManagerClient::Shutdown(); }
 
   session_manager::SessionManager* session_manager() {
     return &session_manager_;
   }
 
   std::unique_ptr<TestingProfile> CreateRegularUserProfile() {
-    const AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
-
+    AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+    auto* const user = user_manager_->AddUser(account_id);
     TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
+    profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
     auto profile = profile_builder.Build();
-
-    auto* const user = user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/true, user_manager::USER_TYPE_REGULAR,
-        profile.get());
-
+    ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile.get());
     user_manager_->LoginUser(user->GetAccountId(), true);
     return profile;
   }
 
   std::unique_ptr<::reporting::UserEventReporterHelperTesting>
   GetReporterHelper(bool reporting_enabled,
+                    bool should_report_user,
                     ::reporting::Status status = ::reporting::Status()) {
     record_.Clear();
     report_count_ = 0;
@@ -111,7 +100,8 @@ class LockUnlockTestHelper {
 
     auto reporter_helper =
         std::make_unique<::reporting::UserEventReporterHelperTesting>(
-            reporting_enabled, /*is_kiosk_user=*/false, std::move(mock_queue));
+            reporting_enabled, should_report_user, /*is_kiosk_user=*/false,
+            std::move(mock_queue));
     return reporter_helper;
   }
 
@@ -119,15 +109,9 @@ class LockUnlockTestHelper {
 
   int GetReportCount() { return report_count_; }
 
-  policy::ReportingUserTracker* reporting_user_tracker() {
-    return reporting_user_tracker_.get();
-  }
-
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  std::unique_ptr<policy::ReportingUserTracker> reporting_user_tracker_;
   content::BrowserTaskEnvironment task_environment_;
 
   LockUnlockRecord record_;
@@ -150,11 +134,11 @@ class LockUnlockReporterTest
 TEST_F(LockUnlockReporterTest, ReportLockPolicyEnabled) {
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
-      /*reporting_enabled=*/true);
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
-  auto reporter = LockUnlockReporter::CreateForTest(
-      std::move(reporter_helper), test_helper_.reporting_user_tracker(),
-      &managed_session_service);
+  auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
+                                                    &managed_session_service);
 
   auto profile = test_helper_.CreateRegularUserProfile();
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
@@ -177,11 +161,11 @@ TEST_F(LockUnlockReporterTest, ReportLockPolicyEnabled) {
 TEST_F(LockUnlockReporterTest, ReportLockPolicyDisabled) {
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
-      /*reporting_enabled=*/false);
+      /*reporting_enabled=*/false,
+      /*should_report_user=*/true);
 
-  auto reporter = LockUnlockReporter::CreateForTest(
-      std::move(reporter_helper), test_helper_.reporting_user_tracker(),
-      &managed_session_service);
+  auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
+                                                    &managed_session_service);
 
   auto profile = test_helper_.CreateRegularUserProfile();
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
@@ -198,11 +182,11 @@ TEST_P(LockUnlockReporterTest, ReportUnlockPolicyDisabled) {
   const auto test_case = GetParam();
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
-      /*reporting_enabled=*/false);
+      /*reporting_enabled=*/false,
+      /*should_report_user=*/true);
 
-  auto reporter = LockUnlockReporter::CreateForTest(
-      std::move(reporter_helper), test_helper_.reporting_user_tracker(),
-      &managed_session_service);
+  auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
+                                                    &managed_session_service);
 
   auto profile = test_helper_.CreateRegularUserProfile();
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
@@ -218,11 +202,11 @@ TEST_P(LockUnlockReporterTest, ReportUnlockPolicyEnabled) {
   const auto test_case = GetParam();
   policy::ManagedSessionService managed_session_service;
   auto reporter_helper = test_helper_.GetReporterHelper(
-      /*reporting_enabled=*/true);
+      /*reporting_enabled=*/true,
+      /*should_report_user=*/true);
 
-  auto reporter = LockUnlockReporter::CreateForTest(
-      std::move(reporter_helper), test_helper_.reporting_user_tracker(),
-      &managed_session_service);
+  auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
+                                                    &managed_session_service);
 
   auto profile = test_helper_.CreateRegularUserProfile();
   auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());

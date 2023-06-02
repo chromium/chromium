@@ -62,10 +62,12 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    autofill::Suggestion::FrontendId frontend_id,
+                                   autofill::Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
   bool RemoveSuggestion(const std::u16string& value,
-                        autofill::Suggestion::FrontendId frontend_id) override;
+                        autofill::Suggestion::FrontendId frontend_id,
+                        autofill::Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
   absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
@@ -212,11 +214,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   gfx::Image page_favicon_;
 
   // The driver that owns |this|.
-  raw_ptr<PasswordManagerDriver> password_manager_driver_;
+  raw_ptr<PasswordManagerDriver, DanglingUntriaged> password_manager_driver_;
 
   raw_ptr<autofill::AutofillClient> autofill_client_;  // weak
 
-  raw_ptr<PasswordManagerClient> password_client_;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> password_client_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;

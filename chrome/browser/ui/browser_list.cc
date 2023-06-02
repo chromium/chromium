@@ -54,7 +54,8 @@ BrowserList::BrowserVector GetIncognitoBrowsersToClose(Profile* profile) {
 }  // namespace
 
 // static
-base::LazyInstance<base::ObserverList<BrowserListObserver>>::Leaky
+base::LazyInstance<base::ObserverList<BrowserListObserver>,
+                   BrowserList::ObserverListTraits>
     BrowserList::observers_ = LAZY_INSTANCE_INITIALIZER;
 
 // static

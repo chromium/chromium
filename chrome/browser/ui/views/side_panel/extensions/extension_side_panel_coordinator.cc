@@ -316,8 +316,7 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
                          : chrome::FindBrowserWithWebContents(web_contents_);
   DCHECK(browser);
 
-  auto* coordinator =
-      BrowserView::GetBrowserViewForBrowser(browser)->side_panel_coordinator();
+  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
 
   // If the SidePanelEntry for this extension is showing when window.close() is
   // called, close the side panel. Otherwise, clear the entry's cached view.
@@ -367,7 +366,7 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
   // drop down menu currently do not automatically get an image's representation
   // when they are shown. Remove this when the aforementioend crbug has been
   // fixed.
-  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+  for (const auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
     extension_icon_->image_skia().GetRepresentation(scale_factor);
   }
 }

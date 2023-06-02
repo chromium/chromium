@@ -22,6 +22,7 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_piece.h"
 #include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/strong_alias.h"
@@ -243,18 +244,18 @@ void NavigateToURLBlockUntilNavigationsComplete(
 // necessary, a user activation can be triggered right before calling this
 // method, e.g. by calling |ExecJs(frame_tree_node, "")|.
 bool NavigateIframeToURL(WebContents* web_contents,
-                         const std::string& iframe_id,
+                         base::StringPiece iframe_id,
                          const GURL& url);
 
 // Similar to |NavigateIframeToURL()| but returns as soon as the navigation is
 // initiated.
 bool BeginNavigateIframeToURL(WebContents* web_contents,
-                              const std::string& iframe_id,
+                              base::StringPiece iframe_id,
                               const GURL& url);
 
 // Generate a URL for a file path including a query string.
 GURL GetFileUrlWithQuery(const base::FilePath& path,
-                         const std::string& query_string);
+                         base::StringPiece query_string);
 
 // Checks whether the page type of the last committed navigation entry matches
 // |page_type|.
@@ -341,12 +342,12 @@ void SimulateMouseClickAt(WebContents* web_contents,
 // friendly by taking zooming into account.
 gfx::PointF GetCenterCoordinatesOfElementWithId(
     content::WebContents* web_contents,
-    const std::string& id);
+    base::StringPiece id);
 
 // Retrieves the center coordinates of the element with id |id| and simulates a
 // mouse click there using SimulateMouseClickAt().
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
-                                          const std::string& id);
+                                          base::StringPiece id);
 
 // Simulates asynchronously a mouse enter/move/leave event. The mouse event is
 // routed through RenderWidgetHostInputEventRouter and thus can target OOPIFs.
@@ -571,12 +572,12 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 // - EvalJs (if you want to retrieve a value)
 // - DOMMessageQueue (to manually wait for domAutomationController.send(...))
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
-                        const std::string& script);
+                        base::StringPiece script);
 
 // Same as `content::ExecuteScriptAsync()`, but doesn't send a user gesture to
 // the renderer.
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                          const std::string& script);
+                                          base::StringPiece script);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
@@ -692,7 +693,7 @@ struct EvalJsResult {
 
   // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
-  EvalJsResult(base::Value value, const std::string& error);
+  EvalJsResult(base::Value value, base::StringPiece error);
 
   // Copy ctor.
   EvalJsResult(const EvalJsResult& value);
@@ -790,21 +791,10 @@ enum EvalJsOptions {
   // that.
   EXECUTE_SCRIPT_NO_USER_GESTURE = (1 << 0),
 
-  // This bit controls how the result is obtained. By default, EvalJs's runner
-  // script will call domAutomationController.send() with the completion
-  // value. Setting this bit will disable that, requiring |script| to provide
-  // its own call to domAutomationController.send() instead.
-  //
-  // Beware that if your script calls domAutomationController.send more than
-  // once, it can interfere with the results obtained by future calls to EvalJs.
-  // It is safer to use Promise resolution rather than
-  // domAutomationController.send.
-  EXECUTE_SCRIPT_USE_MANUAL_REPLY = (1 << 1),
-
   // By default, when the script passed to EvalJs evaluates to a Promise, the
   // execution continues until the Promise resolves, and the resolved value is
   // returned. Setting this bit disables such Promise resolution.
-  EXECUTE_SCRIPT_NO_RESOLVE_PROMISES = (1 << 2),
+  EXECUTE_SCRIPT_NO_RESOLVE_PROMISES = (1 << 1),
 };
 
 // EvalJs() -- run |script| in |execution_target| and return its value or error.
@@ -855,7 +845,7 @@ enum EvalJsOptions {
 //
 // It is guaranteed that EvalJs works even when the target frame is frozen.
 [[nodiscard]] EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
-                                  const std::string& script,
+                                  base::StringPiece script,
                                   int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
@@ -866,8 +856,8 @@ enum EvalJsOptions {
 // processed by the browser.
 [[nodiscard]] EvalJsResult EvalJsAfterLifecycleUpdate(
     const ToRenderFrameHost& execution_target,
-    const std::string& raf_script,
-    const std::string& script,
+    base::StringPiece raf_script,
+    base::StringPiece script,
     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
     int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
@@ -881,7 +871,7 @@ enum EvalJsOptions {
 // until it resolves (by default).
 [[nodiscard]] ::testing::AssertionResult ExecJs(
     const ToRenderFrameHost& execution_target,
-    const std::string& script,
+    base::StringPiece script,
     int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
     int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
@@ -900,7 +890,7 @@ RenderFrameHost* FrameMatchingPredicate(
     base::RepeatingCallback<bool(RenderFrameHost*)> predicate);
 
 // Predicates for use with FrameMatchingPredicate[OrNullPtr]().
-bool FrameMatchesName(const std::string& name, RenderFrameHost* frame);
+bool FrameMatchesName(base::StringPiece name, RenderFrameHost* frame);
 bool FrameIsChildOfMainFrame(RenderFrameHost* frame);
 bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame);
 
@@ -1034,7 +1024,7 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents);
 // WaitForAccessibilityTreeToChange, above, and then checks again.
 // Keeps looping until the text is found (or the test times out).
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
-                                                   const std::string& name);
+                                                   base::StringPiece name);
 
 // Get a snapshot of a web page's accessibility tree.
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents);
@@ -1204,7 +1194,7 @@ class RenderProcessHostKillWaiter {
   // |uma_name| is the name of the histogram from which the |bad_message_reason|
   // can be extracted.
   RenderProcessHostKillWaiter(RenderProcessHost* render_process_host,
-                              const std::string& uma_name);
+                              base::StringPiece uma_name);
 
   RenderProcessHostKillWaiter(const RenderProcessHostKillWaiter&) = delete;
   RenderProcessHostKillWaiter& operator=(const RenderProcessHostKillWaiter&) =

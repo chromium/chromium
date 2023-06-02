@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
-    expires_after="2023-06-30">
+    expires_after="2024-05-23">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -162,6 +162,24 @@ chromium-metrics-reviews@google.com.
     <variant name="RemainingStorageCapacity"
         summary="The remaining storage capacity"/>
   </token>
+</histogram>
+
+<histogram name="Browser.ERP.FilteredOutEvents" units="BooleanFiltered"
+    expires_after="2024-05-23">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Records whether an event is filtered out by FilteredReportQueue.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.RateLimitedEvents" units="BooleanAccepted"
+    expires_after="2024-05-23">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Records whether an event is accepted by ReportQueue rate limiter.
+  </summary>
 </histogram>
 
 <histogram name="Browser.ERP.RecordsPerUpload" units="records"
@@ -753,6 +771,27 @@ chromium-metrics-reviews@google.com.
   <summary>Count of renderer process launch failures grouped by type.</summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.Cleanup.FetchKeepAliveExist"
+    enum="Boolean" expires_after="2023-12-15">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when a failed attempt is made to clean up a RenderProcessHost
+    due to the ref count of fetch keepalive is non-zero. This can be compared to
+    the total attempted cleanups recorded by
+    BrowserRenderProcessHost.Cleanup.Total.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.Cleanup.Total" enum="Boolean"
+    expires_after="2023-12-15">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when an attempt is made to clean up a RenderProcessHost.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.DisconnectedAlive"
     enum="RendererType" expires_after="never">
 <!-- expires-never: For monitoring stability regressions. -->
@@ -765,8 +804,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="BrowserRenderProcessHost.FastShutdownIfPossible.FetchKeepAliveExist"
+    enum="Boolean" expires_after="2023-12-15">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when a failed attempt is made to fast shutdown a
+    RenderProcessHost due to the ref count of fetch keepalive is non-zero. This
+    can be compared to the total attempted fast shutdowns recorded by
+    BrowserRenderProcessHost.FastShutdownIfPossible.Total.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.FastShutdownIfPossible.Total"
+    enum="Boolean" expires_after="2023-12-15">
+  <owner>mych@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records true when an attempt is made to fast shutdown a RenderProcessHost.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.LabeledInTaskManager"
-    enum="BooleanLabeledRendererTask" expires_after="2023-06-04">
+    enum="BooleanLabeledRendererTask" expires_after="2023-12-04">
   <owner>creis@chromium.org</owner>
   <owner>avi@chromium.org</owner>
   <summary>

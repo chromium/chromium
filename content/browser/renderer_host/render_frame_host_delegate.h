@@ -621,9 +621,15 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void UpdateWindowPreferredSize(const gfx::Size& pref_size) {}
 
   // Returns the list of top-level RenderFrameHosts hosting active documents
-  // that belong to the same browsing context group as |render_frame_host|.
+  // that belong to the same browsing context group as `render_frame_host`.
   virtual std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
+      RenderFrameHostImpl* render_frame_host);
+
+  // Returns the list of top-level RenderFrameHosts hosting active documents
+  // that belong to the same CoopRelatedGroup as `render_frame_host`.
+  virtual std::vector<RenderFrameHostImpl*>
+  GetActiveTopLevelDocumentsInCoopRelatedGroup(
       RenderFrameHostImpl* render_frame_host);
 
   // Returns the PrerenderHostRegistry to start/cancel prerendering. This

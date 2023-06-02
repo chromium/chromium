@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -31,12 +31,13 @@
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
     Profile* profile) {
   return static_cast<syncer::DeviceInfoSyncService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
 DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
-  return base::Singleton<DeviceInfoSyncServiceFactory>::get();
+  static base::NoDestructor<DeviceInfoSyncServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -65,8 +66,6 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
           "DeviceInfoSyncService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());

@@ -79,7 +79,7 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   std::vector<std::unique_ptr<GestureEvent>> pending_gestures_;
 
   // |gesture_consumer_| must outlive this object.
-  raw_ptr<GestureConsumer> gesture_consumer_;
+  raw_ptr<GestureConsumer, DanglingUntriaged> gesture_consumer_;
 };
 
 }  // namespace ui

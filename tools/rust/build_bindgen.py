@@ -52,6 +52,20 @@ RUST_BETA_SYSROOT_DIR = os.path.join(THIRD_PARTY_DIR,
 EXE = '.exe' if sys.platform == 'win32' else ''
 
 
+def InstallRustBetaSysroot(rust_git_hash, target_triples):
+    if os.path.exists(RUST_BETA_SYSROOT_DIR):
+        RmTree(RUST_BETA_SYSROOT_DIR)
+    InstallBetaPackage(FetchBetaPackage('cargo', RUST_REVISION),
+                       RUST_BETA_SYSROOT_DIR)
+    InstallBetaPackage(FetchBetaPackage('rustc', RUST_REVISION),
+                       RUST_BETA_SYSROOT_DIR)
+    for t in target_triples:
+        InstallBetaPackage(
+            FetchBetaPackage('rust-std', RUST_REVISION, triple=t),
+            RUST_BETA_SYSROOT_DIR)
+    return RUST_BETA_SYSROOT_DIR
+
+
 def FetchNcurseswLibrary():
     assert sys.platform.startswith('linux')
     ncursesw_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'ncursesw')
@@ -96,25 +110,13 @@ def main():
     if args.build_mac_arm:
         # When cross-compiling, the binaries in RUST_TOOLCHAIN_OUT_DIR are not
         # usable on this machine, so we have to fetch them. We install them,
-        # along with the host and target stdlib to RUST_BETA_SYSROOT_DIR.
-        if os.path.exists(RUST_BETA_SYSROOT_DIR):
-            RmTree(RUST_BETA_SYSROOT_DIR)
-        InstallBetaPackage(FetchBetaPackage('cargo', RUST_REVISION),
-                           RUST_BETA_SYSROOT_DIR)
-        InstallBetaPackage(FetchBetaPackage('rustc', RUST_REVISION),
-                           RUST_BETA_SYSROOT_DIR)
-        InstallBetaPackage(
-            FetchBetaPackage('rust-std',
-                             RUST_REVISION,
-                             triple=RustTargetTriple(None)),
-            RUST_BETA_SYSROOT_DIR)
-        InstallBetaPackage(
-            FetchBetaPackage('rust-std',
-                             RUST_REVISION,
-                             triple=RustTargetTriple(args.build_mac_arm)),
-            RUST_BETA_SYSROOT_DIR)
-        cargo_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'cargo{EXE}')
-        rustc_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'rustc{EXE}')
+        # along with the host and target stdlib to a sysroot dir.
+        root = InstallRustBetaSysroot(
+            RUST_REVISION,
+            [RustTargetTriple(None),
+             RustTargetTriple(args.build_mac_arm)])
+        cargo_bin = os.path.join(root, 'bin', f'cargo{EXE}')
+        rustc_bin = os.path.join(root, 'bin', f'rustc{EXE}')
 
         if not os.path.exists(cargo_bin):
             print(f'Missing cargo at {cargo_bin}. The sysroot was not setup '

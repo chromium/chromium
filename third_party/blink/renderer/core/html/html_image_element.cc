@@ -303,7 +303,8 @@ void HTMLImageElement::ParseAttribute(
   const QualifiedName& name = params.name;
   if (name == html_names::kAltAttr || name == html_names::kTitleAttr) {
     if (UserAgentShadowRoot()) {
-      Element* text = UserAgentShadowRoot()->getElementById("alttext");
+      Element* text =
+          UserAgentShadowRoot()->getElementById(AtomicString("alttext"));
       String alt_text_content = AltText();
       if (text && text->textContent() != alt_text_content)
         text->setTextContent(alt_text_content);

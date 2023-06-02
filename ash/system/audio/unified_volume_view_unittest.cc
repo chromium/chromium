@@ -204,9 +204,11 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
 
 // Tests when the slider is focused, press enter will toggle the mute state.
 TEST_F(UnifiedVolumeViewTest, SliderFocusToggleMute) {
-  // Only the slider is focusable.
-  EXPECT_FALSE(slider_button()->IsAccessibilityFocusable());
-  EXPECT_TRUE(slider()->IsAccessibilityFocusable());
+  // `slider()` is normally focusable, and `slider_button()` is accessibility
+  // focusable.
+  EXPECT_TRUE(slider()->IsFocusable());
+  EXPECT_FALSE(slider_button()->IsFocusable());
+  EXPECT_TRUE(slider_button()->IsAccessibilityFocusable());
 
   // Sets the level to make sure the slider's volume is not 0. Otherwise the
   // slider is still muted even if it's toggled on.

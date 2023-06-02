@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/hover_notifier.h"
@@ -20,6 +21,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -767,6 +769,13 @@ void LoginPasswordView::SetPlaceholderText(
 }
 
 void LoginPasswordView::SetReadOnly(bool read_only) {
+  if (!read_only &&
+      Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+    // TODO(b/276246832): We shouldn't enable the LoginPasswordView during
+    // Authentication.
+    LOG(WARNING) << "LoginPasswordView::SetReadOnly called with false during "
+                    "Authentication.";
+  }
   textfield_->SetReadOnly(read_only);
   textfield_->SetCursorEnabled(!read_only);
   UpdateUiState();

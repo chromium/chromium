@@ -8,4 +8,10 @@ namespace commerce {
 
 const char kChromeUICommerceInternalsHost[] = "commerce-internals";
 
+const char kChromeUIShoppingInsightsSidePanelHost[] =
+    "shopping-insights-side-panel.top-chrome";
+
+const char kChromeUIShoppingInsightsSidePanelUrl[] =
+    "chrome://shopping-insights-side-panel.top-chrome";
+
 }  // namespace commerce

@@ -445,7 +445,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     return test_shared_url_loader_factory_;
   }
 
-  raw_ptr<AccountSelectionBubbleView> dialog_;
+  raw_ptr<AccountSelectionBubbleView, DanglingUntriaged> dialog_;
 
  private:
   base::test::ScopedFeatureList feature_list_;

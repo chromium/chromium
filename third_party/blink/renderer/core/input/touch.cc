@@ -47,14 +47,14 @@ gfx::Vector2dF ContentsOffset(LocalFrame* frame) {
   return offset;
 }
 
-LayoutPoint PageToAbsolute(LocalFrame* frame, const gfx::PointF& page_pos) {
+PhysicalOffset PageToAbsolute(LocalFrame* frame, const gfx::PointF& page_pos) {
   float scale_factor = frame ? frame->PageZoomFactor() : 1.0f;
   gfx::PointF converted_point = gfx::ScalePoint(page_pos, scale_factor);
 
   if (frame && frame->View())
     converted_point = frame->View()->DocumentToFrame(converted_point);
 
-  return LayoutPoint(converted_point);
+  return PhysicalOffset::FromPointFFloor(converted_point);
 }
 
 }  // namespace
@@ -85,7 +85,7 @@ Touch::Touch(EventTarget* target,
              const gfx::SizeF& radius,
              float rotation_angle,
              float force,
-             LayoutPoint absolute_location)
+             PhysicalOffset absolute_location)
     : target_(target),
       identifier_(identifier),
       client_pos_(client_pos),

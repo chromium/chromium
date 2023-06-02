@@ -2,11 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("bluetooth") {
+component("bluetooth") {
   sources = [
     "bluetooth_utils.cc",
     "bluetooth_utils.h",
   ]
+  defines = [ "IS_BLUETOOTH_IMPL=1" ]
 
-  deps = [ "//device/bluetooth/public/cpp:cpp" ]
+  deps = [
+    "//base",
+    "//device/bluetooth/public/cpp",
+  ]
 }

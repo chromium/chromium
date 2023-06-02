@@ -647,7 +647,7 @@ class PasswordManagerTest : public testing::Test {
   testing::NiceMock<MockAffiliationService> mock_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
-  raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged> mock_match_helper_;
   MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockPasswordManagerDriver driver_;
@@ -4024,7 +4024,7 @@ TEST_F(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
 
-  // Create FormData for a form with 1 password field and process it.
+  // Create FormData for a form with 3 password fields and process it.
   FormData form_data;
   form_data.unique_renderer_id = FormRendererId(0);
   form_data.url = test_form_url_;
@@ -4068,6 +4068,37 @@ TEST_F(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
 
   // Check that suggested username was properly recorded in VotesUploader.
   EXPECT_EQ(saved_match.username_value, votes_uploader.suggested_username());
+}
+
+TEST_F(PasswordManagerTest,
+       SubmissionDetectedOnClearedForm_OnlySavingFallback) {
+  base::test::ScopedFeatureList feature_list;
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  PasswordForm saved_match(MakeSavedForm());
+  store_->AddLogin(saved_match);
+
+  // Create FormData for a form with 1 password field and process it.
+  FormData form_data;
+  form_data.unique_renderer_id = FormRendererId(0);
+  form_data.url = test_form_url_;
+
+  FormFieldData password_field;
+  password_field.form_control_type = "password";
+  password_field.unique_renderer_id = FieldRendererId(1);
+  password_field.name = u"one-time-code";
+  password_field.value = u"123456";
+  form_data.fields.push_back(password_field);
+
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  manager()->OnInformAboutUserInput(&driver_, form_data);
+
+  // Don't expect an automatic prompt. Only the manual fallback for saving is
+  // available.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
+  manager()->OnPasswordFormCleared(&driver_, form_data);
 }
 
 // Similar test as above with fields that have empty names.

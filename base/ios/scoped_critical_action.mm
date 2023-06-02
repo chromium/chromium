@@ -5,10 +5,10 @@
 #include "base/ios/scoped_critical_action.h"
 
 #import <UIKit/UIKit.h>
+#include <float.h>
 
 #include <atomic>
 
-#include <float.h>
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -19,8 +19,11 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 
-namespace base {
-namespace ios {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace base::ios {
 namespace {
 
 constexpr base::TimeDelta kMaxTaskReuseDelay = base::Seconds(3);
@@ -62,7 +65,7 @@ ScopedCriticalAction::Core::~Core() {
 // static
 void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
                                                      StringPiece task_name) {
-  UIApplication* application = [UIApplication sharedApplication];
+  UIApplication* application = UIApplication.sharedApplication;
   if (!application) {
     return;
   }
@@ -208,5 +211,4 @@ void ScopedCriticalAction::ActiveBackgroundTaskCache::ReleaseHandle(
   }
 }
 
-}  // namespace ios
-}  // namespace base
+}  // namespace base::ios

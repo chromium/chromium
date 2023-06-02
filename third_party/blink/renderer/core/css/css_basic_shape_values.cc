@@ -42,7 +42,8 @@ namespace cssvalue {
 
 static String BuildCircleString(const String& radius,
                                 const String& center_x,
-                                const String& center_y) {
+                                const String& center_y,
+                                bool has_explicit_center) {
   char at[] = "at";
   char separator[] = " ";
   StringBuilder result;
@@ -51,7 +52,7 @@ static String BuildCircleString(const String& radius,
     result.Append(radius);
   }
 
-  if (!center_x.IsNull() || !center_y.IsNull()) {
+  if (has_explicit_center) {
     if (!radius.IsNull()) {
       result.Append(separator);
     }
@@ -140,7 +141,7 @@ String CSSBasicShapeCircleValue::CustomCSSText() const {
 
   return BuildCircleString(
       radius, SerializePositionOffset(*normalized_cx, *normalized_cy),
-      SerializePositionOffset(*normalized_cy, *normalized_cx));
+      SerializePositionOffset(*normalized_cy, *normalized_cx), center_x_);
 }
 
 bool CSSBasicShapeCircleValue::Equals(
@@ -161,7 +162,8 @@ void CSSBasicShapeCircleValue::TraceAfterDispatch(
 static String BuildEllipseString(const String& radius_x,
                                  const String& radius_y,
                                  const String& center_x,
-                                 const String& center_y) {
+                                 const String& center_y,
+                                 bool has_explicit_center) {
   char at[] = "at";
   char separator[] = " ";
   StringBuilder result;
@@ -179,7 +181,7 @@ static String BuildEllipseString(const String& radius_x,
     needs_separator = true;
   }
 
-  if (!center_x.IsNull() || !center_y.IsNull()) {
+  if (has_explicit_center) {
     if (needs_separator) {
       result.Append(separator);
     }
@@ -225,7 +227,7 @@ String CSSBasicShapeEllipseValue::CustomCSSText() const {
   return BuildEllipseString(
       radius_x, radius_y,
       SerializePositionOffset(*normalized_cx, *normalized_cy),
-      SerializePositionOffset(*normalized_cy, *normalized_cx));
+      SerializePositionOffset(*normalized_cy, *normalized_cx), center_x_);
 }
 
 bool CSSBasicShapeEllipseValue::Equals(

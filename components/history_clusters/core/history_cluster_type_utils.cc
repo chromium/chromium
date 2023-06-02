@@ -76,6 +76,8 @@ mojom::URLVisitPtr VisitToMojom(const TemplateURLService* template_url_service,
     visit_mojom->debug_info["visit_id"] =
         base::NumberToString(annotated_visit.visit_row.visit_id);
     visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
+    visit_mojom->debug_info["interaction_state"] = base::NumberToString(
+        history::ClusterVisit::InteractionStateToInt(visit.interaction_state));
     visit_mojom->debug_info["visit_time"] =
         base::TimeToISO8601(visit.annotated_visit.visit_row.visit_time);
     visit_mojom->debug_info["foreground_duration"] =

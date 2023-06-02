@@ -10,18 +10,21 @@
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -172,10 +175,15 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                                    /*adjust_height_for_width=*/true));
 
   constexpr gfx::Size kLogoImageSize(152, 126);
+  auto image =
+      chromeos::features::IsJellyEnabled()
+          ? ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+                IDR_ARC_COMPAT_MODE_SPLASH_SCREEN_IMAGE)
+          : ui::ImageModel::FromVectorIcon(kCompatModeSplashscreenIcon,
+                                           background_color_id_,
+                                           kLogoImageSize.width());
   AddChildView(views::Builder<views::ImageView>()  // Logo
-                   .SetImage(ui::ImageModel::FromVectorIcon(
-                       kCompatModeSplashscreenIcon, background_color_id_,
-                       kLogoImageSize.width()))
+                   .SetImage(image)
                    .Build());
   AddChildView(views::Builder<views::Label>()  // Header
                    .SetText(l10n_util::GetStringUTF16(

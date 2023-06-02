@@ -21,13 +21,9 @@ class AccessibilityDetailedViewPixelTest
       public testing::WithParamInterface<bool> {
  public:
   AccessibilityDetailedViewPixelTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kQsRevamp, chromeos::features::kJelly}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kQsRevamp, chromeos::features::kJelly});
-    }
+    feature_list_.InitWithFeatureStates(
+        {{features::kQsRevamp, IsQsRevampEnabled()},
+         {chromeos::features::kJelly, IsQsRevampEnabled()}});
   }
 
   bool IsQsRevampEnabled() { return GetParam(); }

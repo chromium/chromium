@@ -4,17 +4,13 @@
 
 """Presubmit for android_webview/tools."""
 
-USE_PYTHON3 = True
-
-
 def _GetPythonUnitTests(input_api, output_api):
   return input_api.canned_checks.GetUnitTestsRecursively(
       input_api,
       output_api,
       input_api.PresubmitLocalPath(),
       files_to_check=['.*_test\\.py$'],
-      files_to_skip=[],
-      run_on_python2=False)
+      files_to_skip=[])
 
 
 def CommonChecks(input_api, output_api):

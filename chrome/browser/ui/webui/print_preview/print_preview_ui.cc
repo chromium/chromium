@@ -16,10 +16,10 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -134,53 +134,13 @@ WebContents* GetInitiator(content::WebUI* web_ui) {
   return dialog_controller->GetInitiator(web_ui->GetWebContents());
 }
 
-// Thread-safe wrapper around a base::flat_map to keep track of mappings from
-// PrintPreviewUI IDs to most recent print preview request IDs.
-class PrintPreviewRequestIdMapWithLock {
- public:
-  PrintPreviewRequestIdMapWithLock() {}
+// Mapping from PrintPreviewUI ID to print preview request ID.
+using PrintPreviewRequestIdMap = base::flat_map<int, int>;
 
-  PrintPreviewRequestIdMapWithLock(const PrintPreviewRequestIdMapWithLock&) =
-      delete;
-  PrintPreviewRequestIdMapWithLock& operator=(
-      const PrintPreviewRequestIdMapWithLock&) = delete;
-
-  ~PrintPreviewRequestIdMapWithLock() {}
-
-  // Gets the value for |preview_id|.
-  // Returns true and sets |out_value| on success.
-  bool Get(int32_t preview_id, int* out_value) {
-    base::AutoLock lock(lock_);
-    PrintPreviewRequestIdMap::const_iterator it = map_.find(preview_id);
-    if (it == map_.end())
-      return false;
-    *out_value = it->second;
-    return true;
-  }
-
-  // Sets the |value| for |preview_id|.
-  void Set(int32_t preview_id, int value) {
-    base::AutoLock lock(lock_);
-    map_[preview_id] = value;
-  }
-
-  // Erases the entry for |preview_id|.
-  void Erase(int32_t preview_id) {
-    base::AutoLock lock(lock_);
-    map_.erase(preview_id);
-  }
-
- private:
-  // Mapping from PrintPreviewUI ID to print preview request ID.
-  using PrintPreviewRequestIdMap = base::flat_map<int, int>;
-
-  PrintPreviewRequestIdMap map_;
-  base::Lock lock_;
-};
-
-// Written to on the UI thread, read from any thread.
-base::LazyInstance<PrintPreviewRequestIdMapWithLock>::DestructorAtExit
-    g_print_preview_request_id_map = LAZY_INSTANCE_INITIALIZER;
+PrintPreviewRequestIdMap& GetPrintPreviewRequestIdMap() {
+  static base::NoDestructor<PrintPreviewRequestIdMap> map;
+  return *map;
+}
 
 // PrintPreviewUI IDMap used to avoid exposing raw pointer addresses to WebUI.
 // Only accessed on the UI thread.
@@ -468,18 +428,16 @@ bool PrintPreviewUI::IsBound() const {
 }
 
 void PrintPreviewUI::ClearPreviewUIId() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (!id_)
     return;
 
   receiver_.reset();
   PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
-  g_print_preview_request_id_map.Get().Erase(*id_);
+  GetPrintPreviewRequestIdMap().erase(*id_);
   g_print_preview_ui_id_map.Get().Remove(*id_);
   id_.reset();
-}
-
-base::WeakPtr<PrintPreviewUI> PrintPreviewUI::GetWeakPointer() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void PrintPreviewUI::GetPrintPreviewDataForIndex(
@@ -744,12 +702,14 @@ void PrintPreviewUI::SetInitialParams(
 bool PrintPreviewUI::ShouldCancelRequest(
     const absl::optional<int32_t>& preview_ui_id,
     int request_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (!preview_ui_id)
     return true;
-  int current_id = -1;
-  if (!g_print_preview_request_id_map.Get().Get(*preview_ui_id, &current_id))
-    return true;
-  return request_id != current_id;
+
+  auto& map = GetPrintPreviewRequestIdMap();
+  auto it = map.find(*preview_ui_id);
+  return it == map.end() || request_id != it->second;
 }
 
 absl::optional<int32_t> PrintPreviewUI::GetIDForPrintPreviewUI() const {
@@ -783,12 +743,14 @@ void PrintPreviewUI::OnInitiatorClosed() {
 }
 
 void PrintPreviewUI::OnPrintPreviewRequest(int request_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (!initial_preview_start_time_.is_null()) {
     base::UmaHistogramTimes(
         "PrintPreview.InitializationTime",
         base::TimeTicks::Now() - initial_preview_start_time_);
   }
-  g_print_preview_request_id_map.Get().Set(*id_, request_id);
+  GetPrintPreviewRequestIdMap()[*id_] = request_id;
 }
 
 void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
@@ -831,7 +793,8 @@ void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
 void PrintPreviewUI::DidGetDefaultPageLayout(
     mojom::PageSizeMarginsPtr page_layout_in_points,
     const gfx::Rect& printable_area_in_points,
-    bool has_custom_page_size_style,
+    bool all_pages_have_custom_size,
+    bool all_pages_have_custom_orientation,
     int32_t request_id) {
   if (printable_area_in_points.width() <= 0 ||
       printable_area_in_points.height() <= 0) {
@@ -862,8 +825,8 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
   layout.Set(kSettingPrintableAreaY, printable_area_in_points.y());
   layout.Set(kSettingPrintableAreaWidth, printable_area_in_points.width());
   layout.Set(kSettingPrintableAreaHeight, printable_area_in_points.height());
-  handler_->SendPageLayoutReady(std::move(layout), has_custom_page_size_style,
-                                request_id);
+  handler_->SendPageLayoutReady(std::move(layout), all_pages_have_custom_size,
+                                all_pages_have_custom_orientation, request_id);
 }
 
 bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {
@@ -876,8 +839,11 @@ bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {
 }
 
 void PrintPreviewUI::OnCancelPendingPreviewRequest() {
-  if (id_)
-    g_print_preview_request_id_map.Get().Set(*id_, -1);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (id_) {
+    GetPrintPreviewRequestIdMap()[*id_] = -1;
+  }
 }
 
 void PrintPreviewUI::OnPrintPreviewFailed(int request_id) {
@@ -1109,9 +1075,11 @@ void PrintPreviewUI::ClearAllPreviewDataForTest() {
 }
 
 void PrintPreviewUI::SetPreviewUIId() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!id_);
+
   id_ = g_print_preview_ui_id_map.Get().Add(this);
-  g_print_preview_request_id_map.Get().Set(*id_, -1);
+  GetPrintPreviewRequestIdMap()[*id_] = -1;
 }
 
 }  // namespace printing

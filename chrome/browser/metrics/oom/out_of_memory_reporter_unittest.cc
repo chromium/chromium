@@ -203,7 +203,7 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 
  private:
-  raw_ptr<base::SimpleTestTickClock> test_tick_clock_;
+  raw_ptr<base::SimpleTestTickClock, DanglingUntriaged> test_tick_clock_;
 };
 
 TEST_F(OutOfMemoryReporterTest, SimpleOOM) {

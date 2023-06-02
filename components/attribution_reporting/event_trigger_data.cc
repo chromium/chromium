@@ -37,11 +37,26 @@ EventTriggerData::FromJSON(base::Value& value) {
   if (!filters.has_value())
     return base::unexpected(filters.error());
 
-  uint64_t data = ParseUint64(*dict, kTriggerData).value_or(0);
-  int64_t priority = ParsePriority(*dict);
-  absl::optional<uint64_t> dedup_key = ParseDeduplicationKey(*dict);
+  absl::optional<uint64_t> data;
+  if (!ParseUint64(*dict, kTriggerData, data)) {
+    return base::unexpected(
+        TriggerRegistrationError::kEventTriggerDataValueInvalid);
+  }
 
-  return EventTriggerData(data, priority, dedup_key, std::move(*filters));
+  absl::optional<int64_t> priority;
+  if (!ParsePriority(*dict, priority)) {
+    return base::unexpected(
+        TriggerRegistrationError::kEventPriorityValueInvalid);
+  }
+
+  absl::optional<uint64_t> dedup_key;
+  if (!ParseDeduplicationKey(*dict, dedup_key)) {
+    return base::unexpected(
+        TriggerRegistrationError::kEventDedupKeyValueInvalid);
+  }
+
+  return EventTriggerData(data.value_or(0), priority.value_or(0), dedup_key,
+                          std::move(*filters));
 }
 
 EventTriggerData::EventTriggerData() = default;

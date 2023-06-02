@@ -51,7 +51,8 @@ class ExtensionIconLoaderTest : public BrowserWithTestWindowTest {
   const gfx::ImageSkia& loaded_icon() { return loaded_icon_; }
 
  protected:
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
   gfx::ImageSkia loaded_icon_;
 };
 

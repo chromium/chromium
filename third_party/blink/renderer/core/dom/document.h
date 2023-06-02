@@ -80,7 +80,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -214,6 +213,7 @@ class QualifiedName;
 class Range;
 class RenderBlockingResourceManager;
 class ResizeObserver;
+class Resource;
 class ResourceFetcher;
 class RootScrollerController;
 class SVGDocumentExtensions;
@@ -724,8 +724,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // does its own ancestor tree walk).
   void UpdateStyleAndLayoutTreeForThisDocument();
 
-  void UpdateStyleAndLayoutTreeForNode(const Node*);
-  void UpdateStyleAndLayoutTreeForSubtree(const Node*);
+  void UpdateStyleAndLayoutTreeForNode(const Node*, DocumentUpdateReason);
+  void UpdateStyleAndLayoutTreeForSubtree(const Node*, DocumentUpdateReason);
 
   void UpdateStyleAndLayout(DocumentUpdateReason);
   void LayoutUpdated();
@@ -1125,9 +1125,16 @@ class CORE_EXPORT Document : public ContainerNode,
     kScrollListener = 1 << 14,
     kLoadListenerAtCapturePhaseOrAtStyleElement = 1 << 15,
     // 0 bits remaining
+    kDOMMutationEventListener =
+        kDOMSubtreeModifiedListener | kDOMNodeInsertedListener |
+        kDOMNodeRemovedListener | kDOMNodeRemovedFromDocumentListener |
+        kDOMNodeInsertedIntoDocumentListener |
+        kDOMCharacterDataModifiedListener,
   };
 
   bool HasListenerType(ListenerType listener_type) const {
+    DCHECK(RuntimeEnabledFeatures::MutationEventsEnabled() ||
+           !(listener_types_ & kDOMMutationEventListener));
     return (listener_types_ & listener_type);
   }
   void AddListenerTypeIfNeeded(const AtomicString& event_type, EventTarget&);
@@ -1767,6 +1774,7 @@ class CORE_EXPORT Document : public ContainerNode,
   LazyLoadImageObserver& EnsureLazyLoadImageObserver();
 
   void IncrementNumberOfCanvases();
+  unsigned GetNumberOfCanvases() const { return num_canvases_; }
 
   void ProcessJavaScriptUrl(const KURL&,
                             scoped_refptr<const DOMWrapperWorld> world);
@@ -2576,7 +2584,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool is_vertical_scroll_enforced_ = false;
 
   // The number of canvas elements on the document
-  int num_canvases_ = 0;
+  unsigned num_canvases_ = 0;
 
   bool deferred_compositor_commit_is_allowed_ = false;
 

@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -77,7 +77,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         const gfx::SizeF& radius,
         float rotation_angle,
         float force,
-        LayoutPoint absolute_location);
+        PhysicalOffset absolute_location);
 
   Touch(LocalFrame*, const TouchInit*);
 
@@ -96,7 +96,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   float force() const { return force_; }
 
   // Blink-internal methods
-  const LayoutPoint& AbsoluteLocation() const { return absolute_location_; }
+  const PhysicalOffset& AbsoluteLocation() const { return absolute_location_; }
   const gfx::PointF& ScreenLocation() const { return screen_pos_; }
   Touch* CloneWithNewTarget(EventTarget*) const;
 
@@ -118,7 +118,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   // FIXME(rbyers): Shouldn't we be able to migrate callers to relying on
   // screenPos, pagePos or clientPos? absoluteLocation appears to be the same as
   // pagePos but without browser scale applied.
-  LayoutPoint absolute_location_;
+  PhysicalOffset absolute_location_;
 };
 
 }  // namespace blink

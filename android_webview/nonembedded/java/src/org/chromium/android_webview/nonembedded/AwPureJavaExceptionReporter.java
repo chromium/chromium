@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.android_webview.nonembedded;
 
-import org.chromium.android_webview.common.crash.CrashUploadUtil;
-import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
+import org.chromium.android_webview.nonembedded.crash.CrashUploadUtil;
+import org.chromium.android_webview.nonembedded.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.services.CrashLoggingUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.crash.PureJavaExceptionReporter;

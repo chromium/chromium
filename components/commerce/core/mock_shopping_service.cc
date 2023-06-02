@@ -26,6 +26,7 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr) {
   // Set up some defaults so tests don't have to explicitly set up each.
+  SetIsReady(true);
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
       std::map<int64_t, ProductInfo>());
@@ -43,6 +44,7 @@ MockShoppingService::MockShoppingService()
       std::vector<const bookmarks::BookmarkNode*>());
   SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*>());
+  SetIsPriceInsightsEligible(true);
 }
 
 MockShoppingService::~MockShoppingService() = default;
@@ -145,6 +147,17 @@ void MockShoppingService::SetIsShoppingListEligible(bool eligible) {
       .WillByDefault(testing::Return(eligible));
 }
 
+void MockShoppingService::SetIsReady(bool ready) {
+  ON_CALL(*this, WaitForReady)
+      .WillByDefault(
+          [ready, this](base::OnceCallback<void(ShoppingService*)> callback) {
+            if (ready) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), this));
+            }
+          });
+}
+
 void MockShoppingService::SetIsClusterIdTrackedByUserResponse(bool is_tracked) {
   ON_CALL(*this, IsClusterIdTrackedByUser)
       .WillByDefault([is_tracked](uint64_t cluster_id,
@@ -175,6 +188,11 @@ void MockShoppingService::SetGetAllShoppingBookmarksValue(
     std::vector<const bookmarks::BookmarkNode*> bookmarks) {
   ON_CALL(*this, GetAllShoppingBookmarks)
       .WillByDefault(testing::Return(bookmarks));
+}
+
+void MockShoppingService::SetIsPriceInsightsEligible(bool is_eligible) {
+  ON_CALL(*this, IsPriceInsightsEligible)
+      .WillByDefault(testing::Return(is_eligible));
 }
 
 }  // namespace commerce

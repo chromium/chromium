@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
-#include "base/base_jni_headers/JNIUtils_jni.h"
+#include "base/base_jni/JNIUtils_jni.h"
 
 namespace base {
 namespace android {

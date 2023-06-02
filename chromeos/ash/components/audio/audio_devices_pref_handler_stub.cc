@@ -133,33 +133,11 @@ bool AudioDevicesPrefHandlerStub::GetAudioOutputAllowedValue() const {
   return is_audio_output_allowed_;
 }
 
-bool AudioDevicesPrefHandlerStub::GetSpeakOnMuteDetectionEnabledValue() const {
-  return is_speak_on_mute_detection_enabled_;
-}
-
-bool AudioDevicesPrefHandlerStub::GetShouldShowSpeakOnMuteOptInNudgeValue()
-    const {
-  return should_show_speak_on_mute_opt_in_nudge_;
-}
-
-void AudioDevicesPrefHandlerStub::SetShouldShowSpeakOnMuteOptInNudgeValue(
-    bool should_show_opt_in_nudge) {
-  should_show_speak_on_mute_opt_in_nudge_ = should_show_opt_in_nudge;
-}
-
 void AudioDevicesPrefHandlerStub::SetAudioOutputAllowedValue(
     bool is_audio_output_allowed) {
   is_audio_output_allowed_ = is_audio_output_allowed;
   for (auto& observer : observers_) {
     observer.OnAudioPolicyPrefChanged();
-  }
-}
-
-void AudioDevicesPrefHandlerStub::SetSpeakOnMuteDetectionEnabledValue(
-    bool is_speak_on_mute_detection_enabled) {
-  is_speak_on_mute_detection_enabled_ = is_speak_on_mute_detection_enabled;
-  for (auto& observer : observers_) {
-    observer.OnSpeakOnMuteDetectionPrefChanged();
   }
 }
 

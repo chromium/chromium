@@ -210,12 +210,7 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_InputClipboardOps,
                             "input/input-clipboard-ops.js")
 
 // https://crbug.com/1411976
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ScreencastBasics DISABLED_ScreencastBasics
-#else
-#define MAYBE_ScreencastBasics ScreencastBasics
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
+HEADLESS_MODE_PROTOCOL_TEST(DISABLED_ScreencastBasics,
                             "sanity/screencast-basics.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,

@@ -36,7 +36,8 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
                 ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
                     /*for_renderer=*/false)),
             std::move(compositor_task_runner),
-            nullptr) {}
+            nullptr,
+            /*shared_image_interface=*/nullptr) {}
 
   void SubmitCompositorFrame(viz::CompositorFrame frame,
                              bool hit_test_data_changed) override {

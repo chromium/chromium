@@ -58,6 +58,14 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
                const base::Time created_time,
                DeskTemplateType type);
 
+  // Admin template constructor.
+  DeskTemplate(base::Uuid uuid,
+               DeskTemplateSource source,
+               const std::string& name,
+               const base::Time created_time,
+               DeskTemplateType type,
+               bool should_launch_on_startup);
+
   DeskTemplate(const DeskTemplate&) = delete;
   DeskTemplate& operator=(const DeskTemplate&) = delete;
   ~DeskTemplate();
@@ -133,6 +141,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Indicates whether this template can be modified by user.
   bool IsModifiable() const { return source_ == DeskTemplateSource::kUser; }
 
+  // This template should launch on startup.
+  bool should_launch_on_startup() const { return should_launch_on_startup_; }
+
   // Sets `desk_uuid` as the desk to launch on for all windows in the template.
   void SetDeskUuid(base::Uuid desk_uuid);
 
@@ -165,6 +176,10 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   base::Time updated_time_;
 
   std::u16string template_name_;
+
+  // If this is an admin template, determines if it should be launched on
+  // startup.
+  bool should_launch_on_startup_ = false;
 
   // The id associated with a particular launch of this template. Must be
   // positive when launching.

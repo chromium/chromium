@@ -608,9 +608,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Called when a site instance is first associated with a process.
   virtual void SiteInstanceGotProcess(SiteInstance* site_instance) {}
 
-  // Called from a site instance's destructor.
-  virtual void SiteInstanceDeleting(SiteInstance* site_instance) {}
-
   // Returns true if for the navigation from |current_effective_url| to
   // |destination_effective_url| in |site_instance|, a new SiteInstance and
   // BrowsingInstance should be created (even if we are in a process model that
@@ -924,6 +921,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows the embedder to control if web attribution reporting is allowed.
   // This method must be idempotent.
   virtual bool IsWebAttributionReportingAllowed();
+
+  // Allows the embedder to control if an Os source event should register as
+  // a Web Os or Os (App) source.
+  // This method must be idempotent.
+  virtual bool ShouldUseOsWebSourceAttributionReporting();
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.
@@ -1650,6 +1652,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // is nullptr by default, and the embedder can elect to set
   // |*factory_override| to a valid override.
   //
+  // |navigation_response_task_runner| is a task runner that may be used for
+  // navigation request blocking tasks. Null when the URLLoaderFactory is not
+  // being created for a navigation request.
+  //
   // Always called on the UI thread.
   virtual bool WillCreateURLLoaderFactory(
       BrowserContext* browser_context,
@@ -1664,7 +1670,8 @@ class CONTENT_EXPORT ContentBrowserClient {
           header_client,
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner);
 
   // Returns true when the embedder wants to intercept a websocket connection.
   virtual bool WillInterceptWebSocket(RenderFrameHost* frame);
@@ -2167,6 +2174,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool get_topics,
       bool observe,
       std::vector<blink::mojom::EpochTopicPtr>& topics);
+
+  // Returns the number of distinct topics epochs versions for `main_frame`.
+  // Must be called when topics are eligible (i.e. `HandleTopicsWebApi` would
+  // return true for the same main frame context).
+  virtual int NumVersionsInTopicsEpochs(
+      content::RenderFrameHost* main_frame) const;
 
   // Returns whether a site is blocked to use Bluetooth scanning API.
   virtual bool IsBluetoothScanningBlocked(

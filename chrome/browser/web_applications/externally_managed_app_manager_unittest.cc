@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -197,7 +198,7 @@ class ExternallyManagedAppManagerTest
   int deduped_install_count_ = 0;
   int deduped_uninstall_count_ = 0;
 
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
 
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
@@ -393,19 +394,6 @@ class ExternallyAppManagerTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = web_app::FakeWebAppProvider::Get(profile());
-    std::unique_ptr<ExternallyManagedAppManager> external_app_manager =
-        std::make_unique<ExternallyManagedAppManager>(profile());
-    external_app_manager->SetUrlLoaderForTesting(
-        web_contents_manager_.CreateUrlLoader());
-
-    external_app_manager->SetDataRetrieverFactoryForTesting(
-        base::BindLambdaForTesting(
-            [fake_web_contents = web_contents_manager_.GetWeakPtr()]() {
-              CHECK(fake_web_contents);
-              return fake_web_contents->CreateDataRetriever();
-            }));
-    provider_->SetExternallyManagedAppManager(std::move(external_app_manager));
     // TODO(http://b/278922549): Disable the external management apps so we
     // don't compete with the policy app manager for our installs /
     // synchronization.
@@ -434,17 +422,17 @@ class ExternallyAppManagerTest : public WebAppTest {
     return output;
   }
 
-  WebAppProvider& provider() { return *provider_; }
+  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
 
-  ExternallyManagedAppManager& external_mananager() {
-    return static_cast<ExternallyManagedAppManager&>(
-        provider().externally_managed_app_manager());
+  ExternallyManagedAppManager& external_manager() {
+    return provider().externally_managed_app_manager();
   }
 
   FakeWebContentsManager& web_contents_manager() {
-    return web_contents_manager_;
+    return static_cast<FakeWebContentsManager&>(
+        provider().web_contents_manager());
   }
 
   AppId PopulateBasicInstallPageWithManifest(GURL install_url,
@@ -456,7 +444,7 @@ class ExternallyAppManagerTest : public WebAppTest {
     install_page_state.redirection_url = absl::nullopt;
 
     install_page_state.page_install_info = std::make_unique<WebAppInstallInfo>(
-        GenerateManifestIdFromStartUrlOnly(start_url));
+        GenerateManifestIdFromStartUrlOnly(install_url));
     install_page_state.page_install_info->title = u"Basic app title";
 
     install_page_state.manifest_url = manifest_url;
@@ -468,7 +456,6 @@ class ExternallyAppManagerTest : public WebAppTest {
     install_page_state.opt_manifest->start_url = start_url;
     install_page_state.opt_manifest->id =
         GenerateManifestIdFromStartUrlOnly(start_url);
-
     install_page_state.opt_manifest->display =
         blink::mojom::DisplayMode::kStandalone;
     install_page_state.opt_manifest->short_name = u"Basic app name";
@@ -477,8 +464,6 @@ class ExternallyAppManagerTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
-  FakeWebContentsManager web_contents_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -489,7 +474,7 @@ TEST_F(ExternallyAppManagerTest, NoNetworkNoPlaceholder) {
   // non-functional / not available.
 
   SynchronizeFuture result;
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  external_manager().SynchronizeInstalledApps(
       CreateExternalInstallOptionsFromTemplate(
           {kInstallUrl}, ExternalInstallSource::kExternalPolicy),
       ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -518,7 +503,7 @@ TEST_F(ExternallyAppManagerTest, SimpleInstall) {
                                                       kStartUrl);
 
   SynchronizeFuture result;
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  external_manager().SynchronizeInstalledApps(
       CreateExternalInstallOptionsFromTemplate(
           {kInstallUrl}, ExternalInstallSource::kExternalPolicy),
       ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -553,7 +538,7 @@ TEST_F(ExternallyAppManagerTest, TwoInstallUrlsSameApp) {
   EXPECT_EQ(app_id, app_id2);
 
   SynchronizeFuture result;
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  external_manager().SynchronizeInstalledApps(
       CreateExternalInstallOptionsFromTemplate(
           {kInstallUrl1, kInstallUrl2}, ExternalInstallSource::kExternalPolicy),
       ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -606,7 +591,7 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
   // First synchronize will install the app.
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    external_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl}, ExternalInstallSource::kExternalPolicy),
         ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -626,7 +611,7 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
   // the install urls correctly.
   {
     SynchronizeFuture result;
-    provider().externally_managed_app_manager().SynchronizeInstalledApps(
+    external_manager().SynchronizeInstalledApps(
         CreateExternalInstallOptionsFromTemplate(
             {kInstallUrl2}, ExternalInstallSource::kExternalPolicy),
         ExternalInstallSource::kExternalPolicy, result.GetCallback());
@@ -670,8 +655,7 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
     install_page_state.opt_manifest->short_name = u"Test user app";
 
-    auto install_info = std::make_unique<WebAppInstallInfo>(
-        GenerateManifestIdFromStartUrlOnly(kStartUrl));
+    auto install_info = std::make_unique<WebAppInstallInfo>();
     install_info->start_url = kStartUrl;
     install_info->title = u"Test user app";
     absl::optional<AppId> user_app_id =
@@ -715,7 +699,7 @@ TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
   template_options.install_placeholder = true;
 
   SynchronizeFuture result;
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  external_manager().SynchronizeInstalledApps(
       CreateExternalInstallOptionsFromTemplate(
           {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
           template_options),
@@ -761,7 +745,7 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
   page_state.redirection_url = kRedirectToUrl;
 
   SynchronizeFuture result;
-  provider().externally_managed_app_manager().SynchronizeInstalledApps(
+  external_manager().SynchronizeInstalledApps(
       CreateExternalInstallOptionsFromTemplate(
           {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
           template_options),

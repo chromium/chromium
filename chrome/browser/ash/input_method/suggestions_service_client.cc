@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -105,6 +106,11 @@ void RecordRequestCandidates(
       ToSuggestionType(suggestion_mode));
 }
 
+void RecordEmptyCandidate(const ime::AssistiveSuggestionMode& suggestion_mode) {
+  UMA_HISTOGRAM_ENUMERATION("InputMethod.Assistive.MultiWord.EmptyCandidate",
+                            ToSuggestionType(suggestion_mode));
+}
+
 void RecordCandidatesGenerated(AssistiveSuggestionMode suggestion_mode) {
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.MultiWord.CandidatesGenerated",
@@ -155,6 +161,9 @@ void SuggestionsServiceClient::RequestSuggestions(
     auto next_word_candidate = NextWordCompletionCandidate::New();
     next_word_candidate->text = candidate.text;
     next_word_candidate->normalized_score = candidate.score;
+    if (next_word_candidate->text.empty()) {
+      RecordEmptyCandidate(suggestion_mode);
+    }
     query->next_word_candidates.push_back(std::move(next_word_candidate));
   }
 

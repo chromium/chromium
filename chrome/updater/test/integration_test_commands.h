@@ -110,8 +110,6 @@ class IntegrationTestCommands
       int expected_exit_code) const = 0;
   virtual void ExpectLegacyPolicyStatusSucceeds() const = 0;
   virtual void RunUninstallCmdLine() const = 0;
-  virtual void SetUpTestService() const = 0;
-  virtual void TearDownTestService() const = 0;
   virtual void RunHandoff(const std::string& app_id) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
   virtual void StressUpdateService() const = 0;

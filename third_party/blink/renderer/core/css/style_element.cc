@@ -247,8 +247,8 @@ void StyleElement::BlockingAttributeChanged(Element& element) {
   if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking) {
     return;
   }
-  if (!IsA<HTMLElement>(element) ||
-      To<HTMLElement>(element).IsPotentiallyRenderBlocking()) {
+  if (const auto* html_element = DynamicTo<HTMLElement>(element);
+      !html_element || html_element->IsPotentiallyRenderBlocking()) {
     return;
   }
   element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(

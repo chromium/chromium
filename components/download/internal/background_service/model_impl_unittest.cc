@@ -45,7 +45,7 @@ class DownloadServiceModelImplTest : public testing::Test {
 
  protected:
   test::MockModelClient client_;
-  raw_ptr<test::TestStore> store_;
+  raw_ptr<test::TestStore, DanglingUntriaged> store_;
   std::unique_ptr<ModelImpl> model_;
 };
 

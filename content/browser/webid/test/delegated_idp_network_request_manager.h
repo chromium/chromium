@@ -53,7 +53,7 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override;
 
  private:
-  raw_ptr<IdpNetworkRequestManager> delegate_;
+  raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;
 };
 
 }  // namespace content

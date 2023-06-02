@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addCSSPrefixSelector} from '../common/js/dom_utils.js';
+
 import {css, customElement, html, property, svg, XfBase} from './xf_base.js';
 
 const TWO_PI = 2.0 * Math.PI;
@@ -51,7 +53,7 @@ export class XfPieProgress extends XfBase {
 
   interpolate = () => {
     // Interpolate faster if close to 100% progress.
-    const boost = this.progress > 0.99 ? 10 : 1;
+    const boost = this.progress > 0.99 ? 20 : 1;
     const deltaTime = Date.now() - this.timeLastFrame;
     this.progressSmooth +=
         (this.progress - this.progressSmooth) * DAMPENING * deltaTime * boost;
@@ -138,7 +140,7 @@ export class XfPieProgress extends XfBase {
 }
 
 function getCSS() {
-  return css`
+  const legacyStyle = css`
     svg {
       height: 100%;
       width: 100%;
@@ -166,4 +168,38 @@ function getCSS() {
       fill: var(--xf-icon-color-outline, transparent);
     }
   `;
+
+  const refresh23Style = css`
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+
+    .queued {
+      stroke: var(--cros-sys-secondary);
+    }
+
+    .edge {
+      fill: none;
+      stroke: var(--cros-sys-progress);
+    }
+
+    .full {
+      fill: var(--cros-sys-progress);
+    }
+
+    .pie {
+      fill: var(--cros-sys-progress);
+      stroke: none;
+    }
+
+    .outline {
+      fill: var(--xf-icon-color-outline, transparent);
+    }
+  `;
+
+  return [
+    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
+    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
+  ];
 }

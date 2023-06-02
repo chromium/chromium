@@ -68,7 +68,8 @@ class TestPasswordManagerClient
   }
 
  private:
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
+      nullptr;
 };
 
 }  // namespace

@@ -238,7 +238,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   NGConstraintSpace CreateConstraintSpaceForMeasure(
       const NGSubgriddedItemData& subgridded_item,
       GridTrackSizingDirection track_direction,
-      absl::optional<LayoutUnit> opt_fixed_block_size = absl::nullopt) const;
+      const LogicalSize& fixed_available_size = kIndefiniteLogicalSize) const;
 
   NGConstraintSpace CreateConstraintSpaceForSubgridAlgorithm(
       const NGSubgriddedItemData& subgrid_data) const;

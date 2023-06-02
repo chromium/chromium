@@ -84,7 +84,8 @@ SystemNudgeController::~SystemNudgeController() {
 }
 
 // static
-void SystemNudgeController::RecordNudgeAction(NudgeCatalogName catalog_name) {
+void SystemNudgeController::MaybeRecordNudgeAction(
+    NudgeCatalogName catalog_name) {
   auto& nudge_registry = GetNudgeRegistry();
   auto it = std::find_if(
       std::begin(nudge_registry), std::end(nudge_registry),

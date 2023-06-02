@@ -10,6 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "url/origin.h"
 
@@ -33,11 +35,14 @@ struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
                            bool has_focus,
                            bool is_background);
   MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin& other);
-  ~MediaDeviceSaltAndOrigin() = default;
+  ~MediaDeviceSaltAndOrigin();
 
   std::string device_id_salt;
   std::string group_id_salt;
+  // Last committed origin of the frame making a media device request.
   url::Origin origin;
+  // ukm::SourceId of the main frame making the media device request.
+  absl::optional<ukm::SourceId> ukm_source_id;
   bool has_focus;
   bool is_background;
 };

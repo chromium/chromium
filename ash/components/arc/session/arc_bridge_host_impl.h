@@ -70,6 +70,9 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
           boot_phase_monitor_remote) override;
   void OnCameraInstanceReady(
       mojo::PendingRemote<mojom::CameraInstance> camera_remote) override;
+  void OnChromeFeatureFlagsInstanceReady(
+      mojo::PendingRemote<mojom::ChromeFeatureFlagsInstance>
+          chrome_feature_flags_remote) override;
   void OnClipboardInstanceReady(
       mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) override;
   void OnCompatibilityModeInstanceReady(

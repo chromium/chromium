@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
+#include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/prefetch_metrics.h"
@@ -59,7 +60,8 @@ void SetMetricsForPossibleNoVarySearchHintMatches(
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
       WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      no_vary_search_helper_(base::MakeRefCounted<NoVarySearchHelper>()) {}
+      no_vary_search_helper_(base::MakeRefCounted<NoVarySearchHelper>()),
+      prefetch_eviction_callback_(base::DoNothing()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
   // On destruction, removes any owned prefetches from |PrefetchService|. Other
@@ -78,12 +80,16 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
 
 void PrefetchDocumentManager::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  // Ignore navigations for a different RenderFrameHost.
-  if (render_frame_host().GetGlobalId() !=
-      navigation_handle->GetPreviousRenderFrameHostId()) {
+  // Ignore navigations for a different LocalFrameToken.
+  // TODO(crbug.com/1431804, crbug.com/1431387): LocalFrameToken is used here
+  // for scoping while RenderFrameHost's ID is used elsewhere. In the long term
+  // we should fix this inconsistency, but the current code is at least not
+  // worse than checking RenderFrameHostId here.
+  if (render_frame_host().GetFrameToken() !=
+      navigation_handle->GetInitiatorFrameToken()) {
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << navigation_handle->GetURL()
-             << ": skipped (different RenderFrameHost)";
+             << ": skipped (different LocalFrameToken)";
     return;
   }
 
@@ -128,17 +134,6 @@ void PrefetchDocumentManager::DidStartNavigation(
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << navigation_handle->GetURL()
              << ": skipped (PrefetchContainer not found)";
-    SetMetricsForPossibleNoVarySearchHintMatches(
-        all_prefetches_, navigation_handle->GetURL(),
-        *serving_page_metrics_container);
-    return;
-  }
-
-  // If this prefetch has already been used with another navigation then stop.
-  if (prefetch_iter->second->HasPrefetchBeenConsideredToServe()) {
-    DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
-             << *prefetch_iter->second
-             << ": skipped (already used for another navigation)";
     SetMetricsForPossibleNoVarySearchHintMatches(
         all_prefetches_, navigation_handle->GetURL(),
         *serving_page_metrics_container);
@@ -248,9 +243,6 @@ void PrefetchDocumentManager::PrefetchUrl(
       std::move(no_vary_search_expected), world,
       weak_method_factory_.GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
-  if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
-    container->SetNoVarySearchHelper(no_vary_search_helper_);
-  }
   DVLOG(1) << *container << ": created";
   base::WeakPtr<PrefetchContainer> weak_container = container->GetWeakPtr();
   owned_prefetches_[url] = std::move(container);
@@ -403,14 +395,20 @@ bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
     DCHECK(GetPrefetchService());
     base::WeakPtr<PrefetchContainer> oldest_prefetch =
         completed_non_eager_prefetches_.front();
+    auto oldest_prefetch_key = oldest_prefetch->GetPrefetchContainerKey();
     // TODO(crbug.com/1445086): We should also be checking if the prefetch is
     // currently being used to serve a navigation. In that scenario, evicting
     // doesn't make sense.
-    GetPrefetchService()->EvictPrefetch(
-        oldest_prefetch->GetPrefetchContainerKey());
+    GetPrefetchService()->EvictPrefetch(oldest_prefetch_key);
     completed_non_eager_prefetches_.pop_front();
+    prefetch_eviction_callback_.Run(oldest_prefetch_key.second);
     return true;
   }
+}
+
+void PrefetchDocumentManager::SetPrefetchEvictionCallback(
+    PrefetchEvictionCallback callback) {
+  prefetch_eviction_callback_ = std::move(callback);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

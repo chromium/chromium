@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ತಿಂಗಳು ಉಳಿದಿದೆ}one{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}other{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}}</translation>
 <translation id="4888938634149558681">ಕರೆ ಮಾಡಿ</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್}one{# ಸೆಕೆಂಡುಗಳು}other{# ಸೆಕೆಂಡುಗಳು}}</translation>
 <translation id="4971687151119236543">ಮೀಡಿಯಾದ ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="5046499563572181734">ಇಲ್ಲಿ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -186,7 +187,7 @@
 <translation id="7879499977785298635">ನಿರ್ಬಂಧಿಸಬೇಡಿ</translation>
 <translation id="7907591526440419938">ಫೈಲ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7969046989155602842">ಕಮಾಂಡ್</translation>
-<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 ಕ್ಕಿಂತ ಹೆಚ್ಚು ಓದದಿರುವ ಅಧಿಸೂಚನೆ}one{# ಕ್ಕಿಂತ ಹೆಚ್ಚು ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು}other{# ಕ್ಕಿಂತ ಹೆಚ್ಚು ಓದದಿರುವ ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 ಕ್ಕಿಂತ ಹೆಚ್ಚು ಓದದಿರುವ ನೋಟಿಫಿಕೇಶನ್}one{# ಕ್ಕಿಂತ ಹೆಚ್ಚು ಓದದಿರುವ ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}other{# ಕ್ಕಿಂತ ಹೆಚ್ಚು ಓದದಿರುವ ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1ನಿ ದಲ್ಲಿ}one{#ನಿ ಗಳಲ್ಲಿ}other{#ನಿ ಗಳಲ್ಲಿ}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> ನಿಂದ ಸಂಖ್ಯೆ</translation>

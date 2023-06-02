@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/bluetooth_devices_observer.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "base/containers/flat_map.h"
@@ -20,6 +21,8 @@
 #include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
+
+class BluetoothDevicesObserver;
 
 // Calls the given callback every time a device is connected or removed with
 // lists of which were added or removed.
@@ -44,6 +47,10 @@ class ASH_EXPORT InputDeviceNotifier : public ui::InputDeviceEventObserver {
   void OnInputDeviceConfigurationChanged(uint8_t input_device_type) override;
   void OnDeviceListsComplete() override;
 
+  // Used as callback for `bluetooth_devices_observer_` whenever a bluetooth
+  // device state changes.
+  void OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device);
+
  private:
   void RefreshDevices();
 
@@ -54,6 +61,8 @@ class ASH_EXPORT InputDeviceNotifier : public ui::InputDeviceEventObserver {
   // will always outlive `InputDeviceNotifier`.
   raw_ptr<base::flat_map<DeviceId, MojomDevicePtr>> connected_devices_;
   InputDeviceListsUpdatedCallback device_lists_updated_callback_;
+
+  std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
 };
 
 // Below explicit template instantiations needed for all supported types.

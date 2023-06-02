@@ -55,7 +55,8 @@ DriveNotificationManagerFactory::GetForBrowserContext(
 // static
 DriveNotificationManagerFactory*
 DriveNotificationManagerFactory::GetInstance() {
-  return base::Singleton<DriveNotificationManagerFactory>::get();
+  static base::NoDestructor<DriveNotificationManagerFactory> instance;
+  return instance.get();
 }
 
 DriveNotificationManagerFactory::DriveNotificationManagerFactory()
@@ -71,7 +72,7 @@ DriveNotificationManagerFactory::DriveNotificationManagerFactory()
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 
-DriveNotificationManagerFactory::~DriveNotificationManagerFactory() {}
+DriveNotificationManagerFactory::~DriveNotificationManagerFactory() = default;
 
 KeyedService* DriveNotificationManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

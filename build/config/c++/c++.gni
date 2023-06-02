@@ -53,13 +53,6 @@ declare_args() {
   libcxx_is_shared = use_custom_libcxx && is_component_build
 }
 
-# TODO(https://crbug.com/1385662): This is temporarily guarded to make it easier
-# to roll out this change. Once the various projects (ANGLE, v8, et cetera)
-# rolling in Chrome's //build have updated, remove this entirely.
-if (!defined(enable_safe_libcxx)) {
-  enable_safe_libcxx = true
-}
-
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.
 export_libcxxabi_from_executables =

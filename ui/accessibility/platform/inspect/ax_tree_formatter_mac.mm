@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -19,15 +21,14 @@
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "ui/accessibility/platform/inspect/ax_transform_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // This file uses the deprecated NSObject accessibility interface.
 // TODO(crbug.com/948844): Migrate to the new NSAccessibility interface.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-using base::StringPrintf;
-using base::SysNSStringToUTF8;
-using base::SysNSStringToUTF16;
-using std::string;
 
 namespace ui {
 
@@ -47,13 +48,13 @@ AXTreeFormatterMac::~AXTreeFormatterMac() = default;
 
 void AXTreeFormatterMac::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
-  static NSArray* default_attributes = [@[
+  static NSArray* default_attributes = @[
     @"AXAutocompleteValue", @"AXDescription", @"AXRole", @"AXSubrole",
     @"AXTitle", @"AXTitleUIElement", @"AXValue"
-  ] retain];
+  ];
 
   for (NSString* attribute : default_attributes) {
-    AddPropertyFilter(property_filters, SysNSStringToUTF8(attribute));
+    AddPropertyFilter(property_filters, base::SysNSStringToUTF8(attribute));
   }
 
   if (show_ids()) {
@@ -69,7 +70,7 @@ base::Value::Dict AXTreeFormatterMac::BuildTree(
 
 base::Value::Dict AXTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  AXUIElementRef node = nil;
+  base::ScopedCFTypeRef<AXUIElementRef> node;
   std::tie(node, std::ignore) = FindAXUIElement(selector);
   if (node == nil) {
     return base::Value::Dict();
@@ -79,7 +80,7 @@ base::Value::Dict AXTreeFormatterMac::BuildTreeForSelector(
 
 base::Value::Dict AXTreeFormatterMac::BuildTreeForAXUIElement(
     AXUIElementRef node) const {
-  return BuildTree(static_cast<id>(node));
+  return BuildTree((__bridge id)node);
 }
 
 base::Value::Dict AXTreeFormatterMac::BuildTree(const id root) const {
@@ -101,13 +102,13 @@ base::Value::Dict AXTreeFormatterMac::BuildTree(const id root) const {
 std::string AXTreeFormatterMac::EvaluateScript(
     const AXTreeSelector& selector,
     const AXInspectScenario& scenario) const {
-  AXUIElementRef root = nil;
+  base::ScopedCFTypeRef<AXUIElementRef> root;
   std::tie(root, std::ignore) = FindAXUIElement(selector);
   if (!root)
     return "";
 
   std::string result =
-      EvaluateScript(static_cast<id>(root), scenario.script_instructions, 0,
+      EvaluateScript((__bridge id)root.get(), scenario.script_instructions, 0,
                      scenario.script_instructions.size());
 
   return result;
@@ -207,7 +208,8 @@ void AXTreeFormatterMac::RecursiveBuildTree(const AXElementWrapper& ax_element,
   base::Value::List child_dict_list;
   for (id child in children) {
     base::Value::Dict child_dict;
-    RecursiveBuildTree({child}, root_rect, indexer, &child_dict);
+    RecursiveBuildTree(AXElementWrapper{child}, root_rect, indexer,
+                       &child_dict);
     child_dict_list.Append(std::move(child_dict));
   }
   dict->Set(kChildrenDictAttr, std::move(child_dict_list));
@@ -226,7 +228,7 @@ void AXTreeFormatterMac::AddProperties(const AXElementWrapper& ax_element,
     NSArray* attributes = ax_element.AttributeNames();
     for (NSString* attribute : attributes) {
       dict->SetByDottedPath(
-          SysNSStringToUTF8(attribute),
+          base::SysNSStringToUTF8(attribute),
           AXNSObjectToBaseValue(*ax_element.GetAttributeValue(attribute),
                                 indexer));
     }
@@ -279,17 +281,19 @@ std::string AXTreeFormatterMac::ProcessTreeForOutput(
   std::string line;
 
   // AXRole and AXSubrole have own formatting and should be listed upfront.
-  std::string role_attr = SysNSStringToUTF8(NSAccessibilityRoleAttribute);
+  std::string role_attr = base::SysNSStringToUTF8(NSAccessibilityRoleAttribute);
   const std::string* value = dict.FindString(role_attr);
   if (value) {
     WriteAttribute(true, *value, &line);
   }
-  std::string subrole_attr = SysNSStringToUTF8(NSAccessibilitySubroleAttribute);
+  std::string subrole_attr =
+      base::SysNSStringToUTF8(NSAccessibilitySubroleAttribute);
   value = dict.FindString(subrole_attr);
   if (value) {
-    WriteAttribute(false,
-                   StringPrintf("%s=%s", subrole_attr.c_str(), value->c_str()),
-                   &line);
+    WriteAttribute(
+        false,
+        base::StringPrintf("%s=%s", subrole_attr.c_str(), value->c_str()),
+        &line);
   }
 
   // Expose all other attributes.
@@ -308,10 +312,10 @@ std::string AXTreeFormatterMac::ProcessTreeForOutput(
 
     // Write formatted value.
     std::string formatted_value = AXFormatValue(item.second);
-    WriteAttribute(
-        false,
-        StringPrintf("%s=%s", item.first.c_str(), formatted_value.c_str()),
-        &line);
+    WriteAttribute(false,
+                   base::StringPrintf("%s=%s", item.first.c_str(),
+                                      formatted_value.c_str()),
+                   &line);
   }
 
   return line;

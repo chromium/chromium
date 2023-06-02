@@ -39,6 +39,8 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WML | install_or_shortcut | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | remove_run_on_os_login_policy | check_run_on_os_login_enabled |
 | WML | install_or_shortcut_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled |
 | WML | install_or_shortcut_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled | install_locally | check_run_on_os_login_enabled |
+| WML | install_policy_app(Standalone, NoShortcut, Windowed, WebApp) | apply_run_on_os_login_policy_allowed | disable_run_on_os_login | check_run_on_os_login_disabled |
+| WML | install_policy_app(Standalone, NoShortcut, Windowed, WebApp) | apply_run_on_os_login_policy_allowed | enable_run_on_os_login | check_run_on_os_login_enabled |
 
 ## Badging
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
@@ -84,7 +86,11 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_shown |
 | WMLC | install_or_shortcut_with_shortcut | check_platform_shortcut_and_icon |
 | WMLC | install_or_shortcut_with_shortcut(NotPromotable) | check_platform_shortcut_and_icon(NotPromotable) |
-
+| WMLC | install_or_shortcut_by_user_tabbed(Standalone) | launch_from_platform_shortcut(Standalone) | check_tab_created(One) |
+| WMLC | install_or_shortcut_by_user_tabbed(Standalone) | launch_from_platform_shortcut(Standalone) | install_omnibox_icon(Standalone) | check_pwa_window_created_in_profile(Standalone, One, Default)
+| WMLC | create_shortcut(Standalone, Windowed) | check_window_created |
+| WMLC | create_shortcut(Standalone, Windowed) | close_pwa | check_app_in_list_windowed(Standalone) | check_platform_shortcut_and_icon(Standalone) |
+| WMLC | create_shortcut(Standalone, Windowed) | close_pwa | launch_from_platform_shortcut(Standalone) | check_pwa_window_created_in_profile(Standalone, One, Default) | check_launch_icon_not_shown |
 
 ## Uninstallation
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
@@ -386,10 +392,10 @@ The test behavior can change whether the site is configured to open as a window 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | launch_file_expect_no_dialog(FileHandler, OneFooFile) |
 | WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_files_loaded_in_site(FileHandler, OneFooFile) |
-| WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneFooFile) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneBarFile) | check_files_loaded_in_site(FileHandler, OneBarFile) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, AskAgain) | check_window_not_created | check_tab_not_created | check_site_handles_file(FileHandler, Foo) | check_site_handles_file(FileHandler, Bar) |
-| WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
+| WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_files_loaded_in_site(FileHandler, OneFooFile) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, Remember) | check_window_not_created | check_tab_not_created | check_site_not_handles_file(FileHandler, Foo) | check_site_not_handles_file(FileHandler, Bar) |
 
 ### Policy test for forcing file handling approval

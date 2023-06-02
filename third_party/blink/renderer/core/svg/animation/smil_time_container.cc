@@ -237,8 +237,7 @@ SMILTime SMILTimeContainer::Elapsed() const {
           base::TimeDelta()) -
       reference_time_;
   DCHECK_GE(time_offset, base::TimeDelta());
-  SMILTime elapsed = presentation_time_ +
-                     SMILTime::FromMicroseconds(time_offset.InMicroseconds());
+  SMILTime elapsed = presentation_time_ + SMILTime::FromTimeDelta(time_offset);
   DCHECK_GE(elapsed, SMILTime());
   return ClampPresentationTime(elapsed);
 }
@@ -488,7 +487,7 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
     return false;
   SMILTime delay_time = next_progress_time - update.TargetTime();
   DCHECK(delay_time.IsFinite());
-  ScheduleAnimationFrame(base::Microseconds(delay_time.InMicroseconds()));
+  ScheduleAnimationFrame(delay_time.ToTimeDelta());
   return true;
 }
 

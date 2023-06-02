@@ -10,11 +10,13 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/field_trial.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -37,12 +39,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/network_service_util.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -341,6 +345,7 @@ const char kAuthBasicSubframePage[] = "/auth-basic-subframe.html";
 const char kAuthDigestPage[] = "/auth-digest";
 
 const char kTitlePage[] = "/title1.html";
+const char kCCNSPage[] = "/echoall/nocache";
 
 // It does not matter what pages are selected as no-auth, as long as they exist.
 // Navigating to non-existing pages caused flakes in the past
@@ -2648,5 +2653,239 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // No authentication request has been prompted to the user.
   EXPECT_EQ(0, observer.auth_needed_count());
+}
+
+class LoginPromptBackForwardCacheNoStoreBrowserTest
+    : public LoginPromptBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoginPromptBrowserTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::
+                                   kCacheControlNoStoreEnterBackForwardCache,
+                               {{"level",
+                                 "restore-unless-http-only-cookie-change"}}}},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    LoginPromptBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ukm_recorder_.reset();
+    LoginPromptBrowserTest::TearDownOnMainThread();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void CreateNewTab() {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("about:blank"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  }
+
+  base::HistogramTester& histogram_tester() { return *histogram_tester_; }
+
+  void ExpectRestored(base::Location location) {
+    EXPECT_THAT(histogram_tester().GetAllSamples(
+                    "BackForwardCache.HistoryNavigationOutcome."
+                    "NotRestoredReason"),
+                testing::UnorderedElementsAreArray(std::vector<base::Bucket>()))
+        << location.ToString();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoginPromptBackForwardCacheNoStoreBrowserTest,
+    ::testing::Values(SplitAuthCacheByNetworkIsolationKey::kFalse,
+                      SplitAuthCacheByNetworkIsolationKey::kTrue));
+
+// Test that when HTTP authentication is required in a page, the BFCache entries
+// without "Cache-Control: no-store" header will be restored.
+IN_PROC_BROWSER_TEST_P(LoginPromptBackForwardCacheNoStoreBrowserTest,
+                       TestBasicAuthPromptDoesNotEvictNonCCNSBackForwardCache) {
+  // Don't run this test if BackForwardCache is disabled.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL auth_page = embedded_test_server()->GetURL(kAuthBasicPage);
+  GURL title_page = embedded_test_server()->GetURL(kTitlePage);
+  GURL title_page_different_site =
+      embedded_test_server()->GetURL("b.com", kTitlePage);
+
+  // Navigate a tab to a non-CCNS page.
+  content::WebContents* contents_without_ccns = GetWebContents();
+  contents_without_ccns->OpenURL(OpenURLParams(
+      title_page, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_TYPED, false));
+  content::WaitForLoadStop(contents_without_ccns);
+  content::RenderFrameHostWrapper rfh_without_ccns(
+      contents_without_ccns->GetPrimaryMainFrame());
+  // Verify that the page is eligible for BFCache.
+  ASSERT_TRUE(
+      content::NavigateToURL(contents_without_ccns, title_page_different_site));
+  ASSERT_TRUE(content::HistoryGoBack(contents_without_ccns));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_without_ccns.get(),
+            contents_without_ccns->GetPrimaryMainFrame());
+  // Navigate away for BFCache eviction test.
+  ASSERT_TRUE(
+      content::NavigateToURL(contents_without_ccns, title_page_different_site));
+
+  // Create a new tab.
+  CreateNewTab();
+  content::WebContents* contents_auth = GetWebContents();
+  ASSERT_NE(contents_auth, contents_without_ccns);
+
+  // Navigate to a page that require HTTP authentication.
+  NavigationController* controller_auth = &contents_auth->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller_auth));
+  WindowedAuthNeededObserver auth_needed_waiter(controller_auth);
+  contents_auth->OpenURL(OpenURLParams(auth_page, content::Referrer(),
+                                       WindowOpenDisposition::CURRENT_TAB,
+                                       ui::PAGE_TRANSITION_TYPED, false));
+  auth_needed_waiter.Wait();
+  // Complete the HTTP authentication.
+  SetAuthForAndWait(*observer.handlers().begin(), controller_auth);
+
+  // The page without CCNS header should be restored from BFCache.
+  ASSERT_TRUE(content::HistoryGoBack(contents_without_ccns));
+  ASSERT_EQ(rfh_without_ccns.get(),
+            contents_without_ccns->GetPrimaryMainFrame());
+}
+
+// Test that when HTTP authentication is required in a page, the BFCache entries
+// with "Cache-Control: no-store" header and sharing the same origin as the page
+// will be evicted.
+IN_PROC_BROWSER_TEST_P(
+    LoginPromptBackForwardCacheNoStoreBrowserTest,
+    TestBasicAuthPromptEvictsSameOriginCCNSBackForwardCache) {
+  // Don't run this test if BackForwardCache is disabled.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL auth_page = embedded_test_server()->GetURL(kAuthBasicPage);
+  GURL ccns_page = embedded_test_server()->GetURL(kCCNSPage);
+  GURL title_page_different_site =
+      embedded_test_server()->GetURL("b.com", kTitlePage);
+
+  // Navigate to a CCNS page.
+  content::WebContents* contents_with_ccns = GetWebContents();
+  contents_with_ccns->OpenURL(OpenURLParams(ccns_page, content::Referrer(),
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            ui::PAGE_TRANSITION_TYPED, false));
+  content::WaitForLoadStop(contents_with_ccns);
+  content::RenderFrameHostWrapper rfh_with_ccns(
+      contents_with_ccns->GetPrimaryMainFrame());
+  // Verify that the page is eligible for BFCache.
+  ASSERT_TRUE(
+      content::NavigateToURL(contents_with_ccns, title_page_different_site));
+  ASSERT_TRUE(content::HistoryGoBack(contents_with_ccns));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_with_ccns.get(), contents_with_ccns->GetPrimaryMainFrame());
+  // Navigate away for BFCache eviction test.
+  ASSERT_TRUE(
+      content::NavigateToURL(contents_with_ccns, title_page_different_site));
+
+  // Create a new tab.
+  CreateNewTab();
+  content::WebContents* contents_auth = GetWebContents();
+  ASSERT_NE(contents_auth, contents_with_ccns);
+
+  // Navigate to a page that require HTTP authentication.
+  NavigationController* controller_auth = &contents_auth->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller_auth));
+  WindowedAuthNeededObserver auth_needed_waiter(controller_auth);
+  contents_auth->OpenURL(OpenURLParams(auth_page, content::Referrer(),
+                                       WindowOpenDisposition::CURRENT_TAB,
+                                       ui::PAGE_TRANSITION_TYPED, false));
+  auth_needed_waiter.Wait();
+  // Complete the HTTP authentication.
+  SetAuthForAndWait(*observer.handlers().begin(), controller_auth);
+
+  // The page with CCNS header should be evicted.
+  ASSERT_TRUE(rfh_with_ccns.WaitUntilRenderFrameDeleted());
+}
+
+// Test that when HTTP authentication is required in a page, the BFCache entries
+// with "Cache-Control: no-store" header but not sharing the same origin as the
+// page will be restored.
+IN_PROC_BROWSER_TEST_P(
+    LoginPromptBackForwardCacheNoStoreBrowserTest,
+    TestBasicAuthPromptDoesNotEvictDifferentOriginCCNSBackForwardCache) {
+  // Don't run this test if BackForwardCache is disabled.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL auth_page = embedded_test_server()->GetURL(kAuthBasicPage);
+  GURL ccns_page_different_site =
+      embedded_test_server()->GetURL("a.com", kCCNSPage);
+  GURL title_page_different_site =
+      embedded_test_server()->GetURL("b.com", kTitlePage);
+
+  // Navigate to a CCNS page with a different origin.
+  content::WebContents* contents_different_site_with_ccns = GetWebContents();
+  contents_different_site_with_ccns->OpenURL(OpenURLParams(
+      ccns_page_different_site, content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+  content::WaitForLoadStop(contents_different_site_with_ccns);
+  content::RenderFrameHostWrapper rfh_different_site_with_ccns(
+      contents_different_site_with_ccns->GetPrimaryMainFrame());
+  // Verify that the page is eligible for BFCache.
+  ASSERT_TRUE(content::NavigateToURL(contents_different_site_with_ccns,
+                                     title_page_different_site));
+  ASSERT_TRUE(content::HistoryGoBack(contents_different_site_with_ccns));
+  ExpectRestored(FROM_HERE);
+  ASSERT_EQ(rfh_different_site_with_ccns.get(),
+            contents_different_site_with_ccns->GetPrimaryMainFrame());
+  // Navigate away for BFCache eviction test.
+  ASSERT_TRUE(content::NavigateToURL(contents_different_site_with_ccns,
+                                     title_page_different_site));
+
+  // Create a new tab.
+  CreateNewTab();
+  content::WebContents* contents_auth = GetWebContents();
+  ASSERT_NE(contents_auth, contents_different_site_with_ccns);
+
+  // Navigate to a page that require HTTP authentication.
+  NavigationController* controller_auth = &contents_auth->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller_auth));
+  WindowedAuthNeededObserver auth_needed_waiter(controller_auth);
+  contents_auth->OpenURL(OpenURLParams(auth_page, content::Referrer(),
+                                       WindowOpenDisposition::CURRENT_TAB,
+                                       ui::PAGE_TRANSITION_TYPED, false));
+  auth_needed_waiter.Wait();
+  // Complete the HTTP authentication.
+  SetAuthForAndWait(*observer.handlers().begin(), controller_auth);
+
+  // The page with CCNS header but with a different origin should be restored
+  // from the BFCache.
+  ASSERT_TRUE(content::HistoryGoBack(contents_different_site_with_ccns));
+  ASSERT_EQ(rfh_different_site_with_ccns.get(),
+            contents_different_site_with_ccns->GetPrimaryMainFrame());
 }
 }  // namespace

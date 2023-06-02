@@ -2,6 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("chromium_choice") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_choice.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("chromium_signin_error") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_signin_error.mm" ]

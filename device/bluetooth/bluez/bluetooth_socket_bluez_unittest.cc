@@ -205,7 +205,7 @@ class BluetoothSocketBlueZTest : public testing::Test {
   int last_bytes_received_;
   scoped_refptr<net::IOBuffer> last_io_buffer_;
   BluetoothSocket::ErrorReason last_reason_;
-  raw_ptr<const BluetoothDevice> last_device_;
+  raw_ptr<const BluetoothDevice, DanglingUntriaged> last_device_;
 };
 
 TEST_F(BluetoothSocketBlueZTest, Connect) {

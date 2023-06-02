@@ -123,7 +123,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
    private:
     uint64_t data_source_id_ = 0;
     std::string name_;
-    raw_ptr<PerfettoProducer> producer_ = nullptr;
+    raw_ptr<PerfettoProducer, DanglingUntriaged> producer_ = nullptr;
   };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

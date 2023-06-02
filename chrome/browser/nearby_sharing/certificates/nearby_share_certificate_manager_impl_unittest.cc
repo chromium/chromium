@@ -808,7 +808,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 }
 
 TEST_F(NearbyShareCertificateManagerImplTest,
-       RemoveExpiredPublicCertificates_Failue) {
+       RemoveExpiredPublicCertificates_Failure) {
   cert_manager_->Start();
 
   // The public certificate expiration scheduler notifies the certificate

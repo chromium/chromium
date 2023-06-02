@@ -2655,7 +2655,7 @@ bool Offset::ParseShorthand(
   } else if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kOffsetPosition, CSSPropertyID::kOffset,
-        *CSSInitialValue::Create(), important,
+        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   }
 
@@ -2667,7 +2667,7 @@ bool Offset::ParseShorthand(
   } else {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kOffsetPath, CSSPropertyID::kOffset,
-        *CSSInitialValue::Create(), important,
+        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   }
 
@@ -2679,8 +2679,10 @@ bool Offset::ParseShorthand(
   } else {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kOffsetDistance, CSSPropertyID::kOffset,
-        *CSSInitialValue::Create(), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+        *CSSNumericLiteralValue::Create(0,
+                                        CSSPrimitiveValue::UnitType::kPixels),
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
   }
 
   if (offset_rotate) {
@@ -2691,7 +2693,7 @@ bool Offset::ParseShorthand(
   } else {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kOffsetRotate, CSSPropertyID::kOffset,
-        *CSSInitialValue::Create(), important,
+        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   }
 
@@ -2703,7 +2705,7 @@ bool Offset::ParseShorthand(
   } else if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kOffsetAnchor, CSSPropertyID::kOffset,
-        *CSSInitialValue::Create(), important,
+        *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   }
 
@@ -3220,8 +3222,11 @@ bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
     if (!axis && (axis = ConsumeSingleTimelineAxis(range))) {
       continue;
     }
-    if (!attachment && (attachment = ConsumeSingleTimelineAttachment(range))) {
-      continue;
+    if (RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()) {
+      if (!attachment &&
+          (attachment = ConsumeSingleTimelineAttachment(range))) {
+        continue;
+      }
     }
     break;
   }
@@ -3251,8 +3256,6 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
   using css_parsing_utils::IsImplicitProperty;
 
-  DCHECK_EQ(3u, shorthand.length());
-
   CSSValueList* name_list = CSSValueList::CreateCommaSeparated();
   CSSValueList* axis_list = CSSValueList::CreateCommaSeparated();
   CSSValueList* attachment_list = CSSValueList::CreateCommaSeparated();
@@ -3270,13 +3273,17 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
   DCHECK_EQ(name_list->length(), axis_list->length());
   DCHECK_EQ(name_list->length(), attachment_list->length());
 
+  DCHECK_GE(shorthand.length(), 2u);
   AddProperty(shorthand.properties()[0]->PropertyID(), shorthand_id, *name_list,
               important, IsImplicitProperty::kNotImplicit, properties);
   AddProperty(shorthand.properties()[1]->PropertyID(), shorthand_id, *axis_list,
               important, IsImplicitProperty::kNotImplicit, properties);
-  AddProperty(shorthand.properties()[2]->PropertyID(), shorthand_id,
-              *attachment_list, important, IsImplicitProperty::kNotImplicit,
-              properties);
+  if (RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()) {
+    DCHECK_EQ(shorthand.length(), 3u);
+    AddProperty(shorthand.properties()[2]->PropertyID(), shorthand_id,
+                *attachment_list, important, IsImplicitProperty::kNotImplicit,
+                properties);
+  }
 
   return range.AtEnd();
 }
@@ -3340,9 +3347,8 @@ const CSSValue* ScrollStart::CSSValueFromComputedStyleInternal(
   const CSSValue* inline_value =
       scrollStartShorthand().properties()[1]->CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style);
-  if (!(IsA<CSSIdentifierValue>(inline_value) &&
-        To<CSSIdentifierValue>(*inline_value).GetValueID() ==
-            CSSValueID::kStart)) {
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(inline_value);
+      !ident_value || ident_value->GetValueID() != CSSValueID::kStart) {
     return MakeGarbageCollected<CSSValuePair>(
         block_value, inline_value, CSSValuePair::kDropIdenticalValues);
   }
@@ -3409,7 +3415,10 @@ const CSSValue* ScrollTimeline::CSSValueFromComputedStyleInternal(
                                  : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ScrollTimelineAxis();
   const Vector<TimelineAttachment>& attachment_vector =
-      style.ScrollTimelineAttachment();
+      RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()
+          ? style.ScrollTimelineAttachment()
+          : Vector<TimelineAttachment>(name_vector.size(),
+                                       TimelineAttachment::kLocal);
   return CSSValueForTimelineShorthand(name_vector, axis_vector,
                                       attachment_vector);
 }
@@ -3577,7 +3586,10 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
                                : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
   const Vector<TimelineAttachment>& attachment_vector =
-      style.ViewTimelineAttachment();
+      RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()
+          ? style.ViewTimelineAttachment()
+          : Vector<TimelineAttachment>(name_vector.size(),
+                                       TimelineAttachment::kLocal);
   return CSSValueForTimelineShorthand(name_vector, axis_vector,
                                       attachment_vector);
 }

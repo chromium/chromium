@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fragment Mutation Tests</title>
+<script>
+
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+var log = [];
+
+function logResult(description, outcome)
+{
+    log.push({ description: description, outcome: outcome});
+}
+
+function printLog(methodName)
+{
+    var entries = log.map(function(entry) {
+        return "<li>" + entry.description + ": " + entry.outcome;
+    });
+    document.body.appendChild(document.createElement("p")).innerHTML = "This test creates a fragment containing three elements: \"B\", \"U\", and \"P\", " +
+        "  attempts to " + methodName + " this fragment and studies effects of mutation events on the fragment.";
+    document.body.appendChild(document.createElement("ul")).innerHTML = entries.join("\n");
+    document.body.appendChild(document.createElement("br"));
+    log = [];
+}
+
+function produceNodeNameString(nodes)
+{
+    var node = nodes.firstChild;
+    var result = "";
+    while(node) {
+        result += node.nodeName;
+        node = node.nextSibling;
+    }
+    return result;
+}
+
+function expectException(error)
+{
+    return function(stash, exception) {
+        if (!exception)
+            return "FAIL, expected exception with code " + code + ". The resulting fragment was: \"" + produceNodeNameString(stash) + "\".";
+
+        if (exception instanceof error)
+            return "PASS";
+        return "FAIL, expected exception code: " + code + ", was: " + exception + ".";
+    }
+}
+
+function expectNodes(nodes)
+{
+    return function(stash, exception) {
+        if (exception)
+            return "FAIL, unexpected exception thrown: " + exception;
+        var result = produceNodeNameString(stash);
+        if (nodes == result)
+            return "PASS";
+        return "FAIL, expected \"" + nodes + "\", was \"" + result + "\".";
+    };
+}
+
+function testFragment(method, description, mutationHandler, expectation, nonStop)
+{
+    var once = 0;
+    var logged = 0;
+    var frag = document.createDocumentFragment();
+    var stash = document.body.appendChild(document.createElement("div"));
+        frag.appendChild(document.createElement("b"));
+        frag.appendChild(document.createElement("u"));
+        frag.appendChild(document.createElement("p"));
+        frag.addEventListener("DOMSubtreeModified", function(evt)
+        {
+            if (!nonStop && once++)
+               return;
+
+            try {
+                mutationHandler(evt, frag, stash);
+            }
+            catch(e) {
+                logResult(description, expectation(stash, e));
+                logged++;
+            }
+        }, false);
+
+    try {
+        method(stash, frag);
+    }
+    catch(e) {
+        logResult(description, expectation(stash, e));
+        logged++;
+    }
+    if (!logged)
+        logResult(description, expectation(stash));
+    document.body.removeChild(stash);
+}
+
+function appendChildMethod(object, subject)
+{
+    object.appendChild(subject);
+}
+
+function insertBeforeMethod(object, subject)
+{
+    object.insertBefore(subject, object.firstChild);
+}
+
+function runTest(methodName, method)
+{
+    var missing = document.body.appendChild(document.createElement("em"));
+    testFragment(method, "Inserting an element in front of the next item in fragment should not affect the result", function(evt, frag)
+    {
+        frag.insertBefore(missing, frag.firstChild);
+    }, expectNodes("BUP"));
+
+    var extra = document.body.appendChild(document.createElement("em"));
+    testFragment(method, "Appending an element at the end of the fragment should not affect the result", function(evt, frag)
+    {
+        frag.appendChild(extra);
+    }, expectNodes("BUP"));
+
+    testFragment(method, "Continually re-appending removed element to the fragment should eventually throw NOT_FOUND_ERR", function(evt, frag, stash)
+    {
+        stash.insertBefore(frag.lastChild, stash.firstChild);
+    }, expectException(TypeError), true);
+    printLog(methodName);
+}
+function runTests()
+{
+    runTest("appendChild", appendChildMethod);
+    runTest("insertBefore", insertBeforeMethod);
+}
+
+</script>
+</head>
+<body onload="runTests()">
+</body>
+</html>

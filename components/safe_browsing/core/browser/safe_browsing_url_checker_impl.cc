@@ -574,8 +574,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
   } else if (!can_check_db_) {
     return SafeBrowsingLookupMechanism::StartCheckResult(
         /*is_safe_synchronously=*/true,
-        /*did_check_url_real_time_allowlist=*/false,
-        /*matched_high_confidence_allowlist=*/absl::nullopt);
+        /*did_check_url_real_time_allowlist=*/false);
   } else if (hash_real_time_lookup_enabled_ &&
              HashRealTimeService::CanCheckUrl(url, request_destination_)) {
     lookup_mechanism = std::make_unique<HashRealTimeMechanism>(

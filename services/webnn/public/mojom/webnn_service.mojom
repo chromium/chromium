@@ -35,8 +35,10 @@ enum CreateContextResult {
 // interface runs in the GPU process and is called from the renderer process.
 interface WebNNContext {
   // Called by the renderer process to create `WebNNGraph` message pipe for
-  // compiling and executing computational graph
-  CreateGraph() => (pending_remote<WebNNGraph>? remote);
+  // executing computational graph, the WebNN graph will be validated and
+  // compiled. Initializes the compiled graph for optimal performance of the
+  // subsequent graph executions if the initialization is a necessary step.
+  CreateGraph(GraphInfo graph_info) => (pending_remote<WebNNGraph>? remote);
 };
 
 // This interface runs in the GPU process and is called from the renderer

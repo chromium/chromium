@@ -75,10 +75,6 @@ BASE_DECLARE_FEATURE(kJourneysPersistCachesToPrefs);
 // batches.
 BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
 
-// Enables either the hide visits thumbs-down or menu item on individual visits
-// of persisted clusters.
-BASE_DECLARE_FEATURE(kHideVisits);
-
 // Enables Journeys creating new tab groups that have names derived from the
 // cluster title. If disabled, new tab groups are anonymous.
 BASE_DECLARE_FEATURE(kJourneysNamedNewTabGroups);

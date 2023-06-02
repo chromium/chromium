@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -54,23 +55,23 @@ void HTMLOListElement::CollectStyleForPresentationAttribute(
     if (value == "a") {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
-          *MakeGarbageCollected<CSSCustomIdentValue>("lower-alpha"));
+          *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kLowerAlpha));
     } else if (value == "A") {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
-          *MakeGarbageCollected<CSSCustomIdentValue>("upper-alpha"));
+          *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kUpperAlpha));
     } else if (value == "i") {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
-          *MakeGarbageCollected<CSSCustomIdentValue>("lower-roman"));
+          *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kLowerRoman));
     } else if (value == "I") {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
-          *MakeGarbageCollected<CSSCustomIdentValue>("upper-roman"));
+          *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kUpperRoman));
     } else if (value == "1") {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kListStyleType,
-          *MakeGarbageCollected<CSSCustomIdentValue>("decimal"));
+          *MakeGarbageCollected<CSSCustomIdentValue>(keywords::kDecimal));
     }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);

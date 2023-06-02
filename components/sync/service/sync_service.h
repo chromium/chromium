@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -205,7 +206,10 @@ class SyncService : public KeyedService {
   };
 
   enum class ModelTypeDownloadStatus {
-    // State is unknown or there are updates to download from the server.
+    // State is unknown or there are updates to download from the server. Data
+    // types will be in this state until sync engine is initialized (or there is
+    // a reason to disable sync). Note that sync initialization may be deferred,
+    // the callers may use StartSyncFlare to start syncing ASAP.
     kWaitingForUpdates = 0,
 
     // There are no known server-side changes to download (local data is
@@ -306,13 +310,16 @@ class SyncService : public KeyedService {
   // instead.
   virtual bool RequiresClientUpgrade() const = 0;
 
-  // Returns true only on ChromeOS (Ash), if sync-the-feature is disabled
-  // because the user cleared data from the Sync dashboard. It can be re-enabled
-  // by invoking SetSyncFeatureRequested().
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Relevant only on ChromeOS (Ash), since the state is unreachable otherwise.
+  // Returns if sync-the-feature is disabled because the user cleared data from
+  // the Sync dashboard. It can be re-enabled by invoking
+  // SetSyncFeatureRequested().
   // TODO(crbug.com/1443446): Consider removing this API, for example by
   // reporting IsInitialSyncFeatureSetupComplete()==false which is otherwise
   // unreachable on ChromeOS Ash.
   virtual bool IsSyncFeatureDisabledViaDashboard() const = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   //////////////////////////////////////////////////////////////////////////////
   // DERIVED STATE ACCESS
@@ -509,6 +516,9 @@ class SyncService : public KeyedService {
   virtual void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) = 0;
 
+  // Returns current download status for the given |type|. The caller can use
+  // SyncServiceObserver::OnStateChanged() to track status changes. Must be
+  // called for real data types only.
   virtual ModelTypeDownloadStatus GetDownloadStatusFor(
       ModelType type) const = 0;
 

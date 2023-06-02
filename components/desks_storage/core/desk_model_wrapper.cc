@@ -5,7 +5,6 @@
 #include "components/desks_storage/core/desk_model_wrapper.h"
 
 #include "ash/public/cpp/desk_template.h"
-#include "base/logging.h"
 #include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
@@ -176,6 +175,9 @@ ash::DeskTemplate* DeskModelWrapper::FindOtherEntryWithName(
   }
 }
 
+std::string DeskModelWrapper::GetCacheGuid() {
+  return GetDeskTemplateModel()->GetCacheGuid();
+}
 desks_storage::DeskSyncBridge* DeskModelWrapper::GetDeskTemplateModel() const {
   DCHECK(desk_template_model_);
   return desk_template_model_;

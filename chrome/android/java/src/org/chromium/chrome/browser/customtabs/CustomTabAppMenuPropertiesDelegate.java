@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -180,7 +181,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                     || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-            if (isChromeScheme || url.isEmpty()) {
+            boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
+            boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
+            if (isChromeScheme || isFileScheme || isContentScheme || url.isEmpty()) {
+                addToHomeScreenVisible = false;
+            }
+
+            if (!WebappsUtils.isAddToHomeIntentSupported()) {
                 addToHomeScreenVisible = false;
             }
 

@@ -587,6 +587,8 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kLongAnimationFrame:
       if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
               GetExecutionContext())) {
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kLongAnimationFrameRequested);
         entries = &long_animation_frame_buffer_;
       }
       break;

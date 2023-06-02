@@ -48,9 +48,8 @@ bool InitializeIpczNodeForProcess(const IpczNodeOptions& options) {
       // to be expanded.
       .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
-  IpczResult result =
-      GetIpczAPI().CreateNode(&ipcz_driver::kDriver, IPCZ_INVALID_DRIVER_HANDLE,
-                              flags, &create_options, &g_node);
+  IpczResult result = GetIpczAPI().CreateNode(&ipcz_driver::kDriver, flags,
+                                              &create_options, &g_node);
   return result == IPCZ_RESULT_OK;
 }
 

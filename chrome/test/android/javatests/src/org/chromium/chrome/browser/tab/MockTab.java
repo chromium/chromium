@@ -21,6 +21,8 @@ public class MockTab extends TabImpl {
     private boolean mIsDestroyed;
     private boolean mIsBeingRestored;
 
+    private boolean mIsCustomTab;
+
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
@@ -101,6 +103,10 @@ public class MockTab extends TabImpl {
         mIsInitialized = isInitialized;
     }
 
+    public void setIsCustomTab(boolean isCustomTab) {
+        mIsCustomTab = isCustomTab;
+    }
+
     @Override
     public void destroy() {
         mIsDestroyed = true;
@@ -111,7 +117,7 @@ public class MockTab extends TabImpl {
 
     @Override
     public boolean isCustomTab() {
-        return false;
+        return mIsCustomTab;
     }
 
     @Override

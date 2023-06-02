@@ -119,17 +119,9 @@
   }
 
   #titleAnnotation {
-    align-items: center;
     background: var(--color-sys-tonal-container);
-    border-radius: 4px;
     color: var(--color-sys-on-tonal-container);
-    display: flex;
-    font-size: 9px;
-    font-weight: 500;
-    height: 17px;
-    justify-content: center;
-    line-height: 7px;
-    width: 54px;
+    min-width: 60px;
   }
 
   :host([one-image]) #titleAnnotation {
@@ -181,16 +173,23 @@
 
   #discountChip {
     background: var(--color-sys-tertiary-container);
-    border-radius: 4px;
     color: var(--color-sys-on-tertiary-container);
-    font-size: 9px;
-    font-weight: 500;
-    height: 17px;
-    line-height: 17px;
     margin-inline-start: 10px;
     min-width: 40px;
+  }
+
+  .annotation {
+    align-items: center;
+    border-radius: 4px;
+    display: flex;
+    font-size: 11px;
+    font-weight: 500;
+    height: 17px;
+    justify-content: center;
+    line-height: 16px;
+    padding-inline-end: 4px;
+    padding-inline-start: 4px;
     text-align: center;
-    width: 40px;
   }
 </style>
 
@@ -224,9 +223,11 @@
     <div id="titleContainer">
       <div id="title" class="truncate">[[cart.merchant]]</div>
       <div id="annotationContainer">
-        <div id="titleAnnotation">$i18n{modulesJourneysCartAnnotation}</div>
+        <div class="annotation" id="titleAnnotation">
+          $i18n{modulesJourneysCartAnnotation}
+        </div>
         <template is="dom-if" if="[[cart.discountText]]" restamp>
-          <div id="discountChip">[[cart.discountText]]</div>
+          <div class="annotation" id="discountChip">[[cart.discountText]]</div>
         </template>
       </div>
     </div>

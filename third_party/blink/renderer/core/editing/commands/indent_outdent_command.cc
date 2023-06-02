@@ -63,7 +63,7 @@ IndentOutdentCommand::IndentOutdentCommand(Document& document,
     : ApplyBlockElementCommand(
           document,
           html_names::kBlockquoteTag,
-          "margin: 0 0 0 40px; border: none; padding: 0px;"),
+          AtomicString("margin: 0 0 0 40px; border: none; padding: 0px;")),
       type_of_action_(type_of_action) {}
 
 bool IndentOutdentCommand::TryIndentingAsListItem(const Position& start,

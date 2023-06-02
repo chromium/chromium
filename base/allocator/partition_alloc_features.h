@@ -119,7 +119,23 @@ enum class BackupRefPtrRefCountSize {
   k16B,
 };
 
-enum class AlternateBucketDistributionMode : uint8_t {
+enum class MemtagMode {
+  // memtagMode will be SYNC.
+  kSync,
+  // memtagMode will be ASYNC.
+  kAsync,
+};
+
+enum class MemoryTaggingEnabledProcesses {
+  // Memory tagging enabled only in the browser process.
+  kBrowserOnly,
+  // Memory tagging enabled in all processes, except renderer.
+  kNonRenderer,
+  // Memory tagging enabled in all processes.
+  kAllProcesses,
+};
+
+enum class BucketDistributionMode : uint8_t {
   kDefault,
   kDenser,
 };
@@ -131,14 +147,21 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrRefCountSize>
     kBackupRefPtrRefCountSizeParam;
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
+extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
+extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
+    kMemoryTaggingEnabledProcessesParam;
+// Kill switch for memory tagging. Skips any code related to memory tagging when
+// enabled.
+BASE_EXPORT BASE_DECLARE_FEATURE(kKillPartitionAllocMemoryTagging);
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableExtractionCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableInstantiationCheckParam;
-extern const BASE_EXPORT base::FeatureParam<AlternateBucketDistributionMode>
-    kPartitionAllocAlternateBucketDistributionParam;
+extern const BASE_EXPORT base::FeatureParam<BucketDistributionMode>
+    kPartitionAllocBucketDistributionParam;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtrForAsh);
 
@@ -149,7 +172,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDCScan);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanImmediateFreeing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanEagerClearing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseAlternateDistribution);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif

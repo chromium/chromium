@@ -736,6 +736,7 @@ class WebNavigationApiFencedFrameTest : public WebNavigationApiTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames, {}},
                               {blink::features::kFencedFramesAPIChanges, {}},
+                              {blink::features::kFencedFramesDefaultMode, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
     // Fenced frames are only allowed in a secure context.
@@ -750,51 +751,5 @@ class WebNavigationApiFencedFrameTest : public WebNavigationApiTest {
 IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames")) << message_;
-}
-
-// Tests that the actual url of a fenced frame navaigation is visible to the
-// extensions
-IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, MappedURL) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
-  GURL main_url = embedded_test_server()->GetURL(
-      "a.test",
-      "/extensions/api_test/webnavigation/fencedFramesMappedURL/main.html");
-  content::RenderFrameHost* rfh =
-      ui_test_utils::NavigateToURL(browser(), main_url);
-  ASSERT_FALSE(rfh->IsErrorDocument());
-
-  const char* kScript = R"(
-    var ff = document.createElement('fencedframe');
-    document.body.appendChild(ff);
-  )";
-  EXPECT_TRUE(content::ExecJs(rfh, kScript));
-
-  ExtensionTestMessageListener background_page_read("ready",
-                                                    ReplyBehavior::kWillReply);
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("webnavigation")
-                        .AppendASCII("fencedFramesMappedURL"));
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(background_page_read.WaitUntilSatisfied());
-  background_page_read.Reply("mparch");
-  background_page_read.Reset();
-  ASSERT_TRUE(background_page_read.WaitUntilSatisfied());
-  background_page_read.Reply("");
-
-  GURL frame_url = embedded_test_server()->GetURL(
-      "b.test",
-      "/extensions/api_test/webnavigation/fencedFramesMappedURL/frame.html");
-
-  GURL urn_uuid = content::test::CreateFencedFrameURLMapping(rfh, frame_url);
-
-  ResultCatcher catcher;
-  EXPECT_TRUE(content::ExecJs(
-      rfh, content::JsReplace("ff.config = new FencedFrameConfig($1);",
-                              urn_uuid.spec())));
-  ASSERT_TRUE(catcher.GetNextResult()) << message_;
-
-  // The parent still sees the urn_uuid as the fenced frame src.
-  EXPECT_EQ(urn_uuid.spec(), content::EvalJs(rfh, "ff.config.url"));
 }
 }  // namespace extensions

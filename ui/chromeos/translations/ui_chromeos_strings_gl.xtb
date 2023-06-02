@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglés (EUA) con teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
-<translation id="1538729222189715449">Abrindo ficheiros de Linux…</translation>
 <translation id="1547964879613821194">Inglés canadense</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
 <translation id="1561842594491319104">Dispositivos Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Sitio de Google</translation>
 <translation id="1853795129690976061">Este cartafol compártese con Linux</translation>
 <translation id="1864756863218646478">Non se puido atopar o ficheiro.</translation>
+<translation id="1877377730633446520">Con esta acción usaranse aproximadamente <ph name="REQUIRED_SPACE" />. Actualmente tes <ph name="FREE_SPACE" /> de espazo dispoñible.</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
 <translation id="1920670151694390848">Malabar (transliteración)</translation>
 <translation id="1920798810075583923">Sandía</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Despregar paneis de comentarios de ficheiros</translation>
 <translation id="1995337122023280937">Ir á localización do ficheiro</translation>
 <translation id="2001796770603320721">Xestionar contido en Drive</translation>
+<translation id="2004942826429452291">Os ficheiros almacenaranse na nube e neste Chromebook.</translation>
 <translation id="2009067268969781306">Ao formatar unha unidade, eliminaranse todos os datos que conteña. Esta acción non se pode desfacer.</translation>
 <translation id="2025955442973426285">Tigriña</translation>
 <translation id="2037845485764049925">Ruso</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Axustes do dispositivo</translation>
 <translation id="2084809735218147718">Signo de agradecemento</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
+<translation id="2089751716171649322">Accede facilmente aos ficheiros de Google Drive cando esteas sen conexión</translation>
 <translation id="2111134541987263231">Activa <ph name="BEGIN_BOLD" />Permitir no modo de incógnito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Eliminaranse <ph name="NUMBER_OF_ITEMS" /> elementos e non poderás restablecelos.</translation>
 <translation id="2122305276694332719">Ao conectarte automaticamente a unha rede oculta, outros usuarios poden ver o teu dispositivo e parte da configuración de rede. Por iso esta opción non é recomendable.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Instalar con Linux</translation>
 <translation id="2225536596944493418">Seguro que queres eliminar <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">Non se puido crear o cartafol "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Borrouse a memoria caché da túa conta de Google Drive.</translation>
 <translation id="2239068707900391003">Persoa con café</translation>
 <translation id="2251368349685848079">Restaurar desde a papeleira</translation>
 <translation id="2278133026967558505">Acceso aos ficheiros por parte de todos os URL e sitios web</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
+<translation id="3501954296166022751">Os teus ficheiros de Google Drive están dispoñibles sen conexión</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3511705761158917664">Preparando sincronización de <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="3522708245912499433">Portugués</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Ao cambiar esta opción de configuración, veranse afectadas todas as redes compartidas</translation>
 <translation id="3737576078404241332">Quitar da barra lateral</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
-<translation id="3780536599611287598">Non tes permiso para mover os ficheiros a "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Non tes conexión</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3793469551756281394">Tempo restante aproximado: <ph name="REMAINING_TIME_HOUR" /> e <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465725236958772856">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, xestionada polo teu administrador, conectar</translation>
 <translation id="4470564870223067757">Dobre alternancia hangul</translation>
+<translation id="4472575034687746823">Comezar</translation>
 <translation id="4474142134969976028">Non hai ningún resultado que coincida</translation>
 <translation id="4477002475007461989">Romanés</translation>
 <translation id="4477219268485577442">Búlgaro fonético</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4805966553127040832">Restaurando <ph name="COUNT" /> elementos</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Para poder utilizar o modo de incógnito, a túa organización esixe o uso dunha extensión}other{Para poder usar o modo de incógnito, a túa organización esixe o uso de varias extensións}}</translation>
-<translation id="4823651846660089135">O dispositivo é de só lectura</translation>
 <translation id="4826849268470072925">Támil (ITRANS)</translation>
 <translation id="482932175346970750">Escribe <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -572,6 +573,7 @@
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5500122897333236901">Islandés</translation>
 <translation id="5508696409934741614">Puntos</translation>
+<translation id="5519161320735100193">Configuración de Google Drive</translation>
 <translation id="5522908512596376669">A lista de ficheiros cambiou á vista de lista.</translation>
 <translation id="5524517123096967210">Non se puido ler o ficheiro.</translation>
 <translation id="5533102081734025921">Imaxe <ph name="IMAGE_TYPE" /></translation>
@@ -618,6 +620,7 @@
 <translation id="5838451609423551646">Quitáronse todas as entradas da selección.</translation>
 <translation id="5838825566232597749">Internacional Workman estadounidense</translation>
 <translation id="5845721951356578987">Membro do persoal de enfermaría</translation>
+<translation id="5860491529813859533">Activar</translation>
 <translation id="5861477046012235702">Persoa xogadora</translation>
 <translation id="5864471791310927901">Produciuse un erro na busca de DHCP</translation>
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
@@ -675,7 +678,6 @@
 <translation id="6327785803543103246">Detección automática do proxy web</translation>
 <translation id="6337014272874260727">Deixar de fixar en ficheiros rápidos</translation>
 <translation id="6339145975392024142">Internacional dos EUA (PC)</translation>
-<translation id="6346310558342052870">Acceso restrinxido</translation>
 <translation id="6356685157277930264">Ventá de información sobre a aplicación Ficheiros</translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="636254897931573416">O valor da coincidencia do sufixo de dominio non é válido</translation>
@@ -863,6 +865,7 @@
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7806708061868529807">Hebreo</translation>
 <translation id="78104721049218340">Tailandés con teclado Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Produciuse un erro ao configurar a rede</translation>
 <translation id="7839804798877833423">A recuperación destes ficheiros ocupará aproximadamente <ph name="FILE_SIZE" /> de datos móbiles.</translation>
@@ -875,15 +878,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Cando se formata unha partición, bórranse todos os datos que contén. Esta acción non se pode desfacer.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Os ficheiros de A miña unidade sincronizaranse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet.</translation>
 <translation id="7925247922861151263">Erro de comprobación de AAA</translation>
 <translation id="7925686952655276919">Non utilizar datos móbiles para a sincronización</translation>
 <translation id="7928710562641958568">Expulsar dispositivo</translation>
+<translation id="7933875256234974853">Preparando todo para sincronizar ficheiros de Drive...</translation>
 <translation id="7943385054491506837">Colemak para EUA</translation>
 <translation id="7953739707111622108">Non se pode abrir este dispositivo porque non se recoñeceu o seu sistema de ficheiros.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francés (Suíza)</translation>
 <translation id="7973962044839454485">Non se puido efectuar a autenticación de PPP debido a un nome de usuario ou un contrasinal incorrecto</translation>
 <translation id="7980421588063892270">Inglés (EUA) con teclado Colemak</translation>
+<translation id="7985008041109611710">Sincronizando <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros</translation>
 <translation id="8000066093800657092">Sen rede</translation>
 <translation id="8008366997883261463">Can</translation>
 <translation id="8028993641010258682">Tamaño</translation>
@@ -1005,6 +1011,7 @@
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8949925099261528566">Con conexión, sen Internet</translation>
 <translation id="8965697826696209160">Non hai espazo suficiente.</translation>
+<translation id="8971742885766657349">Sincronizando - <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Chinés tradicional (Pinyin)</translation>
 <translation id="8998871447376656508">Non tes suficiente espazo libre en Google Drive para completar a carga.</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
@@ -1038,6 +1045,7 @@
 <translation id="9213073329713032541">Iniciouse correctamente a instalación.</translation>
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="9219908252191632183">Paisaxe lunar</translation>
+<translation id="937795003075802289">Sincronizando 1 ficheiro</translation>
 <translation id="938470336146445890">Instala un certificado de usuario</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="943972244133411984">Modificado por</translation>

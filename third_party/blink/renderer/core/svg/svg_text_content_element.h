@@ -85,6 +85,10 @@ class CORE_EXPORT SVGTextContentElement : public SVGGraphicsElement {
 
   bool SelfHasRelativeLengths() const override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
  private:
   bool IsTextContent() const final { return true; }
 

@@ -171,6 +171,13 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void ProcessSelection() { model_->PostProcessSelection(); }
 
+  bool RequiresPostProcessSelection() {
+    return model_->requires_post_process_selection();
+  }
+  void SetRequiresPostProcessSelection(bool requires_post_process_selection) {
+    model_->set_requires_distillation(requires_post_process_selection);
+  }
+
   ui::AXTreeID tree_id_;
 
  private:
@@ -734,8 +741,10 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelection_SelectionStateCorrect) {
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({update});
+  SetRequiresPostProcessSelection(true);
   ProcessSelection();
 
+  ASSERT_FALSE(RequiresPostProcessSelection());
   ASSERT_TRUE(HasSelection());
 
   ASSERT_TRUE(SelectionNodeIdsContains(1));
@@ -814,6 +823,45 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes[3].role = ax::mojom::Role::kStaticText;
   update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
                                      "inline-block");
+  AccessibilityEventReceived({update});
+
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+
+  ASSERT_TRUE(HasSelection());
+  ASSERT_EQ(StartNodeId(), 4);
+  ASSERT_EQ(EndNodeId(), 4);
+
+  ASSERT_TRUE(SelectionNodeIdsContains(1));
+  ASSERT_FALSE(SelectionNodeIdsContains(2));
+  ASSERT_TRUE(SelectionNodeIdsContains(3));
+  ASSERT_TRUE(SelectionNodeIdsContains(4));
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SelectionParentIsListItem_SelectionStateCorrect) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(4);
+  update.nodes[0].id = 1;
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[3].id = 4;
+  update.nodes[0].child_ids = {2, 3};
+  update.nodes[2].child_ids = {4};
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].role = ax::mojom::Role::kLink;
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                     "block");
+  update.nodes[3].role = ax::mojom::Role::kStaticText;
+  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                     "list-item");
   AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;

@@ -225,6 +225,14 @@ BASE_FEATURE(kBrowserVerifiedUserActivationMouse,
              "BrowserVerifiedUserActivationMouse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows pages with cache-control:no-store to enter the back/forward cache.
+// Feature params can specify whether pages with cache-control:no-store can be
+// restored if cookies change / if HTTPOnly cookies change.
+// TODO(crbug.com/1228611): Enable this feature.
+BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
+             "CacheControlNoStoreEnterBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kCanvas2DImageChromium,
@@ -783,14 +791,6 @@ BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If Pepper 3D Image Chromium is allowed, this feature controls whether it is
-// enabled.
-// TODO(https://crbug.com/1196009): Remove this feature, remove the code that
-// uses it.
-BASE_FEATURE(kPepper3DImageChromium,
-             "Pepper3DImageChromium",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill-switch to introduce a compatibility breaking restriction.
 BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
              "PepperCrossOriginRedirectRestriction",
@@ -926,6 +926,13 @@ BASE_FEATURE(kOriginKeyedProcessesByDefault,
 // for subscription refreshes, revoked permissions or subscription losses
 BASE_FEATURE(kPushSubscriptionChangeEvent,
              "PushSubscriptionChangeEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, queues navigations instead of cancelling the previous
+// navigation if the previous navigation is already waiting for commit.
+// See https://crbug.com/838348 and https://crbug.com/1220337.
+BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
+             "QueueNavigationsWhileWaitingForCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning

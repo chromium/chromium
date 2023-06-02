@@ -49,20 +49,10 @@ bool IsNaturalScrollOn() {
          pref->GetBoolean(prefs::kNaturalScroll);
 }
 
-int GetOffsetX(int offset) {
-  // The handler code uses the new directions which is the reverse of the old
-  // handler code. Reverse the offset if the ReverseScrollGestures feature is
-  // disabled so that the unit tests test the old behavior.
-  return features::IsReverseScrollGesturesEnabled() ? offset : -offset;
-}
-
 int GetOffsetY(int offset) {
-  // The handler code uses the new directions which is the reverse of the old
-  // handler code. Reverse the offset if the ReverseScrollGestures feature is
-  // disabled so that the unit tests test the old behavior.
-  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
-    return -offset;
-  return offset;
+  // Reverse the offset if natural scroll is enabled so that the unit tests test
+  // the opposite direction.
+  return IsNaturalScrollOn() ? -offset : offset;
 }
 
 }  // namespace
@@ -75,9 +65,9 @@ class WmGestureHandlerTest : public AshTestBase {
   ~WmGestureHandlerTest() override = default;
 
   void Scroll(float x_offset, float y_offset, int fingers) {
-    GetEventGenerator()->ScrollSequence(
-        gfx::Point(), base::Milliseconds(5), GetOffsetX(x_offset),
-        GetOffsetY(y_offset), /*steps=*/100, fingers);
+    GetEventGenerator()->ScrollSequence(gfx::Point(), base::Milliseconds(5),
+                                        x_offset, GetOffsetY(y_offset),
+                                        /*steps=*/100, fingers);
   }
 
   void MouseWheelScroll(int delta_x, int delta_y, int num_of_times) {
@@ -101,9 +91,6 @@ TEST_F(WmGestureHandlerTest, VerticalScrolls) {
 
 // Tests wrong gestures that swiping down to enter and up to exit overview.
 TEST_F(WmGestureHandlerTest, WrongVerticalScrolls) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kReverseScrollGestures);
-
   const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
 
   // Swiping down cannot enter overview.
@@ -140,8 +127,7 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
   auto scroll_until_window_highlighted = [this](float x_offset,
                                                 float y_offset) {
     do {
-      Scroll(GetOffsetX(x_offset), GetOffsetY(y_offset),
-             kNumFingersForHighlight);
+      Scroll(x_offset, GetOffsetY(y_offset), kNumFingersForHighlight);
     } while (!GetHighlightedWindow());
   };
 
@@ -342,7 +328,6 @@ class ReverseGestureHandlerTest : public WmGestureHandlerTest {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kReverseScrollGestures);
     AshTestBase::SetUp();
 
     // Set natural scroll on.
@@ -352,9 +337,6 @@ class ReverseGestureHandlerTest : public WmGestureHandlerTest {
     pref->SetBoolean(prefs::kNaturalScroll, true);
     pref->SetBoolean(prefs::kMouseReverseScroll, true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ReverseGestureHandlerTest, Overview) {

@@ -41,6 +41,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
 public class AdaptiveToolbarButtonController
@@ -196,7 +197,7 @@ public class AdaptiveToolbarButtonController
         mButtonData.setEnabled(receivedButtonData.isEnabled());
         final ButtonSpec receivedButtonSpec = receivedButtonData.getButtonSpec();
         // ButtonSpec is immutable, so we keep the previous value when noting changes.
-        if (receivedButtonSpec != mOriginalButtonSpec) {
+        if (!Objects.equals(receivedButtonSpec, mOriginalButtonSpec)) {
             assert receivedButtonSpec.getOnLongClickListener()
                     == null
                 : "adaptive button variants are expected to not set a long click listener";

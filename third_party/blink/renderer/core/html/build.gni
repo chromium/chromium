@@ -9,6 +9,8 @@ blink_core_sources_html = [
   "anchor_element_metrics_sender.h",
   "anchor_element_observer.cc",
   "anchor_element_observer.h",
+  "anchor_element_observer_for_service_worker.cc",
+  "anchor_element_observer_for_service_worker.h",
   "blocking_attribute.cc",
   "blocking_attribute.h",
   "canvas/canvas_async_blob_creator.cc",

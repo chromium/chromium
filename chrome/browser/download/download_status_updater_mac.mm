@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"

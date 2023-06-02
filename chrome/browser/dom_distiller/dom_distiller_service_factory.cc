@@ -36,7 +36,8 @@ DomDistillerContextKeyedService::DomDistillerContextKeyedService(
 
 // static
 DomDistillerServiceFactory* DomDistillerServiceFactory::GetInstance() {
-  return base::Singleton<DomDistillerServiceFactory>::get();
+  static base::NoDestructor<DomDistillerServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -59,7 +60,7 @@ DomDistillerServiceFactory::DomDistillerServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-DomDistillerServiceFactory::~DomDistillerServiceFactory() {}
+DomDistillerServiceFactory::~DomDistillerServiceFactory() = default;
 
 KeyedService* DomDistillerServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

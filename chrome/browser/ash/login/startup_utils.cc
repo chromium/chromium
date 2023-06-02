@@ -104,6 +104,7 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestAcceptedTos, false);
+  registry->RegisterBooleanPref(prefs::kOobeCriticalUpdate, false);
   if (switches::IsRevenBranding()) {
     registry->RegisterBooleanPref(prefs::kOobeRevenUpdatedToFlex, false);
   }
@@ -146,6 +147,10 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   if (features::IsOobeDrivePinningEnabled()) {
     registry->RegisterBooleanPref(prefs::kOobeDrivePinningEnabledDeferred,
                                   false);
+  }
+
+  if (features::IsOobeDisplaySizeEnabled()) {
+    registry->RegisterDoublePref(prefs::kOobeDisplaySizeFactorDeferred, 1.0);
   }
 
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);

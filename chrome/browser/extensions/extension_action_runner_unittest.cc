@@ -87,7 +87,8 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override;
 
   // The associated ExtensionActionRunner.
-  raw_ptr<ExtensionActionRunner> extension_action_runner_ = nullptr;
+  raw_ptr<ExtensionActionRunner, DanglingUntriaged> extension_action_runner_ =
+      nullptr;
 
   // The map of observed executions, keyed by extension id.
   std::map<std::string, int> extension_executions_;

@@ -1894,7 +1894,7 @@ class BindUnretainedDanglingInternalFixture : public BindTest {
   }
   template <typename T, RawPtrTraits Traits>
   void Free(raw_ptr<T, Traits>& ptr) {
-    allocator_.root()->Free(ptr);
+    allocator_.root()->Free(ptr.ExtractAsDangling());
   }
 
  private:

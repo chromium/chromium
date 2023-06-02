@@ -51,13 +51,15 @@ class AutofillPopupDelegate {
   // fills out |title| and |body|.
   virtual bool GetDeletionConfirmationText(const std::u16string& value,
                                            Suggestion::FrontendId frontend_id,
+                                           Suggestion::BackendId backend_id,
                                            std::u16string* title,
                                            std::u16string* body) = 0;
 
   // Delete the described suggestion. Returns true if something was deleted,
   // or false if deletion is not allowed.
   virtual bool RemoveSuggestion(const std::u16string& value,
-                                Suggestion::FrontendId frontend_id) = 0;
+                                Suggestion::FrontendId frontend_id,
+                                Suggestion::BackendId backend_id) = 0;
 
   // Informs the delegate that the Autofill previewed form should be cleared.
   virtual void ClearPreviewedForm() = 0;

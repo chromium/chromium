@@ -11,6 +11,7 @@ import unittest.mock as mock
 
 from typing import List, Tuple
 
+from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import data_types
 from flake_suppressor_common import results
 from flake_suppressor_common import tag_utils as common_tag_utils
@@ -113,6 +114,88 @@ class AggregateResultsUnittest(BaseResultsUnittest):
         },
     }
     self.assertEqual(self._results.AggregateResults(query_results),
+                     expected_output)
+
+
+class AggregateTestStatusResultsUnittest(BaseResultsUnittest):
+  def testBasic(self) -> None:
+    """Basic functionality test."""
+    query_results = [
+        {
+            'name': ('gpu_tests.webgl_conformance_integration_test.'
+                     'WebGLConformanceIntegrationTest.'
+                     'conformance/textures/misc/video-rotation.html'),
+            'id':
+            'build-1111',
+            # The win-laptop tag is ignored, and thus should be removed in the
+            # output.
+            'typ_tags': ['win', 'nvidia', 'win-laptop'],
+            'status':
+            ct.ResultStatus.FAIL,
+        },
+        {
+            'name': ('gpu_tests.webgl_conformance_integration_test.'
+                     'WebGLConformanceIntegrationTest.'
+                     'conformance/textures/misc/video-rotation.html'),
+            'id':
+            'build-2222',
+            'typ_tags': ['win', 'nvidia'],
+            'status':
+            ct.ResultStatus.CRASH,
+        },
+        {
+            'name': ('gpu_tests.webgl_conformance_integration_test.'
+                     'WebGLConformanceIntegrationTest.'
+                     'conformance/textures/misc/video-rotation.html'),
+            'id':
+            'build-3333',
+            'typ_tags': ['win', 'amd'],
+            'status':
+            ct.ResultStatus.FAIL,
+        },
+        {
+            'name': ('gpu_tests.webgl_conformance_integration_test.'
+                     'WebGLConformanceIntegrationTest.'
+                     'conformance/textures/misc/texture-npot-video.html'),
+            'id':
+            'build-4444',
+            'typ_tags': ['win', 'nvidia'],
+            'status':
+            ct.ResultStatus.FAIL,
+        },
+        {
+            'name': ('gpu_tests.pixel_integration_test.PixelIntegrationTest.'
+                     'Pixel_CSS3DBlueBox'),
+            'id':
+            'build-5555',
+            'typ_tags': ['win', 'nvidia'],
+            'status':
+            ct.ResultStatus.FAIL,
+        },
+    ]
+    expected_output = {
+        'webgl_conformance_integration_test': {
+            'conformance/textures/misc/video-rotation.html': {
+                ('nvidia', 'win'): [
+                    (ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/1111'),
+                    (ct.ResultStatus.CRASH, 'http://ci.chromium.org/b/2222'),
+                ],
+                ('amd', 'win'):
+                [(ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/3333')],
+            },
+            'conformance/textures/misc/texture-npot-video.html': {
+                ('nvidia', 'win'):
+                [(ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/4444')],
+            },
+        },
+        'pixel_integration_test': {
+            'Pixel_CSS3DBlueBox': {
+                ('nvidia', 'win'):
+                [(ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/5555')],
+            },
+        },
+    }
+    self.assertEqual(self._results.AggregateTestStatusResults(query_results),
                      expected_output)
 
 

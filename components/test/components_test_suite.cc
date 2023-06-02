@@ -30,8 +30,8 @@
 #if !BUILDFLAG(USE_BLINK)
 #include "components/test/ios_components_test_initializer.h"
 #else
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/unittest_test_suite.h"
 #include "ui/gl/test/gl_surface_test_support.h"
@@ -66,7 +66,7 @@ class ComponentsTestSuite : public base::TestSuite {
 #if BUILDFLAG(USE_BLINK)
     gl::GLSurfaceTestSupport::InitializeOneOff();
 
-    content::ForceInProcessNetworkService(true);
+    content::ForceInProcessNetworkService();
 
     // Setup content scheme statics.
     {

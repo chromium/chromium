@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/metadata/view_factory.h"
@@ -41,6 +42,9 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
  public:
   METADATA_HEADER(DialogClientView);
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
+
   DialogClientView(Widget* widget, View* contents_view);
 
   DialogClientView(const DialogClientView&) = delete;
@@ -68,8 +72,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // Essentially it prevents clicks that happen within a user's double click
   // interval from when the protection is started as well as any following
   // clicks that happen in shorter succession than the user's double click
-  // interval. Refer to InputEventActivationProtector for more information.
-  void TriggerInputProtection();
+  // interval. Refer to InputEventActivationProtector for more information. If
+  // |force_early| is true, force to trigger even earlier (shortly before the
+  // this view is visible).
+  void TriggerInputProtection(bool force_early = false);
 
   void Layout() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

@@ -8,21 +8,11 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browsing_topics {
 
 using HmacKey = std::array<uint8_t, 32>;
 using ReadOnlyHmacKey = base::span<const uint8_t, 32>;
-
-// Get the size of the taxonomy. This is used for generating random topics from
-// [1, `GetTaxonomySize()`]. It returns nullopt if this Chrome binary does not
-// support the finch configured taxonomy version
-// `kBrowsingTopicsTaxonomyVersion`.
-//
-// TODO(yaoxia): this should be maintained by UX along with the string mappings.
-// Consider moving to a UX component.
-absl::optional<size_t> GetTaxonomySize();
 
 // Generate a 256 bit random hmac key.
 HmacKey GenerateRandomHmacKey();

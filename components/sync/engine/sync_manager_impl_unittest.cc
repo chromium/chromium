@@ -48,6 +48,8 @@
 #include "url/gurl.h"
 
 using testing::_;
+using testing::SaveArg;
+using testing::Sequence;
 using testing::StrictMock;
 
 namespace syncer {
@@ -133,6 +135,7 @@ class MockSyncScheduler : public FakeSyncScheduler {
                ModelTypeSet types_to_download,
                base::OnceClosure ready_task),
               (override));
+  MOCK_METHOD(void, SetHasPendingInvalidations, (ModelType, bool), (override));
 };
 
 class ComponentsFactory : public TestEngineComponentsFactory {
@@ -206,6 +209,7 @@ class SyncManagerImplTest : public testing::Test {
 
   SyncManagerImpl* sync_manager() { return &sync_manager_; }
   MockSyncScheduler* scheduler() { return scheduler_; }
+  SyncManagerObserverMock* manager_observer() { return &manager_observer_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -219,7 +223,7 @@ class SyncManagerImplTest : public testing::Test {
   // Owned by |sync_manager_|.
   raw_ptr<StrictMock<SyncEncryptionHandlerObserverMock>> encryption_observer_ =
       nullptr;
-  raw_ptr<MockSyncScheduler> scheduler_ = nullptr;
+  raw_ptr<MockSyncScheduler, DanglingUntriaged> scheduler_ = nullptr;
 };
 
 // Test that the configuration params are properly created and sent to
@@ -236,6 +240,29 @@ TEST_F(SyncManagerImplTest, BasicConfiguration) {
   sync_manager()->ConfigureSyncer(
       CONFIGURE_REASON_RECONFIGURATION, types_to_download,
       SyncManager::SyncFeatureState::ON, ready_task.Get());
+}
+
+TEST_F(SyncManagerImplTest, ShouldSetHasPendingInvalidations) {
+  Sequence s1;
+  EXPECT_CALL(*scheduler(),
+              SetHasPendingInvalidations(BOOKMARKS, /*has_invalidation=*/true))
+      .InSequence(s1);
+  EXPECT_CALL(*scheduler(),
+              SetHasPendingInvalidations(BOOKMARKS, /*has_invalidation=*/false))
+      .InSequence(s1);
+  SyncStatus status;
+  EXPECT_CALL(*manager_observer(), OnSyncStatusChanged)
+      .Times(2)
+      .WillRepeatedly(SaveArg<0>(&status));
+
+  sync_manager()->SetHasPendingInvalidations(
+      BOOKMARKS, /*has_pending_invalidations=*/true);
+  EXPECT_EQ(status.invalidated_data_types.Size(), 1u);
+  EXPECT_TRUE(status.invalidated_data_types.Has(BOOKMARKS));
+
+  sync_manager()->SetHasPendingInvalidations(
+      BOOKMARKS, /*has_pending_invalidations=*/false);
+  EXPECT_TRUE(status.invalidated_data_types.Empty());
 }
 
 }  // namespace

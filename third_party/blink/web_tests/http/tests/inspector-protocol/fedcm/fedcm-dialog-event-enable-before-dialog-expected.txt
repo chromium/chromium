@@ -1,0 +1,32 @@
+Check that the dialogShown event works after enabling the FedCm domain then triggering the FedCm dialog
+msg.params: {
+    accounts : [
+        [0] : {
+            accountId : 1234
+            email : john_doe@idp.example
+            givenName : John
+            idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
+            idpSigninUrl : https://idp.example/signin
+            loginState : SignIn
+            name : John Doe
+            pictureUrl : https://idp.example/profile/123
+        }
+        [1] : {
+            accountId : 5678
+            email : aisha@idp.example
+            givenName : Aisha
+            idpConfigUrl : https://devtools.test:8443/resources/fedcm/fedcm.json
+            idpSigninUrl : https://idp.example/signin
+            loginState : SignUp
+            name : Aisha Ahmad
+            pictureUrl : https://idp.example/profile/567
+            privacyPolicyUrl : https://rp.example/privacy_policy.html
+            termsOfServiceUrl : https://rp.example/terms_of_service.html
+        }
+    ]
+    dialogId : <string>
+    dialogType : AccountChooser
+    title : Sign in
+}
+token: 1234
+

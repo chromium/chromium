@@ -32,7 +32,7 @@
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1647582022260550163">権限をリセットし、Cookie とサイトデータを削除してもよろしいですか？</translation>
 <translation id="1660204651932907780">音声の再生をサイトに許可する（推奨）</translation>
-<translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のカスタマイズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1688867105868176567">サイトデータを削除しますか？</translation>
 <translation id="169515064810179024">サイトによるモーション センサーへのアクセスをブロックする</translation>
 <translation id="1717218214683051432">モーション センサー</translation>
@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
 <translation id="4428065317363009941">広告のカスタマイズ</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
-<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> を開く</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 件の Cookie}other{# 件の Cookie}}</translation>
 <translation id="4478158430052450698">サイトごとにズーム設定をカスタマイズしやすくします</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7882806643839505685">特定のサイトに対して音声の再生を許可します。</translation>
 <translation id="789180354981963912">シークレット モードでサードパーティの Cookie をブロックする:</translation>
+<translation id="7895868624847501462">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="DOMAIN" /> とその下にある全サイトの全権限がリセットされます</translation>
 <translation id="7940722705963108451">リマインダーの設定</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{グループでのアクティビティを確認できる <ph name="FPS_OWNER" /> のサイトグループの <ph name="FPS_MEMBERS_COUNT" /> 件のサイト}other{グループでのアクティビティを確認できる <ph name="FPS_OWNER" /> のサイトグループの <ph name="FPS_MEMBERS_COUNT" /> 件のサイト}}</translation>
 <translation id="7986741934819883144">連絡先の選択</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">アプリによる管理</translation>
 <translation id="8324158725704657629">次回から表示しない</translation>
+<translation id="8338445138528827481">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="ORIGIN" /> のすべての権限がリセットされます</translation>
 <translation id="8362795839483915693">アクセスしたサイトを拡大、縮小できます</translation>
 <translation id="8372893542064058268">特定のサイトに対してバックグラウンド同期を許可します。</translation>
 <translation id="8376384591331888629">サイト上のサードパーティ Cookie も対象</translation>

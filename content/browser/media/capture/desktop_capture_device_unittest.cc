@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/tick_clock.h"
@@ -73,6 +75,8 @@ const uint8_t kFakePixelValue = 1;
 // Use a special value for the first pixel to verify the result in the inverted
 // frame test.
 const uint8_t kFakePixelValueFirst = 2;
+
+const char kFrameIsRefresh[] = "WebRTC.DesktopCapture.FrameIsRefresh.Screen";
 
 // Creates a DesktopFrame that has the first pixel bytes set to
 // kFakePixelValueFirst, and the rest of the bytes set to kFakePixelValue, for
@@ -299,6 +303,7 @@ class DesktopCaptureDeviceTest : public testing::Test {
     return result;
   }
 
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<DesktopCaptureDevice> capture_device_;
   std::unique_ptr<webrtc::DesktopFrame> output_frame_;
 };
@@ -622,8 +627,10 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameBeforeStart) {
   EXPECT_CALL(*client, OnStarted()).Times(0);
   EXPECT_CALL(*client, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
       .Times(0);
+
   capture_device_->RequestRefreshFrame();
   capture_device_->StopAndDeAllocate();
+  histogram_tester_.ExpectTotalCount(kFrameIsRefresh, 0);
 }
 
 // This test verifies that calling RequestRefreshFrame() on the screen capturer
@@ -661,33 +668,27 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameAfterStop) {
   EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
   done_event.Reset();
   capture_device_->StopAndDeAllocate();
+  histogram_tester_.ExpectBucketCount(kFrameIsRefresh, false, 1);
+  histogram_tester_.ExpectTotalCount(kFrameIsRefresh, 1);
   capture_device_->RequestRefreshFrame();
+  histogram_tester_.ExpectTotalCount(kFrameIsRefresh, 1);
 }
 
-// Verify that calling RequestRefreshFrame() results in a copy of the last
-// captured frame being sent to the client via OnIncomingCapturedData().
-//
-// TODO(crbug.com/1421656) The test is currently broken due to a change that
-// was required to fix a serious flickering issue. Attempts will be made to
-// enable this test again in a separate CL (and possibly in a new shape) once
-// the main fix has landed.
-TEST_F(DesktopCaptureDeviceTest, DISABLED_RequestRefreshFrameSendsLatestFrame) {
+// Verify that calling RequestRefreshFrame() results in an extra frame being
+// captured and sent to the client. The content should not be the same as for
+// the first default frame.
+TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameSendsExtraFrame) {
   FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
   CreateScreenCaptureDevice(
       std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
 
-  media::VideoCaptureFormat format;
+  FormatChecker format_checker(gfx::Size(kTestFrameWidth1, kTestFrameHeight1),
+                               gfx::Size(kTestFrameWidth1, kTestFrameHeight1));
   base::WaitableEvent done_event(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  int frame_size = 0;
-  output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
-      webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1));
-
-  // Ensure that we receive two calls to OnIncomingCapturedData() even if only
-  // one frame is captured and that the received second frame (which is a
-  // result of calling RequestRefreshFrame) is a copy of the first frame.
+  // Ensure that we receive two calls to OnIncomingCapturedData().
   std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
       CreateMockVideoCaptureDeviceClient());
   EXPECT_CALL(*client, OnError(_, _, _)).Times(0);
@@ -695,8 +696,8 @@ TEST_F(DesktopCaptureDeviceTest, DISABLED_RequestRefreshFrameSendsLatestFrame) {
   EXPECT_CALL(*client, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
       .Times(2)
       .WillRepeatedly(
-          DoAll(Invoke(this, &DesktopCaptureDeviceTest::CopyFrame),
-                SaveArg<1>(&frame_size),
+          DoAll(WithArg<2>(Invoke(&format_checker,
+                                  &FormatChecker::ExpectAcceptableSize)),
                 InvokeWithoutArgs(&done_event, &base::WaitableEvent::Signal)));
 
   media::VideoCaptureParams capture_params;
@@ -706,21 +707,17 @@ TEST_F(DesktopCaptureDeviceTest, DISABLED_RequestRefreshFrameSendsLatestFrame) {
   capture_params.requested_format.pixel_format = media::PIXEL_FORMAT_I420;
 
   capture_device_->AllocateAndStart(capture_params, std::move(client));
-
-  EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
-  done_event.Reset();
-
   capture_device_->RequestRefreshFrame();
-  capture_device_->StopAndDeAllocate();
 
-  // Verifies that |output_frame_| has the same pixel values and size as the
-  // first (and only) captured frame.
-  std::unique_ptr<webrtc::BasicDesktopFrame> expected_frame = CreateBasicFrame(
-      webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1));
-  EXPECT_EQ(output_frame_->stride() * output_frame_->size().height(),
-            frame_size);
-  EXPECT_EQ(0,
-            memcmp(output_frame_->data(), expected_frame->data(), frame_size));
+  // Capture two frames; one default (the first) and one refresh (the second).
+  // The mock for OnIncomingCapturedData() will use FormatChecker to examine the
+  // format of each frame being delivered.
+  EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
+  histogram_tester_.ExpectBucketCount(kFrameIsRefresh, false, 1);
+  EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
+  capture_device_->StopAndDeAllocate();
+  histogram_tester_.ExpectBucketCount(kFrameIsRefresh, true, 1);
+  histogram_tester_.ExpectTotalCount(kFrameIsRefresh, 2);
 }
 
 // Verifies that only captured frames which contains updated regions are
@@ -737,10 +734,7 @@ TEST_F(DesktopCaptureDeviceTest,
   CreateScreenCaptureDevice(
       std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
 
-  base::WaitableEvent done_event1(
-      base::WaitableEvent::ResetPolicy::AUTOMATIC,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  base::WaitableEvent done_event2(
+  base::WaitableEvent done_event(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
@@ -752,8 +746,9 @@ TEST_F(DesktopCaptureDeviceTest,
   EXPECT_CALL(*client, OnError).Times(0);
   EXPECT_CALL(*client, OnFrameDropped).Times(0);
   EXPECT_CALL(*client, OnIncomingCapturedData)
-      .WillOnce(InvokeWithoutArgs(&done_event1, &base::WaitableEvent::Signal))
-      .WillOnce(InvokeWithoutArgs(&done_event2, &base::WaitableEvent::Signal));
+      .Times(2)
+      .WillRepeatedly(
+          InvokeWithoutArgs(&done_event, &base::WaitableEvent::Signal));
 
   media::VideoCaptureParams capture_params;
   capture_params.requested_format.frame_size.SetSize(kTestFrameWidth3,
@@ -765,9 +760,66 @@ TEST_F(DesktopCaptureDeviceTest,
 
   // Ensure that the client gets two captured frames but the capturer had to
   // capture three frames to do so since frame #2 is marked as "not updated".
-  EXPECT_TRUE(done_event1.TimedWait(TestTimeouts::action_max_timeout()));
-  EXPECT_TRUE(done_event2.TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
   EXPECT_EQ(mock_capturer->captured_frames(), 3);
+
+  capture_device_->StopAndDeAllocate();
+}
+
+// Verifies that RequestRefreshFrame() forces a new captured frame even when the
+// content has not changed since the last frame. This is to ensure that the
+// client gets a new frame when explicitly asking for it.
+TEST_F(DesktopCaptureDeviceTest,
+       RequestRefreshFrameSendsFrameEvenIfNoRegionsAreUpdated) {
+  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
+  // Marks captured frame #2, #4, etc. (first frame is #1) as not updated.
+  mock_capturer->set_generate_non_updated_frames(true, 2);
+  CreateScreenCaptureDevice(
+      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+
+  base::WaitableEvent done_event(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  // Drive three frames to the registered client. A non-forwarded captured frame
+  // due to "no-change" is silently discarded by the VideoCaptureDevice but the
+  // rate of capturing new frames is not affected.
+  std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
+      CreateMockVideoCaptureDeviceClient());
+  EXPECT_CALL(*client, OnError).Times(0);
+  EXPECT_CALL(*client, OnFrameDropped).Times(0);
+  EXPECT_CALL(*client, OnIncomingCapturedData)
+      .Times(3)
+      .WillRepeatedly(
+          InvokeWithoutArgs(&done_event, &base::WaitableEvent::Signal));
+
+  media::VideoCaptureParams capture_params;
+  capture_params.requested_format.frame_size.SetSize(kTestFrameWidth3,
+                                                     kTestFrameHeight3);
+  capture_params.requested_format.frame_rate = kFrameRate;
+  capture_params.requested_format.pixel_format = media::PIXEL_FORMAT_I420;
+
+  capture_device_->AllocateAndStart(capture_params, std::move(client));
+
+  // Ensure that the client gets two captured frames but the capturer had to
+  // capture three frames to do so since frame #2 is marked as "not updated".
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
+  }
+  EXPECT_EQ(mock_capturer->captured_frames(), 3);
+  histogram_tester_.ExpectBucketCount(kFrameIsRefresh, false, 3);
+  histogram_tester_.ExpectTotalCount(kFrameIsRefresh, 3);
+
+  // Next frame is #4 and it will be marked as "not updated". Asking for a
+  // refresh at this point in time should override the default
+  // "0Hz functionality" and forward the new refresh frame.
+  capture_device_->RequestRefreshFrame();
+  EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_EQ(mock_capturer->captured_frames(), 4);
+  histogram_tester_.ExpectBucketCount(kFrameIsRefresh, true, 1);
+  histogram_tester_.ExpectBucketCount(kFrameIsRefresh, false, 3);
+  histogram_tester_.ExpectTotalCount(kFrameIsRefresh, 4);
 
   capture_device_->StopAndDeAllocate();
 }

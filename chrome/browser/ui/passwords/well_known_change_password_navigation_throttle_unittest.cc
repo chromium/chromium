@@ -58,7 +58,7 @@ class WellKnownChangePasswordNavigationThrottleTest
  private:
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  raw_ptr<content::RenderFrameHost> subframe_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> subframe_ = nullptr;
 };
 
 TEST_F(WellKnownChangePasswordNavigationThrottleTest,

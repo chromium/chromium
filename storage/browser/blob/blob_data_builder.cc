@@ -186,14 +186,17 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
     return;
   }
 
-  // We can't reference a blob with unknown size.
-  if (ref_entry->total_size() == blink::BlobUtils::kUnknownSize) {
+  // If we're referencing a blob with unknown size, the caller needs to provide
+  // an explicit length for how much of the blob to reference.
+  if (ref_entry->total_size() == blink::BlobUtils::kUnknownSize &&
+      length == blink::BlobUtils::kUnknownSize) {
     has_blob_errors_ = true;
     return;
   }
 
-  if (length == blink::BlobUtils::kUnknownSize)
+  if (length == blink::BlobUtils::kUnknownSize) {
     length = ref_entry->total_size() - offset;
+  }
 
   total_size_ += length;
 
@@ -215,6 +218,24 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
   if (!base::CheckAdd(offset, length).AssignIfValid(&end_byte) ||
       end_byte > ref_entry->total_size()) {
     has_blob_errors_ = true;
+    return;
+  }
+
+  // If `ref_entry` is a blob with unknown size it must always consist of a
+  // single file item, and as such we can just add a reference to the same file.
+  if (ref_entry->total_size() == blink::BlobUtils::kUnknownSize) {
+    CHECK_EQ(ref_entry->items().size(), 1u);
+    const scoped_refptr<BlobDataItem>& source_item =
+        ref_entry->items()[0]->item();
+    CHECK_EQ(source_item->type(), BlobDataItem::Type::kFile);
+    CHECK(!source_item->IsFutureFileItem());
+
+    items_.push_back(base::MakeRefCounted<ShareableBlobDataItem>(
+        BlobDataItem::CreateFile(
+            source_item->path(), source_item->offset() + offset, length,
+            source_item->expected_modification_time(), source_item->file_ref_,
+            source_item->file_access_),
+        ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA));
     return;
   }
 
@@ -241,7 +262,7 @@ void BlobDataBuilder::SliceBlob(const BlobEntry* source,
         source_items[item_index]->item();
     uint64_t source_length = source_item->length();
     BlobDataItem::Type type = source_item->type();
-    DCHECK_NE(source_length, std::numeric_limits<uint64_t>::max());
+    DCHECK_NE(source_length, blink::BlobUtils::kUnknownSize);
     DCHECK_NE(source_length, 0ull);
 
     uint64_t read_size =

@@ -158,21 +158,10 @@ class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase,
   // LoginTestBase:
   void SetUp() override {
     LoginAuthUserViewTestBase::SetUp();
-    SetUpFeatures();
+    feature_list_.InitWithFeatureState(features::kQuickUnlockPinAutosubmit,
+                                       GetParam());
     InitializeViewForUser(CreateUser("user@domain.com"));
   }
-
-  void SetUpFeatures() {
-    autosubmit_feature_enabled_ = GetParam();
-    if (autosubmit_feature_enabled_) {
-      feature_list_.InitWithFeatures({features::kQuickUnlockPinAutosubmit}, {});
-    } else {
-      feature_list_.InitWithFeatures({}, {features::kQuickUnlockPinAutosubmit});
-    }
-  }
-
-  // Initialized by test parameter in `SetUpFeatures`
-  bool autosubmit_feature_enabled_ = false;
 };
 
 class LoginAuthUserViewAutosumbitUnittest : public LoginAuthUserViewTestBase {

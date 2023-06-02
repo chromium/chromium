@@ -46,7 +46,7 @@ class CORE_EXPORT SecurityContextInit {
       const FramePolicy& frame_policy,
       const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy,
       const base::span<const mojom::blink::PermissionsPolicyFeature>
-          required_permissions_to_load);
+          effective_enabled_permissions);
   void ApplyDocumentPolicy(
       DocumentPolicy::ParsedDocumentPolicy& document_policy,
       const String& report_only_document_policy_header);

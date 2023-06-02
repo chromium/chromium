@@ -79,7 +79,6 @@ SVGElement::SVGElement(const QualifiedName& tag_name,
       class_name_(
           MakeGarbageCollected<SVGAnimatedString>(this,
                                                   html_names::kClassAttr)) {
-  AddToPropertyMap(class_name_);
   SetHasCustomStyleCallbacks();
 }
 
@@ -757,19 +756,13 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
   return it->value;
 }
 
-void SVGElement::AddToPropertyMap(SVGAnimatedPropertyBase* property) {
-  attribute_to_property_map_.Set(property->AttributeName(), property);
-}
-
 SVGAnimatedPropertyBase* SVGElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
-  AttributeToPropertyMap::const_iterator it =
-      attribute_to_property_map_.Find<SVGAttributeHashTranslator>(
-          attribute_name);
-  if (it == attribute_to_property_map_.end())
+  if (attribute_name == html_names::kClassAttr) {
+    return class_name_.Get();
+  } else {
     return nullptr;
-
-  return it->value.Get();
+  }
 }
 
 bool SVGElement::IsAnimatableCSSProperty(const QualifiedName& attr_name) {
@@ -1025,10 +1018,8 @@ void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
   DCHECK(HasElementData());
   DCHECK(GetElementData()->svg_attributes_are_dirty());
   if (name == AnyQName()) {
-    for (SVGAnimatedPropertyBase* property :
-         attribute_to_property_map_.Values()) {
-      if (property->NeedsSynchronizeAttribute())
-        property->SynchronizeAttribute();
+    if (class_name_->NeedsSynchronizeAttribute()) {
+      class_name_->SynchronizeAttribute();
     }
     GetElementData()->SetSvgAttributesAreDirty(false);
   } else {
@@ -1052,14 +1043,6 @@ void SVGElement::CollectExtraStyleForPresentationAttribute(
   // Maintaining the presentation attribute style "manually" also seems like a
   // reasonable scheme since that means we can avoid reparsing the presentation
   // attributes that didn't change.
-  for (SVGAnimatedPropertyBase* property :
-       attribute_to_property_map_.Values()) {
-    if (!property->HasPresentationAttributeMapping() ||
-        !property->IsAnimating())
-      continue;
-    CollectStyleForPresentationAttribute(property->AttributeName(),
-                                         g_empty_atom, style);
-  }
 }
 
 scoped_refptr<const ComputedStyle> SVGElement::CustomStyleForLayoutObject(
@@ -1343,7 +1326,6 @@ SVGElementResourceClient& SVGElement::EnsureSVGResourceClient() {
 
 void SVGElement::Trace(Visitor* visitor) const {
   visitor->Trace(elements_with_relative_lengths_);
-  visitor->Trace(attribute_to_property_map_);
   visitor->Trace(svg_rare_data_);
   visitor->Trace(class_name_);
   Element::Trace(visitor);
@@ -1351,6 +1333,15 @@ void SVGElement::Trace(Visitor* visitor) const {
 
 void SVGElement::AccessKeyAction(SimulatedClickCreationScope creation_scope) {
   DispatchSimulatedClick(nullptr, creation_scope);
+}
+
+void SVGElement::SynchronizeAllSVGAttributes(
+    const base::span<SVGAnimatedPropertyBase*> attributes) {
+  for (SVGAnimatedPropertyBase* attr : attributes) {
+    if (attr->NeedsSynchronizeAttribute()) {
+      attr->SynchronizeAttribute();
+    }
+  }
 }
 
 }  // namespace blink

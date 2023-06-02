@@ -114,6 +114,55 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   CloseDialog(dialog_contents);
 }
 
+IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
+                       ExpectDifferentNetworkErrorWhenChannelError) {
+  const char kEndpointResponseSuccess[] =
+      R"({
+      "device": {
+        "displayName": "test_device",
+        "id": "1234",
+        "deviceCapabilities": {
+          "videoOut": true,
+          "videoIn": true,
+          "audioOut": true,
+          "audioIn": true,
+          "devMode": true
+        },
+        "networkInfo": {
+          "hostName": "GoogleNet",
+          "port": "666",
+          "ipV4Address": "192.0.2.146",
+          "ipV6Address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        }
+      }
+    })";
+
+  // Mock a successful fetch from our server.
+  SetEndpointFetcherMockResponse(kEndpointResponseSuccess, net::HTTP_OK,
+                                 net::OK);
+
+  // Simulate the failure of opening a channel. This will trigger the correct
+  // error code below.
+  SetMockOpenChannelCallbackResponse(false);
+
+  EnableAccessCodeCasting();
+
+  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
+                                      browser()->profile());
+
+  auto* dialog_contents = ShowDialog();
+  SetAccessCode("abcdef", dialog_contents);
+
+  PressSubmit(dialog_contents);
+
+  // This error code corresponds to
+  // ErrorMessage.DIFFERENT_NETWORK::AddSinkResultCode.CHANNEL_OPEN_ERROR. This
+  // error code 7 refers to the ErrorMessage described within
+  // chrome/browser/resources/access_code_cast/error_message/error_message.ts
+  EXPECT_EQ(7, WaitForAddSinkErrorCode(dialog_contents));
+  CloseDialog(dialog_contents);
+}
+
 // TODO(b/260627828): This test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
                        DISABLED_ReturnSuccessfulResponseUsingKeyPress) {

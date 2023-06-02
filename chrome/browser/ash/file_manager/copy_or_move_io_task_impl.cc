@@ -346,8 +346,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
   // Got file size for all files at this point!
   speedometer_.SetTotalBytes(progress_->total_bytes);
 
-  if (util::IsNonNativeFileSystemType(
-          progress_->GetDestinationFolder().type())) {
+  if (!progress_->GetDestinationFolder().TypeImpliesPathIsReal()) {
     // Destination is a virtual filesystem, so skip checking free space.
     GenerateDestinationURL(0);
   } else {

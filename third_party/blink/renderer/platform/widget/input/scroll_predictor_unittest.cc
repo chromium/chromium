@@ -118,24 +118,19 @@ class ScrollPredictorTest : public testing::Test {
   void ConfigurePredictorFieldTrialAndInitialize(
       const base::Feature& feature,
       const std::string& predictor_type) {
-    base::FieldTrialParams params;
-    params["predictor"] = predictor_type;
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(feature, params);
-    EXPECT_EQ(params["predictor"],
-              GetFieldTrialParamValueByFeature(feature, "predictor"));
+    ConfigurePredictorAndFilterInternal(
+        feature, predictor_type, /* enable_filtering = */ false,
+        blink::features::kFilteringScrollPrediction, "");
     scroll_predictor_ = std::make_unique<ScrollPredictor>();
   }
 
   void ConfigureFilterFieldTrialAndInitialize(const base::Feature& feature,
                                               const std::string& filter_name) {
-    base::FieldTrialParams params;
-    params["filter"] = filter_name;
-
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(feature, params);
-    EXPECT_EQ(params["filter"],
-              GetFieldTrialParamValueByFeature(feature, "filter"));
+    // We still need the resampler feature to construct the scroll predictor at
+    // all but just initialize it to defaults.
+    ConfigurePredictorAndFilterInternal(
+        blink::features::kResamplingScrollEvents, "",
+        /* enable_filtering = */ true, feature, filter_name);
     scroll_predictor_ = std::make_unique<ScrollPredictor>();
   }
 
@@ -144,6 +139,23 @@ class ScrollPredictorTest : public testing::Test {
       const std::string& predictor_type,
       const base::Feature& filter_feature,
       const std::string& filter_type) {
+    ConfigurePredictorAndFilterInternal(pred_feature, predictor_type,
+                                        /* enable_filtering = */ true,
+                                        filter_feature, filter_type);
+    scroll_predictor_ = std::make_unique<ScrollPredictor>();
+  }
+
+  // Helper method to set up both related features so tests have a consistent
+  // view of the world. We assume that the predictor is always enabled (for the
+  // scroll_predictor_unittests), but filter could be enabled or disabled.
+  void ConfigurePredictorAndFilterInternal(const base::Feature& pred_feature,
+                                           const std::string& predictor_type,
+                                           bool enable_filtering,
+                                           const base::Feature& filter_feature,
+                                           const std::string& filter_type) {
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+
     base::FieldTrialParams pred_field_params;
     pred_field_params["predictor"] = predictor_type;
     base::test::FeatureRefAndParams prediction_params = {pred_feature,
@@ -154,16 +166,24 @@ class ScrollPredictorTest : public testing::Test {
     base::test::FeatureRefAndParams filter_params = {filter_feature,
                                                      filter_field_params};
 
+    enabled.emplace_back(
+        base::test::FeatureRefAndParams(pred_feature, pred_field_params));
+    if (enable_filtering) {
+      enabled.emplace_back(
+          base::test::FeatureRefAndParams(filter_feature, filter_field_params));
+    } else {
+      disabled.emplace_back(base::test::FeatureRef(filter_feature));
+    }
+
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {prediction_params, filter_params}, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
 
     EXPECT_EQ(pred_field_params["predictor"],
               GetFieldTrialParamValueByFeature(pred_feature, "predictor"));
-    EXPECT_EQ(filter_field_params["filter"],
-              GetFieldTrialParamValueByFeature(filter_feature, "filter"));
-
-    scroll_predictor_ = std::make_unique<ScrollPredictor>();
+    if (enable_filtering) {
+      EXPECT_EQ(filter_field_params["filter"],
+                GetFieldTrialParamValueByFeature(filter_feature, "filter"));
+    }
   }
 
   void VerifyPredictorType(const char* expected_type) {
@@ -535,7 +555,7 @@ TEST_F(ScrollPredictorTest, DefaultFilter) {
 }
 
 // We first send 100 events to the scroll predictor with kalman predictor
-// enabled and filetring disable and save the results.
+// enabled and filtering disabled and save the results.
 // We then send the same events with kalman and the empty filter, we should
 // expect the same results.
 TEST_F(ScrollPredictorTest, FilteringPrediction) {

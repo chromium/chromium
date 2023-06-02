@@ -15,10 +15,6 @@ bool GLImageEGLPixmap::Initialize(x11::Pixmap pixmap) {
   return binding_helper_.Initialize(pixmap);
 }
 
-gfx::Size GLImageEGLPixmap::GetSize() {
-  return binding_helper_.GetSize();
-}
-
 bool GLImageEGLPixmap::BindTexImage(unsigned target) {
   return binding_helper_.BindTexImage(target);
 }

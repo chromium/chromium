@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller_lacros.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -62,6 +63,7 @@ struct MatchedRuleInfo {
 constexpr char kWildCardMatching[] = "*";
 
 constexpr char kDrivePattern[] = "drive.google.com";
+constexpr char kOneDrivePattern[] = "onedrive.live.com";
 
 DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
   static constexpr auto kRestrictionsMap =
@@ -102,6 +104,7 @@ data_controls::Component GetComponentMapping(const std::string& component) {
            {dlp::kCrostini, data_controls::Component::kCrostini},
            {dlp::kPluginVm, data_controls::Component::kPluginVm},
            {dlp::kDrive, data_controls::Component::kDrive},
+           {dlp::kOneDrive, data_controls::Component::kOneDrive},
            {dlp::kUsb, data_controls::Component::kUsb}});
 
   auto* it = kComponentsMap.find(component);
@@ -179,7 +182,13 @@ std::vector<std::string> GetAssociatedUrlsConditions(
   switch (component) {
     case data_controls::Component::kDrive:
       return {kDrivePattern};
-    default:
+    case data_controls::Component::kOneDrive:
+      return {kOneDrivePattern};
+    case data_controls::Component::kUnknownComponent:
+    case data_controls::Component::kArc:
+    case data_controls::Component::kCrostini:
+    case data_controls::Component::kPluginVm:
+    case data_controls::Component::kUsb:
       return {};
   }
 }
@@ -541,7 +550,7 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
          restriction == Restriction::kFiles);
 
   std::map<Level, std::set<data_controls::Component>> result;
-  for (data_controls::Component component : components) {
+  for (data_controls::Component component : data_controls::kAllComponents) {
     std::string out_source_pattern;
     Level level = IsRestrictedComponent(source, component, restriction,
                                         &out_source_pattern, nullptr);
@@ -651,7 +660,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   src_conditions_.clear();
   dst_conditions_.clear();
   rules_id_metadata_mapping_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   files_controller_ = nullptr;
 #endif
 
@@ -805,6 +814,10 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!files_controller_) {
         files_controller_ = std::make_unique<DlpFilesControllerAsh>(*this);
+      }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (!files_controller_) {
+        files_controller_ = std::make_unique<DlpFilesControllerLacros>(*this);
       }
 #endif
     } else if (chromeos::DlpClient::Get() &&

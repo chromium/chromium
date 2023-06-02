@@ -4964,8 +4964,10 @@ TEST_F(RenderTextTest, DefaultLineHeights) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"A quick brown fox jumped over the lazy dog!");
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
   const FontList body2_font = FontList().DeriveWithSizeDelta(-1);
+#elif BUILDFLAG(IS_IOS)
+  const FontList body2_font = FontList().DeriveWithSizeDelta(-2);
 #else
   const FontList body2_font;
 #endif

@@ -5,7 +5,7 @@
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sharing/sharing_message_bridge_impl.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -28,7 +28,8 @@ SharingMessageBridgeFactory::~SharingMessageBridgeFactory() = default;
 
 // static
 SharingMessageBridgeFactory* SharingMessageBridgeFactory::GetInstance() {
-  return base::Singleton<SharingMessageBridgeFactory>::get();
+  static base::NoDestructor<SharingMessageBridgeFactory> instance;
+  return instance.get();
 }
 
 // static

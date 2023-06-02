@@ -611,40 +611,6 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   wcax->UpdateMaxNodesInCache();
 }
 
-void BrowserAccessibilityManagerAndroid::OnNodeCreated(ui::AXTree* tree,
-                                                       ui::AXNode* node) {
-  BrowserAccessibilityManager::OnNodeCreated(tree, node);
-  if (node->data().GetBoolAttribute(
-          ax::mojom::BoolAttribute::kTouchPassthrough)) {
-    auto* root = static_cast<BrowserAccessibilityManagerAndroid*>(
-        GetManagerForRootFrame());
-    if (root)
-      root->EnableTouchPassthrough();
-    else
-      EnableTouchPassthrough();
-  }
-}
-
-void BrowserAccessibilityManagerAndroid::OnBoolAttributeChanged(
-    ui::AXTree* tree,
-    ui::AXNode* node,
-    ax::mojom::BoolAttribute attr,
-    bool new_value) {
-  BrowserAccessibilityManager::OnBoolAttributeChanged(tree, node, attr,
-                                                      new_value);
-  if (new_value && attr == ax::mojom::BoolAttribute::kTouchPassthrough) {
-    // TODO(accessibility): there's a tiny chance we could get this
-    // called on an iframe before it's attached to the root frame manager.
-    // If this ever becomes an issue in practice, make this more robust.
-    auto* root = static_cast<BrowserAccessibilityManagerAndroid*>(
-        GetManagerForRootFrame());
-    if (root)
-      root->EnableTouchPassthrough();
-    else
-      EnableTouchPassthrough();
-  }
-}
-
 WebContentsAccessibilityAndroid*
 BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() {
   BrowserAccessibility* parent_node =

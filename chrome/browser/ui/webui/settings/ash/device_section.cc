@@ -573,6 +573,20 @@ const std::vector<SearchConcept>& GetAudioSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetAudioPowerSoundsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {
+          IDS_OS_SETTINGS_TAG_CHARGING_SOUNDS,
+          mojom::kAudioSubpagePath,
+          mojom::SearchResultIcon::kAudio,
+          mojom::SearchResultDefaultRank::kMedium,
+          mojom::SearchResultType::kSetting,
+          {.setting = mojom::Setting::kChargingSounds},
+      },
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetDisplayArrangementSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT,
@@ -905,120 +919,6 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
                           stylus_utils::HasInternalStylus());
 }
 
-void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kDisplayStrings[] = {
-      {"displayAmbientColorTitle", IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_TITLE},
-      {"displayAmbientColorSubtitle",
-       IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_SUBTITLE},
-      {"displayArrangementTitle", IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE},
-      {"displayMirror", IDS_SETTINGS_DISPLAY_MIRROR},
-      {"displayMirrorDisplayName", IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME},
-      {"displayNightLightLabel", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_LABEL},
-      {"displayNightLightOnAtSunset",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_ON_AT_SUNSET},
-      {"displayNightLightOffAtSunrise",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_OFF_AT_SUNRISE},
-      {"displayNightLightScheduleCustom",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_CUSTOM},
-      {"displayNightLightScheduleLabel",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_LABEL},
-      {"displayNightLightScheduleNever",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_NEVER},
-      {"displayNightLightScheduleSunsetToSunRise",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE},
-      {"displayNightLightTemperatureLabel",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMPERATURE_LABEL},
-      {"displayNightLightTempSliderMaxLabel",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MAX_LABEL},
-      {"displayNightLightTempSliderMinLabel",
-       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MIN_LABEL},
-      {"displayNightLightText", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT},
-      {"displayOrientation", IDS_SETTINGS_DISPLAY_ORIENTATION},
-      {"displayOrientationAutoRotate",
-       IDS_SETTINGS_DISPLAY_ORIENTATION_AUTO_ROTATE},
-      {"displayOrientationStandard", IDS_SETTINGS_DISPLAY_ORIENTATION_STANDARD},
-      {"displayOverscanInstructions",
-       IDS_SETTINGS_DISPLAY_OVERSCAN_INSTRUCTIONS},
-      {"displayOverscanPageText", IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT},
-      {"displayOverscanPageTitle", IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE},
-      {"displayOverscanPosition", IDS_SETTINGS_DISPLAY_OVERSCAN_POSITION},
-      {"displayOverscanResize", IDS_SETTINGS_DISPLAY_OVERSCAN_RESIZE},
-      {"displayOverscanReset", IDS_SETTINGS_DISPLAY_OVERSCAN_RESET},
-      {"displayOverscanSubtitle", IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE},
-      {"displayRefreshRateInterlacedMenuItem",
-       IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM},
-      {"displayRefreshRateMenuItem",
-       IDS_SETTINGS_DISPLAY_REFRESH_RATE_MENU_ITEM},
-      {"displayRefreshRateSublabel",
-       IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL},
-      {"displayRefreshRateTitle", IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE},
-      {"displayResolutionInterlacedMenuItem",
-       IDS_SETTINGS_DISPLAY_RESOLUTION_INTERLACED_MENU_ITEM},
-      {"displayResolutionMenuItem", IDS_SETTINGS_DISPLAY_RESOLUTION_MENU_ITEM},
-      {"displayResolutionOnlyMenuItem",
-       IDS_SETTINGS_DISPLAY_RESOLUTION_ONLY_MENU_ITEM},
-      {"displayResolutionSublabel", IDS_SETTINGS_DISPLAY_RESOLUTION_SUBLABEL},
-      {"displayResolutionText", IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT},
-      {"displayResolutionTextBest", IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT_BEST},
-      {"displayResolutionTextNative",
-       IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT_NATIVE},
-      {"displayResolutionTitle", IDS_SETTINGS_DISPLAY_RESOLUTION_TITLE},
-      {"displayScreenExtended", IDS_SETTINGS_DISPLAY_SCREEN_EXTENDED},
-      {"displayScreenPrimary", IDS_SETTINGS_DISPLAY_SCREEN_PRIMARY},
-      {"displayScreenTitle", IDS_SETTINGS_DISPLAY_SCREEN},
-      {"displaySizeSliderMaxLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM},
-      {"displaySizeSliderMinLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM},
-      {"displayTitle", IDS_SETTINGS_DISPLAY_TITLE},
-      {"displayTouchCalibrationText",
-       IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT},
-      {"displayTouchCalibrationTitle",
-       IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE},
-      {"displayUnifiedDesktop", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP},
-      {"displayUnifiedDesktopOff", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_OFF},
-      {"displayUnifiedDesktopOn", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_ON},
-      {"displayZoomLogicalResolutionDefaultText",
-       IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_DEFAULT_TEXT},
-      {"displayZoomLogicalResolutionText",
-       IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_TEXT},
-      {"displayZoomNativeLogicalResolutionNativeText",
-       IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_NATIVE_TEXT},
-      {"displayZoomSublabel", IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL},
-      {"displayZoomTitle", IDS_SETTINGS_DISPLAY_ZOOM_TITLE},
-      {"displayZoomValue", IDS_SETTINGS_DISPLAY_ZOOM_VALUE},
-  };
-  html_source->AddLocalizedStrings(kDisplayStrings);
-
-  html_source->AddLocalizedString(
-      "displayArrangementText",
-      IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT);
-
-  html_source->AddBoolean(
-      "isCryptohomeDataEphemeral",
-      user_manager::UserManager::Get()->IsCurrentUserCryptohomeDataEphemeral());
-
-  html_source->AddBoolean("unifiedDesktopAvailable",
-                          IsUnifiedDesktopAvailable());
-
-  html_source->AddBoolean("listAllDisplayModes",
-                          IsListAllDisplayModesEnabled());
-
-  html_source->AddBoolean("deviceSupportsAmbientColor",
-                          DoesDeviceSupportAmbientColor());
-
-  html_source->AddBoolean("enableTouchCalibrationSetting",
-                          IsTouchCalibrationAvailable());
-
-  html_source->AddString("invalidDisplayId",
-                         base::NumberToString(display::kInvalidDisplayId));
-
-  html_source->AddBoolean("enableDriveFsBulkPinning",
-                          drive::util::IsDriveFsBulkPinningEnabled());
-
-  html_source->AddBoolean(
-      "allowDisplayAlignmentApi",
-      base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
-}
-
 void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
                              bool is_external_storage_page_available) {
   static constexpr webui::LocalizedString kStorageStrings[] = {
@@ -1102,9 +1002,14 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioToggleToUnmuteTooltip",
        IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP},
       {"audioVolumeTitle", IDS_SETTINGS_AUDIO_VOLUME_TITLE},
+      {"chargingSoundsLabel",
+       IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL},
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
+
+  html_source->AddBoolean("areSystemSoundsEnabled",
+                          ash::features::AreSystemSoundsEnabled());
 }
 
 void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
@@ -1176,6 +1081,12 @@ DeviceSection::DeviceSection(Profile* profile,
 
   if (ash::features::IsAudioSettingsPageEnabled()) {
     updater.AddSearchTags(GetAudioSearchConcepts());
+
+    // Only when the feature is enabled, the toggle buttons for charging sounds
+    // and the low battery sound will be shown up.
+    if (ash::features::AreSystemSoundsEnabled()) {
+      updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
+    }
   }
 
   chromeos::PowerManagerClient* power_manager_client =
@@ -1454,6 +1365,8 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_SETTINGS_AUDIO_TITLE, mojom::Subpage::kAudio,
       mojom::SearchResultIcon::kAudio, mojom::SearchResultDefaultRank::kMedium,
       mojom::kAudioSubpagePath);
+  generator->RegisterNestedSetting(mojom::Setting::kChargingSounds,
+                                   mojom::Subpage::kAudio);
 
   // Power.
   generator->RegisterTopLevelSubpage(
@@ -1775,6 +1688,121 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean(
       "enableInputDeviceSettingsSplit",
       base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit));
+}
+
+void DeviceSection::AddDeviceDisplayStrings(
+    content::WebUIDataSource* html_source) const {
+  static constexpr webui::LocalizedString kDisplayStrings[] = {
+      {"displayAmbientColorTitle", IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_TITLE},
+      {"displayAmbientColorSubtitle",
+       IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_SUBTITLE},
+      {"displayArrangementTitle", IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE},
+      {"displayMirror", IDS_SETTINGS_DISPLAY_MIRROR},
+      {"displayMirrorDisplayName", IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME},
+      {"displayNightLightLabel", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_LABEL},
+      {"displayNightLightOnAtSunset",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_ON_AT_SUNSET},
+      {"displayNightLightOffAtSunrise",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_OFF_AT_SUNRISE},
+      {"displayNightLightScheduleCustom",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_CUSTOM},
+      {"displayNightLightScheduleLabel",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_LABEL},
+      {"displayNightLightScheduleNever",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_NEVER},
+      {"displayNightLightScheduleSunsetToSunRise",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE},
+      {"displayNightLightTemperatureLabel",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMPERATURE_LABEL},
+      {"displayNightLightTempSliderMaxLabel",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MAX_LABEL},
+      {"displayNightLightTempSliderMinLabel",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MIN_LABEL},
+      {"displayNightLightText", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT},
+      {"displayOrientation", IDS_SETTINGS_DISPLAY_ORIENTATION},
+      {"displayOrientationAutoRotate",
+       IDS_SETTINGS_DISPLAY_ORIENTATION_AUTO_ROTATE},
+      {"displayOrientationStandard", IDS_SETTINGS_DISPLAY_ORIENTATION_STANDARD},
+      {"displayOverscanInstructions",
+       IDS_SETTINGS_DISPLAY_OVERSCAN_INSTRUCTIONS},
+      {"displayOverscanPageText", IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT},
+      {"displayOverscanPageTitle", IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE},
+      {"displayOverscanPosition", IDS_SETTINGS_DISPLAY_OVERSCAN_POSITION},
+      {"displayOverscanResize", IDS_SETTINGS_DISPLAY_OVERSCAN_RESIZE},
+      {"displayOverscanReset", IDS_SETTINGS_DISPLAY_OVERSCAN_RESET},
+      {"displayOverscanSubtitle", IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE},
+      {"displayRefreshRateInterlacedMenuItem",
+       IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM},
+      {"displayRefreshRateMenuItem",
+       IDS_SETTINGS_DISPLAY_REFRESH_RATE_MENU_ITEM},
+      {"displayRefreshRateSublabel",
+       IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL},
+      {"displayRefreshRateTitle", IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE},
+      {"displayResolutionInterlacedMenuItem",
+       IDS_SETTINGS_DISPLAY_RESOLUTION_INTERLACED_MENU_ITEM},
+      {"displayResolutionMenuItem", IDS_SETTINGS_DISPLAY_RESOLUTION_MENU_ITEM},
+      {"displayResolutionOnlyMenuItem",
+       IDS_SETTINGS_DISPLAY_RESOLUTION_ONLY_MENU_ITEM},
+      {"displayResolutionSublabel", IDS_SETTINGS_DISPLAY_RESOLUTION_SUBLABEL},
+      {"displayResolutionText", IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT},
+      {"displayResolutionTextBest", IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT_BEST},
+      {"displayResolutionTextNative",
+       IDS_SETTINGS_DISPLAY_RESOLUTION_TEXT_NATIVE},
+      {"displayResolutionTitle", IDS_SETTINGS_DISPLAY_RESOLUTION_TITLE},
+      {"displayScreenExtended", IDS_SETTINGS_DISPLAY_SCREEN_EXTENDED},
+      {"displayScreenPrimary", IDS_SETTINGS_DISPLAY_SCREEN_PRIMARY},
+      {"displayScreenTitle", IDS_SETTINGS_DISPLAY_SCREEN},
+      {"displaySizeSliderMaxLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM},
+      {"displaySizeSliderMinLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM},
+      {"displayTitle", IDS_SETTINGS_DISPLAY_TITLE},
+      {"displayTouchCalibrationText",
+       IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT},
+      {"displayTouchCalibrationTitle",
+       IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE},
+      {"displayUnifiedDesktop", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP},
+      {"displayUnifiedDesktopOff", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_OFF},
+      {"displayUnifiedDesktopOn", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_ON},
+      {"displayZoomLogicalResolutionDefaultText",
+       IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_DEFAULT_TEXT},
+      {"displayZoomLogicalResolutionText",
+       IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_TEXT},
+      {"displayZoomNativeLogicalResolutionNativeText",
+       IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_NATIVE_TEXT},
+      {"displayZoomSublabel", IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL},
+      {"displayZoomTitle", IDS_SETTINGS_DISPLAY_ZOOM_TITLE},
+      {"displayZoomValue", IDS_SETTINGS_DISPLAY_ZOOM_VALUE},
+  };
+  html_source->AddLocalizedStrings(kDisplayStrings);
+
+  html_source->AddLocalizedString(
+      "displayArrangementText",
+      IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT);
+
+  html_source->AddBoolean(
+      "isCryptohomeDataEphemeral",
+      user_manager::UserManager::Get()->IsCurrentUserCryptohomeDataEphemeral());
+
+  html_source->AddBoolean("unifiedDesktopAvailable",
+                          IsUnifiedDesktopAvailable());
+
+  html_source->AddBoolean("listAllDisplayModes",
+                          IsListAllDisplayModesEnabled());
+
+  html_source->AddBoolean("deviceSupportsAmbientColor",
+                          DoesDeviceSupportAmbientColor());
+
+  html_source->AddBoolean("enableTouchCalibrationSetting",
+                          IsTouchCalibrationAvailable());
+
+  html_source->AddString("invalidDisplayId",
+                         base::NumberToString(display::kInvalidDisplayId));
+
+  html_source->AddBoolean("enableDriveFsBulkPinning",
+                          drive::util::IsDriveFsBulkPinningEnabled(profile()));
+
+  html_source->AddBoolean(
+      "allowDisplayAlignmentApi",
+      base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
 }
 
 }  // namespace ash::settings

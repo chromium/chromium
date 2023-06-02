@@ -43,4 +43,21 @@ LayoutObject* SVGSymbolElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
 }
 
+SVGAnimatedPropertyBase* SVGSymbolElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  SVGAnimatedPropertyBase* ret =
+      SVGFitToViewBox::PropertyFromAttribute(attribute_name);
+  if (ret) {
+    return ret;
+  } else {
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGSymbolElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  SVGFitToViewBox::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
+}
+
 }  // namespace blink

@@ -7,12 +7,12 @@ import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
   # Enable experimental Skia Graphite Dawn backend. Currently enabled for Mac
-  # only.
-  skia_use_dawn = is_mac
+  # and Windows only.
+  skia_use_dawn = is_mac || is_win
 
   # Enable experimental Skia Graphite Metal backend. Intended only for debugging
   # on non-official developer builds.
-  skia_use_metal = false
+  skia_use_metal = is_mac && !is_official_build
 
   # Enable gtests using SkiaRenderer on Skia Graphite.
   # TODO(rivr): Remove this and enable the tests by default once a software

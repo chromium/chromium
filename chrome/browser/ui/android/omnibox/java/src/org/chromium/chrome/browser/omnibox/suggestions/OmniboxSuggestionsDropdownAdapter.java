@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -36,6 +37,9 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         super.onAttachedToRecyclerView(view);
         mLayoutManager = view.getLayoutManager();
         mSelectedItem = RecyclerView.NO_POSITION;
+        if (OmniboxFeatures.shouldShowSmallestMargins(view.getContext())) {
+            view.addItemDecoration(new SuggestionHorizontalDivider(view.getContext()));
+        }
     }
 
     /* package */ void recordSessionMetrics() {

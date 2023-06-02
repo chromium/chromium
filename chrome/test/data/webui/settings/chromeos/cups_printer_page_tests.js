@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSetupResult, PrinterType, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterSettingsUserAction, PrinterSetupResult, PrinterType, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -15,6 +15,7 @@ import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry} from './cups_printer_test_utils.js';
+import {FakeMetricsPrivate} from './fake_metrics_private.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
 
 /*
@@ -152,6 +153,31 @@ suite('CupsPrinterUITests', () => {
         assertFalse(
             isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
       });
+    });
+  });
+
+  // Verify clicking the add printer manually button is recorded to metrics.
+  test('RecordUserActionMetric', () => {
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+
+    // Enable the add printer manually button.
+    page.prefs = {
+      native_printing: {
+        user_native_printers_allowed: {
+          value: true,
+        },
+      },
+    };
+    page.canAddPrinter = true;
+
+    return flushTasks().then(() => {
+      page.shadowRoot.querySelector('.add-manual-printer-icon').click();
+      assertEquals(
+          1,
+          fakeMetricsPrivate.countMetricValue(
+              'Printing.CUPS.SettingsUserAction',
+              PrinterSettingsUserAction.ADD_PRINTER_MANUALLY));
     });
   });
 });

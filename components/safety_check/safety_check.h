@@ -15,14 +15,14 @@ namespace safety_check {
 
 // The following enums represent the state of each component (common among
 // desktop, Android, and iOS) of the safety check and should be kept in sync
-// with the JS frontend (safety_check_browser_proxy.js) and |SafetyCheck*|
+// with the JS frontend (safety_check_browser_proxy.ts) and |SafetyCheck*|
 // metrics enums in enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safety_check
 enum class PasswordsStatus {
   kChecking = 0,
   kSafe = 1,
-  // Indicates that at least one compromised password exists. Weak passwords
-  // may exist as well.
+  // Indicates that at least one compromised password exists. Weak, reused or
+  // muted compromised password warnings may exist as well.
   kCompromisedExist = 2,
   kOffline = 3,
   kNoPasswords = 4,
@@ -30,11 +30,17 @@ enum class PasswordsStatus {
   kQuotaLimit = 6,
   kError = 7,
   kFeatureUnavailable = 8,
-  // Indicates that no compromised passwords exist, but at least one weak
-  // password.
+  // Indicates that no compromised or reused passwords exist, but there is at
+  // least one weak password.
   kWeakPasswordsExist = 9,
+  // Indicates that no compromised passwords exist, but there is at least one
+  // reused password.
+  kReusedPasswordsExist = 10,
+  // Indicates no weak or reused passwords exist, but there is
+  // at least one compromised password warning that has been muted by the user.
+  kMutedCompromisedExist = 11,
   // New enum values must go above here.
-  kMaxValue = kWeakPasswordsExist,
+  kMaxValue = kMutedCompromisedExist,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safety_check
@@ -65,8 +71,11 @@ enum class UpdateStatus {
   kUnknown = 7,
   // Only used in Android where the user is directed to the Play Store.
   kOutdated = 8,
+  // Only used in ChromeOS where a user performed a consumer rollback, and now
+  // attempts to update to the previously installed (rollback) version.
+  kUpdateToRollbackVersionDisallowed = 9,
   // New enum values must go above here.
-  kMaxValue = kOutdated,
+  kMaxValue = kUpdateToRollbackVersionDisallowed,
 };
 
 // Gets the status of Safe Browsing from the PrefService and invokes

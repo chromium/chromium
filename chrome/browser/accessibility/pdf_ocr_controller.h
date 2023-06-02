@@ -8,9 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 
 class Profile;
 
@@ -36,8 +36,10 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   static std::vector<content::WebContents*> GetAllPdfWebContentsesForTesting(
       Profile* profile);
 
-  // Return true if the PDF OCR pref is true; false otherwise.
+  // Return true if the PDF OCR pref is true and we are not waiting for the
+  // service to become ready.
   bool IsEnabled() const;
+
   // Run PDF OCR only once regardless of the PDF OCR pref value. This function
   // doesn't update the PDF OCR pref value.
   void RunPdfOcrOnlyOnce(content::WebContents* web_contents);
@@ -55,6 +57,12 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   // Sends Pdf Ocr Always Active state to all relevant WebContents.
   void SendPdfOcrAlwaysActiveToAll(bool is_always_active);
 
+  // Return true if it added an observer for `ScreenAIInstallState` or
+  // triggered downloading the Screen AI library. In this case, we need to keep
+  // the request until the library is ready.
+  bool MaybeAddObserverOrTriggerDownload(
+      content::WebContents* web_contents_for_only_once_request);
+
   // Observes changes in Screen AI component download and readiness state.
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
       component_ready_observer_{this};
@@ -68,6 +76,12 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   // Indicates that user has selected always active and we are waiting for the
   // Screen AI service to be ready to send this bit.
   bool send_always_active_state_when_service_is_ready_{false};
+
+  // Store a weak pointer to `content::WebContents` the user requested last for
+  // the "Just once" option. Having a valid pointer indicates that user has
+  // requested running just once on WebContents, and we are waiting for the
+  // Screen AI service to be ready for the user request.
+  base::WeakPtr<content::WebContents> last_webcontents_requested_for_run_once_;
 
   base::WeakPtrFactory<PdfOcrController> weak_ptr_factory_{this};
 };

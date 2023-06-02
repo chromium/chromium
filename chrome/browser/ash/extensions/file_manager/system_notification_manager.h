@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -94,7 +95,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
-    const scoped_refptr<message_center::NotificationDelegate>& delegate);
+    scoped_refptr<message_center::NotificationDelegate> delegate);
 
 // Returns an instance of an 'ash' Notification with title and message specified
 // by string ID values (for 110n) with a bound click delegate.
@@ -103,7 +104,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const std::string& notification_id,
     int title_id,
     int message_id,
-    const scoped_refptr<message_center::NotificationDelegate>& delegate);
+    scoped_refptr<message_center::NotificationDelegate> delegate);
 
 // Returns an instance of an 'ash' Notification with a bound click callback.
 // The notification will have Files app system notification theme.
@@ -120,222 +121,161 @@ class SystemNotificationManager {
   explicit SystemNotificationManager(Profile* profile);
   ~SystemNotificationManager();
 
-  /**
-   * Returns whether or not ANY SWA windows are opened. Does this by checking
-   * the URL of all opened windows.
-   */
+  // Returns whether or not ANY SWA windows are opened. Does this by checking
+  // the URL of all opened windows.
   bool DoFilesSwaWindowsExist();
 
-  /**
-   * Processes a device event to generate a system notification if needed.
-   */
+  // Processes a device event to generate a system notification if needed.
   void HandleDeviceEvent(const file_manager_private::DeviceEvent& event);
 
-  /**
-   *  Returns an instance of an 'ash' Notification.
-   */
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& notification_id,
-      const std::u16string& title,
-      const std::u16string& message);
+  using NotificationPtr = std::unique_ptr<message_center::Notification>;
 
-  /**
-   * Returns an instance of an 'ash' Notification with progress value.
-   */
-  std::unique_ptr<message_center::Notification> CreateProgressNotification(
+  // Returns an instance of an 'ash' Notification.
+  NotificationPtr CreateNotification(const std::string& notification_id,
+                                     const std::u16string& title,
+                                     const std::u16string& message);
+
+  // Returns an instance of an 'ash' Notification with progress value.
+  NotificationPtr CreateProgressNotification(const std::string& notification_id,
+                                             const std::u16string& title,
+                                             const std::u16string& message,
+                                             int progress);
+
+  // Returns an instance of an 'ash' Notification with IOTask progress value.
+  NotificationPtr CreateIOTaskProgressNotification(
+      file_manager::io_task::IOTaskId task_id,
       const std::string& notification_id,
       const std::u16string& title,
       const std::u16string& message,
+      const bool paused,
       int progress);
 
-  /**
-   * Returns an instance of an 'ash' Notification with IOTask progress value.
-   */
-  std::unique_ptr<message_center::Notification>
-  CreateIOTaskProgressNotification(file_manager::io_task::IOTaskId task_id,
-                                   const std::string& notification_id,
-                                   const std::u16string& title,
-                                   const std::u16string& message,
-                                   const bool paused,
-                                   int progress);
-
-  /**
-   * Click handler for the IOTask progress notification.
-   */
+  // Click handler for the IOTask progress notification.
   void HandleIOTaskProgressNotificationClick(
       file_manager::io_task::IOTaskId task_id,
       const std::string& notification_id,
       const bool paused,
       absl::optional<int> button_index);
 
-  /**
-   *  Returns an instance of an 'ash' Notification with title and message
-   *  specified by string ID values (for 110n).
-   */
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const std::string& notification_id,
-      int title_id,
-      int message_id);
+  // Returns an instance of an 'ash' Notification with title and message
+  // specified by string ID values (for 110n).
+  NotificationPtr CreateNotification(const std::string& notification_id,
+                                     int title_id,
+                                     int message_id);
 
-  /**
-   * Processes general extension events and can create a system notification.
-   */
-  void HandleEvent(const extensions::Event& event);
+  using Event = extensions::Event;
 
-  /**
-   * Processes progress event from IOTaskController.
-   */
+  // Processes general extension events and can create a system notification.
+  void HandleEvent(const Event& event);
+
+  // Processes progress event from IOTaskController.
   void HandleIOTaskProgress(
       const file_manager::io_task::ProgressStatus& status);
 
-  /**
-   * Stores and updates the state of a device based on mount events for the top
-   * level or any child partitions.
-   */
-  enum SystemNotificationManagerMountStatus UpdateDeviceMountStatus(
+  // Stores and updates the state of a device based on mount events for the top
+  // level or any child partitions.
+  SystemNotificationManagerMountStatus UpdateDeviceMountStatus(
       file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
-  /**
-   * Processes volume mount completed events.
-   */
+  // Processes volume mount completed events.
   void HandleMountCompletedEvent(
       file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
-  /**
-   * Returns the message center display service that manages notifications.
-   */
+  // Returns the message center display service that manages notifications.
   NotificationDisplayService* GetNotificationDisplayService();
 
-  /**
-   * Stores a reference to the DriveFS event router instance.
-   */
+  // Stores a reference to the DriveFS event router instance.
   void SetDriveFSEventRouter(DriveFsEventRouter* drivefs_event_router);
 
-  /**
-   * Stores a pointer to the IOTaskController instance to be able to cancel
-   * tasks.
-   */
+  // Stores a pointer to the IOTaskController instance to be able to cancel
+  // tasks.
   void SetIOTaskController(
       file_manager::io_task::IOTaskController* io_task_controller);
 
  private:
-  /**
-   * Make notifications for DriveFS sync errors.
-   */
-  std::unique_ptr<message_center::Notification> MakeDriveSyncErrorNotification(
-      const extensions::Event& event,
-      const base::Value::List& event_arguments);
+  // Handles clicks on the DriveFS bulk-pinning error notification.
+  void HandleBulkPinningNotificationClick(absl::optional<int> button_index);
 
-  /**
-   * Click handler for the Drive offline confirmation dialog notification.
-   */
+  // Make notification for DriveFS bulk-pinning error.
+  NotificationPtr MakeBulkPinningErrorNotification(const Event& event);
+
+  // Make notifications for DriveFS sync errors.
+  NotificationPtr MakeDriveSyncErrorNotification(const Event& event);
+
+  // Click handler for the Drive offline confirmation dialog notification.
   void HandleDriveDialogClick(absl::optional<int> button_index);
 
-  /**
-   * Make notification from the DriveFS offline settings event.
-   */
-  std::unique_ptr<message_center::Notification>
-  MakeDriveConfirmDialogNotification(const extensions::Event& event,
-                                     const base::Value::List& event_arguments);
+  // Make notification from the DriveFS offline settings event.
+  NotificationPtr MakeDriveConfirmDialogNotification(const Event& event);
 
-  /**
-   * Update/remove Drive sync progress notification.
-   * |event| is the event object delivered from EventRouter and
-   * |event_arguments| contains ListView serialized version of
-   * file_manager_private::FileTransferStatus.
-   */
-  std::unique_ptr<message_center::Notification> UpdateDriveSyncNotification(
-      const extensions::Event& event,
-      const base::Value::List& event_arguments);
+  // Update/remove Drive sync progress notification.
+  // |event| is the event object delivered from EventRouter and
+  // |event_arguments| contains ListView serialized version of
+  // file_manager_private::FileTransferStatus.
+  NotificationPtr UpdateDriveSyncNotification(const Event& event);
 
-  /**
-   * Click handler for the removable device notification.
-   */
+  // Click handler for the removable device notification.
   void HandleRemovableNotificationClick(
       const std::string& path,
       const std::vector<DeviceNotificationUserActionUmaType>&
           uma_types_for_buttons,
       absl::optional<int> button_index);
 
-  /**
-   * Click handler for Data Leak Prevention or Enterprise Connectors policy
-   * notifications.
-   */
+  // Click handler for Data Leak Prevention or Enterprise Connectors policy
+  // notifications.
   void HandleDataProtectionPolicyNotificationClick(
       base::RepeatingClosure proceed_callback,
       base::RepeatingClosure cancel_callback,
       absl::optional<int> button_index);
 
-  /**
-   * Click handler for the progress notification.
-   */
+  // Click handler for the progress notification.
   void HandleProgressClick(const std::string& notification_id,
                            absl::optional<int> button_index);
 
-  /**
-   * Makes a notification instance for mount errors.
-   */
-  std::unique_ptr<message_center::Notification> MakeMountErrorNotification(
+  // Makes a notification instance for mount errors.
+  NotificationPtr MakeMountErrorNotification(
       file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
-  /**
-   * Makes a notification instance for removable devices.
-   */
-  std::unique_ptr<message_center::Notification> MakeRemovableNotification(
+  // Makes a notification instance for removable devices.
+  NotificationPtr MakeRemovableNotification(
       file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
-  /**
-   * Makes a notification instance Data Protection errors and warnings.
-   */
-  std::unique_ptr<message_center::Notification>
-  MakeDataProtectionPolicyNotification(
+  // Makes a notification instance Data Protection errors and warnings.
+  NotificationPtr MakeDataProtectionPolicyNotification(
       const std::string& notification_id,
       const file_manager::io_task::ProgressStatus& status);
 
-  /**
-   * Makes a notification instance for Data Protection progress notifications.
-   */
-  std::unique_ptr<message_center::Notification>
-  MakeDataProtectionPolicyProgressNotification(
+  // Makes a notification instance for Data Protection progress notifications.
+  NotificationPtr MakeDataProtectionPolicyProgressNotification(
       const std::string& notification_id,
       const file_manager::io_task::ProgressStatus& status);
 
-  /**
-   * Helper function to show a data protection policy dialog.
-   */
+  // Helper function to show a data protection policy dialog.
   void ShowDataProtectionPolicyDialog(file_manager::io_task::IOTaskId task_id,
                                       policy::FilesDialogType type);
 
-  /**
-   * Helper function bound to notification instances that hides notifications.
-   */
+  // Helper function bound to notification instances that hides notifications.
   void Dismiss(const std::string& notification_id);
 
-  /**
-   * Helper function to cancel a task.
-   */
+  // Helper function to cancel a task.
   void CancelTask(file_manager::io_task::IOTaskId task_id);
 
-  /**
-   * Helper function to resume a task.
-   */
-  void ResumeTask(file_manager::io_task::IOTaskId task_id);
+  // Helper function to resume a task.
+  void ResumeTask(file_manager::io_task::IOTaskId task_id,
+                  policy::Policy policy);
 
-  /**
-   * Maps device paths to their mount status.
-   * This is used for removable devices with single/multiple partitions.
-   * e.g. the same device path could have 2 partitions that each generate a
-   * mount event. One partition could have a known file system and the other an
-   *      unknown file system. Different combinations of known/unknown file
-   *      systems on a multi-partition devices require this map to generate
-   *      the correct system notification when errors occur.
-   */
-  std::map<std::string, enum SystemNotificationManagerMountStatus>
-      mount_status_;
+  // Maps device paths to their mount status.
+  // This is used for removable devices with single/multiple partitions.
+  // e.g. the same device path could have 2 partitions that each generate a
+  // mount event. One partition could have a known file system and the other an
+  //      unknown file system. Different combinations of known/unknown file
+  //      systems on a multi-partition devices require this map to generate
+  //      the correct system notification when errors occur.
+  std::map<std::string, SystemNotificationManagerMountStatus> mount_status_;
 
   // User profile.
   const raw_ptr<Profile, ExperimentalAsh> profile_;
@@ -351,8 +291,19 @@ class SystemNotificationManager {
   raw_ptr<file_manager::io_task::IOTaskController, ExperimentalAsh>
       io_task_controller_ = nullptr;
 
+  // Keep track of the bulk-pinning stage.
+  using BulkPinStage = file_manager_private::BulkPinStage;
+  BulkPinStage bulk_pin_stage_ = BulkPinStage::BULK_PIN_STAGE_NONE;
+
+  // Number of times the Google Drive settings page was opened from a system
+  // notification. Used in tests.
+  int drive_settings_open_count_ = 0;
+
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(SystemNotificationManagerTest,
+                           BulkPinningNotification);
 };
 
 }  // namespace file_manager

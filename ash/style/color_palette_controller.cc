@@ -90,13 +90,20 @@ SampleColorScheme GenerateSampleColorScheme(bool dark,
 
   std::unique_ptr<ui::Palette> palette =
       ui::GeneratePalette(seed_color, ToVariant(scheme));
-  // These match the tone values for cros.ref.primary-80,
-  // cros.ref.primary-60, and cros.ref.tertiary-70.
   SampleColorScheme sample;
   sample.scheme = scheme;
-  sample.primary = palette->primary().get(80.f);    // primary 80
-  sample.secondary = palette->primary().get(60.f);  // primary 60
+  // Tertiary is cros.ref.teratiary-70 for all color schemes.
   sample.tertiary = palette->tertiary().get(70.f);  // tertiary 70
+
+  if (scheme == ColorScheme::kVibrant) {
+    // Vibrant uses cros.ref.primary-70 and cros.ref.primary-50.
+    sample.primary = palette->primary().get(70.f);    // primary 70
+    sample.secondary = palette->primary().get(50.f);  // primary 50
+  } else {
+    // All other schemes use cros.ref.primary-80 and cros.ref.primary-60.
+    sample.primary = palette->primary().get(80.f);    // primary 80
+    sample.secondary = palette->primary().get(60.f);  // primary 60
+  }
 
   return sample;
 }

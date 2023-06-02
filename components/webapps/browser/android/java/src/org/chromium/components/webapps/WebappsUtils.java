@@ -174,7 +174,8 @@ public class WebappsUtils {
         ShortcutManager shortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            sIsRequestPinShortcutSupported = shortcutManager.isRequestPinShortcutSupported();
+            sIsRequestPinShortcutSupported =
+                    shortcutManager != null && shortcutManager.isRequestPinShortcutSupported();
         }
     }
 }

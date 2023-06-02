@@ -65,6 +65,12 @@ class CORE_EXPORT HighlightStyleUtils {
       const ComputedStyle& style,
       PseudoId pseudo,
       const AtomicString& pseudo_argument = g_null_atom);
+
+  static bool TextFragmentHasVisualOverflow(const Node* node);
+
+  static bool CustomHighlightHasVisualOverflow(
+      const Node* node,
+      const AtomicString& pseudo_argument = g_null_atom);
 };
 
 }  // namespace blink

@@ -305,7 +305,7 @@ class FrameSequenceTrackerTest : public testing::Test {
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection collection_;
-  raw_ptr<FrameSequenceTracker> tracker_;
+  raw_ptr<FrameSequenceTracker, DanglingUntriaged> tracker_;
 };
 
 // Tests that the tracker works correctly when the source-id for the

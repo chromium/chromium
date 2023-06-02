@@ -94,8 +94,8 @@ class SystemPowerMonitorHelperTest : public testing::Test {
 
  private:
   std::unique_ptr<SystemPowerMonitorHelper> helper_;
-  raw_ptr<FakeDelegate> delegate_;
-  raw_ptr<FakeProvider> provider_;
+  raw_ptr<FakeDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<FakeProvider, DanglingUntriaged> provider_;
 };
 
 class SystemPowerMonitorTest : public testing::Test {

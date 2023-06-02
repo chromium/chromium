@@ -270,7 +270,8 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
   MockClientSocketFactory socket_factory_;
   const std::unique_ptr<HttpNetworkSession> session_;
   CloseResultWaiter result_waiter_;
-  const raw_ptr<MockHttpStream> mock_stream_;  // Owned by |drainer_|.
+  const raw_ptr<MockHttpStream, DanglingUntriaged>
+      mock_stream_;  // Owned by |drainer_|.
   std::unique_ptr<HttpResponseBodyDrainer> drainer_;
 };
 

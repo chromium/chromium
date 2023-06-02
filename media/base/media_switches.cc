@@ -315,17 +315,6 @@ BASE_FEATURE(kFFmpegDecodeOpaqueVP8,
              "FFmpegDecodeOpaqueVP8",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable an updated dialog UI for the getDisplayMedia picker dialog under the
-// preferCurrentTab constraint.
-BASE_FEATURE(kShareThisTabDialog,
-             "ShareThisTabDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The length of the initial delay during which the "Allow"-button is disabled
-// in the share-this-tab dialog.
-const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
-    &kShareThisTabDialog, "activation_delay_ms", 500};
-
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",
@@ -537,6 +526,10 @@ BASE_FEATURE(kCrOSDspBasedNsAllowed,
 BASE_FEATURE(kCrOSDspBasedAgcAllowed,
              "CrOSDspBasedAgcAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIgnoreUiGains,
+             "IgnoreUiGains",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under
@@ -823,6 +816,19 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              "video-blit-color-accuracy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_APPLE)
+// Use the new VideoToolboxVideoDecoder for hardware decoding.
+BASE_FEATURE(kVideoToolboxVideoDecoder,
+             "VideoToolboxVideoDecoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_APPLE)
+
+// Inform webrtc with correct video color space information whenever
+// possible.
+BASE_FEATURE(kWebRTCColorAccuracy,
+             "WebRTCColorAccuracy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
 BASE_FEATURE(kVp9kSVCHWDecoding,
              "Vp9kSVCHWDecoding",
@@ -958,7 +964,7 @@ const base::FeatureParam<bool>
 // while capturing a low-resolution tab.
 BASE_FEATURE(kWebContentsCaptureHiDpi,
              "WebContentsCaptureHiDPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables handling of hardware media keys for controlling media.
 BASE_FEATURE(kHardwareMediaKeyHandling,
@@ -1167,6 +1173,11 @@ BASE_FEATURE(kMediaFoundationD3D11VideoCapture,
              "MediaFoundationD3D11VideoCapture",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable zero-copy based on MediaFoundation video capture with D3D11.
+BASE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy,
+             "MediaFoundationD3D11VideoCaptureZeroCopy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables VP8 decode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
     "MediaFoundationVP8Decoding", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1185,12 +1196,6 @@ BASE_FEATURE(kMediaFoundationClearPlayback,
 // https://docs.microsoft.com/en-us/windows/win32/api/audioclient/ne-audioclient-audclnt_streamoptions
 const base::Feature MEDIA_EXPORT kWasapiRawAudioCapture{
     "WASAPIRawAudioCapture", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Emulates audio capture timestamps instead of using timestamps from the actual
-// audio device.
-// See crbug.com/1315231 for more details.
-const base::Feature MEDIA_EXPORT kUseFakeAudioCaptureTimestamps{
-    "UseFakeAudioCaptureTimestamps", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
 BASE_FEATURE(kD3D11Vp9kSVCHWDecoding,
@@ -1483,6 +1488,12 @@ BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
              "FuchsiaMediacodecVideoEncoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_FUCHSIA)
+
+// Controls whether to pre-dispatch more decode tasks when pending decodes is
+// smaller than maximum supported decodes as advertiszed by decoder.
+BASE_FEATURE(kVideoDecodeBatching,
+             "VideoDecodeBatching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

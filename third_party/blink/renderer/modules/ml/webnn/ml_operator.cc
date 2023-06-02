@@ -62,10 +62,14 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "reshape";
     case MLOperator::OperatorKind::kResample2d:
       return "resample2d";
-    case MLOperator::OperatorKind::kSoftmax:
-      return "softmax";
     case MLOperator::OperatorKind::kSigmoid:
       return "sigmoid";
+    case MLOperator::OperatorKind::kSlice:
+      return "slice";
+    case MLOperator::OperatorKind::kSoftmax:
+      return "softmax";
+    case MLOperator::OperatorKind::kSplit:
+      return "split";
     case MLOperator::OperatorKind::kTranspose:
       return "transpose";
   }
@@ -131,5 +135,52 @@ const Vector<uint32_t>& MLPadOperator::BeginningPadding() const {
 
 const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
   return ending_padding_;
+}
+
+MLSliceOperator::MLSliceOperator(MLGraphBuilder* builder,
+                                 const Vector<uint32_t>& starts,
+                                 const Vector<uint32_t>& sizes)
+    : MLOperator(builder, MLOperator::OperatorKind::kSlice, nullptr),
+      starts_(starts),
+      sizes_(sizes) {}
+
+MLSliceOperator::~MLSliceOperator() = default;
+
+const Vector<uint32_t>& MLSliceOperator::Starts() const {
+  return starts_;
+}
+
+const Vector<uint32_t>& MLSliceOperator::Sizes() const {
+  return sizes_;
+}
+
+MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
+                                 const uint32_t splits,
+                                 const bindings::DictionaryBase* options)
+    : MLOperator(builder, MLOperator::OperatorKind::kSplit, options),
+      is_even_split_(true),
+      split_number_(splits) {}
+
+MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
+                                 const Vector<uint32_t>& splits,
+                                 const bindings::DictionaryBase* options)
+    : MLOperator(builder, MLOperator::OperatorKind::kSplit, options),
+      is_even_split_(false),
+      split_sizes_(splits) {}
+
+MLSplitOperator::~MLSplitOperator() = default;
+
+bool MLSplitOperator::isEvenSplit() const {
+  return is_even_split_;
+}
+
+uint32_t MLSplitOperator::SplitNumber() const {
+  CHECK(is_even_split_);
+  return split_number_;
+}
+
+const Vector<uint32_t>& MLSplitOperator::SplitSizes() const {
+  CHECK(!is_even_split_);
+  return split_sizes_;
 }
 }  // namespace blink

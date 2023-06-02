@@ -431,9 +431,8 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1415758): Flaky.
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
-                       DISABLED_SecureDnsTemplatesWithIdentifiers) {
+                       SecureDnsTemplatesWithIdentifiers) {
   std::string templatesWithIdentifier =
       "https://foo.test-${USER_EMAIL}/dns-query{?dns}";
   std::string templatesWithIdentifierDisplay =

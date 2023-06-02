@@ -2,13 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import os
 import re
 import time
+from typing import Any
+
+from infra import ChromeEnterpriseTestCase
 
 from .verifyable import Verifyable
 from .verifyContent import VerifyContent
-from infra import ChromeEnterpriseTestCase
+
+
+def parse_to_json(source: str, pattern: str) -> Any:
+  """Matches string with a regex and loads to a Json object."""
+  matcher = re.search(pattern, source)
+  if matcher:
+    json_string = matcher.group(0)
+    return json.loads(json_string)
+  return None
 
 
 class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
@@ -46,14 +58,18 @@ class ChromeReportingConnectorTestCase(ChromeEnterpriseTestCase):
   def TriggerUnsafeBrowsingEvent(self):
     """Run UI script to trigger safe browsing event and return deviceId"""
     localDir = os.path.dirname(os.path.abspath(__file__))
-    deviceId = self.RunUITest(
+    # Copy histogram util package to vm instance.
+    self.EnableHistogramSupport(self.win_config['client'], localDir)
+
+    output = self.RunUITest(
         self.win_config['client'],
         os.path.join(localDir, 'common', 'realtime_reporting_ui_test.py'),
         timeout=600)
-    deviceId = re.search(r'DeviceId:.*$',
-                         deviceId.strip()).group(0).replace('DeviceId:',
-                                                            '').rstrip("\\rn'")
-    return deviceId
+    result = parse_to_json(output, '(?<=Result:).*')
+    self.assertIsNotNone(result)
+    deviceId = result['DeviceId']
+    histogram = result['Histogram']
+    return deviceId, histogram
 
   def TryVerifyUntilTimeout(self,
                             verifyClass: Verifyable,

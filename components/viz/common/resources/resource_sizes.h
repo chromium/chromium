@@ -13,7 +13,7 @@
 #include "base/numerics/safe_math.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_resource_format_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -211,7 +211,8 @@ bool ResourceSizes::MaybeWidthInBytesInternal(int width,
                                               ResourceFormat format,
                                               bool aligned,
                                               T* bytes) {
-  base::CheckedNumeric<T> bits_per_row = BitsPerPixel(format);
+  base::CheckedNumeric<T> bits_per_row =
+      SharedImageFormat::SinglePlane(format).BitsPerPixel();
   bits_per_row *= width;
   if (!bits_per_row.IsValid())
     return false;
@@ -264,7 +265,7 @@ template <typename T>
 T ResourceSizes::WidthInBytesInternal(int width,
                                       ResourceFormat format,
                                       bool aligned) {
-  T bytes = BitsPerPixel(format);
+  T bytes = SharedImageFormat::SinglePlane(format).BitsPerPixel();
   bytes *= width;
   bytes = cc::MathUtil::UncheckedRoundUp<T>(bytes, 8);
   bytes /= 8;

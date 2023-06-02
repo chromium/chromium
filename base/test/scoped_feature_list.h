@@ -5,11 +5,11 @@
 #ifndef BASE_TEST_SCOPED_FEATURE_LIST_H_
 #define BASE_TEST_SCOPED_FEATURE_LIST_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -170,6 +170,12 @@ class ScopedFeatureList final {
   // FeatureList and overridden with a single feature either enabled or
   // disabled depending on |enabled|.
   void InitWithFeatureState(const Feature& feature, bool enabled);
+
+  // Same as `InitWithFeatureState()`, but supports multiple features at a time.
+  // `feature_states` - a map where the keys are features and the values are
+  //                    their overridden states (`false` for force-disabled,
+  //                    `true` for force-enabled).
+  void InitWithFeatureStates(const flat_map<FeatureRef, bool>& feature_states);
 
  private:
   using PassKey = base::PassKey<ScopedFeatureList>;

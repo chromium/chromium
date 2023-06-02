@@ -308,6 +308,11 @@ struct StoreAndHashPrefix {
 // matched.
 using StoreAndHashPrefixes = std::vector<StoreAndHashPrefix>;
 
+// The matching hash prefixes and corresponding stores, for each full hash
+// generated for a given URL.
+using FullHashToStoreAndHashPrefixesMap =
+    std::unordered_map<FullHashStr, StoreAndHashPrefixes>;
+
 // Enumerate failures for histogramming purposes.  DO NOT CHANGE THE
 // ORDERING OF THESE VALUES.
 enum V4OperationResult {

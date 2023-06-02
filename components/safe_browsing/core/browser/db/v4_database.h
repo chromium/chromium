@@ -150,13 +150,14 @@ class V4Database {
   virtual bool AreAnyStoresAvailable(
       const StoresToCheck& stores_to_check) const;
 
-  // Searches for a hash prefix matching the |full_hash| in stores in the
-  // database, filtered by |stores_to_check|, and returns the identifier of the
-  // store along with the matching hash prefix in |matched_hash_prefix_map|.
+  // Searches for hash prefixes matching the |full_hashes| in stores in the
+  // database, filtered by |stores_to_check|. The callback is run synchronously,
+  // or asynchronously if MmapSafeBrowsingDatabaseAsync is enabled, with the
+  // identifier of the stores along with the matching hash prefixes.
   virtual void GetStoresMatchingFullHash(
-      const FullHashStr& full_hash,
+      const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
-      StoreAndHashPrefixes* matched_store_and_full_hashes);
+      base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback);
 
   // Returns the file size of the store in bytes. Returns 0 if the store is not
   // found.

@@ -22,6 +22,36 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SettingsAllPermissionTypes">
+<!-- Should be kept in sync with variants AllPermissionTypes in
+  tools/metrics/histograms/metadata/permissions/histograms.xml.
+-->
+
+  <variant name="AR"/>
+  <variant name="AudioAndVideoCapture"/>
+  <variant name="AudioCapture"/>
+  <variant name="CameraPanTiltZoom"/>
+  <variant name="ClipboardReadWrite"/>
+  <variant name="Geolocation"/>
+  <variant name="IdleDetection"/>
+  <variant name="LocalFonts"/>
+  <variant name="MidiSysEx"/>
+  <variant name="MultipleDownload"/>
+  <variant name="Nfc"/>
+  <variant name="Notifications"/>
+  <variant name="PaymentHandler"/>
+  <variant name="ProtectedMedia"/>
+  <variant name="Quota"/>
+  <variant name="RegisterProtocolHandler"/>
+  <variant name="SecurityKeyAttestation"/>
+  <variant name="StorageAccess"/>
+  <variant name="TopLevelStorageAccess"/>
+  <variant name="U2fApiRequest"/>
+  <variant name="VideoCapture"/>
+  <variant name="VR"/>
+  <variant name="WindowPlacement"/>
+</variants>
+
 <histogram name="Settings.AdvancedSpellcheck.OnStartup" enum="BooleanEnabled"
     expires_after="2023-05-07">
   <obsolete>
@@ -342,7 +372,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
-    expires_after="2023-08-21">
+    expires_after="2023-11-19">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
@@ -466,6 +496,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.PromptHelperEvent"
+    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2023-12-01">
+  <owner>sauski@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records each event that occurs when the Privacy Sandbox prompt helper is
+    attempting to find a suitable location to show any pending Privacy Sandbox
+    prompt.
+
+    The helper is only created and attached to the tab when a prompt is
+    required, and so these metrics are only recorded when a prompt is required.
+    Value 1 is recorded on navigations that occur while the helper still exists,
+    but after the prompt has been shown (as the tab that created the helper can
+    outlive the prompt)
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.PromptStartupState"
     enum="SettingsPrivacySandboxPromptStartupState" expires_after="2023-10-22">
   <owner>sauski@google.com</owner>
@@ -498,16 +546,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the startup state of the topics API for Privacy Sandbox GA M1. This
     is recorded during the profile start up.
-  </summary>
-</histogram>
-
-<histogram name="Settings.SafetyCheck.ChromeCleanerResult"
-    enum="SafetyCheckChromeCleanerStatus" expires_after="2023-07-09">
-  <owner>rainhard@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Resulting state of the safety check Chrome cleaner check. Recorded when a
-    safety check is run by the user. Value 4-9 got added with M88.
   </summary>
 </histogram>
 
@@ -568,11 +606,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.PasswordsResult"
-    enum="SafetyCheckPasswordsStatus" expires_after="2023-11-12">
-  <owner>andzaytsev@google.com</owner>
+<histogram name="Settings.SafetyCheck.PasswordsResult2"
+    enum="SafetyCheckPasswordsStatus" expires_after="2024-05-23">
+  <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
-  <summary>Resulting state of the safety check password check.</summary>
+  <summary>
+    Resulting state of the safety check password check. Replaced
+    Settings.SafetyCheck.PasswordsResult in M116 after fixing a bug on Safety
+    Check on iOS that was recording password results multiple times for the same
+    password check.
+  </summary>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.SafeBrowsingResult"
@@ -664,7 +707,7 @@ chromium-metrics-reviews@google.com.
     a permission that was previously revoked by the unused site permission
     module of SafetyCheck.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="SettingsAllPermissionTypes"/>
   <token key="SourceUI">
     <variant name="Prompt"/>
     <variant name="Settings"/>
@@ -970,7 +1013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2023-09-17">
+    enum="TrackedPreference" expires_after="2023-11-19">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

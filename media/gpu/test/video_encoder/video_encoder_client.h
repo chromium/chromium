@@ -25,19 +25,17 @@
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
-
-class Video;
-
 namespace test {
 
 class AlignedDataHelper;
+class RawVideo;
 
 // Video encoder client configuration.
 // TODO(dstaessens): Add extra parameters (e.g. h264 output level)
 struct VideoEncoderClientConfig {
   static constexpr uint32_t kDefaultBitrate = 200000;
   VideoEncoderClientConfig(
-      const Video* video,
+      const RawVideo* video,
       VideoCodecProfile output_profile,
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
@@ -133,7 +131,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // Initialize the video encode accelerator for the specified |video|.
   // Initialization is performed asynchronous, upon completion a 'kInitialized'
   // event will be sent to the test encoder.
-  bool Initialize(const Video* video);
+  bool Initialize(const RawVideo* video);
 
   // Start encoding the video stream, encoder should be idle when this function
   // is called. This function is non-blocking, for each frame encoded a
@@ -184,7 +182,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   void Destroy();
 
   // Create a new video |encoder_| on the |encoder_client_thread_|.
-  void CreateEncoderTask(const Video* video,
+  void CreateEncoderTask(const RawVideo* video,
                          bool* success,
                          base::WaitableEvent* done);
   // Destroy the active video |encoder_| on the |encoder_client_thread_|.
@@ -247,7 +245,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   VideoEncoderClientState encoder_client_state_;
 
   // The video being encoded, owned by the video encoder test environment.
-  raw_ptr<const Video> video_ = nullptr;
+  raw_ptr<const RawVideo> video_ = nullptr;
   // Helper used to align data and create frames from the raw video stream.
   std::unique_ptr<media::test::AlignedDataHelper> aligned_data_helper_;
 

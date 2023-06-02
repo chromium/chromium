@@ -18,10 +18,14 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace policy {
+class CloudPolicyClient;
+}  // namespace policy
+
 namespace reporting {
 
-// Implements the logic required to talk to the device management service for
-// Encrypted Reporting Pipeline records upload.
+// Implements the logic required to talk to the device management service
+// for Encrypted Reporting Pipeline records upload.
 class EncryptedReportingClient {
  public:
   class Delegate {
@@ -52,8 +56,7 @@ class EncryptedReportingClient {
   // completed.
   void UploadReport(base::Value::Dict merging_payload,
                     absl::optional<base::Value::Dict> context,
-                    const std::string& dm_token,
-                    const std::string& client_id,
+                    policy::CloudPolicyClient* cloud_policy_client,
                     ResponseCallback callback);
 
  private:
@@ -76,7 +79,6 @@ class EncryptedReportingClient {
 
   base::WeakPtrFactory<EncryptedReportingClient> weak_ptr_factory_{this};
 };
-
 }  // namespace reporting
 
 #endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_ENCRYPTED_REPORTING_CLIENT_H_

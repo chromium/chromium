@@ -603,6 +603,14 @@ void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
     delegate->ClearPersistedTokens();
 }
 
+jboolean AwBrowserContext::HasFormData(JNIEnv* env) {
+  return GetFormDatabaseService()->HasFormData();
+}
+
+void AwBrowserContext::ClearFormData(JNIEnv* env) {
+  return GetFormDatabaseService()->ClearFormData();
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 AwBrowserContext::GetJavaBrowserContext() {
   if (!obj_) {

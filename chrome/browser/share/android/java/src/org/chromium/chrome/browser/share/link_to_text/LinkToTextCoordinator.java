@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -60,6 +61,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private String mSelectedText;
     private ShareParams mShareLinkParams;
     private ShareParams mShareTextParams;
+    private boolean mIncludeOriginInTitle;
     public @RemoteRequestStatus int mRemoteRequestStatus;
 
     @VisibleForTesting
@@ -67,21 +69,22 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     public LinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
-            String selectedText) {
+            String selectedText, boolean includeOriginInTitle) {
         initLinkToTextCoordinator(tab, chromeOptionShareCallback, chromeShareExtras, shareStartTime,
-                visibleUrl, selectedText);
+                visibleUrl, selectedText, includeOriginInTitle);
     }
 
     @VisibleForTesting
     void initLinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
-            String selectedText) {
+            String selectedText, boolean includeOriginInTitle) {
         mTab = tab;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mChromeShareExtras = chromeShareExtras;
         mShareStartTime = shareStartTime;
         mShareUrl = visibleUrl;
         mSelectedText = selectedText;
+        mIncludeOriginInTitle = includeOriginInTitle;
 
         mTab.addObserver(this);
         mRemoteRequestStatus = RemoteRequestStatus.NONE;
@@ -108,7 +111,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mShareLinkParams = isSelectorEmpty
                 ? null
                 : new ShareParams
-                          .Builder(mTab.getWindowAndroid(), mTab.getTitle(),
+                          .Builder(mTab.getWindowAndroid(), getTitle(),
                                   LinkToTextHelper.getUrlToShare(mShareUrl, selector))
                           .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
                           .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
@@ -362,5 +365,12 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION, "TimeoutLengthMs",
                 TIMEOUT_MS);
+    }
+
+    @VisibleForTesting
+    public String getTitle() {
+        if (!mIncludeOriginInTitle) return mTab.getTitle();
+        String origin = new GURL(mShareUrl).getOrigin().getSpec();
+        return mTab.getContext().getString(R.string.sharing_including_link_title_template, origin);
     }
 }

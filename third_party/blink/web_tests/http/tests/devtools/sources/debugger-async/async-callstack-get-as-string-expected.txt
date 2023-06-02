@@ -3,21 +3,21 @@ Tests asynchronous call stacks for DataTransferItem.getAsString.
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) onGetAsString (async-callstack-get-as-string.js:44)
+    0) onGetAsString (async-callstack-get-as-string.js:47)
     [DataTransferItem.getAsString]
-    0) onPaste (async-callstack-get-as-string.js:39)
-    1) timeout (async-callstack-get-as-string.js:30)
+    0) onPaste (async-callstack-get-as-string.js:42)
+    1) timeout (async-callstack-get-as-string.js:33)
     [setTimeout]
-    0) testFunction (async-callstack-get-as-string.js:15)
+    0) testFunction (async-callstack-get-as-string.js:18)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onPaste (async-callstack-get-as-string.js:35)
-    1) timeout (async-callstack-get-as-string.js:30)
+    0) onPaste (async-callstack-get-as-string.js:38)
+    1) timeout (async-callstack-get-as-string.js:33)
     [setTimeout]
-    0) testFunction (async-callstack-get-as-string.js:15)
+    0) testFunction (async-callstack-get-as-string.js:18)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

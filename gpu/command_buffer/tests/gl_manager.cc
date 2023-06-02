@@ -61,6 +61,8 @@ void InitializeGpuPreferencesForTestingFromCommandLine(
   // Only initialize specific GpuPreferences members used for testing.
   preferences->use_passthrough_cmd_decoder =
       gles2::UsePassthroughCommandDecoder(&command_line);
+  preferences->enable_gpu_service_logging_gpu =
+      command_line.HasSwitch(switches::kEnableGPUServiceLoggingGPU);
 }
 
 class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
@@ -306,20 +308,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
   share_group_ = share_group ? share_group : new gl::GLShareGroup;
 
   ContextCreationAttribs attribs;
-  attribs.red_size = 8;
-  attribs.green_size = 8;
-  attribs.blue_size = 8;
-  attribs.alpha_size = 8;
-  attribs.depth_size = 16;
-  attribs.stencil_size = 8;
   attribs.context_type = options.context_type;
-  attribs.samples = options.multisampled ? 4 : 0;
-  attribs.sample_buffers = options.multisampled ? 1 : 0;
-  attribs.alpha_size = options.backbuffer_alpha ? 8 : 0;
-  attribs.should_use_native_gmb_for_backbuffer =
-      options.should_use_native_gmb_for_backbuffer;
-  attribs.offscreen_framebuffer_size = options.size;
-  attribs.buffer_preserved = options.preserve_backbuffer;
   attribs.bind_generates_resource = options.bind_generates_resource;
 
   translator_cache_ =
@@ -412,6 +401,56 @@ void GLManager::InitializeWithWorkaroundsImpl(
       << "Could not init GLES2Implementation";
 
   MakeCurrent();
+
+  // Initialize FBO for drawing
+  if (!options.size.IsEmpty()) {
+    GLuint color, depth_stencil;
+    gles2_implementation_->GenTextures(1, &color);
+    gles2_implementation_->BindTexture(GL_TEXTURE_2D, color);
+    gles2_implementation_->TexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA, options.size.width(), options.size.height(),
+        0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    gles2_implementation_->BindTexture(GL_TEXTURE_2D, 0);
+
+    gles2_implementation_->GenRenderbuffers(1, &depth_stencil);
+    gles2_implementation_->BindRenderbuffer(GL_RENDERBUFFER, depth_stencil);
+    gles2_implementation_->RenderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, options.size.width(),
+        options.size.height());
+    gles2_implementation_->BindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    gles2_implementation_->GenFramebuffers(1, &fbo_);
+    gles2_implementation_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
+    gles2_implementation_->FramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color, 0);
+    EXPECT_TRUE(glGetError() == GL_NONE);
+
+    // WebGL requires GL_DEPTH_STENCIL_ATTACHMENT
+    if (context_type_ == CONTEXT_TYPE_WEBGL1 ||
+        context_type_ == CONTEXT_TYPE_WEBGL2) {
+      gles2_implementation_->FramebufferRenderbuffer(
+          GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+          depth_stencil);
+    } else {
+      gles2_implementation_->FramebufferRenderbuffer(
+          GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_stencil);
+      gles2_implementation_->FramebufferRenderbuffer(
+          GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+          depth_stencil);
+    }
+
+    gles2_implementation_->Viewport(0, 0, options.size.width(),
+                                    options.size.height());
+
+    gles2_implementation_->Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
+                                 GL_STENCIL_BUFFER_BIT);
+  }
+
+  EXPECT_TRUE(glGetError() == GL_NONE);
+}
+
+void GLManager::BindOffscreenFramebuffer(GLenum target) {
+  gles2_implementation_->BindFramebuffer(target, fbo_);
 }
 
 size_t GLManager::GetSharedMemoryBytesAllocated() const {

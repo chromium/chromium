@@ -1,0 +1,34 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "backbone": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.3.3.tgz",
+      "integrity": "sha1-TMgOp8sWMaxHSInOQPL4vGg7KZk=",
+      "requires": {
+        "underscore": "1.8.3"
+      }
+    },
+    "jquery": {
+      "version": "3.2.1",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
+      "integrity": "sha1-XE2d5lKvbNCncBVKYxu6ErAVx4c="
+    },
+    "todomvc-app-css": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/todomvc-app-css/-/todomvc-app-css-2.1.0.tgz",
+      "integrity": "sha1-tvJxbTOa+i5feZNH0qSLBTliQqU="
+    },
+    "todomvc-common": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/todomvc-common/-/todomvc-common-1.0.3.tgz",
+      "integrity": "sha1-y6GGgQnKpAG5COv3d5TMEBS3SHM="
+    },
+    "underscore": {
+      "version": "1.8.3",
+      "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz",
+      "integrity": "sha1-Tz+1OxBuYJf8+ctBCfKl6b36UCI="
+    }
+  }
+}

@@ -593,7 +593,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   // First attempt receives client auth request.
   SSLSocketDataProvider ssl_data1(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
   ssl_data1.next_proto = kProtoHTTP2;
-  ssl_data1.cert_request_info = cert_request.get();
+  ssl_data1.cert_request_info = cert_request;
 
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
   StaticSocketDataProvider socket_data1;

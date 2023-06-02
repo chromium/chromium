@@ -211,6 +211,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1442987760062738829">Perforeren</translation>
 <translation id="1446396933673057385">Nauwkeurigheidscheck</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">De instellingen die je ouder heeft gekozen, zorgen ervoor dat je online nu beter beveiligd bent</translation>
 <translation id="1453974140256777690">Tekst die je plakt of bijvoegt, wordt voor analyse naar Google Cloud of naar derden gestuurd. De tekst kan bijvoorbeeld worden gescand op gevoelige gegevens of malware.</translation>
 <translation id="1455413310270022028">Gum</translation>
 <translation id="1459693405370120464">Weer</translation>
@@ -268,6 +269,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1569487616857761740">Vervaldatum invoeren</translation>
 <translation id="1569694109004336106">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
+<translation id="1576277203042721907">Shopping-inzichten</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Er is iets misgegaan met het bekijken van deze webpagina.</translation>
 <translation id="1584492003828271317">Of een advertentie wordt gepersonaliseerd terwijl je browst, is afhankelijk van deze instelling, door sites voorgestelde advertenties, je cookie-instellingen en of de site die je bekijkt advertenties personaliseert</translation>
@@ -976,6 +978,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3380864720620200369">Klant-ID:</translation>
 <translation id="3381668585148405088">Je aankoop verifiëren</translation>
 <translation id="3383566085871012386">Huidige voorrangsvolgorde</translation>
+<translation id="3384522979010096022">Je organisatie staat niet toe dat je deze site bekijkt</translation>
 <translation id="3387261909427947069">Betaalmethoden</translation>
 <translation id="3391030046425686457">Afleveradres</translation>
 <translation id="3391482648489541560">bestanden bewerken</translation>
@@ -1097,7 +1100,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3676592649209844519">Apparaat-ID:</translation>
 <translation id="3677008721441257057">Bedoelde je &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Verzoek kan niet worden ondertekend</translation>
-<translation id="3678342917559046352">Ongeldige extensie: er wordt verwacht dat de waarde een van de volgende notaties heeft: &lt;extension_id&gt; of &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Pagina openen in een nieuw incognitovenster (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Certificaatgegevens</translation>
 <translation id="3681421644246505351">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis.</translation>
@@ -1127,6 +1129,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3740319564441798148">Lange afstand bus- en treinvervoer</translation>
 <translation id="3743765582345153106">Altijd laten verifiëren bij gebruik van automatisch invullen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
+<translation id="3744212718085287312">Wil je deze kaart de volgende keer beter beveiligen met een virtuele kaart?</translation>
 <translation id="3744286742364977428">Bestanden die je downloadt, worden voor analyse naar Google Cloud of naar derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen volgens het bedrijfsbeleid.</translation>
 <translation id="3744899669254331632">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde inloggegevens heeft verstuurd die niet door Chromium kunnen worden verwerkt. Aangezien netwerkfouten en aanvallen doorgaans van tijdelijke aard zijn, zal deze pagina later waarschijnlijk wel werken.</translation>
 <translation id="3748148204939282805">Cybercriminelen op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kunnen proberen om je te misleiden zodat je iets gevaarlijks doet, bijvoorbeeld software installeren of je persoonlijke informatie bekendmaken (zoals wachtwoorden, telefoonnummers of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1235,6 +1238,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4040350669425716613">Colleges en universiteiten</translation>
 <translation id="4047351652147966654">18 x 24 inch</translation>
+<translation id="404831776305217138">Update-URL voor extensie met ID <ph name="EXTENSION_ID" /> is ongeldig of gebruikt een niet-ondersteund schema. Ondersteunde schema's zijn: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> en <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Je kunt het gebruiken in meerdere Google-producten</translation>
 <translation id="405399507749852140">Krijg meldingen bij een prijsdaling op een site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1262,6 +1266,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="410148943680000050">Desktoppublishing</translation>
 <translation id="4103249731201008433">Serienummer van apparaat is ongeldig</translation>
 <translation id="4106133539597032659">Knop Site maken, druk op Enter om snel een nieuwe site in Google Sites te maken</translation>
+<translation id="4106887816571530227">Ingesloten content niet toegestaan</translation>
 <translation id="4110652170750985508">Je betaling controleren</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
@@ -1341,7 +1346,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Opmerking</translation>
 <translation id="425582637250725228">Wijzigingen die je hebt aangebracht, worden mogelijk niet opgeslagen.</translation>
-<translation id="425869179292622354">Wil je deze kaart beter beveiligen met een virtuele kaart?</translation>
 <translation id="4258748452823770588">Onjuiste handtekening</translation>
 <translation id="4261046003697461417">Er kunnen geen aantekeningen worden gemaakt in beveiligde documenten</translation>
 <translation id="4265872034478892965">Toegestaan door je beheerder</translation>
@@ -1600,6 +1604,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4876305945144899064">Geen gebruikersnaam</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Geen}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> zoeken</translation>
+<translation id="4877521229462766300">Ingesloten content toestaan?</translation>
 <translation id="4879491255372875719">Automatisch (standaard)</translation>
 <translation id="4880827082731008257">Geschiedenis doorzoeken</translation>
 <translation id="4881695831933465202">Openen</translation>
@@ -1797,6 +1802,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5314967030527622926">Boekjesmaker</translation>
 <translation id="5316812925700871227">Linksom draaien</translation>
 <translation id="5317780077021120954">Opslaan</translation>
+<translation id="5323043727018853753">Ingesloten content toegestaan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
 <translation id="5332219387342487447">Verzendmethode</translation>
@@ -2173,6 +2179,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6306713302480826305">Dit adres wordt verwijderd van dit apparaat en je andere ingelogde apparaten</translation>
 <translation id="6312113039770857350">Webpagina niet beschikbaar</translation>
 <translation id="6316226860534107313">Scooters en bromfietsen</translation>
+<translation id="6316723751983724988">Nieuw: Family Link-keuzes voor Chrome zijn hier van toepassing</translation>
 <translation id="63172326633386613">Toegankelijkheidsinstellingen beheren</translation>
 <translation id="6319249456820053699">Camera's en camcorders</translation>
 <translation id="6321917430147971392">Controleer je DNS-instellingen</translation>
@@ -2280,6 +2287,8 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6569060085658103619">Je bekijkt een extensiepagina</translation>
 <translation id="6569366777234823130">Dramafilms</translation>
 <translation id="6573200754375280815">Twee perforaties rechts</translation>
+<translation id="6576181918031900030">Casten starten</translation>
+<translation id="6578434528542148658">Ongeldige extensie-ID.</translation>
 <translation id="657902945730878902">Tekenen en kleuren</translation>
 <translation id="6579630537141957243">MIDI-apparaat verbinden?</translation>
 <translation id="6579990219486187401">Lichtroze</translation>
@@ -2724,6 +2733,7 @@ Aanvullende informatie:
 <translation id="7598391785903975535">Minder dan <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan dit verzoek momenteel niet verwerken.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nooit vertalen</translation>
+<translation id="7601297359530599375">Meestal kun je beveiligd verbinding maken met deze site, maar deze keer is het Chrome niet gelukt. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>
 <translation id="7613889955535752492">Vervaldatum: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je wachtwoorden te beheren in de Chrome-instellingen.</translation>
@@ -2824,6 +2834,7 @@ Aanvullende informatie:
 <translation id="7822320754433038727">Jacht en schietsport</translation>
 <translation id="782886543891417279">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk (<ph name="WIFI_NAME" />) dat je gebruikt.</translation>
 <translation id="7840103971441592723">Schermopname is gestart</translation>
+<translation id="784137052867620416">Shopping-inzichten</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Later kan een site die je bezoekt Chrome om relevante onderwerpen vragen om de advertenties te personaliseren die je te zien krijgt. Chrome deelt maximaal 3 onderwerpen en beschermt je browsegeschiedenis en identiteit.</translation>
@@ -2957,7 +2968,6 @@ Aanvullende informatie:
 <translation id="8190193880870196235">Beheerd door een extensie</translation>
 <translation id="8194797478851900357">&amp;Verplaatsen ongedaan maken</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
-<translation id="8201077131113104583">Ongeldige update-URL voor de extensie met de ID '<ph name="EXTENSION_ID" />'.</translation>
 <translation id="8202097416529803614">Besteloverzicht</translation>
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
@@ -2969,6 +2979,7 @@ Aanvullende informatie:
 <translation id="8217748145574471584">Human Resources</translation>
 <translation id="8218327578424803826">Toegewezen locatie:</translation>
 <translation id="8228419419708659934">Weergave met twee pagina's</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> wil toegang tot een apparaat in je netwerk:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportgames</translation>
@@ -3017,7 +3028,6 @@ Aanvullende informatie:
 <translation id="8298115750975731693">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk (<ph name="WIFI_NAME" />) dat je gebruikt.</translation>
 <translation id="8303854710873047864">Het gedeelte <ph name="SECTION" /> is zichtbaar</translation>
 <translation id="830498451218851433">Enkele vouw</translation>
-<translation id="8307888238279532626">Geïnstalleerde apps en hoe vaak ze zijn gebruikt</translation>
 <translation id="831997045666694187">Avond</translation>
 <translation id="8321476692217554900">meldingen</translation>
 <translation id="8329068931308448247">Envelop #14</translation>

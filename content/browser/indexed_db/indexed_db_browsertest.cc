@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/thread_test_helper.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -291,6 +292,21 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     loop.Run();
   }
 
+  storage::QuotaErrorOr<storage::BucketInfo> GetOrCreateBucket(
+      const storage::BucketInitParams& params) {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+    shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetQuotaManager()
+        ->proxy()
+        ->UpdateOrCreateBucket(
+            params, base::SingleThreadTaskRunner::GetCurrentDefault(),
+            future.GetCallback());
+    return future.Take();
+  }
+
  private:
   mojo::Remote<storage::mojom::MockFailureInjector> failure_injector_;
 };
@@ -395,15 +411,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
 
   // Find the bucket that was created.
   const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
-              blink::StorageKey::CreateFirstParty(
-                  url::Origin::Create(database_open_url))));
+      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(database_open_url))));
   ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -434,15 +444,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
 
   // Find the bucket that was created.
   const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
-              blink::StorageKey::CreateFirstParty(
-                  url::Origin::Create(database_open_url))));
+      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(database_open_url))));
   ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -768,15 +772,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   DeleteForStorageKey(kTestStorageKey);
-  const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(kTestStorageKey));
+  const auto maybe_bucket_info = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(kTestStorageKey));
   ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   EXPECT_EQ(0,
@@ -1233,15 +1230,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
 
   // Find the bucket that was created.
   const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
-              blink::StorageKey::CreateFirstParty(
-                  url::Origin::Create(embedded_test_server()->base_url()))));
+      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(embedded_test_server()->base_url()))));
   ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
@@ -1329,15 +1320,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
 
   // Find the bucket that was created.
   const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
-              blink::StorageKey::CreateFirstParty(
-                  url::Origin::Create(embedded_test_server()->base_url()))));
+      GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
+          blink::StorageKey::CreateFirstParty(
+              url::Origin::Create(embedded_test_server()->base_url()))));
   ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   int64_t next_blob_number = GetNextBlobNumber(bucket_locator, 1);

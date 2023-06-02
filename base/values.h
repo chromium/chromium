@@ -140,6 +140,8 @@ namespace base {
 //       `front()`, `back()`, `reserve()`, `operator[]`, `clear()`, `erase()`:
 //       Identical to the STL container equivalents, with additional safety
 //       checks, e.g. `operator[]` will `CHECK()` if the index is out of range.
+// - `rbegin()` and `rend()` are also supported, but there are no safety checks
+// (see crbug.com/1446739).
 // - `Clone()`: Create a deep copy.
 // - `Append()`: Append a value to the end of the list. Accepts `Value` or any
 //       of the subtypes that `Value` can hold.
@@ -628,6 +630,15 @@ class BASE_EXPORT GSL_OWNER Value {
     const_iterator end() const;
     const_iterator cend() const;
 
+    // Returns a reverse iterator preceding the first value in this list. May
+    // not be dereferenced.
+    std::vector<Value>::reverse_iterator rend();
+    std::vector<Value>::const_reverse_iterator rend() const;
+
+    // Returns a reverse iterator to the last value in this list.
+    std::vector<Value>::reverse_iterator rbegin();
+    std::vector<Value>::const_reverse_iterator rbegin() const;
+
     // Returns a reference to the first value in the container. Fails with
     // `CHECK()` if the list is empty.
     const Value& front() const;
@@ -641,6 +652,14 @@ class BASE_EXPORT GSL_OWNER Value {
     // Increase the capacity of the backing container, but does not change
     // the size. Assume all existing iterators will be invalidated.
     void reserve(size_t capacity);
+
+    // Resizes the list.
+    // If `new_size` is greater than current size, the extra elements in the
+    // back will be destroyed.
+    // If `new_size` is less than current size, new default-initialized elements
+    // will be added to the back.
+    // Assume all existing iterators will be invalidated.
+    void resize(size_t new_size);
 
     // Returns a reference to the value at `index` in this list. Fails with a
     // `CHECK()` if `index >= size()`.

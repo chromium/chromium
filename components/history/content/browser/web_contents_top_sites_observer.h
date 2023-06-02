@@ -37,7 +37,7 @@ class WebContentsTopSitesObserver
       const content::LoadCommittedDetails& load_details) override;
 
   // Underlying TopSites instance, may be null during testing.
-  raw_ptr<TopSites> top_sites_;
+  raw_ptr<TopSites, DanglingUntriaged> top_sites_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

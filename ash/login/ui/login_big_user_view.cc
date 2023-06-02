@@ -54,16 +54,6 @@ LoginBigUserView::LoginBigUserView(
 
 LoginBigUserView::~LoginBigUserView() = default;
 
-void LoginBigUserView::OnThemeChanged() {
-  NonAccessibleView::OnThemeChanged();
-
-  auto* background = GetBackground();
-  if (background) {
-    background->SetNativeControlColor(
-        GetColorProvider()->GetColor(kColorAshShieldAndBase80));
-  }
-}
-
 void LoginBigUserView::CreateChildView(const LoginUserInfo& user) {
   if (IsPublicAccountUser(user)) {
     CreatePublicAccount(user);
@@ -133,10 +123,9 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
   } else {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetBackground(views::CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainter(
-            GetColorProvider()->GetColor(kColorAshShieldAndBase80),
-            login::kNonBlurredWallpaperBackgroundRadiusDp)));
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshShieldAndBase80, login::kNonBlurredWallpaperBackgroundRadiusDp,
+        0));
   }
 }
 

@@ -46,7 +46,6 @@ namespace content {
 class FrameTreeNode;
 class NavigationEntryRestoreContext;
 class NavigationEntryRestoreContextImpl;
-class SubresourceWebBundleNavigationInfo;
 
 class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
  public:
@@ -267,8 +266,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const std::string& method,
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      std::unique_ptr<SubresourceWebBundleNavigationInfo>
-          subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
   // Returns the FrameNavigationEntry corresponding to |frame_tree_node|, if

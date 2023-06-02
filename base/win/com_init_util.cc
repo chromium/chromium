@@ -4,11 +4,11 @@
 
 #include "base/win/com_init_util.h"
 
+#include <stdint.h>
 #include <windows.h>
-
 #include <winternl.h>
+
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 
 namespace base {
@@ -28,12 +28,8 @@ struct OleTlsData {
     MTA = 0x140,
   };
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
-  RAW_PTR_EXCLUSION void* thread_base;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #reinterpret-cast-trivial-type
-  RAW_PTR_EXCLUSION void* sm_allocator;
+  uintptr_t thread_base;
+  uintptr_t sm_allocator;
   DWORD apartment_id;
   DWORD apartment_flags;
   // There are many more fields than this, but for our purposes, we only care

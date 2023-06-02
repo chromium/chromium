@@ -61,10 +61,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
@@ -366,6 +368,11 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 #pragma mark - SetUpListViewDelegate
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
+  [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
+  [self.NTPMetricsDelegate setUpListItemOpened];
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  set_up_list_prefs::RecordInteraction(localState);
+
   switch (type) {
     case SetUpListItemType::kSignInSync:
       [self showSignIn];
@@ -377,6 +384,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       [self showCredentialProviderPromo];
       break;
     case SetUpListItemType::kFollow:
+    case SetUpListItemType::kAllSet:
       // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
       NOTREACHED();
   }
@@ -406,6 +414,10 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                 action:nil
                  style:UIAlertActionStyleCancel];
   [_actionSheetCoordinator start];
+}
+
+- (void)setUpListViewHeightDidChange {
+  [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
 #pragma mark - SetUpList Helpers

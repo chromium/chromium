@@ -1,0 +1,161 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://os-settings/lazy_load.js';
+
+import {SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {assertAsync} from '../utils.js';
+
+import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+
+suite('<one-google-drive-subpage>', function() {
+  /* The <one-google-drive-subpage> page. */
+  let oneDrivePage: SettingsOneDriveSubpageElement;
+  /* The BrowserProxy element to make assertions on when mojo methods are
+     called. */
+  let testOneDriveProxy: OneDriveTestBrowserProxy;
+
+  teardown(function() {
+    oneDrivePage.remove();
+  });
+
+  async function setupOneDrivePage(options: ProxyOptions) {
+    testOneDriveProxy = new OneDriveTestBrowserProxy(options);
+    OneDriveBrowserProxy.setInstance(testOneDriveProxy);
+    oneDrivePage = document.createElement('settings-one-drive-subpage');
+    document.body.appendChild(oneDrivePage);
+    await oneDrivePage.initPromise;
+    flush();
+  }
+
+  test('Signed in page content', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
+    assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+    assertTrue(!!openOneDriveFolderButton);
+  });
+
+  test('Signed out page content', async () => {
+    await setupOneDrivePage({
+      email: null,
+    });
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
+    assertEquals('Disconnected', signedInAsLabelElement.innerText);
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+    assertFalse(!!openOneDriveFolderButton);
+  });
+
+  test('Update page to signed in state on OneDrive mount', async () => {
+    await setupOneDrivePage({email: null});
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals('Disconnected', signedInAsLabelElement.innerText);
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+
+    // Simulate OneDrive mount: mount signal to observer and ability to return
+    // an email address.
+    const email = 'email@gmail.com';
+    testOneDriveProxy.handler.setResultFor('getUserEmailAddress', {email});
+    testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+    await assertAsync(
+        () => signedInAsLabelElement.innerText === 'Signed in as ' + email);
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+  });
+
+  test('Update page to signed out state on OneDrive unmount', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+
+    // Simulate OneDrive unmount: unmount signal and returns an empty email
+    // address.
+    testOneDriveProxy.handler.setResultFor(
+        'getUserEmailAddress', {email: null});
+    testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+    await assertAsync(
+        () => signedInAsLabelElement.innerText === 'Disconnected');
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+  });
+
+  test('Connect button click', async () => {
+    await setupOneDrivePage({email: null});
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+
+    connectDisconnectButton.click();
+    assertEquals(
+        1, testOneDriveProxy.handler.getCallCount('connectToOneDrive'));
+    assertEquals(
+        0, testOneDriveProxy.handler.getCallCount('disconnectFromOneDrive'));
+  });
+
+  test('Disconnect button click', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+
+    connectDisconnectButton.click();
+    assertEquals(
+        0, testOneDriveProxy.handler.getCallCount('connectToOneDrive'));
+    assertEquals(
+        1, testOneDriveProxy.handler.getCallCount('disconnectFromOneDrive'));
+  });
+
+  test('Open OneDrive folder', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
+
+    openOneDriveFolderButton.click();
+    assertEquals(
+        1, testOneDriveProxy.handler.getCallCount('openOneDriveFolder'));
+  });
+});

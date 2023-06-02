@@ -1,0 +1,50 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/url_pattern.mojom";
+
+// This represents a condition of the router rule.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement other conditions in the full picture.
+union ServiceWorkerRouterCondition {
+  // URLPattern to be used for matching.
+  UrlPattern url_pattern;
+};
+
+// This is used for specifying the source is network.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement fields in the full picture.
+struct ServiceWorkerRouterNetworkSource {
+};
+
+// This represents a source of the router rule.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement other sources in the full picture.
+union ServiceWorkerRouterSource {
+  ServiceWorkerRouterNetworkSource network_source;
+};
+
+// This represents a ServiceWorker static routing API's router rule.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// It represents each route.
+// When an request matches `conditions`, a response is fetched from `sources`.
+// `conditions` are evaluated sequentially to ensure all of them are fulfilled.
+// `sources` are tried sequentially, and quit once available source is found
+// and used.
+struct ServiceWorkerRouterRule {
+  // There can be a list of conditions, and expected to be evaluated
+  // from front to back.
+  array<ServiceWorkerRouterCondition> conditions;
+  // There can be a list of sources, and expected to be routed from
+  // front to back.
+  array<ServiceWorkerRouterSource> sources;
+};
+
+// This represents a list of ServiceWorker static routing API's router rules.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+struct ServiceWorkerRouterRules {
+  array<ServiceWorkerRouterRule> rules;
+};

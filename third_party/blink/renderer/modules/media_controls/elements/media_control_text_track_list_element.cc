@@ -32,9 +32,8 @@ constexpr int kTrackIndexOffValue = -1;
 const QualifiedName& TrackIndexAttrName() {
   // Save the track index in an attribute to avoid holding a pointer to the text
   // track.
-  DEFINE_STATIC_LOCAL(
-      QualifiedName, track_index_attr,
-      (g_null_atom, AtomicString("data-track-index"), g_null_atom));
+  DEFINE_STATIC_LOCAL(QualifiedName, track_index_attr,
+                      (AtomicString("data-track-index")));
   return track_index_attr;
 }
 

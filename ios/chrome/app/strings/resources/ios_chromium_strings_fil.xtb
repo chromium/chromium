@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1736662517232558588">Na-clear Chromium data</translation>
-<translation id="177102542580335555">Ang standard na proteksyon sa seguridad ang nakukuha mo para sa profile sa Chromium na ito</translation>
 <translation id="1838412507805038478">Na-verify ng Chromium na ang <ph name="ISSUER" /> ang nag-isyu ng certificate ng website na ito.</translation>
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account.</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3650632991272923014">Ginamit ni <ph name="USER_EMAIL1" /> ang Chromium at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
+<translation id="3661862315467204831">Buksan ang Mga Setting ng Chromium sa iOS, pagkatapos ay i-tap ang "Default na APP ng Browser" at piliin ang Chromium.</translation>
 <translation id="372658070733623520">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
+<translation id="3827545470516145620">Mayroon kang standard na proteksyon sa seguridad sa device na ito</translation>
 <translation id="3955621079070267756">Buksan ang Chromium Mula sa Anumang App</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>

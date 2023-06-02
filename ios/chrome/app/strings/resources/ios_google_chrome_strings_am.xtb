@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
 <translation id="2736805085127235148">አሁን ላይ በእርስዎ የመሣሪያ ቅንብሮች ውስጥ የChrome ማሳወቂያዎች ጠፍተዋል።</translation>
 <translation id="2767464022270041271">ምንም የተቀመጡ የይለፍ ቃላት የሉም። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃላትዎን ሲያስቀምጡ ሊፈትሻቸው ይችላል።</translation>
+<translation id="2840432500933227975">በiOS ውስጥ የChrome ቅንብሮችን ይክፈቱ ከዚያ «አሳሸ ነባሪ ኤፒፒ» ላይ መታ ይድርጉ እና Chromeን ይምረጡ።</translation>
 <translation id="2869959624320573933">በመለያ ወደ Chrome ይግቡ</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />ን ይምረጡ</translation>
 <translation id="3030414234702425231">እርስዎ በ<ph name="SIGNOUT_MANAGED_DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ Chrome ውሂብዎ ከዚህ መሣሪያ ላይ ይሰረዛል። የእርስዎ ውሂብ በእርስዎ Google መለያ ውስጥ ይቆያል።</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">ይህ ማለት Chrome የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="3706101708757577809">አገናኞችን በመልእክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="3720541637541300822">Chromeን ሲዘጉ ማንነት የማያሳውቁ ትሮችን ይቆልፉ</translation>
+<translation id="3827545470516145620">እርስዎ በዚህ መሣሪያ ላይ መደበኛ የደህንነት ጥበቃ እያገኙ ነው</translation>
 <translation id="384394811301901750">Google Chrome አሁን ካሜራዎን መጠቀም አይችልም</translation>
 <translation id="3980220367029651214">የስምረት መለያዎችን ከ<ph name="USER_EMAIL1" /> ወደ <ph name="USER_EMAIL2" /> እየቀየሩ ነው። ነባሩ የChrome ውሂብዎ በ<ph name="DOMAIN" /> ነው የሚተዳደረው። ይሄ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል፣ ነገር ግን ውሂብዎ በ<ph name="USER_EMAIL1" /> ውስጥ እንዳለ ይቀራል።</translation>
 <translation id="3984746313391923992">ድርጅትዎ ከChrome ዘግተው እንደወጡ እንዲቆዩ ይፈልጋል።</translation>
@@ -148,7 +150,6 @@
 <ph name="BEGIN_INDENT" />  • ስለ Chrome አጠቃቀምዎ መረጃ ወደ Google ተልኳል፣ ነገር ግን ከእርስዎ ጋር አልተያያዘም።
   • Chrome ከተበላሸ፣ ስለ ብልሽቱ ዝርዝሮች አንዳንድ የግል መረጃዎችን ሊያካትቱ ይችላሉ።
   • ማስመርን ካበሩት፣ መለኪያዎች እርስዎ ስለሚጎበኟቸው ዩአርኤሎች መረጃንም ሊያካትቱ ይችላሉ።<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">ለዚህ የChrome መገለጫ መደበኛ የደህንነት ጥበቃ እያገኙ ነው</translation>
 <translation id="9112744793181547300">Chrome እንደ ነባሪ ይቀናበር?</translation>
 <translation id="9122931302567044771">ይህ ማለት Chrome የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 </translationbundle>

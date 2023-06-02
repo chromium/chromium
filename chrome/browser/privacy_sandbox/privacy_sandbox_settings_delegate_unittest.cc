@@ -87,11 +87,13 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // When the capability is restricted, the delegate should return as such.
   SetPrivacySandboxAccountCapability(kTestEmail, false);
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
-  // Even when the capability is unrestricted, the sandbox should remain
-  // restricted.
+  // Even when the capability is currently unrestricted, the sandbox should
+  // remain restricted. The capability should be reported as currently
+  // unrestricted.
   // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
   SetPrivacySandboxAccountCapability(kTestEmail, true);
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
+  EXPECT_TRUE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
@@ -101,6 +103,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // If the user is not signed in to Chrome then we don't use any age signal and
   // don't restrict the feature.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
+  EXPECT_FALSE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
@@ -178,32 +181,11 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
-       UnrestrictedPref_UserSignedInWithAccountCapability) {
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kTestEmail, signin::ConsentLevel::kSignin);
-  SetPrivacySandboxAccountCapability(kTestEmail, true);
-
-  // Calls to IsPrivacySandboxRestricted should set the unrestricted pref
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
-  delegate()->IsPrivacySandboxRestricted();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
        UnrestrictedPref_UserSignedInWithoutAccountCapability) {
   identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
   SetPrivacySandboxAccountCapability(kTestEmail, false);
 
-  // Calls to IsPrivacySandboxRestricted should NOT set the unrestricted pref
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
-  delegate()->IsPrivacySandboxRestricted();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest, UnrestrictedPref_UserNotSignedIn) {
-  // Calls to IsPrivacySandboxRestricted should NOT set the unrestricted pref
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
   delegate()->IsPrivacySandboxRestricted();
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
 }
@@ -259,4 +241,5 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
             .name,
         "true"}});
   EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
+  EXPECT_FALSE(delegate()->IsPrivacySandboxCurrentlyUnrestricted());
 }

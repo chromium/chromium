@@ -221,10 +221,8 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID,
-            AutofillFeatures.AUTOFILL_ACROSS_IFRAMES})
-    public void
-    testCallsCallbackForCreditCardOnSelectingItem() {
+    @EnableFeatures({AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID})
+    public void testCallsCallbackForCreditCardOnSelectingItem() {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
 
@@ -246,10 +244,8 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID,
-            AutofillFeatures.AUTOFILL_ACROSS_IFRAMES})
-    public void
-    testCallsCallbackForVirtualCardOnSelectingItem() {
+    @EnableFeatures({AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID})
+    public void testCallsCallbackForVirtualCardOnSelectingItem() {
         mCoordinator.showSheet(new CreditCard[] {VIRTUAL_CARD}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
 

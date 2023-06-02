@@ -400,7 +400,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
 
   app_info->store_page_url = absl::nullopt;
   app_info->may_uninstall =
-      web_app_provider_->install_finalizer().CanUserUninstallWebApp(app_id);
+      web_app_provider_->registrar_unsafe().CanUserUninstallWebApp(app_id);
   app_info->is_deprecated_app = false;
   return app_info;
 }
@@ -504,7 +504,7 @@ void AppHomePageHandler::ResetExtensionDialogState() {
 }
 
 void AppHomePageHandler::UninstallWebApp(const std::string& web_app_id) {
-  if (!web_app_provider_->install_finalizer().CanUserUninstallWebApp(
+  if (!web_app_provider_->registrar_unsafe().CanUserUninstallWebApp(
           web_app_id)) {
     LOG(ERROR) << "Attempt to uninstall a webapp that is non-usermanagable "
                   "was made. App id : "

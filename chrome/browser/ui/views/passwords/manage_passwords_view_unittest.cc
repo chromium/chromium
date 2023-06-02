@@ -43,7 +43,7 @@ class ManagePasswordsViewTest : public PasswordBubbleViewTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<ManagePasswordsView> view_;
+  raw_ptr<ManagePasswordsView, DanglingUntriaged> view_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 

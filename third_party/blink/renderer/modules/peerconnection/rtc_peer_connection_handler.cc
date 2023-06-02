@@ -29,6 +29,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -489,14 +490,11 @@ using RTCStatsReportCallbackInternal =
 void GetRTCStatsOnSignalingThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
-    RTCStatsReportCallbackInternal callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
-    bool is_track_stats_deprecation_trial_enabled) {
+    RTCStatsReportCallbackInternal callback) {
   TRACE_EVENT0("webrtc", "GetRTCStatsOnSignalingThread");
   native_peer_connection->GetStats(
       CreateRTCStatsCollectorCallback(
-          main_thread, ConvertToBaseOnceCallback(std::move(callback)),
-          exposed_group_ids, is_track_stats_deprecation_trial_enabled)
+          main_thread, ConvertToBaseOnceCallback(std::move(callback)))
           .get());
 }
 
@@ -1094,7 +1092,7 @@ bool RTCPeerConnectionHandler::Initialize(
                                       &configuration_);
 
   configuration_.media_config.video.enable_send_packet_batching =
-      base::FeatureList::IsEnabled(kWebRtcSendPacketBatch);
+      base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch);
 
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
@@ -1643,17 +1641,13 @@ void RTCPeerConnectionHandler::GetStats(
                           level, observer, std::move(selector)));
 }
 
-void RTCPeerConnectionHandler::GetStats(
-    RTCStatsReportCallback callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
-    bool is_track_stats_deprecation_trial_enabled) {
+void RTCPeerConnectionHandler::GetStats(RTCStatsReportCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   PostCrossThreadTask(
       *signaling_thread().get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &GetRTCStatsOnSignalingThread, task_runner_, native_peer_connection_,
-          CrossThreadBindOnce(std::move(callback)), exposed_group_ids,
-          is_track_stats_deprecation_trial_enabled));
+      CrossThreadBindOnce(&GetRTCStatsOnSignalingThread, task_runner_,
+                          native_peer_connection_,
+                          CrossThreadBindOnce(std::move(callback))));
 }
 
 webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>

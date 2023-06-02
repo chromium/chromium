@@ -38,7 +38,7 @@ class URLLoaderContextForTests : public URLLoaderContext {
   }
 
   // URLLoaderContext implementation.
-  bool ShouldRequireNetworkIsolationKey() const override;
+  bool ShouldRequireIsolationInfo() const override;
   const cors::OriginAccessList& GetOriginAccessList() const override;
   const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const override;
@@ -61,8 +61,10 @@ class URLLoaderContextForTests : public URLLoaderContext {
   cors::OriginAccessList origin_access_list_;
   corb::PerFactoryState corb_state_;
 
-  raw_ptr<mojom::NetworkContextClient> network_context_client_ = nullptr;
-  raw_ptr<net::URLRequestContext> url_request_context_ = nullptr;
+  raw_ptr<mojom::NetworkContextClient, DanglingUntriaged>
+      network_context_client_ = nullptr;
+  raw_ptr<net::URLRequestContext, DanglingUntriaged> url_request_context_ =
+      nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 };
 

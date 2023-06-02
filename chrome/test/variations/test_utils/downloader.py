@@ -25,6 +25,7 @@ GSUTIL_PATH = os.path.join(
 
 CHROME_DIR = os.path.join(SRC_DIR, "_chrome")
 
+
 @functools.lru_cache
 def _find_gsutil_cmd() -> str:
   if gsutil := (shutil.which('gsutil.py') or shutil.which('gsutil')):
@@ -64,6 +65,23 @@ def _download_chrome(version: str, files: List[str]) -> str:
                    downloaded_dir]
       subprocess.run(unzip_cmd, capture_output=True, check=False)
   return downloaded_dir
+
+
+def download_chromedriver_linux_host(channel: str, version: str) -> str:
+  """Download the chromedriver that works with the given channel/version."""
+
+  # Find the same or next version of the given channel and version whose
+  # chromedriver is compatible with.
+  # Linux doesn't distribute canary, use dev instead.
+  if channel == 'canary':
+    channel = 'dev'
+  closest_version = find_closest_version(
+    release_os='linux', channel=channel, version=version)
+  downloaded_dir = _download_chrome(str(closest_version),
+                                    ['linux64/chromedriver_linux64.zip'])
+
+  return os.path.join(downloaded_dir, "chromedriver_linux64")
+
 
 def download_chrome_mac(version: str) -> str:
   files = ["mac-universal/chrome-mac.zip", "mac-arm64/chromedriver_mac64.zip"]
@@ -105,6 +123,28 @@ def find_version(release_os: str, channel: str) -> packaging.version.Version:
       # same channel, so order the results descending by the fraction so that
       # the first returned release is the standard release for the channel
       f"?order_by=fraction%20desc")
+
+  try:
+    response = json.loads(urlopen(url=url).read())
+    return packaging.version.parse(response['releases'][0]['version'])
+  except Exception as e:
+    raise RuntimeError("Fail to retrieve version info.") from e
+
+def find_closest_version(release_os: str,
+                         channel: str,
+                         version: str) -> packaging.version.Version:
+  # See find_version
+  # Search for the newest major version,
+  # https://crsrc.org/c/chrome/test/chromedriver/chrome_launcher.cc;l=287;drc=ea1bdac
+  major = int(version.split('.')[0])
+  url = (
+      f"https://versionhistory.googleapis.com/v1/chrome/"
+      f"platforms/{release_os}/channels/{channel}/versions/all/releases"
+      # Find the newest version that's earlier than the next major,
+      # so effectively, it finds the latest of the current major.
+      f"?filter=version<{major+1}"
+      # Order by version descending to find the earliest/closest version.
+      f"&order_by=version%20desc")
 
   try:
     response = json.loads(urlopen(url=url).read())

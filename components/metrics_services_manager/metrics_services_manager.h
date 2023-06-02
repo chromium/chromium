@@ -13,6 +13,10 @@
 namespace metrics {
 class MetricsService;
 class MetricsServiceClient;
+}  // namespace metrics
+
+namespace metrics::structured {
+class StructuredMetricsService;
 }
 
 namespace ukm {
@@ -22,7 +26,7 @@ class UkmService;
 namespace variations {
 class EntropyProviders;
 class VariationsService;
-}
+}  // namespace variations
 
 namespace metrics_services_manager {
 
@@ -54,13 +58,17 @@ class MetricsServicesManager {
   // Returns the UkmService, creating it if it hasn't been created yet.
   ukm::UkmService* GetUkmService();
 
+  // Returns the StructuredMetricsService associated with the
+  // |metrics_service_client_|.
+  metrics::structured::StructuredMetricsService* GetStructuredMetricsService();
+
   // Returns the VariationsService, creating it if it hasn't been created yet.
   variations::VariationsService* GetVariationsService();
 
   // Called when loading state changed.
   void LoadingStateChanged(bool is_loading);
 
-  // Update the managed services when permissions for uploading metrics change.
+  // Updates the managed services when permissions for uploading metrics change.
   void UpdateUploadPermissions(bool may_upload);
 
   // Gets the current state of metric reporting.
@@ -81,13 +89,16 @@ class MetricsServicesManager {
   // created yet (and additionally creating the MetricsService in that case).
   metrics::MetricsServiceClient* GetMetricsServiceClient();
 
-  // Update which services are running to match current permissions.
+  // Updates which services are running to match current permissions.
   void UpdateRunningServices();
 
-  // Update the state of UkmService to match current permissions.
+  // Updates the state of UkmService to match current permissions.
   void UpdateUkmService();
 
-  // Update the managed services when permissions for recording/uploading
+  // Updates the state of StructuredMetricsService to match current permissions.
+  void UpdateStructuredMetricsService();
+
+  // Updates the managed services when permissions for recording/uploading
   // metrics change.
   void UpdatePermissions(bool current_may_record,
                          bool current_consent_given,

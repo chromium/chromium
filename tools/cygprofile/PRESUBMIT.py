@@ -9,9 +9,6 @@ for more details on the presubmit API built into depot_tools.
 """
 
 
-USE_PYTHON3 = True
-
-
 def CommonChecks(input_api, output_api):
   output = []
   files_to_skip = []
@@ -25,13 +22,9 @@ def CommonChecks(input_api, output_api):
   # messages.
   if input_api.sys.platform != 'win32':
     output.extend(
-        input_api.canned_checks.RunUnitTests(
-            input_api,
-            output_api, [
-                input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                       'run_tests')
-            ],
-            run_on_python2=False))
+        input_api.canned_checks.RunUnitTests(input_api, output_api, [
+            input_api.os_path.join(input_api.PresubmitLocalPath(), 'run_tests')
+        ]))
   return output
 
 

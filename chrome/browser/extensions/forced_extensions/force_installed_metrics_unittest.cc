@@ -226,7 +226,7 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-  raw_ptr<base::MockOneShotTimer> fake_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> fake_timer_;
   std::unique_ptr<ForceInstalledMetrics> metrics_;
 };
 

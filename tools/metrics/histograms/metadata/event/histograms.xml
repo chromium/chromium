@@ -1205,6 +1205,7 @@ chromium-metrics-reviews@google.com.
     <variant name="KeyPressed" summary="key-pressed events"/>
     <variant name="KeyReleased" summary="key-released events"/>
     <variant name="MouseDragged" summary="mouse-dragged events"/>
+    <variant name="MouseMoved" summary="mouse-moved events"/>
     <variant name="MousePressed" summary="mouse-pressed events"/>
     <variant name="MouseReleased" summary="mouse-released events"/>
     <variant name="MouseWheel" summary="mouse-wheel events"/>

@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -54,6 +55,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final Callback<Tab> mPrintCallback;
 
     private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     /**
      * Construct the controller used to display Android share sheet, and show the share sheet.
@@ -66,13 +68,15 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * whether incognito mode is selected or not.
      * @param profileSupplier Supplier of the current profile of the User.
      * @param printCallback The callback used to trigger print action.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     public static void showShareSheet(ShareParams params, ChromeShareExtras chromeShareExtras,
             BottomSheetController controller, Supplier<Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier, Supplier<Profile> profileSupplier,
-            Callback<Tab> printCallback) {
-        var newController = new AndroidShareSheetController(
-                controller, tabProvider, tabModelSelectorSupplier, profileSupplier, printCallback);
+            Callback<Tab> printCallback, DeviceLockActivityLauncher deviceLockActivityLauncher) {
+        var newController =
+                new AndroidShareSheetController(controller, tabProvider, tabModelSelectorSupplier,
+                        profileSupplier, printCallback, deviceLockActivityLauncher);
         // If the current share is delegated to, once the link generation is complete, the call will
         // routes back to #showShareSheet eventually.
         if (!newController.processShareWithLinkToText(params, chromeShareExtras)) {
@@ -89,16 +93,18 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * whether incognito mode is selected or not.
      * @param profileSupplier Supplier of the current profile of the User.
      * @param printCallback The callback used to trigger print action.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     @VisibleForTesting
     AndroidShareSheetController(BottomSheetController controller, Supplier<Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier, Supplier<Profile> profileSupplier,
-            Callback<Tab> printCallback) {
+            Callback<Tab> printCallback, DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mController = controller;
         mTabProvider = tabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mProfileSupplier = profileSupplier;
         mPrintCallback = printCallback;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
     }
 
     @Override
@@ -121,16 +127,22 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         Activity activity = params.getWindow().getActivity().get();
         ChromeCustomShareAction.Provider provider = null;
 
+        String urlToShare = getUrlToShare(params, chromeShareExtras);
+        // If an URL is not provided along with the image, use the content URL if it is provided.
+        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()
+                && (chromeShareExtras.getDetailedContentType() != DetailedContentType.WEB_SHARE)) {
+            params.setUrl(chromeShareExtras.getContentUrl().getSpec());
+        }
+
         if (showCustomActions) {
             boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
             var actionProvider =
                     new AndroidCustomActionProvider(params.getWindow().getActivity().get(),
                             params.getWindow(), mTabProvider, mController, params, mPrintCallback,
                             isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
-                            getUrlToShare(params, chromeShareExtras), profile, chromeShareExtras,
-                            isInMultiWindow, mLinkToTextCoordinator);
-            if (actionProvider.getCustomActions().size() > 0
-                    || actionProvider.getModifyShareAction() != null) {
+                            urlToShare, profile, chromeShareExtras, isInMultiWindow,
+                            mLinkToTextCoordinator, mDeviceLockActivityLauncher);
+            if (actionProvider.getCustomActions().size() > 0) {
                 provider = actionProvider;
             }
         }
@@ -138,11 +150,6 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         // TODO(https://crbug.com/1421783): Maybe fallback to Chrome's share sheet properly.
         if (provider == null) {
             Log.i(TAG, "No custom actions provided.");
-        }
-
-        // If an URL is not provided along with the image, use the content URL if it is provided.
-        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()) {
-            params.setUrl(chromeShareExtras.getContentUrl().getSpec());
         }
 
         if (!isLinkSharing(params, chromeShareExtras)) {
@@ -184,9 +191,9 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         }
 
         assert mLinkToTextCoordinator == null : "LinkToTextCoordinator is already created!";
-        mLinkToTextCoordinator =
-                new LinkToTextCoordinator(mTabProvider.get(), this, chromeShareExtras,
-                        SystemClock.elapsedRealtime(), params.getUrl(), params.getText());
+        mLinkToTextCoordinator = new LinkToTextCoordinator(mTabProvider.get(), this,
+                chromeShareExtras, SystemClock.elapsedRealtime(), params.getUrl(), params.getText(),
+                /*includeOriginInTitle=*/true);
         mLinkToTextCoordinator.shareLinkToText();
         return true;
     }

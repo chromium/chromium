@@ -16,7 +16,8 @@ base::Clock* OfflineSigninLimiterFactory::clock_for_testing_ = nullptr;
 
 // static
 OfflineSigninLimiterFactory* OfflineSigninLimiterFactory::GetInstance() {
-  return base::Singleton<OfflineSigninLimiterFactory>::get();
+  static base::NoDestructor<OfflineSigninLimiterFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -41,7 +42,7 @@ OfflineSigninLimiterFactory::OfflineSigninLimiterFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-OfflineSigninLimiterFactory::~OfflineSigninLimiterFactory() {}
+OfflineSigninLimiterFactory::~OfflineSigninLimiterFactory() = default;
 
 KeyedService* OfflineSigninLimiterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

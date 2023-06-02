@@ -9,7 +9,6 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -102,10 +101,7 @@ class PasswordControllerJsTest : public PlatformTest {
     return result;
   }
 
-  std::string BaseUrl() {
-    web::URLVerificationTrustLevel unused_level;
-    return web_state()->GetCurrentURL(&unused_level).spec();
-  }
+  std::string BaseUrl() { return web_state()->GetLastCommittedURL().spec(); }
 
  protected:
   id ExecuteJavaScript(NSString* script) {

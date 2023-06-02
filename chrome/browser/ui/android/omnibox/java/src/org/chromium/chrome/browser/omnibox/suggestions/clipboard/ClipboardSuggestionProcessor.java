@@ -108,7 +108,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         final int icon =
                 isUrlSuggestion ? R.drawable.ic_globe_24dp : R.drawable.ic_suggestion_magnifier;
         setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
+                SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
                         .setAllowTint(true)
                         .build());
 
@@ -136,7 +136,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 (int) Math.round(scale * height), true);
                     }
                     setSuggestionDrawableState(model,
-                            SuggestionDrawableState.Builder.forBitmap(getContext(), bitmap)
+                            SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
                                     .setUseRoundedCorners(true)
                                     .setLarge(true)
                                     .build());
@@ -161,22 +161,22 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             @NonNull PropertyModel model, boolean showContent) {
         int icon =
                 showContent ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black;
-        String iconString = OmniboxResourceProvider.getString(getContext(),
+        String iconString = OmniboxResourceProvider.getString(mContext,
                 showContent ? R.string.accessibility_omnibox_conceal_clipboard_contents
                             : R.string.accessibility_omnibox_reveal_clipboard_contents);
-        String announcementString = OmniboxResourceProvider.getString(getContext(),
+        String announcementString = OmniboxResourceProvider.getString(mContext,
                 showContent ? R.string.accessibility_omnibox_conceal_button_announcement
                             : R.string.accessibility_omnibox_reveal_button_announcement);
         Runnable action = showContent ? ()
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);
         setActionButtons(model,
-                Arrays.asList(new Action(
-                        SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
-                                .setLarge(true)
-                                .setAllowTint(true)
-                                .build(),
-                        iconString, announcementString, action)));
+                Arrays.asList(
+                        new Action(SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
+                                           .setLarge(true)
+                                           .setAllowTint(true)
+                                           .build(),
+                                iconString, announcementString, action)));
     }
 
     @Override

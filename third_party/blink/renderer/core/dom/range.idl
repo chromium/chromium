@@ -42,7 +42,7 @@
     [RaisesException] short compareBoundaryPoints(unsigned short how, Range sourceRange);
 
     [RaisesException, CEReactions] void deleteContents();
-    [NewObject, RaisesException, CEReactions, DoNotTestNewObject] DocumentFragment extractContents();
+    [NewObject, RaisesException, CEReactions] DocumentFragment extractContents();
     [NewObject, RaisesException, CEReactions] DocumentFragment cloneContents();
     [RaisesException, CEReactions] void insertNode(Node node);
     [RaisesException, CEReactions] void surroundContents(Node newParent);

@@ -171,12 +171,17 @@ void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(
   suppress_meta_top_row_key_rewrites_ = should_suppress;
 }
 
-void EventRewriterDelegateImpl::RecordEventRemappedToRightClick() {
+void EventRewriterDelegateImpl::RecordEventRemappedToRightClick(
+    bool alt_based_right_click) {
   PrefService* const pref_service = GetPrefService();
   if (!pref_service) {
     return;
   }
-  pref_service->SetBoolean(prefs::kEventRemappedToRightClick, true);
+  const auto* pref_name = alt_based_right_click
+                              ? prefs::kAltEventRemappedToRightClick
+                              : prefs::kSearchEventRemappedToRightClick;
+  int count = pref_service->GetInteger(pref_name);
+  pref_service->SetInteger(pref_name, ++count);
 }
 
 void EventRewriterDelegateImpl::RecordSixPackEventRewrite(

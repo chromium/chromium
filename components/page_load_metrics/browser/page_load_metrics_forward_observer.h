@@ -105,6 +105,9 @@ class PageLoadMetricsForwardObserver final
   void OnFirstInputInPage(const mojom::PageLoadTiming& timing) override;
   void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                  int behavior_flags) override;
+  void OnJavaScriptFrameworksObserved(
+      content::RenderFrameHost* rfh,
+      const blink::JavaScriptFrameworkDetectionResult&) override;
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) override;

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/message_loop/message_pump_type.h"
@@ -133,9 +135,7 @@ class ChannelReflectorListener : public IPC::Listener {
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION IPC::Channel* channel_ = nullptr;
+  raw_ptr<IPC::Channel> channel_ = nullptr;
 };
 
 class MessageCountFilter : public IPC::MessageFilter {

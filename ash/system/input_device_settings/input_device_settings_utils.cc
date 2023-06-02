@@ -124,12 +124,14 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
   static constexpr auto kKeyboardsPretendingToBeMice =
       base::MakeFixedFlatSet<VendorProductId>({
           {0x29ea, 0x0102},  // Kinesis Freestyle Edge RGB
-          {0x46d, 0xc343},   // Logitech G915 TKL (USB)
-          {0x46d, 0xb35f},   // Logitech G915 TKL (Bluetooth)
+          {0x046d, 0xc343},  // Logitech G915 TKL (USB)
+          {0x046d, 0xb35f},  // Logitech G915 TKL (Bluetooth)
           {0x046d, 0x408a},  // Logitech MX Keys (Universal Receiver)
           {0x046d, 0xb35b},  // Logitech MX Keys (Bluetooth)
           {0x0951, 0x16e6},  // HyperX Alloy Origins Core
           {0x1532, 0x025e},  // Razer Cynosa V2
+          {0x05ac, 0x0256},  // EGA MGK2 (USB)
+          {0x05ac, 0x024f},  // EGA MGK2 (Bluetooth)
       });
 
   return kKeyboardsPretendingToBeMice.contains(

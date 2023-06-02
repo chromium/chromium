@@ -923,8 +923,6 @@ TEST_F(SpdySessionTest, CreateStreamAfterGoAway) {
 // Receiving a HEADERS frame after a GOAWAY frame should result in
 // the stream being refused.
 TEST_F(SpdySessionTest, HeadersAfterGoAway) {
-  base::HistogramTester histogram_tester;
-
   spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(1));
   spdy::SpdySerializedFrame push(
       spdy_util_.ConstructSpdyPush(nullptr, 0, 2, 1, kDefaultUrl));
@@ -974,11 +972,6 @@ TEST_F(SpdySessionTest, HeadersAfterGoAway) {
   data.Resume();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(session_);
-
-  histogram_tester.ExpectBucketCount(
-      "Net.SpdyPushedStreamFate",
-      static_cast<int>(SpdyPushedStreamFate::kPushDisabled), 1);
-  histogram_tester.ExpectTotalCount("Net.SpdyPushedStreamFate", 1);
 }
 
 // A session observing a network change with active streams should close
@@ -6320,42 +6313,6 @@ TEST(CanPoolTest, CanPoolWithClientCertsAndPolicy) {
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                     "mail.example.com", "www.example.org",
                                     NetworkAnonymizationKey()));
-}
-
-TEST(RecordPushedStreamHistogramTest, VaryResponseHeader) {
-  struct {
-    size_t num_headers;
-    const char* headers[2];
-    int expected_bucket;
-  } test_cases[] = {{0, {}, 0},
-                    {1, {"foo", "bar"}, 0},
-                    {1, {"vary", ""}, 1},
-                    {1, {"vary", "*"}, 2},
-                    {1, {"vary", "accept-encoding"}, 3},
-                    {1, {"vary", "foo , accept-encoding ,bar"}, 4},
-                    {1, {"vary", "\taccept-encoding, foo"}, 4},
-                    {1, {"vary", "foo"}, 5},
-                    {1, {"vary", "fooaccept-encoding"}, 5},
-                    {1, {"vary", "foo, accept-encodingbar"}, 5}};
-
-  for (const auto& test_case : test_cases) {
-    spdy::Http2HeaderBlock headers;
-    for (size_t j = 0; j < test_case.num_headers; ++j) {
-      headers[test_case.headers[2 * j]] = test_case.headers[2 * j + 1];
-    }
-    base::HistogramTester histograms;
-    histograms.ExpectTotalCount("Net.PushedStreamVaryResponseHeader", 0);
-    SpdySession::RecordPushedStreamVaryResponseHeaderHistogram(headers);
-    histograms.ExpectTotalCount("Net.PushedStreamVaryResponseHeader", 1);
-    histograms.ExpectBucketCount("Net.PushedStreamVaryResponseHeader",
-                                 test_case.expected_bucket, 1);
-    // Adding an unrelated header field should not change how Vary is parsed.
-    headers["foo"] = "bar";
-    SpdySession::RecordPushedStreamVaryResponseHeaderHistogram(headers);
-    histograms.ExpectTotalCount("Net.PushedStreamVaryResponseHeader", 2);
-    histograms.ExpectBucketCount("Net.PushedStreamVaryResponseHeader",
-                                 test_case.expected_bucket, 2);
-  }
 }
 
 // Regression test for https://crbug.com/1115492.

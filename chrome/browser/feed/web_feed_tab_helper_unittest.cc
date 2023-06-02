@@ -80,8 +80,9 @@ class WebFeedTabHelperTest : public content::RenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<WebFeedTabHelper> tab_helper_;  // Owned by WebContents.
-  raw_ptr<TestWebFeedInfoFinder>
+  raw_ptr<WebFeedTabHelper, DanglingUntriaged>
+      tab_helper_;  // Owned by WebContents.
+  raw_ptr<TestWebFeedInfoFinder, DanglingUntriaged>
       web_feed_info_finder_;  // Owned by WebFeedTabHelper.
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 

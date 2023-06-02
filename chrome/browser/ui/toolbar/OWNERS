@@ -2,6 +2,7 @@
 per-file browser_actions_bar_browsertest*=rdevlin.cronin@chromium.org
 per-file *toolbar_action*=rdevlin.cronin@chromium.org
 per-file *toolbar_action*=emiliapaz@chromium.org
+per-file chrome_labs*=elainechien@chromium.org
 
 # Media Router Action Files
 per-file *media_router*=file://chrome/browser/media/router/OWNERS

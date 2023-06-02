@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/commit_deferring_condition.h"
 

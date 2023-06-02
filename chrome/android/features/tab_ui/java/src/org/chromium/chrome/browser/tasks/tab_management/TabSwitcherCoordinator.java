@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -257,37 +256,6 @@ public class TabSwitcherCoordinator
 
             RecordHistogram.recordTimesHistogram("Android.TabSwitcher.SetupRecyclerView.Time",
                     SystemClock.uptimeMillis() - startTimeMs);
-
-            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
-                mMediator.addTabSwitcherViewObserver(new TabSwitcherViewObserver() {
-                    @Override
-                    public void startedShowing() {}
-
-                    @Override
-                    public void finishedShowing() {
-                        if (!mTabModelSelector.isTabStateInitialized()) return;
-
-                        int selectedIndex = mTabModelSelector.getTabModelFilterProvider()
-                                                    .getCurrentTabModelFilter()
-                                                    .index();
-                        ViewHolder selectedViewHolder =
-                                mTabListCoordinator.getContainerView()
-                                        .findViewHolderForAdapterPosition(selectedIndex);
-
-                        if (selectedViewHolder == null) return;
-
-                        View focusView = selectedViewHolder.itemView;
-                        focusView.requestFocus();
-                        focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                    }
-
-                    @Override
-                    public void startedHiding() {}
-
-                    @Override
-                    public void finishedHiding() {}
-                });
-            }
 
             mMessageCardProviderCoordinator = new MessageCardProviderCoordinator(
                     activity, tabModelSelector::isIncognitoSelected, (identifier) -> {
@@ -565,19 +533,10 @@ public class TabSwitcherCoordinator
 
     @Override
     public void requestFocusOnCurrentTab() {
-        if (!mTabModelSelector.isTabStateInitialized()) return;
-
-        int selectedIndex =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index();
-        ViewHolder selectedViewHolder =
-                mTabListCoordinator.getContainerView().findViewHolderForAdapterPosition(
-                        selectedIndex);
-
-        if (selectedViewHolder == null) return;
-
-        View focusView = selectedViewHolder.itemView;
-        focusView.requestFocus();
-        focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        // TODO(crbug.com/1447564): Ideally, this shouldn't be called directly and instead mediator
+        // should listen for |requestFocusOnCurrentTab| signal implicitly and apply changes. This
+        // would require refactoring TabSwitcher.TabListDelegate and its implementation.
+        mMediator.requestAccessibilityFocusOnCurrentTab();
     }
 
     @Override

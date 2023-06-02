@@ -21,23 +21,43 @@ namespace {
 
 class RayMode {
  public:
-  RayMode(StyleRay::RaySize size, bool contain)
-      : size_(size), contain_(contain) {}
+  RayMode(StyleRay::RaySize size,
+          bool contain,
+          const BasicShapeCenterCoordinate& center_x,
+          const BasicShapeCenterCoordinate& center_y,
+          bool has_explicit_center)
+      : size_(size),
+        contain_(contain),
+        center_x_(center_x),
+        center_y_(center_y),
+        has_explicit_center_(has_explicit_center) {}
 
   explicit RayMode(const StyleRay& style_ray)
-      : size_(style_ray.Size()), contain_(style_ray.Contain()) {}
+      : size_(style_ray.Size()),
+        contain_(style_ray.Contain()),
+        center_x_(style_ray.CenterX()),
+        center_y_(style_ray.CenterY()),
+        has_explicit_center_(style_ray.HasExplicitCenter()) {}
 
   StyleRay::RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
+  const BasicShapeCenterCoordinate& CenterX() const { return center_x_; }
+  const BasicShapeCenterCoordinate& CenterY() const { return center_y_; }
+  bool HasExplicitCenter() const { return has_explicit_center_; }
 
   bool operator==(const RayMode& other) const {
-    return size_ == other.size_ && contain_ == other.contain_;
+    return size_ == other.size_ && contain_ == other.contain_ &&
+           center_x_ == other.center_x_ && center_y_ == other.center_y_ &&
+           has_explicit_center_ == other.has_explicit_center_;
   }
   bool operator!=(const RayMode& other) const { return !(*this == other); }
 
  private:
   StyleRay::RaySize size_;
   bool contain_;
+  BasicShapeCenterCoordinate center_x_;
+  BasicShapeCenterCoordinate center_y_;
+  bool has_explicit_center_ = true;
 };
 
 }  // namespace
@@ -128,12 +148,17 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& ray_non_interpolable_value =
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
-  // TODO(sakhapov): handle coord box.
-  state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
+  // TODO(sakhapov): make position interpolable.
+  scoped_refptr<StyleRay> style_ray =
       StyleRay::Create(To<InterpolableNumber>(interpolable_value).Value(),
                        ray_non_interpolable_value.Mode().Size(),
-                       ray_non_interpolable_value.Mode().Contain()),
-      CoordBox::kBorderBox));
+                       ray_non_interpolable_value.Mode().Contain(),
+                       ray_non_interpolable_value.Mode().CenterX(),
+                       ray_non_interpolable_value.Mode().CenterY(),
+                       ray_non_interpolable_value.Mode().HasExplicitCenter());
+  // TODO(sakhapov): handle coord box.
+  state.StyleBuilder().SetOffsetPath(
+      ShapeOffsetPathOperation::Create(style_ray, CoordBox::kBorderBox));
 }
 
 void CSSRayInterpolationType::Composite(

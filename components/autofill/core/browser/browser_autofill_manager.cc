@@ -80,6 +80,7 @@
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -236,6 +237,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionFrontendId(
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kCreditCardEntry:
       NOTREACHED();
   }
   NOTREACHED();
@@ -1341,7 +1344,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
     mojom::RendererFormDataAction action,
     const FormData& form,
     const FormFieldData& field,
-    Suggestion::FrontendId unique_id,
+    Suggestion::BackendId backend_id,
     const AutofillTriggerSource trigger_source) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
@@ -1351,8 +1354,8 @@ void BrowserAutofillManager::FillOrPreviewForm(
   if (!RefreshDataModels() || !driver()->RendererIsAvailable())
     return;
 
-  const AutofillProfile* profile = GetProfile(unique_id);
-  const CreditCard* credit_card = GetCreditCard(unique_id);
+  const AutofillProfile* profile = GetProfile(backend_id);
+  const CreditCard* credit_card = GetCreditCard(backend_id);
 
   if (credit_card) {
     FillOrPreviewCreditCardForm(action, form, field, credit_card,
@@ -1566,6 +1569,7 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 bool BrowserAutofillManager::GetDeletionConfirmationText(
     const std::u16string& value,
     Suggestion::FrontendId identifier,
+    Suggestion::BackendId backend_id,
     std::u16string* title,
     std::u16string* body) {
   if (identifier == PopupItemId::kAutocompleteEntry) {
@@ -1579,12 +1583,12 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
     return true;
   }
 
-  if (identifier.as_int() < 0) {
+  if (!identifier.is_an_address_or_card_popup_item_id()) {
     return false;
   }
 
-  const CreditCard* credit_card = GetCreditCard(identifier);
-  const AutofillProfile* profile = GetProfile(identifier);
+  const CreditCard* credit_card = GetCreditCard(backend_id);
+  const AutofillProfile* profile = GetProfile(backend_id);
 
   if (credit_card) {
     return credit_card_access_manager_->GetDeletionConfirmationText(
@@ -1614,13 +1618,13 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
 }
 
 bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
-    Suggestion::FrontendId unique_id) {
-  const CreditCard* credit_card = GetCreditCard(unique_id);
+    Suggestion::BackendId backend_id) {
+  const CreditCard* credit_card = GetCreditCard(backend_id);
   if (credit_card) {
     return credit_card_access_manager_->DeleteCard(credit_card);
   }
 
-  const AutofillProfile* profile = GetProfile(unique_id);
+  const AutofillProfile* profile = GetProfile(backend_id);
   if (profile) {
     bool is_local = profile->record_type() == AutofillProfile::LOCAL_PROFILE;
     if (is_local)
@@ -2134,19 +2138,14 @@ bool BrowserAutofillManager::RefreshDataModels() {
 }
 
 CreditCard* BrowserAutofillManager::GetCreditCard(
-    Suggestion::FrontendId unique_id) {
-  Suggestion::BackendId credit_card_id =
-      suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
+    Suggestion::BackendId unique_id) {
   return client()->GetPersonalDataManager()->GetCreditCardByGUID(
-      credit_card_id.value());
+      unique_id.value());
 }
 
 AutofillProfile* BrowserAutofillManager::GetProfile(
-    Suggestion::FrontendId unique_id) {
-  Suggestion::BackendId profile_id =
-      suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
-
-  std::string guid = profile_id.value();
+    Suggestion::BackendId unique_id) {
+  std::string guid = unique_id.value();
   if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
     return client()->GetPersonalDataManager()->GetProfileByGUID(guid);
   }

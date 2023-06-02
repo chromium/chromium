@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(SWAP_MANAGEMENT) FakeSwapManagementClient
   void InitiateSwapZramWriteback(
       swap_management::ZramWritebackMode mode,
       chromeos::VoidDBusMethodCallback callback) override;
+
+  void MGLRUSetEnable(uint8_t value,
+                      chromeos::VoidDBusMethodCallback callback) override;
 };
 
 }  // namespace ash

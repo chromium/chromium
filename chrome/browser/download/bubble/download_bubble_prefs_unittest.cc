@@ -52,7 +52,7 @@ class DownloadBubblePrefsTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   base::test::ScopedFeatureList feature_list_;
 
   void ExpectFeatureFlagEnabledStatus(bool expect_enabled) {

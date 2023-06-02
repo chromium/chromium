@@ -14,6 +14,7 @@ void ArcOnBatteryObserver::StartObserving(
     const ObserverStateChangedCallback& callback) {
   ThrottleObserver::StartObserving(context, callback);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 }
 
 void ArcOnBatteryObserver::StopObserving() {

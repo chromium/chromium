@@ -1447,14 +1447,17 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.HasFlag(MatchFlag::kAffectedByActive)) {
     state.StyleBuilder().SetAffectedByActive();
   }
-  if (match_result.HasFlag(MatchFlag::kAffectedByInitial)) {
-    state.StyleBuilder().SetIsPseudoInitialStyle();
+  if (match_result.HasFlag(MatchFlag::kAffectedByStartingStyle)) {
+    state.StyleBuilder().SetIsStartingStyle();
   }
   if (match_result.DependsOnSizeContainerQueries()) {
     state.StyleBuilder().SetDependsOnSizeContainerQueries(true);
   }
   if (match_result.DependsOnStyleContainerQueries()) {
     state.StyleBuilder().SetDependsOnStyleContainerQueries(true);
+  }
+  if (match_result.DependsOnStickyContainerQueries()) {
+    state.StyleBuilder().SetDependsOnStickyContainerQueries(true);
   }
   if (match_result.FirstLineDependsOnSizeContainerQueries()) {
     state.StyleBuilder().SetFirstLineDependsOnSizeContainerQueries(true);

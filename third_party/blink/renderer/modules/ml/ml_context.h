@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_CONTEXT_H_
 
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
@@ -69,6 +70,7 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
       CreateWebNNGraphResult result,
       mojo::PendingRemote<webnn::mojom::blink::WebNNGraph>)>;
   void CreateWebNNGraph(ScriptState* script_state,
+                        webnn::mojom::blink::GraphInfoPtr graph_info,
                         CreateWebNNGraphCallback callback);
 
  private:
@@ -84,6 +86,7 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
   // The callback of creating context called from WebNN server side.
   void OnCreateWebNNContext(
       ScriptState* script_state,
+      webnn::mojom::blink::GraphInfoPtr graph_info,
       CreateWebNNGraphCallback callback,
       webnn::mojom::blink::CreateContextResult result,
       mojo::PendingRemote<webnn::mojom::blink::WebNNContext>

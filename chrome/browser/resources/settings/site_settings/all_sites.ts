@@ -101,7 +101,7 @@ export class AllSitesElement extends AllSitesElementBase {
       // to siteGroupMap.
       /**
        * Map containing sites to display in the widget, grouped into their
-       * eTLD+1 names.
+       * group names.
        */
       siteGroupMap: {
         type: Object,
@@ -248,7 +248,7 @@ export class AllSitesElement extends AllSitesElementBase {
       // Create a new map to make an observable change.
       const newMap = new Map(this.siteGroupMap);
       response.forEach(siteGroup => {
-        newMap.set(siteGroup.etldPlus1, siteGroup);
+        newMap.set(siteGroup.groupingKey, siteGroup);
       });
       this.siteGroupMap = newMap;
       this.forceListUpdate_();
@@ -264,7 +264,7 @@ export class AllSitesElement extends AllSitesElementBase {
     // Create a new map to make an observable change.
     const newMap = new Map(this.siteGroupMap);
     list.forEach(storageSiteGroup => {
-      newMap.set(storageSiteGroup.etldPlus1, storageSiteGroup);
+      newMap.set(storageSiteGroup.groupingKey, storageSiteGroup);
     });
     this.siteGroupMap = newMap;
     this.forceListUpdate_();
@@ -296,7 +296,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private filterPopulatedList_(
       siteGroupMap: Map<string, SiteGroup>, searchQuery: string): SiteGroup[] {
     const result = [];
-    for (const [_etldPlus1, siteGroup] of siteGroupMap) {
+    for (const [_groupingKey, siteGroup] of siteGroupMap) {
       if (this.isFpsFiltered_()) {
         const fpsOwnerFilter =
             this.filter.substring(this.filter.indexOf(':') + 1);
@@ -377,7 +377,7 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private nameComparator_(siteGroup1: SiteGroup, siteGroup2: SiteGroup):
       number {
-    return siteGroup1.etldPlus1.localeCompare(siteGroup2.etldPlus1);
+    return siteGroup1.displayName.localeCompare(siteGroup2.displayName);
   }
 
   /**
@@ -478,10 +478,10 @@ export class AllSitesElement extends AllSitesElementBase {
 
   // Creates a placeholder origin used to hold cookies scoped at the eTLD+1
   // level.
-  private generatePlaceholderOrigin_(etldPlus1: string, numCookies: number):
-      OriginInfo {
+  private generatePlaceholderOrigin_(
+      numCookies: number, origin: string, etldPlus1?: string): OriginInfo {
     return {
-      origin: `http://${etldPlus1}/`,
+      origin: etldPlus1 ? `http://${etldPlus1}/` : origin,
       engagement: 0,
       usage: 0,
       numCookies: numCookies,
@@ -496,7 +496,7 @@ export class AllSitesElement extends AllSitesElementBase {
     const siteGroupToUpdate = this.filteredList_[index];
 
     const updatedSiteGroup: SiteGroup = {
-      etldPlus1: siteGroupToUpdate.etldPlus1,
+      groupingKey: siteGroupToUpdate.groupingKey,
       displayName: siteGroupToUpdate.displayName,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: siteGroupToUpdate.numCookies,
@@ -510,7 +510,7 @@ export class AllSitesElement extends AllSitesElementBase {
         this.browserProxy.recordAction(
             AllSitesAction2.REMOVE_ORIGIN_PARTITIONED);
         this.browserProxy.clearPartitionedOriginDataAndCookies(
-            this.toUrl(origin)!.href, siteGroupToUpdate.etldPlus1);
+            this.toUrl(origin)!.href, siteGroupToUpdate.groupingKey);
 
       } else {
         this.browserProxy.recordAction(AllSitesAction2.REMOVE_ORIGIN);
@@ -531,13 +531,13 @@ export class AllSitesElement extends AllSitesElementBase {
       if (updatedSiteGroup.origins.length === 0 &&
           updatedSiteGroup.numCookies > 0) {
         const originPlaceHolder = this.generatePlaceholderOrigin_(
-            updatedSiteGroup.etldPlus1, updatedSiteGroup.numCookies);
+            updatedSiteGroup.numCookies, origin, updatedSiteGroup.etldPlus1);
         updatedSiteGroup.origins.push(originPlaceHolder);
       }
     } else {
       this.browserProxy.recordAction(AllSitesAction2.REMOVE_SITE_GROUP);
-      this.browserProxy.clearEtldPlus1DataAndCookies(
-          siteGroupToUpdate.etldPlus1);
+      this.browserProxy.clearSiteGroupDataAndCookies(
+          siteGroupToUpdate.groupingKey);
       siteGroupToUpdate.origins.forEach(originEntry => {
         this.resetPermissionsForOrigin_(originEntry.origin);
       });
@@ -781,14 +781,14 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Helper to remove data and cookies for an etldPlus1.
+   * Helper to remove data and cookies for an group.
    * @param index The index of the target siteGroup in filteredList_ that should
    *     be cleared.
    */
   private clearDataForSiteGroupIndex_(index: number) {
     const siteGroupToUpdate = this.filteredList_[index];
     const updatedSiteGroup: SiteGroup = {
-      etldPlus1: siteGroupToUpdate.etldPlus1,
+      groupingKey: siteGroupToUpdate.groupingKey,
       displayName: siteGroupToUpdate.displayName,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
@@ -797,7 +797,8 @@ export class AllSitesElement extends AllSitesElementBase {
       origins: [],
     };
 
-    this.browserProxy.clearEtldPlus1DataAndCookies(siteGroupToUpdate.etldPlus1);
+    this.browserProxy.clearSiteGroupDataAndCookies(
+        siteGroupToUpdate.groupingKey);
 
     for (let i = 0; i < siteGroupToUpdate.origins.length; ++i) {
       const updatedOrigin = Object.assign({}, siteGroupToUpdate.origins[i]);
@@ -821,10 +822,10 @@ export class AllSitesElement extends AllSitesElementBase {
   private updateSiteGroup_(index: number, updatedSiteGroup: SiteGroup) {
     if (updatedSiteGroup.origins.length > 0) {
       this.set('filteredList_.' + index, updatedSiteGroup);
-      this.siteGroupMap.set(updatedSiteGroup.etldPlus1, updatedSiteGroup);
+      this.siteGroupMap.set(updatedSiteGroup.groupingKey, updatedSiteGroup);
     } else {
       this.splice('filteredList_', index, 1);
-      this.siteGroupMap.delete(updatedSiteGroup.etldPlus1);
+      this.siteGroupMap.delete(updatedSiteGroup.groupingKey);
     }
   }
 

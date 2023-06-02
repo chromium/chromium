@@ -459,13 +459,10 @@ bool VotesUploader::UploadPasswordVote(
 
   // TODO(crbug.com/875768): Use VotesUploader::StartUploadRequest for avoiding
   // code duplication.
-  bool success = download_manager->StartUploadRequest(
+  return download_manager->StartUploadRequest(
       form_structure, false /* was_autofilled */, available_field_types,
       login_form_signature, true /* observed_submission */, nullptr /* prefs */,
       nullptr /* observer */);
-
-  UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.UploadStarted", success);
-  return success;
 }
 
 // TODO(crbug.com/840384): Share common code with UploadPasswordVote.

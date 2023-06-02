@@ -39,7 +39,7 @@ def NaclRevision():
       return None
     return subprocess.check_output(
         ['git', 'log', '-1', '--format=%H'],
-        cwd= nacl_dir,
+        cwd= nacl_dir, shell=os.name == 'nt',
     ).decode('utf-8').strip()
 
 class CipdError(Exception):
@@ -69,7 +69,7 @@ def RbeProjectFromInstance(instance):
         return None
     return m.group(1)
 
-def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance):
+def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance, rbe_project):
     tmpl_path = os.path.join(
         THIS_DIR, 'reproxy_cfg_templates', reproxy_cfg_template)
     logging.info(f'generate reproxy.cfg using {tmpl_path}')
@@ -88,6 +88,7 @@ def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance):
        depsscanner_address = ""
     reproxy_cfg = reproxy_cfg_tmpl.substitute({
       'rbe_instance': rbe_instance,
+      'rbe_project': rbe_project,
       'reproxy_cfg_template': reproxy_cfg_template,
       'depsscanner_address': depsscanner_address,
     })
@@ -130,15 +131,6 @@ def main():
     logging.basicConfig(level=logging.WARNING if args.quiet else logging.INFO,
                         format="%(message)s")
 
-
-    if args.reproxy_cfg_template:
-        if not args.rbe_instance:
-            logging.error(
-              '--rbe_instance is required if --reproxy_cfg_template is set')
-            return 1
-        if not GenerateReproxyCfg(args.reproxy_cfg_template, args.rbe_instance):
-           return 1
-
     if not args.rewrapper_cfg_project and not args.rbe_instance:
         logging.error(
            'At least one of --rbe_instance and --rewrapper_cfg_project '
@@ -148,6 +140,15 @@ def main():
     rbe_project = args.rewrapper_cfg_project
     if not args.rewrapper_cfg_project:
         rbe_project = RbeProjectFromInstance(args.rbe_instance)
+
+    if args.reproxy_cfg_template:
+        if not args.rbe_instance:
+            logging.error(
+              '--rbe_instance is required if --reproxy_cfg_template is set')
+            return 1
+        if not GenerateReproxyCfg(
+          args.reproxy_cfg_template, args.rbe_instance, rbe_project):
+           return 1
 
     logging.info('fetch reclient_cfgs for RBE project %s...' % rbe_project)
 

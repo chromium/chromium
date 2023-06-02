@@ -10,12 +10,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/gpu/dawn_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
@@ -671,7 +673,6 @@ WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
     WGPUDevice device,
     const WGPUTextureFormat wgpu_format) const {
   // TODO(crbug.com/2709243): Figure out other SI flags, if any.
-  DCHECK(usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU);
   const WGPUTextureUsageFlags kBasicUsage =
       WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
       WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
@@ -1114,6 +1115,26 @@ D3DImageBacking::ProduceSkiaGanesh(
   return SkiaGLImageRepresentation::Create(
       ProduceGLTexturePassthrough(manager, tracker), std::move(context_state),
       manager, this, tracker);
+}
+
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+D3DImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  auto device = context_state->dawn_context_provider()->GetDevice();
+  wgpu::AdapterProperties adapter_properties;
+  device.GetAdapter().GetProperties(&adapter_properties);
+  auto dawn_representation = ProduceDawn(
+      manager, tracker, device.Get(),
+      static_cast<WGPUBackendType>(adapter_properties.backendType), {});
+  return SkiaGraphiteDawnImageRepresentation::Create(
+      std::move(dawn_representation), context_state,
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(

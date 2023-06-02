@@ -1379,8 +1379,8 @@ class MDnsConnectionTest : public TestWithTaskEnvironment {
 
   StrictMock<MockMDnsConnectionDelegate> delegate_;
 
-  raw_ptr<MockMDnsDatagramServerSocket> socket_ipv4_ptr_;
-  raw_ptr<MockMDnsDatagramServerSocket> socket_ipv6_ptr_;
+  raw_ptr<MockMDnsDatagramServerSocket, DanglingUntriaged> socket_ipv4_ptr_;
+  raw_ptr<MockMDnsDatagramServerSocket, DanglingUntriaged> socket_ipv6_ptr_;
   SimpleMockSocketFactory factory_;
   MDnsConnection connection_;
   TestCompletionCallback callback_;

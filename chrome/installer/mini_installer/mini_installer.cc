@@ -36,6 +36,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <initializer_list>
 
 #include "build/branding_buildflags.h"
@@ -43,24 +44,14 @@
 #include "chrome/installer/mini_installer/configuration.h"
 #include "chrome/installer/mini_installer/decompress.h"
 #include "chrome/installer/mini_installer/delete_with_retry.h"
+#include "chrome/installer/mini_installer/enumerate_resources.h"
+#include "chrome/installer/mini_installer/memory_range.h"
+#include "chrome/installer/mini_installer/mini_file.h"
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
-#include "chrome/installer/mini_installer/pe_resource.h"
 #include "chrome/installer/mini_installer/regkey.h"
+#include "chrome/installer/mini_installer/write_to_disk.h"
 
 namespace mini_installer {
-
-// This structure passes data back and forth for the processing
-// of resource callbacks.
-struct Context {
-  // Input to the call back method. Specifies the dir to save resources.
-  const wchar_t* base_path;
-  // First output from call back method. Full path of Chrome archive.
-  PathString* chrome_resource_path;
-  // Second output from call back method. Full path of Setup archive/exe.
-  PathString* setup_resource_path;
-  // A Windows error code corresponding to an extraction error.
-  DWORD error_code;
-};
 
 // Deletes |path|, updating |max_delete_attempts| if more attempts were taken
 // than indicated in |max_delete_attempts|.
@@ -324,93 +315,149 @@ void AppendCommandLineFlags(const wchar_t* command_line,
   buffer->append(command_line);
 }
 
-// Processes a resource of type |type| in |module| on behalf of a call to
-// EnumResourceNames. On each call, |name| contains the name of a resource. A
-// TRUE return value continues the enumeration, whereas FALSE stops it. This
-// function extracts the first resource starting with "chrome" and/or "setup",
-// populating |context| (which must be a pointer to a Context struct) with the
-// path(s) of the extracted file(s). Enumeration stops early in case of error,
-// which includes any unexpected resources or duplicate matching resources.
-// |context|'s |error_code| member may be populated with a Windows error code
-// corresponding to an error condition.
-BOOL CALLBACK OnResourceFound(HMODULE module,
-                              const wchar_t* type,
-                              wchar_t* name,
-                              LONG_PTR l_param) {
-  if (!l_param)
-    return FALSE;  // Break: impossible condition.
+namespace {
 
-  if (IS_INTRESOURCE(name))
-    return FALSE;  // Break: resources with integer names are unexpected.
+// A ResourceEnumeratorDelegate that captures the resource name and data range
+// for the chrome 7zip archive and the optional setup patch 7zip archive.
+class LzmaResourceDelegate : public ResourceEnumeratorDelegate {
+ public:
+  LzmaResourceDelegate(PathString& archive_name,
+                       MemoryRange& archive_range,
+                       PathString& setup_name,
+                       MemoryRange& setup_range,
+                       DWORD& error_code)
+      : archive_name_(archive_name),
+        archive_range_(archive_range),
+        setup_name_(setup_name),
+        setup_range_(setup_range),
+        error_code_(error_code) {}
+  bool OnResource(const wchar_t* name, const MemoryRange& data_range) override;
 
-  Context& context = *reinterpret_cast<Context*>(l_param);
+ private:
+  PathString& archive_name_;
+  MemoryRange& archive_range_;
+  PathString& setup_name_;
+  MemoryRange& setup_range_;
+  DWORD& error_code_;
+};
 
-  PEResource resource(name, type, module);
-  if (!resource.IsValid() || resource.Size() < 1)
-    return FALSE;  // Break: invalid/empty resources are unexpected.
-
-  PathString full_path;
-  if (!full_path.assign(context.base_path) || !full_path.append(name))
-    return FALSE;  // Break: failed to form the output path.
-
-  if (StrStartsWith(name, kChromeArchivePrefix) &&
-      context.chrome_resource_path->empty()) {
-    if (!resource.WriteToDisk(full_path.get())) {
-      context.error_code = ::GetLastError();
-      return FALSE;  // Break: failed to write resource.
+// Returns false to stop enumeration on unexpected resource names, duplicate
+// archive resources, or string overflow.
+bool LzmaResourceDelegate::OnResource(const wchar_t* name,
+                                      const MemoryRange& data_range) {
+  if (StrStartsWith(name, kChromeArchivePrefix)) {
+    if (!archive_range_.empty()) {
+      error_code_ = ERROR_TOO_MANY_NAMES;
+      return false;  // Break: duplicate resource name.
     }
-    context.chrome_resource_path->assign(full_path);
-  } else if (StrStartsWith(name, kSetupPrefix) &&
-             context.setup_resource_path->empty()) {
-    if (!resource.WriteToDisk(full_path.get())) {
-      context.error_code = ::GetLastError();
-      return FALSE;  // Break: failed to write resource.
+    if (!archive_name_.assign(name)) {
+      error_code_ = ERROR_FILENAME_EXCED_RANGE;
+      return false;  // Break: resource name is too long.
     }
-    context.setup_resource_path->assign(full_path);
+    archive_range_ = data_range;
+  } else if (StrStartsWith(name, kSetupPrefix)) {
+    if (!setup_range_.empty()) {
+      error_code_ = ERROR_TOO_MANY_NAMES;
+      return false;  // Break: duplicate resource name.
+    }
+    if (!setup_name_.assign(name)) {
+      error_code_ = ERROR_FILENAME_EXCED_RANGE;
+      return false;  // Break: resource name is too long.
+    }
+    setup_range_ = data_range;
   } else {
-    // Break: unexpected resource names or multiple {chrome,setup}* resources
-    // are unexpected.
-    return FALSE;
+    error_code_ = ERROR_INVALID_DATA;
+    return false;  // Break: unexpected resource name.
   }
+  return true;  // Continue: advance to the next resource.
+}
 
-  return TRUE;  // Continue: advance to the next resource.
+// A ResourceEnumeratorDelegate that captures the resource name and data range
+// for the compressed setup executable.
+class LzResourceDelegate : public ResourceEnumeratorDelegate {
+ public:
+  LzResourceDelegate(PathString& setup_name,
+                     MemoryRange& setup_range,
+                     DWORD& error_code)
+      : setup_name_(setup_name),
+        setup_range_(setup_range),
+        error_code_(error_code) {}
+  bool OnResource(const wchar_t* name, const MemoryRange& data_range) override;
+
+ private:
+  PathString& setup_name_;
+  MemoryRange& setup_range_;
+  DWORD& error_code_;
+};
+
+bool LzResourceDelegate::OnResource(const wchar_t* name,
+                                    const MemoryRange& data_range) {
+  if (StrStartsWith(name, kSetupPrefix)) {
+    if (!setup_range_.empty()) {
+      error_code_ = ERROR_TOO_MANY_NAMES;
+      return false;  // Break: unexpected or duplicate resource name.
+    }
+    if (!setup_name_.assign(name)) {
+      error_code_ = ERROR_FILENAME_EXCED_RANGE;
+      return false;  // Break: resource name is too long.
+    }
+    setup_range_ = data_range;
+  } else {
+    error_code_ = ERROR_INVALID_DATA;
+    return false;  // Break: unexpected resource name.
+  }
+  return true;  // Continue: advance to the next resource.
 }
 
 #if defined(COMPONENT_BUILD)
-// An EnumResNameProc callback that writes the resource |name| to disk in the
-// directory |base_path_ptr| (which must end with a path separator).
-BOOL CALLBACK WriteResourceToDirectory(HMODULE module,
-                                       const wchar_t* type,
-                                       wchar_t* name,
-                                       LONG_PTR base_path_ptr) {
-  const wchar_t* base_path = reinterpret_cast<const wchar_t*>(base_path_ptr);
+// A ResourceEnumeratorDelegate that writes all resources to disk in a given
+// directory (which must end with a path separator).
+class ResourceWriterDelegate : public ResourceEnumeratorDelegate {
+ public:
+  explicit ResourceWriterDelegate(const wchar_t* base_path)
+      : base_path_(base_path) {}
+  bool OnResource(const wchar_t* name, const MemoryRange& data_range) override;
+
+ private:
+  const wchar_t* const base_path_;
+};
+
+bool ResourceWriterDelegate::OnResource(const wchar_t* name,
+                                        const MemoryRange& data_range) {
   PathString full_path;
 
-  PEResource resource(name, type, module);
-  return (resource.IsValid() && full_path.assign(base_path) &&
-          full_path.append(name) && resource.WriteToDisk(full_path.get()));
+  return (!data_range.empty() && full_path.assign(base_path_) &&
+          full_path.append(name) && WriteToDisk(data_range, full_path.get()));
 }
 
-// An EnumResNameProc callback that deletes the file corresponding to the
-// resource |name| from the directory |base_path_ptr| (which must end with a
-// path separator).
-BOOL CALLBACK DeleteResourceInDirectory(HMODULE module,
-                                        const wchar_t* type,
-                                        wchar_t* name,
-                                        LONG_PTR base_path_ptr) {
+// A ResourceEnumeratorDelegate that deletes the file corresponding to each
+// resource from a given directory (which must end with a path separator).
+class ResourceDeleterDelegate : public ResourceEnumeratorDelegate {
+ public:
+  explicit ResourceDeleterDelegate(const wchar_t* base_path)
+      : base_path_(base_path) {}
+  bool OnResource(const wchar_t* name, const MemoryRange& data_range) override;
+
+ private:
+  const wchar_t* const base_path_;
+};
+
+bool ResourceDeleterDelegate::OnResource(const wchar_t* name,
+                                         const MemoryRange& data_range) {
   PathString full_path;
 
-  if (full_path.assign(reinterpret_cast<const wchar_t*>(base_path_ptr)) &&
-      full_path.append(name)) {
+  if (full_path.assign(base_path_) && full_path.append(name)) {
     // Do not record metrics for these deletes, as they are not done for release
     // builds.
     int attempts;
     DeleteWithRetry(full_path.get(), attempts);
   }
 
-  return TRUE;  // Continue enumeration.
+  return true;  // Continue enumeration.
 }
-#endif
+#endif  // defined(COMPONENT_BUILD)
+
+}  // namespace
 
 // Finds and writes to disk resources of various types. Returns false
 // if there is a problem in writing any resource to disk. setup.exe resource
@@ -438,34 +485,48 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
   if (!setup_dest_path.assign(base_path) || !setup_dest_path.append(kSetupExe))
     return ProcessExitResult(PATH_STRING_OVERFLOW);
 
-  // Prepare the input to OnResourceFound method that needs a location where
-  // it will write all the resources.
-  Context context = {
-      base_path,
-      archive_path,
-      setup_path,
-      ERROR_SUCCESS,
-  };
+  PathString archive_name;
+  MemoryRange archive_range;
+  PathString setup_name;
+  MemoryRange setup_range;
+  DWORD error_code;
 
-  // Get the resources of type 'B7' (7zip archive).
-  // We need a chrome archive to do the installation. So if there
-  // is a problem in fetching B7 resource, just return an error.
-  if (!::EnumResourceNames(module, kLZMAResourceType, OnResourceFound,
-                           reinterpret_cast<LONG_PTR>(&context)) ||
-      archive_path->empty()) {
-    const DWORD enum_error = ::GetLastError();
+  // Scan through type 'B7' resources looking for the mandatory chrome archive
+  // and the optional compressed setup patch.
+  error_code = ERROR_FILE_NOT_FOUND;
+  if (!EnumerateResources(
+          LzmaResourceDelegate(archive_name, archive_range, setup_name,
+                               setup_range, error_code),
+          module, kLZMAResourceType) ||
+      archive_range.empty()) {
+    // Exit if the archive was not found.
+    return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE, error_code);
+  }
+
+  // Write the archive to disk.
+  if (!archive_path->assign(base_path) ||
+      !archive_path->append(archive_name.get())) {
+    return ProcessExitResult(PATH_STRING_OVERFLOW);
+  }
+  if (!WriteToDisk(archive_range, archive_path->get())) {
     return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE,
-                             enum_error == ERROR_RESOURCE_ENUM_USER_STOP
-                                 ? context.error_code
-                                 : enum_error);
+                             ::GetLastError());
   }
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
-  // If we found setup 'B7' resource (used for differential updates), handle
-  // it.  Note that this is only for Chrome; Chromium installs are always
-  // "full" installs.
-  if (!setup_path->empty()) {
+  // If a compressed setup patch was found, run the previous setup.exe to
+  // generate the new setup.exe.
+  if (!setup_range.empty()) {
+    // Write the patch to disk.
+    if (!setup_path->assign(base_path) ||
+        !setup_path->append(setup_name.get())) {
+      return ProcessExitResult(PATH_STRING_OVERFLOW);
+    }
+    if (!WriteToDisk(setup_range, setup_path->get())) {
+      return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ::GetLastError());
+    }
+
     CommandString cmd_line;
     PathString exe_path;
     // Get the path to setup.exe first.
@@ -503,15 +564,20 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
 
   // setup.exe wasn't sent as 'B7', lets see if it was sent as 'BL'
   // (compressed setup).
-  context.error_code = ERROR_SUCCESS;
-  if (!::EnumResourceNames(module, kLZCResourceType, OnResourceFound,
-                           reinterpret_cast<LONG_PTR>(&context)) ||
-      setup_path->empty()) {
-    const DWORD enum_error = ::GetLastError();
-    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP,
-                             enum_error == ERROR_RESOURCE_ENUM_USER_STOP
-                                 ? context.error_code
-                                 : enum_error);
+  error_code = ERROR_FILE_NOT_FOUND;
+  if (!EnumerateResources(
+          LzResourceDelegate(setup_name, setup_range, error_code), module,
+          kLZCResourceType) ||
+      setup_range.empty()) {
+    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, error_code);
+  }
+
+  // Write the compressed binary to disk.
+  if (!setup_path->assign(base_path) || !setup_path->append(setup_name.get())) {
+    return ProcessExitResult(PATH_STRING_OVERFLOW);
+  }
+  if (!WriteToDisk(setup_range, setup_path->get())) {
+    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ::GetLastError());
   }
 
   // Uncompress LZ compressed resource. Setup is packed with 'MSCF'
@@ -528,8 +594,8 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
 #if defined(COMPONENT_BUILD)
   if (exit_code.IsSuccess()) {
     // Extract the modules in component build required by setup.exe.
-    if (!::EnumResourceNames(module, kBinResourceType, WriteResourceToDirectory,
-                             reinterpret_cast<LONG_PTR>(base_path))) {
+    if (!EnumerateResources(ResourceWriterDelegate(base_path), module,
+                            kBinResourceType)) {
       return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP, ::GetLastError());
     }
   }
@@ -606,8 +672,8 @@ void DeleteExtractedFiles(HMODULE module,
 
 #if defined(COMPONENT_BUILD)
   // Delete the modules in a component build extracted for use by setup.exe.
-  ::EnumResourceNames(module, kBinResourceType, DeleteResourceInDirectory,
-                      reinterpret_cast<LONG_PTR>(base_path.get()));
+  EnumerateResources(ResourceDeleterDelegate(base_path.get()), module,
+                     kBinResourceType);
 #endif
 
   // Delete the temp dir (if it is empty, otherwise fail).

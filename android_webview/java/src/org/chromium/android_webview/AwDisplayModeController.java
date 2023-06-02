@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.view.View;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.DisplayMode;
 
@@ -18,6 +19,7 @@ import org.chromium.blink.mojom.DisplayMode;
  * Display mode will be used for display cutout controller's internal implementation since we only
  * apply display cutout to fullscreen mode. Also, display mode will be reported as CSS property.
  */
+@Lifetime.WebView
 public class AwDisplayModeController {
     private static final boolean DEBUG = false;
     private static final String TAG = "DisplayMode";

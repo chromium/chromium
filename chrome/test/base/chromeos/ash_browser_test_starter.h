@@ -7,6 +7,8 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 class InProcessBrowserTest;
 
@@ -33,10 +35,14 @@ class AshBrowserTestStarter {
   // this no earlier than SetUpOnMainThread().
   void StartLacros(InProcessBrowserTest* test_class_obj);
 
+  net::EmbeddedTestServer* https_server();
+  GURL base_url();
+
  private:
   // This is XDG_RUNTIME_DIR.
   base::ScopedTempDir scoped_temp_dir_xdg_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
 };
 
 }  // namespace test

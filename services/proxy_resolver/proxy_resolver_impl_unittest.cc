@@ -120,7 +120,7 @@ class MockProxyResolverV8Tracing : public ProxyResolverV8Tracing {
   struct Job {
     GURL url;
     net::NetworkAnonymizationKey network_anonymization_key;
-    raw_ptr<net::ProxyInfo> results;
+    raw_ptr<net::ProxyInfo, DanglingUntriaged> results;
     bool cancelled = false;
 
     void Complete(int result) {
@@ -223,10 +223,10 @@ class ProxyResolverImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockProxyResolverV8Tracing> mock_proxy_resolver_;
+  raw_ptr<MockProxyResolverV8Tracing, DanglingUntriaged> mock_proxy_resolver_;
 
   std::unique_ptr<ProxyResolverImpl> resolver_impl_;
-  raw_ptr<mojom::ProxyResolver> resolver_;
+  raw_ptr<mojom::ProxyResolver, DanglingUntriaged> resolver_;
 };
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrl) {

@@ -20,6 +20,7 @@ constexpr int kButtonCornerRadius = 4;
 constexpr SkAlpha kMultitaskDefaultButtonOpacity = SK_AlphaOPAQUE * 0.21;
 constexpr SkAlpha kMultitaskHoverButtonOpacity = SK_AlphaOPAQUE * 0.40;
 constexpr SkAlpha kMultitaskHoverBackgroundOpacity = SK_AlphaOPAQUE * 0.12;
+constexpr SkAlpha kMultitaskDisabledButtonOpacity = SK_AlphaOPAQUE * 0.15;
 
 }  // namespace chromeos
 

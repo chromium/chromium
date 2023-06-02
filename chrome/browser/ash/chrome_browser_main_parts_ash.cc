@@ -198,6 +198,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -690,6 +691,15 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
 
   // Triggers the installation as earlier as possible.
   DocumentScannerInstaller::GetInstance()->TriggerInstall();
+
+  if (auto* fake_biod_client = FakeBiodClient::Get()) {
+    // The Fake biod saves the fake records to the chrome::DIR_USER_DATA
+    // directory, since we can't retrieve this path from chromeos
+    // we have to pass it in this way.
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+    fake_biod_client->SetFakeUserDataDir(std::move(user_data_dir));
+  }
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
   // USE_REAL_DBUS clients may be undefined even if the device is using real
@@ -1390,13 +1400,11 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
 
-  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
-    // DiagnosticsBrowserDelegate has to be initialized after ProfilerHelper and
-    // UserManager. Initializing in PostProfileInit to ensure Profile data is
-    // available and shell has been initialized.
-    diagnostics::DiagnosticsLogController::Initialize(
-        std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
-  }
+  // DiagnosticsBrowserDelegate has to be initialized after ProfilerHelper and
+  // UserManager. Initializing in PostProfileInit to ensure Profile data is
+  // available and shell has been initialized.
+  diagnostics::DiagnosticsLogController::Initialize(
+      std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
 
   // Start background collection of memory pressure data for Chrome OS.
   memory_pressure_detail_ = base::MakeRefCounted<MemoryMetrics>(

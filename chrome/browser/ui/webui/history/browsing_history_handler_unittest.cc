@@ -99,7 +99,7 @@ class BrowsingHistoryHandlerWithWebUIForTesting
  private:
   base::SimpleTestClock test_clock_;
   bool postpone_query_results_ = false;
-  raw_ptr<history::MockBrowsingHistoryService> mock_service_;
+  raw_ptr<history::MockBrowsingHistoryService, DanglingUntriaged> mock_service_;
 };
 
 }  // namespace
@@ -170,8 +170,9 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     return service;
   }
 
-  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
-  raw_ptr<history::FakeWebHistoryService> web_history_service_ = nullptr;
+  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_ = nullptr;
+  raw_ptr<history::FakeWebHistoryService, DanglingUntriaged>
+      web_history_service_ = nullptr;
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 

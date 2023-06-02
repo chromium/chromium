@@ -15,11 +15,11 @@
     <div class="button-box">
       <span class="flex">
           [[getDescription_(certificateType, certificates)]]</span>
-      <cr-button id="import" on-click="onImportTap_"
+      <cr-button id="import" on-click="onImportClick_"
           hidden="[[!canImport_(certificateType, importAllowed, isKiosk_)]]">
         [[i18n('certificateManagerImport')]]</cr-button>
 <if expr="is_chromeos">
-      <cr-button id="importAndBind" on-click="onImportAndBindTap_"
+      <cr-button id="importAndBind" on-click="onImportAndBindClick_"
           hidden="[[!canImportAndBind_(certificateType, importAllowed,
                  isGuest_)]]">
         [[i18n('certificateManagerImportAndBind')]]</cr-button>

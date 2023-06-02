@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">तृतीय-पक्ष कुकीजना अनुमती द्या</translation>
 <translation id="4428065317363009941">जाहिरात पर्सनलायझेशन</translation>
 <translation id="4434045419905280838">पॉप-अप आणि रीडिरेक्ट</translation>
-<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> चा विस्तार करा</translation>
 <translation id="4468959413250150279">विशिष्ट साइटसाठी ध्वनी म्यूट करा.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# कुकी}other{# कुकी}}</translation>
 <translation id="4478158430052450698">वेगवेगळ्या साइटसाठी झूम कस्टमाइझ करणे सोपे करा</translation>
@@ -285,7 +284,7 @@
 <translation id="6177128806592000436">या साइटवरील तुमचे कनेक्शन सुरक्षित नाही</translation>
 <translation id="6181444274883918285">साइट एक्सेप्शन जोडा</translation>
 <translation id="6192792657125177640">अपवाद</translation>
-<translation id="6196640612572343990">तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
+<translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> पर्याय</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइंस्टॉल करायचे आहे का?</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7882806643839505685">विशिष्ट साइटसाठी ध्वनीची परवानगी द्या.</translation>
 <translation id="789180354981963912">गुप्त मोडमधील तृतीय पक्ष कुकी ब्लॉक करा:</translation>
+<translation id="7895868624847501462">ही कृती कुकीसह सर्व स्थानिक डेटा साफ करेल आणि <ph name="DOMAIN" />व त्याखालील सर्व साइटसाठी सर्व परवानग्या रीसेट करेल</translation>
 <translation id="7940722705963108451">मला आठवण करून द्या</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> च्या साइटच्या गटातीतल <ph name="FPS_MEMBERS_COUNT" /> साइट तुमची अ‍ॅक्टिव्हिटी पाहू शकते}other{<ph name="FPS_OWNER" /> च्या साइटच्या गटातीतल <ph name="FPS_MEMBERS_COUNT" /> साइट तुमची अ‍ॅक्टिव्हिटी पाहू शकतात}}</translation>
 <translation id="7986741934819883144">संपर्क निवडा</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">मथळे</translation>
 <translation id="8300705686683892304">ॲपद्वारे व्यवस्थापित</translation>
 <translation id="8324158725704657629">पुन्हा विचारू नका</translation>
+<translation id="8338445138528827481">ही कृती कुकीसह सर्व स्थानिक डेटा साफ करेल आणि <ph name="ORIGIN" /> साठी सर्व परवानग्या रीसेट करेल</translation>
 <translation id="8362795839483915693">तुम्ही भेट देता त्या साइटवर झूम इन किंवा आउट करू शकता</translation>
 <translation id="8372893542064058268">विशिष्ट साइटसाठी पार्श्वभूमी संकालनासाठी अनुमती द्या.</translation>
 <translation id="8376384591331888629">या साइटवरील तृतीय-पक्ष कुकीच्या समावेशासह</translation>

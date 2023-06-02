@@ -120,9 +120,8 @@ class MessageTest : public testing::Test {
 
  private:
   ::testing::StrictMock<test::MockDriver> driver_;
-  const Ref<Node> node_{MakeRefCounted<Node>(Node::Type::kNormal,
-                                             test::kMockDriver,
-                                             IPCZ_INVALID_DRIVER_HANDLE)};
+  const Ref<Node> node_{
+      MakeRefCounted<Node>(Node::Type::kNormal, test::kMockDriver)};
   const Ref<DriverTransport> transport_{MakeRefCounted<DriverTransport>(
       DriverObject(test::kMockDriver, kTransportHandle))};
   std::queue<ReceivedMessage> received_messages_;

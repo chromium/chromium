@@ -143,7 +143,11 @@ void ReadbackTextureOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   gpu::AddVulkanCleanupTaskForSkiaFlush(context_state->vk_context_provider(),
                                         &flush_info);
 
-  surface->flush(SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
+  // Graphite surfaces do not need to be flushed, only Ganesh ones.
+  if (GrDirectContext* direct_context = context_state->gr_context()) {
+    direct_context->flush(surface, SkSurfaces::BackendSurfaceAccess::kNoAccess,
+                          flush_info);
+  }
 }
 
 // Reads back NV12 planes from textures returned in the result.
@@ -172,14 +176,14 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
                                   ->GetCompositorGpuThreadSharedContextState()
                                   .get();
 
-        ReadbackTextureOnGpuThread(shared_image_manager, context_state,
-                                   result.GetTextureResult()->planes[0].mailbox,
-                                   texture_size, kAlpha_8_SkColorType,
-                                   out_luma_plane);
+        ReadbackTextureOnGpuThread(
+            shared_image_manager, context_state,
+            result.GetTextureResult()->mailbox_holders[0].mailbox, texture_size,
+            kAlpha_8_SkColorType, out_luma_plane);
 
         ReadbackTextureOnGpuThread(
             shared_image_manager, context_state,
-            result.GetTextureResult()->planes[1].mailbox,
+            result.GetTextureResult()->mailbox_holders[1].mailbox,
             gfx::Size(texture_size.width() / 2, texture_size.height() / 2),
             kR8G8_unorm_SkColorType, out_chroma_planes);
 
@@ -707,8 +711,8 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     child_context_provider_->SharedImageInterface()->DestroySharedImage(
-        result->GetTextureResult()->planes[i].sync_token,
-        result->GetTextureResult()->planes[i].mailbox);
+        result->GetTextureResult()->mailbox_holders[i].sync_token,
+        result->GetTextureResult()->mailbox_holders[i].mailbox);
   }
 
   // Allocate new bitmap & populate it with Y & UV data.

@@ -103,8 +103,8 @@ void MediaRouterDebuggerImpl::LogMirroringStats() {
   if (!ShouldFetchMirroringStats()) {
     return;
   }
-  DVLOG(1) << "Mirroring stats for the most recent session: "
-           << most_recent_mirroring_stats_.DebugString();
+  VLOG(1) << "Mirroring stats for the most recent session: "
+          << most_recent_mirroring_stats_.DebugString();
 }
 
 }  // namespace media_router

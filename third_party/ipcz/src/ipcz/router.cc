@@ -205,33 +205,6 @@ void Router::SetOutwardLink(const OperationContext& context,
   Flush(context, kForceProxyBypassAttempt);
 }
 
-size_t Router::GetOutboundCapacityInBytes(const IpczPutLimits& limits) {
-  if (limits.max_queued_bytes == 0 || limits.max_queued_parcels == 0) {
-    return 0;
-  }
-
-  const OperationContext context{OperationContext::kAPICall};
-  absl::MutexLock lock(&mutex_);
-  if (status_.num_remote_parcels >= limits.max_queued_parcels ||
-      status_.num_remote_bytes >= limits.max_queued_bytes) {
-    return 0;
-  }
-
-  if (outbound_parcels_.GetNumAvailableElements() >=
-      limits.max_queued_parcels - status_.num_remote_parcels) {
-    return 0;
-  }
-
-  const size_t num_bytes_pending =
-      outbound_parcels_.GetTotalAvailableElementSize();
-  const size_t available_capacity =
-      limits.max_queued_bytes - status_.num_remote_bytes;
-  if (num_bytes_pending >= available_capacity) {
-    return 0;
-  }
-  return available_capacity - num_bytes_pending;
-}
-
 bool Router::AcceptInboundParcel(const OperationContext& context,
                                  Parcel& parcel) {
   TrapEventDispatcher dispatcher;
@@ -309,8 +282,6 @@ bool Router::AcceptRouteClosureFrom(const OperationContext& context,
           status_.flags |=
               IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
         }
-        status_.num_remote_bytes = 0;
-        status_.num_remote_parcels = 0;
         traps_.UpdatePortalStatus(
             context, status_, TrapSet::UpdateReason::kPeerClosed, dispatcher);
       }
@@ -366,8 +337,6 @@ bool Router::AcceptRouteDisconnectedFrom(const OperationContext& context,
         status_.flags |=
             IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
       }
-      status_.num_remote_parcels = 0;
-      status_.num_remote_bytes = 0;
       traps_.UpdatePortalStatus(context, status_,
                                 TrapSet::UpdateReason::kPeerClosed, dispatcher);
     }
@@ -599,8 +568,6 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
         descriptor.num_bytes_consumed);
     if (descriptor.peer_closed) {
       router->is_peer_closed_ = true;
-      router->status_.num_remote_parcels = 0;
-      router->status_.num_remote_bytes = 0;
       if (!router->inbound_parcels_.SetFinalSequenceLength(
               descriptor.closed_peer_sequence_length)) {
         return nullptr;

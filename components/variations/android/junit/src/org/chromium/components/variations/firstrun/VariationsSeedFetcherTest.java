@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -74,7 +73,13 @@ public class VariationsSeedFetcherTest {
         mConnection = mock(HttpURLConnection.class);
         doReturn(mConnection)
                 .when(mFetcher)
-                .getServerConnection(any(VariationsSeedFetcher.SeedFetchParameters.class));
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                                .setRestrictMode(sRestrict)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                .build());
         mPrefs = ContextUtils.getAppSharedPreferences();
         UmaRecorderHolder.resetForTesting();
     }
@@ -95,6 +100,16 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getHeaderField("IM")).thenReturn("gzip");
         when(mConnection.getInputStream())
                 .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
+        doReturn(mConnection)
+                .when(mFetcher)
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                // Restrict mode is null because fetchSeed sets this to null.
+                                .setRestrictMode(null)
+                                .build());
 
         long startTime = new Date().getTime();
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
@@ -472,6 +487,14 @@ public class VariationsSeedFetcherTest {
     @Test
     public void testFetchSeed_badResponse() throws IOException {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+        doReturn(mConnection)
+                .when(mFetcher)
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                .build());
 
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
 
@@ -492,6 +515,14 @@ public class VariationsSeedFetcherTest {
     @Test
     public void testFetchSeed_IOException() throws IOException {
         doThrow(new IOException()).when(mConnection).connect();
+        doReturn(mConnection)
+                .when(mFetcher)
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                .build());
 
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
 

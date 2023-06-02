@@ -83,7 +83,7 @@ public class CronetSmokeTestRule implements TestRule {
 
         // Check the response info
         UrlResponseInfo responseInfo = callback.getResponseInfo();
-        Assert.assertNotNull(responseInfo);
+        assertThat(responseInfo).isNotNull();
         Assert.assertFalse(responseInfo.wasCached());
         assertThat(responseInfo.getUrl()).isEqualTo(url);
         assertThat(responseInfo.getUrlChain().get(responseInfo.getUrlChain().size() - 1))
@@ -93,12 +93,12 @@ public class CronetSmokeTestRule implements TestRule {
     }
 
     static void assertJavaEngine(CronetEngine engine) {
-        Assert.assertNotNull(engine);
+        assertThat(engine).isNotNull();
         assertThat(engine.getClass().getName()).isEqualTo("org.chromium.net.impl.JavaCronetEngine");
     }
 
     static void assertNativeEngine(CronetEngine engine) {
-        Assert.assertNotNull(engine);
+        assertThat(engine).isNotNull();
         assertThat(engine.getClass().getName())
                 .isEqualTo("org.chromium.net.impl.CronetUrlRequestContext");
     }

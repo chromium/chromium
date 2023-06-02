@@ -18,7 +18,8 @@ namespace ash {
 // static
 InSessionPasswordSyncManagerFactory*
 InSessionPasswordSyncManagerFactory::GetInstance() {
-  return base::Singleton<InSessionPasswordSyncManagerFactory>::get();
+  static base::NoDestructor<InSessionPasswordSyncManagerFactory> instance;
+  return instance.get();
 }
 
 // static

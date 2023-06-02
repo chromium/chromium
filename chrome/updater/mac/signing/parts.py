@@ -8,8 +8,8 @@ bundle that need to be signed, as well as providing a function to sign them.
 
 import os.path
 
-from . import commands, signing
-from .model import CodeSignOptions, CodeSignedProduct, VerifyOptions
+from signing import commands, signing
+from signing.model import CodeSignOptions, CodeSignedProduct, VerifyOptions
 
 
 def get_parts(config):

@@ -119,8 +119,8 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
   std::unique_ptr<
       performance_manager::TestNodeWrapper<performance_manager::SystemNodeImpl>>
       system_node_;
-  raw_ptr<MockBackgroundTabLoadingPolicy> policy_;
-  raw_ptr<MockPageLoader> mock_loader_;
+  raw_ptr<MockBackgroundTabLoadingPolicy, DanglingUntriaged> policy_;
+  raw_ptr<MockPageLoader, DanglingUntriaged> mock_loader_;
   int num_all_tabs_loaded_calls_ = 0;
 };
 

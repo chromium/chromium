@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
@@ -70,7 +71,9 @@ ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     : callback(std::move(callback)),
       remaining_install_requests(pending_installs.size()),
       pending_installs(std::move(pending_installs)),
-      remaining_uninstall_requests(remaining_uninstall_requests) {}
+      remaining_uninstall_requests(remaining_uninstall_requests) {
+  CHECK(this->callback);
+}
 
 ExternallyManagedAppManager::SynchronizeRequest::~SynchronizeRequest() =
     default;
@@ -93,7 +96,7 @@ struct ExternallyManagedAppManager::TaskAndCallback {
 };
 
 ExternallyManagedAppManager::ExternallyManagedAppManager(Profile* profile)
-    : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {}
+    : profile_(profile) {}
 
 ExternallyManagedAppManager::~ExternallyManagedAppManager() {
   DCHECK(!registration_callback_);
@@ -107,10 +110,27 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
 void ExternallyManagedAppManager::SetSubsystems(
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* finalizer,
-    WebAppCommandScheduler* command_scheduler) {
+    WebAppCommandScheduler* command_scheduler,
+    WebContentsManager* web_contents_manager) {
   ui_manager_ = ui_manager;
   finalizer_ = finalizer;
   command_scheduler_ = command_scheduler;
+  if (!web_contents_manager) {
+    CHECK_IS_TEST();
+  } else {
+    // TODO(http://b/283521737): Remove this and use WebContentsManager.
+    url_loader_ = web_contents_manager->CreateUrlLoader();
+    // TODO(http://b/283521737): Remove this and use WebContentsManager.
+    data_retriever_factory_ = base::BindRepeating(
+        [](base::WeakPtr<WebContentsManager> web_contents_manager)
+            -> std::unique_ptr<WebAppDataRetriever> {
+          if (!web_contents_manager) {
+            return nullptr;
+          }
+          return web_contents_manager->CreateDataRetriever();
+        },
+        web_contents_manager->GetWeakPtr());
+  }
 }
 
 void ExternallyManagedAppManager::InstallNow(
@@ -164,6 +184,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback) {
+  CHECK(callback);
   DCHECK(base::ranges::all_of(
       desired_apps_install_options,
       [&install_source](const ExternalInstallOptions& install_options) {
@@ -216,7 +237,7 @@ void ExternallyManagedAppManager::SetUrlLoaderForTesting(
 void ExternallyManagedAppManager::SetDataRetrieverFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory) {
   CHECK_IS_TEST();
-  data_retriever_factory_for_testing_ = std::move(factory);
+  data_retriever_factory_ = std::move(factory);
 }
 
 void ExternallyManagedAppManager::ReleaseWebContents() {
@@ -234,17 +255,13 @@ ExternallyManagedAppManager::CreateInstallationTask(
   std::unique_ptr<ExternallyManagedAppInstallTask> install_task =
       std::make_unique<ExternallyManagedAppInstallTask>(
           profile_, url_loader_.get(), ui_manager(), finalizer(),
-          command_scheduler(), std::move(install_options));
-  if (data_retriever_factory_for_testing_) {
-    CHECK_IS_TEST();
-    install_task->SetDataRetrieverFactoryForTesting(  // IN-TEST
-        data_retriever_factory_for_testing_);
-  }
+          command_scheduler(), data_retriever_factory_,
+          std::move(install_options));
   return install_task;
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
-ExternallyManagedAppManager::StartRegistration(GURL install_url) {
+ExternallyManagedAppManager::CreateRegistration(GURL install_url) {
   DCHECK(!IsShuttingDown());
   ExternallyManagedAppRegistrationTask::RegistrationCallback callback =
       base::BindOnce(&ExternallyManagedAppManager::OnRegistrationFinished,
@@ -408,7 +425,8 @@ bool ExternallyManagedAppManager::RunNextRegistration() {
 
   GURL url_to_check = std::move(pending_registrations_.front());
   pending_registrations_.pop_front();
-  current_registration_ = StartRegistration(std::move(url_to_check));
+  current_registration_ = CreateRegistration(std::move(url_to_check));
+  current_registration_->Start();
   return true;
 }
 
@@ -494,6 +512,7 @@ base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     ExternalInstallSource install_source,
     SynchronizeCallback callback,
     AllAppsLock& lock) {
+  CHECK(callback);
   base::Value::Dict debug_info;
   debug_info.Set("install_source", base::ToString(install_source));
   base::Value::List* desired_installs =
@@ -658,6 +677,7 @@ void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
   if (request.remaining_install_requests > 0)
     return;
 
+  CHECK(request.callback);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(request.callback),
                                 std::move(request.install_results),

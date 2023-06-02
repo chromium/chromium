@@ -1,0 +1,48 @@
+Tests that all connection types of NetInfo are supported.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL connection.type should be cellular. Was unknown.
+FAIL connection.downlinkMax should be 1. Was Infinity.
+FAIL connection.type should be cellular. Was unknown.
+FAIL connection.downlinkMax should be 1. Was Infinity.
+FAIL connection.type should be bluetooth. Was unknown.
+FAIL connection.downlinkMax should be 2. Was Infinity.
+FAIL connection.type should be bluetooth. Was unknown.
+FAIL connection.downlinkMax should be 2. Was Infinity.
+FAIL connection.type should be ethernet. Was unknown.
+FAIL connection.downlinkMax should be 3. Was Infinity.
+FAIL connection.type should be ethernet. Was unknown.
+FAIL connection.downlinkMax should be 3. Was Infinity.
+FAIL connection.type should be wifi. Was unknown.
+FAIL connection.downlinkMax should be 4. Was Infinity.
+FAIL connection.type should be wifi. Was unknown.
+FAIL connection.downlinkMax should be 4. Was Infinity.
+FAIL connection.type should be wimax. Was unknown.
+FAIL connection.downlinkMax should be 5. Was Infinity.
+FAIL connection.type should be wimax. Was unknown.
+FAIL connection.downlinkMax should be 5. Was Infinity.
+FAIL connection.type should be other. Was unknown.
+FAIL connection.downlinkMax should be 6. Was Infinity.
+FAIL connection.type should be other. Was unknown.
+FAIL connection.downlinkMax should be 6. Was Infinity.
+FAIL connection.type should be none. Was unknown.
+FAIL connection.downlinkMax should be 7. Was Infinity.
+FAIL connection.type should be none. Was unknown.
+FAIL connection.downlinkMax should be 7. Was Infinity.
+PASS connection.type is types[count][0]
+FAIL connection.downlinkMax should be 8. Was Infinity.
+PASS connection.type is types[count][0]
+FAIL connection.downlinkMax should be 8. Was Infinity.
+FAIL connection.type should be wimax. Was unknown.
+FAIL connection.downlinkMax should be 8. Was Infinity.
+FAIL connection.type should be wimax. Was unknown.
+FAIL connection.downlinkMax should be 8. Was Infinity.
+FAIL connection.type should be wimax. Was unknown.
+FAIL connection.downlinkMax should be 9. Was Infinity.
+FAIL connection.type should be wimax. Was unknown.
+FAIL connection.downlinkMax should be 9. Was Infinity.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

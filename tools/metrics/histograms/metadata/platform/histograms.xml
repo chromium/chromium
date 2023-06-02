@@ -642,6 +642,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.Event" enum="CrosHibernateCycleEvent"
+    expires_after="2024-05-10">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    Tracks the top level events of the hibernate cycle: suspend attempt/failure
+    and resume attempt/success/failure. Reported at resume from hibernate or
+    failure to hibernate.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.ExcessMemoryAvailable" units="MiB"
     expires_after="2023-08-04">
   <owner>asavery@chromium.org</owner>
@@ -651,6 +663,16 @@ chromium-metrics-reviews@google.com.
     amount of space needed to successfully hibernate on ChromeOS devices when
     there is more memory available than needed when hibernate is triggered.
     Recorded at hibernate.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Hibernate.FileSystem.Hibermeta.FileSystemStatus"
+    enum="CrosHibernateFileSystemStatus" expires_after="2024-05-10">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    Result of 'hibermeta' file system checks. Reported at resume from hibernate.
   </summary>
 </histogram>
 
@@ -1318,6 +1340,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.StorageDegradationAmount" units="KiB"
+    expires_after="2024-05-31">
+  <owner>lbaraz@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Total amount of space freed by controlled degradation performed by Storage.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.StorageQueueGenerationIdReset" enum="Boolean"
     expires_after="2024-01-31">
   <owner>vshenvi@google.com</owner>
@@ -1356,7 +1387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
-    enum="ModemfwdCheckForWedgedModemResult" expires_after="2023-09-17">
+    enum="ModemfwdCheckForWedgedModemResult" expires_after="2023-11-19">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -2062,7 +2093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.UnaggregatedUsageTimeTooBig" units="seconds"
-    expires_after="2023-06-04">
+    expires_after="2024-05-31">
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>

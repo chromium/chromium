@@ -39,6 +39,10 @@ absl::optional<Promo> PromoForName(base::StringPiece promo) {
   if (promo == "promos_manager::Promo::WhatsNew")
     return promos_manager::Promo::WhatsNew;
 
+  if (promo == "promos_manager::Promo::Choice") {
+    return promos_manager::Promo::Choice;
+  }
+
   return absl::nullopt;
 }
 
@@ -58,6 +62,8 @@ base::StringPiece NameForPromo(Promo promo) {
       return "promos_manager::Promo::PostRestoreSignInAlert";
     case promos_manager::Promo::WhatsNew:
       return "promos_manager::Promo::WhatsNew";
+    case promos_manager::Promo::Choice:
+      return "promos_manager::Promo::Choice";
   }
 }
 

@@ -97,6 +97,11 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
   return !requests_per_page_url_.empty();
 }
 
+void TestBookmarkClient::SetStorageStateForUma(
+    metrics::StorageStateForUma storage_state) {
+  storage_state_for_uma_ = storage_state;
+}
+
 bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
     BookmarkNode::Type type) {
   switch (type) {
@@ -118,6 +123,10 @@ bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
   return base::BindOnce(&TestBookmarkClient::LoadManagedNode,
                         std::move(managed_node_));
+}
+
+metrics::StorageStateForUma TestBookmarkClient::GetStorageStateForUma() {
+  return storage_state_for_uma_;
 }
 
 bool TestBookmarkClient::CanSetPermanentNodeTitle(

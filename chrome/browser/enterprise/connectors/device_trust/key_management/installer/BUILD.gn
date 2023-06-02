@@ -18,7 +18,7 @@ source_set("elevated_rotation") {
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
-    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
     "//components/policy/proto",
     "//crypto",

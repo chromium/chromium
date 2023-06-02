@@ -91,8 +91,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   absl::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
-  void RecordMetricsForSetValueEffect(VcEffectId effect_id,
-                                      int state_value) const override;
+  void RecordMetricsForSetValueEffectOnClick(VcEffectId effect_id,
+                                             int state_value) const override;
+  void RecordMetricsForSetValueEffectOnStartup(VcEffectId effect_id,
+                                               int state_value) const override;
 
   // media::CameraEffectObserver:
   void OnCameraEffectChanged(

@@ -12,7 +12,7 @@ include_rules = [
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
   "+gpu/command_buffer/common",
-  "+gpu/command_buffer/service/shared_image/shared_image_format_utils.h",
+  "+gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h",
   "+gpu/config/gpu_feature_info.h",
   "+gpu/config/skia_limits.h",
   "+gpu/GLES2",

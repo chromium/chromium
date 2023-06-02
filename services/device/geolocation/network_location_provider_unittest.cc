@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
@@ -188,12 +187,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
     WifiData data;
     for (int i = 0; i < ap_count; ++i) {
       AccessPointData ap;
-      ap.mac_address =
-          base::ASCIIToUTF16(base::StringPrintf("%02d-34-56-78-54-32", i));
+      ap.mac_address = base::StringPrintf("%02d-34-56-78-54-32", i);
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
       ap.signal_to_noise = i + 42;
-      ap.ssid = u"Some nice+network|name\\";
       data.access_point_data.insert(ap);
     }
     return data;
@@ -206,7 +203,6 @@ class GeolocationNetworkProviderTest : public testing::Test {
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
       ap.signal_to_noise = i + 42;
-      ap.ssid = u"Some nice+network|name\\";
       data.access_point_data.insert(ap);
     }
     return data;

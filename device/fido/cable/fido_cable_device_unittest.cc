@@ -168,7 +168,7 @@ class FidoCableDeviceTest : public Test {
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<NiceMockBluetoothAdapter>();
   FakeCableAuthenticator authenticator_;
-  raw_ptr<MockFidoBleConnection> connection_;
+  raw_ptr<MockFidoBleConnection, DanglingUntriaged> connection_;
   std::unique_ptr<FidoCableDevice> device_;
 };
 

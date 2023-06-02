@@ -43,12 +43,22 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceType;
 
-const base::FeatureParam<base::TimeDelta> kFirstReportWindowDeadline{
+const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
     &blink::features::kConversionMeasurement, "first_report_window_deadline",
     AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
 
-const base::FeatureParam<base::TimeDelta> kSecondReportWindowDeadline{
+const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
     &blink::features::kConversionMeasurement, "second_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
+    &blink::features::kConversionMeasurement,
+    "first_event_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
+    &blink::features::kConversionMeasurement,
+    "second_event_report_window_deadline",
     AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kAggregateReportMinDelay{
@@ -58,6 +68,22 @@ const base::FeatureParam<base::TimeDelta> kAggregateReportMinDelay{
 const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
     &blink::features::kConversionMeasurement, "aggregate_report_delay_span",
     AttributionConfig::AggregateLimit::kDefaultDelaySpan};
+
+const base::FeatureParam<bool> kVTCEarlyReportingWindows(
+    &blink::features::kConversionMeasurement,
+    "vtc_early_reporting_windows",
+    false);
+
+std::vector<base::TimeDelta> GetVtcEarlyDeadlines(
+    const AttributionConfig& config) {
+  if (!kVTCEarlyReportingWindows.Get()) {
+    return std::vector<base::TimeDelta>();
+  }
+
+  return std::vector<base::TimeDelta>{
+      config.event_level_limit.first_event_report_window_deadline,
+      config.event_level_limit.second_event_report_window_deadline};
+}
 
 base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
   constexpr base::TimeDelta kMinDeltaTime = base::Days(1);
@@ -114,15 +140,38 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     : AttributionStorageDelegateImpl(noise_mode,
                                      delay_mode,
                                      AttributionConfig()) {
-  base::TimeDelta first_deadline = kFirstReportWindowDeadline.Get();
-  base::TimeDelta second_deadline = kSecondReportWindowDeadline.Get();
+  base::TimeDelta first_deadline = kFirstNavigationReportWindowDeadline.Get();
+  base::TimeDelta second_deadline = kSecondNavigationReportWindowDeadline.Get();
 
   if (!first_deadline.is_negative() && first_deadline < second_deadline) {
-    config_.event_level_limit.first_report_window_deadline = first_deadline;
-    config_.event_level_limit.second_report_window_deadline = second_deadline;
+    config_.event_level_limit.first_navigation_report_window_deadline =
+        first_deadline;
+    config_.event_level_limit.second_navigation_report_window_deadline =
+        second_deadline;
   } else {
     LOG(WARNING)
-        << "Invalid reporting window deadline value(s) - "
+        << "Invalid navigation reporting window deadline value(s) - "
+        << "Reporting window deadlines should be non-negative "
+        << "and the first deadline should be less than the second."
+        << "Using default values: ["
+        << AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline
+        << ", "
+        << AttributionConfig::EventLevelLimit::
+               kDefaultSecondReportWindowDeadline
+        << "]";
+  }
+
+  first_deadline = kFirstEventReportWindowDeadline.Get();
+  second_deadline = kSecondEventReportWindowDeadline.Get();
+
+  if (!first_deadline.is_negative() && first_deadline < second_deadline) {
+    config_.event_level_limit.first_event_report_window_deadline =
+        first_deadline;
+    config_.event_level_limit.second_event_report_window_deadline =
+        second_deadline;
+  } else {
+    LOG(WARNING)
+        << "Invalid VTC reporting window deadline value(s) - "
         << "Reporting window deadlines should be non-negative "
         << "and the first deadline should be less than the second."
         << "Using default values: ["
@@ -413,10 +462,10 @@ std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EarlyDeadlines(
   switch (source_type) {
     case SourceType::kNavigation:
       return std::vector<base::TimeDelta>{
-          config_.event_level_limit.first_report_window_deadline,
-          config_.event_level_limit.second_report_window_deadline};
+          config_.event_level_limit.first_navigation_report_window_deadline,
+          config_.event_level_limit.second_navigation_report_window_deadline};
     case SourceType::kEvent:
-      return std::vector<base::TimeDelta>();
+      return GetVtcEarlyDeadlines(config_);
   }
 }
 

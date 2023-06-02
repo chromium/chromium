@@ -747,7 +747,30 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_MIGRATION_WARNING_OTHER_OPTIONS" desc="The text on the button that leads to other options in the password migration warning sheet.">
         Other options
       </message>
-
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_CONTENT_DESCRIPTION" desc="Accessibility string read when the password migration warning sheet opens." formatter_data="android_java">
+        Google Password Manager update
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_CLOSED" desc="Accessibility string read when the password migration warning sheet closes." formatter_data="android_java">
+        Update about password merge is closed
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_TURN_ON_SYNC" desc="The text that describes the option to start syncing that is offered in the password migration warning sheet.">
+        Save the passwords on this device in your Google Account by turning on sync
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_TURN_ON_SYNC_SUBTITLE" desc="The subtitle that appears under the option to turn on sync in the password migration warning sheet if the user is not signed in.">
+        You’ll be asked to sign in to your Google Account
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_PASSWORD_EXPORT" desc="The text that describes the option to export the passwords that is offered in the password migration warning sheet.">
+        Export &amp; delete passwords saved to this device
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_PASSWORD_EXPORT_SUBTITLE" desc="The subtitle that explaint the password export option in the password migration warning sheet.">
+        All passwords will be downloaded on your device and removed from Chrome <ph name="CHROME_CHANNEL">%1$s<ex>Dev</ex></ph>
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_NEXT" desc="The text for the next button in the password migration warning sheet. It starts one of the flows offered on the sheet.">
+        Next
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_CANCEL" desc="The text for the cancel button in the password migration warning sheet. It closes the sheet">
+        Cancel
+      </message>
 
       <!-- Lock Screen Fragment -->
       <message name="IDS_LOCKSCREEN_DESCRIPTION_COPY" desc="When a user attempts to copy a password for a particular website into clipboard in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
@@ -845,8 +868,8 @@ CHAR_LIMIT guidelines:
       <message name="IDS_CONTEXTUAL_SEARCH_SEE_BETTER_RESULTS_SUMMARY" desc="Summary for the see better results switch in Contextual Search preference.">
         By including more of a page’s text, you might see better results
       </message>
-      <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for 'Do Not Track' preference">
-        “Do Not Track”
+      <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for the 'Do Not Track' preference. Please leave the 'Do Not Track' part in English according to the glossary.">
+        Send a “Do Not Track” request
       </message>
       <message name="IDS_DO_NOT_TRACK_DESCRIPTION" desc="Description for 'Do Not Track' preference">
         Enabling “Do Not Track” means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted.
@@ -1963,30 +1986,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Child accounts -->
-      <message name="IDS_ACCOUNT_MANAGEMENT_PARENTAL_SETTINGS" desc="Title of parental settings section of account page for child account.">
-        Parental Settings
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_NO_PARENTAL_DATA" desc="String saying that we are waiting for family information.">
-        Waiting for details of parents.
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_ONE_PARENT_NAME" desc="String for name of single parent for child account.">
-        This browser is managed by <ph name="PARENT_NAME">%1$s<ex>parent1@gmail.com</ex></ph>.
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_TWO_PARENT_NAMES" desc="String for names of two parents for child account.">
-        This browser is managed by <ph name="PARENT_NAME_1">%1$s<ex>parent1@gmail.com</ex></ph> and <ph name="PARENT_NAME_2">%2$s<ex>parent2@gmail.com</ex></ph>.
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_CHILD_CONTENT_TITLE" desc="Title of the Content setting, which controls which websites a child is allowed to visit.">
-        Content
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_CHILD_CONTENT_APPROVED" desc="Setting that permits child accounts to visit only sites approved by their parents.">
-        Only allow certain sites
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_CHILD_CONTENT_FILTER_MATURE" desc="Setting that permits child accounts to visit any websites that don't have mature contents. As the filter is not perfect, the browser can only attempt to block these sites.">
-        Try to block mature sites
-      </message>
-      <message name="IDS_ACCOUNT_MANAGEMENT_CHILD_CONTENT_ALL" desc="Setting that permits child accounts to visit any websites.">
-        Allow all sites
-      </message>
       <message name="IDS_ACCOUNT_MANAGEMENT_HEADER_NO_PARENTAL_DATA" desc="String saying that child should go to parent for help for child account.">
         If you need help, ask your parent
       </message>
@@ -4143,9 +4142,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_OMNIBOX_SHOWING_SUGGESTIONS_FOR_WEBSITE" desc="Whenever the User is visiting a Website, when they click the Omnibox, we will announce this message, if we have suggestions to show.">
         Showing suggestions for <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph>
       </message>
-      <message name="IDS_ACCESSIBILITY_OMNIBOX_PEDAL" desc="Announce focused Chrome Action Button on the Omnibox Suggestions List. List of known Action buttons is defined here: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc">
-        Chrome action button: <ph name="ACTION">%s<ex>clear browsing data</ex></ph>
-      </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_SUGGESTED_ITEMS" desc="Announcement about the presence and volume of suggestions below the Omnibox.">
         <ph name="SUGGESTIONS_COUNT">%d<ex>12</ex></ph> suggested items in list below.
       </message>
@@ -4340,6 +4336,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_VIDEO_PREVIEWS_OPTION_WIFI_AND_MOBILE_DATA" desc="Option in video previews preference. Users can click this option to allow video previews on both Wi-Fi and mobile data.">
         On Wi-Fi &amp; mobile data
+      </message>
+
+      <!-- PageInsights Hub -->
+      <message name="IDS_PAGE_INSIGHTS_SHEET_DESCRIPTION" desc="The content description of the page insights sheet.">
+        Page insights bottom sheet
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_SHEET_OPENED_FULL" desc="Accessibility string read when the page insights sheet is opened at full height. The sheet will occupy up to the full screen.">
+        Page insights bottom sheet is opened
+      </message>
+      <message name="IDS_PAGE_INSIGHTS_SHEET_CLOSED" desc="Accessibility string read when the page insights sheet is closed.">
+        Page insights bottom sheet is closed
       </message>
 
       <!-- WebFeed -->
@@ -5227,8 +5234,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Copy image
       </message>
 
+      <message name="IDS_SHARING_COPY_IMAGE_WITH_LINK" desc="Label for the Copy Image button with link in the sharing hub.">
+        Copy image with link
+      </message>
+
       <message name="IDS_SHARING_COPY_GIF" desc="Label for the Copy GIF button in the sharing hub.">
         Copy GIF
+      </message>
+
+      <message name="IDS_SHARING_COPY_HIGHLIGHT_WITHOUT_LINK" desc="Label for the Copy highlighted text without link button in the sharing hub. This is used when sharing highlighted text with a generated link.">
+        Copy without link
       </message>
 
       <message name="IDS_SHARING_SCREENSHOT" desc="Label for Screenshot button in the sharing hub.">
@@ -5279,12 +5294,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Send to devices
       </message>
 
-      <message name="IDS_SHARING_INCLUDE_LINK" desc="Label for the button in android share sheet to include a link to share along with highlighted text.">
-        Include link
-      </message>
-
-      <message name="IDS_SHARING_EXCLUDE_LINK" desc="Label for the button in android share sheet to share the highlighted text without a link.">
-        Exclude link
+      <message name="IDS_SHARING_INCLUDING_LINK_TITLE_TEMPLATE" desc="Title used in share sheet when sharing the highlighted text with a generated link.">
+        Including link: <ph name="ORIGIN">%1$s<ex>https://www.example.com</ex></ph>
       </message>
 
       <message name="IDS_TEXT_COPIED" desc="Text shown in the toast notification when Copy Text is selected in the sharing hub.">
@@ -5756,6 +5767,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_QUICK_DELETE_SNACKBAR_MESSAGE" desc="Text inside the snackbar which is shown once the user confirms deletion via the 'Delete last 15 minutes' option present inside the three dots menu.">
         Deleted
+      </message>
+
+      <!-- Password generation bottom sheet -->
+      <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes that the bottom sheet proposes a generated password to be automatically filled into the sign up form and saved to the Password Manager.">
+        Strong password suggested. Keyboard hidden.
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the password generation bottom sheet is closed.">
+        Password suggestion is closed.
       </message>
     </messages>
   </release>

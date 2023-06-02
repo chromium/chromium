@@ -216,6 +216,9 @@ class PageSpecificContentSettings
     // Called whenever site data is accessed.
     virtual void OnSiteDataAccessed(const AccessDetails& access_details) = 0;
 
+    // Called whenever this page is loaded via a redirect with stateful bounces.
+    virtual void OnStatefulBounceDetected() = 0;
+
     content::WebContents* web_contents() { return web_contents_; }
 
     // Called when the WebContents is destroyed; nulls out
@@ -307,6 +310,10 @@ class PageSpecificContentSettings
   // Called when audio has been blocked on the page.
   void OnAudioBlocked();
 
+  // Records one additional stateful bounce during the navigation that led to
+  // this page.
+  void IncrementStatefulBounceCount();
+
   // Returns whether a particular kind of content has been blocked for this
   // page.
   bool IsContentBlocked(ContentSettingsType content_type) const;
@@ -376,6 +383,8 @@ class PageSpecificContentSettings
   blocked_local_shared_objects() const {
     return blocked_local_shared_objects_;
   }
+
+  int stateful_bounce_count() const { return stateful_bounce_count_; }
 
   BrowsingDataModel* allowed_browsing_data_model() const {
     return allowed_browsing_data_model_.get();
@@ -493,8 +502,9 @@ class PageSpecificContentSettings
   // otherwise.
   template <typename DelegateMethod, typename... Args>
   void NotifyDelegate(DelegateMethod method, Args... args) {
-    if (IsEmbeddedPage())
+    if (IsEmbeddedPage()) {
       return;
+    }
     if (IsPagePrerendering()) {
       DCHECK(updates_queued_during_prerender_);
       updates_queued_during_prerender_->delegate_updates.emplace_back(
@@ -559,6 +569,10 @@ class PageSpecificContentSettings
   // Stores the blocked/allowed cookies.
   browsing_data::LocalSharedObjectsContainer allowed_local_shared_objects_;
   browsing_data::LocalSharedObjectsContainer blocked_local_shared_objects_;
+
+  // Stores the count of stateful bounces during the navigation that led to this
+  // page.
+  int stateful_bounce_count_ = 0u;
 
   std::unique_ptr<BrowsingDataModel> allowed_browsing_data_model_;
   std::unique_ptr<BrowsingDataModel> blocked_browsing_data_model_;

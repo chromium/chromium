@@ -25,9 +25,12 @@
 
 namespace {
 
+const char kDevToolsFrontendOrigin[] = "debug-frontend.test";
+const char kOriginToReplace[] = "127.0.0.1";
+
 GURL GetInspectedPageURL(const GURL& test_url) {
   std::string spec = test_url.spec();
-  std::string test_query_param = "&test=";
+  std::string test_query_param = "&inspected_test=";
   std::string test_script_url =
       spec.substr(spec.find(test_query_param) + test_query_param.length());
   std::string inspected_page_url = test_script_url.replace(
@@ -86,11 +89,20 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
   // To reduce timeouts, we need to load DevTools resources from the same
   // origin as the `test_url_string`.
   CHECK_NE(test_url_string.find("127.0.0.1:8000"), std::string::npos);
-  std::string url_string = "http://127.0.0.1:8000/inspector-sources/";
+  std::string url_string = "http://" + std::string(kDevToolsFrontendOrigin) +
+                           ":8000/inspector-sources/";
   url_string += "integration_test_runner.html?experiments=true";
   if (is_debug_dev_tools)
     url_string += "&debugFrontend=true";
-  url_string += "&test=" + test_url_string;
+
+  std::string devtools_test_url = test_url_string;
+  devtools_test_url.replace(test_url_string.find(kOriginToReplace),
+                            std::strlen(kOriginToReplace),
+                            kDevToolsFrontendOrigin);
+
+  url_string += "&test=" + devtools_test_url;
+  url_string += "&inspected_test=" + test_url_string;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kContentShellDevToolsTabTarget)) {

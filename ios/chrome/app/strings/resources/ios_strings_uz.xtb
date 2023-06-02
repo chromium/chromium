@@ -142,7 +142,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1870148520156231997">Parolni ochish</translation>
 <translation id="1872096359983322073">Fonar</translation>
 <translation id="1883255238294161206">Ro‘yxatni yig‘ish</translation>
-<translation id="1891796056033961979">Saqlangan bukmarklar, parollar, sozlamalar va boshqalar shu ekranda chiqadi.</translation>
 <translation id="1894023287452300670">Narxni shu yerdan kuzating</translation>
 <translation id="1910975740091000991">iOS uchun Chrome</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
@@ -316,6 +315,9 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2975121486251958312">Faqat Inkognito rejimida ochiladi</translation>
 <translation id="2982481275546140226">Axborotlarni tozalash</translation>
 <translation id="298306318844797842">Toʻlov usulini kiriting</translation>
+<translation id="2988274366244053197">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
+
+Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Yangi varaqda ochish</translation>
 <translation id="3020183492814296499">Yorliqlar</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
@@ -382,6 +384,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3471148582064653480">Parollar, tarix va boshqa maʼlumotlarni sinxronlang</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} ta sayt yoki ilova uchun}other{{COUNT} ta sayt yoki ilova uchun}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> sifatida davom etish</translation>
+<translation id="3476450923187944815">Parollarni boshqa ilovalarda ishlatish.</translation>
 <translation id="3478058380795961209">Oy (muddat)</translation>
 <translation id="3482959374254649722">Tablar sinxronlanmoqda...</translation>
 <translation id="3484946776651937681">Yuklanmalar jildini ochish</translation>
@@ -444,7 +447,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3891414008432200754">Narxi</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
 <translation id="3897092660631435901">Menyu</translation>
-<translation id="3899568514738536144">Ochilgan veb-sahifalar tarixini koʻrish</translation>
 <translation id="3904829425754749514">Sinxronizatsiya tashkilotingiz tomonidan faolsizlantirilgan. Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular hisobingizga sinxronlanmaydi.</translation>
 <translation id="3913386780052199712">Chrome hisobiga kirildi</translation>
 <translation id="3915450441834151894">Sayt haqida</translation>
@@ -501,7 +503,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="430793432425771671">Barchasini sinxronlash</translation>
 <translation id="4309403553630140242">Batafsil axborot olish uchun ikki marta bosing.</translation>
 <translation id="430967081421617822">Boshidan beri</translation>
-<translation id="4324952538601951430">Saqlangan xatchoʻplaringiz, parollaringiz va sozlamalaringiz endi shu yerda</translation>
 <translation id="4334428914252001502">1 ta maqola ochilmagan.</translation>
 <translation id="4338650699862464074">Siz tashrif buyurgan URL manzillarni Google serverlariga yuboradi.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Bu va hisobdan kirilgan boshqa qurilmalarda quyidagi manzil oʻchirib tashalandi.}other{Bu va hisobdan kirilgan boshqa qurilmalarda quyidagi manzillar oʻchirib tashalandi.}}</translation>
@@ -655,6 +656,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318298563956633672">Siz bu mahsulotni kuzatyapsiz.</translation>
+<translation id="5325595483440111327">Ochilgan veb-sahifalar tarixini koʻrish.</translation>
 <translation id="5339316356165661760">Sinxronizatsiyani yoqish</translation>
 <translation id="536067926684072644">Bukmarklarni chiqarish</translation>
 <translation id="5360976571138293719">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bilan tanishing</translation>
@@ -753,6 +755,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> bilan qidirish</translation>
 <translation id="5963939892571022323">Belgilangan matnga havola yaratilmadi.</translation>
 <translation id="5965679971710331625">Siz o‘z hisobingizga kirgansiz</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 ta bukmark oʻchirildi}other{{count} ta bukmark oʻchirildi}}</translation>
 <translation id="5979837087407522202">Parollar ichidan qidirish</translation>
 <translation id="5981230843984570095">Barcha nofaol varaqlarni yopish</translation>
 <translation id="5982717868370722439">Mavjud ma’lumotlarni <ph name="USER_EMAIL" /> manziliga qo‘shish.</translation>
@@ -922,6 +925,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6822587385560699678">Yoniqligida parollar <ph name="ACCOUNT" /> hisobiga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
 <translation id="6831043979455480757">Tarjima</translation>
+<translation id="6839843088069935119">{count,plural, =1{Bukmark “{title}” jildiga saqlandi. U faqat shu qurilmada saqlanadi.}other{Bukmarklar “{title}” jildiga saqlandi. Ular faqat shu qurilmada saqlanadi.}}</translation>
 <translation id="6842136130964845393">Parollarni istalgan vaqt ochish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6851516051005285358">Kompyuter versiyasi</translation>
 <translation id="6852222216891664518">Qadalgan varaqni yopish</translation>
@@ -1000,6 +1004,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7435356471928173109">Administrator tomonidan faolsizlantirilgan</translation>
 <translation id="7438481509621345350">Endi yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
 <translation id="7446583256109515732">Varaq olib tashlandi</translation>
+<translation id="7451023311965289370">{count,plural, =1{Bukmark “{title}” jildiga saqlandi}other{Bukmarklar “{title}” jildiga saqlandi}}</translation>
 <translation id="7454057999980797137">Hudud</translation>
 <translation id="7459628154744868585">Kuchaytirilgan himoya yoniq</translation>
 <translation id="746684838091935575">3. Chrome brauzerini tanlang</translation>
@@ -1057,7 +1062,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7840771868269352570">Tanlangan elementlar olib tashlanadi.</translation>
 <translation id="7845466610722898">Saqlangan sahifalarni chiqarish</translation>
 <translation id="784551991304901159">Kontentni koʻrish uchun menyudan Yoqish bandini tanlang</translation>
-<translation id="7846158885638438868">{count,plural, =1{Bukmark “{title}” jildiga saqlandi}other{Bukmark “{title}” jildiga saqlandi}}</translation>
 <translation id="7853202427316060426">Harakat</translation>
 <translation id="7856733331829174190">Yuklab olinmadi</translation>
 <translation id="785938070103630874">Parollar, toʻlov usullari, manzillar va boshqalarni oching</translation>
@@ -1137,9 +1141,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8299417921174340354">Parollarni ishlatish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="8299613349954694191">Brauzer tarixi saqlanmasligi uchun inkognito tab oching.</translation>
 <translation id="8316944564970119719">Sayt va parolni kiritib, keyin Saqlang</translation>
-<translation id="8317835149433843300">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzerida ochilgan veb-sahifalar tarixi Google hisobingizda saqlanmaydi.
-
-Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Yangi qidiruv</translation>
 <translation id="8323906514956095947">Varaqqa oid boshqa amallar uchun bosib turing</translation>
 <translation id="8328777765163860529">Hammasini yopish</translation>

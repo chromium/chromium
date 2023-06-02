@@ -25,5 +25,12 @@ enum SmartCardDisposition {
 
   Promise<SmartCardConnectionStatus> status();
 
+  [CallWith=ScriptState, RaisesException]
+  Promise<ArrayBuffer> control([EnforceRange] unsigned long controlCode,
+      BufferSource data);
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<ArrayBuffer> getAttribute([EnforceRange] unsigned long tag);
+
   // TODO(crbug.com/1386175): add the rest of the API
 };

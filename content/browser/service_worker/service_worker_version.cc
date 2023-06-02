@@ -254,7 +254,6 @@ absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
 constexpr base::TimeDelta ServiceWorkerVersion::kTimeoutTimerDelay;
 constexpr base::TimeDelta ServiceWorkerVersion::kStartNewWorkerTimeout;
 constexpr base::TimeDelta ServiceWorkerVersion::kStopWorkerTimeout;
-constexpr base::TimeDelta ServiceWorkerVersion::kWarmUpDuration;
 
 ServiceWorkerVersion::MainScriptResponse::MainScriptResponse(
     const network::mojom::URLResponseHead& response_head) {
@@ -2335,7 +2334,8 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
                                     : kStartNewWorkerTimeout;
 
   if (embedded_worker_->pause_initializing_global_scope()) {
-    start_limit = kWarmUpDuration;
+    start_limit =
+        blink::features::kSpeculativeServiceWorkerWarmUpDuration.Get();
   }
 
   if (GetTickDuration(start_time_) > start_limit) {

@@ -123,6 +123,9 @@ void AddValuesRow(views::TableLayoutView* layout_view,
   if (are_new_values) {
     std::unique_ptr<views::ImageButton> edit_button =
         CreateEditButton(std::move(edit_button_callback));
+
+    edit_button->SetProperty(views::kElementIdentifierKey,
+                             UpdateAddressProfileView::kEditButtonViewId);
     layout_view->AddChildView(std::move(edit_button));
   }
 }
@@ -168,6 +171,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
+  SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
@@ -293,5 +297,9 @@ void UpdateAddressProfileView::Hide() {
 
   controller_ = nullptr;
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UpdateAddressProfileView, kTopViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UpdateAddressProfileView,
+                                      kEditButtonViewId);
 
 }  // namespace autofill

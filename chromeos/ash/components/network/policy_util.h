@@ -5,16 +5,43 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 struct NetworkProfile;
 
 namespace policy_util {
+
+// This class represents a cellular activation code and its corresponding type
+// and is used to simplify all cellular code related to enterprise policy.
+struct COMPONENT_EXPORT(CHROMEOS_NETWORK) SmdxActivationCode {
+  enum class Type {
+    SMDP = 0,
+    SMDS = 1,
+  };
+
+  SmdxActivationCode(Type type, std::string value);
+  SmdxActivationCode(SmdxActivationCode&& other);
+  SmdxActivationCode& operator=(SmdxActivationCode&& other);
+  SmdxActivationCode(const SmdxActivationCode&) = delete;
+  SmdxActivationCode& operator=(const SmdxActivationCode&) = delete;
+  ~SmdxActivationCode() = default;
+
+  Type type;
+  std::string value;
+};
+
+// This function is used to output the activation code type and, when the type
+// is SM-DS, the activation code value.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::ostream& operator<<(std::ostream& stream,
+                         const SmdxActivationCode& activation_code);
 
 // This fake credential contains a random postfix which is extremely unlikely to
 // be used by any user. Used to determine saved but unknown credential
@@ -72,6 +99,13 @@ const std::string* GetIccidFromONC(const base::Value::Dict& onc_config);
 // NetworkConfiguration if it is a Cellular NetworkConfiguration.
 // If there is no SMDPAddress, returns nullptr.
 const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config);
+
+// This function returns the SM-DX activation code found in |onc_config|. If
+// both an SM-DP+ activation code and an SM-DS activation code are provided, or
+// if neither are provided, this function returns |absl::nullopt|.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
+    const base::Value::Dict& onc_config);
 
 }  // namespace policy_util
 }  // namespace ash

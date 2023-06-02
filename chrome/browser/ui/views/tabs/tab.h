@@ -113,7 +113,7 @@ class Tab : public gfx::AnimationDelegate,
   absl::optional<SkColor> GetGroupColor() const;
 
   // Returns the color used for the alert indicator icon.
-  SkColor GetAlertIndicatorColor(TabAlertState state) const;
+  ui::ColorId GetAlertIndicatorColor(TabAlertState state) const;
 
   // Returns true if this tab is the active tab.
   bool IsActive() const;

@@ -43,9 +43,14 @@ class PasskeyModel : public KeyedService {
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
   virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const = 0;
+
+  // Deletes the passkey with the given |credential_id|. If the passkey is the
+  // head of the shadow chain, then all passkeys for the same (user id, rp id)
+  // are deleted as well.
+  // Returns true if a passkey was found and deleted, false otherwise.
+  virtual bool DeletePasskey(const std::string& credential_id) = 0;
   virtual std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) = 0;
-  virtual bool DeletePasskeyForTesting(std::string sync_id) = 0;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_

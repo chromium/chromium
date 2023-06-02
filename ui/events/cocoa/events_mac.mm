@@ -5,6 +5,7 @@
 #include "ui/events/event_utils.h"
 
 #include <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
@@ -16,18 +17,24 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
+#include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
-EventType EventTypeFromNative(const PlatformEvent& native_event) {
-  NSEventType type = [native_event type];
+EventType EventTypeFromNative(const PlatformEvent& platform_event) {
+  NSEvent* event = platform_event.Get();
+  NSEventType type = event.type;
   switch (type) {
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp:
     case NSEventTypeFlagsChanged:
-      return IsKeyUpEvent(native_event) ? ET_KEY_RELEASED : ET_KEY_PRESSED;
+      return IsKeyUpEvent(event) ? ET_KEY_RELEASED : ET_KEY_PRESSED;
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown:
     case NSEventTypeOtherMouseDown:
@@ -72,45 +79,47 @@ EventType EventTypeFromNative(const PlatformEvent& native_event) {
   return ET_UNKNOWN;
 }
 
-int EventFlagsFromNative(const PlatformEvent& event) {
+int EventFlagsFromNative(const PlatformEvent& platform_event) {
+  NSEvent* event = platform_event.Get();
   NSUInteger modifiers = [event modifierFlags];
   return EventFlagsFromNSEventWithModifiers(event, modifiers);
 }
 
-base::TimeTicks EventTimeFromNative(const PlatformEvent& native_event) {
+base::TimeTicks EventTimeFromNative(const PlatformEvent& platform_event) {
   base::TimeTicks timestamp =
-      ui::EventTimeStampFromSeconds([native_event timestamp]);
+      ui::EventTimeStampFromSeconds([platform_event.Get() timestamp]);
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }
 
-base::TimeTicks EventLatencyTimeFromNative(const PlatformEvent& native_event,
+base::TimeTicks EventLatencyTimeFromNative(const PlatformEvent& platform_event,
                                            base::TimeTicks current_time) {
-  return EventTimeFromNative(native_event);
+  return EventTimeFromNative(platform_event);
 }
 
-gfx::PointF EventLocationFromNative(const PlatformEvent& native_event) {
-  NSWindow* window = [native_event window];
-  NSPoint location = [native_event locationInWindow];
+gfx::PointF EventLocationFromNative(const PlatformEvent& platform_event) {
+  NSEvent* event = platform_event.Get();
+  NSWindow* window = event.window;
+  NSPoint location = event.locationInWindow;
   // If there's no window, the event is in screen coordinates.
-  NSRect frame = window ? [window contentRectForFrameRect:[window frame]]
-                        : [[[NSScreen screens] firstObject] frame];
+  NSRect frame = window ? [window contentRectForFrameRect:window.frame]
+                        : NSScreen.screens.firstObject.frame;
   // In Cocoa, the y coordinate anchors to the bottom, so we need to flip it.
   return gfx::PointF(location.x, NSHeight(frame) - location.y);
 }
 
-gfx::Point EventSystemLocationFromNative(const PlatformEvent& native_event) {
+gfx::Point EventSystemLocationFromNative(const PlatformEvent& platform_event) {
   NOTIMPLEMENTED();
   return gfx::Point();
 }
 
-int EventButtonFromNative(const PlatformEvent& native_event) {
+int EventButtonFromNative(const PlatformEvent& platform_event) {
   NOTIMPLEMENTED();
   return 0;
 }
 
-int GetChangedMouseButtonFlagsFromNative(const PlatformEvent& native_event) {
-  NSEventType type = [native_event type];
+int GetChangedMouseButtonFlagsFromNative(const PlatformEvent& platform_event) {
+  NSEventType type = [platform_event.Get() type];
   switch (type) {
     case NSEventTypeLeftMouseDown:
     case NSEventTypeLeftMouseUp:
@@ -131,18 +140,19 @@ int GetChangedMouseButtonFlagsFromNative(const PlatformEvent& native_event) {
 }
 
 PointerDetails GetMousePointerDetailsFromNative(
-    const PlatformEvent& native_event) {
+    const PlatformEvent& platform_event) {
   return PointerDetails(EventPointerType::kMouse);
 }
 
-gfx::Vector2d GetMouseWheelOffset(const PlatformEvent& event) {
-  if ([event hasPreciseScrollingDeltas]) {
+gfx::Vector2d GetMouseWheelOffset(const PlatformEvent& platform_event) {
+  NSEvent* event = platform_event.Get();
+  if (event.hasPreciseScrollingDeltas) {
     // Handle continuous scrolling devices such as a Magic Mouse or a trackpad.
     // -scrollingDelta{X|Y} have float return types but they return values that
     // are already rounded to integers.
     // The values are the same as the values returned from calling
     // CGEventGetIntegerValueField(kCGScrollWheelEventPointDeltaAxis{1|2}).
-    return gfx::Vector2d([event scrollingDeltaX], [event scrollingDeltaY]);
+    return gfx::Vector2d(event.scrollingDeltaX, event.scrollingDeltaY);
   } else {
     // Empirically, a value of 0.1 is typical for one mousewheel click. Positive
     // values when scrolling up or to the left. Scrolling quickly results in a
@@ -151,13 +161,13 @@ gfx::Vector2d GetMouseWheelOffset(const PlatformEvent& event) {
     // Use the same multiplier as content::WebMouseWheelEventBuilder. Note this
     // differs from the value returned by CGEventSourceGetPixelsPerLine(), which
     // is typically 10.
-    return gfx::Vector2d(kScrollbarPixelsPerCocoaTick * [event deltaX],
-                         kScrollbarPixelsPerCocoaTick * [event deltaY]);
+    return gfx::Vector2d(kScrollbarPixelsPerCocoaTick * event.deltaX,
+                         kScrollbarPixelsPerCocoaTick * event.deltaY);
   }
 }
 
 gfx::Vector2d GetMouseWheelTick120ths(const PlatformEvent& event) {
-  CGEventRef cg_event = [event CGEvent];
+  CGEventRef cg_event = [event.Get() CGEvent];
 
   if (!cg_event ||
       CGEventGetIntegerValueField(cg_event, kCGScrollWheelEventIsContinuous)) {
@@ -172,42 +182,47 @@ gfx::Vector2d GetMouseWheelTick120ths(const PlatformEvent& event) {
           120);
 }
 
-PlatformEvent CopyNativeEvent(const PlatformEvent& event) {
-  return [event copy];
+bool ShouldCopyPlatformEvents() {
+  return true;
 }
 
-void ReleaseCopiedNativeEvent(const PlatformEvent& event) {
-  [event release];
+PlatformEvent CreateInvalidPlatformEvent() {
+  return PlatformEvent();
 }
 
-void ClearTouchIdIfReleased(const PlatformEvent& native_event) {
+bool IsPlatformEventValid(const PlatformEvent& event) {
+  return event.IsValid();
+}
+
+void ClearTouchIdIfReleased(const PlatformEvent& platform_event) {
   NOTIMPLEMENTED();
 }
 
 PointerDetails GetTouchPointerDetailsFromNative(
-    const PlatformEvent& native_event) {
+    const PlatformEvent& platform_event) {
   NOTIMPLEMENTED();
   return PointerDetails(EventPointerType::kUnknown,
-                        /* pointer_id*/ 0,
-                        /* radius_x */ 1.0,
-                        /* radius_y */ 1.0,
-                        /* force */ 0.f);
+                        /*pointer_id=*/0,
+                        /*radius_x=*/1.0,
+                        /*radius_y=*/1.0,
+                        /*force=*/0.f);
 }
 
-bool GetScrollOffsets(const PlatformEvent& native_event,
+bool GetScrollOffsets(const PlatformEvent& platform_event,
                       float* x_offset,
                       float* y_offset,
                       float* x_offset_ordinal,
                       float* y_offset_ordinal,
                       int* finger_count,
                       EventMomentumPhase* momentum_phase) {
-  gfx::Vector2d offset = GetMouseWheelOffset(native_event);
+  NSEvent* event = platform_event.Get();
+  gfx::Vector2d offset = GetMouseWheelOffset(platform_event);
   *x_offset = *x_offset_ordinal = offset.x();
   *y_offset = *y_offset_ordinal = offset.y();
 
   // For non-scrolling events, the finger count can be determined with
-  // [[native_event touchesMatchingPhase:NSTouchPhaseTouching inView:nil] count]
-  // but it's illegal to ask that of scroll events, so say two fingers.
+  // [[platform_event touchesMatchingPhase:NSTouchPhaseTouching inView:nil]
+  // count] but it's illegal to ask that of scroll events, so say two fingers.
   *finger_count = 2;
 
   // If a user just rests two fingers on the touchpad without moving, AppKit
@@ -223,21 +238,21 @@ bool GetScrollOffsets(const PlatformEvent& native_event,
   // needs tests in events_mac_unittest.mm.
   DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
 
-  if ([native_event phase] & kBeginPhaseMask)
+  if (event.phase & kBeginPhaseMask) {
     *momentum_phase = EventMomentumPhase::MAY_BEGIN;
+  }
 
-  if (([native_event phase] | [native_event momentumPhase]) & kEndPhaseMask) {
+  if ((event.phase | event.momentumPhase) & kEndPhaseMask) {
     DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
     *momentum_phase = EventMomentumPhase::END;
-  } else if ([native_event momentumPhase] != NSEventPhaseNone) {
+  } else if (event.momentumPhase != NSEventPhaseNone) {
     DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
     *momentum_phase = EventMomentumPhase::INERTIAL_UPDATE;
   }
 
   // If the event completely lacks phase information, there won't be further
   // updates, so they must be treated as an end.
-  if (([native_event phase] | [native_event momentumPhase]) ==
-      NSEventPhaseNone) {
+  if ((event.phase | event.momentumPhase) == NSEventPhaseNone) {
     DCHECK_EQ(EventMomentumPhase::NONE, *momentum_phase);
     *momentum_phase = EventMomentumPhase::END;
   }
@@ -245,7 +260,7 @@ bool GetScrollOffsets(const PlatformEvent& native_event,
   return true;
 }
 
-bool GetFlingData(const PlatformEvent& native_event,
+bool GetFlingData(const PlatformEvent& platform_event,
                   float* vx,
                   float* vy,
                   float* vx_ordinal,
@@ -255,25 +270,27 @@ bool GetFlingData(const PlatformEvent& native_event,
   return false;
 }
 
-KeyboardCode KeyboardCodeFromNative(const PlatformEvent& native_event) {
-  return KeyboardCodeFromNSEvent(native_event);
+KeyboardCode KeyboardCodeFromNative(const PlatformEvent& platform_event) {
+  return KeyboardCodeFromNSEvent(platform_event.Get());
 }
 
-DomCode CodeFromNative(const PlatformEvent& native_event) {
-  return DomCodeFromNSEvent(native_event);
+DomCode CodeFromNative(const PlatformEvent& platform_event) {
+  return DomCodeFromNSEvent(platform_event.Get());
 }
 
-uint32_t WindowsKeycodeFromNative(const PlatformEvent& native_event) {
-  return static_cast<uint32_t>(KeyboardCodeFromNSEvent(native_event));
+uint32_t WindowsKeycodeFromNative(const PlatformEvent& platform_event) {
+  return static_cast<uint32_t>(KeyboardCodeFromNSEvent(platform_event.Get()));
 }
 
-uint16_t TextFromNative(const PlatformEvent& native_event) {
+uint16_t TextFromNative(const PlatformEvent& platform_event) {
+  NSEvent* event = platform_event.Get();
   NSString* text = @"";
-  if ([native_event type] != NSEventTypeFlagsChanged)
-    text = [native_event characters];
+  if (event.type != NSEventTypeFlagsChanged) {
+    text = event.characters;
+  }
 
   // These exceptions are based on web_input_event_builders_mac.mm:
-  uint32_t windows_keycode = WindowsKeycodeFromNative(native_event);
+  uint32_t windows_keycode = WindowsKeycodeFromNative(platform_event);
   if (windows_keycode == '\r')
     text = @"\r";
   if ([text isEqualToString:@"\x7F"])
@@ -282,17 +299,19 @@ uint16_t TextFromNative(const PlatformEvent& native_event) {
     text = @"\x9";
 
   uint16_t return_value;
-  [text getCharacters:&return_value];
+  [text getCharacters:&return_value range:NSMakeRange(0, 1)];
   return return_value;
 }
 
-uint16_t UnmodifiedTextFromNative(const PlatformEvent& native_event) {
+uint16_t UnmodifiedTextFromNative(const PlatformEvent& platform_event) {
+  NSEvent* event = platform_event.Get();
   NSString* text = @"";
-  if ([native_event type] != NSEventTypeFlagsChanged)
-    text = [native_event charactersIgnoringModifiers];
+  if (event.type != NSEventTypeFlagsChanged) {
+    text = event.charactersIgnoringModifiers;
+  }
 
   // These exceptions are based on web_input_event_builders_mac.mm:
-  uint32_t windows_keycode = WindowsKeycodeFromNative(native_event);
+  uint32_t windows_keycode = WindowsKeycodeFromNative(platform_event);
   if (windows_keycode == '\r')
     text = @"\r";
   if ([text isEqualToString:@"\x7F"])
@@ -301,11 +320,11 @@ uint16_t UnmodifiedTextFromNative(const PlatformEvent& native_event) {
     text = @"\x9";
 
   uint16_t return_value;
-  [text getCharacters:&return_value];
+  [text getCharacters:&return_value range:NSMakeRange(0, 1)];
   return return_value;
 }
 
-bool IsCharFromNative(const PlatformEvent& native_event) {
+bool IsCharFromNative(const PlatformEvent& platform_event) {
   return false;
 }
 

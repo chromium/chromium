@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/crosapi/mojom/network_change.mojom.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/network_service_util.h"
+#include "content/public/browser/network_service_util.h"
 #include "net/base/network_change_notifier_passive.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 

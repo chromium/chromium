@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -42,17 +41,17 @@ class WebAppIconDownloader : public content::WebContentsObserver {
                               IconsMap icons_map,
                               DownloadedIconsHttpResults icons_http_results)>;
 
-  // |extra_favicon_urls| allows callers to provide icon urls that aren't
-  // provided by the renderer (e.g touch icons on non-android environments).
-  WebAppIconDownloader(content::WebContents* web_contents,
-                       base::flat_set<GURL> extra_favicon_urls,
-                       WebAppIconDownloaderCallback callback,
-                       IconDownloaderOptions options = IconDownloaderOptions());
+  WebAppIconDownloader();
   WebAppIconDownloader(const WebAppIconDownloader&) = delete;
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
   ~WebAppIconDownloader() override;
 
-  void Start();
+  // |extra_icon_urls| allows callers to provide icon urls that aren't
+  // provided by the renderer (e.g touch icons on non-android environments).
+  virtual void Start(content::WebContents* web_contents,
+                     const base::flat_set<GURL>& extra_icon_urls,
+                     WebAppIconDownloaderCallback callback,
+                     IconDownloaderOptions options = IconDownloaderOptions());
 
   size_t pending_requests() const { return in_progress_requests_.size(); }
 
@@ -66,7 +65,6 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   // Fetches icons for the given urls.
   // |callback_| is run when all downloads complete.
-  void FetchIcons(const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls);
   void FetchIcons(const base::flat_set<GURL>& urls);
 
   // Icon download callback.
@@ -84,14 +82,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   void CancelDownloads(IconsDownloadedResult result,
                        DownloadedIconsHttpResults icons_http_results);
 
-  // URLs that aren't given by WebContentsObserver::DidUpdateFaviconURL() that
-  // should be used for this favicon. This is necessary in order to get touch
-  // icons on non-android environments.
-  base::flat_set<GURL> extra_favicon_urls_;
-
   IconDownloaderOptions options_;
-
-  bool starting_ = false;
 
   // The icons which were downloaded. Populated by FetchIcons().
   IconsMap icons_map_;
@@ -99,6 +90,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   DownloadedIconsHttpResults icons_http_results_;
 
   // Request ids of in-progress requests.
+  bool populating_pending_requests_ = false;
   std::set<int> in_progress_requests_;
 
   // Urls for which a download has already been initiated. Used to prevent

@@ -112,7 +112,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   void OnInitializeDone(const DecoderStatus& status,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
-                        VideoDecoderType decoder_type);
+                        VideoDecoderType decoder_type,
+                        bool needs_transcryption);
 
   void OnDecodeDone(uint64_t decode_id,
                     bool is_flush_cb,

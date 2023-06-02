@@ -4,7 +4,6 @@
 
 #include "chrome/updater/updater_scope.h"
 
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -45,12 +44,11 @@ UpdaterScope GetUpdaterScopeForCommandLine(
     return UpdaterScope::kSystem;
   }
 
-  // TODO(crbug.com/1128631): support bundles. For now, assume one app.
+  // Assume only one app is present since bundles are not supported.
   const absl::optional<tagging::TagArgs> tag_args =
       GetTagArgsForCommandLine(command_line).tag_args;
   if (tag_args && !tag_args->apps.empty() &&
       tag_args->apps.front().needs_admin) {
-    CHECK_EQ(tag_args->apps.size(), size_t{1});
     switch (*tag_args->apps.front().needs_admin) {
       case tagging::AppArgs::NeedsAdmin::kYes:
         return UpdaterScope::kSystem;
@@ -62,9 +60,6 @@ UpdaterScope GetUpdaterScopeForCommandLine(
                    : UpdaterScope::kSystem;
     }
   }
-
-  // crbug.com(1214058): consider handling the elevation case by
-  // calling IsUserAdmin().
   return UpdaterScope::kUser;
 #else
   return IsSystemProcessForCommandLine(command_line) ? UpdaterScope::kSystem

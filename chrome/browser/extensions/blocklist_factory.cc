@@ -21,7 +21,8 @@ Blocklist* BlocklistFactory::GetForBrowserContext(BrowserContext* context) {
 
 // static
 BlocklistFactory* BlocklistFactory::GetInstance() {
-  return base::Singleton<BlocklistFactory>::get();
+  static base::NoDestructor<BlocklistFactory> instance;
+  return instance.get();
 }
 
 BlocklistFactory::BlocklistFactory()
@@ -37,7 +38,7 @@ BlocklistFactory::BlocklistFactory()
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 }
 
-BlocklistFactory::~BlocklistFactory() {}
+BlocklistFactory::~BlocklistFactory() = default;
 
 KeyedService* BlocklistFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

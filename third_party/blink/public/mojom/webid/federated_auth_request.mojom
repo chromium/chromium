@@ -30,7 +30,6 @@ enum RequestTokenStatus {
 // the error message of such exception should say.
 enum RequestUserInfoStatus {
   kSuccess,
-  kErrorTooManyRequests,
   kError,
 };
 

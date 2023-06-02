@@ -46,6 +46,22 @@
 
       --oobe-welcome-header-font-weight: 400; /* regular */
 
+      --oobe-content-dialog-font-family: var(--oobe-default-font-family);
+      --oobe-content-dialog-font-size: var(--oobe-default-font-size);
+      --oobe-content-dialog-font-weight: var(--oobe-default-font-weight);
+      --oobe-content-dialog-line-height: var(--oobe-default-line-height);
+
+      --oobe-modal-dialog-header-font-family: var(--oobe-default-font-family);
+      --oobe-modal-dialog-header-font-size:
+          var(--oobe-modal-dialog-header-font-size);
+      --oobe-modal-dialog-header-font-weight:
+          var(--oobe-modal-dialog-header-font-weight);
+
+      --oobe-modal-dialog-content-font-family: var(--oobe-default-font-family);
+      --oobe-modal-dialog-content-font-size: var(--oobe-default-font-size);
+      --oobe-modal-dialog-content-font-weight: var(--oobe-default-font-weight);
+      --oobe-modal-dialog-content-line-height: var(--oobe-default-line-height);
+
       /* Select */
       --oobe-select-height: 44px;
 

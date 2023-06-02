@@ -27,7 +27,7 @@ class LayerAnimationObserverTestApi {
 
  private:
   // The instance to provide internal access to.
-  raw_ptr<LayerAnimationObserver> observer_;
+  raw_ptr<LayerAnimationObserver, DanglingUntriaged> observer_;
 };
 
 }  // namespace test

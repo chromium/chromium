@@ -17,19 +17,13 @@ class MetricsServiceClient;
 
 namespace metrics::structured::reporting {
 
-// The limiting parameters of the log store and reporting service.
-struct StorageLimits {
-  size_t min_log_queue_count = 0;
-  size_t min_log_queue_size = 0;
-  size_t max_log_size = 0;
-};
-
 // A service that uploads Structured Metrics logs to the UMA server.
 class StructuredMetricsReportingService : public metrics::ReportingService {
  public:
-  StructuredMetricsReportingService(MetricsServiceClient* client,
-                                    PrefService* local_state,
-                                    const StorageLimits& storage_limits);
+  StructuredMetricsReportingService(
+      MetricsServiceClient* client,
+      PrefService* local_state,
+      const UnsentLogStore::UnsentLogStoreLimits& storage_limits);
 
   void StoreLog(const std::string& serialized_log,
                 metrics::MetricsLogsEventManager::CreateReason reason);
@@ -47,6 +41,14 @@ class StructuredMetricsReportingService : public metrics::ReportingService {
   GURL GetInsecureUploadUrl() const override;
   base::StringPiece upload_mime_type() const override;
   MetricsLogUploader::MetricServiceType service_type() const override;
+
+  // Methods for submitting UMA histograms.
+  void LogActualUploadInterval(base::TimeDelta interval) override;
+  void LogResponseOrErrorCode(int response_code,
+                              int error_code,
+                              bool was_https) override;
+  void LogSuccessLogSize(size_t log_size) override;
+  void LogLargeRejection(size_t log_size) override;
 
   metrics::UnsentLogStore log_store_;
 };

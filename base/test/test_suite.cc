@@ -26,7 +26,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -210,6 +210,7 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
         << " in test " << test.test_case_name() << "." << test.name();
     DCHECK_EQ(thread_pool_set_before_test_, ThreadPoolInstance::Get())
         << " in test " << test.test_case_name() << "." << test.name();
+    feature_list_set_before_test_ = nullptr;
   }
 
   // Check for leaks in test cases (consisting of one or more tests).
@@ -222,21 +223,15 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
         << " in case " << test_case.name();
     DCHECK_EQ(thread_pool_set_before_case_, ThreadPoolInstance::Get())
         << " in case " << test_case.name();
+    feature_list_set_before_case_ = nullptr;
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FeatureList* feature_list_set_before_test_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION FeatureList* feature_list_set_before_case_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION ThreadPoolInstance* thread_pool_set_before_test_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION ThreadPoolInstance* thread_pool_set_before_case_ = nullptr;
+  raw_ptr<FeatureList, DanglingUntriaged> feature_list_set_before_test_ =
+      nullptr;
+  raw_ptr<FeatureList> feature_list_set_before_case_ = nullptr;
+  raw_ptr<ThreadPoolInstance> thread_pool_set_before_test_ = nullptr;
+  raw_ptr<ThreadPoolInstance> thread_pool_set_before_case_ = nullptr;
 };
 
 // iOS: base::Process is not available.

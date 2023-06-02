@@ -65,7 +65,7 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
 
  private:
   std::unique_ptr<gfx::AnimationTestApi> animation_api_;
-  raw_ptr<views::Widget> parent_widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> parent_widget_ = nullptr;
 };
 
 TEST_F(FullscreenControlPopupTest, ShowPopupAnimated) {

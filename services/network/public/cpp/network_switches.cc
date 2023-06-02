@@ -6,6 +6,8 @@
 
 namespace network::switches {
 
+const char kBlockThirdPartyCookies[] = "block-third-party-cookies";
+
 // Forces Network Quality Estimator (NQE) to return a specific effective
 // connection type.
 const char kForceEffectiveConnectionType[] = "force-effective-connection-type";
@@ -34,6 +36,23 @@ const char kIgnoreUrlFetcherCertRequests[] = "ignore-urlfetcher-cert-requests";
 // embedder) is also present.
 const char kIgnoreCertificateErrorsSPKIList[] =
     "ignore-certificate-errors-spki-list";
+
+// Specifies a proxy server for origins specified in
+// kIPAnonymizationProxyAllowList. This proxy will be used on a best-effort
+// basis when normal proxy resolution would result in trying direct connections
+// (possibly after trying some other proxy server).
+const char kIPAnonymizationProxyServer[] = "ip-anonymization-proxy-server";
+
+// Specifies a list of origins on which to use the server specified by
+// `kIPAnonymizationProxyServer`. if `kIPAnonymizationProxyServer` is empty this
+// list will be ignored. This is intended as a reverse bypass rules list.
+const char kIPAnonymizationProxyAllowList[] =
+    "ip-anonymization-proxy-allow-list";
+
+// Specifies a value for the "password" header to be passed to the proxy
+// specified by `kIPAnonymizationProxyServer`. if `kIPAnonymizationProxyServer`
+// is empty this list will be ignored.
+const char kIPAnonymizationProxyPassword[] = "ip-anonymization-proxy-password";
 
 // Enables saving net log events to a file. If a value is given, it used as the
 // path the the file, otherwise the file is named netlog.json and placed in the
@@ -111,5 +130,9 @@ const char kUseFirstPartySet[] = "use-first-party-set";
 // And the Web Platform Test RFC #72 behind it:
 // https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
 const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
+
+// Enables running high priority tasks in the network services using
+// ThreadDelegate::GetHighPriorityTaskRunner().
+const char kNetworkServiceScheduler[] = "network-service-scheduler";
 
 }  // namespace network::switches

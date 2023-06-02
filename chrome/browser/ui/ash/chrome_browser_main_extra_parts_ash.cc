@@ -278,7 +278,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   ash::bluetooth_config::Initialize(delegate);
 
   // Create geolocation manager
-  g_browser_process->SetGeolocationManager(
+  device::GeolocationManager::SetInstance(
       ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
 }
 
@@ -385,7 +385,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   }
 
   // Initialized in PreProfileInit (which may not get called in some tests).
-  g_browser_process->SetGeolocationManager(nullptr);
+  device::GeolocationManager::SetInstance(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();
   ime_controller_client_.reset();

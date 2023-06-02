@@ -155,6 +155,10 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   // Returns the promo banner url to highlight time-of-day wallpapers and screen
   // saver feature.
   virtual const char* GetPromoBannerUrl() const = 0;
+
+  // Returns the product name that features the exclusive time of day wallpapers
+  // and screen savers.
+  virtual const char* GetTimeOfDayProductName() const = 0;
 };
 
 }  // namespace ash

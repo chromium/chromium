@@ -44,5 +44,10 @@
     >
       $i18n{errorProfileSync}
     </template>
+    <template is="dom-if"
+      if="[[isEqual(messageCode, errorMessageEnum.DIFFERENT_NETWORK)]]"
+    >
+      $i18n{errorDifferentNetwork}
+    </template>
   </template>
 </div>

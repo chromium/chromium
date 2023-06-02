@@ -34,6 +34,24 @@ using testing::AnyNumber;
 
 namespace blink {
 
+namespace {
+constexpr int kSampleRate = 8000;
+constexpr int kFramesPerBuffer = 800;
+constexpr int kNumFrames = 10;
+const media::AudioParameters kMonoParams =
+    media::AudioParameters(media::AudioParameters::AUDIO_PCM_LINEAR,
+                           media::ChannelLayoutConfig::Mono(),
+                           kSampleRate,
+                           kFramesPerBuffer);
+
+const media::AudioParameters kStereoParams =
+    media::AudioParameters(media::AudioParameters::AUDIO_PCM_LINEAR,
+                           media::ChannelLayoutConfig::Stereo(),
+                           kSampleRate,
+                           kFramesPerBuffer);
+
+}  // namespace
+
 class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
  public:
   ~MediaStreamAudioTrackUnderlyingSourceTest() override {
@@ -76,9 +94,6 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   }
 
  protected:
-  static const int kSampleRate = 8000;
-  static const int kNumFrames = 10;
-
   // Pushes data into |track|. |timestamp| is the reference time at the
   // beginning of the audio data to be pushed into |track|.
   void PushData(
@@ -92,6 +107,44 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
             MediaStreamAudioSource::From(track->Component()->Source()));
     pushable_audio_source->PushAudioData(std::move(data));
     platform_->RunUntilIdle();
+  }
+
+  void SetChannelData(media::AudioBus* bus, int channel, float value) {
+    ASSERT_LE(channel, bus->channels());
+
+    float* bus_channel = bus->channel(channel);
+    for (int i = 0; i < bus->frames(); ++i) {
+      bus_channel[i] = value;
+    }
+  }
+
+  bool DataMatches(scoped_refptr<media::AudioBuffer> buffer,
+                   const media::AudioBus& bus) {
+    EXPECT_EQ(bus.channels(), buffer->channel_count());
+    EXPECT_EQ(bus.frames(), buffer->frame_count());
+
+    for (int ch = 0; ch < bus.channels(); ch++) {
+      const float* bus_channel = bus.channel(ch);
+      const float* buffer_channel =
+          reinterpret_cast<float*>(buffer->channel_data()[ch]);
+      for (int i = 0; i < bus.frames(); ++i) {
+        if (bus_channel[i] != buffer_channel[i]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  std::unique_ptr<media::AudioBus> CreateTestData(
+      const media::AudioParameters params,
+      float channel_value_increment) {
+    auto audio_bus = media::AudioBus::Create(params);
+    for (int ch = 0; ch < audio_bus->channels(); ++ch) {
+      SetChannelData(audio_bus.get(), ch, (ch + 1) * channel_value_increment);
+    }
+    return audio_bus;
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
@@ -226,6 +279,125 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, PlatformSourceAliveAfterGC) {
   // owned by |component|, the MediaStreamAudioTrack cleanup would crash since
   // it would try to access |source|, which has been garbage collected.
   // A scenario like this one could occur when an execution context is detached.
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, BufferPooling_Simple) {
+  V8TestingScope v8_scope;
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(v8_scope.GetScriptState(), track, 0u);
+  auto* buffer_pool = source->GetAudioBufferPoolForTesting();
+
+  // Needs to be called before CopyIntoAudioBuffer().
+  buffer_pool->SetFormat(kStereoParams);
+
+  // Create fake data with distinct channels.
+  auto audio_bus = CreateTestData(kStereoParams, 0.25);
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  // Send data to the pool.
+  auto buffer = buffer_pool->CopyIntoAudioBuffer(*audio_bus, now);
+
+  // Verify returned data.
+  EXPECT_TRUE(DataMatches(buffer, *audio_bus));
+  EXPECT_EQ(buffer->timestamp(), now - base::TimeTicks());
+
+  source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, BufferPooling_BufferReuse) {
+  V8TestingScope v8_scope;
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(v8_scope.GetScriptState(), track, 0u);
+  auto* buffer_pool = source->GetAudioBufferPoolForTesting();
+
+  // Needs to be called before CopyIntoAudioBuffer().
+  buffer_pool->SetFormat(kStereoParams);
+
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 0);
+
+  // Create fake data with distinct channels.
+  auto audio_bus = CreateTestData(kStereoParams, 0.25);
+  auto other_audio_bus = CreateTestData(kStereoParams, 0.33);
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  // Send data to the pool.
+  auto buffer = buffer_pool->CopyIntoAudioBuffer(*audio_bus, now);
+
+  // Verify returned data.
+  EXPECT_TRUE(DataMatches(buffer, *audio_bus));
+
+  // We should have allocated a single buffer.
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 1);
+
+  // Release all references to `buffer`. The pool should still keep one.
+  buffer.reset();
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 1);
+
+  // Request a new buffer.
+  auto other_buffer = buffer_pool->CopyIntoAudioBuffer(*other_audio_bus, now);
+
+  // There should be no extra allocation since `buffer` was cleared.
+  EXPECT_TRUE(DataMatches(other_buffer, *other_audio_bus));
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 1);
+
+  // Request another buffer, without releasing `other_buffer`.
+  buffer = buffer_pool->CopyIntoAudioBuffer(*audio_bus, now);
+
+  // There should be two allocated buffers now.
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 2);
+
+  // Make sure we didn't overwrite any data.
+  EXPECT_TRUE(DataMatches(buffer, *audio_bus));
+  EXPECT_TRUE(DataMatches(other_buffer, *other_audio_bus));
+
+  source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSourceTest, BufferPooling_FormatChange) {
+  V8TestingScope v8_scope;
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(v8_scope.GetScriptState(), track, 0u);
+  auto* buffer_pool = source->GetAudioBufferPoolForTesting();
+
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 0);
+
+  // Needs to be called before CopyIntoAudioBuffer().
+  buffer_pool->SetFormat(kStereoParams);
+
+  // Create fake data with distinct channels.
+  auto stereo_audio_bus = CreateTestData(kStereoParams, 0.25);
+  auto mono_audio_bus = CreateTestData(kMonoParams, 0.33);
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  // Send data to the pool.
+  auto buffer_a = buffer_pool->CopyIntoAudioBuffer(*stereo_audio_bus, now);
+  auto buffer_b = buffer_pool->CopyIntoAudioBuffer(*stereo_audio_bus, now);
+
+  // We should have allocated 2 buffers.
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 2);
+
+  // Sending an identical formats should not clear the pool.
+  buffer_pool->SetFormat(kStereoParams);
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 2);
+
+  // Sending a different format should clear the pool.
+  buffer_pool->SetFormat(kMonoParams);
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 0);
+
+  // Make sure the references we are holding are still valid.
+  EXPECT_TRUE(DataMatches(buffer_a, *stereo_audio_bus));
+  EXPECT_TRUE(DataMatches(buffer_b, *stereo_audio_bus));
+
+  // Send data in the new format to the pool.
+  auto mono_buffer = buffer_pool->CopyIntoAudioBuffer(*mono_audio_bus, now);
+
+  // The pool should allocate new buffers.
+  EXPECT_EQ(buffer_pool->GetSizeForTesting(), 1);
+
+  source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 }  // namespace blink

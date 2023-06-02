@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -17,7 +17,8 @@
 // static
 AutocompleteScoringModelServiceFactory*
 AutocompleteScoringModelServiceFactory::GetInstance() {
-  return base::Singleton<AutocompleteScoringModelServiceFactory>::get();
+  static base::NoDestructor<AutocompleteScoringModelServiceFactory> instance;
+  return instance.get();
 }
 
 // static

@@ -4,6 +4,14 @@
     "args": ["--enable-features=BackForwardCache"]
   },
   {
+    "name": "chrome-for-testing",
+    "args": [],
+    "comments": [
+      "Used to gate Chrome for Testing (goo.gle/chrome-for-testing) ",
+      "expectation differences. Does not require a runtime flag."
+    ]
+  },
+  {
     "name": "devtools-tab-target",
     "args": ["--content-shell-devtools-tab-target"]
   },

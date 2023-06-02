@@ -56,14 +56,7 @@ LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
       did_screen_scale_factor_change_(false),
       needs_boundaries_or_transform_update_(true),
       has_non_isolated_blending_descendants_(false),
-      has_non_isolated_blending_descendants_dirty_(false) {
-  auto* svg = To<SVGSVGElement>(node);
-  DCHECK(svg);
-
-  SetIntrinsicSize(
-      LayoutSize(LayoutUnit(svg->IntrinsicWidth().value_or(kDefaultWidth)),
-                 LayoutUnit(svg->IntrinsicHeight().value_or(kDefaultHeight))));
-}
+      has_non_isolated_blending_descendants_dirty_(false) {}
 
 LayoutSVGRoot::~LayoutSVGRoot() = default;
 

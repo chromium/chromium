@@ -2,50 +2,67 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("network") {
+source_set("common") {
   public = [
     "key_network_delegate.h",
     "key_upload_request.h",
-    "mojo_key_network_delegate.h",
     "util.h",
   ]
 
   sources = [
     "key_upload_request.cc",
-    "mojo_key_network_delegate.cc",
     "util.cc",
   ]
 
   public_deps = [
+    "//base",
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
 
   deps = [
-    "//base",
-    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/policy/proto",
     "//crypto",
+  ]
+}
+
+source_set("network") {
+  public = [ "mojo_key_network_delegate.h" ]
+
+  sources = [ "mojo_key_network_delegate.cc" ]
+
+  public_deps = [
+    ":common",
+    "//base",
+    "//net",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//url",
   ]
+}
 
-  if (is_win) {
-    public += [ "win_key_network_delegate.h" ]
+if (is_win) {
+  source_set("win_key_network_delegate") {
+    public = [ "win_key_network_delegate.h" ]
 
-    sources += [ "win_key_network_delegate.cc" ]
+    sources = [ "win_key_network_delegate.cc" ]
 
-    public_deps += [ "//components/winhttp" ]
-
-    deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher",
+    public_deps = [
+      ":common",
+      "//base",
+      "//components/winhttp",
       "//net",
       "//url",
     ]
+
+    deps = [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher" ]
   }
 }
 
@@ -56,7 +73,7 @@ source_set("test_support") {
   sources = [ "mock_key_network_delegate.cc" ]
 
   public_deps = [
-    ":network",
+    ":common",
     "//testing/gmock",
     "//url",
   ]
@@ -67,6 +84,7 @@ source_set("unit_tests") {
   sources = [ "mojo_key_network_delegate_unittest.cc" ]
 
   deps = [
+    ":common",
     ":network",
     ":test_support",
     "//base",
@@ -80,6 +98,9 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [ "win_key_network_delegate_unittest.cc" ]
 
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher:test_support" ]
+    deps += [
+      ":win_key_network_delegate",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network/fetcher:test_support",
+    ]
   }
 }

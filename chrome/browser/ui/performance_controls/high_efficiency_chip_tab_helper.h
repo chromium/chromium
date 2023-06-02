@@ -35,13 +35,6 @@ class HighEfficiencyChipTabHelper
   // Indicates that the chip has been animated for the current discard.
   void SetWasAnimated();
 
-  // Indicates that the tab associated with this helper has been navigated
-  // away from.
-  // Note: "Hidden" means that the user has navigated away from the tab
-  // associated with this helper and thus this tab helper's state shouldn't
-  // be shown to user while another tab is active.
-  void SetChipHasBeenHidden();
-
   // Returns whether the tab associated with this helper has been navigated
   // away from and to another tab.
   bool HasChipBeenHidden();
@@ -58,6 +51,7 @@ class HighEfficiencyChipTabHelper
   // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
   friend class content::WebContentsUserData<HighEfficiencyChipTabHelper>;

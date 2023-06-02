@@ -229,9 +229,10 @@ class CreditCard : public AutofillDataModel {
   // card.
   [[nodiscard]] int Compare(const CreditCard& credit_card) const;
 
-  // Determines if |this| is a local version of the server card |other|.
-  [[nodiscard]] bool IsLocalDuplicateOfServerCard(
-      const CreditCard& other) const;
+  // Determines if `this` and `other` are likely duplicates of each other (name,
+  // expiration date, cc number, billing address match each other if they are
+  // defined) but one card is a local card and the other is a server card.
+  [[nodiscard]] bool IsLocalOrServerDuplicateOf(const CreditCard& other) const;
 
   // Determines if `this` is the matching card as `other` (same card number and
   // expiration date). If either is a masked server card, compares their last

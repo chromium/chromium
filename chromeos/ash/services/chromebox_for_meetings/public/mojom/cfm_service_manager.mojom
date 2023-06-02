@@ -5,7 +5,7 @@
 // See chromeos/ash/services/chromebox_for_meetings/public/mojom/README.md
 // before changing this file.
 //
-// Next MinVersion: 2
+// Next MinVersion: 1
 
 module chromeos.cfm.mojom;
 
@@ -43,12 +43,10 @@ interface CfmServiceContext {
 
   // Attempt to bind the |receiver_pipe| of an intended mojo::Receiver
   // to a remote service that is internally identified as |interface_name|
-  // |receiver_identifier| can be used to identify the sender of the pipe.
   // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
   RequestBindService@1(
       string interface_name,
-      handle<message_pipe> receiver_pipe,
-      [MinVersion=1] string? receiver_identifier) => (bool success);
+      handle<message_pipe> receiver_pipe) => (bool success);
 };
 
 // Interface implemented by interfaces that want to be registered with the Cfm
@@ -63,8 +61,5 @@ interface CfmServiceAdaptor {
   // FooImpl assuming FooImpl also implements the CfmServiceAdaptor.
   // Note: Ideally services should handle multiple clients (i.e BindingSet)
   // unless explicitly stated.
-  // |receiver_identifier| if set can be used to identify the sender.
-  OnBindService@0(
-      handle<message_pipe> receiver_pipe,
-      [MinVersion=1] string? receiver_identifier);
+  OnBindService@0(handle<message_pipe> receiver_pipe);
 };

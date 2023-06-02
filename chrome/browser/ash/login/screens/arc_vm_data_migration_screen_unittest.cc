@@ -194,8 +194,11 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     // Set the default states. They can be overwritten by individual test cases.
     arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                      arc::ArcVmDataMigrationStatus::kConfirmed);
-    FakeArcVmDataMigratorClient::Get()->set_android_data_size(
-        kDefaultAndroidDataSize);
+    arc::data_migrator::GetAndroidDataInfoResponse response;
+    response.set_total_allocated_space_src(kDefaultAndroidDataSize);
+    response.set_total_allocated_space_dest(kDefaultAndroidDataSize);
+    FakeArcVmDataMigratorClient::Get()->set_get_android_data_info_response(
+        response);
     SetFreeDiskSpace(/*enough=*/true);
     SetBatteryState(/*enough=*/true, /*connected=*/true);
 
@@ -484,7 +487,8 @@ TEST_F(ArcVmDataMigrationScreenTest,
 }
 
 TEST_F(ArcVmDataMigrationScreenTest, GetAndroidDataSizeFailureIsFatal) {
-  FakeArcVmDataMigratorClient::Get()->set_android_data_size(absl::nullopt);
+  FakeArcVmDataMigratorClient::Get()->set_get_android_data_info_response(
+      absl::nullopt);
 
   screen_->Show(wizard_context_.get());
   task_environment()->RunUntilIdle();

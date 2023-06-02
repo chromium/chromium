@@ -460,6 +460,19 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   std::cout << "Parsed " << info->raw_symbols.size() << " symbols" << std::endl;
 }
 
+void ParseCompressedStringList(const char* gzipped,
+                               unsigned long len,
+                               std::vector<std::string>* string_list) {
+  std::vector<char> decompressed;
+  Decompress(gzipped, len, &decompressed);
+  char* rest = &decompressed[0];
+  int n_strings = ReadLoneInt(&rest);
+  string_list->resize(n_strings);
+  for (int i = 0; i < n_strings; i++) {
+    (*string_list)[i] = strsep(&rest, "\n");
+  }
+}
+
 bool IsDiffSizeInfo(const char* file, unsigned long len) {
   return !strncmp(file, kDiffHeader, 4);
 }
@@ -467,7 +480,9 @@ bool IsDiffSizeInfo(const char* file, unsigned long len) {
 void ParseDiffSizeInfo(char* file,
                        unsigned long len,
                        SizeInfo* before,
-                       SizeInfo* after) {
+                       SizeInfo* after,
+                       std::vector<std::string>* removed_sources,
+                       std::vector<std::string>* added_sources) {
   // Skip "DIFF" header.
   char* rest = file;
   rest += strlen(kDiffHeader);
@@ -480,12 +495,29 @@ void ParseDiffSizeInfo(char* file,
     exit(1);
   }
 
+  auto get_uint_field = [&](const char* key) -> unsigned long {
+    return fields.isMember(key) ? fields[key].asUInt() : 0;
+  };
+
   unsigned long header_len = rest - file;
-  unsigned long before_len = fields["before_length"].asUInt();
-  unsigned long after_len = len - header_len - before_len;
+  unsigned long removed_sources_len = get_uint_field("removed_sources_length");
+  unsigned long added_sources_len = get_uint_field("added_sources_length");
+  unsigned long before_len = get_uint_field("before_length");
+  unsigned long after_len =
+      len - header_len - before_len - removed_sources_len - added_sources_len;
+
+  if (removed_sources_len) {
+    ParseCompressedStringList(rest, removed_sources_len, removed_sources);
+    rest += removed_sources_len;
+  }
+  if (added_sources_len) {
+    ParseCompressedStringList(rest, added_sources_len, added_sources);
+    rest += added_sources_len;
+  }
 
   ParseSizeInfo(rest, before_len, before);
-  ParseSizeInfo(rest + before_len, after_len, after);
+  rest += before_len;
+  ParseSizeInfo(rest, after_len, after);
 }
 
 }  // namespace caspian

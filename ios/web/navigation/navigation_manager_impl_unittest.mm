@@ -97,6 +97,7 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
                     NavigationInitiationType,
                     bool));
   MOCK_METHOD0(GetPendingItem, NavigationItemImpl*());
+  MOCK_CONST_METHOD0(GetCurrentURL, GURL());
 
  private:
   WebState* GetWebState() override { return web_state_; }

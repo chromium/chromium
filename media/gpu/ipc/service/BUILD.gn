@@ -25,8 +25,6 @@ target(link_target_type, "service") {
   # The legacy VDA API is not supported on Android.
   if (!is_android) {
     sources += [
-      "gpu_video_decode_accelerator.cc",
-      "gpu_video_decode_accelerator.h",
       "picture_buffer_manager.cc",
       "picture_buffer_manager.h",
       "vda_video_decoder.cc",
@@ -42,7 +40,6 @@ target(link_target_type, "service") {
     "//ipc",
     "//media",
     "//media/gpu",
-    "//media/mojo/mojom",
   ]
   deps = [
     "//build:chromeos_buildflags",

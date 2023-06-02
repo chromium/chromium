@@ -46,8 +46,13 @@ EditingList* EditingList::Show(DisplayOverlayController* controller) {
 }
 
 EditingList::EditingList(DisplayOverlayController* controller)
-    : controller_(controller) {}
-EditingList::~EditingList() = default;
+    : TouchInjectorObserver(), controller_(controller) {
+  controller_->AddTouchInjectorObserver(this);
+}
+
+EditingList::~EditingList() {
+  controller_->RemoveTouchInjectorObserver(this);
+}
 
 void EditingList::Init() {
   SetUseDefaultFillLayout(true);
@@ -99,7 +104,7 @@ void EditingList::AddHeader(views::View* container) {
   header_container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&EditingList::OnAddButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kAddIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   header_container->AddChildView(ash::bubble_utils::CreateLabel(
@@ -109,7 +114,7 @@ void EditingList::AddHeader(views::View* container) {
   header_container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&EditingList::OnDoneButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &ash::kCheckIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
@@ -182,6 +187,22 @@ void EditingList::OnDoneButtonPressed() {
 
 gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
+}
+
+void EditingList::OnActionAdded(const Action& action) {
+  NOTIMPLEMENTED();
+}
+void EditingList::OnActionRemoved(const Action& action) {
+  NOTIMPLEMENTED();
+}
+
+void EditingList::OnActionTypeChanged(const Action& action,
+                                      const Action& new_action) {
+  NOTIMPLEMENTED();
+}
+
+void EditingList::OnActionUpdated(const Action& action) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace arc::input_overlay

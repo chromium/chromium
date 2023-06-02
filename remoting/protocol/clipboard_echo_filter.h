@@ -61,7 +61,7 @@ class ClipboardEchoFilter {
   void InjectClipboardEventToHost(const ClipboardEvent& event);
   void InjectClipboardEventToClient(const ClipboardEvent& event);
 
-  raw_ptr<ClipboardStub> host_stub_;
+  raw_ptr<ClipboardStub, DanglingUntriaged> host_stub_;
   raw_ptr<ClipboardStub> client_stub_;
   ClientFilter client_filter_;
   HostFilter host_filter_;

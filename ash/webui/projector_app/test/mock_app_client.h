@@ -65,12 +65,14 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_METHOD1(NotifyAppUIActive, void(bool active));
   MOCK_METHOD2(ToggleFileSyncingNotificationForPaths,
                void(const std::vector<base::FilePath>&, bool));
+  MOCK_METHOD1(HandleAccountReauth, void(const std::string&));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);
   void GrantOAuthTokenFor(const std::string& account_email,
                           const base::Time& expiry_time);
   void AddSecondaryAccount(const std::string& account_email);
+  void MakeFetchTokenFailWithError(const GoogleServiceAuthError& error);
 
  private:
   signin::IdentityTestEnvironment identity_test_environment_;

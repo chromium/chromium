@@ -55,7 +55,7 @@ class ClangPluginTest(object):
 
     passing = []
     failing = []
-    tests = glob.glob('*.cpp')
+    tests = glob.glob('*.cpp') + glob.glob('*.mm')
     for test in tests:
       sys.stdout.write('Testing %s... ' % test)
       test_name, _ = os.path.splitext(test)
@@ -110,6 +110,10 @@ class ClangPluginTest(object):
     except IOError:
       open(result_file, 'w').write(actual)
       return 'no expected file found'
+
+    # Normalize backslashes to forward-slashes to avoid failure on Windows
+    actual = actual.replace('\\', '/')
+    expected = expected.replace('\\', '/')
 
     if expected != actual:
       open(result_file, 'w').write(actual)

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -26,6 +27,7 @@
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
@@ -33,7 +35,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace chromeos {
 
@@ -182,8 +183,9 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
       close_callback_(std::move(close_callback)) {
   DCHECK(window);
   DCHECK(close_callback_);
-  SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
+  if (features::IsJellyEnabled()) {
+    SetBackground(views::CreateThemedSolidBackground(ui::kColorSysSurface3));
+  }
   SetUseDefaultFillLayout(true);
 
   window_observation_.Observe(window);

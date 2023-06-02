@@ -74,7 +74,9 @@ StreamDataSourceFactory::CreateErrorMessage(
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
-StreamDataSourceFactory::CreateReportStream() const {
+StreamDataSourceFactory::CreateReportStream(
+    const base::debug::tracer::AllocationTraceRecorder&
+        allocation_trace_recorder) const {
   return CreateErrorMessage("!!REPORT CREATION NOT IMPLEMENTED!!");
 }
 #endif

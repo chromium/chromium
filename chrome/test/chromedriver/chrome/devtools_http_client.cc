@@ -29,7 +29,7 @@ WebViewInfo::WebViewInfo(const std::string& id,
 
 WebViewInfo::WebViewInfo(const WebViewInfo& other) = default;
 
-WebViewInfo::~WebViewInfo() {}
+WebViewInfo::~WebViewInfo() = default;
 
 bool WebViewInfo::IsFrontend() const {
   return base::StartsWith(url, "devtools://", base::CompareCase::SENSITIVE);
@@ -39,12 +39,12 @@ bool WebViewInfo::IsInactiveBackgroundPage() const {
   return type == WebViewInfo::kBackgroundPage && debugger_url.empty();
 }
 
-WebViewsInfo::WebViewsInfo() {}
+WebViewsInfo::WebViewsInfo() = default;
 
 WebViewsInfo::WebViewsInfo(const std::vector<WebViewInfo>& info)
     : views_info(info) {}
 
-WebViewsInfo::~WebViewsInfo() {}
+WebViewsInfo::~WebViewsInfo() = default;
 
 const WebViewInfo& WebViewsInfo::Get(int index) const {
   return views_info[index];
@@ -64,16 +64,10 @@ const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
 
 DevToolsHttpClient::DevToolsHttpClient(
     const DevToolsEndpoint& endpoint,
-    network::mojom::URLLoaderFactory* factory,
-    std::unique_ptr<std::set<WebViewInfo::Type>> window_types)
-    : url_loader_factory_(factory),
-      endpoint_(endpoint),
-      window_types_(std::move(window_types)) {
-  window_types_->insert(WebViewInfo::kPage);
-  window_types_->insert(WebViewInfo::kApp);
-}
+    network::mojom::URLLoaderFactory* factory)
+    : url_loader_factory_(factory), endpoint_(endpoint) {}
 
-DevToolsHttpClient::~DevToolsHttpClient() {}
+DevToolsHttpClient::~DevToolsHttpClient() = default;
 
 Status DevToolsHttpClient::Init(const base::TimeDelta& timeout) {
   if (!endpoint_.IsValid()) {
@@ -92,7 +86,7 @@ Status DevToolsHttpClient::Init(const base::TimeDelta& timeout) {
     base::PlatformThread::Sleep(base::Milliseconds(50));
   }
 
-  return ParseBrowserInfo(data, &browser_info_);
+  return browser_info_.ParseBrowserInfo(data);
 }
 
 Status DevToolsHttpClient::GetWebViewsInfo(WebViewsInfo* views_info) {
@@ -105,15 +99,6 @@ Status DevToolsHttpClient::GetWebViewsInfo(WebViewsInfo* views_info) {
 
 const BrowserInfo* DevToolsHttpClient::browser_info() {
   return &browser_info_;
-}
-
-bool DevToolsHttpClient::IsBrowserWindow(const WebViewInfo& view) const {
-  return base::Contains(*window_types_, view.type) ||
-         (view.type == WebViewInfo::kOther && view.url == "chrome://print/");
-}
-
-const DevToolsEndpoint& DevToolsHttpClient::endpoint() const {
-  return endpoint_;
 }
 
 bool DevToolsHttpClient::FetchUrlAndLog(const std::string& url,

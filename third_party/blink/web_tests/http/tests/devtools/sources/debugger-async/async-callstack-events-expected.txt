@@ -3,38 +3,38 @@ Tests asynchronous call stacks for various DOM events.
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) onHashChange1 (async-callstack-events.js:61)
+    0) onHashChange1 (async-callstack-events.js:64)
     [hashchange]
-    0) doTestHashChange (async-callstack-events.js:55)
-    1) testFunction (async-callstack-events.js:20)
+    0) doTestHashChange (async-callstack-events.js:58)
+    1) testFunction (async-callstack-events.js:23)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onHashChange2 (async-callstack-events.js:67)
+    0) onHashChange2 (async-callstack-events.js:70)
     [hashchange]
-    0) doTestHashChange (async-callstack-events.js:55)
-    1) testFunction (async-callstack-events.js:20)
+    0) doTestHashChange (async-callstack-events.js:58)
+    1) testFunction (async-callstack-events.js:23)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onSelectionChange (async-callstack-events.js:48)
+    0) onSelectionChange (async-callstack-events.js:51)
     [selectionchange]
-    0) setSelection (async-callstack-events.js:33)
-    1) doTestSelectionChange (async-callstack-events.js:40)
-    2) testFunction (async-callstack-events.js:20)
+    0) setSelection (async-callstack-events.js:36)
+    1) doTestSelectionChange (async-callstack-events.js:43)
+    2) testFunction (async-callstack-events.js:23)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onVideoPlay (async-callstack-events.js:80)
+    0) onVideoPlay (async-callstack-events.js:83)
     [play]
-    0) doTestMediaEvents (async-callstack-events.js:74)
-    1) testFunction (async-callstack-events.js:20)
+    0) doTestMediaEvents (async-callstack-events.js:77)
+    1) testFunction (async-callstack-events.js:23)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

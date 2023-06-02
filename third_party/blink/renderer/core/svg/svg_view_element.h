@@ -44,6 +44,10 @@ class SVGViewElement final : public SVGElement,
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
 };
 
 }  // namespace blink

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -21,6 +22,7 @@
 #include "components/reading_list/core/reading_list_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
@@ -35,6 +37,14 @@ constexpr char kTabName1[] = "Tab 1";
 constexpr char kTabName2[] = "Tab 2";
 constexpr char kTabName3[] = "Tab 3";
 constexpr char kTabName4[] = "Tab 4";
+
+bool IsItemEnabledInMenu(ui::MenuModel* menu, int command_id) {
+  ui::MenuModel* model = menu;
+  size_t index = 0;
+  return ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model,
+                                                     &index) &&
+         menu->IsEnabledAt(index);
+}
 
 class MockPage : public reading_list::mojom::Page {
  public:
@@ -80,6 +90,11 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     BrowserList::SetLastActive(browser());
 
+    incognito_browser_ =
+        CreateBrowserWithTestWindowForParams(Browser::CreateParams(
+            profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+            /*user_gesture=*/true));
+
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
@@ -105,6 +120,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    incognito_browser_.reset();
     handler_.reset();
     test_web_ui_.reset();
     web_contents_.reset();
@@ -117,6 +133,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
              ReadingListModelFactory::GetDefaultFactoryForTesting()}};
   }
 
+  Browser* incognito_browser() { return incognito_browser_.get(); }
   ReadingListModel* model() { return model_; }
   TestReadingListPageHandler* handler() { return handler_.get(); }
 
@@ -172,10 +189,11 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
   testing::StrictMock<MockPage> page_;
 
  private:
+  std::unique_ptr<Browser> incognito_browser_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestReadingListPageHandler> handler_;
-  raw_ptr<ReadingListModel> model_;
+  raw_ptr<ReadingListModel, DanglingUntriaged> model_;
 };
 
 TEST_F(TestReadingListPageHandlerTest, GetReadLaterEntries) {
@@ -393,6 +411,42 @@ TEST_F(TestReadingListPageHandlerTest,
   EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
   // Expect CurrentPageActionButtonStateChanged to be called twice.
   EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(2);
+}
+
+TEST_F(TestReadingListPageHandlerTest, OpenInIncognitoEnabledWhenNotInOTRMode) {
+  std::unique_ptr<ui::SimpleMenuModel> read_later_context_menu =
+      handler()->GetItemContextMenuModelForTesting(browser(), model(),
+                                                   GURL(kTabUrl1));
+
+  // "Open Link In New Incognito Window" command option should be enabled when
+  // not in OTR mode.
+  EXPECT_TRUE(IsItemEnabledInMenu(read_later_context_menu.get(),
+                                  IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
+
+  // Expect ItemsChanged to be called four times from the two AddEntry calls in
+  // SetUp() each AddEntry call while the reading list is open triggers items to
+  // be marked as read which triggers an ItemsChanged call.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
+}
+
+TEST_F(TestReadingListPageHandlerTest, OpenInIncognitoDisabledWhenInOTRMode) {
+  std::unique_ptr<ui::SimpleMenuModel> otr_read_later_context_menu =
+      handler()->GetItemContextMenuModelForTesting(incognito_browser(), model(),
+                                                   GURL(kTabUrl1));
+
+  // "Open Link In New Incognito Window" command option should be disabled
+  // when in OTR mode.
+  EXPECT_FALSE(IsItemEnabledInMenu(otr_read_later_context_menu.get(),
+                                   IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
+
+  // Expect ItemsChanged to be called four times from the two AddEntry calls in
+  // SetUp() each AddEntry call while the reading list is open triggers items to
+  // be marked as read which triggers an ItemsChanged call.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called once.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(1);
 }
 
 }  // namespace

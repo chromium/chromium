@@ -275,6 +275,7 @@ void ContinueTaskView::UpdateResult() {
 
   title_->SetText(result()->title());
   subtitle_->SetText(result()->details());
+  subtitle_->SetVisible(!result()->details().empty());
 
   GetViewAccessibility().OverrideName(result()->title() + u" " +
                                       result()->details());

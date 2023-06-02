@@ -135,7 +135,8 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   // Contains the info necessary to start a media route.
   std::unique_ptr<MediaRouteStarter> media_route_starter_;
 
-  raw_ptr<AccessCodeCastSinkService> access_code_sink_service_;
+  raw_ptr<AccessCodeCastSinkService, DanglingUntriaged>
+      access_code_sink_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<syncer::SyncService> sync_service_;
 

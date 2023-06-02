@@ -54,6 +54,11 @@ class FakeConnection : public Connection {
   void VerifyUser(absl::optional<mojom::UserVerificationResponse> response);
   void SendAccountTransferAssertionInfo(
       absl::optional<FidoAssertionInfo> assertion_info);
+  void HandleHandshakeResult(bool success);
+
+  void set_phone_instance_id(std::string phone_instance_id) {
+    phone_instance_id_ = phone_instance_id;
+  }
 
  private:
   bool handshake_initiated_ = false;

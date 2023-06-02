@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "components/device_signals/core/browser/user_delegate.h"
 
 namespace device_signals {
@@ -28,6 +29,11 @@ bool UserPermissionServiceAsh::ShouldCollectConsent() const {
 UserPermission UserPermissionServiceAsh::CanCollectSignals() const {
   if (IsDeviceCloudManaged() &&
       (user_delegate_->IsSigninContext() || user_delegate_->IsAffiliated())) {
+    return UserPermission::kGranted;
+  }
+
+  if (ash::features::IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled() &&
+      !IsDeviceCloudManaged() && user_delegate_->IsManagedUser()) {
     return UserPermission::kGranted;
   }
 

@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/content_browser_client.h"
@@ -198,6 +199,10 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // which the URLLoaderFactory will be used. |frame| can be nullptr for
   // factories proxied for service worker.
   //
+  // |navigation_response_task_runner| is a task runner that may be non-null for
+  // navigation requests and can be used to run navigation request blocking
+  // tasks.
+  //
   // Returns |true| if the URLLoaderFactory will be proxied; |false| otherwise.
   bool MaybeProxyURLLoaderFactory(
       content::BrowserContext* browser_context,
@@ -209,6 +214,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
       const url::Origin& request_initiator = url::Origin());
 
   // Any request which requires authentication to complete will be bounced

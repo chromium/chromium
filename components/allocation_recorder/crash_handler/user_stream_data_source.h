@@ -15,6 +15,7 @@ class MinidumpUserExtensionStreamDataSource;
 
 namespace allocation_recorder::crash_handler {
 
+class AllocationRecorderHolder;
 class StreamDataSourceFactory;
 
 // The implementation of crashpad's UserStreamDataSource which will be included
@@ -23,10 +24,11 @@ class StreamDataSourceFactory;
 class AllocationRecorderStreamDataSource
     : public crashpad::UserStreamDataSource {
  public:
-  // Create a new instance of AllocationRecorderStreamDataSource. This instance
-  // will use the passed factory to create the final stream. See
-  // ProduceStreamData for details.
+  // Create a new instance of AllocationTraceStreamDataSource. This instance
+  // will use the passed holder to store the recorder and factory to create the
+  // final stream. See ProduceStreamData for details.
   AllocationRecorderStreamDataSource(
+      scoped_refptr<AllocationRecorderHolder> recorder_holder,
       scoped_refptr<StreamDataSourceFactory> stream_source_factory);
 
   ~AllocationRecorderStreamDataSource() override;
@@ -38,6 +40,7 @@ class AllocationRecorderStreamDataSource
   ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
 
  private:
+  const scoped_refptr<AllocationRecorderHolder> recorder_holder_;
   const scoped_refptr<StreamDataSourceFactory> stream_source_factory_;
 };
 

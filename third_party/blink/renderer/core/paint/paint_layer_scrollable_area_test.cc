@@ -615,7 +615,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollOriginInRtlContainer) {
   PaintLayerScrollableArea* scrollable_area =
       container->GetLayoutBox()->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
-  EXPECT_EQ(scrollable_area->ScrollOrigin().x(), 100);
+  EXPECT_EQ(scrollable_area->ScrollOriginInt().x(), 100);
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest,

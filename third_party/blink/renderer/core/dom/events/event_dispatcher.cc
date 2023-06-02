@@ -32,6 +32,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
@@ -61,7 +63,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-
 namespace blink {
 
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
@@ -187,7 +188,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
     return DispatchEventResult::kNotCanceled;
   }
   std::unique_ptr<EventTiming> eventTiming;
-  LocalFrame* frame = node_->GetDocument().GetFrame();
+  auto& document = node_->GetDocument();
+  LocalFrame* frame = document.GetFrame();
   LocalDOMWindow* window = nullptr;
   if (frame) {
     window = frame->DomWindow();
@@ -218,9 +220,23 @@ DispatchEventResult EventDispatcher::Dispatch() {
     DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
                                          AdTracker::StackType::kBottomAndTop));
     if (frame->IsAdFrame()) {
-      UseCounter::Count(node_->GetDocument(), WebFeature::kAdClick);
+      UseCounter::Count(document, WebFeature::kAdClick);
     }
   }
+
+#if DCHECK_IS_ON()
+  // If Mutation Events are disabled, we should never dispatch trusted ones.
+  if (event_->isTrusted() &&
+      (event_->type() == event_type_names::kDOMCharacterDataModified ||
+       event_->type() == event_type_names::kDOMSubtreeModified ||
+       event_->type() == event_type_names::kDOMNodeInserted ||
+       event_->type() == event_type_names::kDOMNodeInsertedIntoDocument ||
+       event_->type() == event_type_names::kDOMNodeRemoved ||
+       event_->type() == event_type_names::kDOMNodeRemovedFromDocument)) {
+    DCHECK(RuntimeEnabledFeatures::MutationEventsEnabled());
+    DCHECK(ContextFeatures::MutationEventsEnabled(&document));
+  }
+#endif
 
   // 6. Let isActivationEvent be true, if event is a MouseEvent object and
   // event's type attribute is "click", and false otherwise.

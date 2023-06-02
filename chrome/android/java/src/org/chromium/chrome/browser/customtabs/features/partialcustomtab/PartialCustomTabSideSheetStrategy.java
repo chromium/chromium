@@ -162,9 +162,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         if (mIsMaximized) {
             if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();
             setTopMargins(0, 0);
-        } else {
-            if (shouldDrawDividerLine()) drawDividerLine();
-            updateShadowOffset();
         }
 
         AnimatorUpdateListener updateListener;
@@ -199,7 +196,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             // the resized web contents.
             new Handler().postDelayed(() -> content.setVisibility(View.VISIBLE), 20);
         } else {
-            content.setVisibility(View.INVISIBLE);
+            content.setVisibility(View.GONE);
         }
     }
 
@@ -219,6 +216,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
                     maybeResetTalkbackFocus();
                 }
                 initializeSize();
+                if (shouldDrawDividerLine()) drawDividerLine();
+                updateShadowOffset();
                 maybeInvokeResizeCallback();
             });
         }

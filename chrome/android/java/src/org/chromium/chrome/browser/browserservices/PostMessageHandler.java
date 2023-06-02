@@ -47,7 +47,8 @@ public class PostMessageHandler implements OriginVerificationListener {
     private final PostMessageBackend mPostMessageBackend;
     private WebContents mWebContents;
     private MessagePort[] mChannel;
-    private Uri mPostMessageUri;
+    private Uri mPostMessageSourceUri;
+    private Uri mPostMessageTargetUri;
 
     /**
      * Basic constructor. Everytime the given {@link CustomTabsSessionToken} is associated with a
@@ -94,7 +95,7 @@ public class PostMessageHandler implements OriginVerificationListener {
         // Can't reset with the same web contents twice.
         if (webContents.equals(mWebContents)) return;
         mWebContents = webContents;
-        if (mPostMessageUri == null) return;
+        if (mPostMessageSourceUri == null) return;
         new WebContentsObserver(webContents) {
             private boolean mNavigatedOnce;
 
@@ -129,7 +130,8 @@ public class PostMessageHandler implements OriginVerificationListener {
         mChannel = webContents.createMessageChannel();
         mChannel[0].setMessageCallback(mMessageCallback, null);
 
-        webContents.postMessageToMainFrame(new MessagePayload(""), mPostMessageUri.toString(), "",
+        webContents.postMessageToMainFrame(new MessagePayload(""), mPostMessageSourceUri.toString(),
+                mPostMessageTargetUri != null ? mPostMessageTargetUri.toString() : "",
                 new MessagePort[] {mChannel[1]});
 
         mPostMessageBackend.onNotifyMessageChannelReady(null);
@@ -147,8 +149,9 @@ public class PostMessageHandler implements OriginVerificationListener {
      * Sets the postMessage postMessageUri for this session to the given {@link Uri}.
      * @param postMessageUri The postMessageUri value to be set.
      */
-    public void initializeWithPostMessageUri(Uri postMessageUri) {
-        mPostMessageUri = postMessageUri;
+    public void initializeWithPostMessageUri(Uri postMessageUri, Uri targetOrigin) {
+        mPostMessageSourceUri = postMessageUri;
+        mPostMessageTargetUri = targetOrigin;
         if (mWebContents != null && !mWebContents.isDestroyed()) {
             initializeWithWebContents(mWebContents);
         }
@@ -186,11 +189,27 @@ public class PostMessageHandler implements OriginVerificationListener {
     }
 
     @Override
-    public void onOriginVerified(String packageName, Origin origin, boolean result,
-            Boolean online) {
+    public void onOriginVerified(
+            String packageName, Origin origin, boolean result, Boolean online) {
         if (!result) return;
         initializeWithPostMessageUri(
-                OriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin));
+                OriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin),
+                mPostMessageTargetUri);
+    }
+
+    /**
+     * Sets the target origin URI, this should be called before initializing in order for it to
+     * work.
+     *
+     * @param postMessageTargetUri Uri to post the first message to.
+     */
+    public void setPostMessageTargetUri(Uri postMessageTargetUri) {
+        mPostMessageTargetUri = postMessageTargetUri;
+    }
+
+    @VisibleForTesting
+    public Uri getPostMessageTargetUriForTesting() {
+        return mPostMessageTargetUri;
     }
 
     /**
@@ -198,6 +217,6 @@ public class PostMessageHandler implements OriginVerificationListener {
      */
     @VisibleForTesting
     public Uri getPostMessageUriForTesting() {
-        return mPostMessageUri;
+        return mPostMessageSourceUri;
     }
 }

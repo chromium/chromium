@@ -16,6 +16,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
@@ -74,7 +75,7 @@ class ResourcePoolTest : public testing::Test {
   }
 
   viz::TestSharedBitmapManager shared_bitmap_manager_;
-  raw_ptr<MockContextSupport> context_support_;
+  raw_ptr<MockContextSupport, DanglingUntriaged> context_support_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -691,7 +692,7 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   gfx::Size size(100, 101);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
   EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::BufferFormat(format.resource_format()));
+            viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t target = 5;
   gpu::Mailbox mailbox;
@@ -745,7 +746,7 @@ TEST_F(ResourcePoolTest, InvalidResource) {
   gfx::Size size(100, 101);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
   EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::BufferFormat(format.resource_format()));
+            viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t target = 5;
 

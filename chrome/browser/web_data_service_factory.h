@@ -12,7 +12,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 class KeywordWebDataService;
@@ -65,7 +65,7 @@ class WebDataServiceFactory
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend struct base::DefaultSingletonTraits<WebDataServiceFactory>;
+  friend base::NoDestructor<WebDataServiceFactory>;
 
   WebDataServiceFactory();
   ~WebDataServiceFactory() override;

@@ -4,11 +4,20 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 
-#import "ios/chrome/browser/overlays/public/infobar_banner/permissions_infobar_banner_overlay_request_config.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/permissions/permissions.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,23 +25,23 @@
 
 @interface PermissionsBannerOverlayMediator ()
 // The permissions banner config from the request.
-@property(nonatomic, readonly) PermissionsBannerRequestConfig* config;
+@property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
 @end
 
 @implementation PermissionsBannerOverlayMediator
 
 #pragma mark - Accessors
 
-- (PermissionsBannerRequestConfig*)config {
+- (DefaultInfobarOverlayRequestConfig*)config {
   return self.request
-             ? self.request->GetConfig<PermissionsBannerRequestConfig>()
+             ? self.request->GetConfig<DefaultInfobarOverlayRequestConfig>()
              : nullptr;
 }
 
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
-  return PermissionsBannerRequestConfig::RequestSupport();
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
 #pragma mark - InfobarOverlayRequestMediator
@@ -47,19 +56,44 @@
 @implementation PermissionsBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  PermissionsBannerRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  DefaultInfobarOverlayRequestConfig* config = self.config;
+  if (!self.consumer || !config) {
     return;
+  }
 
-  [self.consumer setTitleText:config->title_text()];
-  [self.consumer setButtonText:config->button_text()];
+  BOOL isCameraAccessible = NO;
+  NSString* titleText;
+
+  PermissionsInfobarDelegate* delegate =
+      static_cast<PermissionsInfobarDelegate*>(config->delegate());
+  NSArray<NSNumber*>* accessiblePermissions =
+      delegate->GetMostRecentlyAccessiblePermissions();
+
+  if ([accessiblePermissions containsObject:@(web::PermissionCamera)]) {
+    // Camera access is enabled.
+    isCameraAccessible = true;
+    titleText =
+        [accessiblePermissions containsObject:@(web::PermissionMicrophone)]
+            ? l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_AND_MICROPHONE_ACCESSIBLE)
+            : l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE);
+  } else {
+    // Only microphone access is enabled.
+    titleText = l10n_util::GetNSString(
+        IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE);
+  }
+  NSString* buttonText = l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE);
 
   UIImage* iconImage =
-      config->is_camera_accessible()
-          ? CustomSymbolWithPointSize(kCameraFillSymbol,
-                                      kInfobarSymbolPointSize)
-          : DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
-                                       kInfobarSymbolPointSize);
+      isCameraAccessible ? CustomSymbolWithPointSize(kCameraFillSymbol,
+                                                     kInfobarSymbolPointSize)
+                         : DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
+                                                      kInfobarSymbolPointSize);
+
+  [self.consumer setTitleText:titleText];
+  [self.consumer setButtonText:buttonText];
+
   [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:NO];
 }

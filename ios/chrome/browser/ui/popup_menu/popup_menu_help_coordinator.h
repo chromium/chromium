@@ -19,7 +19,12 @@
 // UI updater.
 @property(nonatomic, weak) id<PopupMenuUIUpdating> UIUpdater;
 
-- (void)showOverflowMenuIPHInViewController:(UIViewController*)menu;
+// An integer whose value is matching the overflow_menu::Destination,
+// representing the destination on the overflow menu that should be highlighted.
+// Return nil if no destination is highlighted (default scenario).
+- (NSNumber*)highlightDestination;
+
+- (void)showHistoryOnOverflowMenuIPHInViewController:(UIViewController*)menu;
 
 @end
 

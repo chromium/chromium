@@ -21,7 +21,6 @@
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
-@protocol BrowserCommands;
 @class BrowserActionFactory;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
@@ -31,16 +30,15 @@ class FaviconLoader;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @protocol SnackbarCommands;
-class WebStateList;
 class AutocompleteController;
 
 namespace image_fetcher {
 class ImageDataFetcher;
-}  // namespace
+}  // namespace image_fetcher
 
 namespace feature_engagement {
 class Tracker;
-}
+}  // namespace feature_engagement
 
 class OmniboxPopupMediatorDelegate {
  public:
@@ -91,7 +89,6 @@ class OmniboxPopupMediatorDelegate {
 - (void)setSemanticContentAttribute:
     (UISemanticContentAttribute)semanticContentAttribute;
 
-@property(nonatomic, weak) id<BrowserCommands> dispatcher;
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
 /// Consumer for debug info.
 @property(nonatomic, weak) id<PopupDebugInfoConsumer,
@@ -108,8 +105,6 @@ class OmniboxPopupMediatorDelegate {
 /// Presenter for the popup, handling the positioning and the presentation
 /// animations.
 @property(nonatomic, strong) OmniboxPopupPresenter* presenter;
-/// The web state list this mediator is handling.
-@property(nonatomic, assign) WebStateList* webStateList;
 /// Whether the default search engine is Google impacts which icon is used in
 /// some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;

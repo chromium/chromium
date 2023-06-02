@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class PushMessagingServiceImpl;
@@ -25,7 +25,7 @@ class PushMessagingServiceFactory : public ProfileKeyedServiceFactory {
   void RestoreFactoryForTests(content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<PushMessagingServiceFactory>;
+  friend base::NoDestructor<PushMessagingServiceFactory>;
 
   PushMessagingServiceFactory();
   ~PushMessagingServiceFactory() override;

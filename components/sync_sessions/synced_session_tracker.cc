@@ -127,15 +127,16 @@ void PopulateSyncedSessionFromSpecifics(
   if (header_specifics.has_client_name()) {
     synced_session->SetSessionName(header_specifics.client_name());
   }
-  if (header_specifics.has_device_type()) {
-    syncer::DeviceInfo::FormFactor device_form_factor;
-    if (header_specifics.has_device_form_factor()) {
-      device_form_factor =
-          syncer::ToDeviceInfoFormFactor(header_specifics.device_form_factor());
-    } else { /*Fallback to derive from old device type enum*/
-      device_form_factor = syncer::DeriveFormFactorFromDeviceType(
-          header_specifics.device_type());
-    }
+
+  syncer::DeviceInfo::FormFactor device_form_factor =
+      syncer::ToDeviceInfoFormFactor(header_specifics.device_form_factor());
+  // Old clients only populate the device type, so the form factor needs to be
+  // inferred.
+  if (device_form_factor == syncer::DeviceInfo::FormFactor::kUnknown) {
+    device_form_factor =
+        syncer::DeriveFormFactorFromDeviceType(header_specifics.device_type());
+  }
+  if (device_form_factor != syncer::DeviceInfo::FormFactor::kUnknown) {
     synced_session->SetDeviceTypeAndFormFactor(header_specifics.device_type(),
                                                device_form_factor);
   }

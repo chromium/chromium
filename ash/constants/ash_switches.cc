@@ -899,6 +899,9 @@ const char kShowLoginDevOverlay[] = "show-login-dev-overlay";
 // testing. Limited to ChromeOS-on-linux and test images only.
 const char kShowOobeDevOverlay[] = "show-oobe-dev-overlay";
 
+// Enables the QuickStart debugger in OOBE which mimics an Android phone.
+const char kShowOobeQuickStartDebugger[] = "show-oobe-quick-start-debugger";
+
 // Draws a circle at each touch point, similar to the Android OS developer
 // option "Show taps".
 const char kShowTaps[] = "show-taps";

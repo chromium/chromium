@@ -108,8 +108,7 @@ AppListSearchView::AppListSearchView(
   auto* answer_card_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           view_delegate, dialog_controller_,
-          SearchResultView::SearchResultViewType::kAnswerCard,
-          /*animates_result_updates=*/true, absl::nullopt));
+          SearchResultView::SearchResultViewType::kAnswerCard, absl::nullopt));
   answer_card_container->SetListType(
       SearchResultListView::SearchResultListType::kAnswerCard);
   add_result_container(answer_card_container);
@@ -118,8 +117,7 @@ AppListSearchView::AppListSearchView(
   auto* best_match_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           view_delegate, dialog_controller_,
-          SearchResultView::SearchResultViewType::kDefault,
-          /*animated_result_updates=*/true, absl::nullopt));
+          SearchResultView::SearchResultViewType::kDefault, absl::nullopt));
   best_match_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
   add_result_container(best_match_container);
@@ -143,8 +141,7 @@ AppListSearchView::AppListSearchView(
     auto* result_container =
         scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
             view_delegate, dialog_controller_,
-            SearchResultView::SearchResultViewType::kDefault,
-            /*animates_result_updates=*/true, i));
+            SearchResultView::SearchResultViewType::kDefault, i));
     add_result_container(result_container);
   }
 

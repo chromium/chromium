@@ -10,20 +10,17 @@
 
 namespace apps::deduplication {
 
-EntryId::EntryId(std::string app_id, AppType app_type)
+Entry::Entry(std::string app_id, AppType app_type)
     : entry_type(EntryType::kApp), id(std::move(app_id)), app_type(app_type) {}
-EntryId::EntryId(const GURL& url)
+Entry::Entry(const GURL& url)
     : entry_type(EntryType::kWebPage), id(url.spec()) {}
-EntryId::EntryId(std::string phone_hub_app_package_name)
-    : entry_type(EntryType::kPhoneHubApp),
-      id(std::move(phone_hub_app_package_name)) {}
 
-bool EntryId::operator==(const EntryId& other) const {
+bool Entry::operator==(const Entry& other) const {
   return entry_type == other.entry_type && id == other.id &&
          (entry_type != EntryType::kApp || app_type == other.app_type);
 }
 
-bool EntryId::operator<(const EntryId& other) const {
+bool Entry::operator<(const Entry& other) const {
   if (entry_type != other.entry_type)
     return entry_type < other.entry_type;
 
@@ -33,25 +30,19 @@ bool EntryId::operator<(const EntryId& other) const {
   return id < other.id;
 }
 
-Entry::Entry(EntryId entry_id) : entry_id(std::move(entry_id)) {}
-
-bool Entry::operator==(const Entry& other) const {
-  return entry_id == other.entry_id;
-}
-
-bool Entry::operator<(const Entry& other) const {
-  return entry_id < other.entry_id;
-}
-
-std::ostream& operator<<(std::ostream& out, const EntryId& entry_id) {
-  out << "EntryType: "
-      << static_cast<std::underlying_type<EntryType>::type>(entry_id.entry_type)
+std::ostream& operator<<(std::ostream& out, const Entry& entry) {
+  out << "EntryStatus: "
+      << static_cast<std::underlying_type<EntryStatus>::type>(
+             entry.entry_status)
       << std::endl;
-  out << "Id: " << entry_id.id << std::endl;
-  if (entry_id.app_type.has_value()) {
+  out << "EntryType: "
+      << static_cast<std::underlying_type<EntryType>::type>(entry.entry_type)
+      << std::endl;
+  out << "Id: " << entry.id << std::endl;
+  if (entry.app_type.has_value()) {
     out << "AppType: "
         << static_cast<std::underlying_type<AppType>::type>(
-               entry_id.app_type.value())
+               entry.app_type.value())
         << std::endl;
   }
   return out;

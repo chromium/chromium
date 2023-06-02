@@ -3,18 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//remoting/android/client_java_tmpl.gni")
 import("//remoting/android/remoting_apk_tmpl.gni")
 import("//remoting/remoting_options.gni")
 
-group("jni") {
-  testonly = true
-
-  deps = [ ":remoting_client_jni" ]
-}
-
-shared_library("remoting_client_jni") {
+shared_library_with_jni("remoting_client_jni") {
   deps = [
     "//remoting/android:jni_headers",
     "//remoting/base",
@@ -54,6 +49,8 @@ shared_library("remoting_client_jni") {
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
   assert_no_deps = [ "//third_party/ffmpeg:*" ]
+  java_targets = [ "//remoting/android:remoting_apk" ]
+  remove_uncalled_jni = true
 }
 
 java_cpp_enum("jni_enums") {

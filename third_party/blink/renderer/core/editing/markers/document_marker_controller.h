@@ -175,6 +175,13 @@ class CORE_EXPORT DocumentMarkerController final
       DocumentMarker::MarkerTypes = DocumentMarker::MarkerTypes::All()) const;
   DocumentMarkerVector Markers() const;
 
+  // Apply a function to all the markers of a particular type. The
+  // function receives the text node and marker, for every <node,marker>
+  // pair in the marker set.
+  void ApplyToMarkersOfType(
+      base::FunctionRef<void(WeakMember<Text>, DocumentMarker*)>,
+      DocumentMarker::MarkerType);
+
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
   DocumentMarkerVector CustomHighlightMarkersNotOverlapping(const Text&) const;
 
@@ -229,7 +236,13 @@ class CORE_EXPORT DocumentMarkerController final
                                          const Text* key) const;
 
   // Called when a node is removed from a marker map.
-  void DidRemoveNodeFromMap(DocumentMarker::MarkerType);
+  // When clear_document_allowed is true this class will be removed from the
+  // mutation observer list when the marker set is empty. For efficiency
+  // it should generally be true, but it must be false when called
+  // from a method that implements SynchronousMutationObserver interfaces
+  // (currently only DidUpdateCharacterData);
+  void DidRemoveNodeFromMap(DocumentMarker::MarkerType,
+                            bool clear_document_allowed = true);
 
   MarkerMaps markers_;
 

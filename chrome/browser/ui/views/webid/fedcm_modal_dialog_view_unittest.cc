@@ -7,32 +7,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "ui/views/controls/label.h"
 
 class FedCmModalDialogView;
 
 namespace {
-
-std::vector<std::string> GetChildClassNames(views::View* parent) {
-  std::vector<std::string> child_class_names;
-  for (views::View* child_view : parent->children()) {
-    child_class_names.push_back(child_view->GetClassName());
-  }
-  return child_class_names;
-}
-
-views::View* GetViewWithClassName(views::View* parent,
-                                  const std::string& class_name) {
-  for (views::View* child_view : parent->children()) {
-    if (child_view->GetClassName() == class_name) {
-      return child_view;
-    }
-  }
-  return nullptr;
-}
-
-}  // namespace
 
 class FedCmModalDialogViewTest : public ChromeViewsTestBase {
  public:
@@ -50,25 +28,40 @@ class FedCmModalDialogViewTest : public ChromeViewsTestBase {
       web_contents_;  // Owned by `web_contents_factory_`.
 };
 
-TEST_F(FedCmModalDialogViewTest, Init) {
-  FedCmModalDialogView modal_dialog_view =
-      FedCmModalDialogView(web_contents(), GURL(u"https://example.com"),
-                           /*observer=*/nullptr);
-  views::View* view = modal_dialog_view.GetContentsView();
+class TestDelegate : public content::WebContentsDelegate {
+ public:
+  explicit TestDelegate(content::WebContents* contents) {
+    contents->SetDelegate(this);
+  }
+  ~TestDelegate() override = default;
 
-  const std::vector<views::View*> container = view->children();
-  ASSERT_EQ(container.size(), 1u);
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override {
+    opened_++;
+    return source;
+  }
 
-  // Check for header and web view.
-  const std::vector<views::View*> children = container[0]->children();
-  ASSERT_EQ(children.size(), 2u);
-  EXPECT_THAT(GetChildClassNames(container[0]),
-              testing::ElementsAreArray({"View", "WebView"}));
+  int opened() const { return opened_; }
 
-  // Check origin label in header.
-  views::View* header = children[0];
-  views::Label* origin_label =
-      static_cast<views::Label*>(GetViewWithClassName(header, "Label"));
-  ASSERT_TRUE(origin_label);
-  EXPECT_EQ(origin_label->GetText(), u"example.com");
+ private:
+  int opened_ = 0;
+};
+
+}  // namespace
+
+TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
+  // Override the delegate to test that OpenURLFromTab gets called.
+  TestDelegate delegate(web_contents());
+
+  std::unique_ptr<FedCmModalDialogView> popup_window =
+      std::make_unique<FedCmModalDialogView>(web_contents(),
+                                             /*observer=*/nullptr);
+  content::WebContents* web_contents =
+      popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, delegate.opened());
+  ASSERT_TRUE(web_contents);
 }

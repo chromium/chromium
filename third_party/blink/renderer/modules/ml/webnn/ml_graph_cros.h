@@ -7,6 +7,7 @@
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -34,11 +35,6 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
   ~MLGraphCrOS() override;
 
   void Trace(Visitor* visitor) const override;
-
-  const HashMap<String, ml::model_loader::mojom::blink::TensorInfoPtr>&
-  GetInputTensorInfoMapForTesting() const;
-  const HashMap<String, ml::model_loader::mojom::blink::TensorInfoPtr>&
-  GetOutputTensorInfoMapForTesting() const;
 
   // The caller of this function is responsible to keep flatbuffer alive and
   // unset it when it's no longer used.
@@ -69,6 +65,18 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver,
                         ExceptionState& exception_state) override;
+  // Resolve the promise with an MLComputeResult that contains input and output
+  // ArrayBufferViews. The `inputs_info` and `outputs_info` carry the backing
+  // memory in `ArrayBufferContents` transferred from the original user supplied
+  // `ArrayBufferView`s.
+  void OnComputeGraph(
+      ScriptPromiseResolver* resolver,
+      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+          inputs_info,
+      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+          outputs_info,
+      ml::model_loader::mojom::blink::ComputeResult mojo_result,
+      const absl::optional<HashMap<String, Vector<uint8_t>>>& mojo_outputs);
 
   // Compute the converted model with synchronous call of `Model` interface.
   void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
@@ -76,10 +84,6 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
                        ExceptionState& exception_state) override;
 
   HeapMojoRemote<ml::model_loader::mojom::blink::Model> remote_model_;
-  HashMap<String, ml::model_loader::mojom::blink::TensorInfoPtr>
-      input_tensor_name_to_info_;
-  HashMap<String, ml::model_loader::mojom::blink::TensorInfoPtr>
-      output_tensor_name_to_info_;
 };
 
 }  // namespace blink

@@ -278,6 +278,7 @@ namespace autotestPrivate {
   // A mapping of crosapi::BrowserManager::State
   enum LacrosState {
     NotInitialized,
+    Reloading,
     Mounting,
     Unavailable,
     Stopped,
@@ -819,6 +820,8 @@ namespace autotestPrivate {
 
   // Callback invoked when the temporary directory was removed.
   callback RemoveFuseboxTempDirCallback = void();
+
+  callback IsFeatureEnabledCallback = void(boolean enabled);
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -1568,6 +1571,11 @@ namespace autotestPrivate {
     // Delete a bruschetta VM.
     [supportsPromises] static void removeBruschetta(
       DOMString vm_name, VoidCallback callback);
+
+    // Returns whether a base::Feature is enabled. The state may change because
+    // a Chrome uprev into ChromeOS changed the default feature state.
+    [supportsPromises] static void isFeatureEnabled(
+      DOMString feature_name, IsFeatureEnabledCallback callback);
   };
 
   interface Events {

@@ -283,6 +283,8 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
       var(--cr-fallback-color-state-on-subtle-rgb), .08);
 
+  --cr-fallback-color-base-container: rgba(105, 145, 214, .12);
+
   /* States */
   --cr-hover-background-color: var(--color-sys-state-hover,
       rgba(var(--cr-fallback-color-on-surface-rgb), .08));
@@ -329,5 +331,6 @@ html[chrome-refresh-2023] {
         var(--cr-fallback-color-state-on-subtle-rgb), .10);
     --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
         var(--cr-fallback-color-state-on-subtle-rgb), .16);
+    --cr-fallback-color-base-container: rgba(40, 40, 40, 1);
   }
 }

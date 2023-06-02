@@ -33,14 +33,9 @@ std::string CreateFidoClientDataJson(const url::Origin& origin,
 
 cbor::Value GenerateGetAssertionRequest(const std::string& challenge_b64url);
 
-std::vector<uint8_t> BuildTargetDeviceHandshakeMessage(
-    const std::string& authentication_token,
-    std::array<uint8_t, 32> secret,
-    std::array<uint8_t, 12> nonce);
-
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     int32_t session_id,
-    std::string& shared_secret);
+    const base::span<uint8_t, 32> shared_secret);
 }  // namespace ash::quick_start::requests
 
 #endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_REQUESTS_H

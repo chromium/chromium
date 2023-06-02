@@ -674,10 +674,10 @@ bool AutofillManager::CanShowAutofillUi() const {
   return driver_->CanShowAutofillUi();
 }
 
-void AutofillManager::TriggerReparseInAllFrames(
-    base::OnceCallback<void(bool success)> trigger_reparse_finished_callback) {
-  driver_->TriggerReparseInAllFrames(
-      std::move(trigger_reparse_finished_callback));
+void AutofillManager::TriggerFormExtractionInAllFrames(
+    base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
+  driver_->TriggerFormExtractionInAllFrames(
+      std::move(form_extraction_finished_callback));
 }
 
 void AutofillManager::ParseFormsAsync(

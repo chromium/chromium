@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -70,7 +70,8 @@ ReadingListModel* ReadingListModelFactory::GetForBrowserContext(
 
 // static
 ReadingListModelFactory* ReadingListModelFactory::GetInstance() {
-  return base::Singleton<ReadingListModelFactory>::get();
+  static base::NoDestructor<ReadingListModelFactory> instance;
+  return instance.get();
 }
 
 // static

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_OHTTP_KEY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_OHTTP_KEY_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -21,8 +21,7 @@ class OhttpKeyService;
 
 // Singleton that owns OhttpKeyService objects, one for each active
 // Profile. It listens to profile destroy events and destroy its associated
-// service. It returns nullptr if the profile is in the Incognito mode.
-// It returns a separate object if the profile is in Guest mode.
+// service. It returns nullptr if the profile is in incognito or guest mode.
 class OhttpKeyServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
@@ -36,7 +35,7 @@ class OhttpKeyServiceFactory : public ProfileKeyedServiceFactory {
   OhttpKeyServiceFactory& operator=(const OhttpKeyServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<OhttpKeyServiceFactory>;
+  friend base::NoDestructor<OhttpKeyServiceFactory>;
 
   OhttpKeyServiceFactory();
   ~OhttpKeyServiceFactory() override = default;

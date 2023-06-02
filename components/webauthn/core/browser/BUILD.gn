@@ -33,10 +33,13 @@ static_library("test_support") {
   sources = [
     "mock_internal_authenticator.cc",
     "mock_internal_authenticator.h",
+    "test_passkey_model.cc",
+    "test_passkey_model.h",
   ]
   deps = [
     ":browser",
     "//base/test:test_support",
+    "//components/sync",
     "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",

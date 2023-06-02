@@ -38,6 +38,22 @@ void SVGMPathElement::Trace(Visitor* visitor) const {
 
 SVGMPathElement::~SVGMPathElement() = default;
 
+SVGAnimatedPropertyBase* SVGMPathElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  SVGAnimatedPropertyBase* ret =
+      SVGURIReference::PropertyFromAttribute(attribute_name);
+  if (ret) {
+    return ret;
+  } else {
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGMPathElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  SVGURIReference::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
+}
+
 void SVGMPathElement::BuildPendingResource() {
   ClearResourceReferences();
   if (!isConnected())

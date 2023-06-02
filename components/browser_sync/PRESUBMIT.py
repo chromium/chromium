@@ -10,8 +10,6 @@ for more details about the presubmit API built into depot_tools.
 
 import re
 
-USE_PYTHON3 = True
-
 BROWSER_SYNC_SOURCE_FILES = (r'^components[\\/]browser_sync[\\/].*\.(cc|h)$',)
 
 def CheckChangeLintsClean(input_api, output_api):

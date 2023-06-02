@@ -94,8 +94,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kChromeSyncPromoAddAccount = 15,
     // Chrome Settings > Turn on Sync.
     kChromeSettingsTurnOnSyncButton = 16,
+    // Launched from ChromeOS Projector App for re-authentication.
+    kChromeOSProjectorAppReauth = 17,
 
-    kMaxValue = kChromeSettingsTurnOnSyncButton
+    kMaxValue = kChromeOSProjectorAppReauth
   };
 
   AccountManagerFacade();

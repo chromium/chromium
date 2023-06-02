@@ -31,8 +31,8 @@
 // Unit tests for ios/chrome/browser/web/resources/autofill_controller.js
 namespace {
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Structure for getting element by name using JavaScripts.
 struct ElementByName {
@@ -140,7 +140,10 @@ enum ExtractMask {
 };
 
 const ExtractMask kFormExtractMasks[] = {
-    EXTRACT_NONE, EXTRACT_VALUE, EXTRACT_OPTION_TEXT, EXTRACT_OPTIONS,
+    EXTRACT_NONE,
+    EXTRACT_VALUE,
+    EXTRACT_OPTION_TEXT,
+    EXTRACT_OPTIONS,
 };
 
 // Gets the attributes to check for a mask in `kFormExtractMasks`.
@@ -780,8 +783,9 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
             [NSString stringWithFormat:@"'gChrome~field~%d'", index];
       }
       // Option text is used as value for extract_mask 1 << 1
-      if ((extract_mask & 1 << 1) && [attribute isEqualToString:@"value"])
+      if ((extract_mask & 1 << 1) && [attribute isEqualToString:@"value"]) {
         expected_value = [expected objectForKey:@"value_option_text"];
+      }
       [verifying_javascripts
           addObject:[NSString stringWithFormat:@"%@['%@']===%@", results,
                                                attribute, expected_value]];
@@ -909,7 +913,7 @@ class AutofillControllerJsTest : public PlatformTest {
 
   std::unique_ptr<base::Value> CallJavaScriptFunction(
       const std::string& function,
-      const std::vector<base::Value>& parameters);
+      const base::Value::List& parameters);
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
@@ -997,7 +1001,7 @@ id AutofillControllerJsTest::ExecuteJavaScript(NSString* java_script) {
 
 std::unique_ptr<base::Value> AutofillControllerJsTest::CallJavaScriptFunction(
     const std::string& function,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   return web::test::CallJavaScriptFunctionForFeature(
       web_state(), function, parameters,
       autofill::AutofillJavaScriptFeature::GetInstance());
@@ -1030,74 +1034,68 @@ TEST_F(AutofillControllerJsTest, HasTagName) {
 TEST_F(AutofillControllerJsTest, CombineAndCollapseWhitespace) {
   web::test::LoadHtml(@"<html><body></body></html>", web_state());
 
-  std::vector<base::Value> params;
-  params.push_back(base::Value("foo"));
-  params.push_back(base::Value("bar"));
-  params.push_back(base::Value(false));
+  base::Value::List params;
+
+  params.Append("foo");
+  params.Append("bar");
+  params.Append(false);
   auto result =
       CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foobar", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value("foo"));
-  params.push_back(base::Value("bar"));
-  params.push_back(base::Value(true));
+  params.Append("foo");
+  params.Append("bar");
+  params.Append(true);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foo bar", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value("foo "));
-  params.push_back(base::Value("bar"));
-  params.push_back(base::Value(false));
+  params.Append("foo ");
+  params.Append("bar");
+  params.Append(false);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foo bar", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value("foo"));
-  params.push_back(base::Value(" bar"));
-  params.push_back(base::Value(false));
+  params.Append("foo");
+  params.Append(" bar");
+  params.Append(false);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foo bar", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value("foo"));
-  params.push_back(base::Value(" bar"));
-  params.push_back(base::Value(true));
+  params.Append("foo");
+  params.Append(" bar");
+  params.Append(true);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foo bar", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value("foo  "));
-  params.push_back(base::Value("  bar"));
-  params.push_back(base::Value(false));
+  params.Append("foo  ");
+  params.Append("  bar");
+  params.Append(false);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foo bar", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value("foo"));
-  params.push_back(base::Value("bar "));
-  params.push_back(base::Value(false));
+  params.Append("foo");
+  params.Append("bar ");
+  params.Append(false);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ("foobar ", result->GetString());
-
   params.clear();
 
-  params.push_back(base::Value(" foo"));
-  params.push_back(base::Value("bar"));
-  params.push_back(base::Value(true));
+  params.Append(" foo");
+  params.Append("bar");
+  params.Append(true);
   result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
   ASSERT_TRUE(result->is_string());
   EXPECT_EQ(" foo bar", result->GetString());
@@ -1295,7 +1293,8 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
 
   // Test text and select elements of which the value should be changed.
   const ElementByName elements[] = {
-      {"firstname", 0, -1}, {"state", 0, -1},
+      {"firstname", 0, -1},
+      {"state", 0, -1},
   };
   NSArray* values = @[
     @"new name",
@@ -1372,7 +1371,8 @@ TEST_F(AutofillControllerJsTest, IsTextInput) {
 
 TEST_F(AutofillControllerJsTest, IsSelectElement) {
   const ElementByName elements_expecting_true[] = {
-      {"state", 0, -1}, {"course", 0, -1},
+      {"state", 0, -1},
+      {"course", 0, -1},
   };
 
   TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isSelectElement(%@)",
@@ -1600,7 +1600,7 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormData) {
 TEST_F(AutofillControllerJsTest, WebFormElementToFormDataTooManyFields) {
   NSString* html_fragment = @"<FORM name='Test' action='http://c.com'>";
   // In autofill_controller.js, the maximum number of parsable element is 200
-  // (__gCrWeb.fill.MAX_PARSEABLE_FIELDS = 200). Here an HTML page with 201
+  // (__gCrWeb.fill.MAX_EXTRACTABLE_FIELDS = 200). Here an HTML page with 201
   // elements is generated for testing.
   for (NSUInteger index = 0; index < 201; ++index) {
     html_fragment =

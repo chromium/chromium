@@ -1346,7 +1346,8 @@ void WebContentsViewAura::OnWindowTargetVisibilityChanged(bool visible) {
 }
 
 void WebContentsViewAura::OnWindowOcclusionChanged(
-    aura::Window::OcclusionState occlusion_state) {
+    aura::Window::OcclusionState old_occlusion_state,
+    aura::Window::OcclusionState new_occlusion_state) {
   UpdateWebContentsVisibility();
 }
 

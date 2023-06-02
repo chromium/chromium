@@ -36,6 +36,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
@@ -112,7 +113,7 @@ void AccessCodeCastIntegrationBrowserTest::SetUp() {
   // This command removes the verify pixels switch so that our TestDialog code
   // does not automatically take pixel screenshots.
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      "browser-ui-tests-verify-pixels");
+      ::switches::kVerifyPixels);
 }
 
 void AccessCodeCastIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
@@ -455,8 +456,10 @@ void AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall(
     CastDeviceCountMetrics::SinkSource sink_source,
     ChannelOpenedCallback callback,
     cast_channel::CastSocketOpenParams open_params) {
-  if (!open_channel_response_)
+  if (!open_channel_response_) {
+    std::move(callback).Run(open_channel_response_);
     return;
+  }
 
   // On a successful addition to the media router, we have to mock
   // the channel open response within the Media Router AND that the

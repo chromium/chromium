@@ -286,6 +286,7 @@ chrome.fileManagerPrivate.EntryPropertyName = {
   SYNC_STATUS: 'syncStatus',
   PROGRESS: 'progress',
   SHORTCUT: 'shortcut',
+  SYNC_COMPLETED_TIME: 'syncCompletedTime',
 };
 
 /**
@@ -533,6 +534,7 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   isArbitrarySyncFolder: (boolean|undefined),
  *   syncStatus: (!chrome.fileManagerPrivate.SyncStatus|undefined),
  *   progress: (number|undefined),
+ *   syncCompletedTime: (number|undefined),
  *   shortcut: (boolean|undefined)
  * }}
  */
@@ -931,6 +933,7 @@ chrome.fileManagerPrivate.ResumeParams;
  *   totalBytes: number,
  *   taskId: number,
  *   remainingSeconds: number,
+ *   sourcesScanned: number,
  *   showNotification: boolean,
  *   errorName: string,
  *   pauseParams: (!chrome.fileManagerPrivate.PauseParams|undefined),
@@ -1349,42 +1352,6 @@ chrome.fileManagerPrivate.searchFilesByHashes = function(volumeId, hashList, cal
 chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
 
 /**
- * Creates a ZIP file for the selected files and folders. Folders are
- * recursively explored and zipped. Hidden files and folders (with names
- * starting with a dot) found during recursive exploration are included too.
- * |entries| Entries of the selected files and folders to zip. They must be
- * under the |parentEntry| directory. |parentEntry| Entry of the directory
- * containing the selected files and     folders. This is where the ZIP file
- * will be created, too. |destName| Name of the destination ZIP file. The ZIP
- * file will be created     in the directory specified by |parentEntry|.
- * |callback| Callback called on completion.
- * @param {!Array<Entry>} entries
- * @param {DirectoryEntry} parentEntry
- * @param {string} destName
- * @param {function(number, number): void} callback |zipId| The ID of the ZIP
- *     operation. |totalBytes| Total number of bytes to be zipped.
- */
-chrome.fileManagerPrivate.zipSelection = function(entries, parentEntry, destName, callback) {};
-
-/**
- * Cancels an ongoing ZIP operation. Does nothing if there is no matching
- * ongoing ZIP operation. |zipId| ID of the ZIP operation.
- * @param {number} zipId
- */
-chrome.fileManagerPrivate.cancelZip = function(zipId) {};
-
-/**
- * Gets the progress of an ongoing ZIP operation. |zipId| ID of the ZIP
- * operation.
- * @param {number} zipId
- * @param {function(number, number): void} callback |result| Less than 0 if the
- *     operation is still in progress, 0 if the operation finished successfully,
- *     or greater than 0 if the operation finished with an error. |bytes| Total
- *     number of bytes having been zipped so far.
- */
-chrome.fileManagerPrivate.getZipProgress = function(zipId, callback) {};
-
-/**
  * Retrieves the state of the current drive connection. |callback|
  * @param {function(!chrome.fileManagerPrivate.DriveConnectionState): void}
  *     callback
@@ -1407,21 +1374,6 @@ chrome.fileManagerPrivate.validatePathNameLength = function(parentEntry, name, c
  * @param {!chrome.fileManagerPrivate.ZoomOperationType} operation
  */
 chrome.fileManagerPrivate.zoom = function(operation) {};
-
-/**
- * Requests a Webstore API OAuth2 access token. |callback|
- * @param {function(string): void} callback |accessToken| OAuth2 access token,
- *     or an empty string if failed to fetch.
- */
-chrome.fileManagerPrivate.requestWebStoreAccessToken = function(callback) {};
-
-/**
- * Requests a download url to download the file contents. |entry| The entry to
- * download. |callback|
- * @param {Entry} entry
- * @param {function(string): void} callback |url| Result url.
- */
-chrome.fileManagerPrivate.getDownloadUrl = function(entry, callback) {};
 
 /**
  * Obtains a list of profiles that are logged-in.

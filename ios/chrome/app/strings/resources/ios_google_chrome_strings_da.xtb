@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
+<translation id="2840432500933227975">Åbn Chrome-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chrome.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Det betyder, at Chrome anmoder om mobilwebsitet hver gang.</translation>
 <translation id="3706101708757577809">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner, når du lukker Chrome</translation>
+<translation id="3827545470516145620">Du får standardbeskyttelse på denne enhed</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Din organisation kræver, at du forbliver logget ud af Chrome.</translation>
@@ -150,7 +152,6 @@ Ting, du skal overveje:
   • Hvis Chrome oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger.
 
   • Hvis du aktiverer synkronisering, kan metrics også omfatte oplysninger om de webadresser, du besøger.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Du får standardbeskyttelse til denne Chrome-profil</translation>
 <translation id="9112744793181547300">Vil du angive Chrome som standard?</translation>
 <translation id="9122931302567044771">Det betyder, at Chrome anmoder om computerwebsitet hver gang.</translation>
 </translationbundle>

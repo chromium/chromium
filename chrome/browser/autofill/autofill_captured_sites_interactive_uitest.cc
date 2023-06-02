@@ -275,12 +275,10 @@ class AutofillCapturedSitesInteractiveTest
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     AutofillUiTest::SetUpOnMainThread();
-    if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-      test_delegate()->SetIgnoreBackToBackMessages(
-          ObservedUiEvents::kPreviewFormData, true);
-      test_delegate()->SetIgnoreBackToBackMessages(
-          ObservedUiEvents::kFormDataFilled, true);
-    }
+    test_delegate()->SetIgnoreBackToBackMessages(
+        ObservedUiEvents::kPreviewFormData, true);
+    test_delegate()->SetIgnoreBackToBackMessages(
+        ObservedUiEvents::kFormDataFilled, true);
     recipe_replayer_ =
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
@@ -328,8 +326,7 @@ class AutofillCapturedSitesInteractiveTest
     // prediction. Test will check this attribute on all the relevant input
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kAutofillAcrossIframes, {}},
-                              {features::test::kAutofillServerCommunication,
+        /*enabled_features=*/{{features::test::kAutofillServerCommunication,
                                {}},
                               {features::test::kAutofillShowTypePredictions,
                                {}},

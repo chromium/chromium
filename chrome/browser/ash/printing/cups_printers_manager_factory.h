@@ -14,7 +14,7 @@ class BrowserContext;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace ash {
@@ -37,7 +37,7 @@ class CupsPrintersManagerFactory : public ProfileKeyedServiceFactory {
   CupsPrintersManagerProxy* GetProxy();
 
  private:
-  friend struct base::DefaultSingletonTraits<CupsPrintersManagerFactory>;
+  friend base::NoDestructor<CupsPrintersManagerFactory>;
 
   CupsPrintersManagerFactory();
   ~CupsPrintersManagerFactory() override;

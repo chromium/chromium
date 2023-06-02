@@ -49,6 +49,11 @@ void PrefServiceSyncableFactory::SetPrefModelAssociatorClient(
   pref_model_associator_client_ = pref_model_associator_client;
 }
 
+void PrefServiceSyncableFactory::SetAccountPrefStore(
+    scoped_refptr<PersistentPrefStore> account_pref_store) {
+  account_pref_store_ = std::move(account_pref_store);
+}
+
 std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry) {
   TRACE_EVENT0("browser", "PrefServiceSyncableFactory::CreateSyncable");
@@ -60,11 +65,19 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
     // DualLayerUserPrefStore is used as the main user pref store, and sync is
     // hooked up directly to the underlying account store.
 
-    auto account_pref_store = base::MakeRefCounted<InMemoryPrefStore>();
+    // `account_pref_store_` not being set implies
+    // SyncableEnablePersistentStoreForAccountPreferences flag is disabled. An
+    // in-memory store used in this case instead.
+    CHECK(account_pref_store_ ||
+          !base::FeatureList::IsEnabled(
+              syncer::kSyncEnablePersistentStorageForAccountPreferences));
+    if (!account_pref_store_) {
+      account_pref_store_ = base::MakeRefCounted<InMemoryPrefStore>();
+    }
+
     auto dual_layer_user_pref_store =
         base::MakeRefCounted<sync_preferences::DualLayerUserPrefStore>(
-            user_prefs_, std::move(account_pref_store),
-            pref_model_associator_client_);
+            user_prefs_, account_pref_store_, pref_model_associator_client_);
     auto pref_value_store = std::make_unique<PrefValueStore>(
         managed_prefs_.get(), supervised_user_prefs_.get(),
         extension_prefs_.get(), standalone_browser_prefs_.get(),

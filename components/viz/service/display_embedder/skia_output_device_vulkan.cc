@@ -107,7 +107,10 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
         context_provider_->GetDeviceQueue()->GetVulkanQueueIndex();
     GrBackendSurfaceMutableState state(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                                        queue_index);
-    sk_surface->flush({}, &state);
+    if (GrDirectContext* direct_context =
+            GrAsDirectContext(sk_surface->recordingContext())) {
+      direct_context->flush(sk_surface, {}, &state);
+    }
   }
 
   SkiaOutputDevice::Submit(sync_cpu, std::move(callback));

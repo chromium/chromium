@@ -21,12 +21,16 @@ public class TabSwitcherCustomViewManager {
         /**
          * This is fired when a client has requested a view to be shown.
          *
-         * @param customView The {@link View} that is requested to be added.
+         * @param customView        The {@link View} that is requested to be added.
          * @param backPressRunnable A {@link Runnable} which can be supplied if clients also wish to
-         *         handle back presses while the custom view is shown. A null value can be passed to
-         *         not intercept back presses.
+         *                          handle back presses while the custom view is shown. A null
+         *                          value can be passed to
+         *                          not intercept back presses.
+         * @param clearTabList      A boolean to indicate whether we should clear the tab list when
+         *                          showing the custom view.
          */
-        void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable);
+        void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable,
+                boolean clearTabList);
         /**
          * This is fired when the same client has made the view unavailable for it to be shown
          * any longer.
@@ -56,14 +60,18 @@ public class TabSwitcherCustomViewManager {
     /**
      * A method to request showing a custom view.
      *
-     * @param customView The {@link View} that is being requested by the client to be shown.
+     * @param customView        The {@link View} that is being requested by the client to be shown.
      * @param backPressRunnable A {@link Runnable} which can be supplied if clients also wish to
-     *         handle back presses while the custom view is shown. A null value can be passed to not
-     *         intercept back presses.
+     *                          handle back presses while the custom view is shown. A null value
+     *                          can be passed to not
+     *                          intercept back presses.
+     * @param clearTabList      A boolean to indicate whether we should clear the tab list when
+     *                          showing the custom view.
      *
      * @return true, if the request to show custom view was relayed successfully, false otherwise.
      */
-    public boolean requestView(@NonNull View customView, @Nullable Runnable backPressRunnable) {
+    public boolean requestView(
+            @NonNull View customView, @Nullable Runnable backPressRunnable, boolean clearTabList) {
         if (mIsCustomViewRequested) {
             assert false : "Previous request view is in-flight.";
             // assert statements are removed in release builds.
@@ -71,7 +79,7 @@ public class TabSwitcherCustomViewManager {
         }
         mIsCustomViewRequested = true;
         mCustomView = customView;
-        mDelegate.addCustomView(mCustomView, backPressRunnable);
+        mDelegate.addCustomView(mCustomView, backPressRunnable, clearTabList);
         return true;
     }
 

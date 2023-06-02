@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
+
 // Represents a user-selectable suggestion for a single field within a form
 // on a web page.
 @interface FormSuggestion : NSObject
@@ -22,11 +24,8 @@
 // otherwise.
 @property(copy, readonly, nonatomic) UIImage* icon;
 
-// The integer identifier associated with the suggestion. Identifiers greater
-// than zero are profile or credit card identifiers.
-// The frontend ids will be deprecated. See crbug.com/1394920. Along with it,
-// `identifier` would be changed to PopupItemId.
-@property(assign, readonly, nonatomic) NSInteger identifier;
+// Denotes the popup type.
+@property(assign, readonly, nonatomic) autofill::PopupItemId popupItemId;
 
 // Indicates if the user should re-authenticate with the device before applying
 // the suggestion.
@@ -46,7 +45,7 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                            identifier:(NSInteger)identifier
+                           popupItemId:(autofill::PopupItemId)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
@@ -55,7 +54,7 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                            identifier:(NSInteger)identifier
+                           popupItemId:(autofill::PopupItemId)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth;
 

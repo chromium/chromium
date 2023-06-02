@@ -22,6 +22,7 @@ extern const char kForceSafeSearch[];
 extern const char kGeolocationDisabled[];
 extern const char kSafeSitesEnabled[];
 extern const char kSigninAllowed[];
+extern const char kSigninAllowedOnNextStartup[];
 
 // A special supervised user ID used for child accounts.
 extern const char kChildAccountSUID[];

@@ -22,7 +22,7 @@ include_rules = [
   "+components/variations",
   "+components/variations/net",
   "+components/version_info",
-  "+components/webauthn/android",
+  "+components/webauthn",
   "+components/webdata/common",
   "+crypto",
   "+google_apis",

@@ -22,10 +22,12 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
 class GpuMemoryBufferManager;
+class ClientSharedImageInterface;
 }
 
 namespace viz {
@@ -62,7 +64,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
       scoped_refptr<RasterContextProviderWrapper>
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager);
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface);
   LayerTreeFrameSink(const LayerTreeFrameSink&) = delete;
 
   ~LayerTreeFrameSink() override;
@@ -108,6 +111,9 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager() const {
     return gpu_memory_buffer_manager_;
   }
+  gpu::ClientSharedImageInterface* shared_image_interface() const {
+    return shared_image_interface_.get();
+  }
 
   // If supported, this sets the viz::LocalSurfaceId the LayerTreeFrameSink will
   // use to submit a CompositorFrame.
@@ -151,6 +157,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<ContextLostForwarder> worker_context_lost_forwarder_;
 

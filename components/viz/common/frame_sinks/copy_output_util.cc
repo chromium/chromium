@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
-#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -80,53 +79,6 @@ gfx::Rect ComputeResultRect(const gfx::Rect& area,
 
   return gfx::Rect(static_cast<int>(x), static_cast<int>(y),
                    static_cast<int>(w), static_cast<int>(h));
-}
-
-int GetLumaPlaneSize(const CopyOutputResult& result) {
-  DCHECK(!result.IsEmpty());
-  DCHECK(result.format() == CopyOutputResult::Format::I420_PLANES ||
-         result.format() == CopyOutputResult::Format::NV12_PLANES);
-
-  return result.size().GetArea();
-}
-
-int GetLumaPlaneStride(const CopyOutputResult& result) {
-  DCHECK(!result.IsEmpty());
-  DCHECK(result.format() == CopyOutputResult::Format::I420_PLANES ||
-         result.format() == CopyOutputResult::Format::NV12_PLANES);
-
-  return result.size().width();
-}
-
-int GetChromaPlaneSize(const CopyOutputResult& result) {
-  DCHECK(!result.IsEmpty());
-  DCHECK(result.format() == CopyOutputResult::Format::I420_PLANES ||
-         result.format() == CopyOutputResult::Format::NV12_PLANES);
-
-  const int rounded_width = (result.size().width() + 1) / 2;
-  const int rounded_height = (result.size().height() + 1) / 2;
-
-  if (result.format() == CopyOutputResult::Format::I420_PLANES) {
-    return rounded_height * rounded_width;
-  } else {
-    return 2 * rounded_height * rounded_width;
-  }
-}
-
-int GetChromaPlaneStride(const CopyOutputResult& result) {
-  DCHECK(!result.IsEmpty());
-  DCHECK(result.format() == CopyOutputResult::Format::I420_PLANES ||
-         result.format() == CopyOutputResult::Format::NV12_PLANES);
-
-  const int rounded_width = (result.size().width() + 1) / 2;
-
-  if (result.format() == CopyOutputResult::Format::I420_PLANES) {
-    // For chroma in I420, we need to round width up:
-    return rounded_width;
-  } else {
-    // For chroma in NV12, we need to round width up and multiply by 2:
-    return 2 * rounded_width;
-  }
 }
 
 RenderPassGeometry::RenderPassGeometry() = default;

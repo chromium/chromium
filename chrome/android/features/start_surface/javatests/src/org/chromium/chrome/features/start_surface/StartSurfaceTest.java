@@ -671,56 +671,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
-    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    public void testShow_SingleAsHomepage_BottomSheet() {
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        BottomSheetTestSupport bottomSheetTestSupport = new BottomSheetTestSupport(
-                cta.getRootUiCoordinatorForTesting().getBottomSheetController());
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
-
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
-
-        /** Verifies the case of start surface -> a tab -> tab switcher -> start surface. */
-        StartSurfaceTestUtils.clickFirstTabInCarousel();
-        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
-
-        TabUiTestHelper.enterTabSwitcher(cta);
-        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
-
-        /** Verifies the case of navigating to a tab -> start surface -> tab switcher. */
-        StartSurfaceTestUtils.clickFirstTabInCarousel();
-        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
-
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
-
-        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
-        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @EnableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BottomSheet_WithBottomSheetGtsSupport() {
         if (!mImmediateReturn) {
@@ -1035,7 +985,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @DisabledTest(message = "crbug.com/1170673 - NoInstant_NoReturn version is flaky")
     public void test_UsesSpareTabForNavigationFromSearchBox() {
         if (!mImmediateReturn) return;
 

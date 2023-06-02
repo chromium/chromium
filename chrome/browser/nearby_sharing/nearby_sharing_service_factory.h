@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -42,7 +42,7 @@ class NearbySharingServiceFactory : public ProfileKeyedServiceFactory {
       bool is_supported);
 
  private:
-  friend struct base::DefaultSingletonTraits<NearbySharingServiceFactory>;
+  friend base::NoDestructor<NearbySharingServiceFactory>;
 
   NearbySharingServiceFactory();
   ~NearbySharingServiceFactory() override;

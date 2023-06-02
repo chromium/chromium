@@ -115,6 +115,8 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(std::string device_id_salt,
 MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
     const MediaDeviceSaltAndOrigin& other) = default;
 
+MediaDeviceSaltAndOrigin::~MediaDeviceSaltAndOrigin() = default;
+
 void GetDefaultMediaDeviceID(
     MediaDeviceType device_type,
     int render_process_id,
@@ -148,8 +150,9 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   url::Origin origin;
   GURL url;
   net::SiteForCookies site_for_cookies;
-  url::Origin top_level_origin;
+  url::Origin main_frame_origin;
   std::string frame_salt;
+  absl::optional<ukm::SourceId> source_id;
   bool has_focus = true;
   bool is_background = false;
 
@@ -157,10 +160,11 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
     origin = frame_host->GetLastCommittedOrigin();
     url = frame_host->GetLastCommittedURL();
     site_for_cookies = frame_host->ComputeSiteForCookies();
-    top_level_origin = frame_host->frame_tree_node()
-                           ->frame_tree()
-                           .GetMainFrame()
-                           ->GetLastCommittedOrigin();
+    main_frame_origin = frame_host->frame_tree_node()
+                            ->frame_tree()
+                            .GetMainFrame()
+                            ->GetLastCommittedOrigin();
+    source_id = frame_host->GetPageUkmSourceId();
     frame_salt = frame_host->GetMediaDeviceIDSaltBase();
     has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
 
@@ -177,7 +181,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
     are_persistent_ids_allowed =
         GetContentClient()->browser()->ArePersistentMediaDeviceIDsAllowed(
             process_host->GetBrowserContext(), url, site_for_cookies,
-            top_level_origin);
+            main_frame_origin);
     device_id_salt = process_host->GetBrowserContext()->GetMediaDeviceIDSalt();
     group_id_salt = device_id_salt;
   }
@@ -192,8 +196,11 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   // thus appending a constant.
   group_id_salt += frame_salt + "groupid";
 
-  return {std::move(device_id_salt), std::move(group_id_salt),
-          std::move(origin), has_focus, is_background};
+  MediaDeviceSaltAndOrigin salt_and_origin(
+      std::move(device_id_salt), std::move(group_id_salt), std::move(origin),
+      has_focus, is_background);
+  salt_and_origin.ukm_source_id = source_id;
+  return salt_and_origin;
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(

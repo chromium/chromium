@@ -1145,6 +1145,9 @@ public class TabImpl implements Tab {
         if (!maybeShowNativePage(url.getSpec(), isReload)) {
             showRenderedPage();
         }
+
+        CriticalPersistedTabData.from(this).setLastNavigationCommittedTimestampMillis(
+                System.currentTimeMillis());
     }
 
     /**

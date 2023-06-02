@@ -63,7 +63,7 @@ BASE_FEATURE(kRealboxWidthBehavior,
 // searchbox.
 BASE_FEATURE(kRealboxRoundedCorners,
              "NtpRealboxRoundedCorners",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the real search box ("realbox") on the New Tab page will show a
 // Google (g) icon instead of the typical magnifying glass (aka loupe).
@@ -76,15 +76,15 @@ BASE_FEATURE(kNtpAlphaBackgroundCollections,
              "NtpAlphaBackgroundCollections",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, NTP background image links will be checked for HTTP status
+// errors."
+BASE_FEATURE(kNtpBackgroundImageErrorDetection,
+             "NtpBackgroundImageErrorDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, chrome cart module will be shown.
 BASE_FEATURE(kNtpChromeCartModule,
              "NtpChromeCartModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, Comprehensive Theming color changes will be applied to elements
-// on the New Tab Page, excluding the Realbox.
-BASE_FEATURE(kNtpComprehensiveTheming,
-             "NtpComprehensiveTheming",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Comprehensive Theming color changes will be applied to the
@@ -147,6 +147,11 @@ BASE_FEATURE(kNtpWideModules,
 BASE_FEATURE(kNtpModulesOrder,
              "NtpModulesOrder",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If true, displays a horizontal scrollbar on overflowing modules.
+BASE_FEATURE(kNtpModulesOverflowScrollbar,
+             "NtpModulesOverflowScrollbar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, modules will be able to be reordered via dragging and dropping
 BASE_FEATURE(kNtpModulesDragAndDrop,
@@ -303,16 +308,6 @@ BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,
 BASE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted,
              "NtpHistoryClustersModuleFetchClustersUntilExhausted",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<double>
-    kNtpElementLuminosityChangeForLightBackgroundParam{
-        &kNtpComprehensiveTheming,
-        "NtpElementLuminosityChangeForLightBackgroundParam", 0.1};
-
-const base::FeatureParam<double>
-    kNtpElementLuminosityChangeForDarkBackgroundParam{
-        &kNtpComprehensiveTheming,
-        "NtpElementLuminosityChangeForDarkBackgroundParam", 0.2};
 
 const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam{
     &kNtpRemoveScrim, "NtpOgbButtonSelectorParam", ".gb_A"};

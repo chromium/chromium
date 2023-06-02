@@ -21,8 +21,6 @@ typedef enum CurrentState {
   STATE_DOWNLOAD_COMPLETE = 8,
   STATE_EXTRACTING = 9,
   STATE_APPLYING_DIFFERENTIAL_PATCH = 10,
-  // TODO(omaha3): Should we move STATE_DOWNLOAD_COMPLETE here and eliminate
-  // STATE_READY_TO_INSTALL?
   STATE_READY_TO_INSTALL = 11,
   STATE_WAITING_TO_INSTALL = 12,
   STATE_INSTALLING = 13,
@@ -65,7 +63,6 @@ interface IAppVersionWeb : IDispatch {
   // Returns the count of the Packages in the AppVersion.
   [propget] HRESULT packageCount([out, retval] long* count);
 
-  // TODO(omaha3): Implement this after a security review.
   // Returns an IDispatch of the Package in the AppVersion at the specified
   // 0-based index.
   [propget] HRESULT packageWeb([in] long index,
@@ -91,7 +88,6 @@ BEGIN_INTERFACE(
 ]
 interface ICurrentState : IDispatch {
   // This interface is exposed to web clients!
-  // TODO(omaha3): Update valid comments once we settle on an implementation.
 
   // A value from the CurrentState enum. This value determines which of the
   // properties below are valid.
@@ -120,8 +116,6 @@ interface ICurrentState : IDispatch {
 
   [propget] HRESULT nextRetryTime([out, retval] ULONGLONG*);
 
-  // TODO(omaha 3): Need some way to indicate reconnecting, retrying, etc.
-
   // The following two properties are only valid when stateValue is
   // STATE_INSTALLING or STATE_INSTALL_COMPLETE.
 
@@ -147,12 +141,8 @@ interface ICurrentState : IDispatch {
 
   // The following three properties are only valid when stateValue is
   // STATE_ERROR or STATE_INSTALL_COMPLETE.
-  // TODO(omaha3): If STATE_DOWNLOAD_COMPLETE or STATE_READY_TO_INSTALL becomes
-  // a terminal state, does it support completion messages?
-
+  //
   // Completion message, localized in the specified language.
-  // TODO(omaha3): If we're going to have bundle error messages too, should the
-  // language be at bundle level? Should bundle have its own language setter?
   [propget] HRESULT completionMessage([out, retval] BSTR*);
 
   // Application installer result code. This is to be used as additional

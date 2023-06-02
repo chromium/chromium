@@ -756,6 +756,11 @@ void LocalFrameClientImpl::DidObserveLoadingBehavior(
     web_frame_->Client()->DidObserveLoadingBehavior(behavior);
 }
 
+void LocalFrameClientImpl::DidObserveJavaScriptFrameworks(
+    const JavaScriptFrameworkDetectionResult& result) {
+  web_frame_->Client()->DidObserveJavaScriptFrameworks(result);
+}
+
 void LocalFrameClientImpl::DidObserveSubresourceLoad(
     const SubresourceLoadMetrics& subresource_load_metrics) {
   if (web_frame_->Client()) {

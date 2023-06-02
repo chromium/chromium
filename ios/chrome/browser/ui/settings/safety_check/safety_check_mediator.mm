@@ -74,14 +74,6 @@ namespace {
 // The size of leading symbol icons.
 constexpr NSInteger kLeadingSymbolImagePointSize = 22;
 
-constexpr char kSafetyCheckMetricsUpdates[] =
-    "Settings.SafetyCheck.UpdatesResult";
-constexpr char kSafetyCheckMetricsPasswords[] =
-    "Settings.SafetyCheck.PasswordsResult";
-constexpr char kSafetyCheckMetricsSafeBrowsing[] =
-    "Settings.SafetyCheck.SafeBrowsingResult";
-constexpr char kSafetyCheckInteractions[] = "Settings.SafetyCheck.Interactions";
-
 typedef NSArray<TableViewItem*>* ItemArray;
 
 typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
@@ -566,9 +558,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
       if (!IsPasswordCheckupEnabled() && !noInsecurePasswords) {
-        base::UmaHistogramEnumeration(
-            kSafetyCheckMetricsPasswords,
-            safety_check::PasswordsStatus::kCompromisedExist);
+        if (wasRunning) {
+          base::UmaHistogramEnumeration(
+              kSafetyCheckMetricsPasswords,
+              safety_check::PasswordsStatus::kCompromisedExist);
+        }
         return PasswordCheckRowStateUnmutedCompromisedPasswords;
       } else if (self.currentPasswordCheckState == PasswordCheckState::kIdle) {
         // Safe state is only possible after the state transitioned from
@@ -602,10 +596,19 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
           safety_check::PasswordsStatus::kCompromisedExist);
       return PasswordCheckRowStateUnmutedCompromisedPasswords;
     case WarningType::kReusedPasswordsWarning:
+      base::UmaHistogramEnumeration(
+          kSafetyCheckMetricsPasswords,
+          safety_check::PasswordsStatus::kReusedPasswordsExist);
       return PasswordCheckRowStateReusedPasswords;
     case WarningType::kWeakPasswordsWarning:
+      base::UmaHistogramEnumeration(
+          kSafetyCheckMetricsPasswords,
+          safety_check::PasswordsStatus::kWeakPasswordsExist);
       return PasswordCheckRowStateWeakPasswords;
     case WarningType::kDismissedWarningsWarning:
+      base::UmaHistogramEnumeration(
+          kSafetyCheckMetricsPasswords,
+          safety_check::PasswordsStatus::kMutedCompromisedExist);
       return PasswordCheckRowStateDismissedWarnings;
     case WarningType::kNoInsecurePasswordsWarning:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,

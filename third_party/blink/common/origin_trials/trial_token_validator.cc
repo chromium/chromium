@@ -13,6 +13,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
@@ -307,6 +308,29 @@ bool TrialTokenValidator::RevalidateTokenAndTrial(
       ValidateTokenEnabled(*policy, trial_name, token_expiry_time,
                            usage_restriction, token_signature, current_time);
   return status == OriginTrialTokenStatus::kSuccess;
+}
+
+std::vector<OriginTrialFeature> TrialTokenValidator::FeaturesEnabledByTrial(
+    base::StringPiece trial_name) {
+  std::vector<OriginTrialFeature> enabled_features;
+  base::span<const OriginTrialFeature> features =
+      origin_trials::FeaturesForTrial(trial_name);
+  for (const OriginTrialFeature feature : features) {
+    if (origin_trials::FeatureEnabledForOS(feature)) {
+      enabled_features.push_back(feature);
+      // Also add implied features
+      for (const OriginTrialFeature implied_feature :
+           origin_trials::GetImpliedFeatures(feature)) {
+        enabled_features.push_back(implied_feature);
+      }
+    }
+  }
+  return enabled_features;
+}
+
+bool TrialTokenValidator::TrialEnablesFeaturesForOS(
+    base::StringPiece trial_name) {
+  return !FeaturesEnabledByTrial(trial_name).empty();
 }
 
 bool TrialTokenValidator::RequestEnablesFeature(const net::URLRequest* request,

@@ -18,6 +18,7 @@
 #import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
+#include "media/capture/video/video_capture_metrics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -121,6 +122,11 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
       capture_device.reset();
     }
   }
+
+  if (capture_device) {
+    LogCaptureDeviceHashedModelId(descriptor);
+  }
+
   return capture_device ? VideoCaptureErrorOrDevice(std::move(capture_device))
                         : VideoCaptureErrorOrDevice(
                               VideoCaptureError::kMacSetCaptureDeviceFailed);

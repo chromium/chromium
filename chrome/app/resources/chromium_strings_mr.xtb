@@ -18,6 +18,7 @@
 <translation id="1414495520565016063">तुम्ही Chromium मध्ये साइन इन केले आहे!</translation>
 <translation id="1524282610922162960">Chromium टॅब शेअर करा</translation>
 <translation id="1553461853655228091">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chromium ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
+<translation id="1555506416658437797">पेमेंट पद्धती संपादित करा.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1625909126243026060">Chromium मधील महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="1632539827495546968">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही Chromium ब्राउझरमध्ये <ph name="GUEST_LINK_BEGIN" />अतिथी मोड<ph name="GUEST_LINK_END" /> वापरू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
@@ -133,10 +134,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chromium प्रोफाइलमध्ये साइन इन केलेले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, Chromium तुमच्याकरिता तुमची स्वतःची प्रोफाइल तयार करू शकते.</translation>
 <translation id="391789666908693569">तुमचे खाते <ph name="MANAGER_NAME" /> द्वारे व्यवस्थापित केले जाते. तुमचा अ‍ॅडमिनिस्ट्रेटर ही Chromium ब्राउझर प्रोफाइल आणि त्यातील डेटा, जसे की बुकमार्क, इतिहास आणि पासवर्ड पाहू व संपादित करू शकतो.</translation>
 <translation id="3945058413678539331">Chromium पासवर्ड कॉपी करण्याचा प्रयत्‍न करत आहे. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
+<translation id="3962623956404948996">Chromium हे ही फाइल स्कॅन करण्याच्या शिफारशी करते, कारण ती धोकादायक असू शकते</translation>
 <translation id="3997429360543082038">ChromiumOS बद्दल</translation>
 <translation id="4019629340646866719">ChromiumOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chromium उत्कृष्ट बनव‍िण्यात मदत करा</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
+<translation id="4050599136622776556">Chromium हे पेमेंट पद्धती संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
+<translation id="4055805654398742145">Password Manager</translation>
 <translation id="4148957013307229264">स्थापना करत आहे...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chromium</translation>
 <translation id="421369550622382712">Chromium साठी उत्कृष्ट ॲप्स, गेम, विस्तार आणि थीम शोधा</translation>

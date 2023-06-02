@@ -40,7 +40,7 @@ class MockDataRetriever : public WebAppDataRetriever {
   MOCK_METHOD(void,
               GetIcons,
               (content::WebContents * web_contents,
-               base::flat_set<GURL> icon_urls,
+               const base::flat_set<GURL>& icon_urls,
                bool skip_page_favicons,
                GetIconsCallback callback),
               (override));

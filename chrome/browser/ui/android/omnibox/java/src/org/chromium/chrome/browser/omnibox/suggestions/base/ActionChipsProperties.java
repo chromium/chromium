@@ -22,13 +22,11 @@ public class ActionChipsProperties {
      * Views below can be used by any instance of the carousel, guaranteeing that each instance
      * will look like every other.
      */
-    @IntDef({ViewType.HEADER, ViewType.CHIP})
+    @IntDef({ViewType.CHIP})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
-        /** Header element, used to provide leading space. */
-        public int HEADER = 0;
         /** Carousel item is a PedalView instance. */
-        public int CHIP = 1;
+        public int CHIP = 0;
     }
 
     /** Action Chip descriptors. */

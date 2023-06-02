@@ -120,11 +120,11 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
 
   if (const auto* properties = fragment_to_paint_->PaintProperties()) {
     // See comments for ScrollTranslation in object_paint_properties.h
-    // for the reason of adding ScrollOrigin(). The paint offset will
+    // for the reason of adding ScrollOriginInt(). The paint offset will
     // be used only for the scrolling contents that are not painted through
     // descendant objects' Paint() method, e.g. inline boxes.
     if (properties->ScrollTranslation())
-      paint_offset_ += PhysicalOffset(box.ScrollOrigin());
+      paint_offset_ += PhysicalOffset(box.ScrollOriginInt());
   }
 
   // We calculated cull rects for PaintLayers only.

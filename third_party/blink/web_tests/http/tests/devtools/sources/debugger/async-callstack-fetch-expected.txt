@@ -3,21 +3,21 @@ Tests asynchronous call stacks for fetch.
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) chained1 (async-callstack-fetch.js:18)
+    0) chained1 (async-callstack-fetch.js:21)
     [Promise.then]
-    0) doFetch (async-callstack-fetch.js:17)
+    0) doFetch (async-callstack-fetch.js:20)
     [setTimeout]
-    0) testFunction (async-callstack-fetch.js:12)
+    0) testFunction (async-callstack-fetch.js:15)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) chained4 (async-callstack-fetch.js:22)
+    0) chained4 (async-callstack-fetch.js:25)
     [Promise.then]
-    0) doFetch (async-callstack-fetch.js:21)
+    0) doFetch (async-callstack-fetch.js:24)
     [setTimeout]
-    0) testFunction (async-callstack-fetch.js:12)
+    0) testFunction (async-callstack-fetch.js:15)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

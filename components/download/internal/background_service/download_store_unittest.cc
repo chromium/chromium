@@ -71,7 +71,7 @@ class DownloadStoreTest : public testing::Test {
 
  protected:
   std::map<std::string, protodb::Entry> db_entries_;
-  raw_ptr<leveldb_proto::test::FakeDB<protodb::Entry>> db_;
+  raw_ptr<leveldb_proto::test::FakeDB<protodb::Entry>, DanglingUntriaged> db_;
   std::unique_ptr<DownloadStore> store_;
   absl::optional<bool> hard_recover_result_;
 };

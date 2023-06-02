@@ -206,6 +206,16 @@ export class SettingsSetupFingerprintDialogElement extends
    * on scan results.
    */
   private onScanReceived_(scan: FingerprintScan): void {
+    if (scan.isComplete) {
+      this.problemMessage_ = '';
+      this.step_ = FingerprintSetupStep.READY;
+      this.clearSensorMessageTimeout_();
+      const event =
+          new CustomEvent('add-fingerprint', {bubbles: true, composed: true});
+      this.dispatchEvent(event);
+      this.percentComplete_ = scan.percentComplete;
+      return;
+    }
     switch (this.step_) {
       case FingerprintSetupStep.LOCATE_SCANNER:
         this.$.arc.reset();
@@ -214,16 +224,7 @@ export class SettingsSetupFingerprintDialogElement extends
         this.setProblem_(scan.result);
         break;
       case FingerprintSetupStep.MOVE_FINGER:
-        if (scan.isComplete) {
-          this.problemMessage_ = '';
-          this.step_ = FingerprintSetupStep.READY;
-          this.clearSensorMessageTimeout_();
-          const event = new CustomEvent(
-              'add-fingerprint', {bubbles: true, composed: true});
-          this.dispatchEvent(event);
-        } else {
-          this.setProblem_(scan.result);
-        }
+        this.setProblem_(scan.result);
         this.percentComplete_ = scan.percentComplete;
         break;
       case FingerprintSetupStep.READY:

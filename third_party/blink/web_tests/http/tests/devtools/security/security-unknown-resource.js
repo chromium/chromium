@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SecurityTestRunner} from 'security_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that requests to unresolved origins result in unknown security state and show up in the sidebar origin list.\n`);
-  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   var request = SDK.NetworkRequest.create(

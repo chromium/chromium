@@ -67,7 +67,7 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<ThemeTrackingImageView> view_ = nullptr;
+  raw_ptr<ThemeTrackingImageView, DanglingUntriaged> view_ = nullptr;
 
   bool is_dark_ = false;
 };

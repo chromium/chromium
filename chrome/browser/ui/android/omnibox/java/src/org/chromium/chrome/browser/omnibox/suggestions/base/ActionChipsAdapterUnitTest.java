@@ -36,10 +36,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ActionChipsAdapterUnitTest {
-    private static final int HEADER_INDEX = 0;
-    private static final int CHIP_1_INDEX = 1;
-    private static final int CHIP_2_INDEX = 2;
-    private static final int CHIP_3_WITH_NO_VIEW_INDEX = 3;
+    private static final int CHIP_1_INDEX = 0;
+    private static final int CHIP_2_INDEX = 1;
+    private static final int CHIP_3_WITH_NO_VIEW_INDEX = 2;
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock View mHeader;
     private @Mock View mChip1;
@@ -52,22 +51,17 @@ public class ActionChipsAdapterUnitTest {
 
     @Before
     public void setUp() {
-        // Header
-        mModel.add(new ListItem(
-                ActionChipsProperties.ViewType.HEADER, new PropertyModel(ChipProperties.ALL_KEYS)));
-        doReturn(mHeader).when(mLayoutManager).findViewByPosition(HEADER_INDEX);
-
-        // Chip with View, 1
+        // Chip with View, 0
         mModel.add(new ListItem(
                 ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mChip1).when(mLayoutManager).findViewByPosition(CHIP_1_INDEX);
 
-        // Chip with View, 2
+        // Chip with View, 1
         mModel.add(new ListItem(
                 ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mChip2).when(mLayoutManager).findViewByPosition(CHIP_2_INDEX);
 
-        // Chip with no View, 3
+        // Chip with no View, 2
         mModel.add(new ListItem(
                 ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
 
@@ -123,11 +117,6 @@ public class ActionChipsAdapterUnitTest {
     @Test(expected = AssertionError.class)
     public void setSelectedItem_rejectPositionOutOfRange() {
         mAdapter.setSelectedItem(mAdapter.getItemCount());
-    }
-
-    @Test(expected = AssertionError.class)
-    public void setSelectedItem_rejectHeaderView() {
-        mAdapter.setSelectedItem(0);
     }
 
     // The following tests build on top of the setSelectedItem tests.

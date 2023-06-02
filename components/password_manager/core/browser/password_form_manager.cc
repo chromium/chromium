@@ -586,8 +586,11 @@ void PasswordFormManager::UpdateStateOnUserInput(
   // modified, the user might have modified the username.
   std::u16string generated_password =
       password_save_manager_->GetGeneratedPassword();
-  if (votes_uploader_.get_generation_element() == field_id)
+  CHECK(!generated_password.empty());
+  if (votes_uploader_.get_generation_element() == field_id) {
     generated_password = field_value;
+    CHECK(!generated_password.empty());
+  }
   PresaveGeneratedPasswordInternal(*observed_form(), generated_password);
 }
 

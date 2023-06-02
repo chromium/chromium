@@ -130,6 +130,13 @@ class AppBannerManagerAndroid : public AppBannerManager {
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
+  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override;
+  // Locally installed apps do not exist on Android.
+  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override;
+  void SaveInstallationDismissedForMl(const GURL& manifest_id) override;
+  void SaveInstallationIgnoredForMl(const GURL& manifest_id) override;
+  void SaveInstallationAcceptedForMl(const GURL& manifest_id) override;
+  bool IsMlPromotionBlockedByHistoryGuardrail(const GURL& manifest_id) override;
 
   void CheckEngagementForAmbientBadge();
 

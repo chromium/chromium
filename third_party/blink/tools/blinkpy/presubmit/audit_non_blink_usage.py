@@ -319,6 +319,7 @@ _CONFIG = [
 
             # cc painting and raster types.
             'cc::CategorizedWorkerPool',
+            'cc::ColorFilter',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
             'cc::PaintCanvas',
@@ -1302,7 +1303,6 @@ _CONFIG = [
             'gpu::MailboxHolder',
             'media::.+',
             'libyuv::.+',
-            'viz::SkColorTypeToResourceFormat',
             'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ]
     },
@@ -1867,6 +1867,16 @@ _CONFIG = [
             'shared_highlighting::kFragmentTextBackgroundColorARGB',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/events/keyboard_event.h',
+            'third_party/blink/renderer/core/events/keyboard_event.cc',
+        ],
+        'allowed': [
+            'base::StringPiece16',
+            'base::i18n::UTF16CharIterator',
+        ]
+    }
 ]
 
 

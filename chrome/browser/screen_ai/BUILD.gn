@@ -1,0 +1,63 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+if (is_chromeos_ash) {
+  source_set("screen_ai_chromeos_installer") {
+    sources = [
+      "screen_ai_chromeos_installer.cc",
+      "screen_ai_chromeos_installer.h",
+    ]
+
+    deps = [
+      ":screen_ai_install_state",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+      "//components/services/screen_ai/public/cpp:utilities",
+    ]
+  }
+}
+
+source_set("screen_ai_install_state") {
+  sources = [
+    "screen_ai_install_state.cc",
+    "screen_ai_install_state.h",
+  ]
+
+  deps = [
+    ":prefs",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//components/prefs",
+    "//components/services/screen_ai/public/cpp:utilities",
+    "//ui/accessibility:ax_base",
+  ]
+}
+
+source_set("screen_ai_service_router_factory") {
+  sources = [
+    "screen_ai_service_router.cc",
+    "screen_ai_service_router.h",
+    "screen_ai_service_router_factory.cc",
+    "screen_ai_service_router_factory.h",
+  ]
+
+  deps = [
+    ":screen_ai_install_state",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/services/screen_ai/public/mojom",
+    "//content/public/browser",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [ "//components/prefs" ]
+}

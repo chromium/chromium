@@ -254,7 +254,8 @@ enum EntryPropertyName {
   isArbitrarySyncFolder,
   syncStatus,
   progress,
-  shortcut
+  shortcut,
+  syncCompletedTime
 };
 
 // Source of the volume data.
@@ -561,6 +562,10 @@ dictionary EntryProperties {
   // E.g., pasting, syncing. Note: currently, this is exclusively being used
   // for Drive syncing.
   double? progress;
+
+  // Time in milliseconds since the epoch when the file last received a
+  // "completed" sync status.
+  double? syncCompletedTime;
 
   // True if the entry is a shortcut.
   boolean? shortcut;
@@ -1156,6 +1161,14 @@ dictionary ProgressStatus {
   // The estimate time to finish the operation.
   double remainingSeconds;
 
+  // Number of sources scanned. Only used when in SCANNING state.
+  // When scanning files, the progress is roughly the percentage of the
+  // number of scanned items out of the total items. This isn't always
+  // accurate, e.g. when uploading entire folders or because some items
+  // are not scanned at all. The goal is to show the user that some
+  // progress is happening.
+  long sourcesScanned;
+
   // Whether notifications should be shown on progress status.
   boolean showNotification;
 
@@ -1348,26 +1361,10 @@ callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
 // contain at most one path per hash.
 callback SearchFilesByHashesCallback = void(object paths);
 
-// |zipId| The ID of the ZIP operation.
-// |totalBytes| Total number of bytes to be zipped.
-callback ZipSelectionCallback = void(long zipId, double totalBytes);
-
-// |result| Less than 0 if the operation is still in progress, 0 if the
-// operation finished successfully, or greater than 0 if the operation finished
-// with an error.
-// |bytes| Total number of bytes having been zipped so far.
-callback ZipProgressCallback = void(long result, double bytes);
-
 callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 
 // |result| true if the length is in the valid range, false otherwise.
 callback ValidatePathNameLengthCallback = void(boolean result);
-
-// |accessToken| OAuth2 access token, or an empty string if failed to fetch.
-callback RequestWebStoreAccessTokenCallback = void(DOMString accessToken);
-
-// |url| Result url.
-callback GetUrlCallback = void(DOMString url);
 
 // |profiles| List of profile information.
 // |runningProfile| ID of the profile that runs the application instance.
@@ -1698,31 +1695,6 @@ interface Functions {
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
 
-  // Creates a ZIP file for the selected files and folders. Folders are
-  // recursively explored and zipped. Hidden files and folders (with names
-  // starting with a dot) found during recursive exploration are included too.
-  // |entries| Entries of the selected files and folders to zip. They must be
-  //     under the |parentEntry| directory.
-  // |parentEntry| Entry of the directory containing the selected files and
-  //     folders. This is where the ZIP file will be created, too.
-  // |destName| Name of the destination ZIP file. The ZIP file will be created
-  //     in the directory specified by |parentEntry|.
-  // |callback| Callback called on completion.
-  [nocompile]
-  static void zipSelection([instanceOf=Entry] object[] entries,
-                           [instanceOf=DirectoryEntry] object parentEntry,
-                           DOMString destName,
-                           ZipSelectionCallback callback);
-
-  // Cancels an ongoing ZIP operation.
-  // Does nothing if there is no matching ongoing ZIP operation.
-  // |zipId| ID of the ZIP operation.
-  static void cancelZip(long zipId);
-
-  // Gets the progress of an ongoing ZIP operation.
-  // |zipId| ID of the ZIP operation.
-  static void getZipProgress(long zipId, ZipProgressCallback callback);
-
   // Retrieves the state of the current drive connection.
   // |callback|
   static void getDriveConnectionState(GetDriveConnectionStateCallback callback);
@@ -1740,18 +1712,6 @@ interface Functions {
   // Changes the zoom factor of the Files app.
   // |operation| Zooming mode.
   static void zoom(ZoomOperationType operation);
-
-  // Requests a Webstore API OAuth2 access token.
-  // |callback|
-  static void requestWebStoreAccessToken(
-      RequestWebStoreAccessTokenCallback callback);
-
-  // Requests a download url to download the file contents.
-  // |entry| The entry to download.
-  // |callback|
-  [nocompile]
-  static void getDownloadUrl([instanceOf=Entry] object entry,
-                             GetUrlCallback callback);
 
   // Obtains a list of profiles that are logged-in.
   static void getProfiles(GetProfilesCallback callback);

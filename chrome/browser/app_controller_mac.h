@@ -43,6 +43,11 @@ class ColorProvider;
                 NSApplicationDelegate,
                 ASWebAuthenticationSessionWebBrowserSessionHandling>
 
+// The app-wide singleton AppController. Guaranteed to be the delegate of NSApp
+// inside of Chromium (not inside of app shims; see AppShimDelegate). Guaranteed
+// to not be nil.
+@property(readonly, nonatomic, class) AppController* sharedController;
+
 @property(readonly, nonatomic) BOOL startupComplete;
 @property(readonly, nonatomic) Profile* lastProfileIfLoaded;
 
@@ -50,6 +55,11 @@ class ColorProvider;
 // TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
 // |-lastProfileIfLoaded|.
 @property(readonly, nonatomic) Profile* lastProfile;
+
+// Do not create new instances of AppController; use the `sharedController`
+// property so that the invariants of there always being exactly one
+// AppController and that that instance is the NSApp delegate always hold true.
+- (instancetype)init NS_UNAVAILABLE;
 
 // This method is called very early in application startup after the main menu
 // has been created.

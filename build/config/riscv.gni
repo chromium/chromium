@@ -4,7 +4,8 @@
 
 import("//build/config/v8_target_cpu.gni")
 
-if (current_cpu == "riscv64" || v8_current_cpu == "riscv64") {
+if (current_cpu == "riscv64" || v8_current_cpu == "riscv64" ||
+    current_cpu == "riscv32" || v8_current_cpu == "riscv32") {
   declare_args() {
     # RISCV Vector extension compilation flag.
     riscv_use_rvv = false

@@ -41,6 +41,9 @@ enum class DebugDataType {
   kSourceStorageLimit,
   kSourceSuccess,
   kSourceUnknownError,
+  // TODO(tquintanilla): Add interop test for `kSourceDestinationRateLimit`
+  // case.
+  kSourceDestinationRateLimit,
   kTriggerNoMatchingSource,
   kTriggerAttributionsPerSourceDestinationLimit,
   kTriggerNoMatchingFilterData,
@@ -72,15 +75,21 @@ absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return absl::nullopt;
     case StorableSource::Result::kSuccess:
-    // `kSourceSuccess` is sent for unattributed reporting origin limit to
-    // mitigate the security concerns on reporting this error. Because
-    // `kExcessiveReportingOrigins` is thrown based on information across
-    // reporting origins, reporting on it would violate the same-origin policy.
+    // `kSourceSuccess` is sent for unattributed reporting origin limit and max
+    // unique destinations per source site to mitigate the security concerns on
+    // reporting these errors. Because `kDestinationGlobalLimitReached` and
+    // `kExcessiveReportingOrigins` are thrown based on information across
+    // reporting origins, reporting on them would violate the same-origin
+    // policy.
     case StorableSource::Result::kExcessiveReportingOrigins:
+    case StorableSource::Result::kDestinationGlobalLimitReached:
       return DataTypeIfCookieSet(DebugDataType::kSourceSuccess,
                                  is_debug_cookie_set);
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
       return DebugDataType::kSourceDestinationLimit;
+    case StorableSource::Result::kDestinationReportingLimitReached:
+    case StorableSource::Result::kDestinationBothLimitsReached:
+      return DebugDataType::kSourceDestinationRateLimit;
     case StorableSource::Result::kSuccessNoised:
       return DataTypeIfCookieSet(DebugDataType::kSourceNoised,
                                  is_debug_cookie_set);
@@ -200,6 +209,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "source-storage-limit";
     case DebugDataType::kSourceSuccess:
       return "source-success";
+    case DebugDataType::kSourceDestinationRateLimit:
+      return "source-destination-rate-limit";
     case DebugDataType::kSourceUnknownError:
       return "source-unknown-error";
     case DebugDataType::kTriggerNoMatchingSource:
@@ -278,6 +289,10 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
       break;
     case DebugDataType::kSourceStorageLimit:
       SetLimit(data_body, result.max_sources_per_origin);
+      break;
+    case DebugDataType::kSourceDestinationRateLimit:
+      SetLimit(data_body,
+               result.max_destinations_per_rate_limit_window_reporting_origin);
       break;
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceSuccess:
@@ -373,6 +388,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kSourceStorageLimit:
     case DebugDataType::kSourceSuccess:
     case DebugDataType::kSourceUnknownError:
+    case DebugDataType::kSourceDestinationRateLimit:
       NOTREACHED();
       return base::Value::Dict();
   }
@@ -387,16 +403,16 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
   return dict;
 }
 
-GURL ReportURL(const attribution_reporting::SuitableOrigin& reporting_origin) {
+}  // namespace
+
+GURL AttributionDebugReport::ReportUrl() const {
   static constexpr char kPath[] =
       "/.well-known/attribution-reporting/debug/verbose";
 
   GURL::Replacements replacements;
   replacements.SetPathStr(kPath);
-  return reporting_origin->GetURL().ReplaceComponents(replacements);
+  return reporting_origin_->GetURL().ReplaceComponents(replacements);
 }
-
-}  // namespace
 
 // static
 absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
@@ -464,10 +480,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
 AttributionDebugReport::AttributionDebugReport(
     base::Value::List report_body,
-    const attribution_reporting::SuitableOrigin& reporting_origin,
+    attribution_reporting::SuitableOrigin reporting_origin,
     base::Time original_report_time)
     : report_body_(std::move(report_body)),
-      report_url_(ReportURL(reporting_origin)),
+      reporting_origin_(std::move(reporting_origin)),
       original_report_time_(original_report_time) {
   DCHECK(!report_body_.empty());
 }

@@ -17,6 +17,7 @@
 <translation id="1414495520565016063">మీరు Chromiumకు సైన్ ఇన్ చేశారు!</translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను క్రియేట్ చేయడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
+<translation id="1555506416658437797">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయండి.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromiumను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు}=1{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromiumను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ అజ్ఞాత విండో మళ్లీ తెరవబడదు.}other{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromiumను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ # అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.}}</translation>
 <translation id="1625909126243026060">Chromiumలోని ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్‌ను రివ్యూ చేయండి</translation>
 <translation id="1632539827495546968">మీరు ఈ ఖాతాను ఒకసారి మాత్రమే ఉపయోగించాలనుకుంటే, Chromium బ్రౌజర్‌లో <ph name="GUEST_LINK_BEGIN" />గెస్ట్ మోడ్‌ను<ph name="GUEST_LINK_END" /> ఉపయోగించండి. వేరెవరి కోసం అయినా మీరు ఖాతాను జోడించాలనుకుంటే, మీ <ph name="DEVICE_TYPE" />‌కు <ph name="LINK_BEGIN" />కొత్త వ్యక్తిని జోడించండి<ph name="LINK_END" />.
@@ -130,10 +131,13 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chromium ప్రొఫైల్‌కు సైన్ ఇన్ చేశారు. మీరు బ్రౌజ్ చేసిన వాటిని విడిగా ఉంచడానికి, Chromium మీ కోసం మీ సొంత ప్రొఫైల్‌ను క్రియేట్ చేయగలదు.</translation>
 <translation id="391789666908693569">మీ ఖాతాను <ph name="MANAGER_NAME" /> మేనేజ్ చేస్తున్నారు. మీ అడ్మినిస్ట్రేటర్ ఈ Chromium బ్రౌజర్ ప్రొఫైల్‌ను, అలాగే బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌ల వంటి దాని డేటాను చూడగలరు, ఎడిట్ చేయగలరు.</translation>
 <translation id="3945058413678539331">పాస్‌వర్డ్‌లను కాపీ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
+<translation id="3962623956404948996">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు, కాబట్టి దీనిని స్కాన్ చేయమని Chromium సిఫార్సు చేస్తోంది</translation>
 <translation id="3997429360543082038">ChromiumOS గురించి</translation>
 <translation id="4019629340646866719">ChromiumOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయడం ద్వారా Chromiumను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="4050175100176540509">ముఖ్యమైన భద్రతా మెరుగుదలలు మరియు కొత్త ఫీచర్‌లు తాజా వెర్షన్‌లో అందుబాటులో ఉన్నాయి.</translation>
+<translation id="4050599136622776556">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
+<translation id="4055805654398742145">Password Manager</translation>
 <translation id="4148957013307229264">వ్యవస్థాపిస్తోంది...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్ - Chromium</translation>
 <translation id="421369550622382712">Chromium కోసం గొప్ప యాప్‌లు, ఆటలు, ఎక్స్‌టెన్షన్‌లు మరియు థీమ్‌లను కనుగొనండి.</translation>

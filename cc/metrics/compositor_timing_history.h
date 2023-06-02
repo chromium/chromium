@@ -83,8 +83,7 @@ class CC_EXPORT CompositorTimingHistory {
   void WillActivate();
   void DidActivate();
   void WillDraw();
-  void DidDraw(bool used_new_active_tree,
-               bool has_custom_property_animations);
+  void DidDraw();
   void WillInvalidateOnImplSide();
 
   // Record the scheduler's deadline mode and send to UMA.
@@ -112,7 +111,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   // Used to calculate frame rates of Main and Impl threads.
   bool compositor_drawing_continuously_;
-  base::TimeTicks new_active_tree_draw_end_time_prev_;
   base::TimeTicks draw_end_time_prev_;
 
   // If you add any history here, please remember to reset it in
@@ -168,10 +166,8 @@ class CC_EXPORT CompositorTimingHistory {
   std::unique_ptr<UMAReporter> uma_reporter_;
 
   // Owned by LayerTreeHost and is destroyed when LayerTreeHost is destroyed.
-  raw_ptr<RenderingStatsInstrumentation> rendering_stats_instrumentation_;
-
-  // Used only for reporting animation targeted UMA.
-  bool previous_frame_had_custom_property_animations_ = false;
+  raw_ptr<RenderingStatsInstrumentation, DanglingUntriaged>
+      rendering_stats_instrumentation_;
 };
 
 }  // namespace cc

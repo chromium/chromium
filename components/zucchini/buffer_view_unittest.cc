@@ -142,30 +142,6 @@ TEST_F(BufferViewTest, Write) {
 #endif
 }
 
-TEST_F(BufferViewTest, Modify) {
-  struct TestStruct {
-    uint32_t a;
-    uint32_t b;
-  };
-
-  MutableBufferView buffer(bytes_.data(), bytes_.size());
-
-  buffer.modify<TestStruct>(0).a = 0x01234567;
-  buffer.modify<TestStruct>(0).b = 0x89ABCDEF;
-  EXPECT_EQ(ParseHexString("67 45 23 01 EF CD AB 89 10 00"),
-            std::vector<uint8_t>(buffer.begin(), buffer.end()));
-
-  buffer.modify<uint8_t>(9);
-#if GTEST_HAS_DEATH_TEST
-  EXPECT_DEATH(buffer.modify<uint8_t>(10), "");
-#endif
-
-  buffer.modify<uint32_t>(6);
-#if GTEST_HAS_DEATH_TEST
-  EXPECT_DEATH(buffer.modify<uint32_t>(7), "");
-#endif
-}
-
 TEST_F(BufferViewTest, CanAccess) {
   MutableBufferView buffer(bytes_.data(), bytes_.size());
   EXPECT_TRUE(buffer.can_access<uint32_t>(0));

@@ -14,10 +14,6 @@ namespace share {
 
 BASE_DECLARE_FEATURE(kScreenshotsForAndroidV2);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kCrowLaunchTab);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 bool AreUpcomingSharingFeaturesEnabled();
 
 }  // namespace share

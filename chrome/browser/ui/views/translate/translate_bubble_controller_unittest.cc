@@ -250,8 +250,9 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<translate::testing::MockTranslateMetricsLogger>
       mock_translate_metrics_logger_;
 
-  raw_ptr<FakeTranslateBubbleModel> fake_translate_bubble_model_ = nullptr;
-  raw_ptr<FakePartialTranslateBubbleModel>
+  raw_ptr<FakeTranslateBubbleModel, DanglingUntriaged>
+      fake_translate_bubble_model_ = nullptr;
+  raw_ptr<FakePartialTranslateBubbleModel, DanglingUntriaged>
       fake_partial_translate_bubble_model_ = nullptr;
 
   // Owned by WebContents.

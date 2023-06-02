@@ -229,16 +229,12 @@ void LayoutNGSVGText::UpdateBlockLayout() {
 
   gfx::RectF old_boundaries = ObjectBoundingBox();
 
-  if (RuntimeEnabledFeatures::LayoutNewSVGTextEntryEnabled()) {
-    const ComputedStyle& style = StyleRef();
-    NGConstraintSpaceBuilder builder(
-        style.GetWritingMode(), style.GetWritingDirection(),
-        /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
-    builder.SetAvailableSize(LogicalSize());
-    NGBlockNode(this).Layout(builder.ToConstraintSpace());
-  } else {
-    UpdateNGBlockLayout();
-  }
+  const ComputedStyle& style = StyleRef();
+  NGConstraintSpaceBuilder builder(
+      style.GetWritingMode(), style.GetWritingDirection(),
+      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  builder.SetAvailableSize(LogicalSize());
+  NGBlockNode(this).Layout(builder.ToConstraintSpace());
 
   needs_update_bounding_box_ = true;
 

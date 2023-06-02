@@ -127,7 +127,7 @@ class DragWindowController::DragWindowDetails {
     // be modified so that it can optionally be clipped to the main window's
     // bounds.
     widget_->SetContentsView(std::make_unique<WindowMirrorView>(
-        original_window, /*show_non_client_view=*/true));
+        original_window, /*show_non_client_view=*/true, /*sync_bounds=*/true));
 
     aura::Window* window = widget_->GetNativeWindow();
     window->SetId(kShellWindowId_PhantomWindow);

@@ -28,7 +28,7 @@ grit("resources") {
 
   deps = [
     "//chromeos/ash/components/human_presence:human_presence_internals_ts",
-    "//chromeos/ash/components/language/public/mojom:mojom_js",
+    "//chromeos/ash/components/language_packs/public/mojom:mojom_js",
     "//chromeos/ash/components/multidevice/mojom:mojom_js",
     "//chromeos/ash/services/device_sync/public/mojom:mojom_js",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js",

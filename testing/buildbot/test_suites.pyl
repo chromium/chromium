@@ -130,6 +130,19 @@
           'skia_gold_test',
         ],
       },
+      'variations_smoke_tests': {
+        'isolate_name': 'variations_desktop_smoke_tests',
+        'args': [
+          '--target-platform=android',
+        ],
+        'mixins': [
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
     },
 
     'android_isolated_scripts': {
@@ -475,6 +488,14 @@
       'chrome_private_code_test': {},
     },
 
+    'chrome_profile_generator_tests': {
+      'chrome_public_apk_profile_tests': {
+        'ci_only': True,
+        'experiment_percentage': 100,
+        'test':'chrome_public_apk_baseline_profile_generator',
+      },
+    },
+
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
@@ -499,7 +520,6 @@
       'chrome_public_wpt': {
         'args': [
           '--no-wpt-internal',
-          '--log-wptreport',
         ],
         'swarming': {
           'shards': 36,
@@ -694,9 +714,7 @@
 
     'chromeos_js_code_coverage_browser_tests' : {
       'chromeos_js_code_coverage_browser_tests': {
-        'args': [
-          "--gtest_filter=*PersonalizationApp*"
-        ],
+        'args': [],
         'test': 'browser_tests',
       }
     },
@@ -1939,6 +1957,20 @@
       },
     },
 
+    # Script tests that only need to run on one builder per desktop platform.
+    'desktop_once_isolated_scripts': {
+      'test_env_py_unittests': {
+        'resultdb': {
+          'enable': True,
+        },
+      },
+      'xvfb_py_unittests': {
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     'devtools_browser_tests' : {
       'devtools_browser_tests': {
         'args': [
@@ -2036,31 +2068,6 @@
           'shards': 7,
         }
       },
-      'webkit_layout_from_devtools': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn .
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--num-retries=3',
-          '--layout-tests-directory=../../third_party/devtools-frontend/src/test/webtests/',
-          'http/tests/devtools',
-        ],
-        'isolate_name': 'devtools_web_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 4,
-        }
-      },
     },
 
     'devtools_webkit_isolated_scripts': {
@@ -2116,31 +2123,6 @@
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 7,
-        }
-      },
-      'webkit_layout_from_devtools': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn .
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--num-retries=3',
-          '--layout-tests-directory=../../third_party/devtools-frontend/src/test/webtests/',
-          'http/tests/devtools',
-        ],
-        'isolate_name': 'devtools_web_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 4,
         }
       },
     },
@@ -2766,6 +2748,9 @@
         'swarming': {
           'shards': 14,
         },
+        'android_swarming': {
+          'shards': 36,
+        },
       },
       'webgpu_cts_with_validation': {
         'args': [
@@ -2777,6 +2762,9 @@
         ],
         'swarming': {
           'shards': 14,
+        },
+        'android_swarming': {
+          'shards': 36,
         },
         'telemetry_test_name': 'webgpu_cts',
       },
@@ -2803,7 +2791,6 @@
           '--use-gpu-in-tests'
         ],
         'test': 'browser_tests',
-        'ci_only': True,
       },
     },
 
@@ -3828,7 +3815,20 @@
       'cast_unittests': {},
       'cc_unittests': {},
       'color_unittests': {},
+      'components_browsertests': {},
       'components_unittests': {},
+      'content_browsertests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter',
+        ],
+        'timeout_sec': 14400,
+        'swarming': {
+          'expiration': 10800,
+          'hard_timeout': 14400,
+          'shards': 8,
+        },
+      },
       'content_unittests': {},
       'crashpad_tests': {},
       'crypto_unittests': {},
@@ -3928,7 +3928,7 @@
       'ios_chrome_bookmarks_eg2tests_module': {},
       'ios_chrome_settings_eg2tests_module': {
         'swarming': {
-          'shards': 3,
+          'shards': 4,
         },
       },
       'ios_chrome_signin_eg2tests_module': {
@@ -4013,18 +4013,6 @@
       },
     },
 
-    'lacros_cq_tast_tests_jacuzzi': {
-      'lacros_cq_tast_tests_jacuzzi': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'experiment_percentage': 5,
-      },
-    },
-
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
       'cc_unittests': {},
@@ -4086,6 +4074,7 @@
         'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
         'timeout_sec': 10800,
         'test_level_retries': 2,
+        'shards': 2,
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -4762,6 +4751,7 @@
     # Rust tests run on all targets.
     'rust_common_gtests': {
       'base_unittests': {},
+      'components_unittests': {},  # For go/rusty-qr-code-generator
       'mojo_rust_integration_unittests': {},
       'mojo_rust_unittests': {},
       'rust_gtest_interop_unittests': {},
@@ -4780,12 +4770,6 @@
         'swarming': {},
         'test': 'build_rust_tests',
       },
-    },
-
-    # Some Rust-related tooling is itself written in Rust. These tools are only
-    # run on build hosts.
-    'rust_tooling_gtests': {
-      'gnrt_unittests': {},
     },
 
     'site_isolation_android_fyi_gtests': {
@@ -5571,7 +5555,6 @@
     'wpt_tests_ios': {
       'wpt_tests_ios': {
         'args': [
-          '--log-wptreport',
           '--no-wpt-internal',
         ],
         'merge': {
@@ -5592,9 +5575,6 @@
 
     'wpt_web_tests': {
       'wpt_tests_suite': {
-        'args': [
-          '--log-wptreport',
-        ],
         'merge': {
           'args': [
             '--verbose',
@@ -5611,9 +5591,6 @@
 
     'wpt_web_tests_content_shell': {
       'wpt_tests_suite': {
-        'args': [
-          '--log-wptreport'
-        ],
         'merge': {
           'args': [
             '--verbose',
@@ -5631,7 +5608,6 @@
     'wpt_web_tests_enable_leak_detection': {
       'wpt_tests_suite': {
         'args': [
-          '--log-wptreport',
           '--enable-leak-detection',
         ],
         'merge': {
@@ -5652,7 +5628,6 @@
     'wpt_web_tests_highdpi': {
       'wpt_tests_suite_highdpi': {
         'args': [
-          '--log-wptreport',
           '--flag-specific',
           'highdpi',
         ],
@@ -5719,7 +5694,6 @@
       'wpt_tests_suite_not_site_per_process': {
         'args': [
           '--child-processes=8',
-          '--log-wptreport',
           '--flag-specific',
           'disable-site-isolation-trials',
         ],
@@ -6007,6 +5981,22 @@
       'gpu_dawn_webgpu_blink_web_tests',
     ],
 
+    # Like chromium_linux_rel_isolated_scripts above, but includes
+    # desktop_once_isolated_scripts. Note: use
+    # chromium_linux_rel_isolated_scripts if you're setting up a new builder.
+    # This group should only be used across ~3 builders.
+    'chromium_linux_rel_isolated_scripts_once': [
+      'chromedriver_py_tests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'desktop_once_isolated_scripts',
+      'linux_specific_chromium_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'pytype_tests',
+      'telemetry_perf_unittests_isolated_scripts',
+      'vulkan_swiftshader_isolated_scripts',
+      'chromium_web_tests_high_dpi_isolated_scripts',
+    ],
+
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -6058,6 +6048,20 @@
       # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 
+    # Like chromium_mac_rel_isolated_scripts above, but includes
+    # desktop_once_isolated_scripts. Note: use
+    # chromium_mac_rel_isolated_scripts if you're setting up a new builder.
+    # This group should only be used across ~3 builders.
+    'chromium_mac_rel_isolated_scripts_once': [
+      'chromedriver_py_tests_isolated_scripts',
+      'components_perftests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'desktop_once_isolated_scripts',
+      'mac_specific_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts',
+    ],
+
     # Pixel tests only enabled on Win 10. So this is
     # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
     # 'non_android_chromium_gtests_skia_gold'.
@@ -6105,6 +6109,21 @@
 
     'chromium_win_rel_isolated_scripts_code_coverage': [
       'gpu_dawn_webgpu_blink_web_tests',
+    ],
+
+    # Like chromium_win_rel_isolated_scripts above, but includes
+    # desktop_once_isolated_scripts. Note: use
+    # chromium_win_rel_isolated_scripts if you're setting up a new builder.
+    # This group should only be used across ~3 builders.
+    'chromium_win_rel_isolated_scripts_once': [
+      'chromedriver_py_tests_isolated_scripts',
+      'components_perftests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'desktop_once_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'telemetry_desktop_minidump_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts',
+      'win_specific_isolated_scripts',
     ],
 
     'cronet_dbg_isolated_scripts': [
@@ -6601,7 +6620,6 @@
     # Rust tests run on non-cross builds.
     'rust_host_gtests': [
       'rust_common_gtests',
-      'rust_tooling_gtests',
     ],
 
     'sandboxed_chromium_memory_linux_gtests': [
@@ -6675,6 +6693,7 @@
       'android_trichrome_smoke_tests': {},
       'android_smoke_tests': {},
       'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chrome_profile_generator_tests': {},
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
@@ -6738,6 +6757,14 @@
       'chromeos_chrome_all_tast_tests': {
         'variants': [
           'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
+        ]
+      },
+    },
+
+    'chromeos_kevin_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM',
         ]
       },
     },
@@ -6855,6 +6882,48 @@
         'variants': [
           'LACROS_ASH_TOT',
           ],
+      },
+    },
+
+    'ios15_beta_simulator_tests': {
+      'ios_common_tests': {
+        'variants': [
+          'SIM_IPHONE_X_16_2',
+          'SIM_IPHONE_6S_15_5',
+        ],
+      },
+      'ios_eg2_tests': {
+        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'variants': [
+          'SIM_IPHONE_X_16_2',
+          'SIM_IPAD_AIR_3RD_GEN_16_2',
+          'SIM_IPHONE_X_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+        ]
+      },
+      'ios_eg2_cq_tests': {
+        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'variants': [
+          'SIM_IPHONE_X_16_2',
+          'SIM_IPAD_6_GEN_16_2',
+          'SIM_IPHONE_SE_1ST_GEN_15_5',
+        ]
+      },
+      'ios_screen_size_dependent_tests': {
+        'variants': [
+          'SIM_IPHONE_X_16_2',
+          'SIM_IPHONE_SE_3RD_GEN_16_2',
+          'SIM_IPHONE_X_15_5',
+          'SIM_IPHONE_SE_1ST_GEN_15_5',
+        ],
+      },
+      'ios_crash_xcuitests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_X_16_2',
+          'SIM_IPAD_AIR_2_15_5',
+
+        ]
       },
     },
 
@@ -6993,7 +7062,6 @@
     'ios_blink_dbg_tests': {
       'ios_blink_tests': {
         'variants': [
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
           'SIM_IPHONE_X_16_2',
         ]
       },
@@ -7303,19 +7371,6 @@
           'CROS_JACUZZI_PUBLIC_LKGM',
           'CROS_KEVIN64_PUBLIC_LKGM',
         ]
-      },
-    },
-
-    'lacros_device_arm_tests_rel': {
-      'lacros_all_tast_tests': {
-        'variants': [
-          'LACROS_JACUZZI',
-        ],
-      },
-      'lacros_cq_tast_tests_jacuzzi': {
-        'variants': [
-          'LACROS_JACUZZI',
-        ],
       },
     },
 

@@ -205,6 +205,51 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
+  suite('ogb scrim', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({removeScrim: true});
+    });
+
+    test('scroll bounce', async () => {
+      // Arrange.
+
+      // Set theme that triggers the scrim.
+      const theme = createTheme(true);
+      theme.backgroundImage = createBackgroundImage('https://foo.com');
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Make sure page is scrollable.
+      const spacer = document.createElement('div');
+      spacer.style.width = '100%';
+      spacer.style.height = '10000px';
+      spacer.style.flexShrink = '0';
+      $$(app, '#content')!.append(spacer);
+
+      // Simulates a vertical scroll.
+      const scrollY = async (y: number) => {
+        window.scroll(0, y);
+        // `window.scroll` doesn't automatically trigger scroll event.
+        window.dispatchEvent(new Event('scroll'));
+        // Wait for position update to propagate.
+        await new Promise<void>(
+            resolve => requestAnimationFrame(() => resolve()));
+      };
+
+      // Act (no bounce).
+      await scrollY(0);
+
+      // Assert (no bounce).
+      assertStyle($$(app, '#oneGoogleBarScrim')!, 'position', 'fixed');
+
+      // Act (scroll).
+      await scrollY(10);
+
+      // Assert (scroll).
+      assertStyle($$(app, '#oneGoogleBarScrim')!, 'position', 'absolute');
+    });
+  });
+
   suite('theming', () => {
     test('setting theme updates ntp', async () => {
       // Act.

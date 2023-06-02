@@ -25,6 +25,8 @@ namespace {
 constexpr char kSmdsGsma[] = "1$lpa.ds.gsma.com$";
 // The activation code for the Stork SM-DS server.
 constexpr char kSmdsStork[] = "1$prod.smds.rsp.goog$";
+// The activation code for the Android staging SM-DS server.
+constexpr char kSmdsAndroidStaging[] = "1$lpa.live.esimdiscovery.dev$";
 
 const char kNonShillCellularNetworkPathPrefix[] = "/non-shill-cellular/";
 
@@ -184,10 +186,17 @@ absl::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
 }
 
 std::vector<std::string> GetSmdsActivationCodes() {
-  if (features::IsUseStorkSmdsServerAddressEnabled()) {
-    return {kSmdsStork};
+  std::vector<std::string> activation_codes;
+  if (features::ShouldUseStorkSmds()) {
+    activation_codes.push_back(kSmdsStork);
   }
-  return {kSmdsGsma};
+  if (features::ShouldUseAndroidStagingSmds()) {
+    activation_codes.push_back(kSmdsAndroidStaging);
+  }
+  if (activation_codes.empty()) {
+    activation_codes.push_back(kSmdsGsma);
+  }
+  return activation_codes;
 }
 
 }  // namespace cellular_utils

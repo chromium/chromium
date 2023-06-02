@@ -29,9 +29,10 @@ namespace blink {
 
 class AudioContextOptions;
 class AudioTimestamp;
-class Document;
+class ExecutionContext;
 class ExceptionState;
 class HTMLMediaElement;
+class LocalDOMWindow;
 class MediaElementAudioSourceNode;
 class MediaStream;
 class MediaStreamAudioDestinationNode;
@@ -47,11 +48,11 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioContext* Create(Document&,
+  static AudioContext* Create(ExecutionContext*,
                               const AudioContextOptions*,
                               ExceptionState&);
 
-  AudioContext(Document&,
+  AudioContext(LocalDOMWindow&,
                const WebAudioLatencyHint&,
                absl::optional<float> sample_rate,
                WebAudioSinkDescriptor sink_descriptor);

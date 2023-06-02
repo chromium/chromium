@@ -131,6 +131,46 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest, GetUserState);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest,
+                           ProtegoRequestIsNotLoggedWhenEsbIsNotEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsNoneIfNotRecordedBeforeFirstRunOfCollector);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithTokenWhenPingSincePreviousLogTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithoutTokenWhenPingSincePreviousLogTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithTokenWhenPingMoreRecentThanWithoutToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithoutTokenWhenPingMoreRecentThanWithToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsNoneWhenNoPingWithTokenSincePreviousLogTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsNoneWhenNoPingWithoutTokenSincePreviousLogTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithTokenWhenPingBeforeCollectorHasEverRun);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingMetricsCollectorTest,
+      ProtegoRequestLogsWithoutTokenWhenPingBeforeCollectorHasEverRun);
+
+  // The type of Protego ping that was sent by an enhanced protection
+  // user. These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class ProtegoPingType {
+    kUnknownType = 0,
+    kNone = 1,
+    kWithToken = 2,
+    kWithoutToken = 3,
+    kMaxValue = kWithoutToken,
+  };
 
   static bool IsBypassEventType(const EventType& type);
   static bool IsSecuritySensitiveEventType(const EventType& type);
@@ -138,6 +178,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   // For daily metrics.
   void LogMetricsAndScheduleNextLogging();
+  void MaybeLogDailyEsbProtegoPingSentLast24Hours();
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
   void LogDailyOptInMetrics();
   void LogDailyEventMetrics();

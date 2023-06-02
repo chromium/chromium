@@ -5,6 +5,7 @@
 
 import collections
 import os
+from collections import defaultdict
 from typing import List, Tuple
 
 from flake_suppressor_common import common_typing as ct
@@ -49,6 +50,35 @@ class ResultProcessor():
       build_url_list.append(build_url)
     return aggregated_results
 
+  def AggregateTestStatusResults(
+      self, results: ct.QueryJsonType) -> ct.AggregatedStatusResultsType:
+    """Aggregates BigQuery results.
+
+    Also filters out any results that have already been suppressed.
+
+    Args:
+      results: Parsed JSON results from a BigQuery query.
+
+    Returns:
+      A map in the following format:
+      {
+        'test_suite': {
+          'test_name': {
+            ('typ', 'tags', 'as', 'tuple'): [ (status, url), (status, url) ],
+          },
+        },
+      }
+    """
+    results = self._ConvertJsonResultsToResultObjects(results)
+    results = self._FilterOutSuppressedResults(results)
+    aggregated_results = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(list)))
+    for r in results:
+      build_url = 'http://ci.chromium.org/b/%s' % r.build_id
+      aggregated_results[r.suite][r.test][r.tags].append(
+          ct.ResultTupleType(r.status, build_url))
+    return aggregated_results
+
   def _ConvertJsonResultsToResultObjects(self, results: ct.QueryJsonType
                                          ) -> List[data_types.Result]:
     """Converts JSON BigQuery results to data_types.Result objects.
@@ -64,8 +94,13 @@ class ResultProcessor():
       suite, test_name = self.GetTestSuiteAndNameFromResultDbName(r['name'])
       build_id = r['id'].split('-')[-1]
       typ_tags = tuple(tag_utils.TagUtils.RemoveIgnoredTags(r['typ_tags']))
-      object_results.append(
-          data_types.Result(suite, test_name, typ_tags, build_id))
+      if 'status' in r:
+        object_results.append(
+            data_types.Result(suite, test_name, typ_tags, build_id,
+                              r['status']))
+      else:
+        object_results.append(
+            data_types.Result(suite, test_name, typ_tags, build_id))
     return object_results
 
   def _FilterOutSuppressedResults(self, results: List[data_types.Result]

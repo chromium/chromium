@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/feature_engagement/public",
+  "+components/keyed_service/core",
+]

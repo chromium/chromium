@@ -193,6 +193,10 @@ extern const char kGooglePhotosURL[];
 // The URL for the "Learn more" link for the High Efficiency Mode.
 extern const char kHighEfficiencyModeLearnMoreUrl[];
 
+// The URL in the help text for the High Efficiency Mode tab discarding
+// exceptions add dialog.
+extern const char kHighEfficiencyModeTabDiscardingHelpUrl[];
+
 // The URL for the "Learn more" page for the usage/crash reporting option in the
 // first run dialog.
 extern const char kLearnMoreReportingURL[];

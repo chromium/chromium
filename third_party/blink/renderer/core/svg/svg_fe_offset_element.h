@@ -45,6 +45,10 @@ class SVGFEOffsetElement final : public SVGFilterPrimitiveStandardAttributes {
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override { return false; }
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedNumber> dx_;
   Member<SVGAnimatedNumber> dy_;
   Member<SVGAnimatedString> in1_;

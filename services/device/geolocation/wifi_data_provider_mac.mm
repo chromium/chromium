@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
@@ -61,14 +60,13 @@ bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
         AccessPointData access_point_data;
         // -[CWNetwork bssid] uses colons to separate the components of the MAC
         // address, but AccessPointData requires they be separated with a dash.
-        access_point_data.mac_address = base::SysNSStringToUTF16([network.bssid
+        access_point_data.mac_address = base::SysNSStringToUTF8([network.bssid
             stringByReplacingOccurrencesOfString:@":"
                                       withString:@"-"]);
         access_point_data.radio_signal_strength = network.rssiValue;
         access_point_data.channel = network.wlanChannel.channelNumber;
         access_point_data.signal_to_noise =
             access_point_data.radio_signal_strength - network.noiseMeasurement;
-        access_point_data.ssid = base::SysNSStringToUTF16(network.ssid);
         data->insert(access_point_data);
       }
     }

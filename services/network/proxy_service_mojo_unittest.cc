@@ -138,7 +138,7 @@ class ProxyServiceMojoTest : public testing::Test {
   TestNetworkDelegate network_delegate_;
   net::MockHostResolver mock_host_resolver_;
   // Owned by |proxy_resolution_service_|.
-  raw_ptr<net::MockPacFileFetcher> fetcher_;
+  raw_ptr<net::MockPacFileFetcher, DanglingUntriaged> fetcher_;
   net::RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<net::ConfiguredProxyResolutionService>
       proxy_resolution_service_;

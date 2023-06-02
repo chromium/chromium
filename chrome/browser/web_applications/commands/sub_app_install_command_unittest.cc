@@ -133,7 +133,7 @@ class SubAppInstallCommandTest : public WebAppTest {
   const GURL parent_url_{"http://www.foo.bar/web_apps/basic.html"};
   const GURL sub_app_url_{"http://www.foo.bar/web_apps/standalone/basic.html"};
 
-  raw_ptr<TestWebAppUrlLoader> command_manager_url_loader_;
+  raw_ptr<TestWebAppUrlLoader, DanglingUntriaged> command_manager_url_loader_;
 };
 
 TEST_F(SubAppInstallCommandTest, InstallSingleAppSuccess) {

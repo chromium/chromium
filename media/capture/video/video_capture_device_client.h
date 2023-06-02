@@ -87,7 +87,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       std::vector<CapturedExternalVideoBuffer> scaled_buffers,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
-      gfx::Rect visible_rect) override;
+      const gfx::Rect& visible_rect) override;
   ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
                                     VideoPixelFormat format,
                                     int frame_feedback_id,
@@ -113,11 +113,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   double GetBufferPoolUtilization() const override;
 
  private:
-  ReadyFrameInBuffer CreateReadyFrameFromExternalBuffer(
+  VideoCaptureDevice::Client::ReserveResult CreateReadyFrameFromExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
-      gfx::Rect visible_rect);
+      const gfx::Rect& visible_rect,
+      ReadyFrameInBuffer* ready_buffer);
 
   // A branch of OnIncomingCapturedData for Y16 frame_format.pixel_format.
   void OnIncomingCapturedY16Data(const uint8_t* data,

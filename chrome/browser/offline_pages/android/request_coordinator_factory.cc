@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
@@ -78,7 +78,8 @@ RequestCoordinatorFactory::RequestCoordinatorFactory()
 
 // static
 RequestCoordinatorFactory* RequestCoordinatorFactory::GetInstance() {
-  return base::Singleton<RequestCoordinatorFactory>::get();
+  static base::NoDestructor<RequestCoordinatorFactory> instance;
+  return instance.get();
 }
 
 // static

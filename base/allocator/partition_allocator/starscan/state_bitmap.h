@@ -347,7 +347,7 @@ unsigned StateBitmap<PageSize, PageAlignment, AllocationAlignment>::GetBits(
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 bool StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
     FilterQuarantine::operator()(CellType bits) const {
-  return __builtin_popcount(bits) == 1;
+  return __builtin_popcount(static_cast<unsigned>(bits)) == 1;
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>

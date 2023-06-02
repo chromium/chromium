@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4434045419905280838">Pop-ups et redirections</translation>
-<translation id="4440642537584213025">Développer "<ph name="TARGET_DESCRIPTION" />"</translation>
 <translation id="4468959413250150279">Coupez le son d'un site spécifique.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Permet de faciliter la personnalisation du zoom en fonction des sites</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
 <translation id="789180354981963912">Bloquer les cookies tiers en mode navigation privée :</translation>
+<translation id="7895868624847501462">Cette action effacera toutes les données locales, y compris les cookies, et réinitialisera toutes les autorisations pour <ph name="DOMAIN" /> et tous les sites qui en dépendent</translation>
 <translation id="7940722705963108451">M'envoyer un rappel</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="FPS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8300705686683892304">Gérés par l'application</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
+<translation id="8338445138528827481">Cette action effacera toutes les données locales, y compris les cookies, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Vous pouvez faire un zoom avant ou arrière sur les sites que vous consultez</translation>
 <translation id="8372893542064058268">Autorisez la synchronisation en arrière-plan pour un site spécifique.</translation>
 <translation id="8376384591331888629">Y compris les cookies tiers de ce site</translation>

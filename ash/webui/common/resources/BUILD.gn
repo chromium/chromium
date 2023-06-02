@@ -15,7 +15,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash)
 
 preprocessed_dir = "$target_gen_dir/preprocessed"
-preprocessed_manifest = "preprocessed.manifest"
+preprocessed_manifest = "preprocessed_manifest.json"
 
 web_component_files = [
   "keyboard_diagram.js",
@@ -289,6 +289,10 @@ generate_grd("build_grd") {
     "cellular_setup/default_esim_profile_dark.svg",
     "cellular_setup/spinner.json",
     "cellular_setup/spinner_dark.json",
+    "hotspot/hotspot_dot.svg",
+    "hotspot/hotspot_inner.svg",
+    "hotspot/hotspot-off.svg",
+    "hotspot/hotspot.svg",
     "multidevice_setup/all_set_1x_dark.svg",
     "multidevice_setup/all_set_1x_light.svg",
     "multidevice_setup/all_set_2x_dark.svg",
@@ -331,8 +335,8 @@ generate_grd("build_grd") {
   ]
 
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ]) +
-      filter_include(get_target_outputs(":preprocess"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ]) +
+      filter_include(get_target_outputs(":preprocess"), [ "*_manifest.json" ])
   grd_prefix = "ash_webui_common"
   out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "ash/common"
@@ -474,12 +478,14 @@ checked_in_dts_files = [
   "network/network_choose_mobile.d.ts",
   "network/network_config.d.ts",
   "network/network_config_input.d.ts",
+  "network/network_config_select.d.ts",
   "network/network_config_toggle.d.ts",
   "network/network_icon.d.ts",
   "network/network_ip_config.d.ts",
   "network/network_list.d.ts",
   "network/network_list_item.d.ts",
   "network/network_nameservers.d.ts",
+  "network/network_password_input.d.ts",
   "network/network_property_list_mojo.d.ts",
   "network/network_proxy.d.ts",
   "network/network_siminfo.d.ts",

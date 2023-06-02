@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/functional/bind.h"
@@ -99,13 +100,12 @@ using RequestSource = SearchTermsData::RequestSource;
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
 // Checks the last action the user took on the Credential Provider Promo to
-// determine if it was completed.
-bool CredentialProviderPromoCompleted(PrefService* local_state) {
+// determine if it was dismissed.
+bool CredentialProviderPromoDismissed(PrefService* local_state) {
   IOSCredentialProviderPromoAction last_action =
       static_cast<IOSCredentialProviderPromoAction>(local_state->GetInteger(
           prefs::kIosCredentialProviderPromoLastActionTaken));
-  return last_action == IOSCredentialProviderPromoAction::kGoToSettings ||
-         last_action == IOSCredentialProviderPromoAction::kNo;
+  return last_action == IOSCredentialProviderPromoAction::kNo;
 }
 
 }  // namespace
@@ -114,6 +114,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
                                           MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
+                                          SceneStateObserver,
                                           SetUpListDelegate> {
   std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
   std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
@@ -240,14 +241,19 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kIosCredentialProviderPromoLastActionTaken,
           &_prefChangeRegistrar);
-      if (CredentialProviderPromoCompleted(_localState)) {
+      if (CredentialProviderPromoDismissed(_localState)) {
         set_up_list_prefs::MarkItemComplete(_localState,
                                             SetUpListItemType::kAutofill);
+      } else {
+        [self checkIfCPEEnabled];
       }
       _setUpList = [SetUpList buildFromPrefs:prefService
                                   localState:_localState
                        authenticationService:authenticationService];
     }
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+    [sceneState addObserver:self];
     _browser = browser;
   }
   return self;
@@ -272,6 +278,9 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
     [_setUpList disconnect];
     _setUpList = nil;
   }
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  [sceneState removeObserver:self];
   _localState = nullptr;
 }
 
@@ -289,18 +298,24 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] && ![self shouldHideMVTForTileAblation]) {
+  if ([self.mostVisitedItems count] && ![self shouldHideMVTTiles]) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
   if ([self shouldShowSetUpList]) {
     self.setUpList.delegate = self;
-    [self.consumer showSetUpListWithItems:[self setUpListItems]];
+    NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
+    [self.consumer showSetUpListWithItems:items];
+    [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
+    for (SetUpListItemViewData* item in items) {
+      [self.contentSuggestionsMetricsRecorder
+          recordSetUpListItemShown:item.type];
+    }
   }
   // Show Shortcuts if the Tile Ablation is not enabled and either:
   // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
-  if (![self shouldHideShortcutsForTileAblation] &&
+  if (![self shouldHideShortcuts] &&
       (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
@@ -410,8 +425,13 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   ProceduralBlock completion = ^{
     if ([weakSelf.setUpList allItemsComplete]) {
       [weakSelf.consumer showSetUpListDoneWithAnimations:^{
-        [self.feedDelegate contentSuggestionsWasUpdated];
+        if (!IsMagicStackEnabled()) {
+          [self.feedDelegate contentSuggestionsWasUpdated];
+        }
       }];
+    } else if (IsMagicStackEnabled()) {
+      [self.consumer scrollToNextMagicStackModuleForCompletedModule:
+                         SetUpListModuleTypeForSetUpListType(item.type)];
     }
   };
   [self.consumer markSetUpListItemComplete:item.type completion:completion];
@@ -553,7 +573,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if ([self shouldHideMVTForTileAblation]) {
+  if ([self shouldHideMVTTiles]) {
     return;
   }
 
@@ -600,6 +620,16 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   }
 }
 
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level == SceneActivationLevelForegroundActive) {
+    if (IsIOSSetUpListEnabled() && _setUpList) {
+      [self checkIfCPEEnabled];
+    }
+  }
+}
 #pragma mark - Private
 
 // Updates `prefs::kIosSyncSegmentsNewTabPageDisplayCount` with the number of
@@ -616,7 +646,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if ([self shouldHideMVTForTileAblation]) {
+  if ([self shouldHideMVTTiles]) {
     return;
   }
   self.mostVisitedItems = self.freshMostVisitedItems;
@@ -747,30 +777,34 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   return NO;
 }
 
-// Returns whether the shortcut tiles should be hidden for the tile ablation
-// experiment.
-- (BOOL)shouldHideShortcutsForTileAblation {
+// Returns whether the shortcut tiles should be hidden.
+- (BOOL)shouldHideShortcuts {
+  if (ShoudHideShortcuts()) {
+    return YES;
+  }
   if ([self isTileAblationComplete]) {
     return NO;
   }
-  ntp_tiles::NewTabPageRetentionExperimentBehavior behavior =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
-  return behavior ==
-         ntp_tiles::NewTabPageRetentionExperimentBehavior::kTileAblationHideAll;
+  ntp_tiles::NewTabPageFieldTrialExperimentBehavior behavior =
+      ntp_tiles::GetNewTabPageFieldTrialExperimentType();
+  return behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
+                         kTileAblationHideAll;
 }
 
-// Returns whether the MVT tiles should be hidden for the tile ablation
-// experiment.
-- (BOOL)shouldHideMVTForTileAblation {
+// Returns whether the MVT tiles should be hidden.
+- (BOOL)shouldHideMVTTiles {
+  if (ShouldHideMVT()) {
+    return YES;
+  }
   if ([self isTileAblationComplete]) {
     return NO;
   }
-  ntp_tiles::NewTabPageRetentionExperimentBehavior behavior =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
+  ntp_tiles::NewTabPageFieldTrialExperimentBehavior behavior =
+      ntp_tiles::GetNewTabPageFieldTrialExperimentType();
 
-  return behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
+  return behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
                          kTileAblationHideAll ||
-         behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
+         behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
                          kTileAblationHideMVTOnly;
 }
 
@@ -836,6 +870,32 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   return items;
 }
 
+// Checks if the CPE is enabled and marks the SetUpList Autofill item complete
+// if it is.
+- (void)checkIfCPEEnabled {
+  __weak __typeof(self) weakSelf = self;
+  scoped_refptr<base::SequencedTaskRunner> runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  [ASCredentialIdentityStore.sharedStore
+      getCredentialIdentityStoreStateWithCompletion:^(
+          ASCredentialIdentityStoreState* state) {
+        if (state.isEnabled) {
+          // The completion handler sent to ASCredentialIdentityStore is
+          // executed on a background thread. Putting it back onto the main
+          // thread to update local state prefs.
+          runner->PostTask(FROM_HERE, base::BindOnce(^{
+                             __typeof(self) strongSelf = weakSelf;
+                             if (!strongSelf) {
+                               return;
+                             }
+                             set_up_list_prefs::MarkItemComplete(
+                                 strongSelf->_localState,
+                                 SetUpListItemType::kAutofill);
+                           }));
+        }
+      }];
+}
+
 #pragma mark - Properties
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {
@@ -885,7 +945,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (IsIOSSetUpListEnabled() &&
       preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
-      CredentialProviderPromoCompleted(_localState)) {
+      CredentialProviderPromoDismissed(_localState)) {
     set_up_list_prefs::MarkItemComplete(_localState,
                                         SetUpListItemType::kAutofill);
   }

@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
@@ -102,7 +103,7 @@ void AutofillKeyboardAccessoryView::Show() {
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
         env, data_array, position++, ConvertUTF16ToJavaString(env, label),
         ConvertUTF16ToJavaString(env, sublabel), android_icon_id,
-        suggestion.frontend_id.as_int(),
+        suggestion.frontend_id.as_popup_item_id(),
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
         ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));

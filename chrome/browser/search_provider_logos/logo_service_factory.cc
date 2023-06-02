@@ -38,7 +38,8 @@ LogoService* LogoServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 LogoServiceFactory* LogoServiceFactory::GetInstance() {
-  return base::Singleton<LogoServiceFactory>::get();
+  static base::NoDestructor<LogoServiceFactory> instance;
+  return instance.get();
 }
 
 LogoServiceFactory::LogoServiceFactory()

@@ -3033,42 +3033,40 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
   // This may be due to legacy layout fallback, inline box, table box, etc.
   // Also, if we could not predict that the LayoutObject would not be created,
   // like if the parent LayoutObject returns false for IsChildAllowed.
-  auto* cq_data = container.GetContainerQueryData();
+  ContainerQueryData* cq_data = container.GetContainerQueryData();
   if (!cq_data) {
     return;
   }
 
   StyleRecalcChange change;
-  if (ContainerQueryEvaluator* evaluator =
-          cq_data->GetContainerQueryEvaluator()) {
-    ContainerQueryEvaluator::Change query_change =
-        evaluator->SizeContainerChanged(GetDocument(), container,
-                                        PhysicalSize(), kPhysicalAxisNone);
-    switch (query_change) {
-      case ContainerQueryEvaluator::Change::kNone:
-        DCHECK(cq_data->SkippedStyleRecalc());
+  ContainerQueryEvaluator& evaluator =
+      container.EnsureContainerQueryEvaluator();
+  ContainerQueryEvaluator::Change query_change =
+      evaluator.SizeContainerChanged(PhysicalSize(), kPhysicalAxisNone);
+  switch (query_change) {
+    case ContainerQueryEvaluator::Change::kNone:
+      DCHECK(cq_data->SkippedStyleRecalc());
+      break;
+    case ContainerQueryEvaluator::Change::kNearestContainer:
+      if (!IsShadowHost(container)) {
+        change = change.ForceRecalcSizeContainer();
         break;
-      case ContainerQueryEvaluator::Change::kNearestContainer:
-        if (!IsShadowHost(container)) {
-          change = change.ForceRecalcSizeContainer();
-          break;
-        }
-        // Since the nearest container is found in shadow-including ancestors
-        // and not in flat tree ancestors, and style recalc traversal happens in
-        // flat tree order, we need to invalidate inside flat tree descendant
-        // containers if such containers are inside shadow trees.
-        //
-        // See also StyleRecalcChange::FlagsForChildren where we turn
-        // kRecalcContainer into kRecalcDescendantContainers when traversing
-        // past a shadow host.
-        [[fallthrough]];
-      case ContainerQueryEvaluator::Change::kDescendantContainers:
-        change = change.ForceRecalcDescendantSizeContainers();
-        break;
-    }
-    if (query_change != ContainerQueryEvaluator::Change::kNone) {
-      container.ComputedStyleRef().ClearCachedPseudoElementStyles();
-    }
+      }
+      // Since the nearest container is found in shadow-including ancestors
+      // and not in flat tree ancestors, and style recalc traversal happens in
+      // flat tree order, we need to invalidate inside flat tree descendant
+      // containers if such containers are inside shadow trees.
+      //
+      // See also StyleRecalcChange::FlagsForChildren where we turn
+      // kRecalcContainer into kRecalcDescendantContainers when traversing
+      // past a shadow host.
+      [[fallthrough]];
+    case ContainerQueryEvaluator::Change::kDescendantContainers:
+      change = change.ForceRecalcDescendantSizeContainers();
+      break;
+  }
+  if (query_change != ContainerQueryEvaluator::Change::kNone) {
+    container.ComputedStyleRef().ClearCachedPseudoElementStyles();
   }
 
   DecrementSkippedContainerRecalc();
@@ -3097,14 +3095,12 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   StyleRecalcChange change;
 
-  auto* cq_data = container.GetContainerQueryData();
-  DCHECK(cq_data);
-  auto* evaluator = cq_data->GetContainerQueryEvaluator();
-  DCHECK(evaluator);
-
   ContainerQueryEvaluator::Change query_change =
-      evaluator->SizeContainerChanged(GetDocument(), container, physical_size,
-                                      physical_axes);
+      container.EnsureContainerQueryEvaluator().SizeContainerChanged(
+          physical_size, physical_axes);
+
+  ContainerQueryData* cq_data = container.GetContainerQueryData();
+  CHECK(cq_data);
 
   switch (query_change) {
     case ContainerQueryEvaluator::Change::kNone:
@@ -3197,13 +3193,7 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
   SelectorFilterRootScope filter_scope(parent);
-  StyleRecalcChange sibling_change =
-      root_element.RecalcStyle(change, style_recalc_context);
-
-  if (sibling_change.RecalcSiblingDescendants()) {
-    root_element.RecalcSubsequentSiblingStyles(change.Combine(sibling_change),
-                                               style_recalc_context);
-  }
+  root_element.RecalcStyle(change, style_recalc_context);
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {

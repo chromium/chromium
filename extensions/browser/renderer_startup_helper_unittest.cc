@@ -271,7 +271,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   std::unique_ptr<RendererStartupHelperInterceptor> helper_;
-  raw_ptr<ExtensionRegistry> registry_;  // Weak.
+  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_;  // Weak.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
       incognito_render_process_host_;

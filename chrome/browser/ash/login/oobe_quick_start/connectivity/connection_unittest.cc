@@ -17,6 +17,7 @@
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
@@ -70,26 +71,13 @@ constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
     0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
     0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
 
-// 12 random bytes to use as the nonce.
-constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
-                                            0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
-
-// A serialized auth message produced with |kAuthToken|, |kSharedSecret|, and
-// |kNonce|. Uses the "Target" role.
-constexpr std::array<uint8_t, 50> kTargetDeviceAuthMessage = {
-    0x08, 0x01, 0x12, 0x2e, 0x0a, 0x0c, 0x60, 0x3e, 0x87, 0x69,
-    0xa3, 0x55, 0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed, 0x12, 0x1e,
-    0x44, 0x28, 0x93, 0x04, 0xd3, 0xc0, 0x03, 0x50, 0xc9, 0x9d,
-    0x4f, 0x8d, 0x01, 0xaa, 0xcf, 0xc6, 0x43, 0x41, 0xa2, 0xcf,
-    0x4a, 0x91, 0x6e, 0x49, 0x14, 0x9d, 0x2e, 0xea, 0x9a, 0xf6};
-
 // 6 random bytes to use as the RandomSessionId.
 constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
                                                      0x27, 0xbb, 0x28};
 
-class ConstantNonceGenerator : public Connection::NonceGenerator {
-  Connection::Nonce Generate() override { return kNonce; }
-};
+// 12 random bytes to use as the nonce.
+constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
+                                            0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
 
 constexpr base::TimeDelta kNotifySourceOfUpdateResponseTimeout =
     base::Seconds(3);
@@ -115,7 +103,6 @@ class ConnectionTest : public testing::Test {
         nearby_connection, session_context_,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
-        std::make_unique<ConstantNonceGenerator>(),
         /*on_connection_closed=*/base::DoNothing(),
         /*on_connection_authenticated=*/
         base::BindLambdaForTesting(
@@ -141,6 +128,14 @@ class ConnectionTest : public testing::Test {
 
   bool IsResponseTimeoutTimerRunning() {
     return connection_->response_timeout_timer_.IsRunning();
+  }
+
+  void CallParseBootstrapConfigurationsResponse(
+      base::OnceClosure callback,
+      std::string cryptauth_device_id) {
+    connection_->ParseBootstrapConfigurationsResponse(
+        *mojom::BootstrapConfigurations::New(cryptauth_device_id));
+    std::move(callback).Run();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -264,6 +259,11 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(*bootstrap_options.FindInt(kDeviceTypeKey), kDeviceTypeChrome);
 
   // Emulate a BootstrapConfigurations response.
+  std::vector<uint8_t> cryptauth_device_id = {0x01, 0x02, 0x03};
+  std::string expected_cryptauth_device_id(cryptauth_device_id.begin(),
+                                           cryptauth_device_id.end());
+  fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
+      expected_cryptauth_device_id, absl::nullopt);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   // OnBootstrapOptionsResponse should trigger a write of FIDO GetInfo
@@ -424,7 +424,6 @@ TEST_F(ConnectionTest, TestClose) {
           fake_nearby_connection_.get(), session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
-          std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 
@@ -448,7 +447,6 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
           fake_nearby_connection_.get(), session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
-          std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 
@@ -465,13 +463,28 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
 }
 
 TEST_F(ConnectionTest, InitiateHandshake) {
-  connection_->InitiateHandshake(kAuthToken, base::DoNothing());
+  base::test::TestFuture<bool> future;
+  connection_->InitiateHandshake(kAuthToken, future.GetCallback());
+  EXPECT_TRUE(handshake::VerifyHandshakeMessage(
+      fake_nearby_connection_->GetWrittenData(), kAuthToken, kSharedSecret,
+      handshake::DeviceRole::kTarget));
+
+  std::vector<uint8_t> response = handshake::BuildHandshakeMessage(
+      kAuthToken, kSharedSecret, kNonce, handshake::DeviceRole::kSource);
+  fake_nearby_connection_->AppendReadableData(response);
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
+  base::test::TestFuture<bool> future;
+  connection_->InitiateHandshake(kAuthToken, future.GetCallback());
   std::vector<uint8_t> written_payload =
       fake_nearby_connection_->GetWrittenData();
-  ASSERT_EQ(kTargetDeviceAuthMessage.size(), written_payload.size());
-  for (size_t i = 0; i < kTargetDeviceAuthMessage.size(); i++) {
-    EXPECT_EQ(kTargetDeviceAuthMessage[i], written_payload[i]);
-  }
+
+  // Simulate the source device sending back the same message it received from
+  // the target device. Should fail because it uses the wrong role.
+  fake_nearby_connection_->AppendReadableData(written_payload);
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {
@@ -541,6 +554,26 @@ TEST_F(ConnectionTest,
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ConnectionTest, GetPhoneInstanceId) {
+  MarkConnectionAuthenticated();
+  base::RunLoop run_loop;
+
+  // Phone instance ID is initially empty.
+  EXPECT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
+
+  // Arbitrary CryptAuth ID.
+  std::vector<uint8_t> cryptauth_device_id = {0x01, 0x02, 0x03};
+  std::string expected_cryptauth_device_id(cryptauth_device_id.begin(),
+                                           cryptauth_device_id.end());
+
+  CallParseBootstrapConfigurationsResponse(run_loop.QuitClosure(),
+                                           expected_cryptauth_device_id);
+
+  run_loop.Run();
+  EXPECT_EQ(authenticated_connection_->get_phone_instance_id(),
+            expected_cryptauth_device_id);
 }
 
 }  // namespace ash::quick_start

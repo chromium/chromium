@@ -268,12 +268,12 @@ void EnrollmentScreenHandler::ShowAuthError(
 }
 
 void EnrollmentScreenHandler::ShowOtherError(
-    EnterpriseEnrollmentHelper::OtherError error) {
+    EnrollmentLauncher::OtherError error) {
   switch (error) {
-    case EnterpriseEnrollmentHelper::OTHER_ERROR_DOMAIN_MISMATCH:
+    case EnrollmentLauncher::OTHER_ERROR_DOMAIN_MISMATCH:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_LOCK_WRONG_USER, true);
       return;
-    case EnterpriseEnrollmentHelper::OTHER_ERROR_FATAL:
+    case EnrollmentLauncher::OTHER_ERROR_FATAL:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_FATAL_ENROLLMENT_ERROR, true);
       return;
   }

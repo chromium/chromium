@@ -483,7 +483,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks) {
   LoginUser(primary_user_);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  UserManager()->set_is_current_user_new(true);
+  UserManager()->SetIsCurrentUserNew(true);
   UserManager()->set_is_current_user_owner(true);
   metadata_store()->LoggedInStateChanged();
   ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
@@ -498,7 +498,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_EnterpriseEnrolled) {
   LoginUser(primary_user_);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  UserManager()->set_is_current_user_new(true);
+  UserManager()->SetIsCurrentUserNew(true);
   UserManager()->set_is_current_user_owner(true);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
@@ -512,7 +512,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotOwner) {
   LoginUser(primary_user_);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  UserManager()->set_is_current_user_new(true);
+  UserManager()->SetIsCurrentUserNew(true);
   UserManager()->set_is_current_user_owner(false);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
@@ -526,7 +526,7 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
   LoginUser(primary_user_);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  UserManager()->set_is_current_user_new(false);
+  UserManager()->SetIsCurrentUserNew(false);
   UserManager()->set_is_current_user_owner(true);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));

@@ -127,6 +127,9 @@ constexpr float kOuterHightlightBorderThickness =
 // bar's anchor bounds.
 constexpr int kCaptureBarBottomPadding = 16;
 
+// Height of the capture bar.
+constexpr int kCaptureBarHeight = 64;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

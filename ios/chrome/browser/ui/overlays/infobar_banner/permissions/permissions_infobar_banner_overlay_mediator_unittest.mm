@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/permissions_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
@@ -48,8 +49,8 @@ TEST_F(PermissionsBannerOverlayMediatorTest, SetUpConsumer) {
   // Package the infobar into an OverlayRequest, then create a mediator that
   // uses this request in order to set up a fake consumer.
   std::unique_ptr<OverlayRequest> request =
-      OverlayRequest::CreateWithConfig<PermissionsBannerRequestConfig>(
-          &infobar);
+      OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+          &infobar, InfobarOverlayType::kBanner);
   PermissionsBannerOverlayMediator* mediator =
       [[PermissionsBannerOverlayMediator alloc] initWithRequest:request.get()];
   FakeInfobarBannerConsumer* consumer =
@@ -76,8 +77,8 @@ TEST_F(PermissionsBannerOverlayMediatorTest, PresentModal) {
   // Package the infobar into an OverlayRequest, then create a mediator that
   // uses this request in order to set up a fake consumer.
   std::unique_ptr<OverlayRequest> request =
-      OverlayRequest::CreateWithConfig<PermissionsBannerRequestConfig>(
-          &infobar);
+      OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+          &infobar, InfobarOverlayType::kBanner);
   callback_installer_.InstallCallbacks(request.get());
   PermissionsBannerOverlayMediator* mediator =
       [[PermissionsBannerOverlayMediator alloc] initWithRequest:request.get()];

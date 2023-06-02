@@ -119,6 +119,11 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(net::features::kPartitionedCookies),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
+    // Override third-party cookie blocking.
+    {network::switches::kBlockThirdPartyCookies,
+     std::cref(net::features::kForceThirdPartyCookieBlocking),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
     // Overrides for --isolation-by-default.
     {switches::kIsolationByDefault,
      std::cref(features::kEmbeddingRequiresOptIn),
@@ -182,10 +187,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnablePrivacySandboxAdsApis,
      std::cref(blink::features::kPrivateAggregationApi),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnablePrivacySandboxAdsApis,
-     std::cref(blink::features::
-                   kPrivateAggregationApiFledgeExtensionsLocalTestingOverride),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnablePrivacySandboxAdsApis,
      std::cref(features::kAttributionFencedFrameReportingBeacon),

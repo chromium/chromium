@@ -284,9 +284,18 @@ class ImagePaintTimingDetectorTest : public testing::Test,
         SkImageInfo::MakeN32Premul(width, height, src_rgb_color_space);
     sk_sp<SkSurface> surface(SkSurfaces::Raster(raster_image_info));
     sk_sp<SkImage> image = surface->makeImageSnapshot();
+    scoped_refptr<UnacceleratedStaticBitmapImage> original_image_data =
+        UnacceleratedStaticBitmapImage::Create(image);
+    // To ensure that the image may be considered as an LCP candidate, allocate
+    // a small amount of memory for the image (0.1bpp should exceed the LCP
+    // entropy threshold).
+    int bytes = (width * height / 80) + 1;
+    Vector<char> img_data(bytes);
+    scoped_refptr<SharedBuffer> shared_buffer =
+        SharedBuffer::AdoptVector(img_data);
+    original_image_data->SetData(shared_buffer, /*all_data_received=*/true);
     ImageResourceContent* original_image_content =
-        ImageResourceContent::CreateLoaded(
-            UnacceleratedStaticBitmapImage::Create(image).get());
+        ImageResourceContent::CreateLoaded(original_image_data.get());
     return original_image_content;
   }
 
@@ -450,20 +459,21 @@ TEST_P(ImagePaintTimingDetectorTest,
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(), 0u);
-  EXPECT_EQ(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
+  LargestContentfulPaintDetailsForReporting largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 0u);
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
   SetBodyInnerHTML(R"HTML(
     <img id="target"></img>
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
-      25u);
-  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
+  largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 25u);
+  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTimingToZero) {
@@ -472,18 +482,15 @@ TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTimingToZero) {
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
-      25u);
-  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
+  auto largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 25u);
+  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
   GetDocument().body()->RemoveChild(GetDocument().getElementById("target"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
-      25u);
-  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 25u);
+  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OpacityZero) {
@@ -1189,11 +1196,11 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML) {
                                                 "opacity: 1");
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(CountImageRecords(), 1u);
-  EXPECT_EQ(
-      GetPerformanceTimingForReporting().LargestImagePaintSizeForMetrics(),
-      25u);
-  EXPECT_GT(GetPerformanceTimingForReporting().LargestImagePaintForMetrics(),
-            0u);
+  auto largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 25u);
+  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTML2) {

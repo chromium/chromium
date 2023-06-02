@@ -19,9 +19,6 @@
 
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
 
-# Sheriff 2018-08-17
-crbug.com/847114 [ Linux ] http/tests/devtools/tracing/decode-resize.js [ Pass Failure ]
-
 crbug.com/733494 [ Linux ] media/autoplay/document-user-activation.html [ Pass Failure ]
 
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]
@@ -31,7 +28,7 @@ crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html
 crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.html [ Failure ]
 
 # Sheriff 2021-02-25
-crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
+crbug.com/1182675 [ Linux ] dom/mutation-event-tests/dom/attr/id-update-map-crash.html [ Failure Pass ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]

@@ -316,10 +316,14 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     }
   }
 
-  if (event->type() == ui::ET_GESTURE_END)
+  if (event->type() == ui::ET_GESTURE_END) {
     UpdateGestureTarget(nullptr);
-  else if (event->type() == ui::ET_GESTURE_BEGIN)
+  } else if (event->type() == ui::ET_GESTURE_BEGIN) {
     UpdateGestureTarget(target, event_location);
+    // We don't always process ET_GESTURE_END events (i.e. on a fling or swipe),
+    // so reset `is_moving_floated_window_` in ET_GESTURE_BEGIN.
+    is_moving_floated_window_ = false;
+  }
 
   if (event->handled())
     return;
@@ -401,11 +405,13 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       // drag is converted to a two finger drag, a jump occurs because the
       // location of the ET_GESTURE_SCROLL_UPDATE event switches from the single
       // finger's position to the position in the middle of the two fingers.
-      if (window_resizer_.get())
+      if (window_resizer_.get()) {
         return;
+      }
 
-      if (!client_area_drag && !CanStartOneFingerDrag(component))
+      if (!client_area_drag && !CanStartOneFingerDrag(component)) {
         return;
+      }
 
       gfx::PointF location_in_parent = event_location;
       aura::Window::ConvertPointToTarget(target, target->parent(),
@@ -420,8 +426,13 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
 
-  if (!window_resizer_.get())
+  if (is_moving_floated_window_) {
+    event->StopPropagation();
+  }
+
+  if (!window_resizer_.get()) {
     return;
+  }
 
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_UPDATE: {
@@ -580,6 +591,14 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
   // client (i.e. |this| never handled ET_GESTURE_EVENT_BEGIN).
   if (in_gesture_drag_ && (!gesture_target_ || update_gesture_target)) {
     UpdateGestureTarget(window);
+  }
+
+  if (auto* window_state = WindowState::Get(window);
+      window_component == HTCAPTION && window_state &&
+      window_state->IsFloated()) {
+    // When a window is floated and we start a drag from the caption area,
+    // stop propagation of any events that may show the tab strip.
+    is_moving_floated_window_ = true;
   }
 
   return true;

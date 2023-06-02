@@ -42,7 +42,7 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
       *intercept = true;
     }
   }
-  void OnDialogShown(bool auto_reauthn);
+  void OnDialogShown();
 
  private:
   // DevToolsDomainHandler:

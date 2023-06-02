@@ -139,7 +139,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // Remove the channel for a particular renderer.
   void RemoveChannel(int client_id);
 
-  void OnContextLost(int context_lost_count, bool synthetic_loss);
+  void OnContextLost(int context_lost_count,
+                     bool synthetic_loss,
+                     error::ContextLostReason context_lost_reason);
 
   const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
   const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds() const {

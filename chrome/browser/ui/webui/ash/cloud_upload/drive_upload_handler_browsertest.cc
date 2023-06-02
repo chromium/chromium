@@ -212,15 +212,17 @@ class DriveUploadHandlerTest
   // signals to the DriveFs delegate.
   void SimulateDriveUploadEvents() {
     // Set file metadata for `drivefs::mojom::DriveFs::GetMetadata`.
-    fake_drivefs().SetMetadata(
-        observed_relative_drive_path(),
+    drivefs::FakeMetadata metadata;
+    metadata.path = observed_relative_drive_path();
+    metadata.mime_type =
         "application/"
-        "vnd.openxmlformats-officedocument.wordprocessingml.document",
-        test_file_name_, false, false, false, {}, {}, "abc123",
-        /*alternate_url=*/
+        "vnd.openxmlformats-officedocument.wordprocessingml.document";
+    metadata.original_name = test_file_name_;
+    metadata.doc_id = "abc123";
+    metadata.alternate_url =
         "https://docs.google.com/document/d/"
-        "smalldocxid?rtpof=true&usp=drive_fs",
-        /*shortcut=*/false);
+        "smalldocxid?rtpof=true&usp=drive_fs";
+    fake_drivefs().SetMetadata(std::move(metadata));
 
     // Simulate server sync events.
     drivefs::mojom::SyncingStatusPtr status =

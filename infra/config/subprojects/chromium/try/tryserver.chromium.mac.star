@@ -189,7 +189,30 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac12-arm64-rel-compilator",
-    os = os.MAC_12,
+    os = os.MAC_DEFAULT,
+    check_for_flakiness = True,
+    # TODO (crbug.com/1245171): Revert when root issue is fixed
+    grace_period = 4 * time.minute,
+    main_list_view = "try",
+)
+
+try_.orchestrator_builder(
+    name = "mac13-arm64-rel",
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac13-arm64-rel-tests",
+    ],
+    check_for_flakiness = True,
+    compilator = "mac13-arm64-rel-compilator",
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 1,
+    ),
+)
+
+try_.compilator_builder(
+    name = "mac13-arm64-rel-compilator",
+    os = os.MAC_DEFAULT,
     check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
@@ -272,6 +295,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac13-tests",
+    mirrors = [
+        "ci/Mac Builder",
+        "ci/Mac13 Tests",
+    ],
+)
+
+try_.builder(
     name = "mac_chromium_archive_rel_ng",
     mirrors = [
         "ci/mac-archive-rel",
@@ -320,7 +351,7 @@ try_.builder(
     name = "mac_chromium_dbg_ng",
     mirrors = [
         "ci/Mac Builder (dbg)",
-        "ci/Mac12 Tests (dbg)",
+        "ci/Mac13 Tests (dbg)",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -544,6 +575,7 @@ ios_builder(
         "ci/ios16-sdk-simulator",
     ],
     os = os.MAC_13,
+    cpu = cpu.ARM64,
     xcode = xcode.x14betabots,
 )
 

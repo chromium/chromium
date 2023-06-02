@@ -40,7 +40,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #endif
 
@@ -167,22 +167,16 @@ class PageContentAnnotationsServiceEphemeralProfileBrowserTest
         /*disabled_features=*/{});
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  ~PageContentAnnotationsServiceEphemeralProfileBrowserTest() override {}
 
-    std::unique_ptr<ash::ScopedDevicePolicyUpdate> device_policy_update =
-        device_state_.RequestDevicePolicyUpdate();
-    device_policy_update->policy_payload()
-        ->mutable_ephemeral_users_enabled()
-        ->set_ephemeral_users_enabled(true);
-  }
-
- protected:
-  ash::DeviceStateMixin device_state_{
-      &mixin_host_,
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  PageContentAnnotationsServiceEphemeralProfileBrowserTest(
+      const PageContentAnnotationsServiceEphemeralProfileBrowserTest&) = delete;
+  PageContentAnnotationsServiceEphemeralProfileBrowserTest& operator=(
+      const PageContentAnnotationsServiceEphemeralProfileBrowserTest&) = delete;
 
  private:
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

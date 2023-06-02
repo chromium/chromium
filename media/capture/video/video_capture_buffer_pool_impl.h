@@ -59,8 +59,12 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
       int* buffer_id,
       int* buffer_id_to_drop) override;
   void RelinquishProducerReservation(int buffer_id) override;
-  int ReserveIdForExternalBuffer(const gfx::GpuMemoryBufferHandle& handle,
-                                 int* buffer_id_to_drop) override;
+  VideoCaptureDevice::Client::ReserveResult ReserveIdForExternalBuffer(
+      gfx::GpuMemoryBufferHandle handle,
+      VideoPixelFormat format,
+      const gfx::Size& dimensions,
+      int* buffer_id_to_drop,
+      int* buffer_id) override;
   double GetBufferPoolUtilization() const override;
   void HoldForConsumers(int buffer_id, int num_clients) override;
   void RelinquishConsumerHold(int buffer_id, int num_clients) override;

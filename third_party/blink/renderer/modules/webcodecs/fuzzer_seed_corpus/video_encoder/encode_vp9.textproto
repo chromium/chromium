@@ -15,7 +15,13 @@ invocations: [
       bitrate: 1500000,
       framerate: 25,
       width: 200,
-      height: 50
+      height: 50,
+      display_width: 200,
+      display_height: 50,
+      bitrate_mode: VARIABLE,
+      scalability_mode: L1T1,
+      alpha: KEEP,
+      latency_mode: QUALITY
     }
   },
   {
@@ -42,6 +48,9 @@ invocations: [
       },
       options {
         key_frame: true,
+        vp9 {
+          quantizer: 35
+        }
       }
     }
   },

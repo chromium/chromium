@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -124,6 +124,22 @@ export class FakeInputDeviceSettingsProvider implements
     return this.methods.resolveMethod('fakePointingSticks');
   }
 
+  restoreDefaultKeyboardModifierRemappings(id: number): void {
+    const keyboards = this.methods.getResult('fakeKeyboards');
+    for (const keyboard of keyboards) {
+      if (keyboard.id === id) {
+        keyboard.settings.modifierRemappings =
+            keyboard.metaKey === MetaKey.kCommand ? {
+              [ModifierKey.kControl]: ModifierKey.kMeta,
+              [ModifierKey.kMeta]: ModifierKey.kControl,
+            } :
+                                                    {};
+      }
+    }
+    this.methods.setResult('fakeKeyboards', keyboards);
+    this.notifyKeboardListUpdated();
+  }
+
   setKeyboardSettings(id: number, settings: KeyboardSettings): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
     for (const keyboard of keyboards) {
@@ -166,8 +182,11 @@ export class FakeInputDeviceSettingsProvider implements
 
   notifyKeboardListUpdated(): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
+    // Make a deep copy to notify the functions observing keyboard settings.
+    const keyboardsClone =
+        !keyboards ? keyboards : JSON.parse(JSON.stringify(keyboards));
     for (const observer of this.keyboardObservers) {
-      observer.onKeyboardListUpdated(keyboards);
+      observer.onKeyboardListUpdated(keyboardsClone);
     }
   }
 

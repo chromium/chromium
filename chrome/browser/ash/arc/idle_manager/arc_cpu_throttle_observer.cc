@@ -20,8 +20,11 @@ void ArcCpuThrottleObserver::StartObserving(
       arc::ArcInstanceThrottle::GetForBrowserContext(context);
 
   // This may be null in unit tests.
-  if (instance_throttle)
+  if (instance_throttle) {
     instance_throttle->AddServiceObserver(this);
+    // Align internal state with that of the underlying service.
+    OnThrottle(instance_throttle->should_throttle());
+  }
 }
 
 void ArcCpuThrottleObserver::StopObserving() {

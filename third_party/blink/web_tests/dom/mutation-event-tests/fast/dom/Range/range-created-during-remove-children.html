@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<div id="container">
+<p id="description"></p>
+<div id="sample"><span contenteditable="true">foobar</span></div>
+</div>
+<div id="console"></div>
+<script src="../../../../../resources/js-test.js"></script>
+<script>
+description('Range objects should be updated after set innerHTML.');
+
+function $(id) { return document.getElementById(id); }
+
+var ranges = {};
+function eventHandler(event) {
+    if (ranges[event.type])
+        return;
+    ranges[event.type] = document.createRange();
+    ranges[event.type].selectNodeContents(sample.firstChild.firstChild);
+}
+
+document.addEventListener('blur', eventHandler, true);
+document.addEventListener('DOMNodeRemovedFromDocument', eventHandler, true);
+
+$('sample').firstChild.focus();
+$('sample').innerHTML = '';
+
+shouldBe('ranges["blur"].startOffset', '0');
+shouldBe('ranges["blur"].endOffset', '0');
+shouldBe('ranges["DOMNodeRemovedFromDocument"].startOffset', '0');
+shouldBe('ranges["DOMNodeRemovedFromDocument"].endOffset', '0');
+
+if (window.testRunner)
+    $('container').outerHTML = '';
+</script>

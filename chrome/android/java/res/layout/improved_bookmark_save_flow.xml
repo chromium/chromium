@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowView
+    android:id="@+id/improved_bookmark_save_flow"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="18dp"
+      android:paddingBottom="5dp"
+      android:paddingHorizontal="16dp">
+
+    <!--
+      The save flow can have multiple "panes" which represent the bookmark being saved and any
+      powers attached to it.
+    -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bookmark_container"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingVertical="18dp"
+        android:paddingHorizontal="16dp"
+        android:contentDescription="@string/edit_folder"
+        android:foreground="@drawable/bookmark_touch_ripple"
+        android:focusable="true"
+        android:clickable="true" >
+
+      <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+          android:id="@+id/bookmark_image"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          android:layout_width="@dimen/improved_bookmark_save_flow_image_size"
+          android:layout_height="@dimen/improved_bookmark_save_flow_image_size"
+          android:scaleType="center"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+          android:background="@drawable/rounded_rectangle_surface_0"
+          android:importantForAccessibility="no"
+          android:focusable="false"
+          android:clickable="false" />
+
+      <LinearLayout
+          app:layout_constraintStart_toEndOf="@id/bookmark_image"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:layout_gravity="center"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="12dp"
+          android:orientation="vertical"
+          android:importantForAccessibility="no"
+          android:focusable="false"
+          android:clickable="false" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bookmark_save_flow_title"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:importantForAccessibility="no"
+            android:focusable="false" />
+        <!-- Spans are used to mutate the color of part of this text at runtime. -->
+        <TextView
+            android:id="@+id/bookmark_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:importantForAccessibility="no"
+            android:focusable="false" />
+
+      </LinearLayout>
+      <ImageView
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:layout_width="@dimen/min_touch_target_size"
+          android:layout_height="match_parent"
+          android:scaleType="center"
+          android:src="@drawable/chevron_right"
+          android:importantForAccessibility="no"
+          android:focusable="false" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+      <!-- Price-tracking section. -->
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/price_tracking_container"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/bookmark_container"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="2dp" >
+
+      <ImageView
+          android:id="@+id/price_tracking_image"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:src="@drawable/price_tracking_disabled"
+          app:tint="@macro/default_icon_color"
+          android:importantForAccessibility="no" />
+
+      <LinearLayout
+          app:layout_constraintStart_toEndOf="@id/price_tracking_image"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:layout_gravity="center"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="12dp"
+          android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enable_price_tracking_menu_item"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/price_tracking_save_flow_notification_switch_subtitle"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+      </LinearLayout>
+
+      <androidx.appcompat.widget.SwitchCompat
+          android:id="@+id/price_tracking_switch"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowView>

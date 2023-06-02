@@ -14,7 +14,7 @@
 #include "components/sync/model/model_type_store.h"
 
 namespace desks_storage {
-
+DeskSyncService::DeskSyncService() = default;
 DeskSyncService::DeskSyncService(
     version_info::Channel channel,
     syncer::OnceModelTypeStoreFactory create_store_callback,
@@ -29,10 +29,6 @@ DeskSyncService::DeskSyncService(
 DeskSyncService::~DeskSyncService() = default;
 
 DeskModel* DeskSyncService::GetDeskModel() {
-  return bridge_.get();
-}
-
-DeskSyncBridge* DeskSyncService::GetDeskSyncBridge() {
   return bridge_.get();
 }
 

@@ -32,6 +32,7 @@
 хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
+<translation id="1555506416658437797">төлбөрийн хэрэгслийг засна уу.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="1587223624401073077">Google Chrome нь таны камерыг ашиглаж байна.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> аюултай тул үүнийг Chrome блок хийсэн.</translation>
@@ -83,6 +84,7 @@
 <translation id="234869673307233423">Chrome таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="235650106824528204">Энэ профайлыг ашиглах үед үүссэн Chrome-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Цааш</translation>
+<translation id="2399868464369312507">Google Chrome төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
 <translation id="2401189691232800402">ChromeOS систем</translation>
 <translation id="2467438592969358367">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="2485422356828889247">Устгах</translation>
@@ -392,6 +394,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8418845734693287262">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromeOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8451192282033883849">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chrome хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>
+<translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>
 <translation id="8504220326736535258">Энэ файл хортой программтай тул Chrome үүнийг блоклосон</translation>
 <translation id="8516431725144212809">Chrome-с тооцоолсон таны сонирхол</translation>
@@ -408,6 +411,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8649026945479135076">Таны зочилсон сайтууд таны сонирхдог зүйлсийг таны туршлагыг хувийн болгохын тулд санах нь түгээмэл юм. Сайтууд мөн Chrome-р таны сонирхлын талаарх мэдээллийг хадгалах боломжтой.</translation>
 <translation id="8669527147644353129">Google Chrome Туслагч</translation>
 <translation id="8679801911857917785">Энэ нь мөн таныг Chrome-ыг эхлүүлэх үед гарч ирдэг хуудсыг хянадаг.</translation>
+<translation id="8684875378076460854">Энэ файл аюултай байж магадгүй тул Chrome үүнийг скан хийхийг зөвлөж байна</translation>
 <translation id="8686817260976772516">Та Chrome профайлаар Chrome-н бүх зүйлээ тусгаарлах боломжтой. Найзууд, гэр бүлдээ профайл үүсгэх эсвэл ажил болон дуртай зүйлээ хооронд нь хуваагаарай.</translation>
 <translation id="8712767363896337380">Шинэчилж дуусаж байна! Шинэчилж дуусгахын тулд Chrome-г дахин ачаална уу.</translation>
 <translation id="873133009373065397">Google Chrome өгөгдмөл хөтчийг тодорхойлох эсвэл тохируулах боломжгүй</translation>

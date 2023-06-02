@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak klavye ile İngilizce (ABD)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Ana Makine</translation>
 <translation id="1521655867290435174">Google E-Tablolar</translation>
-<translation id="1538729222189715449">Linux dosyaları açılıyor...</translation>
 <translation id="1547964879613821194">Kanada İngilizcesi</translation>
 <translation id="1556189134700913550">Tümüne uygula</translation>
 <translation id="1561842594491319104">Chrome cihazlar</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google sitesi</translation>
 <translation id="1853795129690976061">Bu klasör Linux ile paylaşılıyor.</translation>
 <translation id="1864756863218646478">Dosya bulunamadı.</translation>
+<translation id="1877377730633446520">Yaklaşık <ph name="REQUIRED_SPACE" /> depolama alanı kullanılacak. Şu anda <ph name="FREE_SPACE" /> alanınız var.</translation>
 <translation id="1884013283844450420">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Bağlan</translation>
 <translation id="1920670151694390848">Malayalam Harf Çevirisi</translation>
 <translation id="1920798810075583923">Karpuz</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Dosyalar geri bildirim panellerini genişlet</translation>
 <translation id="1995337122023280937">Dosya konumuna git</translation>
 <translation id="2001796770603320721">Drive'da Yönet</translation>
+<translation id="2004942826429452291">Dosyalar bulutta ve bu Chromebook'ta depolanır.</translation>
 <translation id="2009067268969781306">Bir sürücünün biçimlendirilmesi, üzerinde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="2025955442973426285">Tigrinya dili</translation>
 <translation id="2037845485764049925">Rusça</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Cihaz ayarları</translation>
 <translation id="2084809735218147718">Teşekkürler yazısı</translation>
 <translation id="2088690981887365033">VPN ağı</translation>
+<translation id="2089751716171649322">İnternete bağlı değilken Google Drive dosyalarınıza kolayca erişin</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Gizli modda izin ver<ph name="END_BOLD" />'i açın</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> öğe silinecek ve bu öğeleri geri yükleyemeyeceksiniz.</translation>
 <translation id="2122305276694332719">Gizli bir ağa otomatik olarak bağlanmak başkalarının cihazınızı ve bazı ağ ayarlarını görmesine olanak sağladığından önerilmez.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux ile yükle</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> öğeyi silmek istediğiniz emin misiniz?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" klasörü oluşturulamıyor. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Google Drive önbelleğiniz temizlendi.</translation>
 <translation id="2239068707900391003">Elinde kahve tutan bir kişi</translation>
 <translation id="2251368349685848079">Çöp kutusundan geri yükle</translation>
 <translation id="2278133026967558505">Tüm web siteleri ve URL'ler tarafından dosya erişimi</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3486821258960016770">Moğolca</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hata.</translation>
+<translation id="3501954296166022751">Google Drive dosyalarınızı internet bağlantısı olmadan kullanabilirsiniz</translation>
 <translation id="3509680540198371098">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> öğe senkronize edilmeye hazırlanıyor...</translation>
 <translation id="3522708245912499433">Portekizce</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Bu ayarı değiştirmek tüm paylaşılan ağları etkiler</translation>
 <translation id="3737576078404241332">Kenar çubuğundan kaldır</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
-<translation id="3780536599611287598">Dosyaları "<ph name="FOLDER_NAME" />" klasörüne taşıma izniniz yok.</translation>
 <translation id="3786301125658655746">Çevrimdışısınız</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3793469551756281394">Yaklaşık <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> kaldı</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Özel ad sunucuları</translation>
 <translation id="4465725236958772856">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Yöneticiniz tarafından yönetiliyor, Bağlan</translation>
 <translation id="4470564870223067757">Hangul 2 Grubu</translation>
+<translation id="4472575034687746823">Başlayın</translation>
 <translation id="4474142134969976028">Eşleşen sonuç yok</translation>
 <translation id="4477002475007461989">Romence</translation>
 <translation id="4477219268485577442">Bulgarca fonetik</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> öğe geri yükleniyor</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Gizli modu kullanmak için kuruluşunuzun bir uzantıya ihtiyacı var}other{Gizli modu kullanmak için kuruluşunuzun bazı uzantılara ihtiyacı var}}</translation>
-<translation id="4823651846660089135">Cihaz salt okunur</translation>
 <translation id="4826849268470072925">Tamilce ITRANS</translation>
 <translation id="482932175346970750">Tarayıcınıza <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yazın</translation>
 <translation id="4843566743023903107">Chromebase'ler</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5500122897333236901">İzlanda dili</translation>
 <translation id="5508696409934741614">Noktalar</translation>
+<translation id="5519161320735100193">Google Drive ayarları</translation>
 <translation id="5522908512596376669">Dosya listesi, liste görünümü olarak değiştirildi.</translation>
 <translation id="5524517123096967210">Dosya okunamadı.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> resmi</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Tüm girişler seçimden kaldırıldı.</translation>
 <translation id="5838825566232597749">ABD Workman uluslararası</translation>
 <translation id="5845721951356578987">Hemşire</translation>
+<translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5861477046012235702">Oyuncu</translation>
 <translation id="5864471791310927901">DHCP araması başarısız oldu</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Web proxy otomatik keşfi</translation>
 <translation id="6337014272874260727">Hızlı dosyalardaki sabitlemeyi kaldır</translation>
 <translation id="6339145975392024142">ABD uluslararası (PC)</translation>
-<translation id="6346310558342052870">Erişim kısıtlı</translation>
 <translation id="6356685157277930264">Dosya geri bildirim penceresi</translation>
 <translation id="6358884629796491903">Ejderha</translation>
 <translation id="636254897931573416">Alan adı son eki eşleşme değeri geçersiz</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7806708061868529807">İbranice</translation>
 <translation id="78104721049218340">Kedmanee klavye ile Tayca</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Ağ yapılandırılırken hata oluştu</translation>
 <translation id="7839804798877833423">Bu dosyaları getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Bir bölümün biçimlendirilmesi o bölümde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Drive'ım bölümündeki dosyalarınız Chromebook'unuzla otomatik olarak senkronize edildiği için bu dosyalara internet bağlantısı olmadan erişebilirsiniz.</translation>
 <translation id="7925247922861151263">AAA kontrolü başarısız oldu</translation>
 <translation id="7925686952655276919">Senkronizasyon için mobil veri kullanma</translation>
 <translation id="7928710562641958568">Cihazı çıkar</translation>
+<translation id="7933875256234974853">Drive dosyaları senkronize edilmeye hazırlanıyor...</translation>
 <translation id="7943385054491506837">ABD Colemak</translation>
 <translation id="7953739707111622108">Bu cihaz, dosya sistemi tanınmadığından açılamıyor.</translation>
 <translation id="7969525169268594403">Slovence</translation>
 <translation id="7972920761225148017">Fransızca (İsviçre)</translation>
 <translation id="7973962044839454485">Yanlış kullanıcı adı veya şifreden dolayı PPP kimlik doğrulaması başarısız oldu</translation>
 <translation id="7980421588063892270">Colemak klavye ile İngilizce (ABD)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> dosya senkronize ediliyor</translation>
 <translation id="8000066093800657092">Ağ yok</translation>
 <translation id="8008366997883261463">Jack Russell Teriyeri</translation>
 <translation id="8028993641010258682">Boyut</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Danca</translation>
 <translation id="8949925099261528566">Bağlı, internet yok</translation>
 <translation id="8965697826696209160">Yeterli alan yok.</translation>
+<translation id="8971742885766657349">Senkronize ediliyor - %<ph name="PERCENT" /></translation>
 <translation id="8997962250644902079">Çince (Geleneksel) Pinyin</translation>
 <translation id="8998871447376656508">Google Drive'ınızda yükleme işlemini tamamlayacak kadar yeterli boş alan yok.</translation>
 <translation id="9003940392834790328">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Yükleme işlemi başarıyla başlatıldı.</translation>
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="9219908252191632183">Ay</translation>
+<translation id="937795003075802289">1 dosya senkronize ediliyor</translation>
 <translation id="938470336146445890">Lütfen bir kullanıcı sertifikası yükleyin.</translation>
 <translation id="939736085109172342">Yeni klasör</translation>
 <translation id="943972244133411984">Değiştiren:</translation>

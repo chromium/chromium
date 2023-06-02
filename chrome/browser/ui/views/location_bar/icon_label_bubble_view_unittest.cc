@@ -268,8 +268,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TestIconLabelBubbleView> view_ = nullptr;
-  raw_ptr<TestInkDrop> ink_drop_ = nullptr;
+  raw_ptr<TestIconLabelBubbleView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<TestInkDrop, DanglingUntriaged> ink_drop_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
   bool steady_reached_ = false;

@@ -12,7 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 
 /**
  * Omnibox action for showing the history clusters (journeys) UI. This exists as a separate class so
@@ -26,8 +26,10 @@ public class HistoryClustersAction extends OmniboxAction {
     /** Associated user query, guaranteed to be a non-empty string. */
     public final @NonNull String query;
 
-    public HistoryClustersAction(@NonNull String hint, @NonNull String query) {
-        super(OmniboxActionType.HISTORY_CLUSTERS, hint, JOURNEYS_ICON);
+    public HistoryClustersAction(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint, @NonNull String query) {
+        super(OmniboxActionId.HISTORY_CLUSTERS, nativeInstance, hint, accessibilityHint,
+                JOURNEYS_ICON);
         assert !TextUtils.isEmpty(query);
         this.query = query;
     }
@@ -44,7 +46,7 @@ public class HistoryClustersAction extends OmniboxAction {
      */
     public static @NonNull HistoryClustersAction from(@NonNull OmniboxAction action) {
         assert action != null;
-        assert action.actionId == OmniboxActionType.HISTORY_CLUSTERS;
+        assert action.actionId == OmniboxActionId.HISTORY_CLUSTERS;
         assert action instanceof HistoryClustersAction;
         return (HistoryClustersAction) action;
     }

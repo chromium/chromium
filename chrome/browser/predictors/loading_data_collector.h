@@ -171,7 +171,7 @@ class LoadingDataCollector {
   // Cleanup inflight_navigations_ and call a cleanup for stats_collector_.
   void CleanupAbandonedNavigations(NavigationId navigation_id);
 
-  const raw_ptr<ResourcePrefetchPredictor> predictor_;
+  const raw_ptr<ResourcePrefetchPredictor, DanglingUntriaged> predictor_;
   const raw_ptr<LoadingStatsCollector> stats_collector_;
   const LoadingPredictorConfig config_;
 

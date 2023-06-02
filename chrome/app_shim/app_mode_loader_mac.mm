@@ -26,6 +26,10 @@
 #import "chrome/common/mac/app_mode_chrome_locator.h"
 #include "chrome/common/mac/app_mode_common.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 const int kErrorReturnValue = 1;
@@ -33,12 +37,11 @@ const int kErrorReturnValue = 1;
 typedef int (*StartFun)(const app_mode::ChromeAppModeInfo*);
 
 int LoadFrameworkAndStart(int argc, char** argv) {
-  using base::SysNSStringToUTF8;
   base::CommandLine command_line(argc, argv);
 
   @autoreleasepool {
     // Get the current main bundle, i.e., that of the app loader that's running.
-    NSBundle* app_bundle = [NSBundle mainBundle];
+    NSBundle* app_bundle = NSBundle.mainBundle;
     if (!app_bundle) {
       NSLog(@"Couldn't get loader bundle");
       return kErrorReturnValue;
@@ -144,6 +147,12 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       }
     }
 
+    // Check if `executable_path` was overridden by tests via the command line.
+    if (command_line.HasSwitch(app_mode::kLaunchChromeForTest)) {
+      executable_path =
+          command_line.GetSwitchValuePath(app_mode::kLaunchChromeForTest);
+    }
+
     // ** 4: Read information from the Info.plist.
     // Read information about the this app shortcut from the Info.plist.
     // Don't check for null-ness on optional items.
@@ -154,16 +163,16 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     }
 
     const std::string app_mode_id =
-        SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutIDKey]);
+        base::SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutIDKey]);
     if (!app_mode_id.size()) {
       NSLog(@"Couldn't get app shortcut ID");
       return kErrorReturnValue;
     }
 
-    const std::string app_mode_name =
-        SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutNameKey]);
+    const std::string app_mode_name = base::SysNSStringToUTF8(
+        info_plist[app_mode::kCrAppModeShortcutNameKey]);
     const std::string app_mode_url =
-        SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutURLKey]);
+        base::SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutURLKey]);
 
     base::FilePath plist_user_data_dir = base::mac::NSStringToFilePath(
         info_plist[app_mode::kCrAppModeUserDataDirKey]);
@@ -172,7 +181,7 @@ int LoadFrameworkAndStart(int argc, char** argv) {
         info_plist[app_mode::kCrAppModeProfileDirKey]);
 
     // ** 5: Open the framework.
-    StartFun ChromeAppModeStart = NULL;
+    StartFun ChromeAppModeStart = nullptr;
     NSLog(@"Using framework path %s", framework_path.value().c_str());
     NSLog(@"Loading framework dylib %s", framework_dylib_path.value().c_str());
     void* cr_dylib = dlopen(framework_dylib_path.value().c_str(), RTLD_LAZY);
@@ -214,13 +223,13 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     // If the shim was launched by chrome, simply quit. Chrome will detect that
     // the app shim has terminated, rebuild it (if it hadn't try to do so
     // already), and launch it again.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            app_mode::kLaunchedByChromeProcessId)) {
+    if (executable_path.empty()) {
       NSLog(@"Loading Chrome failed, terminating");
       return kErrorReturnValue;
     }
 
-    NSLog(@"Loading Chrome failed, launching Chrome with command line");
+    NSLog(@"Loading Chrome failed, launching Chrome with command line at %s",
+          executable_path.value().c_str());
     base::CommandLine cr_command_line(executable_path);
     // The user_data_dir from the plist is actually the app data dir.
     cr_command_line.AppendSwitchPath(
@@ -232,6 +241,13 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     // shim.
     cr_command_line.AppendSwitchPath(switches::kProfileDirectory, profile_dir);
     cr_command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
+
+    // If kLaunchChromeForTest was specified, this is a launch from a test.
+    // In this case make sure to tell chrome to use a mock keychain, as
+    // otherwise it might hang on startup.
+    if (command_line.HasSwitch(app_mode::kLaunchChromeForTest)) {
+      cr_command_line.AppendSwitch("use-mock-keychain");
+    }
 
     // Launch the executable directly since base::mac::LaunchApplication doesn't
     // pass command line arguments if the application is already running.

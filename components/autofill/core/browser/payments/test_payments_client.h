@@ -169,7 +169,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   // useful to control whether or not GetUnmaskDetails() is responded to.
   bool should_return_unmask_details_ = true;
   payments::PaymentsClient::UnmaskDetails unmask_details_;
-  raw_ptr<const payments::PaymentsClient::UnmaskRequestDetails>
+  raw_ptr<const payments::PaymentsClient::UnmaskRequestDetails,
+          DanglingUntriaged>
       unmask_request_ = nullptr;
   payments::PaymentsClient::SelectChallengeOptionRequestDetails
       select_challenge_option_request_;

@@ -27,7 +27,7 @@ class DawnServiceSerializer : public dawn::wire::CommandSerializer {
   bool NeedsFlush() const;
 
  private:
-  raw_ptr<DecoderClient> client_;
+  raw_ptr<DecoderClient, DanglingUntriaged> client_;
   std::vector<uint8_t> buffer_;
   size_t put_offset_;
 };

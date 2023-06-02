@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+document.addEventListener("DOMSubtreeModified", function() {
+});
+function selectstart() {
+  var oElement = event.srcElement;
+  oElement.insertAdjacentHTML('afterbegin', '<details></details>')
+  oElement.innerText = 'Test passes if it does not crash.';
+}
+document.addEventListener("selectstart", selectstart);
+window.onload = function(){
+  document.execCommand("SelectAll")
+};
+</script>

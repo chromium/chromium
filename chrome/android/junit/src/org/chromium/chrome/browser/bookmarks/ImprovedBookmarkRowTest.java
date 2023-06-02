@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -140,5 +144,28 @@ public class ImprovedBookmarkRowTest {
         Assert.assertTrue(mImprovedBookmarkRow.findViewById(R.id.more).isEnabled());
         Assert.assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_YES,
                 mImprovedBookmarkRow.findViewById(R.id.more).getImportantForAccessibility());
+    }
+
+    @Test
+    public void testListMenuButtonDelegateDoesNotChangeVisibility() {
+        int visibility = mImprovedBookmarkRow.findViewById(R.id.more).getVisibility();
+        mModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE, null);
+        // Setting the delegate shouldn't affect visibility.
+        Assert.assertEquals(
+                visibility, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    }
+
+    @Test
+    public void testAccessoryViewHasParent() {
+        doReturn(mViewGroup).when(mView).getParent();
+        doAnswer((invocation) -> {
+            doReturn(null).when(mView).getParent();
+            return null;
+        })
+                .when(mViewGroup)
+                .removeView(mView);
+
+        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, mView);
+        verify(mViewGroup).removeView(mView);
     }
 }

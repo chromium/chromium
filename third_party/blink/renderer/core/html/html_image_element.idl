@@ -23,10 +23,11 @@
 [
     ActiveScriptWrappable,
     Exposed=Window,
-    HTMLConstructor,
-    NamedConstructor=Image(optional unsigned long width, optional unsigned long height),
-    NamedConstructor_CallWith=Document
+    LegacyFactoryFunction=Image(optional unsigned long width, optional unsigned long height),
+    LegacyFactoryFunction_CallWith=Document
 ] interface HTMLImageElement : HTMLElement {
+    [HTMLConstructor] constructor();
+
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, Reflect, URL] attribute USVString src;
     [CEReactions, Reflect] attribute DOMString srcset;
@@ -54,7 +55,7 @@
     [CEReactions, Reflect] attribute unsigned long vspace;
     [CEReactions, Reflect, URL] attribute DOMString longDesc;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString border;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString border;
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-htmlimageelement-interface

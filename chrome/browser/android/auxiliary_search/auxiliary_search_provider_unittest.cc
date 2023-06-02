@@ -53,7 +53,7 @@ BookmarkNode* AsMutable(const BookmarkNode* node) {
 }
 
 TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
-  auxiliary_search::AuxiliarySearchGroup group;
+  auxiliary_search::AuxiliarySearchBookmarkGroup group;
   for (int i = 0; i < 200; i++) {
     std::string number = base::NumberToString(i);
     BookmarkNode* node = AsMutable(model_->AddURL(
@@ -63,13 +63,14 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
   }
   provider->GetBookmarks(model_.get(), &group);
 
-  EXPECT_EQ(100, group.entry_size());
+  EXPECT_EQ(100, group.bookmark_size());
 
   std::unordered_set<int> bookmark_titles_int;
   for (int i = 0; i < 100; i++) {
-    auxiliary_search::AuxiliarySearchGroup_Entry entry = group.entry(i);
+    auxiliary_search::AuxiliarySearchBookmarkGroup_Bookmark bookmark =
+        group.bookmark(i);
     int title_int;
-    EXPECT_TRUE(base::StringToInt(entry.title(), &title_int));
+    EXPECT_TRUE(base::StringToInt(bookmark.title(), &title_int));
 
     EXPECT_TRUE(title_int >= 100 && title_int <= 199);
     bookmark_titles_int.insert(title_int);

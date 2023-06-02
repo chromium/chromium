@@ -133,7 +133,8 @@ class MediaItemUIDeviceSelectorView
   global_media_controls::GlobalMediaControlsEntryPoint const entry_point_;
 
   // Child views
-  raw_ptr<AudioDeviceEntryView> current_audio_device_entry_view_ = nullptr;
+  raw_ptr<AudioDeviceEntryView, DanglingUntriaged>
+      current_audio_device_entry_view_ = nullptr;
   raw_ptr<views::View> expand_button_strip_ = nullptr;
   raw_ptr<ExpandDeviceSelectorLabel> expand_label_ = nullptr;
   raw_ptr<ExpandDeviceSelectorButton> dropdown_button_ = nullptr;

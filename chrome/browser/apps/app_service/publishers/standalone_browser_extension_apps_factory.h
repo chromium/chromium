@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -26,8 +26,7 @@ class StandaloneBrowserExtensionAppsFactoryForApp
   static void ShutDownForTesting(content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      StandaloneBrowserExtensionAppsFactoryForApp>;
+  friend base::NoDestructor<StandaloneBrowserExtensionAppsFactoryForApp>;
 
   StandaloneBrowserExtensionAppsFactoryForApp();
   StandaloneBrowserExtensionAppsFactoryForApp(
@@ -53,8 +52,7 @@ class StandaloneBrowserExtensionAppsFactoryForExtension
   static void ShutDownForTesting(content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      StandaloneBrowserExtensionAppsFactoryForExtension>;
+  friend base::NoDestructor<StandaloneBrowserExtensionAppsFactoryForExtension>;
 
   StandaloneBrowserExtensionAppsFactoryForExtension();
   StandaloneBrowserExtensionAppsFactoryForExtension(

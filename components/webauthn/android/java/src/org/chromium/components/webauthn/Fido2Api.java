@@ -166,7 +166,7 @@ public final class Fido2Api {
      * @throws NoSuchAlgorithmException when options requests an impossible-to-satisfy public-key
      *         algorithm.
      */
-    public static void appendMakeCredentialOptionsToParcel(
+    private static void appendMakeCredentialOptionsToParcel(
             PublicKeyCredentialCreationOptions options, Parcel parcel)
             throws NoSuchAlgorithmException {
         final int a = writeHeader(OBJECT_MAGIC, parcel);

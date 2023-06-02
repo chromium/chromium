@@ -218,7 +218,8 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     UserSessionManager::GetInstance()->CheckEolInfo(user_profile);
 
   UserSessionManager::GetInstance()->ShowNotificationsIfNeeded(user_profile);
-  UserSessionManager::GetInstance()->MaybeLaunchSettings(user_profile);
+  UserSessionManager::GetInstance()->PerformPostBrowserLaunchOOBEActions(
+      user_profile);
 }
 
 void LaunchShimlessRma() {

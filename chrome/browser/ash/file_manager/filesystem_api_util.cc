@@ -179,54 +179,6 @@ void PrepareFileOnIOThread(
 
 }  // namespace
 
-bool IsNonNativeFileSystemType(storage::FileSystemType type) {
-  switch (type) {
-    // Public enum values, also exposed to JavaScript.
-    case storage::kFileSystemTypeTemporary:
-    case storage::kFileSystemTypePersistent:
-    case storage::kFileSystemTypeIsolated:
-    case storage::kFileSystemTypeExternal:
-      break;
-
-      // Everything else is a private (also known as internal) enum value.
-
-    case storage::kFileSystemInternalTypeEnumStart:
-    case storage::kFileSystemInternalTypeEnumEnd:
-      NOTREACHED();
-      break;
-
-    case storage::kFileSystemTypeLocal:
-    case storage::kFileSystemTypeRestrictedLocal:
-    case storage::kFileSystemTypeLocalMedia:
-    case storage::kFileSystemTypeLocalForPlatformApp:
-    case storage::kFileSystemTypeDriveFs:
-    case storage::kFileSystemTypeSmbFs:
-    case storage::kFileSystemTypeFuseBox:
-      return false;
-
-    case storage::kFileSystemTypeUnknown:
-    case storage::kFileSystemTypeTest:
-    case storage::kFileSystemTypeDragged:
-    case storage::kFileSystemTypeDeviceMedia:
-    case storage::kFileSystemTypeSyncable:
-    case storage::kFileSystemTypeSyncableForInternalSync:
-    case storage::kFileSystemTypeForTransientFile:
-    case storage::kFileSystemTypeProvided:
-    case storage::kFileSystemTypeDeviceMediaAsFileStorage:
-    case storage::kFileSystemTypeArcContent:
-    case storage::kFileSystemTypeArcDocumentsProvider:
-      break;
-
-      // We don't use a "default:" case. Whenever file_system_types.h gains a
-      // new enum value, raise a compiler error (with -Werror,-Wswitch) unless
-      // this switch statement is also updated.
-  }
-
-  // The path indeed corresponds to a mount point not associated with a native
-  // local path.
-  return true;
-}
-
 bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -243,7 +195,7 @@ bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
     return false;
   }
 
-  return IsNonNativeFileSystemType(filesystem_url.type());
+  return !filesystem_url.TypeImpliesPathIsReal();
 }
 
 bool IsDriveLocalPath(Profile* profile, const base::FilePath& path) {

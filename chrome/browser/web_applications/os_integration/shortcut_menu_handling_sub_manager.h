@@ -57,8 +57,8 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
       ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps);
 
   const base::FilePath profile_path_;
-  const raw_ref<WebAppIconManager> icon_manager_;
-  const raw_ref<WebAppRegistrar> registrar_;
+  const raw_ref<WebAppIconManager, DanglingUntriaged> icon_manager_;
+  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
 
   base::WeakPtrFactory<ShortcutMenuHandlingSubManager> weak_ptr_factory_{this};
 };

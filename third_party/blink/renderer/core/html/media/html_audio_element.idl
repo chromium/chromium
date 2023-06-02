@@ -27,8 +27,8 @@
 
 [
     Exposed=Window,
-    HTMLConstructor,
-    NamedConstructor=Audio(optional DOMString src),
-    NamedConstructor_CallWith=Document
+    LegacyFactoryFunction=Audio(optional DOMString src),
+    LegacyFactoryFunction_CallWith=Document
 ] interface HTMLAudioElement : HTMLMediaElement {
+    [HTMLConstructor] constructor();
 };

@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/common/extensions/api/certificate_provider.h"
@@ -310,7 +310,8 @@ CertificateProviderServiceFactory::GetForBrowserContext(
 // static
 CertificateProviderServiceFactory*
 CertificateProviderServiceFactory::GetInstance() {
-  return base::Singleton<CertificateProviderServiceFactory>::get();
+  static base::NoDestructor<CertificateProviderServiceFactory> instance;
+  return instance.get();
 }
 
 CertificateProviderServiceFactory::CertificateProviderServiceFactory()

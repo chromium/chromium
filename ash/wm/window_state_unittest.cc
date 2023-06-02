@@ -1293,7 +1293,8 @@ TEST_F(WindowStateTest, WindowStateRestoreHistoryBasicFunctionalites) {
   EXPECT_EQ(
       restore_stack[0],
       (WindowState::RestoreState{.window_state_type = WindowStateType::kDefault,
-                                 .actual_bounds_in_screen = default_bounds}));
+                                 .actual_bounds_in_screen = default_bounds,
+                                 .restore_bounds_in_screen = default_bounds}));
   EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
   EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), default_bounds);
 

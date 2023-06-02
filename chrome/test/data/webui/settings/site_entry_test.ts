@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createOriginInfo,createSiteGroup} from './test_util.js';
+import {createOriginInfo, createSiteGroup} from './test_util.js';
 
 // clang-format on
 
@@ -20,16 +20,17 @@ suite('SiteEntry', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
-  const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
-    'http://example.com',
-    'https://www.example.com',
-    'https://login.example.com',
-  ]);
+  const TEST_MULTIPLE_SITE_GROUP =
+      createSiteGroup('example.com', 'example.com', [
+        'http://example.com',
+        'https://www.example.com',
+        'https://login.example.com',
+      ]);
 
   /**
    * An example eTLD+1 Object with a single origin in it.
    */
-  const TEST_SINGLE_SITE_GROUP = createSiteGroup('foo.com', [
+  const TEST_SINGLE_SITE_GROUP = createSiteGroup('foo.com', 'foo.com', [
     'https://login.foo.com',
   ]);
 

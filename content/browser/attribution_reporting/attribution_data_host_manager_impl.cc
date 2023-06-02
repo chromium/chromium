@@ -654,12 +654,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
   }
 
+  // TODO(csharrison): Remove `nav_type` via reverting crrev.com/c/4070064.
   auto source_type = SourceType::kEvent;
   if (auto nav_type = context->nav_type()) {
     source_type = SourceType::kNavigation;
-
-    base::UmaHistogramEnumeration(
-        "Conversions.SourceRegistration.NavigationType.Background", *nav_type);
   }
 
   attribution_manager_->HandleSource(
@@ -836,14 +834,6 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
     if (source.has_value()) {
       attribution_manager_->HandleSource(std::move(*source),
                                          registrations->render_frame_id());
-
-      if (const auto* navigation =
-              absl::get_if<SourceRegistrations::ForegroundNavigation>(
-                  &registrations->data())) {
-        base::UmaHistogramEnumeration(
-            "Conversions.SourceRegistration.NavigationType.Foreground",
-            navigation->nav_type);
-      }
     } else {
       attribution_manager_->NotifyFailedSourceRegistration(
           pending_decode.header, registrations->source_origin(),

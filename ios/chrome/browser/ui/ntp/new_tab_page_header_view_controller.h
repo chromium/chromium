@@ -110,6 +110,9 @@
 // Update any dynamic constraints.
 - (void)updateConstraints;
 
+// The positive offset value to begin the fake omniobx expansion animation.
+- (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_

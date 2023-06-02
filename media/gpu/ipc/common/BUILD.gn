@@ -6,7 +6,6 @@ source_set("common") {
   sources = [
     "media_param_traits.cc",
     "media_param_traits.h",
-    "media_param_traits_macros.h",
   ]
 
   deps = [

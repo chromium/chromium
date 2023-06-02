@@ -61,6 +61,7 @@ class VirtualCardUsageData;
 //   count              How many times the user has entered the string |value|
 //                      in a field of name |name|.
 //
+// DEPRECATED. Use local_addresses instead.
 // autofill_profiles    This table contains Autofill profile data added by the
 //                      user with the Autofill dialog.  Most of the columns are
 //                      standard entries in a contact information form.
@@ -102,6 +103,7 @@ class VirtualCardUsageData;
 //                      If true, a profile does not qualify to get merged with
 //                      a profile observed in a form submission.
 //
+// DEPRECATED. See autofill_profiles.
 // autofill_profile_addresses
 //   guid               The guid string that identifies the profile to which
 //                      the name belongs.
@@ -151,6 +153,7 @@ class VirtualCardUsageData;
 //                      value was observed in a form submission, or even
 //                      validated by the user in the settings.
 //
+// DEPRECATED. See autofill_profiles.
 // autofill_profile_names
 //                      This table contains the multi-valued name fields
 //                      associated with a profile.
@@ -191,6 +194,7 @@ class VirtualCardUsageData;
 //                      value was observed in a form submission, or even
 //                      validated by the user in the settings.
 //
+// DEPRECATED. See autofill_profiles.
 // autofill_profile_emails
 //                      This table contains the multi-valued email fields
 //                      associated with a profile.
@@ -199,6 +203,7 @@ class VirtualCardUsageData;
 //                      the email belongs.
 //   email
 //
+// DEPRECATED. See autofill_profiles.
 // autofill_profile_phones
 //                      This table contains the multi-valued phone fields
 //                      associated with a profile.
@@ -207,6 +212,7 @@ class VirtualCardUsageData;
 //                      phone number belongs.
 //   number
 //
+// DEPRECATED. See autofill_profiles.
 // autofill_profile_birthdates
 //                      This table contains the multi-valued birthdate fields
 //                      associated with a profile.
@@ -339,7 +345,8 @@ class VirtualCardUsageData;
 //                      a form.
 //   use_date           The date this IBAN was last used to fill a form,
 //                      in time_t.
-//   value              Actual value of the IBAN (the bank account number).
+//   value_encrypted    Actual value of the IBAN (the bank account number),
+//                      encrypted.
 //   nickname           A nickname for the IBAN, entered by the user.
 //
 //
@@ -453,6 +460,8 @@ class VirtualCardUsageData;
 //
 // contact_info         This table contains Autofill profile data synced from a
 //                      remote source.
+// local_addresses      This table contains kLocalOrSyncable Autofill profiles.
+//                      It has the same layout as the contact_info table.
 //
 //   guid               A guid string to uniquely identify the profile.
 //   use_count          The number of times this profile has been used to fill a
@@ -479,6 +488,8 @@ class VirtualCardUsageData;
 //                      Contains the values for all relevant ServerFieldTypes of
 //                      a contact_info entry. At most one entry per (guid, type)
 //                      pair exists.
+// local_addresses_type_tokens
+//                      Like contact_info_type_tokens, but for local_addresses.
 //
 //  guid                The guid of the corresponding profile in contact_info.
 //  type                The ServerFieldType, represented by its integer value in
@@ -594,24 +605,22 @@ class AutofillTable : public WebDatabaseTable,
   virtual bool RemoveAutofillProfile(const std::string& guid,
                                      AutofillProfile::Source profile_source);
 
-  // Removes all profiles from the given `profile_source`. Currently this is
-  // only supported for kAccount profiles, since they are cleared when the Sync
-  // data types gets disabled.
+  // Removes all profiles from the given `profile_source`.
   bool RemoveAllAutofillProfiles(AutofillProfile::Source profile_source);
 
   // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
   // `kContactInfoTable`.
   std::unique_ptr<AutofillProfile> GetAutofillProfile(
       const std::string& guid,
-      AutofillProfile::Source profile_source);
+      AutofillProfile::Source profile_source) const;
 
   // Retrieves local/server profiles in the database. They are returned in
   // unspecified order.
   // The `profile_source` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
   virtual bool GetAutofillProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles,
-      AutofillProfile::Source profile_source);
+      AutofillProfile::Source profile_source,
+      std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
   virtual bool GetServerProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
 
@@ -762,9 +771,6 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
                                        const base::Time& delete_end);
 
-  // Clear all profiles.
-  bool ClearAutofillProfiles();
-
   // Clear all credit cards.
   bool ClearCreditCards();
 
@@ -786,12 +792,6 @@ class AutofillTable : public WebDatabaseTable,
       syncer::ModelType model_type,
       const sync_pb::ModelTypeState& model_type_state) override;
   bool ClearModelTypeState(syncer::ModelType model_type) override;
-
-  // Removes the orphan rows in the autofill_profile_names,
-  // autofill_profile_emails and autofill_profile_phones table that were not
-  // removed in the previous implementation of
-  // RemoveAutofillDataModifiedBetween(see crbug.com/836737).
-  bool RemoveOrphanAutofillTableRows();
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
@@ -824,6 +824,11 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion109AddVirtualCardUsageDataTable();
   bool MigrateToVersion110AddInitialCreatorIdAndLastModifierId();
   bool MigrateToVersion111AddVirtualCardEnrollmentTypeColumn();
+  // No MigrateToVersion112. WebDatabase changed, but AutofillTable wasn't
+  // affected.
+  bool MigrateToVersion113MigrateLocalAddressProfilesToNewTable();
+  bool MigrateToVersion114DropLegacyAddressTables();
+  bool MigrateToVersion115EncryptIbanValue();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -915,15 +920,21 @@ class AutofillTable : public WebDatabaseTable,
       const std::vector<AutofillProfile>& profiles,
       bool update_metadata);
 
+  // Reads profiles from the deprecated autofill_profiles table.
+  std::unique_ptr<AutofillProfile> GetAutofillProfileFromLegacyTable(
+      const std::string& guid) const;
+  bool GetAutofillProfilesFromLegacyTable(
+      std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
+
   bool InitMainTable();
   bool InitCreditCardsTable();
   bool InitIBANsTable();
-  bool InitProfilesTable();
-  bool InitProfileAddressesTable();
-  bool InitProfileNamesTable();
-  bool InitProfileEmailsTable();
-  bool InitProfilePhonesTable();
-  bool InitProfileBirthdatesTable();
+  bool InitLegacyProfilesTable();
+  bool InitLegacyProfileAddressesTable();
+  bool InitLegacyProfileNamesTable();
+  bool InitLegacyProfileEmailsTable();
+  bool InitLegacyProfilePhonesTable();
+  bool InitLegacyProfileBirthdatesTable();
   bool InitMaskedCreditCardsTable();
   bool InitUnmaskedCreditCardsTable();
   bool InitServerCardMetadataTable();
@@ -937,8 +948,8 @@ class AutofillTable : public WebDatabaseTable,
   bool InitOfferDataTable();
   bool InitOfferEligibleInstrumentTable();
   bool InitOfferMerchantDomainTable();
-  bool InitContactInfoTable();
-  bool InitContactInfoTypeTokensTable();
+  bool InitProfileMetadataTable(AutofillProfile::Source source);
+  bool InitProfileTypeTokensTable(AutofillProfile::Source source);
   bool InitVirtualCardUsageDataTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;

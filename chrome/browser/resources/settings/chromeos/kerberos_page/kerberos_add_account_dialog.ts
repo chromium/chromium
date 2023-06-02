@@ -42,8 +42,8 @@ interface KerberosAddAccountDialogElement {
 }
 
 /**
- * The default placeholder that is shown in the username field
- * of authentication dialog.
+ * The default placeholder that is shown in the username field of the
+ * authentication dialog.
  */
 const DEFAULT_USERNAME_PLACEHOLDER: string = 'user@example.com';
 
@@ -95,11 +95,6 @@ class KerberosAddAccountDialogElement extends
         value: '',
       },
 
-      rememberPassword_: {
-        type: Boolean,
-        value: false,
-      },
-
       generalErrorText_: {
         type: String,
         value: '',
@@ -136,9 +131,19 @@ class KerberosAddAccountDialogElement extends
       },
 
       /**
-       * Whether the remember password options is allowed by policy.
+       * Whether the password should be remembered by default.
        */
-      rememberPasswordEnabled_: {
+      rememberPasswordByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('kerberosRememberPasswordByDefault');
+        },
+      },
+
+      /**
+       * Whether the remember password option is allowed by policy.
+       */
+      rememberPasswordEnabledByPolicy_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('kerberosRememberPasswordEnabled');
@@ -182,18 +187,21 @@ class KerberosAddAccountDialogElement extends
   private passwordErrorText_: string;
   private password_: string;
   private prefillDomain_: string;
-  private rememberPasswordEnabled_: boolean;
-  private rememberPassword_: boolean;
+  private rememberPasswordByDefault_: boolean;
+  private rememberPasswordEnabledByPolicy_: boolean;
+  private rememberPasswordChecked_: boolean;
   private showAdvancedConfig_: boolean;
   private title_: string;
-  private useRememberedPassword_: boolean;
+  private useStoredPassword_: boolean;
   private usernameErrorText_: string;
   private username_: string;
 
   constructor() {
     super();
 
-    this.useRememberedPassword_ = false;
+    this.useStoredPassword_ = false;
+    this.rememberPasswordChecked_ = this.rememberPasswordByDefault_ &&
+        this.rememberPasswordEnabledByPolicy_ && !this.isGuestMode_;
     this.config_ = '';
     this.title_ = '';
     this.actionButtonLabel_ = '';
@@ -219,16 +227,16 @@ class KerberosAddAccountDialogElement extends
       this.$.password.focus();
 
       if (this.presetAccount.passwordWasRemembered &&
-          this.rememberPasswordEnabled_) {
+          this.rememberPasswordEnabledByPolicy_) {
         // The daemon knows the user's password, so prefill the password field
         // with some string (Chrome does not know the actual password for
         // security reasons). If the user does not change it, an empty password
-        // is sent to the daemon, which is interpreted as "use remembered
-        // password". Also, keep remembering the password by default.
+        // is sent to the daemon, which is interpreted as "use stored password".
+        // Also, keep remembering the password by default.
         const FAKE_PASSWORD = 'xxxxxxxx';
         this.password_ = FAKE_PASSWORD;
-        this.rememberPassword_ = true;
-        this.useRememberedPassword_ = true;
+        this.rememberPasswordChecked_ = true;
+        this.useStoredPassword_ = true;
       }
 
       this.config_ = this.presetAccount!.config;
@@ -262,8 +270,8 @@ class KerberosAddAccountDialogElement extends
     this.usernameErrorText_ = '';
     this.passwordErrorText_ = '';
 
-    // An empty password triggers the Kerberos daemon to use the remembered one.
-    const passwordToSubmit = this.useRememberedPassword_ ? '' : this.password_;
+    // An empty password triggers the Kerberos daemon to use the stored one.
+    const passwordToSubmit = this.useStoredPassword_ ? '' : this.password_;
 
     // For new accounts (no preset), bail if the account already exists.
     const allowExisting = !!this.presetAccount;
@@ -271,7 +279,7 @@ class KerberosAddAccountDialogElement extends
     this.browserProxy_
         .addAccount(
             this.computeUsername_(this.username_, this.prefillDomain_),
-            passwordToSubmit, this.rememberPassword_, this.config_,
+            passwordToSubmit, this.rememberPasswordChecked_, this.config_,
             allowExisting)
         .then(error => {
           this.inProgress_ = false;
@@ -290,9 +298,9 @@ class KerberosAddAccountDialogElement extends
   }
 
   private onPasswordInput_(): void {
-    // On first input, don't reuse the remembered password, but submit the
-    // changed one.
-    this.useRememberedPassword_ = false;
+    // On first input, don't reuse the stored password, but submit the changed
+    // one.
+    this.useStoredPassword_ = false;
   }
 
   private getAdvancedConfigDialog(): CrDialogElement {

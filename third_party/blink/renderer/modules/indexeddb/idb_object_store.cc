@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
@@ -167,7 +168,7 @@ IDBRequest* IDBObjectStore::get(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   BackendDB()->Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId,
                    key_range, /*key_only=*/false,
-                   request->CreateWebCallbacks().release());
+                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -209,7 +210,7 @@ IDBRequest* IDBObjectStore::getKey(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   BackendDB()->Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId,
                    key_range, /*key_only=*/true,
-                   request->CreateWebCallbacks().release());
+                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -725,9 +726,9 @@ IDBRequest* IDBObjectStore::deleteFunction(
     IDBRequest::AsyncTraceState metrics) {
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-
-  BackendDB()->DeleteRange(transaction_->Id(), Id(), key_range,
-                           request->CreateWebCallbacks().release());
+  BackendDB()->DeleteRange(
+      transaction_->Id(), Id(), key_range,
+      WTF::BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
   return request;
 }
 
@@ -772,8 +773,9 @@ IDBRequest* IDBObjectStore::clear(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->Clear(transaction_->Id(), Id(),
-                     request->CreateWebCallbacks().release());
+  BackendDB()->Clear(
+      transaction_->Id(), Id(),
+      WTF::BindOnce(&IDBRequest::OnClear, WrapPersistent(request)));
   return request;
 }
 
@@ -1082,9 +1084,8 @@ IDBRequest* IDBObjectStore::openCursor(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyAndValue, direction);
 
-  BackendDB()->OpenCursor(transaction_->Id(), Id(),
-                          IDBIndexMetadata::kInvalidId, range, direction, false,
-                          task_type, request->CreateWebCallbacks().release());
+  BackendDB()->OpenCursor(Id(), IDBIndexMetadata::kInvalidId, range, direction,
+                          false, task_type, request);
   return request;
 }
 
@@ -1125,10 +1126,8 @@ IDBRequest* IDBObjectStore::openKeyCursor(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyOnly, direction);
 
-  BackendDB()->OpenCursor(transaction_->Id(), Id(),
-                          IDBIndexMetadata::kInvalidId, key_range, direction,
-                          true, mojom::IDBTaskType::Normal,
-                          request->CreateWebCallbacks().release());
+  BackendDB()->OpenCursor(Id(), IDBIndexMetadata::kInvalidId, key_range,
+                          direction, true, mojom::IDBTaskType::Normal, request);
   return request;
 }
 

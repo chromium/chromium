@@ -23,7 +23,7 @@ class TestPushNotificationClient : public PushNotificationClient {
   bool HasNotificationReceivedInteraction();
   // Sets the client's UIBackgroundFetchResult to given FetchResult.
   void SetBackgroundFetchResult(UIBackgroundFetchResult result);
-  void OnBrowserReady() override;
+  void OnSceneActiveForegroundBrowserReady() override;
   bool IsBrowserReady();
 
  private:

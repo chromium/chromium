@@ -241,6 +241,10 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ShelfAPITest) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("shelf")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, IsFeatureEnabled) {
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("isFeatureEnabled")) << message_;
+}
+
 class AutotestPrivateHoldingSpaceApiTest
     : public AutotestPrivateApiTest,
       public ::testing::WithParamInterface<bool /* mark_time_of_first_add */> {

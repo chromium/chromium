@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS prefetches can be used for traversal navigations
-FAIL History's Document is used for traversal navigations assert_equals: prefetch from different Document should not be used expected "" but got "prefetch"
-PASS prefetches can be used for reload navigations
-Harness: the test ran to completion.
-

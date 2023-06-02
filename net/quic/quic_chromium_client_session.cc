@@ -119,7 +119,8 @@ void LogAcceptChForOriginHistogram(bool value) {
 void RecordConnectionCloseErrorCodeImpl(const std::string& histogram,
                                         uint64_t error,
                                         bool is_google_host,
-                                        bool handshake_confirmed) {
+                                        bool handshake_confirmed,
+                                        bool has_ech_config_list) {
   base::UmaHistogramSparse(histogram, error);
 
   if (handshake_confirmed) {
@@ -138,6 +139,19 @@ void RecordConnectionCloseErrorCodeImpl(const std::string& histogram,
                                error);
     }
   }
+
+  // Record a set of metrics based on whether ECH was advertised in DNS. The ECH
+  // experiment does not change DNS behavior, so this measures the same servers
+  // in both experiment and control groups.
+  if (has_ech_config_list) {
+    base::UmaHistogramSparse(histogram + "ECH", error);
+
+    if (handshake_confirmed) {
+      base::UmaHistogramSparse(histogram + "ECH.HandshakeConfirmed", error);
+    } else {
+      base::UmaHistogramSparse(histogram + "ECH.HandshakeNotConfirmed", error);
+    }
+  }
 }
 
 void LogMigrateToSocketStatus(bool success) {
@@ -146,8 +160,9 @@ void LogMigrateToSocketStatus(bool success) {
 
 void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
                                     quic::ConnectionCloseSource source,
-                                    const std::string& hostname,
-                                    bool handshake_confirmed) {
+                                    base::StringPiece hostname,
+                                    bool handshake_confirmed,
+                                    bool has_ech_config_list) {
   bool is_google_host = IsGoogleHost(hostname);
   std::string histogram = "Net.QuicSession.ConnectionCloseErrorCode";
 
@@ -156,7 +171,8 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
     // |quic_error_code|.
     histogram += "Client";
     RecordConnectionCloseErrorCodeImpl(histogram, frame.quic_error_code,
-                                       is_google_host, handshake_confirmed);
+                                       is_google_host, handshake_confirmed,
+                                       has_ech_config_list);
     return;
   }
 
@@ -166,26 +182,31 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
   // extracted from the CONNECTION_CLOSE frame reason phrase, and might be
   // QUIC_IETF_GQUIC_ERROR_MISSING.
   RecordConnectionCloseErrorCodeImpl(histogram, frame.quic_error_code,
-                                     is_google_host, handshake_confirmed);
+                                     is_google_host, handshake_confirmed,
+                                     has_ech_config_list);
 
   // For IETF QUIC frames, also record the error code received on the wire.
   if (frame.close_type == quic::IETF_QUIC_TRANSPORT_CONNECTION_CLOSE) {
     histogram += "IetfTransport";
     RecordConnectionCloseErrorCodeImpl(histogram, frame.wire_error_code,
-                                       is_google_host, handshake_confirmed);
+                                       is_google_host, handshake_confirmed,
+                                       has_ech_config_list);
     if (frame.quic_error_code == quic::QUIC_IETF_GQUIC_ERROR_MISSING) {
       histogram += "GQuicErrorMissing";
       RecordConnectionCloseErrorCodeImpl(histogram, frame.wire_error_code,
-                                         is_google_host, handshake_confirmed);
+                                         is_google_host, handshake_confirmed,
+                                         has_ech_config_list);
     }
   } else if (frame.close_type == quic::IETF_QUIC_APPLICATION_CONNECTION_CLOSE) {
     histogram += "IetfApplication";
     RecordConnectionCloseErrorCodeImpl(histogram, frame.wire_error_code,
-                                       is_google_host, handshake_confirmed);
+                                       is_google_host, handshake_confirmed,
+                                       has_ech_config_list);
     if (frame.quic_error_code == quic::QUIC_IETF_GQUIC_ERROR_MISSING) {
       histogram += "GQuicErrorMissing";
       RecordConnectionCloseErrorCodeImpl(histogram, frame.wire_error_code,
-                                         is_google_host, handshake_confirmed);
+                                         is_google_host, handshake_confirmed,
+                                         has_ech_config_list);
     }
   }
 }
@@ -1838,6 +1859,9 @@ void QuicChromiumClientSession::OnConnectionClosed(
 
   UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumDefaultPathDegrading",
                             connection()->GetStats().num_path_degrading);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Net.QuicSession.NumForwardProgressMadeAfterPathDegrading",
+      connection()->GetStats().num_forward_progress_after_path_degrading);
   if (const quic::QuicConnection::MultiPortStats* multi_port_stats =
           connection()->multi_port_stats()) {
     UMA_HISTOGRAM_COUNTS_1000(
@@ -1872,7 +1896,8 @@ void QuicChromiumClientSession::OnConnectionClosed(
   }
 
   RecordConnectionCloseErrorCode(frame, source, session_key_.host(),
-                                 OneRttKeysAvailable());
+                                 OneRttKeysAvailable(),
+                                 !ech_config_list_.empty());
   if (OneRttKeysAvailable()) {
     handles::NetworkHandle current_network = GetCurrentNetwork();
     for (auto& observer : connectivity_observer_list_)
@@ -2104,9 +2129,22 @@ void QuicChromiumClientSession::OnConnectionClosed(
   }
 
   CHECK_EQ(sockets_.size(), packet_readers_.size());
+  // Packet readers must not outlive sockets. Clear them before deleting sockets
+  // below.
+  packet_readers_.clear();
+
+  bool socket_found_in_writer = false;
   for (auto& socket : sockets_) {
     socket->Close();
+    // If a writer exists that was not destroyed when the connection migrated,
+    // then that writer may not be notified that its socket has been closed.
+    // We know that the writer is a QuicChromiumPacketWriter since the packet
+    // writer is set with the same type originally.
+    socket_found_in_writer |=
+        static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+            ->OnSocketClosed(std::move(socket));
   }
+  CHECK(socket_found_in_writer);
   DCHECK(!HasActiveRequestStreams());
   CloseAllHandles(ERR_UNEXPECTED);
   CancelAllRequests(ERR_CONNECTION_CLOSED);
@@ -3087,18 +3125,31 @@ void QuicChromiumClientSession::MaybeStartProbing(
 void QuicChromiumClientSession::CreateContextForMultiPortPath(
     std::unique_ptr<quic::MultiPortPathContextObserver> context_observer) {
   if (!connection()->connection_migration_use_new_cid()) {
+    context_observer->OnMultiPortPathContextAvailable(nullptr);
     return;
   }
 
   // Create and configure socket on default network
   std::unique_ptr<DatagramClientSocket> probing_socket =
       stream_factory_->CreateSocket(net_log_.net_log(), net_log_.source());
-  if (stream_factory_->ConfigureSocket(
-          probing_socket.get(), ToIPEndPoint(peer_address()), default_network_,
-          session_key_.socket_tag()) != OK) {
-    return;
-  }
+  DatagramClientSocket* probing_socket_ptr = probing_socket.get();
+  CompletionOnceCallback configure_callback = base::BindOnce(
+      &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
+      weak_factory_.GetWeakPtr(), std::move(context_observer),
+      std::move(probing_socket));
+  stream_factory_->ConnectAndConfigureSocket(
+      std::move(configure_callback), probing_socket_ptr,
+      ToIPEndPoint(peer_address()), default_network_,
+      session_key_.socket_tag());
+}
 
+void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
+    std::unique_ptr<quic::MultiPortPathContextObserver> context_observer,
+    std::unique_ptr<DatagramClientSocket> probing_socket,
+    int rv) {
+  if (rv != OK) {
+    context_observer->OnMultiPortPathContextAvailable(nullptr);
+  }
   // Create new packet writer and reader on the probing socket.
   auto probing_writer = std::make_unique<QuicChromiumPacketWriter>(
       probing_socket.get(), task_runner_);
@@ -3642,9 +3693,19 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   // take care of any failed 0-RTT request.
   connect_timing_.connect_end = tick_clock_->NowTicks();
   DCHECK_LE(connect_timing_.connect_start, connect_timing_.connect_end);
-  UMA_HISTOGRAM_TIMES(
-      "Net.QuicSession.HandshakeConfirmedTime",
-      connect_timing_.connect_end - connect_timing_.connect_start);
+  base::TimeDelta handshake_confirmed_time =
+      connect_timing_.connect_end - connect_timing_.connect_start;
+  UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime",
+                      handshake_confirmed_time);
+
+  // Also record the handshake time when ECH was advertised in DNS. The ECH
+  // experiment does not change DNS behavior, so this measures the same servers
+  // in both experiment and control groups.
+  if (!ech_config_list_.empty()) {
+    UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.ECH",
+                        handshake_confirmed_time);
+  }
+
   // Track how long it has taken to finish handshake after we have finished
   // DNS host resolution.
   if (!connect_timing_.domain_lookup_end.is_null()) {

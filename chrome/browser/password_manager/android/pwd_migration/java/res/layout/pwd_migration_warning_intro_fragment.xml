@@ -14,8 +14,8 @@ found in the LICENSE file.
       android:id="@+id/migration_warning_sheet_subtitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
       android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
   <org.chromium.ui.widget.ButtonCompat
@@ -23,9 +23,9 @@ found in the LICENSE file.
       android:id="@+id/acknowledge_password_migration_button"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="12dp"
-      android:minHeight="@dimen/pwd_migration_warning_button_height"
       android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/pwd_migration_warning_button_spacing"
+      android:minHeight="@dimen/pwd_migration_warning_button_height"
       android:ellipsize="end"
       android:singleLine="true"
       android:text="@string/password_migration_warning_acknowledge"
@@ -36,9 +36,9 @@ found in the LICENSE file.
       android:id="@+id/password_migration_more_options_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
       android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
       android:minHeight="@dimen/pwd_migration_warning_button_height"
-      android:layout_gravity="center_horizontal"
       android:ellipsize="end"
       android:singleLine="true"
       android:text="@string/password_migration_warning_other_options"

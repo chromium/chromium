@@ -38,6 +38,8 @@ struct ShareTarget {
   url.mojom.Url? image_url;
   // Payload preview for the attachment(s).
   PayloadPreview payload_preview;
+  // True if the remote device is signed into the same Gaia account as the user.
+  bool for_self_share;
 };
 
 // Result of selecting a share target.

@@ -1,0 +1,286 @@
+body {
+    background-color: rgb(46, 51, 55);
+    color: rgb(235, 235, 235);
+    font-family: "Helvetica Neue", Helvetica, Verdana, sans-serif;
+}
+
+::selection {
+    color: rgb(46, 51, 55);
+    background-color: rgb(235, 235, 235);
+}
+
+h1,
+button {
+    font-family: "Futura-Medium", Futura, "Helvetica Neue", Helvetica, Verdana, sans-serif;
+}
+
+code {
+    font-family: Menlo, Monaco, monospace;
+    font-size: smaller;
+}
+
+button {
+    cursor: pointer;
+}
+
+hr {
+    border: 1px solid rgb(235, 235, 235);
+    width: 50%;
+    margin: 40px auto;
+}
+
+img {
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+}
+
+main {
+    display: block;
+    position: absolute;
+    width: 800px;
+    height: 600px;
+    top: 50%;
+    left: 50%;
+    margin-top: -321px;
+    margin-left: -421px;
+    padding: 15px;
+    border: 6px solid rgb(235, 235, 235);
+    border-radius: 20px;
+}
+
+#logo {
+    position: absolute;
+    left: -70px;
+    top: 115px;
+    width: 75px;
+    height: 406px;
+}
+
+h1 {
+    margin-top: 30px;
+    font-size: 40px;
+    font-weight: normal;
+    color: rgb(235, 235, 235);
+    text-align: center;
+}
+
+p {
+    font-size: 16px;
+    line-height: 21px;
+}
+
+a {
+    color: inherit;
+}
+
+.buttons {
+    margin-top: 30px;
+    text-align: center;
+}
+
+button {
+    -webkit-appearance: none;
+    border: 3px solid rgb(235, 235, 235);
+    border-radius: 10px;
+    min-width: 200px;
+    padding: 5px 20px;
+    margin: 0 40px;
+    font-size: 25px;
+    color: rgb(235, 235, 235);
+    background-color: transparent;
+
+    -webkit-user-select: none;
+}
+
+button:active {
+    background-color: rgb(235, 235, 235);
+    color: rgb(46, 51, 55);
+    border-color: rgb(235, 235, 235) !important;
+}
+
+button:focus {
+    outline: none;
+    border-color: rgb(232, 79, 79);
+}
+
+section {
+    display: none;
+}
+
+section > p {
+    margin: 10px 20px;
+}
+
+section.selected {
+    display: block;
+}
+
+#testContainer {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 800px;
+    height: 600px;
+}
+
+section#home > p {
+    margin: 0 auto;
+    width: 70%;
+    text-align: center;
+}
+
+section#home > p:first-child {
+    margin-top: 160px;
+    text-align: center;
+}
+
+section#home > .show-about {
+    margin-top: 100px;
+}
+
+section#home > .buttons {
+    margin-top: 80px;
+}
+
+section#running > #progress {
+    position: absolute;
+    bottom: -6px;
+    left: 60px;
+    right: 60px;
+    height: 6px;
+    background-color: rgb(128, 128, 128);
+    border-left: 6px solid rgb(46, 51, 55);
+    border-right: 6px solid rgb(46, 51, 55);
+}
+
+section#running #progress-completed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 0;
+    background-color: rgb(235, 235, 235);
+}
+
+section#running > #info {
+    position: absolute;
+    bottom: -25px;
+    left: 60px;
+    right: 60px;
+    height: 12px;
+    color: rgb(128, 128, 128);
+    text-align: center;
+    font-size: 12px;
+}
+
+section#summarized-results > #result-number,
+section#summarized-results > #confidence-number {
+    font-family: "Futura-CondensedMedium", Futura, "Helvetica Neue", Helvetica, Verdana, sans-serif;
+}
+
+section#summarized-results > #result-number {
+    text-align: center;
+    font-size: 145px;
+    line-height: 145px;
+}
+
+section#summarized-results > #confidence-number {
+    text-align: center;
+    font-size: 36px;
+    line-height: 36px;
+    color: rgb(128, 128, 128);
+}
+
+section#detailed-results > table {
+    float: left;
+    width: 50%;
+}
+
+section#detailed-results > .arithmetic-mean {
+    clear: both;
+    padding-top: 32px;
+    text-align: center;
+}
+
+section#detailed-results > .arithmetic-mean > label {
+    font-weight: bold;
+    margin-right: 10px;
+    color: rgb(128, 128, 128);
+}
+
+section#detailed-results > .show-about {
+    margin-top: 30px;
+    text-align: center;
+}
+
+section#about h1 {
+    margin-top: 10px;
+    margin-bottom: 0px;
+    font-size: 25px;
+}
+
+section#about .note {
+    color: rgb(128, 128, 128);
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 5px;
+}
+
+th {
+    text-align: right;
+    color: rgb(128, 128, 128);
+}
+
+.gauge {
+    position: relative;
+    width: 738px;
+    height: 78px;
+    background-image: url(gauge.png);
+    background-size: 100% 100%;
+    background-repat: no-repeat;
+    margin: 0 auto;
+}
+
+.gauge > .window {
+    position: absolute;
+    left: 0;
+    top: 33px;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
+}
+
+.gauge > .window > .needle {
+    position: absolute;
+    left: 363px;
+    bottom: -88px;
+    width: 4px;
+    height: 400px;
+    background-color: rgb(247, 148, 29);
+
+    -webkit-transform: rotate(-70deg);
+    -webkit-transform-origin: 2px 400px;
+
+    -moz-transform: rotate(-70deg);
+    -moz-transform-origin: 2px 400px;
+
+    transform: rotate(-70deg);
+    transform-origin: 2px 400px;
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min--moz-device-pixel-ratio: 2), (min-resolution: 2dppx), (min-resolution: 192dpi) {
+    #logo {
+        content: url(logo@2x.png); /* FIXME: This does not work in Firefox. */
+    }
+
+    .gauge {
+        background-image: url(gauge@2x.png);
+    }
+}

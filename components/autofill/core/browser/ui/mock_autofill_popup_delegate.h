@@ -37,12 +37,15 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
               GetDeletionConfirmationText,
               (const std::u16string& value,
                Suggestion::FrontendId frontend_id,
+               Suggestion::BackendId backend_id,
                std::u16string* title,
                std::u16string* body),
               (override));
   MOCK_METHOD(bool,
               RemoveSuggestion,
-              (const std::u16string& value, Suggestion::FrontendId frontend_id),
+              (const std::u16string& value,
+               Suggestion::FrontendId frontend_id,
+               Suggestion::BackendId backend_id),
               (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(PopupType, GetPopupType, (), (const, override));

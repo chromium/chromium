@@ -8,8 +8,10 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/style/style_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -41,8 +43,14 @@ ShelfButton::~ShelfButton() = default;
 
 void ShelfButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  StyleUtil::ConfigureInkDropAttributes(
-      this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+  if (chromeos::features::IsJellyEnabled()) {
+    auto* ink_drop = views::InkDrop::Get(this);
+    ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+    ink_drop->SetVisibleOpacity(1.0f);
+  } else {
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+  }
 }
 
 const char* ShelfButton::GetClassName() const {

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ஆங்கிலம் (யூஎஸ்) - டிவோரக் கீபோர்டு</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ஹோஸ்ட்</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ஃபைல்களைத் திறக்கிறது...</translation>
 <translation id="1547964879613821194">கனடியன் ஆங்கிலம்</translation>
 <translation id="1556189134700913550">எல்லாவற்றிற்கும் பயன்படுத்து</translation>
 <translation id="1561842594491319104">Chrome சாதனங்கள்</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google தளம்</translation>
 <translation id="1853795129690976061">இந்த ஃபோல்டரானது Linux உடன் பகிரப்பட்டுள்ளது</translation>
 <translation id="1864756863218646478">ஃபைலைக் கண்டறிய முடியவில்லை.</translation>
+<translation id="1877377730633446520">இதற்கு <ph name="REQUIRED_SPACE" /> தேவைப்படும். உங்களிடம் தற்போது <ph name="FREE_SPACE" /> உள்ளது.</translation>
 <translation id="1884013283844450420">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இணை</translation>
 <translation id="1920670151694390848">மலையாள ஒலிபெயர்ப்பு</translation>
 <translation id="1920798810075583923">தர்பூசணி</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">ஃபைல்கள்  காட்டப்படும் பேனல்களை விரிக்கும்</translation>
 <translation id="1995337122023280937">ஃபைலின் இடத்திற்குச் செல்</translation>
 <translation id="2001796770603320721">இயக்ககத்தில் நிர்வகி</translation>
+<translation id="2004942826429452291">கிளவுடிலும் இந்த Chromebookகிலும் ஃபைல்கள் சேமிக்கப்படும்.</translation>
 <translation id="2009067268969781306">இயக்ககத்தை ஃபார்மேட் செய்தால் அதில் சேமிக்கப்பட்டுள்ள தரவு அனைத்தும் நீக்கப்படும். அவற்றைத் திரும்பப் பெற முடியாது.</translation>
 <translation id="2025955442973426285">டிக்ரின்யா</translation>
 <translation id="2037845485764049925">ரஷ்யன்</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">சாதன அமைப்புகள்</translation>
 <translation id="2084809735218147718">நன்றி சொல்லும் நபர்</translation>
 <translation id="2088690981887365033">VPN நெட்வொர்க்</translation>
+<translation id="2089751716171649322">ஆஃப்லைனில் இருக்கும்போதும் எளிதாக உங்கள் Google Drive ஃபைல்களை அணுகுங்கள்</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />மறைநிலையில் அனுமதி<ph name="END_BOLD" /> என்பதை இயக்கவும்</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள்/டைரக்டரிகள் நீக்கப்படும். உங்களால் அவற்றை மீட்டெடுக்க முடியாது.</translation>
 <translation id="2122305276694332719">மறைக்கப்பட்டுள்ள நெட்வொர்க்குடன் தானாக இணைந்தால் உங்கள் சாதனத்தையும் சில நெட்வொர்க் அமைப்புகளையும் பிறரால் பார்க்க முடியும் என்பதால் இது பரிந்துரைக்கப்படுவதில்லை.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux தொகுப்பை நிறுவு</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ஃபோல்டரை உருவாக்க முடியவில்லை. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">உங்கள் Google Drive தற்காலிகச் சேமிப்பு அழிக்கப்பட்டது.</translation>
 <translation id="2239068707900391003">காஃபியுடன் இருக்கும் நபர்</translation>
 <translation id="2251368349685848079">நீக்கியவையில் இருந்து மீட்டெடு</translation>
 <translation id="2278133026967558505">அனைத்து இணையதளங்களும் URLகளும் ஃபைலை அணுகும்</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
 <translation id="3486821258960016770">மங்கோலியன்</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> பிழைகள்.</translation>
+<translation id="3501954296166022751">உங்கள் Google Drive ஃபைல்களை இப்போது ஆஃப்லைனில் பயன்படுத்தலாம்</translation>
 <translation id="3509680540198371098">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ஆவணங்களை ஒத்திசைக்கத் தயாராகிறது...</translation>
 <translation id="3522708245912499433">போர்ச்சுகீஸ்</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">இந்த அமைப்பை மாற்றினால், பகிர்ந்த எல்லா நெட்வொர்க்குகளும் பாதிக்கப்படும்</translation>
 <translation id="3737576078404241332">பக்கப்பட்டியில் இருந்து அகற்று</translation>
 <translation id="3749289110408117711">ஃபைல் பெயர்</translation>
-<translation id="3780536599611287598">'<ph name="FOLDER_NAME" />' என்ற ஃபோல்டருக்குக் கோப்புகளை நகர்த்த உங்களுக்கு அனுமதி இல்லை.</translation>
 <translation id="3786301125658655746">ஆஃப்லைனில் உள்ளீர்கள்</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
 <translation id="3793469551756281394">சுமார் <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> மீதமுள்ளது</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">பிரத்தியேகப் பெயர் சேவையகங்கள்</translation>
 <translation id="4465725236958772856">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார், இணை</translation>
 <translation id="4470564870223067757">ஹாங்குல் 2 செட்</translation>
+<translation id="4472575034687746823">தொடங்குக</translation>
 <translation id="4474142134969976028">பொருந்தும் முடிவுகள் இல்லை</translation>
 <translation id="4477002475007461989">ரொமானியன்</translation>
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">அவகாடோ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ஃபைல்கள்/ஃபோல்டர்களை மீட்டெடுக்கிறது</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{மறைநிலையைப் பயன்படுத்த உங்கள் நிறுவனத்திற்கு நீட்டிப்பு தேவை}other{மறைநிலையைப் பயன்படுத்த உங்கள் நிறுவனத்திற்குச் சில நீட்டிப்புகள் தேவை}}</translation>
-<translation id="4823651846660089135">படிப்பதற்கு மட்டுமேயான சாதனம்</translation>
 <translation id="4826849268470072925">தமிழ் (ITRANS)</translation>
 <translation id="482932175346970750">உலாவியில் <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> என டைப் செய்யவும்</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="5500122897333236901">ஐஸ்லாண்டிக்</translation>
 <translation id="5508696409934741614">புள்ளிகள்</translation>
+<translation id="5519161320735100193">Google Drive அமைப்புகள்</translation>
 <translation id="5522908512596376669">ஃபைல் பட்டியல் 'பட்டியல் காட்சிக்கு' மாறியுள்ளது.</translation>
 <translation id="5524517123096967210">ஃபைலைப் படிக்க முடியவில்லை.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> படம்</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">தேர்ந்தெடுக்கப்பட்டதில் உள்ள அனைத்து உள்ளீடுகளும் அகற்றப்பட்டன.</translation>
 <translation id="5838825566232597749">யுஎஸ் ஒர்க்மேன் இன்டர்நேஷனல்</translation>
 <translation id="5845721951356578987">செவிலியர்</translation>
+<translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5861477046012235702">கேமர்</translation>
 <translation id="5864471791310927901">DHCP பார்வையிடுதல் தோல்வி</translation>
 <translation id="5896749729057314184">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">இணைய ப்ராக்ஸியைத் தானாகக் கண்டறி</translation>
 <translation id="6337014272874260727">'துரித ஃபைல்கள்' பிரிவிலிருந்து பிரித்தெடு</translation>
 <translation id="6339145975392024142">யுஎஸ் சர்வதேச கீபோர்டு (PC)</translation>
-<translation id="6346310558342052870">அணுகல் கட்டுப்படுத்தப்பட்டுள்ளது</translation>
 <translation id="6356685157277930264">ஃபைல்களின் கருத்துச் சாளரம்</translation>
 <translation id="6358884629796491903">டிராகன்</translation>
 <translation id="636254897931573416">டொமைனின் பிற்பாதிக்கான பொருத்தத்தின் மதிப்பு தவறாக உள்ளது</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7806708061868529807">ஹீப்ரு</translation>
 <translation id="78104721049218340">தாய் - கேட்மேனி கீபோர்டு</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> டெ.பை.</translation>
 <translation id="7831491651892296503">நெட்வொர்க்கை உள்ளமைப்பதில் பிழை</translation>
 <translation id="7839804798877833423">இந்த ஃபைல்களைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">கட்டாகனா</translation>
 <translation id="7908793776359722643">பார்ட்டிஷனை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">எனது Driveவில் உள்ள உங்கள் ஃபைல்கள் தானாகவே உங்கள் Chromebook உடன் ஒத்திசைக்கப்படும். இதனால் இணைய இணைப்பு இல்லாமலேயே ஃபைல்களை நீங்கள் அணுகலாம்.</translation>
 <translation id="7925247922861151263">AAA சோதனை தோல்வியுற்றது</translation>
 <translation id="7925686952655276919">ஒத்திசைப்பதற்கு, மொபைல் டேட்டா பயன்படுத்தாதே</translation>
 <translation id="7928710562641958568">சாதனத்தை வெளித்தள்ளு</translation>
+<translation id="7933875256234974853">Drive ஃபைல்களை ஒத்திசைக்கத் தயாராகிறது...</translation>
 <translation id="7943385054491506837">யு.எஸ். கோல்மேக்</translation>
 <translation id="7953739707111622108">இந்த சாதனத்தின் கோப்புமுறைமை அறியப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="7969525169268594403">ஸ்லோவேனியன்</translation>
 <translation id="7972920761225148017">ஃபிரெஞ்சு (சுவிட்சர்லாந்து)</translation>
 <translation id="7973962044839454485">தவறான பயனர்பெயர் அல்லது கடவுச்சொல் காரணமாக PPP அங்கீகாரம் தோல்வியடைந்தது</translation>
 <translation id="7980421588063892270">ஆங்கிலம் (யூஎஸ்) - கோல்மக் கீபோர்டு</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ஃபைல்களை ஒத்திசைக்கிறது</translation>
 <translation id="8000066093800657092">நெட்வொர்க் இல்லை</translation>
 <translation id="8008366997883261463">ஜாக் ரஸ்ஸல் டெர்ரியர்</translation>
 <translation id="8028993641010258682">அளவு</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">டேனிஷ்</translation>
 <translation id="8949925099261528566">இணைக்கப்பட்டுள்ளது, ஆனால் இணைய இணைப்பு இல்லை</translation>
 <translation id="8965697826696209160">போதிய இடம் இல்லை.</translation>
+<translation id="8971742885766657349">ஒத்திசைக்கிறது - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">சீனம் (பாரம்பரியம்) பின்யின்</translation>
 <translation id="8998871447376656508">பதிவேற்றத்தை நிறைவுசெய்ய உங்கள் Google Driveவில் போதிய காலியிடம் இல்லை.</translation>
 <translation id="9003940392834790328">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">நிறுவல் தொடங்கியது.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">லூனார்</translation>
+<translation id="937795003075802289">ஒரு ஃபைலை ஒத்திசைக்கிறது</translation>
 <translation id="938470336146445890">பயனர் சான்றிதழை நிறுவுக.</translation>
 <translation id="939736085109172342">புதிய ஃபோல்டர்</translation>
 <translation id="943972244133411984">மாற்றியவர்</translation>

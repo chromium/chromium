@@ -44,11 +44,24 @@ int GetInputMethodTestInterfaceVersion() {
 
 // Used to parameterize these tests.
 struct TestParam {
+  // Enables kExoExtendedConfirmComposition, which uses an extended Wayland API
+  // for ConfirmCompositionText.
+  bool extended_confirm_composition = false;
+
+  // Enables fixes for b/268467697.
+  // Enables the following Lacros feature flags:
+  // - WaylandKeepSelectionFix
+  // - WaylandCancelComposition
+  //
+  // Will not be true if `extended_confirm_composition` is false.
+  bool fix_268467697 = false;
+
   // Enables fixes for b/265853952.
-  // Enables the following feature flags:
-  // - WaylandKeepSelectionFix (Lacros),
-  // - AlwaysConfirmComposition (Ash).
-  // - WaylandCancelComposition (Lacros).
+  // Enables the following Ash feature flags:
+  // - AlwaysConfirmComposition
+  //
+  // Will not be true if `extended_confirm_composition` or `fix_268467697` are
+  // false.
   bool fix_265853952 = false;
 };
 
@@ -531,7 +544,7 @@ class InputMethodLacrosBrowserTest
  public:
   InputMethodLacrosBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_lacros_features;
-    if (GetParam().fix_265853952) {
+    if (GetParam().fix_268467697) {
       enabled_lacros_features.push_back(features::kWaylandKeepSelectionFix);
       enabled_lacros_features.push_back(features::kWaylandCancelComposition);
     }
@@ -543,6 +556,9 @@ class InputMethodLacrosBrowserTest
     std::vector<std::string> enabled_ash_features;
     if (GetParam().fix_265853952) {
       enabled_ash_features.push_back("AlwaysConfirmComposition");
+    }
+    if (GetParam().extended_confirm_composition) {
+      enabled_ash_features.push_back("ExoExtendedConfirmComposition");
     }
     if (!enabled_ash_features.empty()) {
       StartUniqueAshChrome(
@@ -559,8 +575,18 @@ class InputMethodLacrosBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
                          InputMethodLacrosBrowserTest,
-                         ::testing::Values(TestParam{.fix_265853952 = true},
-                                           TestParam{.fix_265853952 = false}));
+                         ::testing::Values(
+                             // All features off.
+                             TestParam{},
+                             // Enable `extended_confirm_composition` first.
+                             TestParam{.extended_confirm_composition = true},
+                             // Enable `fix_268467697` next.
+                             TestParam{.extended_confirm_composition = true,
+                                       .fix_268467697 = true},
+                             // Enable `fix_265853952` last.
+                             TestParam{.extended_confirm_composition = true,
+                                       .fix_268467697 = true,
+                                       .fix_265853952 = true}));
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {
@@ -682,10 +708,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextReplacesSelection) {
-  if (!GetParam().fix_265853952) {
-    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1053,10 +1075,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendLeftArrowKeyWithSelectionCollapsesSelectionLeft) {
-  if (!GetParam().fix_265853952) {
-    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1087,10 +1105,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendRightArrowKeyWithSelectionCollapsesSelectionRight) {
-  if (!GetParam().fix_265853952) {
-    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1121,10 +1135,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendKeyEventShortcutsModifiesSelection) {
-  if (!GetParam().fix_265853952) {
-    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1516,7 +1526,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
-          {kInputMethodTestCapabilityConfirmComposition});
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1542,7 +1553,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
-          {kInputMethodTestCapabilityConfirmComposition});
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1561,17 +1573,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        ConfirmCompositionWithSelectionAndNoComposition) {
-  if (!GetParam().fix_265853952) {
-    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
-          {kInputMethodTestCapabilityConfirmComposition});
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1606,7 +1615,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
           {kInputMethodTestCapabilityConfirmComposition,
-           kInputMethodTestCapabilityAlwaysConfirmComposition});
+           kInputMethodTestCapabilityAlwaysConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1643,10 +1653,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 // See b/267944900 for more information.
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        EscapeAfterResetKeepsSelection) {
-  if (!GetParam().fix_265853952) {
-    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
-  }
-
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),

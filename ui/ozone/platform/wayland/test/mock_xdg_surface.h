@@ -53,7 +53,7 @@ class MockXdgSurface : public ServerObject {
   // Has either toplevel role..
   std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
   // Or popup role.
-  raw_ptr<TestXdgPopup> xdg_popup_ = nullptr;
+  raw_ptr<TestXdgPopup, DanglingUntriaged> xdg_popup_ = nullptr;
 
   // MockSurface that is the ground for this xdg_surface.
   raw_ptr<wl_resource> surface_ = nullptr;
@@ -100,7 +100,7 @@ class MockXdgTopLevel : public ServerObject {
   }
 
  private:
-  raw_ptr<TestZAuraToplevel> zaura_toplevel_ = nullptr;
+  raw_ptr<TestZAuraToplevel, DanglingUntriaged> zaura_toplevel_ = nullptr;
 
   gfx::Size min_size_;
   gfx::Size max_size_;

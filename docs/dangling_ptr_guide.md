@@ -73,6 +73,15 @@ appear before unowned members (`raw_ptr<>`), and to make the unowned members
 appear last in the class, since the unowned members often refer to resources
 owned by the owning members or the class itself.
 
+One sub-category of destruction order issues is related to `KeyedService`s which
+need to correctly
+[declare their dependencies](https://source.chromium.org/chromium/chromium/src/+/main:components/keyed_service/core/keyed_service_base_factory.h;l=60-62;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd)
+and
+[are expected to drop references](https://source.chromium.org/chromium/chromium/src/+/main:components/keyed_service/core/keyed_service.h;l=12-13;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd)
+to their dependencies in their
+[`Shutdown`](https://source.chromium.org/chromium/chromium/src/+/main:components/keyed_service/core/keyed_service.h;l=36-39;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd) method
+(i.e. before their destructor runs).
+
 #### Observer callback
 
 This represents ~4% of the dangling pointers.

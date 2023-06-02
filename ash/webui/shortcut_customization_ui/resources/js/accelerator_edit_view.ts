@@ -166,6 +166,10 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   protected showEditView(): boolean {
     return this.viewState !== ViewState.VIEW;
   }
+
+  public getStatusMessageForTesting(): string {
+    return this.statusMessage;
+  }
 }
 
 declare global {

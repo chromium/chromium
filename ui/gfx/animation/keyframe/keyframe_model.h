@@ -69,12 +69,14 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // Pause the keyframe effect at local time |pause_offset|.
   void Pause(base::TimeDelta pause_offset);
 
-  base::TimeTicks start_time() const { return start_time_; }
+  base::TimeTicks start_time() const {
+    return start_time_.value_or(base::TimeTicks());
+  }
 
   void set_start_time(base::TimeTicks monotonic_time) {
     start_time_ = monotonic_time;
   }
-  bool has_set_start_time() const { return !start_time_.is_null(); }
+  bool has_set_start_time() const { return start_time_.has_value(); }
 
   base::TimeDelta time_offset() const { return time_offset_; }
   void set_time_offset(base::TimeDelta monotonic_time) {
@@ -209,7 +211,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   double playback_rate_;
   FillMode fill_mode_;
 
-  base::TimeTicks start_time_;
+  absl::optional<base::TimeTicks> start_time_;
 
   // The time offset effectively pushes the start of the keyframe model back in
   // time. This is used for resuming paused KeyframeModels -- an animation is

@@ -73,6 +73,7 @@ public class TabStateFileManagerUnitTest {
             state.tabLaunchTypeAtCreation = LAUNCH_TYPE_AT_CREATION;
             state.rootId = ROOT_ID;
             state.userAgent = USER_AGENT;
+            state.lastNavigationCommittedTimestampMillis = TIMESTAMP;
         } finally {
             StreamUtil.closeQuietly(fileInputStream);
         }
@@ -89,6 +90,7 @@ public class TabStateFileManagerUnitTest {
         assertEquals(ROOT_ID, state.rootId);
         assertEquals(CONTENTS_STATE_BYTES.length, state.contentsState.buffer().remaining());
         assertEquals(USER_AGENT, state.userAgent);
+        assertEquals(TIMESTAMP, state.lastNavigationCommittedTimestampMillis);
 
         byte[] bytesFromFile = new byte[CONTENTS_STATE_BYTES.length];
         state.contentsState.buffer().get(bytesFromFile);

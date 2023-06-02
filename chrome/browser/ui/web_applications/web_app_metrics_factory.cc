@@ -22,7 +22,8 @@ WebAppMetrics* WebAppMetricsFactory::GetForProfile(Profile* profile) {
 
 // static
 WebAppMetricsFactory* WebAppMetricsFactory::GetInstance() {
-  return base::Singleton<WebAppMetricsFactory>::get();
+  static base::NoDestructor<WebAppMetricsFactory> instance;
+  return instance.get();
 }
 
 WebAppMetricsFactory::WebAppMetricsFactory()

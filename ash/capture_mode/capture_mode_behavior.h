@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace aura {
 class Window;
@@ -53,6 +54,8 @@ class CaptureModeBehavior {
     return capture_mode_configs_;
   }
 
+  BehaviorType behavior_type() const { return behavior_type_; }
+
   // Called when this behavior becomes the active behavior of a newly created
   // capture session. Sub classes can choose to do any specific session
   // initialization that they need.
@@ -92,6 +95,12 @@ class CaptureModeBehavior {
   // indicate the histogram is for a projector-initiated capture mode session.
   virtual const char* GetClientMetricComponent() const;
 
+  // Returns the client specific buttons info to be shown in the notification
+  // view. The buttons info list may differ based on whether `for_video` is true
+  // or not.
+  virtual std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
+      bool for_video) const;
+
   // Creates the capture mode bar view, which might look different depending on
   // the actual type of the behavior.
   virtual std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView();
@@ -101,8 +110,18 @@ class CaptureModeBehavior {
   // actual type of the behavior.
   gfx::Rect GetCaptureBarBounds(aura::Window* root) const;
 
+  // Notifies the behavior on audio recording mode settings change and the
+  // behavior will decide whether to remember the audio recording mode settings
+  // for future sessions settings restoration or not.
+  virtual void OnAudioRecordingModeChanged();
+  // Notifies the behavior on demo tools settings change and the behavior will
+  // decide whether to remember the demo tools settings for future sessions
+  // settings restoration or not.
+  virtual void OnDemoToolsSettingsChanged();
+
  protected:
-  explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);
+  CaptureModeBehavior(const CaptureModeSessionConfigs& configs,
+                      const BehaviorType behavior_type);
 
   // Returns the anchor bounds of the bar in screen coordinates, which depends
   // on the anchor window of the bar. The anchor window can be the given `root`
@@ -122,6 +141,9 @@ class CaptureModeBehavior {
   // Can be used to cache the old capture mode session configs before this
   // behavior is attached to a new session.
   absl::optional<CaptureModeSessionConfigs> cached_configs_;
+
+ private:
+  const BehaviorType behavior_type_;
 };
 
 }  // namespace ash

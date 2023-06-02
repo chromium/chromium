@@ -1307,6 +1307,8 @@ $L$ctr32_enc_done:
 	pxor	xmm13,xmm0
 	movdqu	xmm15,XMMWORD[80+rdi]
 	pxor	xmm14,xmm0
+	prefetcht0	[448+rdi]
+	prefetcht0	[512+rdi]
 	pxor	xmm15,xmm0
 	DB	102,15,56,220,209
 	DB	102,15,56,220,217

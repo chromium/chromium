@@ -130,9 +130,16 @@ class CORE_EXPORT CSSSelector {
   static constexpr unsigned kClassLikeSpecificity = 0x000100;
   static constexpr unsigned kTagSpecificity = 0x000001;
 
+  static constexpr unsigned kMaxValueMask = 0xffffff;
+  static constexpr unsigned kIdMask = 0xff0000;
+  static constexpr unsigned kClassMask = 0x00ff00;
+  static constexpr unsigned kElementMask = 0x0000ff;
+
   // http://www.w3.org/TR/css3-selectors/#specificity
   // We use 256 as the base of the specificity number system.
   unsigned Specificity() const;
+  // Returns specificity components in decreasing order of significance.
+  std::array<uint8_t, 3> SpecificityTuple() const;
 
   /* how the attribute value has to match.... Default is Exact */
   enum MatchType {
@@ -533,6 +540,10 @@ class CORE_EXPORT CSSSelector {
   // True if the selector was added implicitly. This can happen for e.g.
   // nested rules that would otherwise lack the nesting selector (&).
   bool IsImplicit() const { return is_implicitly_added_; }
+
+  // Returns true for simple selectors whose evaluation depends on DOM tree
+  // position like :first-of-type and :nth-child().
+  bool IsChildIndexedSelector() const;
 
   void Trace(Visitor* visitor) const;
 

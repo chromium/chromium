@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketManager
   void OnConnectionError();
 
   DeleteCallback delete_callback_;
-  raw_ptr<net::URLRequestContext> url_request_context_;
+  raw_ptr<net::URLRequestContext, DanglingUntriaged> url_request_context_;
   const net::NetworkAnonymizationKey network_anonymization_key_;
 
   std::unique_ptr<ProxyResolvingClientSocketFactory>

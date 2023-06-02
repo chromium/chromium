@@ -196,6 +196,11 @@ void RecordPrerenderBackNavigationEligibility(
     PrerenderBackNavigationEligibility eligibility,
     PreloadingAttempt* preloading_attempt);
 
+void RecordPrerenderActivationCommitDeferTime(
+    base::TimeDelta time_delta,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_METRICS_H_

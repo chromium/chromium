@@ -263,7 +263,7 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   header_ = source.GetPointer<typename Traits::Elf_Ehdr>();
 
   sections_count_ = header_->e_shnum;
-  source = std::move(BufferSource(image_).Skip(header_->e_shoff));
+  source = BufferSource(image_, header_->e_shoff);
   sections_ = source.GetArray<typename Traits::Elf_Shdr>(sections_count_);
   if (!sections_)
     return false;
@@ -271,7 +271,7 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
       base::checked_cast<offset_t>(source.begin() - image_.begin());
 
   segments_count_ = header_->e_phnum;
-  source = std::move(BufferSource(image_).Skip(header_->e_phoff));
+  source = BufferSource(image_, header_->e_phoff);
   segments_ = source.GetArray<typename Traits::Elf_Phdr>(segments_count_);
   if (!segments_)
     return false;
@@ -286,8 +286,7 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   if (section_names_size > 0) {
     // If nonempty, then last byte of string section must be null.
     const char* section_names = nullptr;
-    source = std::move(
-        BufferSource(image_).Skip(sections_[string_section_id].sh_offset));
+    source = BufferSource(image_, sections_[string_section_id].sh_offset);
     section_names = source.GetArray<char>(section_names_size);
     if (!section_names || section_names[section_names_size - 1] != '\0')
       return false;

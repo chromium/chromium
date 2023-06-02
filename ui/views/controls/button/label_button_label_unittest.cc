@@ -77,7 +77,7 @@ class LabelButtonLabelTest : public ViewsTestBase {
   SkColor last_color_ = gfx::kPlaceholderColor;
   absl::optional<ui::ColorId> last_color_id_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<TestLabel> label_;
+  raw_ptr<TestLabel, DanglingUntriaged> label_;
 };
 
 // Test that LabelButtonLabel reacts properly to themed and overridden colors.

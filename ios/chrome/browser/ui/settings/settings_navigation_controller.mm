@@ -762,11 +762,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)passwordDetailsCoordinatorDidRemove:
     (PasswordDetailsCoordinator*)coordinator {
-  [self closeSettings];
   DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
+}
+
+- (void)passwordDetailsCancelButtonWasTapped {
+  [self closeSettings];
 }
 
 #pragma mark - ClearBrowsingDataCoordinatorDelegate

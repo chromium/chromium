@@ -6,11 +6,11 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-const char kTestUserHash[] = "testuserhash";
-}  // namespace
 
 namespace ash {
 
@@ -128,24 +128,18 @@ TEST_F(LoginStateTest, TestLoggedInStateChangedObserverOnUserTypeChange) {
 }
 
 TEST_F(LoginStateTest, TestPrimaryUser) {
-  EXPECT_FALSE(LoginState::Get()->IsUserLoggedIn());
-  EXPECT_FALSE(LoginState::Get()->IsInSafeMode());
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_NONE, logged_in_user_type_);
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_NONE,
-            LoginState::Get()->GetLoggedInUserType());
+  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  std::string username_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  fake_user_manager->AddUser(account_id);
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
 
-  // Setting login state to ACTIVE and setting the primary user.
-  LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-      LoginState::LOGGED_IN_ACTIVE, LoginState::LOGGED_IN_USER_REGULAR,
-      kTestUserHash);
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_REGULAR,
-            LoginState::Get()->GetLoggedInUserType());
-  EXPECT_TRUE(LoginState::Get()->IsUserLoggedIn());
-  EXPECT_FALSE(LoginState::Get()->IsInSafeMode());
-  EXPECT_EQ(kTestUserHash, LoginState::Get()->primary_user_hash());
-
-  EXPECT_EQ(1U, GetNewLoginStateChangesCount());
-  EXPECT_EQ(LoginState::LOGGED_IN_USER_REGULAR, logged_in_user_type_);
+  EXPECT_EQ(username_hash, LoginState::Get()->primary_user_hash());
 }
 
 }  // namespace ash

@@ -41,27 +41,39 @@
 
 namespace content {
 
+namespace {
+
+template <typename Range>
+std::u16string GetJavascriptCallImpl(base::StringPiece function_name,
+                                     const Range& args) {
+  std::vector<std::u16string> json_args;
+  for (const auto& arg : args) {
+    json_args.push_back(base::UTF8ToUTF16(*base::WriteJson(arg)));
+  }
+
+  std::u16string result(base::ASCIIToUTF16(function_name));
+  result.push_back('(');
+  result.append(base::JoinString(json_args, u","));
+  result.push_back(')');
+  result.push_back(';');
+  return result;
+}
+
+}  // namespace
+
 const WebUI::TypeID WebUI::kNoWebUI = nullptr;
 
 // static
 std::u16string WebUI::GetJavascriptCall(
     base::StringPiece function_name,
     base::span<const base::ValueView> arg_list) {
-  std::u16string result(base::ASCIIToUTF16(function_name));
-  result.push_back('(');
+  return GetJavascriptCallImpl(function_name, arg_list);
+}
 
-  std::string json;
-  for (size_t i = 0; i < arg_list.size(); ++i) {
-    if (i > 0)
-      result.push_back(',');
-
-    base::JSONWriter::Write(arg_list[i], &json);
-    result.append(base::UTF8ToUTF16(json));
-  }
-
-  result.push_back(')');
-  result.push_back(';');
-  return result;
+// static
+std::u16string WebUI::GetJavascriptCall(base::StringPiece function_name,
+                                        const base::Value::List& arg_list) {
+  return GetJavascriptCallImpl(function_name, arg_list);
 }
 
 WebUIImpl::WebUIImpl(WebContents* web_contents)

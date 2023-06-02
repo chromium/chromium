@@ -60,7 +60,6 @@ target(link_target_type, "renderer_sources") {
     "//content/renderer",
     "//gin",
     "//media/capture",
-    "//media/gpu/ipc/client",
     "//net",
     "//ppapi/buildflags",
     "//skia",

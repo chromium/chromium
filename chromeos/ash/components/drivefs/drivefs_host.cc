@@ -76,7 +76,7 @@ class DriveFsHost::MountState : public DriveFsSession,
           host_->delegate_->GetURLLoaderFactory());
     }
 
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+    if (ash::features::IsInlineSyncStatusOldEventsEnabled()) {
       sync_throttle_timer_ = std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE, kIndividualSyncStatusIntervalMs,
           base::BindRepeating(
@@ -90,7 +90,7 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   ~MountState() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+    if (ash::features::IsInlineSyncStatusOldEventsEnabled()) {
       sync_throttle_timer_->Stop();
     }
     if (team_drives_fetched_) {
@@ -150,7 +150,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   void DispatchBatchIndividualSyncEvents() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
 
-    if (!base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+    if (!ash::features::IsInlineSyncStatusOldEventsEnabled()) {
       return;
     }
 
@@ -181,10 +181,16 @@ class DriveFsHost::MountState : public DriveFsSession,
     }
   }
 
+  void OnItemProgress(const mojom::ProgressEventPtr progress_event) override {
+    for (auto& observer : host_->observers_) {
+      observer.OnItemProgress(*progress_event);
+    }
+  }
+
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
 
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+    if (ash::features::IsInlineSyncStatusOldEventsEnabled()) {
       ResetThrottleTimer();
 
       // Keep track of the syncing paths.
@@ -242,7 +248,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   // Reset the timer if it has finished. This will cause individual syncing
   // status events to be dispatched as soon as the timer finishes again.
   void ResetThrottleTimer() {
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus) &&
+    if (ash::features::IsInlineSyncStatusOldEventsEnabled() &&
         !sync_throttle_timer_->IsRunning()) {
       sync_throttle_timer_->Reset();
     }
@@ -269,7 +275,7 @@ class DriveFsHost::MountState : public DriveFsSession,
     // Verify if we have a valid stable_id. It could be invalid because the
     // DriveFs version that reports stable_id for DriveErrors hasn't been
     // uprreved into ChromeOS yet, but it could be due to some actual error.
-    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus) &&
+    if (ash::features::IsInlineSyncStatusOldEventsEnabled() &&
         error->stable_id > 0) {
       base::FilePath path = host_->GetMountPath();
       if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),

@@ -199,6 +199,9 @@ UIImageView* IconInCircle(NSString* symbol,
     case SetUpListItemType::kAutofill:
       return IconInCircle(kEllipsisRectangleSymbol, _compactLayout,
                           kBlue600Color);
+    case SetUpListItemType::kAllSet:
+      return IconForSymbol(kCheckmarkSealFillSymbol, _compactLayout,
+                           kBlue500Color);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
       NOTREACHED();

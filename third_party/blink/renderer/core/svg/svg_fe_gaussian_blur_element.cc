@@ -36,10 +36,7 @@ SVGFEGaussianBlurElement::SVGFEGaussianBlurElement(Document& document)
           this,
           svg_names::kStdDeviationAttr,
           0.0f)),
-      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {
-  AddToPropertyMap(std_deviation_);
-  AddToPropertyMap(in1_);
-}
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {}
 
 void SVGFEGaussianBlurElement::setStdDeviation(float x, float y) {
   stdDeviationX()->BaseValue()->SetValue(x);
@@ -91,6 +88,27 @@ FilterEffect* SVGFEGaussianBlurElement::Build(SVGFilterBuilder* filter_builder,
       MakeGarbageCollected<FEGaussianBlur>(filter, std_dev_x, std_dev_y);
   effect->InputEffects().push_back(input1);
   return effect;
+}
+
+SVGAnimatedPropertyBase* SVGFEGaussianBlurElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kStdDeviationAttr) {
+    return std_deviation_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEGaussianBlurElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{std_deviation_.Get(), in1_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

@@ -13,9 +13,7 @@
 // OverlayModality is converted from an enum to a class.
 @interface TestOverlayRequestCoordinatorFactory
     : OverlayRequestCoordinatorFactory
-// Initializer for a factory that vends OverlayRequestCoordinators for `browser`
-// at OverlayModality::kTesting.
-- (instancetype)initWithBrowser:(Browser*)browser;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OVERLAYS_TEST_TEST_OVERLAY_REQUEST_COORDINATOR_FACTORY_H_

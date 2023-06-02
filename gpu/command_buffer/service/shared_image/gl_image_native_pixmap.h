@@ -57,9 +57,6 @@ class GPU_GLES2_EXPORT GLImageNativePixmap : public gl::GLImage {
   friend class media::V4L2SliceVideoDecodeAccelerator;
   friend class media::VaapiPictureNativePixmapOzone;
 
-  // Overridden from GLImage:
-  gfx::Size GetSize() override;
-
   explicit GLImageNativePixmap(const gfx::Size& size);
   ~GLImageNativePixmap() override;
 

@@ -43,7 +43,7 @@ class TestWpPointerGestures : public GlobalObject {
                               struct wl_resource* pointer);
 
  private:
-  raw_ptr<TestPinchGesture> pinch_;
+  raw_ptr<TestPinchGesture, DanglingUntriaged> pinch_;
 };
 
 }  // namespace wl

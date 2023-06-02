@@ -141,6 +141,8 @@ class VideoDecoderStreamTest
     EXPECT_MEDIA_LOG(HasSubstr("audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("Audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("decryptor")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("clear to encrypted buffers"))
+        .Times(AnyNumber());
   }
 
   VideoDecoderStreamTest(const VideoDecoderStreamTest&) = delete;
@@ -546,7 +548,7 @@ class VideoDecoderStreamTest
   std::vector<int> platform_decoder_indices_;
 
   // The current decoder used by |video_decoder_stream_|.
-  raw_ptr<FakeVideoDecoder> decoder_ = nullptr;
+  raw_ptr<FakeVideoDecoder, DanglingUntriaged> decoder_ = nullptr;
 
   bool is_initialized_;
   int num_decoded_frames_;

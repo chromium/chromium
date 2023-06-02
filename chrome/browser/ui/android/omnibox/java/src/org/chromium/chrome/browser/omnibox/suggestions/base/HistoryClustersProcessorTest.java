@@ -134,7 +134,8 @@ public class HistoryClustersProcessorTest {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
                 .setDisplayText(query)
                 .setIsSearch(true)
-                .setActions(Arrays.asList(new HistoryClustersAction("hint", query)))
+                .setActions(
+                        Arrays.asList(new HistoryClustersAction(0, "hint", "accessibility", query)))
                 .build();
     }
 

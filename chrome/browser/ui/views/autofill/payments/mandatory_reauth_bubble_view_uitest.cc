@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/mandatory_reauth_ui.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -35,13 +39,25 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
 
   void ShowBubble() {
     MandatoryReauthBubbleControllerImpl* controller = GetController();
-    controller->ShowBubble(base::DoNothing(), base::DoNothing(),
-                           base::DoNothing());
+    controller->ShowBubble(accept_callback.Get(), cancel_callback.Get(),
+                           close_callback.Get());
     views::test::WidgetVisibleWaiter visible_waiter(
-        static_cast<MandatoryReauthOptInBubbleView*>(
-            controller->GetBubbleView())
-            ->GetWidget());
+        GetOptInBubbleView()->GetWidget());
     visible_waiter.Wait();
+  }
+
+  void ReshowBubble() {
+    MandatoryReauthBubbleControllerImpl* controller = GetController();
+    controller->ReshowBubble();
+    if (controller->GetBubbleType() == MandatoryReauthBubbleType::kOptIn) {
+      views::test::WidgetVisibleWaiter visible_waiter(
+          GetOptInBubbleView()->GetWidget());
+      visible_waiter.Wait();
+    } else {
+      views::test::WidgetVisibleWaiter visible_waiter(
+          GetConfirmationBubbleView()->GetWidget());
+      visible_waiter.Wait();
+    }
   }
 
   bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
@@ -56,8 +72,20 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  views::BubbleDialogDelegate* GetOptInBubble() {
+  views::BubbleDialogDelegate* GetReauthBubble() {
     return GetIconView()->GetBubble();
+  }
+
+  MandatoryReauthOptInBubbleView* GetOptInBubbleView() {
+    MandatoryReauthBubbleControllerImpl* controller = GetController();
+    return static_cast<MandatoryReauthOptInBubbleView*>(
+        controller->GetBubbleView());
+  }
+
+  MandatoryReauthConfirmationBubbleView* GetConfirmationBubbleView() {
+    MandatoryReauthBubbleControllerImpl* controller = GetController();
+    return static_cast<MandatoryReauthConfirmationBubbleView*>(
+        controller->GetBubbleView());
   }
 
   MandatoryReauthIconView* GetIconView() {
@@ -109,29 +137,95 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
     ClickOnViewAndWait(cancel_button, mandatory_reauth_bubble);
   }
 
+  void ClickOnCloseButton(
+      views::BubbleDialogDelegate* mandatory_reauth_bubble) {
+    views::View* close_button = mandatory_reauth_bubble->GetBubbleFrameView()
+                                    ->GetCloseButtonForTesting();
+    ClickOnViewAndWait(close_button, mandatory_reauth_bubble);
+  }
+
+  base::MockOnceClosure accept_callback;
+  base::MockOnceClosure cancel_callback;
+  base::MockRepeatingClosure close_callback;
+
  protected:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest, ShowBubble) {
   ShowBubble();
-  EXPECT_TRUE(GetOptInBubble());
+  EXPECT_TRUE(GetReauthBubble());
   EXPECT_TRUE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kOptIn);
 }
 
 IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
                        ClickOptInCancelButton) {
   ShowBubble();
-  ClickOnCancelButton(GetOptInBubble());
-  EXPECT_FALSE(GetOptInBubble());
+  EXPECT_CALL(cancel_callback, Run).Times(1);
+  ClickOnCancelButton(GetReauthBubble());
+  EXPECT_FALSE(GetReauthBubble());
   EXPECT_FALSE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kInactive);
 }
 
 IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest, ClickOptInOkButton) {
   ShowBubble();
-  ClickOnOkButton(GetOptInBubble());
-  EXPECT_FALSE(GetOptInBubble());
+  EXPECT_CALL(accept_callback, Run).Times(1);
+  ClickOnOkButton(GetReauthBubble());
+  EXPECT_FALSE(GetReauthBubble());
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kConfirmation);
+}
+
+IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest, ClickOptInCloseButton) {
+  ShowBubble();
+  EXPECT_CALL(close_callback, Run).Times(1);
+  ClickOnCloseButton(GetReauthBubble());
+  EXPECT_FALSE(GetReauthBubble());
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kOptIn);
+}
+
+IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest, ReshowOptInBubble) {
+  ShowBubble();
+  ClickOnCloseButton(GetReauthBubble());
+  ReshowBubble();
+  EXPECT_TRUE(GetReauthBubble());
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kOptIn);
+}
+
+IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
+                       ReshowConfirmationBubble) {
+  ShowBubble();
+  ClickOnOkButton(GetReauthBubble());
+  ReshowBubble();
+  EXPECT_TRUE(GetReauthBubble());
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kConfirmation);
+}
+
+IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
+                       ClickConfirmationCloseButton) {
+  ShowBubble();
+  ClickOnOkButton(GetReauthBubble());
+  ReshowBubble();
+  EXPECT_TRUE(GetReauthBubble());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kConfirmation);
+  EXPECT_CALL(close_callback, Run).Times(0);
+  ClickOnCloseButton(GetReauthBubble());
+  EXPECT_FALSE(GetReauthBubble());
   EXPECT_FALSE(IsIconVisible());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kInactive);
 }
 
 }  // namespace autofill

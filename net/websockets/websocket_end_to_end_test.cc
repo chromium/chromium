@@ -329,7 +329,8 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     return !event_interface_->failed();
   }
 
-  raw_ptr<ConnectTestingEventInterface> event_interface_;  // owned by channel_
+  raw_ptr<ConnectTestingEventInterface, DanglingUntriaged>
+      event_interface_;  // owned by channel_
   std::unique_ptr<TestProxyDelegateWithProxyInfo> proxy_delegate_;
   std::unique_ptr<URLRequestContextBuilder> context_builder_;
   std::unique_ptr<URLRequestContext> context_;

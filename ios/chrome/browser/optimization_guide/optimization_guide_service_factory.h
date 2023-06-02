@@ -21,6 +21,9 @@ class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* context);
   static OptimizationGuideServiceFactory* GetInstance();
 
+  // Initializes the prediction model store.
+  static void InitializePredictionModelStore();
+
   // Returns the default factory used to build OptimizationGuideService. Can be
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();

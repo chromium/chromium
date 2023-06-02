@@ -26,12 +26,12 @@ android_library("nonembedded_java") {
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
   ]
   deps = [
+    ":crash_java",
     ":devui_java",
     ":services_java",
     ":util_java",
     "//android_webview:android_webview_product_config_java",
     "//android_webview:common_aidl_java",
-    "//android_webview:common_crash_java",
     "//android_webview:common_java",
     "//android_webview:common_platform_services_java",
     "//android_webview/glue:glue_java",
@@ -75,11 +75,11 @@ android_library("devui_java") {
     "java/src/org/chromium/android_webview/devui/util/WebViewCrashLogParser.java",
   ]
   deps = [
+    ":crash_java",
     ":devui_resources",
     ":services_java",
     ":util_java",
     "//android_webview:common_aidl_java",
-    "//android_webview:common_crash_java",
     "//android_webview:common_java",
     "//android_webview:common_platform_services_java",
     "//base:base_java",
@@ -124,13 +124,12 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/VariationsSeedServer.java",
   ]
   deps = [
+    ":crash_java",
     ":devui_resources",
     "//android_webview:common_aidl_java",
-    "//android_webview:common_crash_java",
     "//android_webview:common_java",
     "//android_webview:common_platform_services_java",
     "//android_webview:common_variations_java",
-    "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
     "//base:jni_java",
@@ -149,6 +148,21 @@ android_library("services_java") {
 android_library("util_java") {
   sources = [ "java/src/org/chromium/android_webview/nonembedded_util/WebViewPackageHelper.java" ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
+android_library("crash_java") {
+  sources = [
+    "java/src/org/chromium/android_webview/nonembedded/crash/CrashInfo.java",
+    "java/src/org/chromium/android_webview/nonembedded/crash/CrashUploadUtil.java",
+    "java/src/org/chromium/android_webview/nonembedded/crash/SystemWideCrashDirectories.java",
+  ]
+  deps = [
+    "//android_webview:common_java",
+    "//base:base_java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/minidump_uploader:minidump_uploader_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 source_set("nonembedded") {

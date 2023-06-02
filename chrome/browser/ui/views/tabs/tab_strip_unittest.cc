@@ -211,9 +211,9 @@ class TabStripTestBase : public ChromeViewsTestBase {
   }
 
   // Owned by TabStrip.
-  raw_ptr<FakeBaseTabStripController> controller_ = nullptr;
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
-  raw_ptr<views::View> tab_strip_parent_ = nullptr;
+  raw_ptr<FakeBaseTabStripController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> tab_strip_parent_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 
   ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::ET_MOUSE_PRESSED,

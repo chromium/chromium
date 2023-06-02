@@ -112,6 +112,12 @@ void VideoConferenceTrayEffectsManager::NotifyEffectSupportStateChanged(
   }
 }
 
+void VideoConferenceTrayEffectsManager::RecordInitialStates() {
+  for (auto* delegate : effect_delegates_) {
+    delegate->RecordInitialStates();
+  }
+}
+
 VideoConferenceTrayEffectsManager::EffectDataVector
 VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;

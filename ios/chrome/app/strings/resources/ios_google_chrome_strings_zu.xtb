@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">I-Chrome ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa.</translation>
 <translation id="2736805085127235148">Izaziso ze-Chrome okwamanje zivaliwe kumasethingi edivayisi yakho.</translation>
 <translation id="2767464022270041271">Awekho amaphasiwedi alondoloziwe. Isiphathi Sephasiwedi ye-Google singahlola amaphasiwedi akho uma uwalondoloza.</translation>
+<translation id="2840432500933227975">Vula Amasethingi we-Chrome ku-iOS, bese uthepha kokuthi "I-APP Ezenzakalelayo Yebhrawuza" bese ukhetha i-Chrome.</translation>
 <translation id="2869959624320573933">Ngena ngemvume ku-Chrome</translation>
 <translation id="2957447865124070833">Khetha i-<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Ngoba uphuma ku-akhawunti ephethwe ngu-<ph name="SIGNOUT_MANAGED_DOMAIN" />, idatha yakho ye-Chrome izosuswa kusuka kule divayisi. Idatha yakho izohlala ku-akhawunti yakho ye-Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Lokhu kusho ukuthi i-Chrome izocela isayithi yeselula ngaso sonke isikhathi</translation>
 <translation id="3706101708757577809">Manje ungasebenzisa i-Chrome noma nini uma uthepha izixhumanisi kumilayezo, amadokhumenti, nezinye izinhlelo zokusebenza.</translation>
 <translation id="3720541637541300822">Khiya Amathebhu we-Incognito Lapho Uvala i-Chrome</translation>
+<translation id="3827545470516145620">Uthola ukuvikeleka okujwayelekile kule divayisi</translation>
 <translation id="384394811301901750">I-Google Chrome ayikwazi ukusebenzisa ikhamera yakho khona manje</translation>
 <translation id="3980220367029651214">Ushintsha ama-akhawunti okuvumelanisa kusukela ku-<ph name="USER_EMAIL1" /> ukuya ku-<ph name="USER_EMAIL2" />. Idatha yakho ekhona ye-Chrome iphethwe yi-<ph name="DOMAIN" />. Lokhu kuzosusa idatha yakho kusukela kule divayisi, kodwa idatha yakho izohlala ku-<ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Inhlangano yakho idinga ukuthi uhlale uphume ngemvume ku-Chrome.</translation>
@@ -149,7 +151,6 @@ Izinto okufanele uzicabangele:
 
   • Uma i-Chrome iphahlazeka, imininingwane mayelana nokuphahlazeka ingase ihlanganise ulwazi lomuntu siqu.
   • Uma uvula ukuvumelanisa, ama-metric angase futhi afake ulwazi olumayelana nama-URL owavakashelayo.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Uthola ukuvikeleka okujwayelekile kwale phrofayela ye-Chrome</translation>
 <translation id="9112744793181547300">Setha i-Chrome Njengokuzenzakalelayo?</translation>
 <translation id="9122931302567044771">Lokhu kusho ukuthi i-Chrome izocela isayithi yedeskithophu ngaso sonke isikhathi.</translation>
 </translationbundle>

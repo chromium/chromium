@@ -19,8 +19,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #endif
 
 using read_anything::mojom::ReadAnythingTheme;
@@ -87,6 +87,10 @@ void ReadAnythingPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 ///////////////////////////////////////////////////////////////////////////////
 // read_anything::mojom::UntrustedPageHandler:
 ///////////////////////////////////////////////////////////////////////////////
+
+void ReadAnythingPageHandler::OnCopy() {
+  web_contents()->Copy();
+}
 
 void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
                                             ui::AXNodeID target_node_id) {

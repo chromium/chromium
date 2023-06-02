@@ -360,13 +360,6 @@ public class TemplateUrlService {
                 TemplateUrlService.this, name, keyword, searchUrl, suggestUrl, faviconUrl,
                 setAsDefault);
     }
-    // TODO(crbug/1002271): This API is called from clank repo. Helper function below will be
-    // removed once clank repo is updated.
-    public boolean setPlayAPISearchEngine(
-            String name, String keyword, String searchUrl, String suggestUrl, String faviconUrl) {
-        return TemplateUrlServiceJni.get().setPlayAPISearchEngine(mNativeTemplateUrlServiceAndroid,
-                TemplateUrlService.this, name, keyword, searchUrl, suggestUrl, faviconUrl, true);
-    }
 
     @VisibleForTesting
     public String addSearchEngineForTesting(String keyword, int ageInDays) {

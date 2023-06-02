@@ -45,7 +45,7 @@ class ExtensionUtilUnittest : public ExtensionServiceTestBase {
   }
 
  protected:
-  raw_ptr<TestingProfile> signin_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> signin_profile_;
 
  private:
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;

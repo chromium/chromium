@@ -103,14 +103,13 @@ class WebAppDatabaseTest : public WebAppTest {
     run_loop.Run();
   }
 
-  Registry WriteWebApps(const GURL& base_url, uint32_t num_apps) {
+  Registry WriteWebApps(uint32_t num_apps) {
     Registry registry;
 
     auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
     for (uint32_t i = 0; i < num_apps; ++i) {
-      std::unique_ptr<WebApp> app =
-          test::CreateRandomWebApp({.base_url = base_url, .seed = i});
+      std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = i});
       std::unique_ptr<WebAppProto> proto =
           WebAppDatabase::CreateWebAppProto(*app);
       const AppId app_id = app->app_id();
@@ -159,9 +158,9 @@ class WebAppDatabaseTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<WebAppSyncBridge> sync_bridge_;
-  raw_ptr<FakeWebAppDatabaseFactory> database_factory_;
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
+  raw_ptr<FakeWebAppDatabaseFactory, DanglingUntriaged> database_factory_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };
@@ -171,17 +170,14 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   EXPECT_TRUE(registrar().is_empty());
 
   const uint32_t num_apps = 100;
-  const GURL base_url("https://example.com/path");
 
-  std::unique_ptr<WebApp> app =
-      test::CreateRandomWebApp({.base_url = base_url, .seed = 0});
+  std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = 0});
   AppId app_id = app->app_id();
   RegisterApp(std::move(app));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
   for (uint32_t i = 1; i <= num_apps; ++i) {
-    std::unique_ptr<WebApp> extra_app =
-        test::CreateRandomWebApp({.base_url = base_url, .seed = i});
+    std::unique_ptr<WebApp> extra_app = test::CreateRandomWebApp({.seed = i});
     RegisterApp(std::move(extra_app));
   }
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
@@ -198,7 +194,6 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   EXPECT_TRUE(registrar().is_empty());
 
   const uint32_t num_apps = 100;
-  const GURL base_url("https://example.com/path");
 
   RegistryUpdateData::Apps apps_to_create;
   std::vector<AppId> apps_to_delete;
@@ -211,18 +206,13 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 #endif
 
   for (uint32_t i = 0; i < num_apps; ++i) {
-    std::unique_ptr<WebApp> app =
-        test::CreateRandomWebApp({.base_url = base_url,
-                                  .seed = i,
-                                  .allow_system_source = allow_system_source});
+    std::unique_ptr<WebApp> app = test::CreateRandomWebApp(
+        {.seed = i, .allow_system_source = allow_system_source});
     apps_to_delete.push_back(app->app_id());
     apps_to_create.push_back(std::move(app));
 
-    std::unique_ptr<WebApp> expected_app =
-        test::CreateRandomWebApp({.base_url = base_url,
-                                  .seed = i,
-                                  .non_zero = false,
-                                  .allow_system_source = allow_system_source});
+    std::unique_ptr<WebApp> expected_app = test::CreateRandomWebApp(
+        {.seed = i, .allow_system_source = allow_system_source});
     expected_registry.emplace(expected_app->app_id(), std::move(expected_app));
   }
 
@@ -266,7 +256,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 }
 
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps(GURL("https://example.com/path"), 100);
+  Registry registry = WriteWebApps(100);
 
   InitSyncBridge();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
@@ -479,7 +469,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   const int num_icons = 32;
 
   std::unique_ptr<WebApp> app =
-      test::CreateRandomWebApp({.base_url = base_url, .seed = 0});
+      test::CreateRandomWebApp({.base_url = base_url});
   AppId app_id = app->app_id();
 
   std::vector<apps::IconInfo> icons;
@@ -520,8 +510,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
 }
 
 TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
-  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp(
-      {.base_url = GURL("https://example.com"), .seed = 0});
+  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<WebAppProto> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
@@ -632,21 +621,22 @@ TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      WebApp::IsolationData(InstalledBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(web_app->isolation_data()->location,
               VariantWith<InstalledBundle>(
                   Field("path", &InstalledBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      WebApp::IsolationData(InstalledBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -666,21 +656,22 @@ TEST_F(WebAppDatabaseProtoDataTest,
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("dev_bundle_path"));
-  std::unique_ptr<WebApp> web_app =
-      CreateIsolatedWebApp(WebApp::IsolationData(DevModeBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(web_app->isolation_data()->location,
               VariantWith<DevModeBundle>(
                   Field("path", &DevModeBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app =
-      CreateIsolatedWebApp(WebApp::IsolationData(DevModeBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -699,9 +690,10 @@ TEST_F(WebAppDatabaseProtoDataTest,
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      WebApp::IsolationData(DevModeProxy{.proxy_url = url::Origin::Create(GURL(
-                                             "https://proxy-example.com/"))}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeProxy{.proxy_url =
+                       url::Origin::Create(GURL("https://proxy-example.com/"))},
+      base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
@@ -710,6 +702,23 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
       VariantWith<DevModeProxy>(
           Field("proxy_url", &DevModeProxy::proxy_url,
                 Eq(url::Origin::Create(GURL("https://proxy-example.com/"))))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
+}
+
+TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  // The version must have three numeric parts, thus using five parts here
+  // should break deserialization.
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.2.3.4.5")));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
@@ -725,10 +734,12 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {{url::Origin::Create(GURL("https://example.com")),
-         /*has_subdomain_wildcard=*/false},
-        {url::Origin::Create(GURL("https://example.net")),
-         /*has_subdomain_wildcard=*/true}},
+       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.com")),
+            /*has_subdomain_wildcard=*/false),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.net")),
+            /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
@@ -753,12 +764,15 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {{url::Origin::Create(GURL("https://example.com")),
-         /*has_subdomain_wildcard=*/false},
-        {url::Origin::Create(GURL("https://example.net")),
-         /*has_subdomain_wildcard=*/true},
-        {url::Origin::Create(GURL("https://*.example.net")),
-         /*has_subdomain_wildcard=*/false}},
+       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.com")),
+            /*has_subdomain_wildcard=*/false),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.net")),
+            /*has_subdomain_wildcard=*/true),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://*.example.net")),
+            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},

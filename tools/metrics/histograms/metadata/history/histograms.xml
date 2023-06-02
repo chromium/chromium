@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.ChromeTask.{Task}"
-    units="ms" expires_after="2023-07-01">
+    units="ms" expires_after="2024-07-01">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.Task.{Task}" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -306,6 +306,7 @@ chromium-metrics-reviews@google.com.
     <variant name="NetworkHistory" summary="NetworkHistory"/>
     <variant name="PreflightCache" summary="PreflightCache"/>
     <variant name="ReportingCache" summary="ReportingCache"/>
+    <variant name="SharedDictionary" summary="SharedDictionary"/>
     <variant name="SharedStorage" summary="SharedStorage"/>
     <variant name="StoragePartition" summary="StoragePartition"/>
     <variant name="Synchronous" summary="Synchronous"/>
@@ -930,6 +931,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="History.Clusters.Backend.GetMostRecentClustersForUI.GetMostRecentPersistedClustersTimeHorizon{Source}"
+    units="hours" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    On navigation, context clusters are created, grown, and persisted.
+
+    On startup and every 1 hour afterwards, these context clusters have their
+    triggability calculated. Context clusters older than 2 hours are not updated
+    are not re-updated after the initial triggability is calculated. However, if
+    there are unclustered visits (due to visits from before the user had context
+    clustering enabled or synced visits without a cluster ID), they will also be
+    context clustered with their triggerability calculated as well.
+
+    When a user visits the Journeys WebUI, persisted clusters (both those with
+    and without triggerability calculated) are fetched. Clusters are then
+    augmented with appropriate metadata needed for displaying on the Journeys
+    WebUI (e.g. ranking, deduping, labeling).
+
+    When the keyword cache used to match omnibox inputs and show journey chips
+    or suggestions in the omnibox needs updating, context clusters (both those
+    with and without triggerability calculated) are fetched.
+
+    This histogram records the number of hours that the persisted clusters
+    returned covers.
+
+    Recorded for every batch of fetched clusters; can be recorded more than once
+    per load of {Source}.
+  </summary>
+  <token key="Source" variants="ClusteringRequestSource"/>
+</histogram>
+
+<histogram
     name="History.Clusters.Backend.GetMostRecentClustersForUI.{Segment}{Source}"
     units="ms" expires_after="2023-10-01">
   <owner>sophiechang@chromium.org</owner>
@@ -1110,6 +1145,30 @@ chromium-metrics-reviews@google.com.
     <variant name="Max" summary="maximum keywords"/>
     <variant name="Min" summary="minimum keywords"/>
   </token>
+</histogram>
+
+<histogram name="History.Clusters.Backend.NumVisitsBelowFold"
+    units="number visits" expires_after="2023-12-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the number of visits that are &quot;below the fold&quot; in each
+    cluster after hidden and done visits have been culled. Logged for each
+    cluster that is shown to the user in the Journeys WebUI.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.NumVisitsBelowFoldPercentage"
+    units="%" expires_after="2023-12-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the percentage of visits that are &quot;below the fold&quot; in each
+    cluster after hidden and done visits have been culled. Logged for each
+    cluster that is shown to the user in the Journeys WebUI.
+  </summary>
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumVisitsPerCluster"
@@ -1849,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseAdvancedMetricsTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-11-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1862,7 +1921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseBasicMetricsTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-11-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1887,7 +1946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseForeignVisitMetricsTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-11-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1957,7 +2016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V3" units="domains"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2160,7 +2219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsLegacy" units="visits"
-    expires_after="2023-07-01">
+    expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2174,7 +2233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsNotRemapped" units="visits"
-    expires_after="2023-07-01">
+    expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2188,7 +2247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableFrom" units="visits"
-    expires_after="2023-07-01">
+    expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2202,7 +2261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableOpener" units="visits"
-    expires_after="2023-07-01">
+    expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2216,7 +2275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsTotal" units="visits"
-    expires_after="2023-07-01">
+    expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

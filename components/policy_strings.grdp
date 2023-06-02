@@ -198,8 +198,11 @@
       Duplicate handlers for file_extension "<ph name="FILE_EXTENSION">$1<ex>txt</ex></ph>" referenced by apps "<ph name="POLICY_IDS_LIST">$2<ex>https://google.com/maps, pnomlkjighijklmnopabcdefghijklff</ex></ph>".
     </message>
   </if>
-  <message name="IDS_POLICY_INVALID_EXTENSION_ERROR" desc="The text displayed in the status column when the extension doesn't match the expected format.">
-    Invalid Extension: Expected the value to be of one of the following forms: &lt;extension_id&gt; or &lt;extension_id&gt;;&lt;update_url&gt;.
+  <message name="IDS_POLICY_INVALID_EXTENSION_ID_ERROR" desc="The text displayed in the status column when the extension ID doesn't match the expected format.">
+    Invalid extension ID.
+  </message>
+  <message name="IDS_POLICY_INVALID_UPDATE_URL_ERROR" desc="The text displayed in the status column when the extension update url is invalid or uses an unsupported scheme.">
+    Update URL for extension with ID "<ph name="EXTENSION_ID">$1<ex>abcdefghijklmnopabcdefghijklmnop</ex></ph>" is invalid or uses an unsupported scheme. Supported schemes are: <ph name="HTTP_SCHEME">http</ph>, <ph name="HTTPS_SCHEME">https</ph> and <ph name="FILE_SCHEME">file</ph>.
   </message>
   <message name="IDS_POLICY_URL_PATH_SPECIFIED_ERROR" desc="The text displayed in the status column when a path is specified for an URL, which is not supported">
     The URL pattern "<ph name="URL_PATTERN">$1<ex>*://example.com/</ex></ph>" has a path specified. Paths are not supported for this key, please remove the path and try again. e.g. *://example.com/ => *://example.com",
@@ -275,9 +278,6 @@
   </message>
   <message name="IDS_POLICY_INVALID_PROXY_MODE_ERROR" desc="The text displayed in the status column when the value for ProxyMode is invalid.">
     Invalid proxy mode.
-  </message>
-  <message name="IDS_POLICY_INVALID_UPDATE_URL_ERROR" desc="The text displayed in the status column when the update URL for given extension is invalid.">
-    Invalid update URL for extension with ID "<ph name="EXTENSION_ID">$1<ex>abcdefghijklmnopabcdefghijklmnop</ex></ph>".
   </message>
   <if expr="chromeos_ash">
     <message name="IDS_POLICY_UNKNOWN_ARC_MANAGED_CONFIGURATION_VARIABLE" desc="The warning text displayed in the status column when the managed configuration of an ARC application contains an unknown variable.">

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test wildcard host policy works as expected assert_array_equals: lengths differ, expected array ["https://*:8444"] length 1, got [] length 0
+Harness: the test ran to completion.
+

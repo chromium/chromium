@@ -28,7 +28,7 @@ class UserBypassWebContentsObserver
   ~UserBypassWebContentsObserver() override;
 
   // Helps access the cookie settings object during tests.
-  raw_ptr<content_settings::CookieSettings> GetCookieSettingsForTesting() {
+  content_settings::CookieSettings* GetCookieSettingsForTesting() {
     return cookie_settings_;
   }
 

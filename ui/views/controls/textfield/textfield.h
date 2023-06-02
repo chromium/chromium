@@ -320,6 +320,9 @@ class VIEWS_EXPORT Textfield : public View,
   bool GetUseDefaultBorder() const;
   void SetUseDefaultBorder(bool use_default_border);
 
+  // Removes the Inkdrop hover effect.
+  void RemoveHoverEffect();
+
   // View overrides:
   int GetBaseline() const override;
   gfx::Size CalculatePreferredSize() const override;

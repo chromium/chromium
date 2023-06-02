@@ -257,7 +257,7 @@ if (is_cast_media_device) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_mac || is_win) {
+} else if (is_apple || is_win) {
   _default_mojo_media_services = [
     "audio_decoder",
     "audio_encoder",

@@ -1302,6 +1302,12 @@ void RootWindowController::CreateContainers() {
   settings_bubble_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
   settings_bubble_container->SetProperty(kLockedToRootKey, true);
 
+  aura::Window* help_bubble_container =
+      CreateContainer(kShellWindowId_HelpBubbleContainer, "HelpBubbleContainer",
+                      lock_screen_related_containers);
+  ::wm::SetChildWindowVisibilityChangesAnimated(help_bubble_container);
+  help_bubble_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+
   aura::Window* virtual_keyboard_parent_container = CreateContainer(
       kShellWindowId_ImeWindowParentContainer, "ImeWindowParentContainer",
       lock_screen_related_containers);

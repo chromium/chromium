@@ -18,6 +18,7 @@
 #include "base/native_library.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
@@ -90,6 +91,8 @@ bool IsCleartextPermitted(const std::string& host) {
 }
 
 bool HaveOnlyLoopbackAddresses() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   JNIEnv* env = AttachCurrentThread();
   return Java_AndroidNetworkLibrary_haveOnlyLoopbackAddresses(env);
 }

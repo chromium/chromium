@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,23 +21,21 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/family_preferences_service.h"
+#include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -49,44 +47,30 @@
 #endif
 
 namespace {
-
-// How often to refetch the family members.
-constexpr base::TimeDelta kUpdateInterval = base::Days(1);
-
-// In case of an error while getting the family info, retry with exponential
-// backoff.
-const net::BackoffEntry::Policy kFamilyFetchBackoffPolicy = {
-    // Number of initial errors (in sequence) to ignore before applying
-    // exponential back-off rules.
-    .num_errors_to_ignore = 0,
-
-    // Initial delay for exponential backoff in ms.
-    .initial_delay_ms = 2000,
-
-    // Factor by which the waiting time will be multiplied.
-    .multiply_factor = 2,
-
-    // Fuzzing percentage. ex: 10% will spread requests randomly
-    // between 90%-100% of the calculated time.
-    .jitter_factor = 0.2,  // 20%
-
-    // Maximum amount of time we are willing to delay our request in ms.
-    .maximum_backoff_ms = 1000 * 60 * 60 * 4,  // 4 hours.
-
-    // Time to keep an entry from being discarded even when it
-    // has no significant state, -1 to never discard.
-    .entry_lifetime_ms = -1,
-
-    // Don't use initial delay unless the last request was an error.
-    .always_use_initial_delay = false,
-};
-
+using ::base::BindRepeating;
+using ::base::Unretained;
+using ::supervised_user::FamilyPreferencesService;
+using ::supervised_user::ListFamilyMembersService;
 }  // namespace
 
-ChildAccountService::ChildAccountService(Profile* profile)
+ChildAccountService::ChildAccountService(
+    Profile* profile,
+    FamilyPreferencesService* family_preferences_service,
+    ListFamilyMembersService* list_family_members_service)
     : profile_(profile),
-      family_fetch_backoff_(&kFamilyFetchBackoffPolicy),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {}
+      family_preferences_service_(family_preferences_service),
+      list_family_members_service_(list_family_members_service),
+      identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {
+  // Connects FamilyPreferencesService to ListFamilyMembersService.
+  set_family_members_subscription_ =
+      list_family_members_service_->SubscribeToSuccessfulFetches(BindRepeating(
+          &FamilyPreferencesService::SetFamily,
+          Unretained(
+              family_preferences_service)));  // `this` is dependant of
+                                              // `family_preferences_service`
+                                              // (see
+                                              // ChildAccountServiceFactory).
+}
 
 ChildAccountService::~ChildAccountService() = default;
 
@@ -107,8 +91,12 @@ void ChildAccountService::Init() {
   }
 }
 
+bool ChildAccountService::IsChildAccountStatusKnown() {
+  return family_preferences_service_->IsChildAccountStatusKnown();
+}
+
 void ChildAccountService::Shutdown() {
-  CancelFetchingFamilyInfo();
+  list_family_members_service_->Cancel();
 
   identity_manager_->RemoveObserver(this);
   SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(nullptr);
@@ -117,7 +105,7 @@ void ChildAccountService::Shutdown() {
 
 void ChildAccountService::AddChildStatusReceivedCallback(
     base::OnceClosure callback) {
-  if (IsChildAccountStatusKnown()) {
+  if (family_preferences_service_->IsChildAccountStatusKnown()) {
     std::move(callback).Run();
   } else {
     status_received_callback_list_.push_back(std::move(callback));
@@ -152,29 +140,27 @@ void ChildAccountService::SetActive(bool active) {
     return;
   }
   active_ = active;
-
   if (active_) {
-    StartFetchingFamilyInfo();
+    list_family_members_service_->Start();
 
     supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
     service->remote_web_approvals_manager().AddApprovalRequestCreator(
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
-    CancelFetchingFamilyInfo();
+    list_family_members_service_->Cancel();
   }
 }
 
 void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
-    bool is_child_account) {
-  if (profile_->IsChild() != is_child_account) {
-    SetIsSubjectToParentalControls(is_child_account);
-    if (!is_child_account) {
-      ClearCustodianPrefs(first_custodian);
-      ClearCustodianPrefs(second_custodian);
+    bool supervision_status) {
+  if (profile_->IsChild() != supervision_status) {
+    if (supervision_status) {
+      family_preferences_service_->EnableParentalControls();
+    } else {
+      family_preferences_service_->DisableParentalControls();
     }
   }
-  SetIsChildAccountStatusKnown();
 
   for (auto& callback : status_received_callback_list_) {
     std::move(callback).Run();
@@ -229,19 +215,6 @@ void ChildAccountService::OnExtendedAccountInfoRemoved(
   SetSupervisionStatusAndNotifyObservers(false);
 }
 
-void ChildAccountService::OnResponse(
-    KidsExternalFetcherStatus status,
-    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
-        response) {
-  if (!status.IsOk()) {
-    OnFailure(status);
-    return;
-  }
-
-  OnSuccess(*response);
-  // Release response.
-}
-
 void ChildAccountService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
@@ -265,98 +238,4 @@ void ChildAccountService::AssertChildStatusOfTheUser(bool is_child) {
     LOG(FATAL) << "User child flag has changed: " << is_child;
   }
 #endif
-}
-
-// The following methods set and clear user & custodian information in the
-// profile preferences.
-void ChildAccountService::SetIsSubjectToParentalControls(
-    bool is_subject_to_parental_controls) {
-  if (is_subject_to_parental_controls) {
-    profile_->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                    supervised_user::kChildAccountSUID);
-  } else {
-    profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
-  }
-}
-
-void ChildAccountService::SetIsChildAccountStatusKnown() {
-  profile_->GetPrefs()->SetBoolean(prefs::kChildAccountStatusKnown, true);
-}
-
-bool ChildAccountService::IsChildAccountStatusKnown() {
-  return profile_->GetPrefs()->GetBoolean(prefs::kChildAccountStatusKnown);
-}
-
-void ChildAccountService::SetCustodianPrefs(
-    const Custodian& custodian,
-    const kids_chrome_management::FamilyMember& member) {
-  PrefService* prefs = profile_->GetPrefs();
-  prefs->SetString(custodian.display_name, member.profile().display_name());
-  prefs->SetString(custodian.email, member.profile().email());
-  prefs->SetString(custodian.user_id, member.user_id());
-  prefs->SetString(custodian.profile_url, member.profile().profile_url());
-  prefs->SetString(custodian.profile_image_url,
-                   member.profile().profile_image_url());
-}
-
-void ChildAccountService::ClearCustodianPrefs(const Custodian& custodian) {
-  profile_->GetPrefs()->ClearPref(custodian.display_name);
-  profile_->GetPrefs()->ClearPref(custodian.email);
-  profile_->GetPrefs()->ClearPref(custodian.user_id);
-  profile_->GetPrefs()->ClearPref(custodian.profile_url);
-  profile_->GetPrefs()->ClearPref(custodian.profile_image_url);
-}
-
-// The following methods handle the fetching of list family members.
-void ChildAccountService::OnSuccess(
-    const kids_chrome_management::ListFamilyMembersResponse& response) {
-  bool hoh_found = false;
-  bool parent_found = false;
-  for (const kids_chrome_management::FamilyMember& member :
-       response.members()) {
-    if (member.role() == kids_chrome_management::HEAD_OF_HOUSEHOLD) {
-      hoh_found = true;
-      SetCustodianPrefs(first_custodian, member);
-    } else if (member.role() == kids_chrome_management::PARENT) {
-      parent_found = true;
-      SetCustodianPrefs(second_custodian, member);
-    }
-    if (hoh_found && parent_found) {
-      break;
-    }
-  }
-  if (!hoh_found) {
-    DLOG(WARNING) << "ListFamilyMembers didn't return a Head of household.";
-    ClearCustodianPrefs(first_custodian);
-  }
-  if (!parent_found) {
-    ClearCustodianPrefs(second_custodian);
-  }
-
-  list_family_members_fetcher_.reset();
-  family_fetch_backoff_.InformOfRequest(true);
-
-  ScheduleNextFamilyInfoUpdate(kUpdateInterval);
-}
-
-void ChildAccountService::OnFailure(KidsExternalFetcherStatus error) {
-  DLOG(WARNING) << "ListFamilyMembers failed with status " << error.ToString();
-  family_fetch_backoff_.InformOfRequest(false);
-  ScheduleNextFamilyInfoUpdate(family_fetch_backoff_.GetTimeUntilRelease());
-}
-
-void ChildAccountService::StartFetchingFamilyInfo() {
-  list_family_members_fetcher_ = FetchListFamilyMembers(
-      *identity_manager_, profile_->GetURLLoaderFactory(),
-      base::BindOnce(&ChildAccountService::OnResponse, base::Unretained(this)));
-}
-
-void ChildAccountService::CancelFetchingFamilyInfo() {
-  list_family_members_fetcher_.reset();
-  family_fetch_timer_.Stop();
-}
-
-void ChildAccountService::ScheduleNextFamilyInfoUpdate(base::TimeDelta delay) {
-  family_fetch_timer_.Start(FROM_HERE, delay, this,
-                            &ChildAccountService::StartFetchingFamilyInfo);
 }

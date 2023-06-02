@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">Rozšíření bylo uvolněno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{zbývá 1 měsíc}few{zbývají # měsíce}many{zbývá # měsíce}other{zbývá # měsíců}}</translation>
 <translation id="4888938634149558681">Volat</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekundy}other{# sekund}}</translation>
 <translation id="4971687151119236543">Média – předchozí skladba</translation>
 <translation id="5046499563572181734">Klepněte sem</translation>

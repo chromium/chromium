@@ -318,12 +318,11 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
   MigrateExternalPrefDataToPreinstalledPrefs(pref_service, &registrar,
                                              pref_to_app_data);
   ScopedRegistryUpdate update(sync_bridge);
-  for (auto it : pref_to_app_data) {
-    const WebApp* web_app = registrar.GetAppById(it.first);
+  for (const auto& [app_id, parsed_config_map] : pref_to_app_data) {
+    const WebApp* web_app = registrar.GetAppById(app_id);
     if (web_app) {
       // Sync data across externally installed prefs and web_app DB.
-      for (auto parsed_info : it.second) {
-        WebAppManagement::Type& source = parsed_info.first;
+      for (const auto& [source, parsed_config] : parsed_config_map) {
         if (!web_app->GetSources().test(source))
           continue;
 
@@ -332,29 +331,28 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
         auto map_it = config_map.find(source);
         // Placeholder migration and metrics logging.
         if (map_it != config_map.end() &&
-            map_it->second.is_placeholder ==
-                parsed_info.second.is_placeholder) {
+            map_it->second.is_placeholder == parsed_config.is_placeholder) {
           LogPlaceholderMigrationState(
               PlaceholderMigrationState::kPlaceholderInfoAlreadyInSync);
         } else {
-          WebApp* updated_app = update->UpdateApp(it.first);
+          WebApp* updated_app = update->UpdateApp(app_id);
           updated_app->AddPlaceholderInfoToManagementExternalConfigMap(
-              source, parsed_info.second.is_placeholder);
+              source, parsed_config.is_placeholder);
           LogPlaceholderMigrationState(
               PlaceholderMigrationState::kPlaceholderInfoMigrated);
         }
 
         // Install URL migration and metrics logging.
-        for (auto url : parsed_info.second.install_urls) {
+        for (const GURL& url : parsed_config.install_urls) {
           DCHECK(url.is_valid());
           if (map_it != config_map.end() &&
               base::Contains(map_it->second.install_urls, url)) {
             LogInstallURLMigrationState(
                 InstallURLMigrationState::kInstallURLAlreadyInSync);
           } else {
-            WebApp* updated_app = update->UpdateApp(it.first);
-            updated_app->AddInstallURLToManagementExternalConfigMap(
-                parsed_info.first, url);
+            WebApp* updated_app = update->UpdateApp(app_id);
+            updated_app->AddInstallURLToManagementExternalConfigMap(source,
+                                                                    url);
             LogInstallURLMigrationState(
                 InstallURLMigrationState::kInstallURLMigrated);
           }

@@ -616,6 +616,20 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // Shared Dictionaries.
+  if ((remove_mask & DATA_TYPE_COOKIES) || (remove_mask & DATA_TYPE_CACHE)) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kCompressionDictionaryTransportBackend)) {
+      network::mojom::NetworkContext* network_context =
+          browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
+      network_context->ClearSharedDictionaryCache(
+          delete_begin, delete_end, filter_builder->BuildNetworkServiceFilter(),
+          CreateTaskCompletionClosureForMojo(
+              TracingDataType::kSharedDictionary));
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   // Embedder data.
   if (embedder_delegate_) {
     embedder_delegate_->RemoveEmbedderData(
@@ -859,6 +873,8 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "SharedStorage";
     case TracingDataType::kPreflightCache:
       return "PreflightCache";
+    case TracingDataType::kSharedDictionary:
+      return "SharedDictionary";
   }
 }
 

@@ -65,10 +65,16 @@ public class BookmarkTextInputLayout extends TextInputLayout {
      * Check the text and show or hide error message if needed.
      * If there is a need for extra validation, this method should be overridden
      * and extra validation statements should be added after calling super.validate()
+     *
+     * @return whether the input is valid.
      */
-    public void validate() {
+    public boolean validate() {
+        boolean isValid = !isEmpty();
         if (mEmptyErrorMessage != null) {
-            setError(isEmpty() ? mEmptyErrorMessage : null);
+            setError(isValid ? null : mEmptyErrorMessage);
+            setErrorEnabled(!isValid);
         }
+
+        return isValid;
     }
 }

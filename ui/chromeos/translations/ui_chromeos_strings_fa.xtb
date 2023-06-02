@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">‏انگلیسی (امریکایی) با صفحه‌کلید Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
-<translation id="1538729222189715449">‏درحال باز کردن فایل‌های Linux…</translation>
 <translation id="1547964879613821194">انگلیسی کانادا</translation>
 <translation id="1556189134700913550">اعمال به همه</translation>
 <translation id="1561842594491319104">‏دستگاه‌های Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">‏سایت Google</translation>
 <translation id="1853795129690976061">‏این پوشه با Linux هم‌رسانی شده است</translation>
 <translation id="1864756863218646478">این فایل پیدا نشد.</translation>
+<translation id="1877377730633446520">حدود <ph name="REQUIRED_SPACE" /> استفاده خواهد شد. درحال‌حاضر <ph name="FREE_SPACE" /> دردسترس دارید.</translation>
 <translation id="1884013283844450420">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، اتصال</translation>
 <translation id="1920670151694390848">نویسه‌گردانی مالایالم</translation>
 <translation id="1920798810075583923">هندوانه</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">بزرگ کردن پانل‌های بازخورد فایل‌ها</translation>
 <translation id="1995337122023280937">رفتن به محل فایل</translation>
 <translation id="2001796770603320721">مدیریت در درایو</translation>
+<translation id="2004942826429452291">‏فایل‌ها در فضای ابری و در این Chromebook ذخیره خواهد شد.</translation>
 <translation id="2009067268969781306">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="2025955442973426285">تیگرینیا</translation>
 <translation id="2037845485764049925">روسی</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">تنظیمات دستگاه</translation>
 <translation id="2084809735218147718">تشکر با زبان اشاره</translation>
 <translation id="2088690981887365033">‏شبکه VPN</translation>
+<translation id="2089751716171649322">‏زمانی‌که آفلاین هستید به‌راحتی به فایل‌های Google Drive خود دسترسی داشته باشید</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />در «حالت ناشناس» مجاز است<ph name="END_BOLD" /> را روشن کنید</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> مورد حذف خواهد شد و دیگر نمی‌توانید آن‌ها را بازیابی کنید.</translation>
 <translation id="2122305276694332719">اتصال خودکار به شبکه‌ای پنهان به دیگران امکان می‌دهد دستگاه و برخی تنظیمات شبکه‌تان را ببینند، و توصیه نمی‌شود.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">‏نصب با Linux</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">‏حافظه پنهان Google Drive پاک شد.</translation>
 <translation id="2239068707900391003">شخصی قهوه در دست</translation>
 <translation id="2251368349685848079">بازیابی از حذف‌شده‌ها</translation>
 <translation id="2278133026967558505">دسترسی همه وب‌سایت‌ها و نشانی‌های وب به فایل</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3486821258960016770">مغولی</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
+<translation id="3501954296166022751">‏فایل‌های Google Drive شما در حالت آفلاین دردسترس است</translation>
 <translation id="3509680540198371098">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="3511705761158917664">درحال آماده شدن برای همگام‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="3522708245912499433">پرتغالی</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های به اشتراک‌گذاشته‌شده را تحت تأثیر قرار می‌دهد</translation>
 <translation id="3737576078404241332">حذف از نوار کناری</translation>
 <translation id="3749289110408117711">نام فایل</translation>
-<translation id="3780536599611287598">اجازه ندارید فایل‌ها را به «<ph name="FOLDER_NAME" />» منتقل کنید.</translation>
 <translation id="3786301125658655746">شما آفلاین هستید</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3793469551756281394">تقریباً <ph name="REMAINING_TIME_HOUR" /> و <ph name="REMAINING_TIME_MINUTE" /> باقی مانده است</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">سرورهای نام سفارشی</translation>
 <translation id="4465725236958772856">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، تحت‌مدیریت سرپرست، اتصال</translation>
 <translation id="4470564870223067757">مجموعه هانگول ۲</translation>
+<translation id="4472575034687746823">شروع به کار</translation>
 <translation id="4474142134969976028">نتیجه منطبقی پیدا نشد</translation>
 <translation id="4477002475007461989">رومانیایی</translation>
 <translation id="4477219268485577442">آوایی بلغاری</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">آووکادو</translation>
 <translation id="4805966553127040832">درحال بازیابی <ph name="COUNT" /> مورد</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}one{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}other{برای استفاده از «حالت ناشناس»، سازمانتان به چند افزونه نیاز دارد}}</translation>
-<translation id="4823651846660089135">دستگاه فقط خواندنی است</translation>
 <translation id="4826849268470072925">‏تامیل (ITRANS)</translation>
 <translation id="482932175346970750">‏<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> را در مرورگرتان تایپ کنید</translation>
 <translation id="4843566743023903107">‏دستگاه‌های Chromebase</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5500122897333236901">ایسلندی</translation>
 <translation id="5508696409934741614">نقطه‌ها</translation>
+<translation id="5519161320735100193">‏تنظیمات Google Drive</translation>
 <translation id="5522908512596376669">نمای فهرست فایل به نمای فهرستی تغییر کرده است.</translation>
 <translation id="5524517123096967210">امکان خواندن فایل وجود نداشت.</translation>
 <translation id="5533102081734025921">تصویر <ph name="IMAGE_TYPE" /></translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">همه ورودی‌ها از موارد انتخابی برداشته شد.</translation>
 <translation id="5838825566232597749">‏بین‌المللی US Workman</translation>
 <translation id="5845721951356578987">پرستار</translation>
+<translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5861477046012235702">بازیکن</translation>
 <translation id="5864471791310927901">‏بررسی DHCP انجام نشد</translation>
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">کشف خودکار پراکسی وب</translation>
 <translation id="6337014272874260727">برداشتن سنجاق از «فایل‌های سریع»</translation>
 <translation id="6339145975392024142">بین‌المللی آمریکایی (رایانه شخصی)</translation>
-<translation id="6346310558342052870">دسترسی محدود</translation>
 <translation id="6356685157277930264">پنجره بازخورد فایل‌ها</translation>
 <translation id="6358884629796491903">اژدها</translation>
 <translation id="636254897931573416">مقدار واردشده برای «مطابقت پسوند دامنه» نامعتبر است</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7806708061868529807">عبری</translation>
 <translation id="78104721049218340">تایلندی با صفحه‌کلید کدمانی</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ترابایت</translation>
 <translation id="7831491651892296503">خطا در پیکربندی شبکه</translation>
 <translation id="7839804798877833423">دریافت این فایل‌ها تقریباً <ph name="FILE_SIZE" /> از داده تلفن همراه شما را مصرف می‌کند.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">کاتاکانا</translation>
 <translation id="7908793776359722643">با قالب‌بندی پارتیشن، همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">‏فایل‌های شما در My Drive به‌طور خودکار با Chromebook همگام‌سازی می‌شود تا بتوانید بدون اتصال اینترنت به آن‌ها دسترسی داشته باشید.</translation>
 <translation id="7925247922861151263">‏بررسی AAA انجام نشد</translation>
 <translation id="7925686952655276919">از داده‌های تلفن همراه برای همگام‌سازی استفاده نشود</translation>
 <translation id="7928710562641958568">خارج کردن دستگاه</translation>
+<translation id="7933875256234974853">درحال آماده‌سازی برای همگام‌سازی فایل‌ها…</translation>
 <translation id="7943385054491506837">کلماک آمریکایی</translation>
 <translation id="7953739707111622108">این دستگاه باز نمی‌شود زیرا سیستم فایل‌ آن شناسایی نشد.</translation>
 <translation id="7969525169268594403">اسلوونیایی</translation>
 <translation id="7972920761225148017">فرانسوی (سوئیس)</translation>
 <translation id="7973962044839454485">‏اصالت‌سنجی PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
 <translation id="7980421588063892270">‏انگلیسی (امریکایی) با صفحه‌کلید Colemak</translation>
+<translation id="7985008041109611710">درحال همگام‌سازی <ph name="NUMBER_OF_FILES_SYNCING" /> فایل</translation>
 <translation id="8000066093800657092">بدون شبکه</translation>
 <translation id="8008366997883261463">جک راسل تریر</translation>
 <translation id="8028993641010258682">اندازه</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">دانمارکی</translation>
 <translation id="8949925099261528566">متصل، بدون اینترنت</translation>
 <translation id="8965697826696209160">فضای کافی وجود ندارد.</translation>
+<translation id="8971742885766657349">درحال همگام‌سازی - <ph name="PERCENT" />٪</translation>
 <translation id="8997962250644902079">چینی پین‌یین (سنتی)</translation>
 <translation id="8998871447376656508">‏فضای ذخیره‌سازی کافی در Google Drive برای تکمیل بارگذاری وجود ندارد.</translation>
 <translation id="9003940392834790328">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، جزئیات</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">منظره سطح ماه</translation>
+<translation id="937795003075802289">درحال همگام‌سازی یک فایل</translation>
 <translation id="938470336146445890">لطفاً یک مجوز کاربر نصب کنید.</translation>
 <translation id="939736085109172342">پوشهٔ جدید</translation>
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>

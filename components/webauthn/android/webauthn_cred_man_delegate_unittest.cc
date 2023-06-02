@@ -23,24 +23,24 @@ class WebAuthnCredManDelegateTest : public testing::Test {
 };
 
 TEST_F(WebAuthnCredManDelegateTest, FullRequestNotRunAfterCleanup) {
-  base::MockRepeatingClosure closure;
-  EXPECT_CALL(closure, Run()).Times(0);
+  base::MockCallback<base::RepeatingCallback<void(bool)>> closure;
+  EXPECT_CALL(closure, Run(testing::_)).Times(0);
   delegate()->OnCredManConditionalRequestPending(nullptr, true, closure.Get());
 
-  EXPECT_CALL(closure, Run()).Times(1);
+  EXPECT_CALL(closure, Run(false)).Times(1);
   delegate()->TriggerFullRequest();
 
-  EXPECT_CALL(closure, Run()).Times(0);
+  EXPECT_CALL(closure, Run(false)).Times(0);
   delegate()->CleanUpConditionalRequest();
 
-  EXPECT_CALL(closure, Run()).Times(0);
+  EXPECT_CALL(closure, Run(false)).Times(0);
   delegate()->TriggerFullRequest();
 }
 
 TEST_F(WebAuthnCredManDelegateTest, RequestCompletionCallbackRun) {
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_request_completion_callback;
-  base::MockRepeatingClosure mock_full_request;
+  base::MockCallback<base::RepeatingCallback<void(bool)>> mock_full_request;
   delegate()->SetRequestCompletionCallback(
       mock_request_completion_callback.Get());
 

@@ -15,6 +15,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace metrics {
 // Test class for |ChromeVisibilityObserver|.
 class ChromeVisibilityObserverInteractiveTest
@@ -63,6 +67,12 @@ class ChromeVisibilityObserverInteractiveTest
 // separate sessions or not.
 IN_PROC_BROWSER_TEST_F(ChromeVisibilityObserverInteractiveTest,
                        VisibilityTest) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/1447844";
+  }
+#endif
+
   // Observer should now be active as there is one active browser.
   WaitForActive(/*active=*/true);
 

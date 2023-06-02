@@ -24,16 +24,39 @@ class MockAuthFactorEngine : public AuthFactorEngine {
               StartAuthFlow,
               (const AccountId&, AuthPurpose, FactorEngineObserver*),
               (override));
-  MOCK_METHOD(void,
-              StopAuthFlow,
-              (const AccountId&, AuthPurpose, ShutdownCallback),
-              (override));
+  MOCK_METHOD(void, UpdateObserver, (FactorEngineObserver*), (override));
+  MOCK_METHOD(void, StopAuthFlow, (ShutdownCallback), (override));
   MOCK_METHOD(void, SetUsageAllowed, (UsageAllowed), (override));
   MOCK_METHOD(bool, IsDisabledByPolicy, (), (override));
   MOCK_METHOD(bool, IsLockedOut, (), (override));
   MOCK_METHOD(bool, IsOrientationRestricted, (), (override));
   MOCK_METHOD(void, InitializationTimedOut, (), (override));
   MOCK_METHOD(void, ShutdownTimedOut, (), (override));
+  MOCK_METHOD(void, StartFlowTimedOut, (), (override));
+  MOCK_METHOD(void, StopFlowTimedOut, (), (override));
+};
+
+class MockAuthFactorEngineObserver
+    : public AuthFactorEngine::FactorEngineObserver {
+ public:
+  MockAuthFactorEngineObserver();
+  MockAuthFactorEngineObserver(const MockAuthFactorEngineObserver&) = delete;
+  MockAuthFactorEngineObserver& operator=(const MockAuthFactorEngineObserver&) =
+      delete;
+  ~MockAuthFactorEngineObserver() override;
+
+  MOCK_METHOD(void, OnFactorPresenceChecked, (AshAuthFactor, bool), (override));
+  MOCK_METHOD(void, OnFactorAttempt, (AshAuthFactor), (override));
+  MOCK_METHOD(void, OnFactorAttemptResult, (AshAuthFactor, bool), (override));
+
+  MOCK_METHOD(void, OnPolicyChanged, (AshAuthFactor), (override));
+  MOCK_METHOD(void, OnLockoutChanged, (AshAuthFactor), (override));
+  MOCK_METHOD(void,
+              OnOrientationRestrictionsChanged,
+              (AshAuthFactor),
+              (override));
+  MOCK_METHOD(void, OnCriticalError, (AshAuthFactor), (override));
+  MOCK_METHOD(void, OnFactorCustomSignal, (AshAuthFactor), (override));
 };
 
 }  // namespace ash

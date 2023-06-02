@@ -165,7 +165,7 @@ CORE_EXPORT ExecutionContext* ExecutionContextFromV8Wrappable(
 CORE_EXPORT ExecutionContext* ExecutionContextFromV8Wrappable(
     const DOMParser* parser);
 
-CORE_EXPORT v8::MaybeLocal<v8::Value> CreateNamedConstructorFunction(
+CORE_EXPORT v8::MaybeLocal<v8::Value> CreateLegacyFactoryFunctionFunction(
     ScriptState* script_state,
     v8::FunctionCallback callback,
     const char* func_name,

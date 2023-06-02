@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_READER_REGISTRY_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -38,8 +38,7 @@ class IsolatedWebAppReaderRegistryFactory
   static IsolatedWebAppReaderRegistry* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      IsolatedWebAppReaderRegistryFactory>;
+  friend base::NoDestructor<IsolatedWebAppReaderRegistryFactory>;
 
   IsolatedWebAppReaderRegistryFactory();
   ~IsolatedWebAppReaderRegistryFactory() override;

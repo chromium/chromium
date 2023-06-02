@@ -174,7 +174,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   std::unique_ptr<OptimizationGuideStore> optimization_guide_store_;
   std::unique_ptr<HintCache> hint_cache_;
-  raw_ptr<const proto::Hint> loaded_hint_;
+  raw_ptr<const proto::Hint, DanglingUntriaged> loaded_hint_;
 
   bool is_store_initialized_;
   bool are_component_hints_updated_;

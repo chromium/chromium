@@ -7,6 +7,7 @@
  * a toggle button below the network summary item.
  */
 
+import 'chrome://resources/ash/common/network/network_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -31,7 +32,7 @@ const HotspotSummaryItemElementBase =
     Constructor<PolymerElement&I18nMixinInterface&
                 CrPolicyNetworkBehaviorMojoInterface>;
 
-class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
+export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   static get is() {
     return 'hotspot-summary-item' as const;
   }

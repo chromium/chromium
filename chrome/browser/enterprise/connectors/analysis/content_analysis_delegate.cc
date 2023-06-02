@@ -164,7 +164,8 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.page_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, "", "", title_, /*sha256*/ std::string(),
+        profile_, url_, "", /*destination*/ data_.printer_name, title_,
+        /*sha256*/ std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
         access_point_, /*content_size*/ -1, page_response_, user_justification);
@@ -535,7 +536,8 @@ void ContentAnalysisDelegate::PageRequestCallback(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, "", "", title_, /*sha256*/ std::string(),
+      profile_, url_, "", /*destination*/ data_.printer_name, title_,
+      /*sha256*/ std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
       access_point_, /*content_size*/ -1, result, response,

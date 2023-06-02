@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">તૃતીય-પક્ષ કૂકીઝને મંજૂરી આપો</translation>
 <translation id="4428065317363009941">રુચિ મુજબ જાહેરાત</translation>
 <translation id="4434045419905280838">પૉપ-અપ અને રીડાયરેક્ટ</translation>
-<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" />ને મોટું કરો</translation>
 <translation id="4468959413250150279">કોઈ એક ચોક્કસ સાઇટ માટે અવાજ બંધ કરો.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# કુકી}one{# કુકી}other{# કુકી}}</translation>
 <translation id="4478158430052450698">વિવિધ સાઇટ માટે "નાનું-મોટું કરો"ને કસ્ટમાઇઝ કરવાનું સરળ બનાવો</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7882806643839505685">કોઈ એક ચોક્કસ સાઇટ માટે અવાજ ચલાવવાની મંજૂરી આપો.</translation>
 <translation id="789180354981963912">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો:</translation>
+<translation id="7895868624847501462">આ ક્રિયા કુકી સહિતનો તમામ સ્થાનિક ડેટા સાફ કરશે અને <ph name="DOMAIN" /> તથા તેની હેઠળની બધી સાઇટ માટેની તમામ પરવાનગીઓ રીસેટ કરશે</translation>
 <translation id="7940722705963108451">મને યાદ કરાવો</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ના સાઇટના ગ્રૂપમાંની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ, જે ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે}one{<ph name="FPS_OWNER" />ના સાઇટના ગ્રૂપમાંની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ, જે ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે}other{<ph name="FPS_OWNER" />ના સાઇટના ગ્રૂપમાંની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ, જે ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે}}</translation>
 <translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">કૅપ્શન્સ</translation>
 <translation id="8300705686683892304">ઍપ દ્વારા મેનેજ થતી</translation>
 <translation id="8324158725704657629">ફરીથી પૂછશો નહીં</translation>
+<translation id="8338445138528827481">આ ક્રિયા કુકી સહિતનો તમામ સ્થાનિક ડેટા સાફ કરશે અને <ph name="ORIGIN" /> માટેની બધી પરવાનગીઓને રીસેટ કરશે</translation>
 <translation id="8362795839483915693">તમે મુલાકાત લો છો તે સાઇટને તમે મોટી કે નાની કરી શકો છો</translation>
 <translation id="8372893542064058268">ચોક્કસ સાઇટ માટે બૅકગ્રાઉન્ડ સિંકની મંજૂરી આપો.</translation>
 <translation id="8376384591331888629">આ સાઇટ પરની ત્રીજા પક્ષની કુકી શામેલ છે</translation>

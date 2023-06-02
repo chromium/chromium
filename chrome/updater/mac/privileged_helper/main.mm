@@ -20,6 +20,6 @@ int main(int argc, const char* argv[]) {
   base::ThreadPoolInstance::Create("UpdaterHelperThreadPool");
   base::ThreadPoolInstance::Get()->Start({1});
   const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   return updater::PrivilegedHelperServerInstance()->Run();
 }

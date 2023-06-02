@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_
 #define COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_
 
-#include "url/gurl.h"
-
 namespace syncer {
 
 // Disables syncing browser data to a Google Account.
@@ -40,18 +38,11 @@ inline constexpr char kSyncShortInitialRetryOverride[] =
 inline constexpr char kSyncShortNudgeDelayForTest[] =
     "sync-short-nudge-delay-for-test";
 
-// Specifies the vault server used for trusted vault passphrase.
-inline constexpr char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
-
 // Returns whether sync is allowed to run based on command-line switches.
 // Profile::IsSyncAllowed() is probably a better signal than this function.
 // This function can be called from any thread, and the implementation doesn't
 // assume it's running on the UI thread.
 bool IsSyncAllowedByFlag();
-
-// Returns the default URL for the trusted vault server or the override
-// specified via `kTrustedVaultServiceURL`.
-GURL ExtractTrustedVaultServiceURLFromCommandLine();
 
 }  // namespace syncer
 

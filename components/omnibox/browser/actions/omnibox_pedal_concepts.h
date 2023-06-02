@@ -11,7 +11,7 @@
 //
 // Automatically generate a corresponding Java enum:
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox.action
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxPedalType
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxPedalId
 enum class OmniboxPedalId {
   NONE = 0,
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 
 #include "base/command_line.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -35,7 +35,8 @@ bool IsFeatureAllowed(content::BrowserContext* context) {
 
 // static
 EasyUnlockServiceFactory* EasyUnlockServiceFactory::GetInstance() {
-  return base::Singleton<EasyUnlockServiceFactory>::get();
+  static base::NoDestructor<EasyUnlockServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -61,7 +62,7 @@ EasyUnlockServiceFactory::EasyUnlockServiceFactory()
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 }
 
-EasyUnlockServiceFactory::~EasyUnlockServiceFactory() {}
+EasyUnlockServiceFactory::~EasyUnlockServiceFactory() = default;
 
 KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -4,7 +4,6 @@
 <translation id="1014750484722996375">Працоўныя сталы</translation>
 <translation id="1018219910092211213">Не ўдалося ажыццявіць DNS-пераўтварэнне</translation>
 <translation id="1018656279737460067">Скасавана</translation>
-<translation id="1022433422498218992">Агульныя налады</translation>
 <translation id="1022628058306505708">Рух Зямлі</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
@@ -113,12 +112,13 @@
 <translation id="1768959921651994223">Тып аўтэнтыфікацыі</translation>
 <translation id="1776228893584526149">Колер шпалер</translation>
 <translation id="1782199038061388045">пераклад</translation>
-<translation id="1790209694022261219">Вокны і працоўныя сталы</translation>
 <translation id="1792647875738159689">Сканіраванне скасоўваецца</translation>
 <translation id="1801418420130173017">Адключыць цёмную тэму</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1827738518074806965">Мастацкая галерэя</translation>
+<translation id="1836553715834333258">Колер сістэмы</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
+<translation id="1840474674287087346">Колер працоўнага стала</translation>
 <translation id="1851218745569890714">Відэаканферэнцыі</translation>
 <translation id="1852934301711881861">Усталяваць Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрэлка ўніз</translation>
@@ -237,14 +237,11 @@
 <translation id="2873483161362553159">Навігацыя ў браўзеры</translation>
 <translation id="2874939134665556319">Папярэдні трэк</translation>
 <translation id="2878387241690264070">Разраджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
-<translation id="2902312830803030883">Іншыя дзеянні</translation>
 <translation id="2926057806159140518">Увядзіце імя карыстальніка і пароль або адсканіруйце QR-код</translation>
 <translation id="2940811910881150316">Не ўдаецца пратэсціраваць прыладу. Каб пачаць тэсціраванне, адкрыйце яе вечка.</translation>
-<translation id="2981143481017883351">Эксклюзіўныя аб'екты для Chromebook ужо даступны</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
 <translation id="3009958530611748826">Выберыце папку для захавання</translation>
 <translation id="3017079585324758401">Фон</translation>
-<translation id="3020183492814296499">Спалучэнні клавіш</translation>
 <translation id="3027578600144895987">Закрыць камеру</translation>
 <translation id="3031560714565892478">Гэта відэакамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -278,6 +275,7 @@
 <translation id="3291996639387199448">Кірунак ключа</translation>
 <translation id="3294437725009624529">Госць</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
+<translation id="3305294846493618482">яшчэ</translation>
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -286,7 +284,6 @@
 <translation id="3360306038446926262">Вокны</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
-<translation id="3386675685417744672">Эксклюзіўна для Chromebook</translation>
 <translation id="3404249063913988450">Уключыць застаўку</translation>
 <translation id="3413935475507503304">Каб працягнуць абнаўленне, націсніце "Далей".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -367,7 +364,6 @@
 <translation id="404928562651467259">ПАПЯРЭДЖАННЕ</translation>
 <translation id="4054683689023980771">Спампоўваецца відарыс</translation>
 <translation id="4060260348856573701">Новая APN</translation>
-<translation id="4079743696465895866">Выбраць эксклюзіўныя творы для Chromebook</translation>
 <translation id="4093865285251893588">Відарыс профілю</translation>
 <translation id="409427325554347132">Захаваць даныя тэста</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -421,6 +417,7 @@
 <translation id="4454245904991689773">Сканіраваць у</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
+<translation id="4500966230243561393">Колер інтэрфейсу</translation>
 <translation id="4503223151711056411">Стрэлка ўлева</translation>
 <translation id="4507392511610824664">павялічыць яркасць</translation>
 <translation id="4511264077854731334">Партал</translation>
@@ -499,6 +496,7 @@
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Паказваць фота, час, надвор'е і інфармацыю пра медыяфайлы, калі экран неактыўны.</translation>
+<translation id="5035083460461104704">Колер тэмы</translation>
 <translation id="5038292761217083259">рознакаляровая падсветка клавіятуры</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +608,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Стандартныя шпалеры</translation>
 <translation id="6017514345406065928">Зялёны</translation>
+<translation id="6019566113895157499">Спалучэнні клавіш</translation>
 <translation id="6034694447310538551">Уключыць аўтаматычны штомесячны скід</translation>
 <translation id="6037291330010597344">Прыстасаванне сканера для падачы дакументаў не загружана. Пакладзіце ў яго дакументы і паўтарыце спробу.</translation>
 <translation id="6040143037577758943">Закрыць</translation>
@@ -814,6 +813,7 @@
 <translation id="7618774594543487847">Нейтральны</translation>
 <translation id="7620771111601174153">Атрымаць больш інфармацыі ў Даведачным цэнтры</translation>
 <translation id="763165478673169849">Час апошняга скіду</translation>
+<translation id="7633068090678117093">Фонавы відарыс</translation>
 <translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
 <translation id="765159867434478292">Падзелены</translation>
 <translation id="7656388927906093505">Гэта мыш.</translation>
@@ -979,6 +979,7 @@
 <translation id="8930521118335213258">Вузел</translation>
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>
 <translation id="8936793075252196307">IP-адрас кліента</translation>
+<translation id="8944651180182756621">Колер панэлі запуску</translation>
 <translation id="894617464444543719">Гэта тэлефон.</translation>
 <translation id="8957423540740801332">справа</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
@@ -1012,6 +1013,7 @@
 <translation id="9149391708638971077">Выканаць праверку памяці</translation>
 <translation id="9161276708550942948">прабел</translation>
 <translation id="9173638680043580060">Застаецца менш за хвіліну</translation>
+<translation id="9174334653006917325">Колер карыстальніцкага інтэрфейсу</translation>
 <translation id="917720651393141712">Праверыць</translation>
 <translation id="9188992814426075118">Падсветка клавіятуры можа аўтаматычна падбірацца пад колер шпалер</translation>
 <translation id="9189000703457422362">Не ўдалося падключыцца да гэтай сеткі з выкарыстаннем аўтаматычна распазнаных APN. Па дадатковую інфармацыю звяртайцеся да аператара мабільнай сувязі.</translation>

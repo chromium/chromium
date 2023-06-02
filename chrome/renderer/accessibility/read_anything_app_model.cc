@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -55,6 +56,8 @@ void ReadAnythingAppModel::ResetSelection() {
 bool ReadAnythingAppModel::PostProcessSelection() {
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(active_tree_id_));
+
+  requires_post_process_selection_ = false;
 
   // If the previous selection was inside the distilled content, that means we
   // are currently displaying the distilled content in Read Anything. We may not
@@ -153,7 +156,7 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   ui::AXNode* first_sibling_node =
       start_parent->GetFirstUnignoredChildCrossingTreeBoundary();
   ui::AXNode* last_sibling_node =
-      end_parent->GetLastUnignoredChildCrossingTreeBoundary();
+      end_parent->GetDeepestLastUnignoredChildCrossingTreeBoundary();
 
   // If the last sibling node is null, selection is invalid and we should
   // return early.
@@ -186,10 +189,15 @@ ui::AXNode* ReadAnythingAppModel::GetParentForSelection(ui::AXNode* node) {
   // node has an "inline" display but the parent we want would have a "block"
   // display role, so in order to get the common parent of
   // all sibling nodes, the grandparent should be used.
+  // Displays of type "list-item" is an exception to the "inline" display rule
+  // so that all siblings in a list can be shown correctly to avoid
+  //  misnumbering.
   while (parent && parent->GetUnignoredParentCrossingTreeBoundary() &&
          parent->HasStringAttribute(ax::mojom::StringAttribute::kDisplay) &&
-         parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
-                 .find("inline") != std::string::npos) {
+         ((parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
+               .find("inline") != std::string::npos) ||
+          (parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
+               .find("list-item") != std::string::npos))) {
     parent = parent->GetUnignoredParentCrossingTreeBoundary();
   }
 
@@ -460,6 +468,24 @@ void ReadAnythingAppModel::EraseTreeForTesting(ui::AXTreeID tree_id) {
   EraseTree(tree_id);
 }
 
+void ReadAnythingAppModel::OnScroll(bool on_selection,
+                                    bool from_reading_mode) const {
+  if (on_selection) {
+    // If the scroll event came from the side panel because of a selection, then
+    // this means the main panel was selected, causing the side panel to scroll
+    // & vice versa.
+    base::UmaHistogramEnumeration(
+        string_constants::kScrollEventHistogramName,
+        from_reading_mode ? ReadAnythingScrollEvent::kSelectedMainPanel
+                          : ReadAnythingScrollEvent::kSelectedSidePanel);
+  } else {
+    base::UmaHistogramEnumeration(
+        string_constants::kScrollEventHistogramName,
+        from_reading_mode ? ReadAnythingScrollEvent::kScrolledSidePanel
+                          : ReadAnythingScrollEvent::kScrolledMainPanel);
+  }
+}
+
 void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     const std::vector<ui::AXEvent>& events) {
   // Note that this list of events may overlap with generated events in the
@@ -555,6 +581,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::ALERT:
         requires_distillation_ = true;
         break;
+      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
+        OnScroll(event.event_params.event_from_action ==
+                     ax::mojom::Action::kSetSelection,
+                 /* from_reading_mode= */ false);
+        break;
 
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
@@ -620,7 +651,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::ROLE_CHANGED:
       case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
       case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:

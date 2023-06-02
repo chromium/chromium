@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
@@ -110,7 +111,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
 
   // The current page's context; only valid between NewPage and PageDone call
   // pairs.
-  CGContext* context_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION CGContext* context_;
 };
 
 }  // namespace printing

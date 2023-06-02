@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Không gian làm việc</translation>
 <translation id="1018219910092211213">Không thể phân giải DNS</translation>
 <translation id="1018656279737460067">Đã hủy</translation>
-<translation id="1022433422498218992">Chế độ điều khiển chung</translation>
+<translation id="1020274983236703756">Hiện đã có các nội dung dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Dòng chảy Trái đất</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Chưa nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Tự động đặt lại mức sử dụng dữ liệu mỗi tháng vào một ngày chọn sẵn</translation>
 <translation id="1442433966118452622">Nguồn hình ảnh</translation>
+<translation id="1449035143498573192">Mở trong Google Tìm kiếm</translation>
 <translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
 <translation id="1459693405370120464">Thời tiết</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
@@ -113,12 +114,13 @@
 <translation id="1768959921651994223">Loại xác thực</translation>
 <translation id="1776228893584526149">Tông màu nền</translation>
 <translation id="1782199038061388045">dịch</translation>
-<translation id="1790209694022261219">Cửa sổ và không gian làm việc</translation>
 <translation id="1792647875738159689">Đang hủy quá trình quét</translation>
 <translation id="1801418420130173017">Tắt giao diện tối</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1827738518074806965">Phòng tranh</translation>
+<translation id="1836553715834333258">Màu hệ thống</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
+<translation id="1840474674287087346">Màu màn hình</translation>
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
 <translation id="1856388568474281774">Mũi tên xuống</translation>
@@ -237,14 +239,11 @@
 <translation id="2873483161362553159">Điều hướng trên trình duyệt</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
-<translation id="2902312830803030883">Thao tác khác</translation>
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
 <translation id="2940811910881150316">Không kiểm tra được thiết bị. Mở lại nắp thiết bị để kiểm tra.</translation>
-<translation id="2981143481017883351">Hiện đã có các nội dung dành riêng cho Chromebook</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3017079585324758401">Nền</translation>
-<translation id="3020183492814296499">Lối tắt</translation>
 <translation id="3027578600144895987">Tắt máy ảnh</translation>
 <translation id="3031560714565892478">Thiết bị là máy quay video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +270,7 @@
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
 <translation id="3226657629376379887">Trình đơn thao tác của bố cục</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
+<translation id="3248223063252096240">Dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
 <translation id="3275729367986477355">Hình đại diện</translation>
 <translation id="3283504360622356314">{0,plural, =1{Chỉnh sửa tệp}other{Chỉnh sửa các tệp}}</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Hướng khoá</translation>
 <translation id="3294437725009624529">Khách</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
+<translation id="3305294846493618482">xem thêm</translation>
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
-<translation id="3386675685417744672">Dành riêng cho Chromebook</translation>
 <translation id="3404249063913988450">Bật trình bảo vệ màn hình</translation>
 <translation id="3413935475507503304">Để tiếp tục cập nhật, hãy nhấp vào Tiếp theo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +323,7 @@
 <translation id="3632579075709132555">Bật/tắt Màn hình bảo vệ quyền riêng tư</translation>
 <translation id="3639846061339007994">trên cùng</translation>
 <translation id="3651050199673793219">Chọn đơn vị nhiệt độ</translation>
+<translation id="3663574643422533538">Chọn hình minh hoạ dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3708186454126126312">Đã kết nối trước đây</translation>
@@ -367,12 +368,12 @@
 <translation id="404928562651467259">CẢNH BÁO</translation>
 <translation id="4054683689023980771">Đang tải hình ảnh xuống</translation>
 <translation id="4060260348856573701">APN mới</translation>
-<translation id="4079743696465895866">Chọn hình minh hoạ dành riêng cho Chromebook</translation>
 <translation id="4093865285251893588">Ảnh hồ sơ</translation>
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Bàn di chuột USB</translation>
+<translation id="4113067922640381334">Giờ đây, bạn có thể sử dụng các <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hình nền<ph name="END_LINK_WALLPAPER_SUBPAGE" /> mới</translation>
 <translation id="4117637339509843559">Chế độ tối</translation>
 <translation id="4130035430755296270">Tiếp tục di chuột để xem thêm tuỳ chọn bố cục</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
@@ -421,6 +422,7 @@
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4500966230243561393">Màu giao diện</translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4507392511610824664">tăng độ sáng</translation>
 <translation id="4511264077854731334">Cổng</translation>
@@ -499,6 +501,7 @@
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Hiện ảnh, thời gian, thông tin thời tiết và nội dung phương tiện khi màn hình ở trạng thái rảnh</translation>
+<translation id="5035083460461104704">Màu giao diện</translation>
 <translation id="5038292761217083259">bàn phím nhiều màu</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5049856988445523908">Đã khóa SIM (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +613,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Hình nền mặc định</translation>
 <translation id="6017514345406065928">Xanh lục</translation>
+<translation id="6019566113895157499">Phím tắt</translation>
 <translation id="6034694447310538551">Bật chế độ tự động đặt lại hằng tháng</translation>
 <translation id="6037291330010597344">Khay nạp tài liệu của máy quét đang trống. Hãy nạp tài liệu rồi thử lại.</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Trung tính</translation>
 <translation id="7620771111601174153">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="763165478673169849">Lần đặt lại cuối</translation>
+<translation id="7633068090678117093">Hình nền</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
 <translation id="765159867434478292">Phân tách</translation>
 <translation id="7656388927906093505">Thiết bị là chuột.</translation>
@@ -855,6 +860,7 @@
 <translation id="7953669802889559161">Phương thức nhập</translation>
 <translation id="7955587717700691983">Bàn phím Bluetooth</translation>
 <translation id="7960831585769876809">Nhiệt độ</translation>
+<translation id="7971535376154084247">Chế độ điều khiển chung</translation>
 <translation id="7977800524392185497">Để kết nối với mạng <ph name="NETWORK_NAME" />, hãy đi tới phần Cài đặt</translation>
 <translation id="7978412674231730200">Khoá cá nhân</translation>
 <translation id="7994702968232966508">Phương pháp EAP</translation>
@@ -918,6 +924,7 @@
 <translation id="8461329675984532579">Tên nhà mạng nội hạt</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8476242415522716722">đèn nền bàn phím</translation>
+<translation id="8476942730579767658">Cửa sổ và không gian làm việc</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
 <translation id="8483248364096924578">Địa chỉ IP</translation>
 <translation id="8491311378305535241">Không thể kết nối với các trang web HTTP qua tường lửa từ các ứng dụng Android</translation>
@@ -932,6 +939,7 @@
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
 <translation id="8593058461203131755">tạm dừng nội dung nghe nhìn</translation>
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
+<translation id="8626489604350149811">Thao tác khác cho <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Tím nhạt</translation>
 <translation id="8651481478098336970">tắt tiếng</translation>
 <translation id="8655295600908251630">Kênh</translation>
@@ -979,6 +987,7 @@
 <translation id="8930521118335213258">Ứng dụng ngang hàng</translation>
 <translation id="8930622219860340959">Không dây</translation>
 <translation id="8936793075252196307">Địa chỉ IP khách hàng</translation>
+<translation id="8944651180182756621">Màu trình chạy</translation>
 <translation id="894617464444543719">Thiết bị là điện thoại.</translation>
 <translation id="8957423540740801332">phải</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>
@@ -1012,6 +1021,7 @@
 <translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
 <translation id="9161276708550942948">dấu cách</translation>
 <translation id="9173638680043580060">Còn chưa đầy 1 phút</translation>
+<translation id="9174334653006917325">Màu giao diện người dùng</translation>
 <translation id="917720651393141712">Kiểm tra</translation>
 <translation id="9188992814426075118">Bàn phím có thể tự động khớp với hình nền của bạn</translation>
 <translation id="9189000703457422362">Không thể kết nối với mạng này bằng APN được phát hiện tự động. Hãy liên hệ với nhà mạng di động để biết thêm thông tin.</translation>

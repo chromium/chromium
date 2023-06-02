@@ -19,7 +19,7 @@
 
 // This list should stay in sync with GetExpectedDelegatedFeaturesForTest().
 base::span<const char* const> GetControlledFrameFeatureList() {
-  constexpr const char* feature_list[] = {
+  static constexpr const char* feature_list[] = {
       "controlledFrameInternal", "chromeWebViewInternal", "guestViewInternal",
       "webRequestInternal",      "webViewInternal",
   };

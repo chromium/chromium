@@ -35,13 +35,17 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                android:textAlignment="viewStart" />
+                android:textAlignment="viewStart"
+                android:ellipsize="end"
+                android:singleLine="true" />
             <TextView
                 android:id="@+id/restore_tabs_detail_sheet_session_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                android:textAlignment="viewStart" />
+                android:textAlignment="viewStart"
+                android:ellipsize="end"
+                android:singleLine="true" />
     </LinearLayout>
     <ImageView
         android:id="@+id/restore_tabs_detail_sheet_device_item_selected_icon"

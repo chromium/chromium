@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -94,11 +95,13 @@ void CopyToClipboardShareAction::LaunchAction(
     std::vector<ui::FileInfo> file_infos;
     for (const auto& file : intent->files) {
       auto file_url = apps::GetFileSystemURL(profile_, file->url);
-      // TODO(crbug.com/1274983) : Add support for copying from MTP and
-      // FileSystemProviders.
-      if (!file_manager::util::IsNonNativeFileSystemType(file_url.type())) {
+      base::FilePath path =
+          file_url.TypeImpliesPathIsReal()
+              ? file_url.path()
+              : fusebox::Server::SubstituteFuseboxFilePath(file_url);
+      if (!path.empty()) {
         file_infos.emplace_back(
-            ui::FileInfo(file_url.path(), base::FilePath()));
+            ui::FileInfo(std::move(path), base::FilePath()));
       }
     }
     clipboard_writer.WriteFilenames(ui::FileInfosToURIList(file_infos));
@@ -121,27 +124,6 @@ void CopyToClipboardShareAction::LaunchAction(
 
 void CopyToClipboardShareAction::OnClosing(
     ::sharesheet::SharesheetController* controller) {}
-
-bool CopyToClipboardShareAction::ShouldShowAction(
-    const apps::IntentPtr& intent,
-    bool contains_hosted_document) {
-  bool contains_uncopyable_file = false;
-  if (!intent->files.empty()) {
-    for (const auto& file : intent->files) {
-      auto file_url = apps::GetFileSystemURL(profile_, file->url);
-      contains_uncopyable_file =
-          file_manager::util::IsNonNativeFileSystemType(file_url.type());
-      if (contains_uncopyable_file) {
-        break;
-      }
-    }
-  }
-  // If |intent| contains a file we can't copy, don't show this action.
-  // Files that are not in a native local file system (e.g. MTP, documents
-  // providers) do not currently support paste outside of the Files app.
-  return !contains_uncopyable_file &&
-         ShareAction::ShouldShowAction(intent, contains_hosted_document);
-}
 
 void CopyToClipboardShareAction::ShowToast(ash::ToastData toast_data) {
   ToastManager::Get()->Show(std::move(toast_data));

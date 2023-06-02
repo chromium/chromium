@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -25,14 +24,6 @@ ChromeUserManager::ChromeUserManager(
 
 ChromeUserManager::~ChromeUserManager() = default;
 
-bool ChromeUserManager::IsCurrentUserNew() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kForceFirstRunUI))
-    return true;
-
-  return UserManagerBase::IsCurrentUserNew();
-}
-
 void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
                                          const user_manager::User* primary_user,
                                          bool is_current_user_owner) const {
@@ -50,12 +41,7 @@ void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
     logged_in_user_type = LoginState::LOGGED_IN_USER_NONE;
   }
 
-  if (primary_user) {
-    LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-        logged_in_state, logged_in_user_type, primary_user->username_hash());
-  } else {
-    LoginState::Get()->SetLoggedInState(logged_in_state, logged_in_user_type);
-  }
+  LoginState::Get()->SetLoggedInState(logged_in_state, logged_in_user_type);
 }
 
 bool ChromeUserManager::GetPlatformKnownUserId(

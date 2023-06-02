@@ -49,6 +49,7 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
     WebAppCommandScheduler* command_scheduler,
+    DataRetrieverFactory data_retriever_factory,
     ExternalInstallOptions install_options)
     : profile_(profile),
       url_loader_(url_loader),
@@ -56,6 +57,7 @@ ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
       install_finalizer_(install_finalizer),
       command_scheduler_(command_scheduler),
       externally_installed_app_prefs_(profile_->GetPrefs()),
+      data_retriever_factory_(std::move(data_retriever_factory)),
       install_options_(std::move(install_options)) {}
 
 ExternallyManagedAppInstallTask::~ExternallyManagedAppInstallTask() = default;
@@ -239,11 +241,6 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
 void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
-  if (!data_retriever_factory_) {
-    data_retriever_factory_ = base::BindRepeating(
-        []() { return std::make_unique<WebAppDataRetriever>(); });
-  }
-
   command_scheduler_->InstallExternallyManagedApp(
       install_options_,
       base::BindOnce(

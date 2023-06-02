@@ -89,6 +89,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kGeneralDiscoverable = 2,
   };
 
+  struct VendorProductInfo {
+    uint8_t vendorIdSrc;
+    uint16_t vendorId;
+    uint16_t productId;
+    uint16_t version;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     Observer(const Observer&) = delete;
@@ -239,6 +246,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Gets UUIDs of a device.
   virtual void GetRemoteUuids(
       ResponseCallback<device::BluetoothDevice::UUIDList> callback,
+      FlossDeviceId device);
+
+  virtual void GetRemoteVendorProductInfo(
+      ResponseCallback<VendorProductInfo> callback,
       FlossDeviceId device);
 
   // Get bonding state of a device.

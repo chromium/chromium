@@ -421,7 +421,7 @@ class LogoServiceImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   TemplateURLService template_url_service_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<NiceMock<MockLogoCache>> logo_cache_;
+  raw_ptr<NiceMock<MockLogoCache>, DanglingUntriaged> logo_cache_;
 
   // Used for mocking |logo_service_| URLs.
   network::TestURLLoaderFactory test_url_loader_factory_;

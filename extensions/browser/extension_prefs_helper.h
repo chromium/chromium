@@ -71,8 +71,8 @@ class ExtensionPrefsHelper : public KeyedService {
   const ExtensionPrefs* prefs() const { return prefs_; }
 
  private:
-  const raw_ptr<ExtensionPrefs> prefs_;
-  const raw_ptr<ExtensionPrefValueMap> value_map_;
+  const raw_ptr<ExtensionPrefs, DanglingUntriaged> prefs_;
+  const raw_ptr<ExtensionPrefValueMap, DanglingUntriaged> value_map_;
 };
 
 }  // namespace extensions

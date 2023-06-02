@@ -63,9 +63,12 @@ constexpr char kMimeTypeChromiumWindow[] = "chromium/x-window";
 constexpr uint32_t kDndActionWindowDrag =
     WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
 
-// Value intentionally high to exit the horizontal rail threshold in
-// SnapScrollController, in case of an upwards tab dragging detach with touch.
-constexpr int kHorizontalRailExitThreshold = -1000;
+// Value minimally higher than `GestureDetector::Config::touch_slop` (see [1])
+// to exit the horizontal rail threshold in SnapScrollController, in case of
+// an upwards tab dragging detach with touch.
+//
+// [1] //ui/events/gesture_detection/gesture_detector.h
+constexpr int kHorizontalRailExitThreshold = -10;
 
 }  // namespace
 
@@ -272,10 +275,15 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
     return;
 
   // Forward cursor location update info to the input handling delegate.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   should_process_drag_motion_events_ =
-      !(features::IsWaylandScreenCoordinatesEnabled() &&
-        static_cast<WaylandToplevelWindow*>(drag_target_window_)
+      !(static_cast<WaylandToplevelWindow*>(drag_target_window_)
             ->IsScreenCoordinatesEnabled());
+#else
+  // non-lacros platforms never use global coordinates so they always process
+  // drag events.
+  should_process_drag_motion_events_ = true;
+#endif
 
   pointer_location_ = location;
 
@@ -347,7 +355,7 @@ void WaylandWindowDragController::OnDragLeave() {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     if (!touch_pointer_ids.empty()) {
       // If an user starts dragging a tab horizontally with touch, Chrome enters
-      // in "horizontal snapping" mode (see ScrollSnapController for details).
+      // in "horizontal snapping" mode (see SnapScrollController for details).
       // Hence, in case of touch driven dragging, use a higher negative dy
       // to work around the threshold in ScrollSnapController otherwise,
       // the drag event is discarded.

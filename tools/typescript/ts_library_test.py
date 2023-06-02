@@ -74,7 +74,7 @@ class TsLibraryTest(unittest.TestCase):
         'legacy_file.d.ts',
         'tsconfig_definitions.json',
         'tsconfig_build_ts.json',
-        'build_ts.manifest',
+        'build_ts_manifest.json',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
@@ -128,7 +128,7 @@ class TsLibraryTest(unittest.TestCase):
     files = [
         'bar.js',
         'tsconfig_build_ts.json',
-        'build_ts.manifest',
+        'build_ts_manifest.json',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
@@ -170,7 +170,8 @@ class TsLibraryTest(unittest.TestCase):
         os.path.exists(os.path.join(gen_dir, 'tsconfig_build_ts.json')))
     self.assertFalse(
         os.path.exists(os.path.join(gen_dir, 'tsconfig_build_ts.tsbuildinfo')))
-    self.assertFalse(os.path.exists(os.path.join(gen_dir, 'build_ts.manifest')))
+    self.assertFalse(
+        os.path.exists(os.path.join(gen_dir, 'build_ts_manifest.json')))
 
   def _build_project4(self):
     gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
@@ -204,13 +205,13 @@ class TsLibraryTest(unittest.TestCase):
         'include.js',
         'exclude.js',
         'tsconfig_build_ts.json',
-        'build_ts.manifest',
+        'build_ts_manifest.json',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
 
     # Check that the generated manifest file doesn't include exclude.js.
-    manifest = os.path.join(gen_dir, 'build_ts.manifest')
+    manifest = os.path.join(gen_dir, 'build_ts_manifest.json')
     self._assert_manifest_files(manifest, ['include.js'])
 
   def _assert_manifest_files(self, manifest_path, expected_files):
@@ -271,14 +272,14 @@ class TsLibraryTest(unittest.TestCase):
     # prod:
     self.assertTrue(
         os.path.exists(os.path.join(gen_dir, 'tsconfig_build_ts.json')))
-    manifest = os.path.join(gen_dir, 'build_ts.manifest')
+    manifest = os.path.join(gen_dir, 'build_ts_manifest.json')
     self.assertTrue(os.path.exists(manifest))
     self._assert_manifest_files(manifest, ['bar.js'])
 
     # test:
     self.assertTrue(
         os.path.exists(os.path.join(gen_dir, 'tsconfig_test_build_ts.json')))
-    manifest_test = os.path.join(gen_dir, 'test_build_ts.manifest')
+    manifest_test = os.path.join(gen_dir, 'test_build_ts_manifest.json')
     self.assertTrue(os.path.exists(manifest_test))
     self._assert_manifest_files(manifest_test, ['bar_test.js'])
 
@@ -316,7 +317,7 @@ class TsLibraryTest(unittest.TestCase):
   def _assert_project6_output(self, gen_dir, out_dir):
     gen_dir_files = [
         'tsconfig_build_ts.json',
-        'build_ts.manifest',
+        'build_ts_manifest.json',
     ]
     for f in gen_dir_files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)

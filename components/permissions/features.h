@@ -83,6 +83,9 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool> kUseStrongerPromptLanguage;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kPermissionPredictionServiceUrlOverride;
 
@@ -101,6 +104,9 @@ extern const base::FeatureParam<std::string> kPermissionsPromptSurveyTriggerId;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kPermissionsPromptSurveyDisplayTime;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<std::string> kProbabilityVector;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>

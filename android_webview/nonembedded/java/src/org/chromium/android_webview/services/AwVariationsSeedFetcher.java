@@ -366,7 +366,6 @@ public class AwVariationsSeedFetcher extends JobService {
             final VariationsSeedFetcher.SeedFetchParameters params =
                     VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
                             .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW)
-                            .setRestrictMode(null)
                             .setMilestone(milestone)
                             .setChannel(getChannelStr())
                             .setIsFastFetchMode(fastMode)

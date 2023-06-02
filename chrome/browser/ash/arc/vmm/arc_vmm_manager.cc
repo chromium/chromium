@@ -104,6 +104,7 @@ void ArcVmmManager::SetSwapState(SwapState state) {
     LOG(ERROR) << "Failed to SetSwapState, ARCVM not enabled or connected.";
     return;
   }
+  DVLOG(1) << "SetSwapState " << static_cast<int>(state);
   vm_tools::concierge::SwapOperation op;
   switch (state) {
     case SwapState::ENABLE:
@@ -118,10 +119,22 @@ void ArcVmmManager::SetSwapState(SwapState state) {
   }
 
   if (state == SwapState::DISABLE) {
+    if (last_swap_state_ == state) {
+      return;
+    }
+    last_swap_state_ = state;
     SendSwapRequest(op, base::DoNothing());
     enabled_state_heartbeat_timer_.Reset();
     return;
   }
+
+  if (last_swap_state_ == state && enabled_state_heartbeat_timer_.IsRunning()) {
+    // The state is not update, do not send request now but leave it to heart
+    // beat timer.
+    return;
+  }
+
+  last_swap_state_ = state;
 
   // Reset the timer anyway since the enable state and force enable state may
   // overwrite each other.
@@ -154,6 +167,15 @@ void ArcVmmManager::SetSwapState(SwapState state) {
   }
 }
 
+bool ArcVmmManager::IsSwapped() const {
+  // Currently ArcVmmManager assume after set vmm swap enabled, the system
+  // under the "swapped" state.
+  // In the future, is should be replaced by real swap state from the concierge,
+  // because only the memory swapped and has been written to the disk can be
+  // assumed as "swapped".
+  return last_swap_state_ != SwapState::DISABLE;
+}
+
 void ArcVmmManager::OnConnectionReady() {
   arc_connected_ = true;
 }
@@ -170,6 +192,8 @@ void ArcVmmManager::SendSwapRequest(
     return;
   }
 
+  DVLOG(1) << "SendSwapRequest " << static_cast<int>(operation)
+           << " to concierge.";
   vm_tools::concierge::SwapVmRequest request;
   request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash_);
@@ -199,6 +223,8 @@ void ArcVmmManager::SendAggressiveBalloonRequest(
     return;
   }
 
+  DVLOG(1) << "SendAggressiveBalloon state change " << enable
+           << " request to concierge";
   vm_tools::concierge::AggressiveBalloonRequest request;
   request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash_);
@@ -230,6 +256,8 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
   // Trim ARCVM memory before enable vmm swap in order to squeeze the vm
   // memory. Send enable operation if trim success.
   DCHECK(!trim_call_.is_null());
+  DVLOG(1) << "ShrinkArcVmMemoryAndEnableSwap with request "
+           << static_cast<int>(requested_operation);
   trim_call_.Run(
       base::BindOnce(
           [](base::OnceClosure success_closure, bool success,

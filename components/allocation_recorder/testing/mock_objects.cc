@@ -12,5 +12,8 @@ namespace crash_handler {
 StreamDataSourceFactoryMock::StreamDataSourceFactoryMock() = default;
 StreamDataSourceFactoryMock::~StreamDataSourceFactoryMock() = default;
 
+AllocationRecorderHolderMock::AllocationRecorderHolderMock() = default;
+AllocationRecorderHolderMock::~AllocationRecorderHolderMock() = default;
+
 }  // namespace crash_handler
 }  // namespace allocation_recorder::testing

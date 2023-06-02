@@ -21,7 +21,7 @@ std::unique_ptr<T> CreateLabel(int context) {
 void FadeLabel::SetData(const FadeLabelViewData& data) {
   data_ = data;
   std::u16string text = data.text;
-  absl::optional<bool> is_filename = data.is_filename;
+  const bool is_filename = data.is_filename;
   SetElideBehavior(is_filename ? gfx::NO_ELIDE : gfx::ELIDE_TAIL);
   if (is_filename) {
     text = TruncateFilenameToTwoLines(text);

@@ -1,0 +1,42 @@
+// Copied from
+// http://google3/java/com/google/android/gms/smartdevice/d2d/proto/aes_gcm_authentication_message.proto
+
+syntax = "proto2";
+
+package ash.quick_start.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents an AES-GCM authentication message.
+message AesGcmAuthenticationMessage {
+  enum Version {
+    UNKNOWN_VERSION = 0;
+    V1 = 1;
+  }
+
+  // The protocol version.
+  optional Version version = 1;
+
+  // V1 protocol message.
+  optional V1Message v1 = 2;
+}
+
+message V1Message {
+  message AuthenticationPayload {
+    // Role of the message's creator.
+    // Target = 1
+    // Source = 2
+    optional int32 role = 1;
+
+    // Authentication string created as a result of establishing an
+    // un-authenticated secure connections. In the case of UKEY2, this is called
+    // the verification string.
+    optional string auth_string = 2;
+  }
+
+  // 12-byte random nonce.
+  optional bytes nonce = 1;
+
+  // Encrypted Payload.
+  optional bytes payload = 2;
+}

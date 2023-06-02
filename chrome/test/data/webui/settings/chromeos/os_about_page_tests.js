@@ -228,7 +228,7 @@ suite('AboutPageTest', function() {
                 'aboutRollbackInProgress',
                 {substitutions: [page.deviceManager_, progress + '%']})
             .toString(),
-        statusMessageEl.innerHTML);
+        statusMessageEl.textContent);
 
     fireStatusChanged(
         UpdateStatus.NEARLY_UPDATED, {powerwash: true, rollback: true});
@@ -237,7 +237,14 @@ suite('AboutPageTest', function() {
         page.i18nAdvanced(
                 'aboutRollbackSuccess', {substitutions: [page.deviceManager_]})
             .toString(),
-        statusMessageEl.innerHTML);
+        statusMessageEl.textContent);
+
+    // Simulate update disallowed to previously installed version after a
+    // consumer rollback.
+    fireStatusChanged(UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED);
+    const expectedMessage =
+        page.i18n('aboutUpdateToRollbackVersionDisallowed').toString();
+    assertEquals(expectedMessage, statusMessageEl.textContent);
   });
 
   test('NoInternet', function() {
@@ -245,8 +252,7 @@ suite('AboutPageTest', function() {
     aboutBrowserProxy.sendStatusNoInternet();
     flush();
     assertFalse(page.$.updateStatusMessage.hidden);
-    assertNotEquals(
-        page.$.updateStatusMessage.innerHTML.includes('no internet'));
+    assertTrue(page.$.updateStatusMessage.textContent.includes('no internet'));
   });
 
   /**

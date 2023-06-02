@@ -142,7 +142,7 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
     return record;
   }
 
-  raw_ptr<BluetoothAdapterBlueZ> adapter_bluez_;
+  raw_ptr<BluetoothAdapterBlueZ, DanglingUntriaged> adapter_bluez_;
   size_t success_callbacks_;
   size_t error_callbacks_;
 

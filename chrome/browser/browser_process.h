@@ -46,10 +46,6 @@ class HidSystemTrayIcon;
 class IntranetRedirectDetector;
 #endif
 
-namespace device {
-class GeolocationManager;
-}
-
 namespace embedder_support {
 class OriginTrialsSettingsStorage;
 }
@@ -132,9 +128,6 @@ class BrowserProcess {
   // the current sequence.
   virtual void FlushLocalStateAndReply(base::OnceClosure reply) = 0;
 
-  // Provides the geolocation manager or nullptr if not available
-  virtual device::GeolocationManager* geolocation_manager() = 0;
-
   // Gets the manager for the various metrics-related services, constructing it
   // if necessary.
   virtual metrics_services_manager::MetricsServicesManager*
@@ -162,10 +155,6 @@ class BrowserProcess {
   // NotificationPlatformBridge + NotificationDisplayService
   virtual NotificationUIManager* notification_ui_manager() = 0;
   virtual NotificationPlatformBridge* notification_platform_bridge() = 0;
-
-  // Sets geolocation manager
-  virtual void SetGeolocationManager(
-      std::unique_ptr<device::GeolocationManager> geolocation_manager) = 0;
 
   // Replacement for IOThread. It owns and manages the
   // NetworkContext which will use the network service when the network service

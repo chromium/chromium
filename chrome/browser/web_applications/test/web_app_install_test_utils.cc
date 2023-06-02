@@ -122,7 +122,7 @@ void UninstallWebApp(Profile* profile, const AppId& app_id) {
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile);
   base::RunLoop run_loop;
 
-  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {

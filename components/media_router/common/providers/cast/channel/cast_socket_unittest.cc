@@ -244,7 +244,7 @@ class MockTestCastSocket : public TestCastSocketBase {
   }
 
  private:
-  raw_ptr<MockCastTransport> mock_transport_ = nullptr;
+  raw_ptr<MockCastTransport, DanglingUntriaged> mock_transport_ = nullptr;
 };
 
 // TODO(https://crbug.com/928467):  Remove this class.
@@ -411,7 +411,7 @@ class CastSocketTestBase : public testing::Test {
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
-  raw_ptr<Logger> logger_;
+  raw_ptr<Logger, DanglingUntriaged> logger_;
   CompleteHandler handler_;
   std::unique_ptr<MockCastSocketObserver> observer_;
   CastSocketOpenParams socket_open_params_;

@@ -48,7 +48,9 @@ class BASE_EXPORT UncheckedObserverAdapter {
   }
 
 #if DCHECK_IS_ON()
-  std::string GetCreationStackString() const { return stack_.ToString(); }
+  std::string GetCreationStackString() const {
+    return "Observer created at:\n" + stack_.ToString();
+  }
 #endif  // DCHECK_IS_ON()
 
  private:

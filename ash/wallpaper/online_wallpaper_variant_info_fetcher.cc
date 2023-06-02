@@ -9,6 +9,7 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/functional/bind.h"
@@ -32,8 +33,8 @@ class VariantMatches {
 
   ~VariantMatches() = default;
 
-  // Filters |images| to only the entries that match |asset_id| and
-  // |mode|.
+  // Filters |images| to only the entries that match |location| and
+  // |checkpoint|.
   static absl::optional<VariantMatches> FromImages(
       const std::string& location,
       ScheduleCheckpoint checkpoint,
@@ -42,10 +43,20 @@ class VariantMatches {
     auto image_iter =
         base::ranges::find(images, location, &backdrop::Image::image_url);
 
-    if (image_iter == images.end())
+    if (image_iter == images.end()) {
       return absl::nullopt;
+    }
 
     uint64_t unit_id = image_iter->unit_id();
+    return FromImages(unit_id, checkpoint, images);
+  }
+
+  // Same semantic as the method above but instead of matching against
+  // `location`, `unit_id` is used instead.
+  static absl::optional<VariantMatches> FromImages(
+      uint64_t unit_id,
+      ScheduleCheckpoint checkpoint,
+      const std::vector<backdrop::Image>& images) {
     std::vector<OnlineWallpaperVariant> variants;
     for (const auto& image : images) {
       if (image.unit_id() == unit_id) {
@@ -193,6 +204,24 @@ bool OnlineWallpaperVariantInfoFetcher::FetchDailyWallpaper(
   return true;
 }
 
+void OnlineWallpaperVariantInfoFetcher::FetchTimeOfDayWallpaper(
+    const AccountId& account_id,
+    uint64_t unit_id,
+    ScheduleCheckpoint checkpoint,
+    FetchParamsCallback callback) {
+  auto request = std::make_unique<OnlineWallpaperRequest>(
+      account_id, wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+      WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*daily_refresh_enabled=*/false, checkpoint);
+
+  wallpaper_controller_client_->FetchImagesForCollection(
+      wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+      base::BindOnce(
+          &OnlineWallpaperVariantInfoFetcher::OnTimeOfDayWallpapersFetched,
+          weak_factory_.GetWeakPtr(), std::move(request), unit_id,
+          std::move(callback)));
+}
+
 void OnlineWallpaperVariantInfoFetcher::OnSingleFetch(
     std::unique_ptr<OnlineWallpaperRequest> request,
     FetchParamsCallback callback,
@@ -230,6 +259,36 @@ void OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants(
 
   absl::optional<VariantMatches> matches =
       VariantMatches::FromImages(location, request->checkpoint, images);
+  if (!matches) {
+    LOG(ERROR) << "No valid variants";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  const OnlineWallpaperVariant& first_image = matches->first_match;
+  DCHECK(IsSuitableOnlineWallpaperVariant(first_image, request->checkpoint));
+
+  std::move(callback).Run(ash::OnlineWallpaperParams{
+      request->account_id, first_image.asset_id, first_image.raw_url,
+      request->collection_id, request->layout, /*preview_mode=*/false,
+      /*from_user=*/false, request->daily_refresh_enabled, matches->unit_id,
+      matches->variants});
+}
+
+void OnlineWallpaperVariantInfoFetcher::OnTimeOfDayWallpapersFetched(
+    std::unique_ptr<OnlineWallpaperRequest> request,
+    uint64_t unit_id,
+    FetchParamsCallback callback,
+    bool success,
+    const std::vector<backdrop::Image>& images) {
+  if (!success) {
+    LOG(WARNING) << "Failed to fetch online wallpapers";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  absl::optional<VariantMatches> matches =
+      VariantMatches::FromImages(unit_id, request->checkpoint, images);
   if (!matches) {
     LOG(ERROR) << "No valid variants";
     std::move(callback).Run(absl::nullopt);

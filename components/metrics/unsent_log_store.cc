@@ -170,24 +170,21 @@ UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
                                PrefService* local_state,
                                const char* log_data_pref_name,
                                const char* metadata_pref_name,
-                               size_t min_log_count,
-                               size_t min_log_bytes,
-                               size_t max_log_size,
+                               UnsentLogStoreLimits log_store_limits,
                                const std::string& signing_key,
                                MetricsLogsEventManager* logs_event_manager)
     : metrics_(std::move(metrics)),
       local_state_(local_state),
       log_data_pref_name_(log_data_pref_name),
       metadata_pref_name_(metadata_pref_name),
-      min_log_count_(min_log_count),
-      min_log_bytes_(min_log_bytes),
-      max_log_size_(max_log_size != 0 ? max_log_size : static_cast<size_t>(-1)),
+      log_store_limits_(log_store_limits),
       signing_key_(signing_key),
       logs_event_manager_(logs_event_manager),
       staged_log_index_(-1) {
   DCHECK(local_state_);
   // One of the limit arguments must be non-zero.
-  DCHECK(min_log_count_ > 0 || min_log_bytes_ > 0);
+  DCHECK(log_store_limits_.min_log_count > 0 ||
+         log_store_limits_.min_queue_size_bytes > 0);
 }
 
 UnsentLogStore::~UnsentLogStore() = default;
@@ -291,8 +288,8 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
   for (int i = list_.size() - 1; i >= 0; --i) {
     size_t log_size = list_[i]->compressed_log_data.length();
     // Hit the caps, we can stop moving the logs.
-    if (bytes_used >= min_log_bytes_ &&
-        writer.unsent_logs_count() >= min_log_count_) {
+    if (bytes_used >= log_store_limits_.min_queue_size_bytes &&
+        writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
       // The rest of the logs (including the current one) are trimmed.
       if (overwrite_in_memory_store) {
         NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>>(
@@ -301,8 +298,9 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
       }
       break;
     }
-    // Omit overly large individual logs.
-    if (log_size > max_log_size_) {
+    // Omit overly large individual logs if the value is non-zero.
+    if (log_store_limits_.max_log_size_bytes != 0 &&
+        log_size > log_store_limits_.max_log_size_bytes) {
       metrics_->RecordDroppedLogSize(log_size);
       if (overwrite_in_memory_store) {
         NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,

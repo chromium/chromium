@@ -987,8 +987,8 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   const AppId app_id = isolated_web_app->app_id();
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()}));
+  isolated_web_app->SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
   RegisterApp(std::move(isolated_web_app));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs =
@@ -1014,8 +1014,8 @@ TEST_F(
   const AppId app_id = isolated_web_app->app_id();
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()}));
+  isolated_web_app->SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
   isolated_web_app->SetIsLocallyInstalled(false);
   RegisterApp(std::move(isolated_web_app));
 
@@ -1102,8 +1102,10 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   web_app->SetIsLocallyInstalled(true);
-  web_app->SetIsolationData(WebApp::IsolationData(DevModeProxy{
-      .proxy_url = url::Origin::Create(GURL("http://127.0.0.1:8080"))}));
+  web_app->SetIsolationData(WebApp::IsolationData(
+      DevModeProxy{.proxy_url =
+                       url::Origin::Create(GURL("http://127.0.0.1:8080"))},
+      base::Version("1.0.0")));
 
   RegisterApp(std::move(web_app));
 

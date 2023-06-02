@@ -18,7 +18,7 @@ mojom_with_webui_js_bridge("test_webui_js_bridge2") {
   source = "webui_js_bridge_unittest2.test-mojom"
   public_deps = [ ":test_secondary_interface" ]
 
-  webui_controller = "content::TestWebUIJsBridgeUI"
+  webui_controller = "content::TestWebUIJsBridgeUI2"
   webui_controller_header = "//content/browser/webui/test_webui_js_bridge_ui.h"
   webui_controller_deps = [ "//content/test:test_support" ]
 }

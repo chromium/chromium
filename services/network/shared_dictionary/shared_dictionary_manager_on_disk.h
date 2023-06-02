@@ -41,6 +41,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   SharedDictionaryManagerOnDisk(
       const base::FilePath& database_path,
       const base::FilePath& cache_directory_path,
+      uint64_t cache_max_size,
 #if BUILDFLAG(IS_ANDROID)
       base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -56,6 +57,11 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryStorageIsolationKey& isolation_key) override;
+  void SetCacheMaxSize(uint64_t cache_max_size) override;
+  void ClearData(base::Time start_time,
+                 base::Time end_time,
+                 base::RepeatingCallback<bool(const GURL&)> url_matcher,
+                 base::OnceClosure callback) override;
 
   SharedDictionaryDiskCache& disk_cache() { return disk_cache_; }
   net::SQLitePersistentSharedDictionaryStore& metadata_store() {
@@ -70,7 +76,31 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       const std::string& match,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
 
+  void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
+
  private:
+  class SerializedTask {
+   public:
+    virtual ~SerializedTask() = default;
+    virtual void Start() = 0;
+  };
+  class SerializedTaskInfo {
+   public:
+    virtual ~SerializedTaskInfo() = default;
+    virtual std::unique_ptr<SerializedTask> CreateTask(
+        SharedDictionaryManagerOnDisk*) = 0;
+  };
+
+  class ClearDataTask;
+  class MismatchingEntryDeletionTask;
+  class CacheEvictionTask;
+  class ExpiredDictionaryDeletionTask;
+
+  class ClearDataTaskInfo;
+  class MismatchingEntryDeletionTaskInfo;
+  class CacheEvictionTaskInfo;
+  class ExpiredDictionaryDeletionTaskInfo;
+
   void OnDictionaryWrittenInDiskCache(
       const net::SharedDictionaryStorageIsolationKey& isolation_key,
       const GURL& url,
@@ -89,8 +119,37 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       net::SQLitePersistentSharedDictionaryStore::
           RegisterDictionaryResultOrError result);
 
+  void PostSerializedTask(std::unique_ptr<SerializedTaskInfo> task_info);
+  void OnFinishSerializedTask();
+  void MaybeStartSerializedTask();
+
+  void MaybePostMismatchingEntryDeletionTask();
+  void MaybePostCacheEvictionTask();
+  void MaybePostExpiredDictionaryDeletionTask();
+
+  void OnDictionaryDeleted(
+      const std::set<base::UnguessableToken>& disk_cache_key_tokens,
+      bool need_to_doom_disk_cache_entries);
+
+  const std::set<base::UnguessableToken>& writing_disk_cache_key_tokens()
+      const {
+    return writing_disk_cache_key_tokens_;
+  }
+
+  uint64_t cache_max_size() const { return cache_max_size_; }
+
+  uint64_t cache_max_size_;
   SharedDictionaryDiskCache disk_cache_;
   net::SQLitePersistentSharedDictionaryStore metadata_store_;
+
+  std::unique_ptr<SerializedTask> running_serialized_task_;
+  std::deque<std::unique_ptr<SerializedTaskInfo>> pending_serialized_task_info_;
+
+  std::set<base::UnguessableToken> writing_disk_cache_key_tokens_;
+
+  bool mismatching_entry_deletion_task_posted_ = false;
+  bool cache_eviction_task_queued_ = false;
+  bool expired_entry_deletion_task_queued_ = false;
 
   base::WeakPtrFactory<SharedDictionaryManagerOnDisk> weak_factory_{this};
 };

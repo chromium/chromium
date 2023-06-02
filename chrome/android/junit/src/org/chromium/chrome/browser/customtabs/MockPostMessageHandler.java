@@ -23,7 +23,7 @@ import org.chromium.components.embedder_support.util.Origin;
 class MockPostMessageHandler {
     private final PostMessageHandler mPostMessageHandler;
     private Uri mPostMessageUri;
-
+    private Uri mPostMessageTargetUri;
     public MockPostMessageHandler() {
         mPostMessageHandler = Mockito.mock(PostMessageHandler.class);
 
@@ -35,11 +35,11 @@ class MockPostMessageHandler {
                 .reset(any());
 
         doAnswer((Answer<Void>) invocation -> {
-            initializeWithPostMessageUri(invocation.getArgument(0));
+            initializeWithPostMessageUri(invocation.getArgument(0), invocation.getArgument(1));
             return null;
         })
                 .when(mPostMessageHandler)
-                .initializeWithPostMessageUri(any());
+                .initializeWithPostMessageUri(any(), any());
 
         doAnswer((Answer<Void>) invocation -> {
             onOriginVerified(invocation.getArgument(0), invocation.getArgument(1),
@@ -52,6 +52,17 @@ class MockPostMessageHandler {
         doAnswer((Answer<Uri>) invocation -> { return getPostMessageUriForTesting(); })
                 .when(mPostMessageHandler)
                 .getPostMessageUriForTesting();
+
+        doAnswer((Answer<Uri>) invocation -> { return getPostMessageTargetUriForTesting(); })
+                .when(mPostMessageHandler)
+                .getPostMessageTargetUriForTesting();
+
+        doAnswer((Answer<Void>) invocation -> {
+            setPostMessageTargetUriForTesting(invocation.getArgument(0));
+            return null;
+        })
+                .when(mPostMessageHandler)
+                .setPostMessageTargetUri(any());
     }
 
     public PostMessageHandler getPostMessageHandler() {
@@ -64,19 +75,30 @@ class MockPostMessageHandler {
 
     private void reset() {
         mPostMessageUri = null;
+        mPostMessageTargetUri = null;
     }
 
-    private void initializeWithPostMessageUri(Uri uri) {
+    private void initializeWithPostMessageUri(Uri uri, Uri targetUri) {
         mPostMessageUri = uri;
+        mPostMessageTargetUri = targetUri;
     }
 
     private void onOriginVerified(String packageName, Origin origin, boolean result) {
         if (!result) return;
         initializeWithPostMessageUri(
-                ChromeOriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin));
+                ChromeOriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin),
+                mPostMessageTargetUri);
     }
 
     private Uri getPostMessageUriForTesting() {
         return mPostMessageUri;
+    }
+
+    private void setPostMessageTargetUriForTesting(Uri targetUri) {
+        mPostMessageTargetUri = targetUri;
+    }
+
+    private Uri getPostMessageTargetUriForTesting() {
+        return mPostMessageTargetUri;
     }
 }

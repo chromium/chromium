@@ -401,8 +401,10 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
-  raw_ptr<NiceMock<MockFormSaver>> mock_account_form_saver_ = nullptr;
-  raw_ptr<NiceMock<MockFormSaver>> mock_profile_form_saver_ = nullptr;
+  raw_ptr<NiceMock<MockFormSaver>, DanglingUntriaged> mock_account_form_saver_ =
+      nullptr;
+  raw_ptr<NiceMock<MockFormSaver>, DanglingUntriaged> mock_profile_form_saver_ =
+      nullptr;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
 };
 

@@ -4,7 +4,10 @@
 
 #include "chromecast/cast_core/runtime/browser/cast_runtime_histogram_flattener.h"
 
+#include <memory>
+
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/statistics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,9 +30,25 @@ const cast::metrics::Histogram* LookupHistogram(
 class CastRuntimeHistogramFlattenerTest : public ::testing::Test {
  public:
   void SetUp() override {
+    // Create the temporary stats recorder to get a clean state
+    // for each test.
+    statistics_recorder_ =
+        base::StatisticsRecorder::CreateTemporaryForTesting();
+
     // Ensure existing deltas from previous tests in the process are cleared.
     ASSERT_TRUE(GetHistogramDeltas().empty());
   }
+
+  void TearDown() override {
+    // Destroy the temporary stats recorder, implicitly restoring
+    // the previous global stats recorder.
+    statistics_recorder_.reset();
+  }
+
+  // Stand-in `StatisticsRecorder` for this test suite, to ensure
+  // each test is isolated from everything else in the process that
+  // could emit histograms.
+  std::unique_ptr<base::StatisticsRecorder> statistics_recorder_;
 };
 
 TEST_F(CastRuntimeHistogramFlattenerTest, Empty) {

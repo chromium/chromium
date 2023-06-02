@@ -7,8 +7,6 @@
    This is taken from chrome/browser/resources/safe_browsing/PRESUBMIT.py.
 """
 
-USE_PYTHON3 = True
-
 # TODO(meacer): Refactor and reuse shared code with
 #               chrome/browser/resources/safe_browsing/PRESUBMIT.py
 def CheckVersionUpdatedInSSLErrorAssistantProto(input_api, output_api):

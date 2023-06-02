@@ -920,7 +920,7 @@ TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {
   const base::TimeDelta visit_duration = base::Seconds(10);
   visit_row.visit_duration = visit_duration;
   ASSERT_TRUE(backend()->UpdateVisit(visit_row));
-  bridge()->OnVisitUpdated(visit_row);
+  bridge()->OnVisitUpdated(visit_row, VisitUpdateReason::kUpdateVisitDuration);
 
   // The updated data should have been sent to the processor.
   EXPECT_EQ(processor()->GetEntities().size(), 1u);
@@ -929,6 +929,41 @@ TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {
   EXPECT_EQ(
       base::Microseconds(entity.specifics.history().visit_duration_micros()),
       visit_duration);
+}
+
+TEST_F(HistorySyncBridgeTest, IgnoresUninterestingVisitUpdate) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL and notify the bridge.
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
+
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row.visit_time);
+
+  // The visit should've been sent to the processor. Mark it as "synced",
+  // simulating that it was sent to the server.
+  ASSERT_TRUE(processor()->IsEntityUnsynced(storage_key));
+  processor()->MarkEntitySynced(storage_key);
+  ASSERT_FALSE(processor()->IsEntityUnsynced(storage_key));
+
+  // Notify the bridge about an uninteresting visit update (uninteresting since
+  // none of the on-close context annotation fields are synced).
+  bridge()->OnVisitUpdated(visit_row,
+                           VisitUpdateReason::kSetOnCloseContextAnnotations);
+
+  // This should *not* have been sent to the processor, so the entity should not
+  // be unsynced now.
+  EXPECT_FALSE(processor()->IsEntityUnsynced(storage_key));
+
+  // Sanity check: Some other visit update *should* be sent to the processor.
+  bridge()->OnVisitUpdated(visit_row,
+                           VisitUpdateReason::kAddContextAnnotations);
+  EXPECT_TRUE(processor()->IsEntityUnsynced(storage_key));
 }
 
 TEST_F(HistorySyncBridgeTest, DoesNotUploadUpdatedForeignVisit) {
@@ -961,7 +996,7 @@ TEST_F(HistorySyncBridgeTest, DoesNotUploadUpdatedForeignVisit) {
   // might do it (probably mistakenly).
   visit_row.visit_duration = base::Seconds(10);
   ASSERT_TRUE(backend()->UpdateVisit(visit_row));
-  bridge()->OnVisitUpdated(visit_row);
+  bridge()->OnVisitUpdated(visit_row, VisitUpdateReason::kUpdateVisitDuration);
 
   // The updated visit should *not* have been sent to the processor - the entity
   // in the processor should *not* be unsynced, and its visit duration should
@@ -1141,7 +1176,7 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   ASSERT_TRUE(backend()->UpdateVisit(visit_row2));
   // The bridge gets notified about the updated visit, but this should have no
   // effect since it's not a chain end anymore.
-  bridge()->OnVisitUpdated(visit_row2);
+  bridge()->OnVisitUpdated(visit_row2, VisitUpdateReason::kUpdateTransition);
 
   // Two more visits get appended to the chain.
   URLRow url_row3(GURL("https://url3.com"));
@@ -1245,7 +1280,7 @@ TEST_F(HistorySyncBridgeTest, DoesNotRepeatedlyUploadClientRedirects) {
   ASSERT_TRUE(backend()->UpdateVisit(visit_row1));
   // The bridge gets notified about the updated visit, but this should have no
   // effect since it's not a chain end anymore.
-  bridge()->OnVisitUpdated(visit_row1);
+  bridge()->OnVisitUpdated(visit_row1, VisitUpdateReason::kUpdateTransition);
 
   // A visit gets appended to the chain.
   AdvanceClock();
@@ -1287,7 +1322,7 @@ TEST_F(HistorySyncBridgeTest, DoesNotRepeatedlyUploadClientRedirects) {
   visit_row2.transition = ui::PageTransitionFromInt(
       visit_row2.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
   ASSERT_TRUE(backend()->UpdateVisit(visit_row2));
-  bridge()->OnVisitUpdated(visit_row2);
+  bridge()->OnVisitUpdated(visit_row2, VisitUpdateReason::kUpdateTransition);
 
   // A visit gets appended to the chain.
   AdvanceClock();

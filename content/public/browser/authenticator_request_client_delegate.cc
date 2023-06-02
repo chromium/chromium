@@ -121,10 +121,6 @@ base::android::ScopedJavaLocalRef<jobject>
 WebAuthenticationDelegate::GetIntentSender(WebContents* web_contents) {
   return nullptr;
 }
-
-int WebAuthenticationDelegate::GetSupportLevel(WebContents* web_contents) {
-  return 2 /* browser-like support */;
-}
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

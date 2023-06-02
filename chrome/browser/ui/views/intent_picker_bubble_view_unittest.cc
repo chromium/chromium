@@ -182,8 +182,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<IntentPickerBubbleView> bubble_ = nullptr;
-  raw_ptr<views::View> anchor_view_;
+  raw_ptr<IntentPickerBubbleView, DanglingUntriaged> bubble_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> anchor_view_;
   std::vector<AppInfo> app_info_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 

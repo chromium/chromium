@@ -15,6 +15,7 @@
 namespace media {
 
 struct CAPTURE_EXPORT ReadyFrameInBuffer {
+  ReadyFrameInBuffer();
   ReadyFrameInBuffer(
       int buffer_id,
       int frame_feedback_id,

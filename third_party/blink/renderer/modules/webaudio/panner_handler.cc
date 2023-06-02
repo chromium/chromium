@@ -320,7 +320,7 @@ void PannerHandler::Initialize() {
   panner_ = Panner::Create(panning_model_, Context()->sampleRate(),
                            GetDeferredTaskHandler().RenderQuantumFrames(),
                            listener->HrtfDatabaseLoader());
-  listener->AddPanner(*this);
+  listener->AddPannerHandler(*this);
 
   // The panner is already marked as dirty, so `last_position_` and
   // `last_orientation_` will be updated on first use.  Don't need to
@@ -339,7 +339,7 @@ void PannerHandler::Uninitialize() {
   if (listener) {
     // Listener may have gone in the same garbage collection cycle, which means
     // that the panner does not need to be removed.
-    listener->RemovePanner(*this);
+    listener->RemovePannerHandler(*this);
   }
 
   AudioHandler::Uninitialize();
@@ -637,9 +637,10 @@ void PannerHandler::AzimuthElevation(double* out_azimuth,
   // Calculate new azimuth and elevation if the panner or the listener changed
   // position or orientation in any way.
   if (IsAzimuthElevationDirty() || listener->IsListenerDirty()) {
-    CalculateAzimuthElevation(&cached_azimuth_, &cached_elevation_,
-                              GetPosition(), listener->GetPosition(),
-                              listener->Orientation(), listener->UpVector());
+    CalculateAzimuthElevation(
+        &cached_azimuth_, &cached_elevation_, GetPosition(),
+        listener->GetPosition(), listener->GetOrientation(),
+        listener->GetUpVector());
     is_azimuth_elevation_dirty_ = false;
   }
 

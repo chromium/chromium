@@ -26,6 +26,20 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
                       DisconnectFromTrack);
 
  public:
+  // Public interface for unit testing purposes.
+  class AudioBufferPool {
+   public:
+    AudioBufferPool() = default;
+    virtual ~AudioBufferPool() = default;
+
+    virtual void SetFormat(const media::AudioParameters params) = 0;
+    virtual scoped_refptr<media::AudioBuffer> CopyIntoAudioBuffer(
+        const media::AudioBus& audio_bus,
+        base::TimeTicks capture_time) = 0;
+
+    virtual int GetSizeForTesting() = 0;
+  };
+
   explicit MediaStreamAudioTrackUnderlyingSource(
       ScriptState*,
       MediaStreamComponent*,
@@ -49,6 +63,8 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void ContextDestroyed() override;
   void Trace(Visitor*) const override;
 
+  AudioBufferPool* GetAudioBufferPoolForTesting();
+
  private:
   // FrameQueueUnderlyingSource implementation.
   bool StartFrameDelivery() override;
@@ -66,8 +82,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   Member<MediaStreamComponent> track_;
   bool added_to_track_ = false;
 
-  media::AudioParameters audio_parameters_;
-  scoped_refptr<media::AudioBufferMemoryPool> buffer_pool_;
+  std::unique_ptr<AudioBufferPool> buffer_pool_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

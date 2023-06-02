@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<body>
+<p>Test that HTMLSelectElement DOM is in a consistent state when handling mutation events.</p>
+<form>
+<select multiple size=5><option>1</option><option>2</option></select>
+</form>
+<div id=res></div>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+var select = document.forms[0].elements[0];
+var res = document.getElementById("res");
+var hadFailure = false;
+
+function logError(message)
+{
+    res.innerHTML += message + "<br>";
+    hadFailure = true;
+}
+
+// { test number, expected length, item to check, expected result }
+var testInfo;
+
+function checkSelect(evt)
+{
+    // Force layout to verify that DOM is in a consistent state.
+    document.body.offsetTop;
+
+    if (!testInfo[0])
+        return;
+
+    if (select.length != testInfo[1])
+        logError("Test " + testInfo[0] + ". " + evt.type + ": Incorrect length. Was " + select.length + ", expected " + testInfo[1] + ".");
+
+    if (testInfo[3]) {
+        if (select.item(testInfo[2]).value != testInfo[3])
+            logError("Test " + testInfo[0] + ". " + evt.type + ": Incorrect item " + testInfo[2] + " value. Was " + select.item(testInfo[2]).value + ", expected " + testInfo[3] + ".");
+    } else {
+        if (select.item(testInfo[2]))
+            logError("Test " + testInfo[0] + ". " + evt.type + ": Item " + testInfo[2] + " exists when it should not.");
+    }
+}
+
+function onNodeRemoved()
+{
+    // Force layout to verify that DOM is in a consistent state.
+    document.body.offsetTop;
+
+    if (select.length != 2) {
+        alert("FAIL: Incorrect length after removing an option.");
+        hadFailure = true;
+    }
+
+    if (select.item(2)) {
+        alert("FAIL: A removed option is still present when handling a DOMNodeRemoved event.");
+        hadFailure = true;
+    }
+}
+
+select.addEventListener("DOMNodeInserted", checkSelect, true);
+select.addEventListener("DOMNodeInsertedIntoDocument", checkSelect, true);
+select.addEventListener("DOMSubtreeModified", checkSelect, true);
+select.addEventListener("DOMSubtreeModified", checkSelect, true);
+
+testInfo = [1, 3, 2, "3"];
+select.appendChild(new Option("3", "3", false, false));
+checkSelect();
+
+testInfo = [2, 2, 2, undefined];
+select.removeChild(select.lastChild);
+checkSelect();
+
+testInfo = []; // A DOMSubtreeModified event may be dispatched between removal and addition, skip checks.
+select.replaceChild(new Option("new", "new", false, false), select.lastChild);
+testInfo = [3, 2, 1, "new"];
+checkSelect();
+
+testInfo = [4, 3, 0, "0"];
+select.add(new Option("0", "0", false, false), select.firstChild);
+testInfo = [4, 3, 0, "0"];
+checkSelect();
+
+testInfo = [5, 2, 0, "1"];
+select.remove(0);
+testInfo = [5, 2, 0, "1"];
+checkSelect();
+
+testInfo = [6, 3, 0, "-1"];
+select.insertBefore(new Option("-1", "-1", false, false), select.firstChild);
+testInfo = [6, 3, 0, "-1"];
+checkSelect();
+
+testInfo = [7, 3, 0, "-"];
+select.firstChild.value = "-";
+select.firstChild.text = "-";
+testInfo = [7, 3, 0, "-"];
+checkSelect();
+
+testInfo = []; // Multiple DOMSubtreeModified event may be dispatched, skip check.
+select.innerHTML = "<optgroup><option>1</option><option>2</option></optgroup>";
+testInfo = [8, 2, 0, 1];
+checkSelect();
+
+var optgroup = select.firstChild;
+
+testInfo = [9, 3, 2, "3"];
+optgroup.appendChild(new Option("3", "3", false, false));
+checkSelect();
+
+testInfo = [10, 2, 2, undefined];
+optgroup.removeChild(optgroup.lastChild);
+checkSelect();
+
+testInfo = []; // A DOMSubtreeModified event may be dispatched between removal and addition, skip checks.
+optgroup.replaceChild(new Option("new", "new", false, false), optgroup.lastChild);
+testInfo = [11, 2, 1, "new"];
+checkSelect();
+
+/* WebKit cannot add options right into a group via HTMLSelectElement.add().
+   See <https://bugs.webkit.org/show_bug.cgi?id=24606>.
+testInfo = [12, 3, 0, "0"];
+select.add(new Option("0", "0", false, false), optgroup.firstChild);
+testInfo = [12, 3, 0, "0"];
+checkSelect();
+
+testInfo = [13, 2, 0, "1"];
+select.remove(0);
+checkSelect();
+*/
+
+testInfo = [14, 3, 0, "-1"];
+optgroup.insertBefore(new Option("-1", "-1", false, false), optgroup.firstChild);
+checkSelect();
+
+testInfo = [15, 3, 0, "-"];
+optgroup.firstChild.value = "-";
+optgroup.firstChild.text = "-";
+checkSelect();
+
+testInfo = [16, 0, 0, undefined];
+optgroup.innerHTML = "";
+checkSelect();
+
+if (!hadFailure)
+    res.innerHTML = "SUCCESS";
+</script>

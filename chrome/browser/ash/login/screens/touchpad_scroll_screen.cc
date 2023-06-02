@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -19,6 +20,24 @@ namespace {
 
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionUpdateScrollDirection[] = "update-scroll";
+constexpr const char kUserActionReturn[] = "return";
+
+bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
+  if (!features::IsOobeChoobeEnabled() || !controller) {
+    return false;
+  }
+  return controller->ShouldShowReturnButton(
+      TouchpadScrollScreenView::kScreenId);
+}
+
+void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
+  if (!features::IsOobeChoobeEnabled() || !controller) {
+    return;
+  }
+  controller->OnScreenCompleted(
+      *ProfileManager::GetActiveUserProfile()->GetPrefs(),
+      TouchpadScrollScreenView::kScreenId);
+}
 
 }  // namespace
 
@@ -56,6 +75,15 @@ bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
     }
   }
 
+  // Skip the screen if `kShowTouchpadScrollScreenEnabled` preference is set by
+  // admin to false.
+  const PrefService::Preference* pref =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
+          prefs::kShowTouchpadScrollScreenEnabled);
+  if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
+    return true;
+  }
+
   return false;
 }
 
@@ -87,7 +115,13 @@ void TouchpadScrollScreen::ShowImpl() {
   }
 
   view_->SetReverseScrolling(GetNaturalScrollPrefValue());
-  view_->Show();
+
+  base::Value::Dict data;
+  data.Set(
+      "shouldShowReturn",
+      ShouldShowChoobeReturnButton(
+          WizardController::default_controller()->choobe_flow_controller()));
+  view_->Show(std::move(data));
 }
 
 void TouchpadScrollScreen::HideImpl() {}
@@ -96,6 +130,18 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionNext) {
+    ReportScreenCompletedToChoobe(
+        WizardController::default_controller()->choobe_flow_controller());
+    exit_callback_.Run(Result::kNext);
+    return;
+  }
+
+  if (action_id == kUserActionReturn) {
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->return_to_choobe_screen = true;
+    ReportScreenCompletedToChoobe(
+        WizardController::default_controller()->choobe_flow_controller());
     exit_callback_.Run(Result::kNext);
     return;
   }
@@ -109,16 +155,30 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
+std::string TouchpadScrollScreen::RetrieveChoobeSubtitle() {
+  if (GetNaturalScrollPrefValue()) {
+    return "choobeTouchpadScrollSubtitleEnabled";
+  }
+  return "choobeTouchpadScrollSubtitleDisabled";
+}
+
 ScreenSummary TouchpadScrollScreen::GetScreenSummary() {
   ScreenSummary summary;
   summary.screen_id = TouchpadScrollScreenView::kScreenId;
-  summary.icon_id = "oobe-32:scroll-direction";
+  summary.icon_id = "oobe-40:scroll-choobe";
   summary.title_id = "choobeTouchpadScrollTitle";
-  summary.is_revisitable = false;
+  summary.is_revisitable = true;
   summary.is_synced = !ProfileManager::GetActiveUserProfile()
                            ->GetPrefs()
                            ->FindPreference(prefs::kNaturalScroll)
                            ->IsDefaultValue();
+  if (summary.is_synced ||
+      (WizardController::default_controller()
+           ->choobe_flow_controller()
+           ->IsScreenCompleted(TouchpadScrollScreenView::kScreenId))) {
+    summary.subtitle_resource = RetrieveChoobeSubtitle();
+  }
+
   return summary;
 }
 

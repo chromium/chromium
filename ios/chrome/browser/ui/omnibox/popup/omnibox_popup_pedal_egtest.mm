@@ -22,24 +22,21 @@
 #endif
 
 namespace {
+
 NSString* kDinoPedalString = @"chrome://dino";
 NSString* kDinoSearchString = @"dino game";
-
-// Returns a matcher for a popup row containing `string` as accessibility label.
-id<GREYMatcher> popupRowWithString(NSString* string) {
-  id<GREYMatcher> textMatcher = grey_descendant(
-      chrome_test_util::StaticTextWithAccessibilityLabel(string));
-  id<GREYMatcher> popupRow =
-      grey_allOf(chrome_test_util::OmniboxPopupRow(), textMatcher,
-                 grey_sufficientlyVisible(), nil);
-  return popupRow;
-}
 
 }  // namespace
 
 @interface OmniboxPedalsTestCase : ChromeTestCase
 @end
 @implementation OmniboxPedalsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -61,8 +58,10 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGreyUI focusOmniboxAndType:@"pedaldino"];
 
   // Matcher for the dino pedal and search suggestions.
-  id<GREYMatcher> dinoPedal = popupRowWithString(kDinoPedalString);
-  id<GREYMatcher> dinoSearch = popupRowWithString(kDinoSearchString);
+  id<GREYMatcher> dinoPedal =
+      chrome_test_util::OmniboxPopupRowWithString(kDinoPedalString);
+  id<GREYMatcher> dinoSearch =
+      chrome_test_util::OmniboxPopupRowWithString(kDinoSearchString);
 
   // Dino pedal and search suggestions should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:dinoPedal];
@@ -91,7 +90,8 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO);
 
   // Matcher for the incognito pedal suggestion.
-  id<GREYMatcher> incognitoPedal = popupRowWithString(incognitoPedalString);
+  id<GREYMatcher> incognitoPedal =
+      chrome_test_util::OmniboxPopupRowWithString(incognitoPedalString);
 
   // Incognito pedal should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:incognitoPedal];
@@ -118,7 +118,7 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
 
   // Matcher for the manage passwords pedal suggestion.
   id<GREYMatcher> managePasswordsPedal =
-      popupRowWithString(managePasswordsPedalString);
+      chrome_test_util::OmniboxPopupRowWithString(managePasswordsPedalString);
 
   // Manage passwords pedal should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:managePasswordsPedal];
@@ -153,7 +153,7 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
 
   // Matcher for the clear browsing data pedal suggestion.
   id<GREYMatcher> clearBrowsingDataPedal =
-      popupRowWithString(clearBrowsingDataPedalString);
+      chrome_test_util::OmniboxPopupRowWithString(clearBrowsingDataPedalString);
 
   // Clear browsing data pedal should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:clearBrowsingDataPedal];
@@ -188,7 +188,7 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
 
   // Matcher for the set default browser pedal suggestion.
   id<GREYMatcher> setDefaultBrowserPedal =
-      popupRowWithString(defaultBrowserPedalString);
+      chrome_test_util::OmniboxPopupRowWithString(defaultBrowserPedalString);
 
   // Set default browser pedal should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:setDefaultBrowserPedal];
@@ -225,7 +225,7 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
 
   // Matcher for the manage settings pedal suggestion.
   id<GREYMatcher> manageSettingsPedal =
-      popupRowWithString(manageSettingsPedalString);
+      chrome_test_util::OmniboxPopupRowWithString(manageSettingsPedalString);
 
   // Manage settings pedal should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:manageSettingsPedal];
@@ -260,7 +260,8 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
 
   // Matcher for the manage payment methods pedal suggestion.
   id<GREYMatcher> managePaymentMethodsPedal =
-      popupRowWithString(managePaymenyMethodsPedalString);
+      chrome_test_util::OmniboxPopupRowWithString(
+          managePaymenyMethodsPedalString);
 
   // Manage payment methods pedal should be visible.
   [ChromeEarlGrey
@@ -284,6 +285,75 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that safety check pedal is present and it opens the safety check page.
+- (void)testSafetyCheckPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalsafetycheck"];
+
+  NSString* safetyCheckPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK);
+
+  // Matcher for safety check pedal suggestion.
+  id<GREYMatcher> safetyCheckPedal =
+      chrome_test_util::OmniboxPopupRowWithString(safetyCheckPedalString);
+
+  // Safety check pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:safetyCheckPedal];
+
+  // Tap on safety check pedal.
+  [[EarlGrey selectElementWithMatcher:safetyCheckPedal]
+      performAction:grey_tap()];
+
+  // Safety check page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SafetyCheckTableViewMatcher()];
+
+  // Close the safety check page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SafetyCheckTableViewMatcher()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
+// Tests that visit history pedal is present and it opens the browser history
+// page.
+- (void)testVisitHistoryPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"history"];
+
+  NSString* visitHistoryPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY);
+
+  // Matcher for visit history pedal suggestion.
+  id<GREYMatcher> visitHistoryPedal =
+      chrome_test_util::OmniboxPopupRowWithString(visitHistoryPedalString);
+
+  // Visit history pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:visitHistoryPedal];
+
+  // Tap on visit history pedal.
+  [[EarlGrey selectElementWithMatcher:visitHistoryPedal]
+      performAction:grey_tap()];
+
+  // Visit history page should be displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::HistoryTableView()];
+
+  // Close the Visit history page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::HistoryTableView()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {
@@ -292,8 +362,10 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGreyUI focusOmniboxAndType:@"nopedal"];
 
   // Matcher for the dino pedal and search suggestions.
-  id<GREYMatcher> dinoPedal = popupRowWithString(kDinoPedalString);
-  id<GREYMatcher> dinoSearch = popupRowWithString(kDinoSearchString);
+  id<GREYMatcher> dinoPedal =
+      chrome_test_util::OmniboxPopupRowWithString(kDinoPedalString);
+  id<GREYMatcher> dinoSearch =
+      chrome_test_util::OmniboxPopupRowWithString(kDinoSearchString);
 
   // The dino search suggestion should be present.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:dinoSearch];

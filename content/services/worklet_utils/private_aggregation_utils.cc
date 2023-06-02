@@ -67,7 +67,7 @@ absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
     return absl::Uint128Low64(maybe_debug_key.value());
   }
 
-  *error_out = "debug_key must be a BigInt";
+  *error_out = "debugKey must be a BigInt";
   return absl::nullopt;
 }
 
@@ -99,7 +99,7 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 }
 
 blink::mojom::AggregatableReportHistogramContributionPtr
-ParseSendHistogramReportArguments(
+ParseContributeToHistogramArguments(
     const gin::Arguments& args,
     bool private_aggregation_permissions_policy_allowed) {
   v8::Isolate* isolate = args.isolate();
@@ -118,7 +118,7 @@ ParseSendHistogramReportArguments(
   if (argument_list.size() == 0 || argument_list[0].IsEmpty() ||
       !argument_list[0]->IsObject()) {
     isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "sendHistogramReport requires 1 object parameter")));
+        isolate, "contributeToHistogram requires 1 object parameter")));
     return nullptr;
   }
 
@@ -136,7 +136,8 @@ ParseSendHistogramReportArguments(
   }
   if (js_bucket.IsEmpty() || js_bucket->IsNullOrUndefined()) {
     isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "Invalid or missing bucket in sendHistogramReport argument")));
+        isolate,
+        "Invalid or missing bucket in contributeToHistogram argument")));
     return nullptr;
   }
 
@@ -146,7 +147,8 @@ ParseSendHistogramReportArguments(
   }
   if (js_value.IsEmpty() || js_value->IsNullOrUndefined()) {
     isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "Invalid or missing value in sendHistogramReport argument")));
+        isolate,
+        "Invalid or missing value in contributeToHistogram argument")));
     return nullptr;
   }
 
@@ -226,7 +228,8 @@ void ParseAndApplyEnableDebugModeArguments(
     }
 
     v8::Local<v8::Value> js_debug_key;
-    if (!dict.Get("debug_key", &js_debug_key)) {
+
+    if (!dict.Get("debugKey", &js_debug_key)) {
       // Propagate any exception
       return;
     }

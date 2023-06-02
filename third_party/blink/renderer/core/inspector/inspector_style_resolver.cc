@@ -29,7 +29,8 @@ InspectorStyleResolver::InspectorStyleResolver(
 
   // Update style and layout tree for collecting an up-to-date set of rules
   // and animations.
-  element_->GetDocument().UpdateStyleAndLayoutTreeForNode(element_);
+  element_->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      element_, DocumentUpdateReason::kInspector);
 
   // FIXME: It's really gross for the inspector to reach in and access
   // StyleResolver directly here. We need to provide the Inspector better APIs

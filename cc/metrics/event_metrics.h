@@ -62,7 +62,8 @@ class CC_EXPORT EventMetrics {
     kGesturePinchEnd,
     kGesturePinchUpdate,
     kInertialGestureScrollUpdate,
-    kMaxValue = kInertialGestureScrollUpdate,
+    kMouseMoved,
+    kMaxValue = kMouseMoved,
   };
 
   // Stages of event dispatch in different processes/threads.
@@ -405,9 +406,9 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   float predicted_delta() const { return predicted_delta_; }
 
-  int32_t coalesced_event_count() { return coalesced_event_count_; }
+  int32_t coalesced_event_count() const { return coalesced_event_count_; }
 
-  absl::optional<TraceId> trace_id() { return trace_id_; }
+  absl::optional<TraceId> trace_id() const { return trace_id_; }
 
   void set_predicted_delta(float predicted_delta) {
     predicted_delta_ = predicted_delta;

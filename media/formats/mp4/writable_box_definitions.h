@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -22,6 +23,35 @@ enum class TrackHeaderFlags : uint16_t {
   kTrackEnabled = 0x0001,
   kTrackInMovie = 0x0002,
   kTrackInPreview = 0x0004,
+};
+
+enum class TrackFragmentHeaderFlags : uint32_t {
+  kBaseDataOffsetPresent = 0x0001,
+  kSampleDescriptionIndexPresent = 0x0002,
+  kDefaultSampleDurationPresent = 0x0008,
+  kDefaultSampleSizePresent = 0x0010,
+  kkDefaultSampleFlagsPresent = 0x0020,
+
+  // This is `iso5` brand by spec on 14496-12, so can't be used
+  // with brand of `isom`, `avc1`, `iso2`.
+
+  // https://www.w3.org/TR/mse-byte-stream-format-isobmff/ said that
+  // it should have `kDefaultBaseIsMoof', but not `kBaseDataOffsetPresent`.
+  kDefaultBaseIsMoof = 0x020000,
+};
+
+enum class TrackFragmentRunFlags : uint16_t {
+  kDataOffsetPresent = 0x0001,
+  kFirstSampleFlagsPresent = 0x0004,
+  kSampleDurationPresent = 0x0100,
+  kSampleSizePresent = 0x0200,
+  kSampleFlagsPresent = 0x0400,
+};
+
+enum class FragmentSampleFlags : uint32_t {
+  kSampleFlagIsNonSync = 0x00010000,
+  kSampleFlagDependsYes = 0x01000000,
+  kSampleFlagDependsNo = 0x02000000,
 };
 
 // Box header without version.
@@ -40,7 +70,34 @@ struct MEDIA_EXPORT PixelAspectRatioBox : Box {
   // We use default value of 1 for both of these values.
 };
 
+// Bit Rate Box (`btrt`) box.
+struct MEDIA_EXPORT BitRate : Box {
+  uint32_t max_bit_rate;
+  uint32_t avg_bit_rate;
+};
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Elementary Stream Descriptor (`esds`) box.
+struct MEDIA_EXPORT ElementaryStreamDescriptor : FullBox {
+  ElementaryStreamDescriptor();
+  ~ElementaryStreamDescriptor();
+  ElementaryStreamDescriptor(const ElementaryStreamDescriptor&);
+  ElementaryStreamDescriptor& operator=(const ElementaryStreamDescriptor&);
+
+  // ES descriptor 14496-1
+  // DecoderConfigDescriptor (14496-1).
+  // AAC AudioSpecificConfig (14496-3).
+  std::vector<uint8_t> aac_codec_description;
+};
+
+// MP4A Audio Sample Entry (`mp4a`) box.
+struct MEDIA_EXPORT AudioSampleEntry : Box {
+  uint32_t sample_rate;  // AudioSampleEntry.
+
+  ElementaryStreamDescriptor elementary_stream_descriptor;
+  BitRate bit_rate;
+};
+
 // AVC DecoderConfiguration Record (`avcc`) box.
 struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // Refer AVCDecoderConfigurationRecord of box_definitions.h
@@ -76,6 +133,7 @@ struct MEDIA_EXPORT SampleDescription : FullBox {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   absl::optional<VisualSampleEntry> visual_sample_entry;
+  absl::optional<AudioSampleEntry> audio_sample_entry;
 #endif
 };
 
@@ -228,6 +286,73 @@ struct MEDIA_EXPORT Movie : Box {
   MovieHeader header;
   std::vector<Track> tracks;
   MovieExtends extends;
+};
+
+// Track Fragment Run (`trun`) box.
+struct MEDIA_EXPORT TrackFragmentRun : FullBox {
+  TrackFragmentRun();
+  ~TrackFragmentRun();
+  TrackFragmentRun(const TrackFragmentRun&);
+  TrackFragmentRun& operator=(const TrackFragmentRun&);
+
+  uint32_t sample_count;
+  uint32_t first_sample_flags;
+
+  // Optional fields, presence is indicated in `flags`. If not present, the
+  // default value established in the `TrackFragmentHeader` is used.
+  std::vector<base::TimeDelta> sample_durations;
+  std::vector<uint32_t> sample_sizes;
+  std::vector<uint32_t> sample_flags;
+  // We don't support sample_composition_time_offsets as we don't know
+  // how to get it on given data.
+};
+
+// Track Fragment Decode Time (`tfdt`) box.
+struct MEDIA_EXPORT TrackFragmentDecodeTime : Box {
+  base::TimeDelta base_media_decode_time;
+};
+
+// Track Fragment Header(`tfhd`) box.
+struct MEDIA_EXPORT TrackFragmentHeader : FullBox {
+  uint32_t track_id;
+
+  // `base_data_offset` will be calculated during fragment write.
+  // uint64_t base_data_offset;
+  base::TimeDelta default_sample_duration;
+  uint32_t default_sample_size;
+  uint32_t default_sample_flags;
+};
+
+// Track Fragment Header(`traf`) box.
+struct MEDIA_EXPORT TrackFragment : Box {
+  TrackFragmentHeader header;
+  TrackFragmentDecodeTime decode_time;
+  TrackFragmentRun run;
+};
+
+// Movie Fragment Header(`mfhd`) box.
+struct MEDIA_EXPORT MovieFragmentHeader : FullBox {
+  uint32_t sequence_number;
+};
+
+// Movie Fragment (`moof`) box.
+struct MEDIA_EXPORT MovieFragment : Box {
+  MovieFragment();
+  ~MovieFragment();
+  MovieFragment(const MovieFragment&);
+  MovieFragment& operator=(const MovieFragment&);
+
+  MovieFragmentHeader header;
+  std::vector<TrackFragment> track_fragments;
+};
+
+// Media Data (`mdat`) box.
+struct MEDIA_EXPORT MediaData : Box {
+  MediaData();
+  ~MediaData();
+  MediaData(const MediaData&);
+  MediaData& operator=(const MediaData&);
+  std::vector<base::span<uint8_t>> data;
 };
 
 }  // namespace media::mp4::writable_boxes

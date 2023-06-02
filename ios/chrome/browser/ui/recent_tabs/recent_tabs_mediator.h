@@ -12,10 +12,22 @@
 #import "ios/chrome/browser/ui/recent_tabs/closed_tabs_observer_bridge.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
 
-class ChromeBrowserState;
+class FaviconLoader;
+@protocol RecentTabsConsumer;
+class SyncSetupService;
 class WebStateList;
 
-@protocol RecentTabsConsumer;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
 
 // RecentTabsMediator controls the RecentTabsConsumer,
 // based on the user's signed-in and chrome-sync states.
@@ -31,11 +43,19 @@ class WebStateList;
 // object and may be nil.
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
 
-// The coordinator's BrowserState.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
-
 // The WebStateList that this mediator listens for.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+- (instancetype)
+    initWithSessionSyncService:
+        (sync_sessions::SessionSyncService*)sessionSyncService
+               identityManager:(signin::IdentityManager*)identityManager
+                restoreService:(sessions::TabRestoreService*)restoreService
+                 faviconLoader:(FaviconLoader*)faviconLoader
+              syncSetupService:(SyncSetupService*)syncSetupService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Starts observing the he user's signed-in and chrome-sync states.
 - (void)initObservers;

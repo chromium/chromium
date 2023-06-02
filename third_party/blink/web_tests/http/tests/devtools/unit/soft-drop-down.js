@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function () {
   var items = [
     {

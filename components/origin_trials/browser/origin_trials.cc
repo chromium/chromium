@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
@@ -41,13 +43,13 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOrigin(
                                               current_time, absl::nullopt);
 }
 
-bool OriginTrials::IsTrialPersistedForOrigin(
+bool OriginTrials::IsFeaturePersistedForOrigin(
     const url::Origin& origin,
     const url::Origin& partition_origin,
-    const base::StringPiece trial_name,
+    blink::OriginTrialFeature feature,
     const base::Time current_time) {
   return !GetPersistedTrialsForOriginWithMatch(origin, partition_origin,
-                                               current_time, trial_name)
+                                               current_time, feature)
               .empty();
 }
 
@@ -97,30 +99,39 @@ void OriginTrials::PersistTokensInternal(
             token, origin, script_origins, current_time);
 
     const blink::TrialToken* parsed_token = validation_result.ParsedToken();
-    if (validation_result.Status() == blink::OriginTrialTokenStatus::kSuccess &&
-        blink::origin_trials::IsTrialPersistentToNextResponse(
+
+    if (validation_result.Status() != blink::OriginTrialTokenStatus::kSuccess) {
+      continue;
+    }
+    if (!blink::origin_trials::IsTrialPersistentToNextResponse(
             parsed_token->feature_name())) {
-      if (parsed_token->is_third_party()) {
-        // TODO(crbug.com/1418340): Support for all third-party tokens.
-        // Only accept deprecation trials as third-party for now.
-        bool deprecation_trial = false;
-        for (const blink::OriginTrialFeature feature :
-             blink::origin_trials::FeaturesForTrial(
-                 parsed_token->feature_name())) {
-          deprecation_trial |= blink::origin_trials::GetTrialType(feature) ==
-                               blink::OriginTrialType::kDeprecation;
-        }
-        if (deprecation_trial) {
-          // Valid third-party tokens are saved using the origin stored in the
-          // token.
-          valid_tokens[parsed_token->origin()].push_back(
-              std::move(*parsed_token));
-        }
-      } else {
-        // First party tokens use the passed-in origin, since it could be a
-        // subdomain.
-        valid_tokens[origin].push_back(std::move(*parsed_token));
+      continue;
+    }
+    // TODO(crbug.com/1227440): Should be part of general validation logic.
+    if (!trial_token_validator_->TrialEnablesFeaturesForOS(
+            parsed_token->feature_name())) {
+      continue;
+    }
+    if (parsed_token->is_third_party()) {
+      // TODO(crbug.com/1418340): Support for all third-party tokens.
+      // Only accept deprecation trials as third-party for now.
+      bool deprecation_trial = false;
+      for (const blink::OriginTrialFeature feature :
+           blink::origin_trials::FeaturesForTrial(
+               parsed_token->feature_name())) {
+        deprecation_trial |= blink::origin_trials::GetTrialType(feature) ==
+                             blink::OriginTrialType::kDeprecation;
       }
+      if (deprecation_trial) {
+        // Valid third-party tokens are saved using the origin stored in the
+        // token.
+        valid_tokens[parsed_token->origin()].push_back(
+            std::move(*parsed_token));
+      }
+    } else {
+      // First party tokens use the passed-in origin, since it could be a
+      // subdomain.
+      valid_tokens[origin].push_back(std::move(*parsed_token));
     }
   }
   std::string partition_site = GetTokenPartitionSite(partition_origin);
@@ -134,7 +145,7 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
     const url::Origin& origin,
     const url::Origin& partition_origin,
     const base::Time current_time,
-    const absl::optional<const base::StringPiece> trial_name_match) const {
+    const absl::optional<blink::OriginTrialFeature> trial_feature_match) const {
   if (origin.opaque())
     return {};
 
@@ -143,18 +154,25 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
 
   base::flat_set<std::string> enabled_trials;
   for (const PersistedTrialToken& token : saved_tokens) {
-    if (!trial_name_match || token.trial_name == *trial_name_match) {
-      bool valid = trial_token_validator_->RevalidateTokenAndTrial(
-          token.trial_name, token.token_expiry, token.usage_restriction,
-          token.token_signature, current_time);
-      bool persistent = blink::origin_trials::IsTrialPersistentToNextResponse(
-          token.trial_name);
-      if (valid && persistent &&
-          token.partition_sites.contains(
-              GetTokenPartitionSite(partition_origin))) {
-        // Move the string into the flat_set to avoid extra heap allocations
-        enabled_trials.insert(std::move(token.trial_name));
-      }
+    if (trial_feature_match &&
+        // TODO(crbug.com/1227440): FeaturesEnabledByTrial should be part of
+        // general validation logic.
+        !base::Contains(
+            trial_token_validator_->FeaturesEnabledByTrial(token.trial_name),
+            trial_feature_match.value())) {
+      continue;
+    }
+
+    bool valid = trial_token_validator_->RevalidateTokenAndTrial(
+        token.trial_name, token.token_expiry, token.usage_restriction,
+        token.token_signature, current_time);
+    bool persistent =
+        blink::origin_trials::IsTrialPersistentToNextResponse(token.trial_name);
+    if (valid && persistent &&
+        token.partition_sites.contains(
+            GetTokenPartitionSite(partition_origin))) {
+      // Move the string into the flat_set to avoid extra heap allocations
+      enabled_trials.insert(std::move(token.trial_name));
     }
   }
 

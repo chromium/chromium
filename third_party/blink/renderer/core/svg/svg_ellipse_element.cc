@@ -53,12 +53,7 @@ SVGEllipseElement::SVGEllipseElement(Document& document)
           svg_names::kRyAttr,
           SVGLengthMode::kHeight,
           SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kRy)) {
-  AddToPropertyMap(cx_);
-  AddToPropertyMap(cy_);
-  AddToPropertyMap(rx_);
-  AddToPropertyMap(ry_);
-}
+          CSSPropertyID::kRy)) {}
 
 void SVGEllipseElement::Trace(Visitor* visitor) const {
   visitor->Trace(cx_);
@@ -133,6 +128,44 @@ bool SVGEllipseElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGEllipseElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGEllipse>(this);
+}
+
+SVGAnimatedPropertyBase* SVGEllipseElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kCxAttr) {
+    return cx_.Get();
+  } else if (attribute_name == svg_names::kCyAttr) {
+    return cy_.Get();
+  } else if (attribute_name == svg_names::kRxAttr) {
+    return rx_.Get();
+  } else if (attribute_name == svg_names::kRyAttr) {
+    return ry_.Get();
+  } else {
+    return SVGGeometryElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGEllipseElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{cx_.Get(), cy_.Get(), rx_.Get(),
+                                     ry_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGeometryElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGEllipseElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  for (auto* property : (SVGAnimatedPropertyBase*[]){cx_.Get(), cy_.Get(),
+                                                     rx_.Get(), ry_.Get()}) {
+    if (property->HasPresentationAttributeMapping() &&
+        property->IsAnimating()) {
+      CollectStyleForPresentationAttribute(property->AttributeName(),
+                                           g_empty_atom, style);
+    }
+  }
+  SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

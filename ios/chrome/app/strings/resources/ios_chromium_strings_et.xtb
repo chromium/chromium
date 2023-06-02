@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromiumi andmete sünkroonimine</translation>
 <translation id="1722370509450468186">Parool salvestatakse teie kontole (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromiumi andmed kustutati</translation>
-<translation id="177102542580335555">Saate selle Chromiumi profiili jaoks standardse turvakaitse</translation>
 <translation id="1838412507805038478">Chromium kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromiumil on funktsioonid, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate veebilehti laadida.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromiumi kasutamiseks parimal moel logige Chromiumi sisse oma Google'i kontoga.</translation>
 <translation id="3639997914391704523">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> kasutas Chromiumi ning jättis järjehoidjad, paroolid ja muud seaded sellesse seadmesse.</translation>
+<translation id="3661862315467204831">Avage iOS-is Chromiumi seaded, seejärel puudutage valikut „Brauseri vaike-APP” ja valige Chromium.</translation>
 <translation id="372658070733623520">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole kinnitage, et see olete teie.</translation>
 <translation id="3805899903892079518">Chromiumil pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdepääs valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
+<translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="3955621079070267756">Avage Chromium mis tahes rakendusest</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>

@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
@@ -462,7 +463,6 @@
 }
 
 - (void)locationBarDidBecomeFirstResponder {
-  [self.headerViewController locationBarBecomesFirstResponder];
   self.NTPViewController.omniboxFocused = YES;
 }
 
@@ -797,8 +797,7 @@
 }
 
 - (void)fakeboxTapped {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kFakebox
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kFakebox, [self isStartSurface]);
   [self focusFakebox];
 }
 
@@ -1222,25 +1221,24 @@
 #pragma mark - NewTabPageMetricsDelegate
 
 - (void)recentTabTileOpened {
-  [self.NTPMetricsRecorder
-      recordHomeActionType:IOSHomeActionType::kReturnToRecentTab
-            onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kReturnToRecentTab,
+                   [self isStartSurface]);
 }
 
 - (void)feedArticleOpened {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kFeedCard
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kFeedCard, [self isStartSurface]);
 }
 
 - (void)mostVisitedTileOpened {
-  [self.NTPMetricsRecorder
-      recordHomeActionType:IOSHomeActionType::kMostVisitedTile
-            onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kMostVisitedTile, [self isStartSurface]);
 }
 
 - (void)shortcutTileOpened {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kShortcuts
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kShortcuts, [self isStartSurface]);
+}
+
+- (void)setUpListItemOpened {
+  RecordHomeAction(IOSHomeActionType::kSetUpList, [self isStartSurface]);
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner
@@ -1619,8 +1617,6 @@
   self.visible = visible;
 
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
-    [self updateStartForVisibilityChange:visible];
-
     if (visible) {
       if ([self isFollowingFeedAvailable]) {
         NewTabPageTabHelper* helper =
@@ -1644,22 +1640,27 @@
       if ([self isFeedHeaderVisible]) {
         if ([self.feedExpandedPref value]) {
           [self.NTPMetricsRecorder
-              recordNTPImpression:IOSNTPImpressionType::kFeedVisible];
+              recordHomeImpression:IOSNTPImpressionType::kFeedVisible
+                    isStartSurface:[self isStartSurface]];
         } else {
           [self.NTPMetricsRecorder
-              recordNTPImpression:IOSNTPImpressionType::kFeedCollapsed];
+              recordHomeImpression:IOSNTPImpressionType::kFeedCollapsed
+                    isStartSurface:[self isStartSurface]];
         }
       } else {
         [self.NTPMetricsRecorder
-            recordNTPImpression:IOSNTPImpressionType::kFeedDisabled];
+            recordHomeImpression:IOSNTPImpressionType::kFeedDisabled
+                  isStartSurface:[self isStartSurface]];
       }
     } else {
       if (!self.didAppearTime.is_null()) {
         [self.NTPMetricsRecorder
-            recordTimeSpentInNTP:base::TimeTicks::Now() - self.didAppearTime];
+            recordTimeSpentInHome:(base::TimeTicks::Now() - self.didAppearTime)
+                   isStartSurface:[self isStartSurface]];
         self.didAppearTime = base::TimeTicks();
       }
     }
+    [self updateStartForVisibilityChange:visible];
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
     // TODO(crbug.com/1373650) Move isFeedVisible check to the metrics recorder

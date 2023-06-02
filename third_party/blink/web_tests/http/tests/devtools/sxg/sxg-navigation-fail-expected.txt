@@ -2,6 +2,15 @@ Tests the signed exchange information are available when the navigation failed.
 
 inspected-page.html:1 Validity URL must be same-origin with request URL.
 inspected-page.html:1 Failed to parse SignedExchange header.
-PROMISE FAILURE: ReferenceError: NetowrkTestRunner is not defined
-    at http://127.0.0.1:8000/devtools/sxg/sxg-navigation-fail.js:12:3
+* http://127.0.0.1:8000/loading/sxg/resources/sxg-invalid-validity-url.sxg
+  failed: false
+  statusCode: 200
+  resourceType: signed-exchange
+  SignedExchangeInfo
+    Error: {"message":"Validity URL must be same-origin with request URL."}
+    Error: {"message":"Failed to parse SignedExchange header."}
+* https://127.0.0.1:8443/loading/sxg/resources/inner-url.html
+  failed: false
+  statusCode: 200
+  resourceType: document
 

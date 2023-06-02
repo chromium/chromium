@@ -510,7 +510,11 @@ class AddressComponent {
   // In cases where the tree has been initially completed, there might still be
   // nodes that are empty (e.g. a new leaf or internal node got recently
   // introduced). Gap filling addresses all those cases.
-  // TODO(crbug.com/1440168) Include also parsing as a strategy for gap filling.
+  // The overall strategy is: For every empty node, try building its value by
+  // parsing its parent. If that's not possible (e.g. info can't be parsed), use
+  // formatting rules to build a value from its children. Note that this process
+  // respects non-empty nodes and the information growth invariant (i.e child
+  // information is always contained on their ancestors).
   void FillTreeGaps();
 
   // Determines a value from the subcomponents by using the
@@ -530,8 +534,28 @@ class AddressComponent {
   // of the subcomponents. Returns true on success and is allowed to fail.
   bool ParseValueAndAssignSubcomponentsByRegularExpressions();
 
-  // This method verifies that the `value` is compatible with all the node's
-  // anestors.
+  // This method uses regular expressions acquired by
+  // |GetParseRegularExpressionsByRelevance| to parse |value_| into the values
+  // of the subcomponents that are empty, components with non-empty values
+  // remain unchanged. If parsing is not successful, the function does not
+  // perform any modifications. Returns true if parsing was successful.
+  void TryParseValueAndAssignSubcomponentsRespectingSetValues();
+
+  // Parses |value| by using |parse_expressions| and assigns values to empty
+  // subcomponents only. The value assigned to each subcomponent is compatible
+  // with the information growth invariant (i.e child information is always
+  // contained on their ancestors). If parsing is not successful, the function
+  // does not perform any modifications. Returns true if parsing was successful.
+  bool ParseValueAndAssignSubcomponentsRespectingSetValues(
+      const std::u16string& value,
+      const re2::RE2* parse_expression);
+
+  // This method verifies that the `value` is token compatible with this node
+  // and all the node's descendants.
+  bool IsValueCompatibleWithDescendants(const std::u16string& value) const;
+
+  // This method verifies that the `value` is token compatible with this node
+  // and all the node's ancestors.
   bool IsValueCompatibleWithAncestors(const std::u16string& value) const;
 
   // The unstructured value of this component.

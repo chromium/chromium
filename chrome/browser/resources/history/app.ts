@@ -285,7 +285,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   override ready() {
     super.ready();
 
-    this.addEventListener('cr-toolbar-menu-tap', this.onCrToolbarMenuClick_);
+    this.addEventListener('cr-toolbar-menu-click', this.onCrToolbarMenuClick_);
     this.addEventListener('delete-selected', this.deleteSelected);
     this.addEventListener('history-checkbox-select', this.checkboxSelected);
     this.addEventListener('history-close-drawer', this.closeDrawer_);

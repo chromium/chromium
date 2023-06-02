@@ -615,7 +615,8 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
     // Notify |context_lost_callback_| and |context_lost_observers_| first,
     // since maybe they still need the GrDirectContext for releasing some skia
     // resources.
-    std::move(context_lost_callback_).Run(!device_needs_reset_);
+    std::move(context_lost_callback_)
+        .Run(!device_needs_reset_, context_lost_reason_.value());
     for (auto& observer : context_lost_observers_)
       observer.OnContextLost();
 
@@ -930,6 +931,32 @@ bool SharedContextState::CheckResetStatus(bool need_gl) {
 void SharedContextState::ScheduleGrContextCleanup() {
   if (gr_cache_controller_)
     gr_cache_controller_->ScheduleGrContextCleanup();
+}
+
+int32_t SharedContextState::GetMaxTextureSize() const {
+  int32_t max_texture_size = 0;
+  if (GrContextIsGL()) {
+    gl::GLApi* const api = gl::g_current_gl_context;
+    api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+  } else if (GrContextIsVulkan()) {
+#if BUILDFLAG(ENABLE_VULKAN)
+    max_texture_size = vk_context_provider()
+                           ->GetDeviceQueue()
+                           ->vk_physical_device_properties()
+                           .limits.maxImageDimension2D;
+#else
+    NOTREACHED_NORETURN();
+#endif
+  } else {
+    // TODO(crbug.com/1090476): Query Dawn for this value once an API exists for
+    // capabilities.
+    max_texture_size = 8192;
+  }
+  // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
+  // can be used to accurately represent all valid sub-rects, with overflow
+  // cases, clamped to INT_MAX, always invalid.
+  max_texture_size = std::min(max_texture_size, INT32_MAX - 1);
+  return max_texture_size;
 }
 
 }  // namespace gpu

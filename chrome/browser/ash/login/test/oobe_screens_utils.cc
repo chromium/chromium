@@ -49,6 +49,11 @@ void WaitForExit(OobeScreenId screen_id) {
 
 void WaitForWelcomeScreen() {
   WaitFor(WelcomeView::kScreenId);
+  // Wait until OOBE is fully initialized and the 'Get Started' button enabled.
+  OobeJS()
+      .CreateEnabledWaiter(true /* enabled */,
+                           {"connect", "welcomeScreen", "getStarted"})
+      ->Wait();
 }
 
 void TapWelcomeNext() {

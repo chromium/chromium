@@ -33,7 +33,7 @@
 
 #if defined(__ELF__) && !defined(__OpenBSD__) && !defined(__QNX__) && \
     !defined(__native_client__) && !defined(__asmjs__) &&             \
-    !defined(__wasm__) && !defined(__HAIKU__)
+    !defined(__wasm__) && !defined(__HAIKU__) && !defined(__sun)
 #define ABSL_HAVE_ELF_MEM_IMAGE 1
 #endif
 

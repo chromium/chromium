@@ -568,7 +568,7 @@ class PaymentsClient {
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Provided in constructor; not owned by PaymentsClient.
-  const raw_ptr<AccountInfoGetter> account_info_getter_;
+  const raw_ptr<AccountInfoGetter, DanglingUntriaged> account_info_getter_;
 
   // The current request.
   std::unique_ptr<PaymentsRequest> request_;

@@ -360,6 +360,10 @@ void HTMLFrameOwnerElement::DisconnectContentFrame() {
   // Check if removing the subframe caused |parent_doc| to finish loading.
   if (have_to_check_if_parent_is_completed)
     parent_doc.CheckCompleted();
+
+  // Reset the collapsed state. The frame element will be collapsed again if it
+  // is blocked again in the future.
+  SetCollapsed(false);
 }
 
 HTMLFrameOwnerElement::~HTMLFrameOwnerElement() {
@@ -695,8 +699,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
   // If the subframe navigation is aborted or TAO fails, we report a "fallback"
   // entry that starts at navigation and ends at load/error event.
-  if (url.ProtocolIsInHTTPFamily() ||
-      url.ProtocolIs(url::kUuidInPackageScheme)) {
+  if (url.ProtocolIsInHTTPFamily()) {
     fallback_timing_info_ =
         CreateResourceTimingInfo(base::TimeTicks::Now(), url,
                                  /*response=*/nullptr);

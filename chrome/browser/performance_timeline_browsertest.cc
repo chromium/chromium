@@ -56,10 +56,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   // fetch resource from extension.
-  EXPECT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      "document.querySelector('#fetchResourceButton').click();",
-                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  content::DOMMessageQueue message_queue;
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.querySelector('#fetchResourceButton').click();"));
+  std::string ack;
+  EXPECT_TRUE(message_queue.WaitForMessage(&ack));
+  EXPECT_EQ("true", ack);
 
   // There should be 0 resource entry emitted.
   EXPECT_EQ(content::EvalJs(web_contents(), "getResourceTimingEntryCount();")

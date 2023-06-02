@@ -285,7 +285,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   leveldb::Status DeleteRangeOperation(
       int64_t object_store_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      scoped_refptr<IndexedDBCallbacks> callbacks,
+      blink::mojom::IDBDatabase::DeleteRangeCallback success_callback,
       IndexedDBTransaction* transaction);
 
   leveldb::Status GetKeyGeneratorCurrentNumberOperation(
@@ -293,9 +293,10 @@ class CONTENT_EXPORT IndexedDBDatabase {
       scoped_refptr<IndexedDBCallbacks> callbacks,
       IndexedDBTransaction* transaction);
 
-  leveldb::Status ClearOperation(int64_t object_store_id,
-                                 scoped_refptr<IndexedDBCallbacks> callbacks,
-                                 IndexedDBTransaction* transaction);
+  leveldb::Status ClearOperation(
+      int64_t object_store_id,
+      blink::mojom::IDBDatabase::ClearCallback callback,
+      IndexedDBTransaction* transaction);
 
   bool IsObjectStoreIdInMetadata(int64_t object_store_id) const;
   bool IsObjectStoreIdAndIndexIdInMetadata(int64_t object_store_id,
@@ -395,7 +396,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   const Identifier identifier_;
   // TODO(dmurph): Remove the need for this to be here (and then remove it).
-  raw_ptr<IndexedDBFactory> factory_;
+  raw_ptr<IndexedDBFactory, DanglingUntriaged> factory_;
   const raw_ptr<IndexedDBClassFactory> class_factory_;
   std::unique_ptr<IndexedDBMetadataCoding> metadata_coding_;
 

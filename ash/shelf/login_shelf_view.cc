@@ -54,7 +54,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/manager/display_configurator.h"
@@ -75,6 +74,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -117,11 +117,6 @@ ui::ColorId GetButtonIconColorId() {
   return IsOobe() ? kColorAshButtonIconColorLight : kColorAshButtonIconColor;
 }
 
-ui::ColorId GetButtonBackgroundColorId() {
-  return IsOobe() ? cros_tokens::kCrosSysSystemOnBase
-                  : cros_tokens::kCrosSysSystemOnBase1;
-}
-
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
   switch (button_id) {
     case LoginShelfView::kShutdown:
@@ -162,6 +157,9 @@ constexpr int kButtonMarginLeftDp = kButtonMarginRightDp - 4;
 
 // Spacing between the button image and label.
 constexpr int kImageLabelSpacingDp = 8;
+
+// The highlight radius of the button.
+constexpr int kButtonHighlightRadiusDp = 16;
 
 void AnimateButtonOpacity(ui::Layer* layer,
                           float target_opacity,
@@ -213,9 +211,13 @@ class LoginShelfButton : public PillButton {
   }
 
   void UpdateButtonColors() {
-    SetEnabledTextColorIds(GetButtonTextColorId());
     if (chromeos::features::IsJellyrollEnabled()) {
-      SetBackgroundColorId(GetButtonBackgroundColorId());
+      SetPillButtonType(PillButton::kDefaultElevatedLargeWithIconLeading);
+      SetBorder(std::make_unique<views::HighlightBorder>(
+          kButtonHighlightRadiusDp,
+          views::HighlightBorder::Type::kHighlightBorderNoShadow));
+    } else {
+      SetEnabledTextColorIds(GetButtonTextColorId());
     }
     SetImageModel(
         views::Button::STATE_NORMAL,

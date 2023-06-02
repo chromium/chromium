@@ -351,8 +351,12 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
     host_impl()->active_tree()->DetachLayersKeepingRootLayerForTesting();
     host_impl()->active_tree()->property_trees()->clear();
     child_layers_.clear();
-    child1_ = child2_ = grand_child1_ = grand_child2_ = grand_child3_ =
-        grand_child4_ = nullptr;
+    child1_ = nullptr;
+    child2_ = nullptr;
+    grand_child1_ = nullptr;
+    grand_child2_ = nullptr;
+    grand_child3_ = nullptr;
+    grand_child4_ = nullptr;
   }
 
   // Stores result of CreateTestTreeWithOneSurface().
@@ -361,8 +365,8 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
   // Store result of CreateTestTreeWithTwoSurfaces().
   raw_ptr<TestLayerImpl> child1_ = nullptr;
   raw_ptr<TestLayerImpl> child2_ = nullptr;
-  raw_ptr<TestLayerImpl> grand_child1_ = nullptr;
-  raw_ptr<TestLayerImpl> grand_child2_ = nullptr;
+  raw_ptr<TestLayerImpl, DanglingUntriaged> grand_child1_ = nullptr;
+  raw_ptr<TestLayerImpl, DanglingUntriaged> grand_child2_ = nullptr;
   raw_ptr<TestLayerImpl> grand_child3_ = nullptr;
   raw_ptr<TestLayerImpl> grand_child4_ = nullptr;
 };

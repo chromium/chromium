@@ -134,6 +134,10 @@
     Finalizing...
   </message>
 
+  <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready" translateable="false">
+    Getting the device ready...
+  </message>
+
   <!-- Cellular Setup UI Strings -->
   <message name="IDS_CELLULAR_SETUP_BACK_LABEL" desc="Label for button to go to previous screen during cellular setup">
     Back
@@ -1168,7 +1172,7 @@
     Back up and restore your apps and settings
   </message>
   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options.">
-    Turn on device sync to restore your apps, settings, Wi-Fi networks, and wallpaper from your previous Chromebook. Make changes anytime in Settings > Accounts.
+    Turn on device sync to restore your apps, settings, Wi-Fi networks, and wallpaper from your previous Chromebook. Make changes anytime in Settings &gt; Accounts.
   </message>
   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options.">
     New to Chromebook? Turn on sync so your preferences will be backed up.
@@ -1211,7 +1215,7 @@
     Manage sync options
   </message>
    <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them.">
-    Selected items will be available on this Chromebook. If you're new to Chromebook, sync all items so your preferences will be backed up. Make changes anytime in Settings > Accounts.
+    Selected items will be available on this Chromebook. If you're new to Chromebook, sync all items so your preferences will be backed up. Make changes anytime in Settings &gt; Accounts.
   </message>
   <!-- Strings for recommend apps screen -->
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
@@ -1289,6 +1293,63 @@
   </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP" desc="A label on the button. Used on multiple screens in OOBE to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
     Set up with Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT" desc="A label on the button. Used on OOBE's network screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
+    Connect to Wi-Fi with Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_SIGNIN_SCREEN_ENTRY_POINT" desc="A label on the button. Used on OOBE's sign-in screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
+    Sign in with Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device.">
+    Set up with your Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_QR_CODE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device prompting the user to scan the QR code.">
+    Follow the instructions on your phone to scan the QR code. Make sure your phone's Bluetooth and Wi-Fi are turned on.
+    <ph name="BR">&lt;br&gt;</ph>
+    <ph name="BR">&lt;br&gt;</ph>
+    You can use your phone to add your Wi-Fi and Google Account info to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+    <ph name="BR">&lt;br&gt;</ph>
+    <ph name="BR">&lt;br&gt;</ph>
+    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_PIN_CODE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device prompting the user to verify the code shown on the screen.">
+    Follow the instructions on your phone to verify the code. Make sure your phone's Bluetooth and Wi-Fi are turned on.
+    <ph name="BR">&lt;br&gt;</ph>
+    <ph name="BR">&lt;br&gt;</ph>
+    You can use your phone to add your Wi-Fi and Google Account info to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+    <ph name="BR">&lt;br&gt;</ph>
+    <ph name="BR">&lt;br&gt;</ph>
+    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE" desc="A title used on OOBE's Quick Start screen when WiFi credentials are being transferred to the Chromebook from the Android device.">
+    Connecting to Wi-Fi...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE" desc="A subtitle used on OOBE's Quick Start screen when WiFi credentials are being transferred to the Chromebook from the Android device.">
+    Transfering Wi-Fi from your Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow prompting the user to connect to a WiFi network in order to continue the Chromebook setup using the Android device.">
+    To continue setup with your Android device, connect your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to a network
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_RESUME_AFTER_REBOOT_TITLE" desc="A title used on OOBE's Quick Start flow when the device reboots after applying an update and tries to continue the setup by connecting to the Android device.">
+    Connecting to your Android phone...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_RESUME_AFTER_REBOOT_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the device reboots after applying an update and tries to continue the setup by connecting to the Android device.">
+    Follow the instructions on your phone to continue setup. Make sure your phone is nearby and Bluetooth is turned on.
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE" desc="A title used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
+    Getting Google Account info...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the  user's credentails are being transferred from the Android device to ChromeOS.">
+    Transfering Google Account info from your Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE" desc="A title used on OOBE's Quick Start screen for signing-in into their Chromebook using an Android device prompting the user to scan a QR code.">
+    Sign in with your Android phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_SUBTITLE" desc="A subtitle used on OOBE's Quick Start screen for signing-in into their Chromebook using an Android device.">
+    Follow the instructions on your phone to scan the QR code. Make sure your phone's Bluetooth is on.
+    <ph name="BR">&lt;br&gt;</ph>
+    <ph name="BR">&lt;br&gt;</ph>
+    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$1<ex>Chromebook (123)</ex></ph>...
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
     Swipe up to get started
@@ -6030,9 +6091,6 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_DISALLOWED_ADMIN" desc="Message shown to the user when Steam on Chromebook is blocked by their admin">
     Please contact your administrator
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_CHANNEL" desc="Message shown to the user when they try to install Steam on Chromebook without setting their updates to the correct channel">
-    Device must be in Beta Channel
-  </message>
   <message name="IDS_BOREALIS_DISALLOWED_FLAG" desc="Message shown to the user when Steam on Chromebook doesn't have the correct chrome://flags setting enabled">
     #borealis-enabled must be enabled in chrome://flags
   </message>
@@ -6040,7 +6098,7 @@ Permissions you've already given to websites and apps may apply to this account.
     Got it
   </message>
   <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
-    Steam Installer
+    Steam installer
   </message>
   <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="Title for installer for Steam (noun, name of app).">
     Welcome to Steam on Chromebook
@@ -6105,25 +6163,24 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_INSTALLER_ERROR_RETRY" desc="Button for Steam (noun, name of app) installer to retry after failing.">
     Retry
   </message>
+  <message name="IDS_BOREALIS_BETA_BADGE" desc="Badge text indicating that borealis (steam on chromeos) is a beta product, i.e. it is still under development.">
+    Beta
+  </message>
   <message name="IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling Steam (name of app).">
       Any games and apps installed via Steam will also be removed from this device
   </message>
   <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
       Data associated with this app may be removed from this device
   </message>
-  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_TITLE" desc="Title shown in notification that prompts users for feedback">
-    How was your gameplay experience?
-  </message>
-  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_MESSAGE" desc="Message shown in notification that prompts users for feedback">
-    Help us improve gaming on Chromebooks
-  </message>
-  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_SOURCE" desc="Source of notification that prompts users for feedback">
-    Chromebook Gaming
-  </message>
   <message name="IDS_BOREALIS_SPLASHSCREEN_MESSAGE" desc="Message on splashscreen when starting Steam on Chrome OS.">
     starting up...
   </message>
-
+  <message name="IDS_BOREALIS_HATS_TITLE" desc="Title for HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
+    Help us improve Steam for Chromebook
+  </message>
+  <message name="IDS_BOREALIS_HATS_BODY" desc="Message on HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
+    Tell us about your recent gameplay
+  </message>
   <!-- TPM firmware auto-update notifications -->
   <message name="IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that local data will be deleted.">
     Your local data will soon be deleted
@@ -6554,42 +6611,58 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Touchpad Scroll -->
-  <!-- TODO(b/265107054): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TITLE" desc="Title of the touchpad scroll direction screen." translateable="false">
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TITLE" desc="Title of the touchpad scroll direction screen.">
     Change touchpad scrolling direction
   </message>
-  <message name="IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION" desc="Description of the touchpad scroll direction screen." translateable="false">
-    Try it out. Turn the setting on or off, then scroll with two fingers on your touchpad in the test area.
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION" desc="Description of the touchpad scroll direction screen.">
+    Try it out. Turn the setting on or off, then scroll with two fingers on your touchpad in the test area. You can also find this later in Settings > Device > Mouse and touchpad.
   </message>
-   <message name="IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION_ADDITIONAL" desc="Additional description of the touchpad scroll direction screen." translateable="false">
-    You can also find this later in Settings > Device > Mouse and touchpad.
-  </message>
-  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_TITLE" desc="Title for a toggle that allows reversing the scrolling directions." translateable="false">
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_TITLE" desc="Title for a toggle that allows reversing the scrolling directions.">
     Reverse scrolling
   </message>
-  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_DESC" desc="Description for a toggle that allows reversing the scrolling directions" translateable="false">
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_DESC" desc="Description for a toggle that allows reversing the scrolling directions">
     Swipe up to move the page down
   </message>
-  <message name="IDS_OOBE_TOUCHPAD_SCROLL_AREA_DESC" desc="Description for a scroll area that allows user to try the selected scrolling directions" translateable="false">
-    Scroll with two fingers on your touchpad in this area
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_AREA_DESC" desc="Description for a scroll area that allows user to try the selected scrolling directions">
+    Preview
   </message>
 
   <!-- Display Size -->
-  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_OOBE_DISPLAY_SIZE_TITLE" desc="Title of the display size screen." translateable="false">
-    Change text size
+  <message name="IDS_OOBE_DISPLAY_SIZE_TITLE" desc="Title of the display size screen.">
+    Change display and text size
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION" desc="Description of the display size screen." translateable="false">
-    Adjust the display size to make items on your screen, including text, larger or smaller.
+  <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION" desc="Description of the display size screen.">
+    Make items on your screen, including text, larger or smaller. You can also find this later in Settings &gt; Device &gt; Displays.
   </message>
-   <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION_ADDITIONAL" desc="Additional description of the display size screen." translateable="false">
-    You can also find this later in Settings &gt; Device &gt; Displays.
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE" desc="Title of the zoom levels slider in the display size screen.">
+    Display and text size
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE" desc="Title of the zoom levels slider in the display size screen." translateable="false">
-    Display Size
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION" desc="Description of the zoom levels slider in the display size screen.">
+    Changes will be applied after setup
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION" desc="Description of the zoom levels slider in the display size screen." translateable="false">
-    Make everything bigger or smaller
+  <message name="IDS_OOBE_DISPLAY_SIZE_PREVIEW" desc="Title of the preview section of the display size screen.">
+    Preview
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_A4_APP_NAME" desc="A4 app name in the preview section of the display size screen.">
+    A4
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_CALCULATOR_APP_NAME" desc="Calculator app name in the preview section of the display size screen.">
+    Calculator
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_CAMERA_APP_NAME" desc="Camera app name in the preview section of the display size screen.">
+    Camera
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_FILES_APP_NAME" desc="Files app name in the preview section of the display size screen.">
+    Files
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_PHOTOS_APP_NAME" desc="Photos app name in the preview section of the display size screen.">
+    Photos
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_SETTINGS_APP_NAME" desc="Settings app name in the preview section of the display size screen.">
+    Settings
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_VALUE" desc="The currently selected display size percentage.">
+    <ph name="DISPLAY_ZOOM">$1<ex>120</ex></ph>%
   </message>
 
   <!-- Drive Offline-->
@@ -6627,25 +6700,42 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <!-- CHOOBE Screen -->
   <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
   <message name="IDS_OOBE_CHOOBE_TITLE" desc="Title of the CHOOBE screen." translateable="false">
-    Select features you want to set up next
+    Choose more features to set up
   </message>
   <message name="IDS_OOBE_CHOOBE_DESCRIPTION" desc="Subitle of the CHOOBE screen." translateable="false">
-    Or you can click Done for now and find them later in system Settings
+    You can also find these options in Settings after you finish setting up your Chromebook
   </message>
   <message name="IDS_OOBE_CHOOBE_SKIP_BUTTON" desc="Skip button for the CHOOBE screen" translateable="false">
-    Remind me later
+    Skip
   </message>
 
   <!-- CHOOBE Tiles -->
   <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
   <message name="IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE" desc="Title of the theme selection tile in the CHOOBE screen." translateable="false">
-    Select dark/light theme
+    Select light or dark theme
   </message>
   <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE" desc="Title of the touchpad scroll tile in the CHOOBE screen." translateable="false">
     Change touchpad scrolling direction
   </message>
   <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen." translateable="false">
-    Display size
+    Change display and text size
+  </message>
+  <message name="IDS_OOBE_CHOOBE_RETURN_BUTTON" desc="Label for the return button shown in the last optional screen selected by the user if there still exists more features thaat the user can select." translateable="false">
+    Save and see more
+  </message>
+  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_ENABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll enabled." translateable="false">
+    Reverse scrolling enabled
+  </message>
+  <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_SUBTITLE_DISABLED" desc="Subtitle of the touchpad scroll tile in the CHOOBE screen if reverse scroll disabled." translateable="false">
+    Reverse scrolling disabled
+  </message>
+
+  <!-- CHOOBE Tiles Accessibility -->
+  <message name="IDS_OOBE_CHOOBE_TILE_SYNCED" desc="message will be announced by the chromevox if the tile is synced and contain the sync icons." translateable="false">
+    Setting synced from your previous device.
+  </message>
+  <message name="IDS_OOBE_CHOOBE_TILE_VISITED" desc="message will be announced by the chromevox if the tile is visited." translateable="false">
+    Visited
   </message>
 
   <!-- Strings for the office fallback dialog -->
@@ -6678,6 +6768,26 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE" desc="Office Fallback dialog instructions for when Google Drive is not available in Files app and the user should try to enable it." translateable="false">
     Try enabling Google Drive in Settings.
+  </message>
+
+  <!-- Office setup and move dialogs -->
+  <message name="IDS_CONNECT_TO_ONEDRIVE_TITLE" desc="Title for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
+    Connect to Microsoft OneDrive
+  </message>
+  <message name="IDS_CONNECT_TO_ONEDRIVE_BODY_TEXT" desc="Explanation text for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
+    Connect OneDrive to the Files app to manage your stored documents from your Chromebook. You'll need to sign in with your Microsoft account.
+  </message>
+  <message name="IDS_CANT_CONNECT_ONEDRIVE" desc="Error message text displayed when the user has tried to connect to OneDrive storage, but failed for any reason.">
+    Can't connect to OneDrive. Try again.
+  </message>
+  <message name="IDS_CONNECT_ONEDRIVE" desc="Text for a button which triggers a UI flow to connect the user to OneDrive storage.">
+    Connect to OneDrive
+  </message>
+  <message name="IDS_ONEDRIVE_CONNECTED_TITLE" desc="Text for a button which triggers a UI flow to connect the user to OneDrive storage.">
+    Microsoft OneDrive connected
+  </message>
+  <message name="IDS_ONEDRIVE_CONNECTED_BODY_TEXT" desc="Text for a button which triggers a UI flow to connect the user to OneDrive storage.">
+    OneDrive will now appear in the Files app
   </message>
 
   <!-- security curtain -->

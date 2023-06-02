@@ -70,7 +70,7 @@ void AutozoomControllerImpl::Toggle() {
   SetState(state_ == cros::mojom::CameraAutoFramingState::OFF
                ? cros::mojom::CameraAutoFramingState::ON_SINGLE
                : cros::mojom::CameraAutoFramingState::OFF);
-  SystemNudgeController::RecordNudgeAction(NudgeCatalogName::kAutozoom);
+  SystemNudgeController::MaybeRecordNudgeAction(NudgeCatalogName::kAutozoom);
 }
 
 void AutozoomControllerImpl::AddObserver(AutozoomObserver* observer) {

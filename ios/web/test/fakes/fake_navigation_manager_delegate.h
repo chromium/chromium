@@ -28,6 +28,7 @@ class FakeNavigationManagerDelegate : public NavigationManagerDelegate {
                                bool has_user_gesture) override;
   void RemoveWebView() override;
   NavigationItemImpl* GetPendingItem() override;
+  GURL GetCurrentURL() const override;
 
   // Setters for tests to inject dependencies.
   void SetWebViewNavigationProxy(id test_web_view);

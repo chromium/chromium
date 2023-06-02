@@ -135,6 +135,12 @@
 // nothing.
 - (void)customizeSubtitle:(UITextView*)subtitle;
 
+// Sets the custom height for the gradient view.
+- (void)updateCustomGradientViewHeight:(CGFloat)height;
+
+// Get the height padding of the scroll view.
+- (CGFloat)getScrollViewHeightPadding;
+
 // Detent that attempts to fit the preferred height of the content. Detent may
 // be inactive in some size classes, so it should be used together with at
 // least one other detent.

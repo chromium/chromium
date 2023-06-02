@@ -247,7 +247,7 @@ protocol::Response InspectorAnimationAgent::getCurrentTime(
     animation = it->value;
 
   *current_time = Timing::NullValue();
-  if (animation->Paused() || !animation->timeline()->IsActive()) {
+  if (animation->Paused() || !animation->TimelineInternal()->IsActive()) {
     absl::optional<AnimationTimeDelta> animation_current_time =
         animation->CurrentTimeInternal();
     if (animation_current_time) {
@@ -259,7 +259,7 @@ protocol::Response InspectorAnimationAgent::getCurrentTime(
         animation->StartTimeInternal();
     if (animation_start_time) {
       absl::optional<AnimationTimeDelta> timeline_time =
-          animation->timeline()->CurrentTime();
+          animation->TimelineInternal()->CurrentTime();
       // TODO(crbug.com/916117): Handle NaN values for scroll linked animations.
       if (timeline_time) {
         *current_time = timeline_time.value().InMillisecondsF() -
@@ -286,14 +286,14 @@ protocol::Response InspectorAnimationAgent::setPaused(
     if (paused && !clone->Paused()) {
       // Ensure we restore a current time if the animation is limited.
       absl::optional<AnimationTimeDelta> current_time;
-      if (!clone->timeline()->IsActive()) {
+      if (!clone->TimelineInternal()->IsActive()) {
         current_time = clone->CurrentTimeInternal();
       } else {
         absl::optional<AnimationTimeDelta> start_time =
             clone->StartTimeInternal();
         if (start_time) {
           absl::optional<AnimationTimeDelta> timeline_time =
-              clone->timeline()->CurrentTime();
+              clone->TimelineInternal()->CurrentTime();
           // TODO(crbug.com/916117): Handle NaN values.
           if (timeline_time) {
             current_time = timeline_time.value() - start_time.value();
@@ -344,7 +344,7 @@ blink::Animation* InspectorAnimationAgent::AnimationClone(
       old_effect->EffectTarget(), new_model, old_effect->SpecifiedTiming());
   is_cloning_ = true;
   blink::Animation* clone =
-      blink::Animation::Create(new_effect, animation->timeline());
+      blink::Animation::Create(new_effect, animation->TimelineInternal());
   is_cloning_ = false;
   id_to_animation_clone_.Set(id, clone);
   id_to_animation_.Set(String::Number(clone->SequenceNumber()), clone);
@@ -572,7 +572,8 @@ double InspectorAnimationAgent::NormalizedStartTime(
     time_ms = start_time.value().InMillisecondsF();
   }
 
-  auto* document_timeline = DynamicTo<DocumentTimeline>(animation.timeline());
+  auto* document_timeline =
+      DynamicTo<DocumentTimeline>(animation.TimelineInternal());
   if (document_timeline) {
     if (ReferenceTimeline().PlaybackRate() == 0) {
       time_ms += ReferenceTimeline().CurrentTimeMilliseconds().value_or(

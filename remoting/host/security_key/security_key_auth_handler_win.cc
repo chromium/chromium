@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -33,7 +34,8 @@ namespace remoting {
 namespace {
 
 // The timeout used to disconnect a client from the IPC Server if it forgets to
-// do so.  This ensures the server channel is not blocked forever.
+// send a request after it is connected.  This ensures the server channel is not
+// blocked forever.
 constexpr base::TimeDelta kInitialRequestTimeout = base::Seconds(5);
 
 // This value represents the amount of time to wait for a security key request
@@ -109,10 +111,6 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler,
   mojo::ReceiverSet<mojom::SecurityKeyForwarder, /* connection_id */ int>
       receiver_set_;
 
-  // The amount of time to wait for a client to process the connection details
-  // message and disconnect from the IPC server before disconnecting it.
-  base::TimeDelta disconnect_timeout_;
-
   // Ensures SecurityKeyAuthHandlerWin methods are called on the same thread.
   base::ThreadChecker thread_checker_;
 
@@ -131,8 +129,7 @@ std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(
 
 SecurityKeyAuthHandlerWin::SecurityKeyAuthHandlerWin(
     ClientSessionDetails* client_session_details)
-    : client_session_details_(client_session_details),
-      disconnect_timeout_(kInitialRequestTimeout) {
+    : client_session_details_(client_session_details) {
   DCHECK(client_session_details_);
   receiver_set_.set_disconnect_handler(
       base::BindRepeating(&SecurityKeyAuthHandlerWin::OnIpcPeerDisconnected,
@@ -154,7 +151,7 @@ void SecurityKeyAuthHandlerWin::BindSecurityKeyForwarder(
   // Close the connection if the client doesn't send any requests within the
   // deadline.
   connection.disconnect_timer.Start(
-      FROM_HERE, disconnect_timeout_,
+      FROM_HERE, kInitialRequestTimeout,
       GetCloseConnectionClosure(new_connection_id));
 }
 
@@ -182,7 +179,7 @@ void SecurityKeyAuthHandlerWin::SendClientResponse(
   ActiveConnection& connection = iter->second;
   std::move(connection.on_security_key_request_callback).Run(response_data);
   // Reset the timer to give the client a chance to send another request.
-  connection.disconnect_timer.Start(FROM_HERE, disconnect_timeout_,
+  connection.disconnect_timer.Start(FROM_HERE, kSecurityKeyRequestTimeout,
                                     GetCloseConnectionClosure(connection_id));
 }
 
@@ -205,7 +202,8 @@ size_t SecurityKeyAuthHandlerWin::GetActiveConnectionCountForTest() const {
 
 void SecurityKeyAuthHandlerWin::SetRequestTimeoutForTest(
     base::TimeDelta timeout) {
-  disconnect_timeout_ = timeout;
+  // SecurityKeyAuthHandlerWin tests don't override request timeout.
+  NOTREACHED();
 }
 
 void SecurityKeyAuthHandlerWin::OnSecurityKeyRequest(

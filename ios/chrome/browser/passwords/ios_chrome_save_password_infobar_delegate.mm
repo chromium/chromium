@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -130,8 +131,10 @@ IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
     bool password_update,
     password_manager::metrics_util::PasswordAccountStorageUserState
         account_storage_user_state,
-    std::unique_ptr<PasswordFormManagerForUI> form_to_save)
-    : form_to_save_(std::move(form_to_save)),
+    std::unique_ptr<PasswordFormManagerForUI> form_to_save,
+    CommandDispatcher* dispatcher)
+    : dispatcher_(dispatcher),
+      form_to_save_(std::move(form_to_save)),
       infobar_type_(password_update
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
                         : PasswordInfobarType::kPasswordInfobarTypeSave),

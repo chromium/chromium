@@ -77,7 +77,7 @@ public class AwActionModeCallback extends ActionMode.Callback2 {
 
         int groupId = item.getGroupId();
 
-        if (groupId == R.id.select_action_menu_text_processing_menus) {
+        if (groupId == R.id.select_action_menu_text_processing_items) {
             processText(item.getIntent());
             // The ActionMode is not dismissed to match the behavior with
             // TextView in Android M.

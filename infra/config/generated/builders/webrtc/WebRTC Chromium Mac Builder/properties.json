@@ -16,8 +16,7 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "dcheck",
-                  "mb",
-                  "mac_toolchain"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -44,8 +43,7 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "dcheck",
-                  "mb",
-                  "mac_toolchain"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -94,6 +92,5 @@
   },
   "builder_group": "chromium.webrtc",
   "perf_dashboard_machine_group": "ChromiumWebRTC",
-  "recipe": "chromium",
-  "xcode_build_version": "14c18"
+  "recipe": "chromium"
 }

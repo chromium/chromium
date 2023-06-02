@@ -19,6 +19,7 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -813,6 +814,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   if (web_app.isolation_data().has_value()) {
     auto* mutable_data = local_data->mutable_isolation_data();
+    mutable_data->set_version(web_app.isolation_data()->version.GetString());
+
     for (const std::string& partition :
          web_app.isolation_data()->controlled_frame_partitions) {
       mutable_data->add_controlled_frame_partitions(partition);
@@ -1512,6 +1515,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         local_data.isolation_data().controlled_frame_partitions();
     std::set<std::string> controlled_frame_partitions(partitions.begin(),
                                                       partitions.end());
+    auto version_components =
+        ParseIwaVersionIntoComponents(local_data.isolation_data().version());
+    if (!version_components.has_value()) {
+      DLOG(ERROR) << "WebApp proto isolation_data.version parse error: cannot "
+                     "deserialize version: "
+                  << IwaVersionParseErrorToString(version_components.error());
+      return nullptr;
+    }
+    base::Version version(
+        std::vector(version_components->begin(), version_components->end()));
 
     switch (local_data.isolation_data().location_case()) {
       case IsolationDataProto::LocationCase::kInstalledBundle: {
@@ -1522,8 +1535,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                          "parse error: cannot deserialize file path";
           return nullptr;
         }
-        web_app->SetIsolationData(WebApp::IsolationData(
-            InstalledBundle{.path = *path}, controlled_frame_partitions));
+        web_app->SetIsolationData(
+            WebApp::IsolationData(InstalledBundle{.path = *path}, version,
+                                  controlled_frame_partitions));
         break;
       }
 
@@ -1535,8 +1549,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                          "parse error: cannot deserialize file path";
           return nullptr;
         }
-        web_app->SetIsolationData(WebApp::IsolationData(
-            DevModeBundle{.path = *path}, controlled_frame_partitions));
+        web_app->SetIsolationData(
+            WebApp::IsolationData(DevModeBundle{.path = *path}, version,
+                                  controlled_frame_partitions));
         break;
       }
 
@@ -1551,8 +1566,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                      local_data.isolation_data().dev_mode_proxy().proxy_url();
           return nullptr;
         }
-        web_app->SetIsolationData(WebApp::IsolationData(
-            DevModeProxy{.proxy_url = proxy_url}, controlled_frame_partitions));
+        web_app->SetIsolationData(
+            WebApp::IsolationData(DevModeProxy{.proxy_url = proxy_url}, version,
+                                  controlled_frame_partitions));
         break;
       }
 

@@ -343,14 +343,11 @@ extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyTaperLength;
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
+bool IsOnDeviceHeadSuggestEnabledForLocale(const std::string& locale);
 bool IsOnDeviceTailSuggestEnabled();
 bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
-
-// Returns true if CGI parameter names should not be considered when scoring
-// suggestions.
-bool ShouldDisableCGIParamMatching();
 
 // If true, enables a "starter pack" of @history, @bookmarks, and @settings
 // scopes for Site Search.
@@ -602,9 +599,8 @@ struct MLConfig {
   // Equivalent to omnibox::kLogUrlScoringSignals.
   bool log_url_scoring_signals{false};
 
-  // If true, enables scoring signal annotators for logging Omnibox URL scoring
-  // signals to OmniboxEventProto. Equivalent to
-  // OmniboxFieldTrial::kLogUrlScoringSignalsEnableScoringSignalsAnnotators.
+  // If true, enables scoring signal annotators for populating additional
+  // Omnibox URL scoring signals for logging or ML scoring.
   bool enable_scoring_signals_annotators{false};
 
   // If true, runs the ML scoring model to assign new relevance scores to the
@@ -664,7 +660,10 @@ const MLConfig& GetMLConfig();
 
 // If enabled, logs Omnibox scoring signals to OmniboxEventProto for training
 // the ML scoring models.
-bool IsLogUrlScoringSignalsEnabled();
+bool IsReportingUrlScoringSignalsEnabled();
+
+// If enabled, populates scoring signals of URL matches.
+bool IsPopulatingUrlScoringSignalsEnabled();
 
 // Whether the scoring signal annotators are enabled for logging Omnibox scoring
 // signals to OmniboxEventProto.

@@ -543,8 +543,11 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     int format_version = 1;
     std::string format_version_string;
     if (headers &&
-        headers->GetNormalizedHeader("X-fledge-bidding-signals-format-version",
-                                     &format_version_string)) {
+        (headers->GetNormalizedHeader(
+             "Ad-Auction-Bidding-Signals-Format-Version",
+             &format_version_string) ||
+         headers->GetNormalizedHeader("X-fledge-bidding-signals-format-version",
+                                      &format_version_string))) {
       if (!base::StringToInt(format_version_string, &format_version) ||
           (format_version != 1 && format_version != 2)) {
         std::string error = base::StringPrintf(

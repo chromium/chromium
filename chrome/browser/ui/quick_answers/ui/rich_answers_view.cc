@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -34,17 +35,23 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "url/gurl.h"
 
 namespace {
 
 using quick_answers::QuickAnswer;
 using quick_answers::QuickAnswerResultText;
 using quick_answers::ResultType;
+
+// Rich card dimensions.
+constexpr int kDefaultRichCardWidth = 360;
+constexpr int kMaximumRichCardHeight = 600;
 
 constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 0, 20);
 
@@ -59,6 +66,11 @@ constexpr int kBorderCornerRadius = 12;
 constexpr int kResultTypeIconContainerRadius = 24;
 constexpr int kResultTypeIconSizeDip = 16;
 constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
+
+// Google search link.
+constexpr char kRobotoFont[] = "Roboto";
+constexpr int kSearchLinkLabelFontSize = 13;
+constexpr auto kSearchLinkViewInsets = gfx::Insets::TLBR(22, 60, 26, 20);
 
 }  // namespace
 
@@ -151,12 +163,16 @@ void RichAnswersView::OnFocus() {
 
 void RichAnswersView::OnThemeChanged() {
   views::View::OnThemeChanged();
+
   SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/2, kBorderCornerRadius,
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
   SetBackground(views::CreateRoundedRectBackground(
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground),
       kBorderCornerRadius, /*for_border_thickness=*/2));
+
+  search_link_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
 }
 
 views::FocusTraversable* RichAnswersView::GetPaneFocusTraversable() {
@@ -195,6 +211,9 @@ void RichAnswersView::InitLayout() {
 
   // Add util buttons in the top-right corner.
   AddFrameButtons();
+
+  // Add google search link label at the bottom.
+  AddGoogleSearchLink();
 }
 
 void RichAnswersView::AddResultTypeIcon() {
@@ -236,19 +255,46 @@ void RichAnswersView::AddFrameButtons() {
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
 }
 
+void RichAnswersView::AddGoogleSearchLink() {
+  auto* search_link_view =
+      AddChildView(views::Builder<views::FlexLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kHorizontal)
+                       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+                       .SetInteriorMargin(kSearchLinkViewInsets)
+                       .Build());
+
+  search_link_label_ = search_link_view->AddChildView(
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(
+          IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT)));
+  search_link_label_->SetCallback(base::BindRepeating(
+      &RichAnswersView::OnGoogleSearchLinkClicked, weak_factory_.GetWeakPtr()));
+  search_link_label_->SetFontList(
+      gfx::FontList({kRobotoFont}, gfx::Font::NORMAL, kSearchLinkLabelFontSize,
+                    gfx::Font::Weight::MEDIUM));
+  search_link_label_->SetForceUnderline(false);
+}
+
+void RichAnswersView::OnGoogleSearchLinkClicked() {
+  CHECK(controller_);
+  controller_->OnGoogleSearchLabelPressed();
+}
+
 void RichAnswersView::UpdateBounds() {
   auto display_bounds = display::Screen::GetScreen()
                             ->GetDisplayMatching(anchor_view_bounds_)
-                            .bounds();
+                            .work_area();
 
-  // TODO(b/259440976): Calculate desired bounds based on anchor view bounds.
-  gfx::Rect bounds = {
-      {display_bounds.width() / 2 - 200, display_bounds.height() / 2 - 300},
-      {400, 600}};
+  // TODO(b/283860409): Update the card height of the rich answers view
+  // depending on the card contents.
+  gfx::Rect bounds = {{anchor_view_bounds_.x(),
+                       anchor_view_bounds_.y() - kMaximumRichCardHeight / 2},
+                      {kDefaultRichCardWidth, kMaximumRichCardHeight}};
+  bounds.AdjustToFit(display_bounds);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the toplevel window and the
-  // position will be calculated on server side.
+  // For Lacros, `bounds` is already relative to the top-level window and
+  // the position will be calculated on server side.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
 #endif
   GetWidget()->SetBounds(bounds);

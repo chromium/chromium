@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// JS Frameworks (& CMSes) are detected at load time. This helps us correlate
+// performance metrics (and other metrics) with the existence and version of
+// frameworks on the page.
+enum JavaScriptFramework {
+  kNuxt,
+  kVuePress,
+  kSapper,
+  kGatsby,
+  kNext,
+  kAngular,
+  kVue,
+  kSvelte,
+  kPreact,
+  kReact,
+  kDrupal,
+  kJoomla,
+  kShopify,
+  kSquarespace,
+  kWix,
+  kWordPress,
+};
+
+// This struct is typemapped to blink::JavaScriptFrameworkDetectionResult.
+// JS Frameworks are detected in blink at load time, and reported to UKM via
+// the PageLoadMetrics mechanism in the browser process.
+struct JavaScriptFrameworkDetectionResult {
+  // A map containing versions of detected frameworks.
+  // Frameworks that are not detected at all would not appear in the map, while
+  // frameworks that are detected without a version would have a value of
+  // kNoFrameworkVersionDetected, see javascript_framework_detection.h.
+  // The version value is in the format of 0xMMmm (M = Major, m = minor).
+  // Patch versions etc. are not expressed.
+  map<JavaScriptFramework, int16> detected_versions;
+};

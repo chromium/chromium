@@ -140,11 +140,6 @@ void SharingMessageSender::OnAckReceived(
 
   auto metadata_iter = message_metadata_.find(message_guid);
   DCHECK(metadata_iter != message_metadata_.end());
-  const SentMessageMetadata& metadata = metadata_iter->second;
-
-  LogSharingMessageAckTime(metadata.type, metadata.receiver_device_platform,
-                           metadata.channel_type,
-                           base::TimeTicks::Now() - metadata.timestamp);
 
   InvokeSendMessageCallback(message_guid, SharingSendMessageResult::kSuccessful,
                             std::move(response));

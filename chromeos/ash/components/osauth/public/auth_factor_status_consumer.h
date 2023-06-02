@@ -21,13 +21,14 @@ class AuthHubConnector;
 enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorState {
   kCheckingForPresence,
   kEngineError,
+  kNoFactor,
   kFactorReady,
   kDisabledByPolicy,
   kDisabledStrongFactorRequired,
   kLockedOutIndefinite,
   kLockedOutTemporary,
-  kDisabledParallelAttempt,
   kDisabledFactorSpecific,
+  kDisabledParallelAttempt,
   kOngoingAttempt,
   kMaxValue = kOngoingAttempt,
 };

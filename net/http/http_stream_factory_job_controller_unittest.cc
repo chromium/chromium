@@ -4157,30 +4157,28 @@ TEST_P(HttpStreamFactoryJobControllerTest,
       "h3-Q050=\":443\"; ma=2592000,"
       "h3-Q049=\":443\"; ma=2592000,"
       "h3-Q048=\":443\"; ma=2592000,"
-      "h3-Q046=\":443\"; ma=2592000,"
-      "h3-Q043=\":443\"; ma=2592000,",
+      "h3-Q046=\":443\"; ma=2592000,",
       quic::ParsedQuicVersion::Q050(), quic::AllSupportedVersions());
 }
 
 TEST_P(HttpStreamFactoryJobControllerTest,
        AltSvcVersionSelectionFindsFirstMatchInverse) {
   TestAltSvcVersionSelection(
-      "h3-Q043=\":443\"; ma=2592000,"
       "h3-Q046=\":443\"; ma=2592000,"
       "h3-Q048=\":443\"; ma=2592000,"
       "h3-Q049=\":443\"; ma=2592000,",
-      quic::ParsedQuicVersion::Q043(), quic::AllSupportedVersions());
+      quic::ParsedQuicVersion::Q046(), quic::AllSupportedVersions());
 }
 
 TEST_P(HttpStreamFactoryJobControllerTest,
        AltSvcVersionSelectionWithInverseOrderingNewFormat) {
-  // Server prefers Q043 but client prefers Q046.
+  // Server prefers Q046 but client prefers Q050.
   TestAltSvcVersionSelection(
-      "h3-Q043=\":443\"; ma=2592000,"
-      "h3-Q046=\":443\"; ma=2592000",
-      quic::ParsedQuicVersion::Q043(),
-      quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q046(),
-                                    quic::ParsedQuicVersion::Q043()});
+      "h3-Q046=\":443\"; ma=2592000,"
+      "h3-Q050=\":443\"; ma=2592000",
+      quic::ParsedQuicVersion::Q046(),
+      quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050(),
+                                    quic::ParsedQuicVersion::Q046()});
 }
 
 // Tests that if HttpNetworkSession has a non-empty QUIC host allowlist,

@@ -121,6 +121,7 @@ void MockBidderWorklet::ReportWin(
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     const std::string& seller_signals_json,
+    auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -289,7 +290,7 @@ void MockBidderWorklet::InvokeReportWinCallback(
   DCHECK(report_win_callback_);
   std::move(report_win_callback_)
       .Run(report_url, ad_beacon_map, std::move(pa_requests),
-           std::move(errors));
+           reporting_latency_, std::move(errors));
 }
 
 void MockBidderWorklet::Flush() {
@@ -450,7 +451,7 @@ void MockSellerWorklet::InvokeReportResultCallback(
   DCHECK(report_result_callback_);
   std::move(report_result_callback_)
       .Run(/*signals_for_winner=*/absl::nullopt, std::move(report_url),
-           ad_beacon_map, std::move(pa_requests), errors);
+           ad_beacon_map, std::move(pa_requests), reporting_latency_, errors);
 }
 
 void MockSellerWorklet::Flush() {

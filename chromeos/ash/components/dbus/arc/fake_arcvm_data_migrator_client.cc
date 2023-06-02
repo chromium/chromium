@@ -39,11 +39,12 @@ void FakeArcVmDataMigratorClient::HasDataToMigrate(
       FROM_HERE, base::BindOnce(std::move(callback), has_data_to_migrate_));
 }
 
-void FakeArcVmDataMigratorClient::GetAndroidDataSize(
-    const arc::data_migrator::GetAndroidDataSizeRequest& request,
-    chromeos::DBusMethodCallback<int64_t> callback) {
+void FakeArcVmDataMigratorClient::GetAndroidDataInfo(
+    const arc::data_migrator::GetAndroidDataInfoRequest& request,
+    GetAndroidDataInfoCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), android_data_size_));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_android_data_info_response_));
 }
 
 void FakeArcVmDataMigratorClient::StartMigration(

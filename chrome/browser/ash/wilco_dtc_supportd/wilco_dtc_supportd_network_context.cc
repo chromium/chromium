@@ -130,6 +130,13 @@ void WilcoDtcSupportdNetworkContextImpl::OnDataUseUpdate(
     int64_t recv_bytes,
     int64_t sent_bytes) {}
 
+void WilcoDtcSupportdNetworkContextImpl::OnSharedStorageHeaderReceived(
+    const url::Origin& request_origin,
+    std::vector<network::mojom::SharedStorageOperationPtr> operations,
+    OnSharedStorageHeaderReceivedCallback callback) {
+  std::move(callback).Run();
+}
+
 void WilcoDtcSupportdNetworkContextImpl::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {

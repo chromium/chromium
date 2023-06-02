@@ -1025,6 +1025,45 @@ TEST_F(AccessibilityControllerTest, SetSpokenFeedbackEnabled) {
   controller->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityControllerTest, FeaturesConflictingWithChromeVox) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
+  EXPECT_FALSE(controller->sticky_keys().enabled());
+  EXPECT_FALSE(controller->focus_highlight().enabled());
+  EXPECT_TRUE(controller->IsSpokenFeedbackSettingVisibleInTray());
+  EXPECT_TRUE(controller->IsFocusHighlightSettingVisibleInTray());
+  EXPECT_TRUE(controller->IsStickyKeysSettingVisibleInTray());
+
+  controller->sticky_keys().SetEnabled(true);
+  controller->focus_highlight().SetEnabled(true);
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
+  EXPECT_TRUE(controller->sticky_keys().enabled());
+  EXPECT_TRUE(controller->focus_highlight().enabled());
+  EXPECT_TRUE(controller->IsSpokenFeedbackSettingVisibleInTray());
+  EXPECT_TRUE(controller->IsFocusHighlightSettingVisibleInTray());
+  EXPECT_TRUE(controller->IsStickyKeysSettingVisibleInTray());
+
+  // Turning on Spoken Feedback will make sticky keys, focus highlight
+  // act disabled and disappear from the tray.
+  controller->spoken_feedback().SetEnabled(true);
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
+  EXPECT_FALSE(controller->sticky_keys().enabled());
+  EXPECT_FALSE(controller->focus_highlight().enabled());
+  EXPECT_TRUE(controller->IsSpokenFeedbackSettingVisibleInTray());
+  EXPECT_FALSE(controller->IsFocusHighlightSettingVisibleInTray());
+  EXPECT_FALSE(controller->IsStickyKeysSettingVisibleInTray());
+
+  // Disabling ChromeVox will reset to previous state.
+  controller->spoken_feedback().SetEnabled(false);
+  EXPECT_FALSE(controller->spoken_feedback().enabled());
+  EXPECT_TRUE(controller->sticky_keys().enabled());
+  EXPECT_TRUE(controller->focus_highlight().enabled());
+  EXPECT_TRUE(controller->IsSpokenFeedbackSettingVisibleInTray());
+  EXPECT_TRUE(controller->IsFocusHighlightSettingVisibleInTray());
+  EXPECT_TRUE(controller->IsStickyKeysSettingVisibleInTray());
+}
+
 TEST_F(AccessibilityControllerTest, SetStickyKeysEnabled) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();

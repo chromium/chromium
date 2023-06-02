@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollections, WallpaperGridItem, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollection, WallpaperCollections, WallpaperGridItem, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -21,6 +21,20 @@ suite('WallpaperCollectionsTest', function() {
   let personalizationStore: TestPersonalizationStore;
   const routerOriginal = PersonalizationRouter.instance;
   const routerMock = TestMock.fromClass(PersonalizationRouter);
+
+  // A simplified representation of WallpaperCollectionElement tile for
+  // testing.
+  interface Tile {
+    id: string;
+    type: string;
+  }
+  function getTiles(): Tile[] {
+    // Access a private field for testing because iron-list hides elements
+    // that are out of the viewport. Pick just id and type fields for
+    // simpler testing.
+    return (wallpaperCollectionsElement as any)
+        .tiles_.map(({id, type}: Tile) => ({id, type}));
+  }
 
   setup(function() {
     const mocks = baseSetup();
@@ -268,20 +282,6 @@ suite('WallpaperCollectionsTest', function() {
       const timeOfDayCollectionId =
           loadTimeData.getString('timeOfDayWallpaperCollectionId');
 
-      // A simplified representation of WallpaperCollectionElement tile for
-      // testing.
-      interface Tile {
-        id: string;
-        type: string;
-      }
-      function getTiles(): Tile[] {
-        // Access a private field for testing because iron-list hides elements
-        // that are out of the viewport. Pick just id and type fields for
-        // simpler testing.
-        return (wallpaperCollectionsElement as any)
-            .tiles_.map(({id, type}: Tile) => ({id, type}));
-      }
-
       personalizationStore.data = emptyState();
       // Local images are still loading.
       personalizationStore.data.wallpaper.loading.local.images = true;
@@ -380,4 +380,89 @@ suite('WallpaperCollectionsTest', function() {
       assertDeepEquals(expectedTiles, tiles, 'tiles expected to match');
     });
   }
+
+  test('no error reopening wallpaper subpage', async () => {
+    // Wallpaper collections are loaded when first navigating to the
+    // wallpaper subpage. First the list of collections, then each
+    // collection, is requested from server - the component somewhat relies
+    // on this order to render correctly. Test what happens when user
+    // navigates to, then away from, and back to the wallpaper collections
+    // subpage. This begins reloading wallpaper while existing wallpaper
+    // data is already populated.
+
+    // Needs a lot of collections to reproduce the error - there must be more
+    // wallpaper collections than tiles that fit on the screen.
+    const generatedCollections: WallpaperCollection[] =
+        Array.from({length: 20}, (i: number) => ({
+                                   id: `generated_collection_${i}`,
+                                   name: `Generated Collection ${i}`,
+                                   descriptionContent: '',
+                                   previews: [{url: createSvgDataUrl(`${i}`)}],
+                                 }));
+    wallpaperProvider.setCollections([
+      ...wallpaperProvider.collections!,
+      ...generatedCollections,
+    ]);
+
+    loadTimeData.overrideValues({isTimeOfDayWallpaperEnabled: true});
+
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(
+        WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+
+    await personalizationStore.waitForAction(
+        WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
+
+    const expectedTilesAfterLoading = [
+      {
+        id: '_time_of_day_chromebook_collection',
+        type: 'image_online',
+      },
+      {id: 'local_', type: 'image_local'},
+      {id: 'google_photos_', 'type': 'loading'},
+      {id: 'id_0', type: 'image_online'},
+      {id: 'id_1', type: 'image_online'},
+      {id: 'id_2', type: 'image_online'},
+      ...generatedCollections.map(({id}) => ({id, type: 'image_online'})),
+    ];
+
+    assertDeepEquals(
+        expectedTilesAfterLoading, getTiles(), 'expected tiles should match');
+
+    await teardownElement(wallpaperCollectionsElement);
+
+    // Do not use initElement because it flushes startup tasks, but test
+    // needs to verify an initial state.
+    wallpaperCollectionsElement =
+        document.createElement(WallpaperCollections.is) as
+            WallpaperCollections &
+        HTMLElement;
+
+    // Sets up loading tiles again.
+    assertDeepEquals(
+        [
+          {id: '_time_of_day_chromebook_collection', type: 'loading'},
+          {id: 'local_', type: 'loading'},
+          {id: 'google_photos_', type: 'loading'},
+        ],
+        getTiles().slice(0, 3), 'first special tiles should match');
+    assertGE(getTiles().length, 6, 'at least 6 tiles at first');
+    getTiles().slice(3).forEach((tile, i) => {
+      assertDeepEquals({id: `backdrop_collection_${i}`, type: 'loading'}, tile);
+    });
+
+    // Put the element on the page and wait for network requests to re-fetch
+    // wallpaper collections.
+    personalizationStore.expectAction(
+        WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
+    document.body.appendChild(wallpaperCollectionsElement);
+    await personalizationStore.waitForAction(
+        WallpaperActionName.SET_IMAGES_FOR_COLLECTION);
+
+    assertDeepEquals(
+        expectedTilesAfterLoading, getTiles(),
+        'expected tiles match the second time');
+  });
 });

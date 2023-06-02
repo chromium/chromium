@@ -260,6 +260,12 @@ class IdentifiableSurface {
     // sampled in the browser.
     kFontFamilyAvailable = 38,
 
+    // Represents determining that a local font exists or does not, based on a
+    // name lookup that is allowed to match either a unique name or a family
+    // name. This occurs when a font-family CSS rule doesn't match any
+    // @font-face rule. Input is the lookup name. Output is a bool.
+    kLocalFontExistenceByUniqueOrFamilyName = 39,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

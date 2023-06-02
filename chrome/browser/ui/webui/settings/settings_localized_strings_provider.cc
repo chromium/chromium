@@ -675,6 +675,10 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER},
       {"tabDiscardingExceptionsAdditionalSites",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES},
+      {"tabDiscardingExceptionsAddDialogCurrentTabs",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_CURRENT_TABS},
+      {"tabDiscardingExceptionsAddDialogManual",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -722,6 +726,11 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
           base::NumberToString16(
               performance_manager::user_tuning::UserPerformanceTuningManager::
                   kLowBatteryThresholdPercent)));
+  html_source->AddString(
+      "tabDiscardingExceptionsAddDialogHelp",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP,
+          base::ASCIIToUTF16(chrome::kHighEfficiencyModeTabDiscardingHelpUrl)));
 
   html_source->AddString("highEfficiencyLearnMoreUrl",
                          chrome::kHighEfficiencyModeLearnMoreUrl);
@@ -967,11 +976,13 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"addressPhone", IDS_SETTINGS_AUTOFILL_ADDRESSES_PHONE},
     {"addressEmail", IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL},
     {"honorificLabel", IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL},
+    {"creditCardDescription", IDS_SETTINGS_AUTOFILL_CARD_DESCRIPTION},
+    {"creditCardA11yLabeled", IDS_SETTINGS_AUTOFILL_CARD_A11Y_LABELED},
+    {"creditCardExpDateA11yLabeled",
+     IDS_SETTINGS_AUTOFILL_CARD_EXP_DATE_A11Y_LABELED},
     {"moreActionsForAddress", IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_ADDRESS},
     {"moreActionsForCreditCard",
      IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_CREDIT_CARD},
-    {"moreActionsCreditCardDescription",
-     IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_CARD_DESCRIPTION},
     {"removeAddress", IDS_SETTINGS_ADDRESS_REMOVE},
     {"removeAddressConfirmationTitle",
      IDS_SETTINGS_ADDRESS_REMOVE_CONFIRMATION_TITLE},
@@ -3274,6 +3285,22 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 
+void AddStorageAccessStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"siteSettingsStorageAccess", IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS},
+      {"siteSettingsStorageAccessMidSentence",
+       IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE},
+      {"storageAccessDescription", IDS_SETTINGS_STORAGE_ACCESS_DESCRIPTION},
+      {"storageAccessAllowed", IDS_SETTINGS_STORAGE_ACCESS_ALLOWED},
+      {"storageAccessBlocked", IDS_SETTINGS_STORAGE_ACCESS_BLOCKED},
+      {"storageAccessAllowedExceptions",
+       IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_EXCEPTIONS},
+      {"storageAccessBlockedExceptions",
+       IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_EXCEPTIONS},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
                             Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -3527,6 +3554,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddSearchStrings(html_source);
   AddSiteSettingsStrings(html_source, profile);
   AddSiteDataPageStrings(html_source, profile);
+  AddStorageAccessStrings(html_source);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   AddDefaultBrowserStrings(html_source);

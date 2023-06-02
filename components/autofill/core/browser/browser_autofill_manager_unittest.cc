@@ -681,7 +681,40 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data().AddCreditCard(local_card);
   }
 
+  void CreateUniqueTestServerAndLocalCreditCards() {
+    personal_data().ClearCreditCards();
+
+    CreditCard masked_server_card;
+    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
+                            "4234567890123456",  // Visa
+                            "04", "2999", "1");
+    masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
+    masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    personal_data().AddServerCreditCard(masked_server_card);
+
+    CreditCard full_server_card;
+    test::SetCreditCardInfo(&full_server_card, "Buddy Holly",
+                            "5187654321098765",  // Mastercard
+                            "10", "2998", "1");
+    full_server_card.set_guid("00000000-0000-0000-0000-000000000008");
+    full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    personal_data().AddServerCreditCard(full_server_card);
+
+    CreditCard local_card;
+    test::SetCreditCardInfo(&local_card, "Elvis Presley",
+                            "4234567890121237",  // Visa
+                            "04", "2999", "1");
+    local_card.set_guid("00000000-0000-0000-0000-000000000009");
+    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    personal_data().AddCreditCard(local_card);
+  }
+
   void TearDown() override {
+    // Drop unowned references before destroying BrowserAutofillManager
+    // which owns them.
+    single_field_form_fill_router_ = nullptr;
+    external_delegate_ = nullptr;
+
     // Order of destruction is important as BrowserAutofillManager relies on
     // PersonalDataManager to be around when it gets destroyed.
     browser_autofill_manager_.reset();
@@ -739,13 +772,13 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   void FillAutofillFormData(const FormData& form,
                             const FormFieldData& field,
-                            Suggestion::FrontendId unique_id) {
+                            std::string guid) {
     browser_autofill_manager_->OnAskForValuesToFill(
         form, field, {}, AutoselectFirstSuggestion(true),
         FormElementWasClicked(false));
     browser_autofill_manager_->FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, form, field, unique_id,
-        AutofillTriggerSource::kPopup);
+        mojom::RendererFormDataAction::kFill, form, field,
+        Suggestion::BackendId(guid), AutofillTriggerSource::kPopup);
   }
 
   // Calls |browser_autofill_manager_->OnFillAutofillFormData()| with the
@@ -754,12 +787,12 @@ class BrowserAutofillManagerTest : public testing::Test {
   // parameter of that call into the |response_data| output parameter.
   void FillAutofillFormDataAndSaveResults(const FormData& input_form,
                                           const FormFieldData& input_field,
-                                          Suggestion::FrontendId unique_id,
+                                          std::string guid,
                                           FormData* response_data) {
     EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
         .WillOnce(DoAll(testing::SaveArg<1>(response_data),
                         testing::Return(std::vector<FieldGlobalId>{})));
-    FillAutofillFormData(input_form, input_field, unique_id);
+    FillAutofillFormData(input_form, input_field, guid);
   }
 
   void PreviewVirtualCardDataAndSaveResults(
@@ -773,11 +806,6 @@ class BrowserAutofillManagerTest : public testing::Test {
                          testing::Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         action, guid, input_form, input_field, AutofillTriggerSource::kPopup);
-  }
-
-  Suggestion::FrontendId MakeFrontendId(
-      const TestBrowserAutofillManager::MakeFrontendIdParams& params) {
-    return browser_autofill_manager_->MakeFrontendId(params);
   }
 
   bool WillFillCreditCardNumber(const FormData& form,
@@ -1103,6 +1131,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   virtual int ObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID)
     return IsKeyboardAccessoryEnabled() ? 2 : 4;
+#elif BUILDFLAG(IS_IOS)
+    return base::FeatureList::IsEnabled(
+               features::kAutofillUseTwoDotsForLastFourDigits)
+               ? 2
+               : 4;
 #else
     return 4;
 #endif
@@ -1126,13 +1159,14 @@ class BrowserAutofillManagerTest : public testing::Test {
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  raw_ptr<TestAutofillExternalDelegate> external_delegate_;
+  raw_ptr<TestAutofillExternalDelegate, DanglingUntriaged> external_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   std::unique_ptr<MockIBANManager> iban_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
-  raw_ptr<MockSingleFieldFormFillRouter> single_field_form_fill_router_;
+  raw_ptr<MockSingleFieldFormFillRouter, DanglingUntriaged>
+      single_field_form_fill_router_;
   raw_ptr<TestStrikeDatabase> strike_database_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
   raw_ptr<TestFormDataImporter> test_form_data_importer_;
@@ -1290,6 +1324,11 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
   int ObfuscationLength() override {
 #if BUILDFLAG(IS_ANDROID)
     return is_keyboard_accessory_enabled_ ? 2 : 4;
+#elif BUILDFLAG(IS_IOS)
+    return base::FeatureList::IsEnabled(
+               features::kAutofillUseTwoDotsForLastFourDigits)
+               ? 2
+               : 4;
 #else
     return 4;
 #endif
@@ -1498,9 +1537,12 @@ TEST_F(BrowserAutofillManagerTest,
   // Check that suggestions are made for the field that has the autocomplete
   // attribute.
   GetAutofillSuggestions(form, form.fields[0]);
-  CheckSuggestions(form.fields[0].global_id(),
-                   Suggestion("Charles", "", "", Suggestion::FrontendId(1)),
-                   Suggestion("Elvis", "", "", Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("Charles", "", "",
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Elvis", "", "",
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 
   // Check that there are no suggestions for the field without the autocomplete
   // attribute.
@@ -1529,18 +1571,20 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[0]);
-  CheckSuggestions(form.fields[0].global_id(),
-                   Suggestion("Charles", "Charles Hardin Holley",
-                              kAddressEntryIcon, Suggestion::FrontendId(1)),
-                   Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("Charles", "Charles Hardin Holley", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 
   GetAutofillSuggestions(form, form.fields[1]);
-  CheckSuggestions(form.fields[1].global_id(),
-                   Suggestion("Holley", "Charles Hardin Holley",
-                              kAddressEntryIcon, Suggestion::FrontendId(1)),
-                   Suggestion("Presley", "Elvis Aaron Presley",
-                              kAddressEntryIcon, Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[1].global_id(),
+      Suggestion("Holley", "Charles Hardin Holley", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Test that the call is properly forwarded to its SingleFieldFormFillRouter.
@@ -1623,11 +1667,12 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(form.fields[0].global_id(),
-                   Suggestion("Charles", label1, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)),
-                   Suggestion("Elvis", label2, kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("Charles", label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Elvis", label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Test that we return only matching address profile suggestions when the
@@ -1656,7 +1701,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion("Elvis", label, kAddressEntryIcon, Suggestion::FrontendId(1)));
+      Suggestion("Elvis", label, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -1706,9 +1752,9 @@ TEST_P(SuggestionMatchingTest,
       CheckSuggestions(
           field.global_id(),
           Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
-                     Suggestion::FrontendId(1)),
+                     Suggestion::FrontendId(PopupItemId::kAddressEntry)),
           Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
-                     Suggestion::FrontendId(2)));
+                     Suggestion::FrontendId(PopupItemId::kAddressEntry)));
       break;
     case EnabledFeature::kNone:
       // Test that we sent the right values to the external delegate. No labels
@@ -1716,11 +1762,13 @@ TEST_P(SuggestionMatchingTest,
       CheckSuggestions(
           field.global_id(),
           Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon,
-                     Suggestion::FrontendId(1)),
+                     Suggestion::FrontendId(PopupItemId::kAddressEntry)),
           Suggestion("Grimes", "1234 Smith Blvd., Carl Grimes",
-                     kAddressEntryIcon, Suggestion::FrontendId(2)),
+                     kAddressEntryIcon,
+                     Suggestion::FrontendId(PopupItemId::kAddressEntry)),
           Suggestion("Grimes", "1234 Smith Blvd., Robin Grimes",
-                     kAddressEntryIcon, Suggestion::FrontendId(3)));
+                     kAddressEntryIcon,
+                     Suggestion::FrontendId(PopupItemId::kAddressEntry)));
   }
 }
 
@@ -1755,7 +1803,8 @@ TEST_P(SuggestionMatchingTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion("Elvis", label, kAddressEntryIcon, Suggestion::FrontendId(1)));
+      Suggestion("Elvis", label, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -1823,11 +1872,12 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(form.fields[0].global_id(),
-                   Suggestion("Charles", label1, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)),
-                   Suggestion("Elvis", label2, kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("Charles", label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Elvis", label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Test that we return no suggestions when autofill is disabled.
@@ -1851,9 +1901,10 @@ TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
   FieldGlobalId field_id = test::MakeFieldGlobalId();
   std::vector<Suggestion> suggestions = {
-      Suggestion("Charles", "123 Apple St.", "", Suggestion::FrontendId(1)),
+      Suggestion("Charles", "123 Apple St.", "",
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
       Suggestion("Elvis", "3734 Elvis Presley Blvd.", "",
-                 Suggestion::FrontendId(2))};
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry))};
 
   {
     browser_autofill_manager_->OnSuggestionsReturned(
@@ -1891,14 +1942,13 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_EmptyValue) {
   // Test that we sent the credit card suggestions to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -1923,14 +1973,13 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_Whitespace) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -1955,14 +2004,13 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_StopCharsOnly) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -1988,14 +2036,13 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return all credit card profile suggestions when the triggering
@@ -2027,10 +2074,10 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right value to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("3123"),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "3123", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(7)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return only matching credit card profile suggestions when the
@@ -2053,10 +2100,9 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_MatchCharacter) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)));
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return credit card profile suggestions when the selected form
@@ -2089,12 +2135,11 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 #endif
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      credit_card_number_field.global_id(),
-      Suggestion(visa_value, visa_label, kVisaCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(master_card_value, master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+  CheckSuggestions(credit_card_number_field.global_id(),
+                   Suggestion(visa_value, visa_label, kVisaCard,
+                              PopupItemId::kCreditCardEntry),
+                   Suggestion(master_card_value, master_card_label, kMasterCard,
+                              PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return credit card profile suggestions when the selected form
@@ -2147,12 +2192,11 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
 #endif
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(
-      cardholder_name_field.global_id(),
-      Suggestion("Elvis Presley", visa_label, kVisaCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion("Buddy Holly", master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+  CheckSuggestions(cardholder_name_field.global_id(),
+                   Suggestion("Elvis Presley", visa_label, kVisaCard,
+                              PopupItemId::kCreditCardEntry),
+                   Suggestion("Buddy Holly", master_card_label, kMasterCard,
+                              PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return a warning explaining that credit card profile suggestions
@@ -2172,7 +2216,7 @@ TEST_F(BrowserAutofillManagerTest,
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", Suggestion::FrontendId(-26)));
+                 "", Suggestion::FrontendId(kMixedFormMessage)));
 
   // Clear the test credit cards and try again -- we should still show the
   // mixed form warning.
@@ -2181,7 +2225,7 @@ TEST_F(BrowserAutofillManagerTest,
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", Suggestion::FrontendId(-26)));
+                 "", Suggestion::FrontendId(kMixedFormMessage)));
 }
 
 // Test that we return credit card suggestions for secure pages that have an
@@ -2207,14 +2251,13 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return credit card suggestions for secure pages that have a
@@ -2240,14 +2283,13 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return all credit card suggestions in the case that two cards
@@ -2283,18 +2325,17 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label1, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("3456"),
+                 PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "3456", ObfuscationLength()),
                  master_card_label2, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(7)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that a masked server card is not suggested if more that six digits
@@ -2378,18 +2419,16 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_ExpiredCards) {
 
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("5100"),
-                 master_card_label, kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(1)),
-      Suggestion(
-          std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005"),
-          amex_card_label, kAmericanExpressCard,
-          browser_autofill_manager_->GetPackedCreditCardID(2)),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(3)));
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "5100", ObfuscationLength()),
+                 master_card_label, kMasterCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "0005", ObfuscationLength()),
+                 amex_card_label, kAmericanExpressCard,
+                 PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test cards that are expired AND disused are suppressed when suppression is
@@ -2439,23 +2478,25 @@ TEST_F(BrowserAutofillManagerTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string mastercard_label =
-        test::ObfuscatedCardDigitsAsUTF8("5100");
-    const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("3456");
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength());
+    const std::string visa_label =
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
 #else
     const std::string mastercard_label =
-        std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8("5100") +
+        std::string("Mastercard  ") +
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength()) +
         std::string(", expires on 04/99");
-    const std::string visa_label = std::string("Visa  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("3456") +
-                                   std::string(", expires on 04/10");
+    const std::string visa_label =
+        std::string("Visa  ") +
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()) +
+        std::string(", expires on 04/10");
 #endif
 
-    CheckSuggestions(
-        form.fields[0].global_id(),
-        Suggestion("Bonnie Parker", mastercard_label, kMasterCard,
-                   browser_autofill_manager_->GetPackedCreditCardID(0)),
-        Suggestion("Clyde Barrow", visa_label, kVisaCard,
-                   browser_autofill_manager_->GetPackedCreditCardID(1)));
+    CheckSuggestions(form.fields[0].global_id(),
+                     Suggestion("Bonnie Parker", mastercard_label, kMasterCard,
+                                PopupItemId::kCreditCardEntry),
+                     Suggestion("Clyde Barrow", visa_label, kVisaCard,
+                                PopupItemId::kCreditCardEntry));
   }
 
   // Query with name prefix for card0 returns card0.
@@ -2466,17 +2507,17 @@ TEST_F(BrowserAutofillManagerTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string mastercard_label =
-        test::ObfuscatedCardDigitsAsUTF8("5100");
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength());
 #else
     const std::string mastercard_label =
-        std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8("5100") +
+        std::string("Mastercard  ") +
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength()) +
         std::string(", expires on 04/99");
 #endif
 
-    CheckSuggestions(
-        form.fields[0].global_id(),
-        Suggestion("Bonnie Parker", mastercard_label, kMasterCard,
-                   browser_autofill_manager_->GetPackedCreditCardID(0)));
+    CheckSuggestions(form.fields[0].global_id(),
+                     Suggestion("Bonnie Parker", mastercard_label, kMasterCard,
+                                PopupItemId::kCreditCardEntry));
   }
 
   // Query with name prefix for card1 returns card1.
@@ -2486,17 +2527,18 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("3456");
+    const std::string visa_label =
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
 #else
-    const std::string visa_label = std::string("Visa  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("3456") +
-                                   std::string(", expires on 04/10");
+    const std::string visa_label =
+        std::string("Visa  ") +
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()) +
+        std::string(", expires on 04/10");
 #endif
 
-    CheckSuggestions(
-        form.fields[0].global_id(),
-        Suggestion("Clyde Barrow", visa_label, kVisaCard,
-                   browser_autofill_manager_->GetPackedCreditCardID(1)));
+    CheckSuggestions(form.fields[0].global_id(),
+                     Suggestion("Clyde Barrow", visa_label, kVisaCard,
+                                PopupItemId::kCreditCardEntry));
   }
 
   // Query with name prefix for card2 returns card2.
@@ -2506,17 +2548,19 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    const std::string amex_label = test::ObfuscatedCardDigitsAsUTF8("0005");
+    const std::string amex_label =
+        test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength());
 #else
-    const std::string amex_label = std::string("Amex  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("0005") +
-                                   std::string(", expires on 01/10");
+    const std::string amex_label =
+        std::string("Amex  ") +
+        test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()) +
+        std::string(", expires on 01/10");
 #endif
 
     CheckSuggestions(
         form.fields[0].global_id(),
         Suggestion("John Dillinger", amex_label, kAmericanExpressCard,
-                   browser_autofill_manager_->GetPackedCreditCardID(2)));
+                   PopupItemId::kCreditCardEntry));
   }
 }
 
@@ -2563,28 +2607,30 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
 
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005"),
-          amex_card_exp_label, kAmericanExpressCard,
-          browser_autofill_manager_->GetPackedCreditCardID(1)));
+      Suggestion(std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "0005", ObfuscationLength()),
+                 amex_card_exp_label, kAmericanExpressCard,
+                 PopupItemId::kCreditCardEntry));
 
   // Query by cardholder name field.
   GetAutofillSuggestions(form, form.fields[0]);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const std::string amex_card_label = test::ObfuscatedCardDigitsAsUTF8("0005");
+  const std::string amex_card_label =
+      test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength());
 #else
-  const std::string amex_card_label = std::string("Amex  ") +
-                                      test::ObfuscatedCardDigitsAsUTF8("0005") +
-                                      std::string(", expires on 04/99");
+  const std::string amex_card_label =
+      std::string("Amex  ") +
+      test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()) +
+      std::string(", expires on 04/99");
 #endif
 
   CheckSuggestions(
       form.fields[0].global_id(),
       Suggestion("John Dillinger", "", kGenericCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(2)),
+                 PopupItemId::kCreditCardEntry),
       Suggestion("Clyde Barrow", amex_card_label, kAmericanExpressCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(1)));
+                 PopupItemId::kCreditCardEntry));
 }
 
 TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
@@ -2643,11 +2689,12 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   }
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(form.fields[0].global_id(),
-                   Suggestion("Charles", label1, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)),
-                   Suggestion("Elvis", label2, kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("Charles", label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Elvis", label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 
   FormFieldData field;
   test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
@@ -2665,10 +2712,9 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   CheckSuggestions(
       field.global_id(),
       Suggestion(MakeCardLabel("Visa", "3456"), visa_label, kVisaCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(4)),
+                 PopupItemId::kCreditCardEntry),
       Suggestion(MakeCardLabel("Mastercard", "8765"), master_card_label,
-                 kMasterCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(5)));
+                 kMasterCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test that for non-https forms with both address and credit card fields, we
@@ -2692,10 +2738,12 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(field.global_id(),
-                   Suggestion(l10n_util::GetStringUTF8(
-                                  IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
-                              "", "", Suggestion::FrontendId(-1)));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion(
+          l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+          "", "",
+          Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage)));
 
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().ClearCreditCards();
@@ -2771,8 +2819,7 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
 
   FormData response_data;
   FillAutofillFormDataAndSaveResults(form, form.fields[index_of_trigger_field],
-                                     MakeFrontendId({.profile_id = guid}),
-                                     &response_data);
+                                     guid, &response_data);
   // Extract the sections into individual forms to reduce boiler plate code.
   size_t mid = response_data.fields.size() / 2;
   FormData section1 = response_data;
@@ -3270,11 +3317,12 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(form.fields[0].global_id(),
-                   Suggestion("Charles", label1, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)),
-                   Suggestion("Elvis", label2, kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      form.fields[0].global_id(),
+      Suggestion("Charles", label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Elvis", label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Test that nothing breaks when there are single field form fill (Autocomplete)
@@ -3299,9 +3347,10 @@ TEST_F(BrowserAutofillManagerTest,
   AutocompleteSuggestionsReturned(field.global_id(), suggestions);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(field.global_id(),
-                   Suggestion("one", "", "", Suggestion::FrontendId(0)),
-                   Suggestion("two", "", "", Suggestion::FrontendId(0)));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion("one", "", "", Suggestion::FrontendId(kAutocompleteEntry)),
+      Suggestion("two", "", "", Suggestion::FrontendId(kAutocompleteEntry)));
 }
 
 // Test that we do not return duplicate values drawn from multiple profiles when
@@ -3347,7 +3396,8 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion("Elvis", label, kAddressEntryIcon, Suggestion::FrontendId(1)));
+      Suggestion("Elvis", label, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
@@ -3413,9 +3463,12 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[9].global_id(),
-      Suggestion(value1, label1, kAddressEntryIcon, Suggestion::FrontendId(1)),
-      Suggestion(value2, label2, kAddressEntryIcon, Suggestion::FrontendId(2)),
-      Suggestion(value3, label3, kAddressEntryIcon, Suggestion::FrontendId(3)));
+      Suggestion(value1, label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion(value2, label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion(value3, label3, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -3456,17 +3509,19 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, phone_prefix);
 
   // Test that we sent the right prefix values to the external delegate.
-  CheckSuggestions(form.fields[2].global_id(),
-                   Suggestion("356", "1800FLOWERS", kAddressEntryIcon,
-                              Suggestion::FrontendId(1)));
+  CheckSuggestions(
+      form.fields[2].global_id(),
+      Suggestion("356", "1800FLOWERS", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 
   const FormFieldData& phone_suffix = form.fields[3];
   GetAutofillSuggestions(form, phone_suffix);
 
   // Test that we sent the right suffix values to the external delegate.
-  CheckSuggestions(form.fields[3].global_id(),
-                   Suggestion("9377", "1800FLOWERS", kAddressEntryIcon,
-                              Suggestion::FrontendId(1)));
+  CheckSuggestions(
+      form.fields[3].global_id(),
+      Suggestion("9377", "1800FLOWERS", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Tests that the suggestion consists of phone number without the country code
@@ -3487,9 +3542,10 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
 
   GetAutofillSuggestions(form, form.fields[9]);
 
-  CheckSuggestions(form.fields[9].global_id(),
-                   Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon,
-                              Suggestion::FrontendId(1)));
+  CheckSuggestions(
+      form.fields[9].global_id(),
+      Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Tests that we return email profile suggestions values
@@ -3532,9 +3588,10 @@ TEST_F(BrowserAutofillManagerTest,
   personal_data().AddProfile(profile);
 
   GetAutofillSuggestions(form, form.fields[2]);
-  CheckSuggestions(form.fields[2].global_id(),
-                   Suggestion("test@example.com", "Natty Bumppo",
-                              kAddressEntryIcon, Suggestion::FrontendId(1)));
+  CheckSuggestions(
+      form.fields[2].global_id(),
+      Suggestion("test@example.com", "Natty Bumppo", kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Test that we correctly fill an address form.
@@ -3551,8 +3608,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
   EXPECT_NE(base::Time(), profile->use_date());
 
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 
@@ -3620,8 +3676,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_LogFieldWasAutofill) {
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
   base::HistogramTester histogram_tester;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   // Cardholder name, card number, expiration data were autofilled but cvc was
   // not be autofilled.
@@ -3637,8 +3692,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_Simple) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledCreditCardFormElvis(response_data, /*has_address_fields=*/false);
 }
@@ -3661,8 +3715,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   const char guid[] = "00000000-0000-0000-0000-000000000008";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledCreditCardFormElvis(response_data, /*has_address_fields=*/false);
 }
@@ -3686,8 +3739,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   const char guid[] = "00000000-0000-0000-0000-000000000009";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledCreditCardFormElvis(response_data, /*has_address_fields=*/false);
 }
@@ -3711,8 +3763,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearNoMonth) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
                    card_fill_data);
@@ -3736,8 +3787,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearMonth) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
                    card_fill_data);
@@ -3762,8 +3812,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearNoMonth) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
                    card_fill_data);
@@ -3786,8 +3835,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearMonth) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledForm(response_data, /*address_fill_data=*/absl::nullopt,
                    card_fill_data);
@@ -3823,8 +3871,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
@@ -3873,8 +3920,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
@@ -3922,8 +3968,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
@@ -3970,8 +4015,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_SplitName) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
@@ -4045,8 +4089,7 @@ TEST_F(BrowserAutofillManagerTest,
   personal_data().AddProfile(profile);
 
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
 
   // Verify the correct filling of the name entries.
@@ -4095,8 +4138,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressAndCreditCardForm) {
   FormData response_data;
   {
     SCOPED_TRACE("Address");
-    FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                       MakeFrontendId({.profile_id = guid}),
+    FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                        &response_data);
     ExpectFilledAddressFormElvis(response_data, true);
   }
@@ -4104,9 +4146,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressAndCreditCardForm) {
   // Now fill the credit card data.
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
   {
-    FillAutofillFormDataAndSaveResults(
-        form, form.fields.back(), MakeFrontendId({.credit_card_id = guid2}),
-        &response_data);
+    FillAutofillFormDataAndSaveResults(form, form.fields.back(), guid2,
+                                       &response_data);
     SCOPED_TRACE("Credit card");
     ExpectFilledCreditCardFormElvis(response_data, /*has_address_fields=*/true);
   }
@@ -4228,8 +4269,7 @@ TEST_P(AutofillSimpleFormTest, FillSimpleForm) {
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form, form.fields[0],
-      MakeFrontendId({.credit_card_id = params.cc_guid,
-                      .profile_id = params.profile_guid}),
+      params.cc_guid.empty() ? params.profile_guid : params.cc_guid,
       &response_data);
 
   ASSERT_EQ(response_data.fields.size(), params.expected_form_fields.size());
@@ -4262,8 +4302,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_AutocompleteOff) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
 
   // All fields should be filled.
@@ -4310,8 +4349,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000009";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
 
   // The credit card name, type and number should be filled.
@@ -4397,8 +4435,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
   // Fill the form
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
 
   // All the visible fields should be filled as all the fields belong to the
@@ -4433,8 +4470,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
   // Fill the first section.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   {
     SCOPED_TRACE("Address 1");
@@ -4454,8 +4490,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
   const char guid2[] = "00000000-0000-0000-0000-000000000001";
   ASSERT_LT(9U, kAddressFormSize);
   FillAutofillFormDataAndSaveResults(form, form.fields[kAddressFormSize + 9],
-                                     MakeFrontendId({.profile_id = guid2}),
-                                     &response_data);
+                                     guid2, &response_data);
   {
     SCOPED_TRACE("Address 2");
     ASSERT_EQ(response_data.fields.size(), form.fields.size());
@@ -4538,8 +4573,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
   // Fill the unnamed section.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[1],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[1], guid,
                                      &response_data);
   {
     SCOPED_TRACE("Unnamed section");
@@ -4566,8 +4600,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
 
   // Fill the address portion of the billing section.
   const char guid2[] = "00000000-0000-0000-0000-000000000001";
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid2}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid2,
                                      &response_data);
   {
     SCOPED_TRACE("Billing address");
@@ -4594,8 +4627,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
   // Fill the credit card portion of the billing section.
   const char guid3[] = "00000000-0000-0000-0000-000000000004";
   FillAutofillFormDataAndSaveResults(form, form.fields[form.fields.size() - 2],
-                                     MakeFrontendId({.credit_card_id = guid3}),
-                                     &response_data);
+                                     guid3, &response_data);
   {
     SCOPED_TRACE("Credit card");
     EXPECT_EQ(u"MyForm", response_data.name);
@@ -4634,8 +4666,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleEmails) {
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
 
   // The second email address should be filled.
@@ -4662,8 +4693,7 @@ TEST_F(BrowserAutofillManagerTest, FillAutofilledForm) {
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   {
     SCOPED_TRACE("Address");
@@ -4675,8 +4705,7 @@ TEST_F(BrowserAutofillManagerTest, FillAutofilledForm) {
 
   // Now fill the credit card data.
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  FillAutofillFormDataAndSaveResults(form, form.fields.back(),
-                                     MakeFrontendId({.credit_card_id = guid2}),
+  FillAutofillFormDataAndSaveResults(form, form.fields.back(), guid2,
                                      &response_data);
   {
     SCOPED_TRACE("Credit card 1");
@@ -4690,8 +4719,7 @@ TEST_F(BrowserAutofillManagerTest, FillAutofilledForm) {
   }
 
   FillAutofillFormDataAndSaveResults(form, form.fields[form.fields.size() - 2],
-                                     MakeFrontendId({.credit_card_id = guid2}),
-                                     &response_data);
+                                     guid2, &response_data);
   {
     SCOPED_TRACE("Credit card 2");
     TestCardFillData expected_card_fill_data = kEmptyCardFillData;
@@ -4719,8 +4747,7 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyAutofilledForm) {
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   {
     SCOPED_TRACE("Address");
@@ -4738,8 +4765,7 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyAutofilledForm) {
 
   // Now fill the credit card data.
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  FillAutofillFormDataAndSaveResults(form, form.fields.back(),
-                                     MakeFrontendId({.credit_card_id = guid2}),
+  FillAutofillFormDataAndSaveResults(form, form.fields.back(), guid2,
                                      &response_data);
   {
     SCOPED_TRACE("Credit card 1");
@@ -4770,8 +4796,7 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyManuallyFilledForm) {
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   {
     SCOPED_TRACE("Address");
@@ -4783,8 +4808,7 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyManuallyFilledForm) {
 
   // Now fill the credit card data.
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  FillAutofillFormDataAndSaveResults(form, form.fields.back(),
-                                     MakeFrontendId({.credit_card_id = guid2}),
+  FillAutofillFormDataAndSaveResults(form, form.fields.back(), guid2,
                                      &response_data);
   {
     SCOPED_TRACE("Credit card 1");
@@ -4849,8 +4873,7 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   FormData response_data1;
   FillAutofillFormDataAndSaveResults(
       form_with_us_number_max_length,
-      *form_with_us_number_max_length.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data1);
+      *form_with_us_number_max_length.fields.begin(), guid, &response_data1);
 
   ASSERT_EQ(5U, response_data1.fields.size());
   EXPECT_EQ(u"1", response_data1.fields[0].value);
@@ -4860,9 +4883,9 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   EXPECT_EQ(std::u16string(), response_data1.fields[4].value);
 
   FormData response_data2;
-  FillAutofillFormDataAndSaveResults(
-      form_with_autocompletetype, *form_with_autocompletetype.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data2);
+  FillAutofillFormDataAndSaveResults(form_with_autocompletetype,
+                                     *form_with_autocompletetype.fields.begin(),
+                                     guid, &response_data2);
 
   ASSERT_EQ(5U, response_data2.fields.size());
   EXPECT_EQ(u"1", response_data2.fields[0].value);
@@ -4877,8 +4900,7 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   FormData response_data3;
   FillAutofillFormDataAndSaveResults(
       form_with_us_number_max_length,
-      *form_with_us_number_max_length.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data3);
+      *form_with_us_number_max_length.fields.begin(), guid, &response_data3);
 
   ASSERT_EQ(5U, response_data3.fields.size());
   EXPECT_EQ(u"4", response_data3.fields[0].value);
@@ -4888,9 +4910,9 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   EXPECT_EQ(std::u16string(), response_data3.fields[4].value);
 
   FormData response_data4;
-  FillAutofillFormDataAndSaveResults(
-      form_with_autocompletetype, *form_with_autocompletetype.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data4);
+  FillAutofillFormDataAndSaveResults(form_with_autocompletetype,
+                                     *form_with_autocompletetype.fields.begin(),
+                                     guid, &response_data4);
 
   ASSERT_EQ(5U, response_data4.fields.size());
   EXPECT_EQ(u"44", response_data4.fields[0].value);
@@ -4945,8 +4967,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form_with_multiple_componentized_phone_fields,
-      *form_with_multiple_componentized_phone_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      *form_with_multiple_componentized_phone_fields.fields.begin(), guid,
+      &response_data);
 
   // Verify only the first complete set of phone number fields are filled.
   ASSERT_EQ(8U, response_data.fields.size());
@@ -4991,8 +5013,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form_with_multiple_whole_number_fields,
-      *form_with_multiple_whole_number_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      *form_with_multiple_whole_number_fields.fields.begin(), guid,
+      &response_data);
 
   // Verify only the first complete set of phone number fields are filled.
   ASSERT_EQ(4U, response_data.fields.size());
@@ -5048,8 +5070,8 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form_with_multiple_componentized_phone_fields,
-      *form_with_multiple_componentized_phone_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      *form_with_multiple_componentized_phone_fields.fields.begin(), guid,
+      &response_data);
 
   // Verify only the first complete set of phone number fields are filled,
   // and phone components are not filled more than once.
@@ -5105,8 +5127,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form_with_misclassified_extension,
-      *form_with_misclassified_extension.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      *form_with_misclassified_extension.fields.begin(), guid, &response_data);
 
   // Verify the misclassified extension field is not filled.
   ASSERT_EQ(5U, response_data.fields.size());
@@ -5154,8 +5175,7 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form_with_no_complete_number,
-      *form_with_no_complete_number.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      *form_with_no_complete_number.fields.begin(), guid, &response_data);
 
   // Verify when there is no complete phone number fields, we do best effort
   // filling.
@@ -5202,8 +5222,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Move it to point to "shipping number".
   std::advance(it, 3);
   FillAutofillFormDataAndSaveResults(form_with_multiple_whole_number_fields,
-                                     *it, MakeFrontendId({.profile_id = guid}),
-                                     &response_data);
+                                     *it, guid, &response_data);
 
   // Verify when the second phone number field is being focused, we fill
   // that field *AND* the first phone number field.
@@ -5248,8 +5267,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
       form_with_multiple_whole_number_fields,
-      *form_with_multiple_whole_number_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      *form_with_multiple_whole_number_fields.fields.begin(), guid,
+      &response_data);
 
   // Verify hidden/non-focusable phone field is set to only_fill_when_focused.
   ASSERT_EQ(4U, response_data.fields.size());
@@ -5309,8 +5328,7 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
   FormData response_data;
   base::HistogramTester histogram_tester;
 
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   histogram_tester.ExpectTotalCount(
       "Autofill.HiddenOrPresentationalSelectFieldsFilled", 2);
@@ -5373,7 +5391,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Fill first sections.
   FillAutofillFormDataAndSaveResults(
       form_with_multiple_sections, *form_with_multiple_sections.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_data);
+      guid, &response_data);
 
   // Verify first section is filled with rationalization.
   ASSERT_EQ(9U, response_data.fields.size());
@@ -5391,8 +5409,7 @@ TEST_F(BrowserAutofillManagerTest,
   auto it = form_with_multiple_sections.fields.begin();
   std::advance(it, 6);  // Pointing to second section.
 
-  FillAutofillFormDataAndSaveResults(form_with_multiple_sections, *it,
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form_with_multiple_sections, *it, guid,
                                      &response_data);
 
   // Verify second section is filled with rationalization.
@@ -5428,8 +5445,7 @@ TEST_F(BrowserAutofillManagerTest, FormChangesRemoveField) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 }
@@ -5457,8 +5473,7 @@ TEST_F(BrowserAutofillManagerTest, FormChangesAddField) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 }
@@ -5497,8 +5512,7 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   // filled.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
 
   ASSERT_EQ(5U, response_data.fields.size());
@@ -5522,8 +5536,7 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   FormData later_response_data;
   const char guid2[] = "00000000-0000-0000-0000-000000000002";
   FillAutofillFormDataAndSaveResults(response_data, response_data.fields[4],
-                                     MakeFrontendId({.profile_id = guid2}),
-                                     &later_response_data);
+                                     guid2, &later_response_data);
   ASSERT_EQ(5U, later_response_data.fields.size());
   ExpectFilledField("First Name", "first_name", "Elvis", "text",
                     later_response_data.fields[0]);
@@ -5547,8 +5560,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted) {
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 
@@ -5568,8 +5580,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSaveData) {
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 
@@ -5683,8 +5694,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 
@@ -5764,8 +5774,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   profile1.set_guid(guid);
   personal_data().AddProfile(profile1);
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
 
   TestAddressFillData expected_address_fill_data = address_fill_data;
@@ -5863,8 +5872,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   profile1.set_guid(guid);
   personal_data().AddProfile(profile1);
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
 
   TestAddressFillData expected_address_fill_data = address_fill_data;
@@ -5874,8 +5882,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   // Refill the address data with all the field values.
   const char guid2[] = "00000000-0000-0000-0000-000000000001";
   FillAutofillFormDataAndSaveResults(
-      response_data, *response_data.fields.begin(),
-      MakeFrontendId({.profile_id = guid2}), &response_data);
+      response_data, *response_data.fields.begin(), guid2, &response_data);
 
   expected_address_fill_data.first = "Elvis";
   expected_address_fill_data.phone = "12345678901";
@@ -5974,8 +5981,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 
@@ -6059,8 +6065,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Fill the form by triggering the suggestion from "Name on Card" field.
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &response_data);
   ExpectFilledCreditCardFormElvis(response_data, /*has_address_fields=*/false);
 
@@ -6927,8 +6932,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedServerTypes) {
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
 
@@ -6968,16 +6972,16 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
-  form.fields[3].value = u"Enter your address";
+  FormFieldData* addr1_field = form.FindFieldByName(u"addr1");
+  ASSERT_TRUE(addr1_field != nullptr);
+  addr1_field->value = u"Enter your address";
 
   FormsSeen({form});
 
   // Fill the form.
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      form, form.fields[3], MakeFrontendId({.profile_id = kElvisProfileGuid}),
-      &response_data);
-
+  FillAutofillFormDataAndSaveResults(form, *addr1_field, kElvisProfileGuid,
+                                     &response_data);
   // Set the address field's value back to the default value.
   response_data.fields[3].value = u"Enter your address";
 
@@ -6996,23 +7000,68 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
 
   // Convert the state field to a <select> popup, to make sure that we only
   // reject default values for text fields.
-  ASSERT_TRUE(form.fields[6].name == u"state");
-  form.fields[6].form_control_type = "select-one";
-  form.fields[6].value = base::UTF8ToUTF16(kElvisAddressFillData.state);
+  FormFieldData* state_field = form.FindFieldByName(u"state");
+  ASSERT_TRUE(state_field != nullptr);
+  state_field->form_control_type = "select-one";
+  state_field->value = base::UTF8ToUTF16(kElvisAddressFillData.state);
 
   FormsSeen({form});
 
   // Fill the form.
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      form, form.fields[3], MakeFrontendId({.profile_id = kElvisProfileGuid}),
-      &response_data);
+  FillAutofillFormDataAndSaveResults(form, form.fields[3], kElvisProfileGuid,
+                                     &response_data);
 
   FormSubmitted(response_data);
   ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
   EXPECT_EQ(u"Tennessee",
             personal_data().last_save_imported_profile()->GetRawInfo(
                 ADDRESS_HOME_STATE));
+}
+
+// Test that we save form data when a non-country, non-state <select> in the
+// form contains the default value.
+TEST_F(BrowserAutofillManagerTest,
+       FormSubmittedNonAddressSelectWithDefaultValue) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  // Remove phonenumber field.
+  auto phonenumber_it =
+      base::ranges::find(form.fields, u"phonenumber", &FormFieldData::name);
+  ASSERT_TRUE(phonenumber_it != form.fields.end());
+  form.fields.erase(phonenumber_it);
+
+  // Insert country code and national phone number fields.
+  FormFieldData country_code_field;
+  test::CreateTestFormField("Country Code", "countrycode", "1", "text",
+                            "tel-country-code", &country_code_field);
+  country_code_field.form_control_type = "select-one";
+  form.fields.push_back(country_code_field);
+
+  FormFieldData phonenumber_field;
+  test::CreateTestFormField("Phone Number", "phonenumber", "", "text",
+                            "tel-national", &phonenumber_field);
+  form.fields.push_back(phonenumber_field);
+
+  FormsSeen({form});
+
+  // Fill the form.
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(form, form.fields[3], kElvisProfileGuid,
+                                     &response_data);
+
+  FormSubmitted(response_data);
+
+  // Value of country code field should have been saved.
+  ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  std::u16string formatted_phone_number =
+      personal_data().last_save_imported_profile()->GetRawInfo(
+          PHONE_HOME_WHOLE_NUMBER);
+  std::u16string phone_number_numbers_only;
+  base::RemoveChars(formatted_phone_number, u"+- ", &phone_number_numbers_only);
+  EXPECT_TRUE(base::StartsWith(phone_number_numbers_only, u"1"));
 }
 
 struct ProfileMatchingTypesTestCase {
@@ -7834,9 +7883,8 @@ TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
   profile.set_guid(guid);
   personal_data().AddProfile(profile);
 
-  Suggestion::FrontendId id = MakeFrontendId({.profile_id = guid});
-
-  browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(id);
+  browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
+      Suggestion::BackendId(guid));
 
   EXPECT_FALSE(personal_data().GetProfileByGUID(guid));
 }
@@ -7848,9 +7896,8 @@ TEST_F(BrowserAutofillManagerTest, RemoveCreditCard) {
   credit_card.set_guid(guid);
   personal_data().AddCreditCard(credit_card);
 
-  Suggestion::FrontendId id = MakeFrontendId({.credit_card_id = guid});
-
-  browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(id);
+  browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
+      Suggestion::BackendId(guid));
 
   EXPECT_FALSE(personal_data().GetCreditCardByGUID(guid));
 }
@@ -8115,10 +8162,9 @@ TEST_F(BrowserAutofillManagerTest,
 
   CheckSuggestions(
       form.fields[3].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(4)));
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test that inputs detected to be CVC inputs are forced to
@@ -8216,8 +8262,7 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotFillFormData) {
   // Expect no fields filled, no form data sent to renderer.
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _)).Times(0);
 
-  FillAutofillFormData(form, *form.fields.begin(),
-                       MakeFrontendId({.profile_id = guid}));
+  FillAutofillFormData(form, *form.fields.begin(), guid);
 }
 
 TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
@@ -8249,8 +8294,7 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
   // Expect no fields filled, no form data sent to renderer.
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _)).Times(0);
 
-  FillAutofillFormData(form, *form.fields.begin(),
-                       MakeFrontendId({.credit_card_id = guid}));
+  FillAutofillFormData(form, *form.fields.begin(), guid);
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
@@ -8314,11 +8358,12 @@ TEST_P(SuggestionMatchingTest, DisplaySuggestionsWithMatchingTokens) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(field.global_id(),
-                   Suggestion("buddy@gmail.com", label1, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)),
-                   Suggestion("theking@gmail.com", label2, kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion("buddy@gmail.com", label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("theking@gmail.com", label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Verify that typing "apple" will match "123 Apple St." when substring matching
@@ -8353,9 +8398,10 @@ TEST_P(SuggestionMatchingTest,
       label = "123 Apple St.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(field.global_id(),
-                   Suggestion("123 Apple St., unit 6", label, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion("123 Apple St., unit 6", label, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 // Verify that typing "mail" will not match any of the "@gmail.com" email
@@ -8424,7 +8470,7 @@ TEST_P(CreditCardSuggestionTest,
   GetAutofillSuggestions(form, field);
   CheckSuggestions(field.global_id(),
                    Suggestion("Nancy Drew", visa_label, kVisaCard,
-                              MakeFrontendId({.credit_card_id = guid})));
+                              PopupItemId::kCreditCardEntry));
 }
 
 // Verify that typing "lvis" will not match any of the credit card name when
@@ -8528,11 +8574,12 @@ TEST_P(SuggestionMatchingTest,
       label1 = "1234 Smith Blvd., Carl Shawn Smith Grimes";
       label2 = "1234 Smith Blvd., Robin Adam Smith Grimes";
   }
-  CheckSuggestions(field.global_id(),
-                   Suggestion("Shawn Smith", label1, kAddressEntryIcon,
-                              Suggestion::FrontendId(1)),
-                   Suggestion("Adam Smith", label2, kAddressEntryIcon,
-                              Suggestion::FrontendId(2)));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion("Shawn Smith", label1, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)),
+      Suggestion("Adam Smith", label2, kAddressEntryIcon,
+                 Suggestion::FrontendId(PopupItemId::kAddressEntry)));
 }
 
 TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
@@ -8754,11 +8801,34 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Test that is_all_server_suggestions is false if there is at least one
-// local_card on file.
+// unique local_card on file with local_card deduped.
 TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_IsAllServerSuggestionsFalse) {
-  // Create server and local credit cards.
-  CreateTestServerAndLocalCreditCards();
+       GetCreditCardSuggestions_IsAllServerSuggestionsFalse_LocalCardDeduped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillSuggestServerCardInsteadOfLocalCard);
+  // Create unique server and local credit cards.
+  CreateUniqueTestServerAndLocalCreditCards();
+
+  // Set up our form data.
+  FormData form = CreateTestCreditCardFormData(true, false);
+  FormsSeen({form});
+
+  GetAutofillSuggestions(form, form.fields[1]);
+
+  // Test that we sent the right values to the external delegate.
+  ASSERT_FALSE(external_delegate_->is_all_server_suggestions());
+}
+
+// Test that is_all_server_suggestions is false if there is at least one
+// unique local_card on file with server_card deduped.
+TEST_F(BrowserAutofillManagerTest,
+       GetCreditCardSuggestions_IsAllServerSuggestionsFalse_ServerCardDeduped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSuggestServerCardInsteadOfLocalCard);
+  // Create unique server and local credit cards.
+  CreateUniqueTestServerAndLocalCreditCards();
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(true, false);
@@ -8798,23 +8868,24 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 
   Suggestion virtual_card_suggestion = Suggestion(
       "Virtual card",
-      std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
+      std::string("nickname  ") +
+          test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()),
       label, kVisaCard, autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(
       form.fields[1].global_id(), virtual_card_suggestion,
-      Suggestion(
-          std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          label, kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(7)));
+      Suggestion(std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                 "3456", ObfuscationLength()),
+                 label, kVisaCard, PopupItemId::kCreditCardEntry));
 
   // Non card number field (cardholder name field).
   GetAutofillSuggestions(form, form.fields[0]);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  label = test::ObfuscatedCardDigitsAsUTF8("3456");
+  label = test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
 #else
-  label = std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456") +
+  label = std::string("nickname  ") +
+          test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()) +
           std::string(", expires on 04/99");
 #endif
 
@@ -8822,18 +8893,16 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       Suggestion("Virtual card", std::string("Elvis Presley"), label, kVisaCard,
                  autofill::PopupItemId::kVirtualCreditCardEntry);
 
-  CheckSuggestions(
-      form.fields[0].global_id(), virtual_card_suggestion,
-      Suggestion("Elvis Presley", label, kVisaCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(7)));
+  CheckSuggestions(form.fields[0].global_id(), virtual_card_suggestion,
+                   Suggestion("Elvis Presley", label, kVisaCard,
+                              PopupItemId::kCreditCardEntry));
 
   // Incomplete form.
   GetAutofillSuggestions(form, form.fields[0]);
 
-  CheckSuggestions(
-      form.fields[0].global_id(), virtual_card_suggestion,
-      Suggestion("Elvis Presley", label, kVisaCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(7)));
+  CheckSuggestions(form.fields[0].global_id(), virtual_card_suggestion,
+                   Suggestion("Elvis Presley", label, kVisaCard,
+                              PopupItemId::kCreditCardEntry));
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -10046,8 +10115,7 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
@@ -10094,8 +10162,7 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   features.InitAndDisableFeature(
       autofill::features::kAutofillPreventOverridingPrefilledValues);
 
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Memphis");
@@ -10140,8 +10207,7 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0],
-                                     MakeFrontendId({.profile_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], guid,
                                      &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
@@ -10223,8 +10289,7 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOrigin) {
 
   AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
-  FillAutofillFormData(form, form.fields[0],
-                       MakeFrontendId({.profile_id = profile.guid()}));
+  FillAutofillFormData(form, form.fields[0], profile.guid());
 
   FormStructure* form_structure =
       browser_autofill_manager_->FindCachedFormById(form.global_id());
@@ -10250,9 +10315,8 @@ TEST_F(BrowserAutofillManagerTest,
   profile1.ClearFields({EMAIL_ADDRESS});
   personal_data().AddProfile(profile1);
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      form, form.fields[0], MakeFrontendId({.profile_id = profile1.guid()}),
-      &response_data);
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], profile1.guid(),
+                                     &response_data);
 
   // Check that the email field has no filling source.
   FormStructure* form_structure =
@@ -10265,9 +10329,8 @@ TEST_F(BrowserAutofillManagerTest,
   AutofillProfile profile2 = test::GetFullProfile();
   personal_data().AddProfile(profile2);
   FormData later_response_data;
-  FillAutofillFormDataAndSaveResults(
-      response_data, form.fields[3],
-      MakeFrontendId({.profile_id = profile2.guid()}), &later_response_data);
+  FillAutofillFormDataAndSaveResults(response_data, form.fields[3],
+                                     profile2.guid(), &later_response_data);
 
   // Check that the first three fields have the first profile as filling source
   // and the last field has the second profile.
@@ -10296,9 +10359,8 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOriginOnEditedField) {
   AutofillProfile profile = test::GetFullProfile();
   personal_data().AddProfile(profile);
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      form, form.fields[0], MakeFrontendId({.profile_id = profile.guid()}),
-      &response_data);
+  FillAutofillFormDataAndSaveResults(form, form.fields[0], profile.guid(),
+                                     &response_data);
 
   // Simulate editing the first field.
   response_data.fields[0].value = u"Michael";
@@ -10328,8 +10390,7 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOriginWorksOnlyOnFilledField) {
   AutofillProfile profile = test::GetFullProfile();
   profile.ClearFields({EMAIL_ADDRESS});
   personal_data().AddProfile(profile);
-  FillAutofillFormData(form, form.fields[0],
-                       MakeFrontendId({.profile_id = profile.guid()}));
+  FillAutofillFormData(form, form.fields[0], profile.guid());
 
   FormStructure* form_structure =
       browser_autofill_manager_->FindCachedFormById(form.global_id());
@@ -10394,12 +10455,11 @@ class BrowserAutofillManagerTestForVirtualCardOption
     external_delegate_->CheckSuggestionCount(field_id, 1);
     // Suggestion details need to match the credit card added in the SetUp()
     // above.
-    CheckSuggestions(
-        field_id,
-        Suggestion(
-            std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-            "Expires on 04/99", kVisaCard,
-            browser_autofill_manager_->GetPackedCreditCardID(7)));
+    CheckSuggestions(field_id, Suggestion(std::string("Visa  ") +
+                                              test::ObfuscatedCardDigitsAsUTF8(
+                                                  "3456", ObfuscationLength()),
+                                          "Expires on 04/99", kVisaCard,
+                                          PopupItemId::kCreditCardEntry));
   }
 
  private:
@@ -10463,14 +10523,13 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   GetAutofillSuggestions(form, form.fields[0]);  // Cardholder name field.
 
   external_delegate_->CheckSuggestionCount(form.fields[0].global_id(), 1);
-  const std::string visa_label =
-      base::JoinString({"Visa  ", test::ObfuscatedCardDigitsAsUTF8("3456"),
-                        ", expires on 04/99"},
-                       "");
-  CheckSuggestions(
-      form.fields[0].global_id(),
-      Suggestion("Elvis Presley", visa_label, kVisaCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(7)));
+  const std::string visa_label = base::JoinString(
+      {"Visa  ", test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()),
+       ", expires on 04/99"},
+      "");
+  CheckSuggestions(form.fields[0].global_id(),
+                   Suggestion("Elvis Presley", visa_label, kVisaCard,
+                              PopupItemId::kCreditCardEntry));
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when there
@@ -10556,10 +10615,9 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   external_delegate_->CheckSuggestionCount(field_id, 2);
   CheckSuggestions(
       field_id,
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          "Expires on 04/99", kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(7)),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
                  "", "", PopupItemId::kUseVirtualCard));
@@ -10596,14 +10654,12 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   external_delegate_->CheckSuggestionCount(field_id, 3);
   CheckSuggestions(
       field_id,
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("1111"),
-          "Expires on 04/99", kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(8)),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          "Expires on 04/99", kVisaCard,
-          browser_autofill_manager_->GetPackedCreditCardID(7)),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "1111", ObfuscationLength()),
+                 "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
                  "", "", PopupItemId::kUseVirtualCard));
@@ -10860,11 +10916,12 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion((expected_nickname_.empty() ? std::string("Amex")
-                                             : expected_nickname_) +
-                     "  " + test::ObfuscatedCardDigitsAsUTF8("0005"),
-                 exp_label, kAmericanExpressCard,
-                 browser_autofill_manager_->GetPackedCreditCardID(2)));
+      Suggestion(
+          (expected_nickname_.empty() ? std::string("Amex")
+                                      : expected_nickname_) +
+              "  " +
+              test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()),
+          exp_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry));
 }
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
@@ -10899,14 +10956,14 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
       form.fields[1].global_id(),
       Suggestion(
           (local_nickname_.empty() ? std::string("Amex") : local_nickname_) +
-              "  " + test::ObfuscatedCardDigitsAsUTF8("0005"),
-          exp_label, kAmericanExpressCard,
-          browser_autofill_manager_->GetPackedCreditCardID(1)),
+              "  " +
+              test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()),
+          exp_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry),
       Suggestion(
           (server_nickname_.empty() ? std::string("Amex") : server_nickname_) +
-              "  " + test::ObfuscatedCardDigitsAsUTF8("8431"),
-          exp_label, kAmericanExpressCard,
-          browser_autofill_manager_->GetPackedCreditCardID(2)));
+              "  " +
+              test::ObfuscatedCardDigitsAsUTF8("8431", ObfuscationLength()),
+          exp_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry));
 }
 
 // The following Refill Tests ensure that Autofill can handle the situation
@@ -10951,8 +11008,7 @@ TEST_P(BrowserAutofillManagerRefillTest,
   // Simulate filling and store the data to be filled in |first_fill_data|.
   const char guid[] = "00000000-0000-0000-0000-000000000004";
   FormData first_fill_data;
-  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                     MakeFrontendId({.credit_card_id = guid}),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                      &first_fill_data);
   ASSERT_EQ(3u, first_fill_data.fields.size());
   ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
@@ -11065,8 +11121,7 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
 
     // Simulate filling and store the data to be filled in `fill_data_`.
     const char guid[] = "00000000-0000-0000-0000-000000000004";
-    FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
-                                       MakeFrontendId({.credit_card_id = guid}),
+    FillAutofillFormDataAndSaveResults(form, *form.fields.begin(), guid,
                                        &fill_data_);
     ASSERT_EQ(3u, fill_data_.fields.size());
     ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",

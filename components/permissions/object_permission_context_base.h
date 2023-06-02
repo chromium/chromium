@@ -194,7 +194,8 @@ class ObjectPermissionContextBase : public KeyedService {
   // Never use the `objects_` member directly outside of this function.
   ObjectMap& objects();
 
-  const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  const raw_ptr<HostContentSettingsMap, DanglingUntriaged>
+      host_content_settings_map_;
 
   // In-memory cache that holds the granted objects. Lazy-initialized by first
   // call to `objects()`.

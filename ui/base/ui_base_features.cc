@@ -431,36 +431,24 @@ BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVariableRefreshRateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
+  return base::FeatureList::GetStateIfOverridden(kEnableVariableRefreshRate)
+      .value_or(base::FeatureList::IsEnabled(kEnableVariableRefreshRate));
 }
 
 // Fixes b/267944900.
 BASE_FEATURE(kWaylandKeepSelectionFix,
              "WaylandKeepSelectionFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Fixes b/267944900.
 BASE_FEATURE(kWaylandCancelComposition,
              "WaylandCancelComposition",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWaylandScreenCoordinatesEnabled,
-             "WaylandScreenCoordinatesEnabled",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-bool IsWaylandScreenCoordinatesEnabled() {
-  return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);
-}
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables chrome color management wayland protocol for lacros.
 BASE_FEATURE(kLacrosColorManagement,
              "LacrosColorManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLacrosColorManagementEnabled() {
   return base::FeatureList::IsEnabled(kLacrosColorManagement);
@@ -524,9 +512,5 @@ BASE_FEATURE(kCr2023MacFontSmoothing,
              "Cr2023MacFontSmoothing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-BASE_FEATURE(kUseNanosecondsForMotionEvent,
-             "UseNanosecondsForMotionEvent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

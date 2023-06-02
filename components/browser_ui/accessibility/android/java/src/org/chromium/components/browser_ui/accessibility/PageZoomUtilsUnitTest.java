@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,8 +20,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.content.browser.ContentFeatureListImpl;
-import org.chromium.content.browser.ContentFeatureListImplJni;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -68,9 +65,6 @@ public class PageZoomUtilsUnitTest {
     private HostZoomMapImpl.Natives mHostZoomMapMock;
 
     @Mock
-    private ContentFeatureListImpl.Natives mContentFeatureListMock;
-
-    @Mock
     private BrowserContextHandle mContextMock;
 
     private PropertyModel mModel;
@@ -80,7 +74,6 @@ public class PageZoomUtilsUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
-        mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListMock);
     }
 
     @Test
@@ -142,8 +135,7 @@ public class PageZoomUtilsUnitTest {
     }
 
     @Test
-    public void testShouldAlwaysShowZoomMenuItem_featureFlagOff() {
-        when(mContentFeatureListMock.isEnabled(any())).thenReturn(false);
+    public void testShouldAlwaysShowZoomMenuItem_defaultIsFalse() {
         Assert.assertEquals(SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE, false,
                 PageZoomUtils.shouldAlwaysShowZoomMenuItem());
     }

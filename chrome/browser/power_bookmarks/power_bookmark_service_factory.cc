@@ -23,7 +23,8 @@ PowerBookmarkServiceFactory::GetForBrowserContext(
 
 // static
 PowerBookmarkServiceFactory* PowerBookmarkServiceFactory::GetInstance() {
-  return base::Singleton<PowerBookmarkServiceFactory>::get();
+  static base::NoDestructor<PowerBookmarkServiceFactory> instance;
+  return instance.get();
 }
 
 PowerBookmarkServiceFactory::PowerBookmarkServiceFactory()

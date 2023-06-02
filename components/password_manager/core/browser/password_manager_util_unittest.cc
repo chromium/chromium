@@ -439,7 +439,7 @@ TEST(PasswordManagerUtil, GetMatchType_Android) {
   PasswordForm form = GetTestAndroidCredential();
   form.is_affiliation_based_match = true;
 
-  EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 }
 
 TEST(PasswordManagerUtil, GetMatchType_Web) {

@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <stdint.h>
 
+#include <shellapi.h>
+
 #include <string>
 
 #include "base/command_line.h"
@@ -14,12 +16,14 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
 #include "crypto/random.h"
+#include "extensions/common/extension_features.h"
 
 namespace extensions {
 
@@ -75,6 +79,76 @@ bool GetManifestPath(HKEY root_key,
              root_key, KEY_WOW64_32KEY, host_name, result) ||
          GetManifestPathWithFlags(
              root_key, KEY_WOW64_64KEY, host_name, result);
+}
+
+// If the Host is an executable, we will invoke it directly to avoid problems
+// if CMD.exe is unavailable due to OS policy or other configuration issues
+// on the client. See https://crbug.com/335558 for details.
+base::Process LaunchNativeExeDirectly(const std::wstring& command,
+                                      base::LaunchOptions& options,
+                                      const std::wstring& in_pipe_name,
+                                      const std::wstring& out_pipe_name) {
+  // When calling the Host executable directly, we must first wrap our Named
+  // Pipes into HANDLEs returned from CreateFileW(). We must configure the
+  // handle's security attributes to allow the file handle to be inherited
+  // into the launched process.
+  SECURITY_ATTRIBUTES sa_attr = {};
+  sa_attr.nLength = sizeof(SECURITY_ATTRIBUTES);
+  sa_attr.bInheritHandle = TRUE;
+  sa_attr.lpSecurityDescriptor = nullptr;
+
+  base::win::ScopedHandle stdout_file(
+      ::CreateFileW(out_pipe_name.c_str(), FILE_WRITE_DATA | SYNCHRONIZE, 0,
+                    &sa_attr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
+  if (!stdout_file.IsValid()) {
+    LOG(ERROR) << "Failed to open write handle for stdout.";
+    return base::Process();
+  }
+
+  base::win::ScopedHandle stdin_file(
+      ::CreateFileW(in_pipe_name.c_str(), FILE_READ_DATA | SYNCHRONIZE, 0,
+                    &sa_attr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
+  if (!stdin_file.IsValid()) {
+    LOG(ERROR) << "Failed to open read handle for stdin.";
+    return base::Process();
+  }
+
+  options.stdin_handle = stdin_file.Get();
+  options.stdout_handle = stdout_file.Get();
+  options.stderr_handle = ::GetStdHandle(STD_ERROR_HANDLE);
+  options.handles_to_inherit.push_back(options.stdin_handle);
+  options.handles_to_inherit.push_back(options.stdout_handle);
+
+  // Inherit Chrome's STD_ERROR_HANDLE, if set, into the Native Host. If Chrome
+  // was not started with standard error redirected, this value will be null.
+  if (options.stderr_handle != NULL) {
+    options.handles_to_inherit.push_back(options.stderr_handle);
+  }
+
+  return base::LaunchProcess(command, options);
+}
+
+// For non-executable Hosts, we will use the legacy approach whereby we
+// invoke CMD.exe and instruct it to launch the Host, passing references to
+// our Named Pipes.
+base::Process LaunchNativeHostViaCmd(const std::wstring& command,
+                                     base::LaunchOptions& options,
+                                     const std::wstring& in_pipe_name,
+                                     const std::wstring& out_pipe_name) {
+  DWORD comspec_length = ::GetEnvironmentVariable(L"COMSPEC", NULL, 0);
+  if (comspec_length == 0) {
+    LOG(ERROR) << "COMSPEC is not set";
+    return base::Process();
+  }
+  std::wstring comspec;
+  ::GetEnvironmentVariable(
+      L"COMSPEC", base::WriteInto(&comspec, comspec_length), comspec_length);
+
+  std::wstring wrapped_command = base::StringPrintf(
+      L"%ls /d /c %ls < %ls > %ls", comspec.c_str(), command.c_str(),
+      in_pipe_name.c_str(), out_pipe_name.c_str());
+
+  return base::LaunchProcess(wrapped_command, options);
 }
 
 }  // namespace
@@ -136,64 +210,74 @@ bool NativeProcessLauncher::LaunchNativeProcess(
       L"\\\\.\\pipe\\chrome.nativeMessaging.in.%llx", pipe_name_token);
 
   // Create the pipes to read and write from.
-  base::win::ScopedHandle stdout_pipe(
-      CreateNamedPipeW(out_pipe_name.c_str(),
-                       PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED |
-                           FILE_FLAG_FIRST_PIPE_INSTANCE,
-                       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize,
-                       kTimeoutMs, NULL));
+  base::win::ScopedHandle stdout_pipe(::CreateNamedPipeW(
+      out_pipe_name.c_str(),
+      PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED |
+          FILE_FLAG_FIRST_PIPE_INSTANCE,
+      PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
   if (!stdout_pipe.IsValid()) {
     LOG(ERROR) << "Failed to create pipe " << out_pipe_name;
     return false;
   }
 
-  base::win::ScopedHandle stdin_pipe(
-      CreateNamedPipeW(in_pipe_name.c_str(),
-                       PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED |
-                           FILE_FLAG_FIRST_PIPE_INSTANCE,
-                       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize,
-                       kTimeoutMs, NULL));
+  base::win::ScopedHandle stdin_pipe(::CreateNamedPipeW(
+      in_pipe_name.c_str(),
+      PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED |
+          FILE_FLAG_FIRST_PIPE_INSTANCE,
+      PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
   if (!stdin_pipe.IsValid()) {
     LOG(ERROR) << "Failed to create pipe " << in_pipe_name;
     return false;
   }
 
-  DWORD comspec_length = ::GetEnvironmentVariable(L"COMSPEC", NULL, 0);
-  if (comspec_length == 0) {
-    LOG(ERROR) << "COMSPEC is not set";
-    return false;
-  }
-  std::unique_ptr<wchar_t[]> comspec(new wchar_t[comspec_length]);
-  ::GetEnvironmentVariable(L"COMSPEC", comspec.get(), comspec_length);
-
-  std::wstring command_line_string = command_line.GetCommandLineString();
-
-  std::wstring command = base::StringPrintf(
-      L"%ls /d /c %ls < %ls > %ls", comspec.get(), command_line_string.c_str(),
-      in_pipe_name.c_str(), out_pipe_name.c_str());
-
+  std::wstring command = command_line.GetCommandLineString();
   base::LaunchOptions options;
-  options.start_hidden = true;
   options.current_directory = command_line.GetProgram().DirName();
-  base::Process cmd_process = base::LaunchProcess(command, options);
-  if (!cmd_process.IsValid()) {
+  options.start_hidden = true;
+
+  bool use_direct_launch =
+      base::FeatureList::IsEnabled(
+          extensions_features::kLaunchWindowsNativeHostsDirectly) &&
+      command_line.GetProgram().MatchesFinalExtension(L".exe");
+
+  base::Process launched_process;
+  if (use_direct_launch) {
+    // Compat: If the target is SUBSYSTEM_WINDOWS, then don't set |start_hidden|
+    // in order to mimic legacy behavior: https://crbug.com/1442359.
+    // A Windows executable will have LOWORD of 0x4550. A GUI executable will
+    // have a non-Zero HIWORD while a console executable will have a 0 HIWORD.
+    uintptr_t exe_type = ::SHGetFileInfoW(
+        command_line.GetProgram().value().c_str(), 0, NULL, 0, SHGFI_EXETYPE);
+    if ((LOWORD(exe_type) == 0x4550) && (HIWORD(exe_type) != 0)) {
+      options.start_hidden = false;
+    }
+
+    launched_process =
+        LaunchNativeExeDirectly(command, options, in_pipe_name, out_pipe_name);
+  } else {
+    launched_process =
+        LaunchNativeHostViaCmd(command, options, in_pipe_name, out_pipe_name);
+  }
+
+  if (!launched_process.IsValid()) {
     LOG(ERROR) << "Error launching process "
                << command_line.GetProgram().MaybeAsASCII();
     return false;
   }
 
+  // Wait for the named pipes to be opened by the host.
   bool stdout_connected = ConnectNamedPipe(stdout_pipe.Get(), NULL) ?
       TRUE : GetLastError() == ERROR_PIPE_CONNECTED;
   bool stdin_connected = ConnectNamedPipe(stdin_pipe.Get(), NULL) ?
       TRUE : GetLastError() == ERROR_PIPE_CONNECTED;
   if (!stdout_connected || !stdin_connected) {
-    cmd_process.Terminate(0, false);
+    launched_process.Terminate(0, false);
     LOG(ERROR) << "Failed to connect IO pipes when starting "
                << command_line.GetProgram().MaybeAsASCII();
     return false;
   }
 
-  *process = std::move(cmd_process);
+  *process = std::move(launched_process);
   *read_file = base::File(std::move(stdout_pipe), true /* async */);
   *write_file = base::File(std::move(stdin_pipe), true /* async */);
   return true;

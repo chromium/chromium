@@ -178,7 +178,8 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
       {
         "NAME_FULL" : "first last",
         "NAME_FIRST" : "first",
-        "NAME_LAST" : "last"
+        "NAME_LAST" : "last",
+        "NAME_LAST_SECOND" : "last"
       },
       {
         "source" : "account",
@@ -197,6 +198,8 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
       NAME_FIRST, u"first", VerificationStatus::kObserved);
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_LAST, u"last", VerificationStatus::kObserved);
+  expected_profile1.SetRawInfoWithVerificationStatus(
+      NAME_LAST_SECOND, u"last", VerificationStatus::kObserved);
 
   AutofillProfile expected_profile2(AutofillProfile::Source::kAccount);
   expected_profile2.set_initial_creator_id(999);

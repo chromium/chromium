@@ -14,11 +14,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/browser/ash/input_method/ime_rules_config.h"
+#include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -392,7 +393,15 @@ bool UserInAutocorrectByDefaultBucket(const PrefService& prefs,
 AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile)
-    : suggestion_handler_(suggestion_handler), profile_(profile) {
+    : denylist_(DenylistAdditions{
+          .autocorrect_denylist_json =
+              GetFieldTrialParam(features::kAutocorrectByDefault,
+                                 ParamName::kDenylist),
+          .multi_word_denylist_json =
+              GetFieldTrialParam(features::kAssistMultiWord,
+                                 ParamName::kDenylist)}),
+      suggestion_handler_(suggestion_handler),
+      profile_(profile) {
   undo_button_.id = ui::ime::ButtonId::kUndo;
   undo_button_.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
@@ -1036,12 +1045,18 @@ void AutocorrectManager::UndoAutocorrect() {
         surrounding_text.selection_range.start() - autocorrect_range.start();
     const uint32_t after =
         autocorrect_range.end() - surrounding_text.selection_range.end();
-    input_context->DeleteSurroundingText(before, after);
 
-    // Replace with the original text.
-    input_context->CommitText(
-        pending_autocorrect_->original_text,
-        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    if (base::FeatureList::IsEnabled(
+            features::kAutocorrectUseReplaceSurroundingText)) {
+      input_context->ReplaceSurroundingText(
+          before, after, pending_autocorrect_->original_text);
+    } else {
+      input_context->DeleteSurroundingText(before, after);
+      // Replace with the original text.
+      input_context->CommitText(
+          pending_autocorrect_->original_text,
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    }
   }
 
   MeasureAndLogAssistiveAutocorrectQualityBreakdown(
@@ -1220,7 +1235,7 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
-  disabled_by_rule_ = IsAssistiveInputDisabled(info.tab_url);
+  disabled_by_rule_ = denylist_.Contains(info.tab_url);
   if (disabled_by_rule_) {
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kAppIsInDenylist);

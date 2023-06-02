@@ -39,8 +39,9 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  protected:
-  raw_ptr<FederatedIdentityAutoReauthnPermissionContext> context_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<FederatedIdentityAutoReauthnPermissionContext, DanglingUntriaged>
+      context_;
+  raw_ptr<HostContentSettingsMap, DanglingUntriaged> host_content_settings_map_;
 
   ContentSetting GetContentSetting(const GURL& rp_url) {
     return host_content_settings_map_->GetContentSetting(

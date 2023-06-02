@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">তৃতীয় পক্ষের কুকিজ মঞ্জুর করুন</translation>
 <translation id="4428065317363009941">পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া</translation>
 <translation id="4434045419905280838">পপ-আপ এবং রিডাইরেক্ট</translation>
-<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> বড় করুন</translation>
 <translation id="4468959413250150279">নির্দিষ্ট কোনও সাইটের জন্য সাউন্ড মিউট করুন।</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{#টি কুকি}one{#টি কুকি}other{#টি কুকি}}</translation>
 <translation id="4478158430052450698">বিভিন্ন সাইটের জন্য 'জুম' ফিচার আরও সহজে কাস্টমাইজ করুন</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
 <translation id="789180354981963912">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন:</translation>
+<translation id="7895868624847501462">এই অ্যাকশনের ফলে কুকি সহ সব স্থানীয় ডেটা মুছে যাবে এবং <ph name="DOMAIN" />-এর জন্য ও এর আওতায় থাকা সব সাইটের অনুমতি রিসেট হয়ে যাবে</translation>
 <translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}one{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}other{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}}</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
 <translation id="8300705686683892304">অ্যাপ ম্যানেজ করে</translation>
 <translation id="8324158725704657629">আর দেখতে চাই না</translation>
+<translation id="8338445138528827481">এই অ্যাকশনের ফলে কুকি সহ সব স্থানীয় ডেটা মুছে যাবে এবং <ph name="ORIGIN" />-এর জন্য সব অনুমতি রিসেট হয়ে যাবে</translation>
 <translation id="8362795839483915693">আপনার ভিজিট করা সাইটে বড় বা ছোট করতে পারবেন</translation>
 <translation id="8372893542064058268">একটি নির্দিষ্ট সাইটের জন্য পটভূমি সিঙ্কের অনুমতি দিন।</translation>
 <translation id="8376384591331888629">এই সাইটে থার্ড-পার্টি কুকি সহ</translation>

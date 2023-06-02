@@ -7,9 +7,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts.
 """
 
 
-USE_PYTHON3 = True
-
-
 def CheckGeneratedFiles(input_api, output_api):
     test_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                        'generate_test.py')

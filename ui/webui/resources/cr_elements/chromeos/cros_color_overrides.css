@@ -182,6 +182,11 @@ To get ChromeOS Jelly colors, an element must:
   font: var(--cros-display-7-font);
 }
 
+/* Drawer */
+:host-context(body.jelly-enabled) cr-drawer {
+  --cr-drawer-background-color: var(--cros-sys-app_base_shaded);
+}
+
 /* Icon button */
 :host-context(body.jelly-enabled) cr-icon-button,
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
@@ -283,7 +288,7 @@ To get ChromeOS Jelly colors, an element must:
   --cr-toggle-checked-button-color: var(--cros-sys-primary);
   --cr-toggle-checked-ripple-color: var(--cros-sys-hover_on_prominent);
   --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
-  --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-surface_variant);
   --cr-toggle-unchecked-ripple-color: var(--cros-sys-hover_on_prominent);
   /* TODO(b/266837484) Replace with cros.sys.app-elevation1 when available */
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);

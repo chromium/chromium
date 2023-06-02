@@ -29,7 +29,6 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/openssl_ssl_util.h"
-#include "net/ssl/ssl_client_cert_type.h"
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

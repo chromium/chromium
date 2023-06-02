@@ -58,6 +58,10 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsViewTimeline() const { return false; }
 
+  // Determines which AnimationTimeline instance we should return
+  // from Animation.timeline.
+  virtual AnimationTimeline* ExposedTimeline() { return this; }
+
   virtual bool IsActive() const = 0;
   virtual bool IsResolved() const { return true; }
   virtual AnimationTimeDelta ZeroTime() = 0;
@@ -89,13 +93,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
       const absl::optional<TimelineOffset>& range_start,
       const absl::optional<TimelineOffset>& range_end,
       const Timing& timing) {
-    // TODO(crbug.com/1441013): Support range start and end for scroll-timelines
-    // that are not view timelines.
-    return CalculateIntrinsicIterationDuration(
-        GetTimelineRange(),
-        IsViewTimeline() ? range_start : absl::optional<TimelineOffset>(),
-        IsViewTimeline() ? range_end : absl::optional<TimelineOffset>(),
-        timing);
+    return CalculateIntrinsicIterationDuration(GetTimelineRange(), range_start,
+                                               range_end, timing);
   }
 
   // See class TimelineRange.

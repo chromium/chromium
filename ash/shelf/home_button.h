@@ -12,6 +12,7 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/home_button_controller.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
@@ -51,6 +52,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                               public ShelfButtonDelegate,
                               public views::ViewTargeterDelegate,
                               public ShellObserver,
+                              public ShelfConfig::Observer,
                               public AppListModelProvider::Observer,
                               public QuickAppAccessModel::Observer {
  public:
@@ -109,6 +111,9 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                      const ui::Event& event,
                      views::InkDrop* ink_drop) override;
 
+  // ShelfConfig::Observer:
+  void OnShelfConfigUpdated() override;
+
   // Called when the availability of a long-press gesture may have changed, e.g.
   // when Assistant becomes enabled.
   void OnAssistantAvailabilityChanged();
@@ -136,6 +141,10 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // Starts the launcher nudge animation.
   void StartNudgeAnimation();
 
+  // Sets the button's "toggled" state - the button is toggled when the bubble
+  // launcher is shown.
+  void SetToggled(bool toggled);
+
   void AddNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
   void RemoveNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
 
@@ -151,10 +160,11 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
  protected:
   // views::Button:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
  private:
+  class ButtonImageView;
+
   // Creates `nudge_label_` for launcher nudge.
   void CreateNudgeLabel();
 
@@ -220,6 +230,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // bounds of the home button.
   gfx::Rect GetExpandableContainerClipRectToHomeButton();
 
+  const bool jelly_enabled_;
+
   base::ScopedObservation<QuickAppAccessModel, QuickAppAccessModel::Observer>
       quick_app_model_observation_{this};
 
@@ -229,6 +241,19 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
       app_list_model_observation_{this};
 
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+
+  // The view that paints the home button content. In its own view to ensure
+  // the background is stacked above `expandable_container_`.
+  raw_ptr<ButtonImageView, ExperimentalAsh> button_image_view_ = nullptr;
+
+  // The container of `nudge_label_` or `quick_app_button_`. This is also
+  // responsible for painting the background of the contents. This container can
+  // expand visually by animation.
+  raw_ptr<views::View, ExperimentalAsh> expandable_container_ = nullptr;
+
+  // The app button which is shown next to the home button. Only shown when
+  // set by SetQuickApp().
+  raw_ptr<views::ImageButton, ExperimentalAsh> quick_app_button_ = nullptr;
 
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
@@ -240,11 +265,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // The label view and for launcher nudge animation.
   raw_ptr<views::Label, ExperimentalAsh> nudge_label_ = nullptr;
 
-  // The container of `nudge_label_` or `quick_app_button_`. This is also
-  // responsible for painting the background of the contents. This container can
-  // expand visually by animation.
-  raw_ptr<views::View, ExperimentalAsh> expandable_container_ = nullptr;
-
   // The timer that counts down to hide the nudge_label_ from showing state.
   base::OneShotTimer label_nudge_timer_;
 
@@ -253,10 +273,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   std::unique_ptr<views::CircleLayerDelegate> ripple_layer_delegate_;
 
   std::unique_ptr<ScopedNoClipRect> scoped_no_clip_rect_;
-
-  // The app button which is shown next to the home button. Only shown when
-  // set by SetQuickApp().
-  raw_ptr<views::ImageButton, ExperimentalAsh> quick_app_button_ = nullptr;
 
   base::ObserverList<NudgeAnimationObserver> observers_;
 

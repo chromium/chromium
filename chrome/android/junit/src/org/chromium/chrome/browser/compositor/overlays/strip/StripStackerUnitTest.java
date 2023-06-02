@@ -99,14 +99,10 @@ public class StripStackerUnitTest {
 
     class DummyStacker extends StripStacker {
         @Override
-        public void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
-                float tabStackWidth, int maxTabsToStack, float tabOverlapWidth,
-                float stripLeftMargin, float stripRightMargin, float stripWidth,
-                boolean inReorderMode, boolean tabClosing, boolean tabCreating,
-                float cachedTabWidth) {}
+        public void setTabOffsets(StripLayoutTab[] indexOrderedTabs, boolean tabClosing,
+                boolean tabCreating, float cachedTabWidth) {}
 
         @Override
-        public void performOcclusionPass(
-                int selectedIndex, StripLayoutTab[] indexOrderedTabs, float stripWidth) {}
+        public void performOcclusionPass(StripLayoutTab[] indexOrderedTabs, float stripWidth) {}
     }
 }

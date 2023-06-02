@@ -109,6 +109,12 @@ BASE_FEATURE(kForceWebRequestProxyForTest,
              "ForceWebRequestProxyForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Launches Native Host executables directly on Windows rather than using a
+// cmd.exe process as a proxy.
+BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
+             "LaunchWindowsNativeHostsDirectly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_FEATURE(kNewExtensionFaviconHandling,
              "ExtensionsNewFaviconHandling",
@@ -168,5 +174,12 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
 BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, extensions installed from .zip files (from dev mode) are changed
+// from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
+// persist until removed by the user.
+BASE_FEATURE(kExtensionsZipFileInstalledInProfileDir,
+             "ExtensionsZipFileInstalledInProfileDir",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

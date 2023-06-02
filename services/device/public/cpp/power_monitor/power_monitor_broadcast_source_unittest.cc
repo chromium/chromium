@@ -44,7 +44,8 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
-  raw_ptr<PowerMonitorBroadcastSource> power_monitor_source_ptr_;
+  raw_ptr<PowerMonitorBroadcastSource, DanglingUntriaged>
+      power_monitor_source_ptr_;
 };
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {

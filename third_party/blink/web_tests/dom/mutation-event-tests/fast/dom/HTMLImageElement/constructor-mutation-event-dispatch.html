@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+    <script>
+        function listen(event)
+        {
+        }
+
+        function test()
+        {
+            if (window.testRunner)
+                testRunner.dumpAsText();
+
+            document.addEventListener("DOMSubtreeModified", listen, true);
+            new Image(1, 1);
+        }
+    </script>
+</head>
+<body onload="test()">
+    <p>
+        Test for <i><a href="http://bugs.webkit.org/show_bug.cgi?id=12353">http://bugs.webkit.org/show_bug.cgi?id=12353</a>
+        REGRESSION: Crash on load (mutation event dispatch under the image element constructor deletes the element)</i>.
+    </p>
+    <p>
+        No crash means test PASS.
+    </p>
+</body>

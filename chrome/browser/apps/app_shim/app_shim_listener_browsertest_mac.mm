@@ -44,6 +44,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // A test version of the AppShimController mojo client in chrome_main_app_mode.
 class TestShimClient : public chrome::mojom::AppShim {
  public:
@@ -104,9 +108,9 @@ class TestShimClient : public chrome::mojom::AppShim {
     // lifetime here.
     const IpczAPI& ipcz = mojo::core::GetIpczAPIForMojo();
     IpczHandle node;
-    IpczResult result = ipcz.CreateNode(
-        &mojo::core::GetIpczDriverForMojo(), IPCZ_INVALID_DRIVER_HANDLE,
-        IPCZ_CREATE_NODE_AS_BROKER, nullptr, &node);
+    IpczResult result =
+        ipcz.CreateNode(&mojo::core::GetIpczDriverForMojo(),
+                        IPCZ_CREATE_NODE_AS_BROKER, nullptr, &node);
     CHECK_EQ(IPCZ_RESULT_OK, result);
     secondary_ipcz_broker_.reset(mojo::Handle{node});
 

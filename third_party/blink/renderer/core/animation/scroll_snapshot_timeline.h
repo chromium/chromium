@@ -80,6 +80,11 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
 
   void ResolveTimelineOffsets() const;
 
+  cc::AnimationTimeline* EnsureCompositorTimeline() override;
+  void UpdateCompositorTimeline() override;
+
+  virtual ScrollAxis GetAxis() const = 0;
+
  protected:
   PhaseAndTime CurrentPhaseAndTime() override;
 

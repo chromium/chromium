@@ -78,7 +78,7 @@ class ResultRefreshManager {
 
   // Delegate to write results for all clients to prefs if previous results are
   // not present or invalid.
-  const raw_ptr<CachedResultWriter> cached_result_writer_;
+  const raw_ptr<CachedResultWriter, DanglingUntriaged> cached_result_writer_;
 
   // Platform options indicating whether to force refresh results or not.
   const PlatformOptions platform_options_;

@@ -15,10 +15,12 @@ extern const char kNTPIdentityDiscTappedAction[];
 
 #pragma mark - Histograms
 
-extern const char kHomeActionOnNTPHistogram[];
-extern const char kHomeActionOnStartSurfaceHistogram[];
+extern const char kActionOnNTPHistogram[];
+extern const char kActionOnStartHistogram[];
 extern const char kNTPTimeSpentHistogram[];
+extern const char kStartTimeSpentHistogram[];
 extern const char kNTPImpressionHistogram[];
+extern const char kStartImpressionHistogram[];
 extern const char kNTPOverscrollActionHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_NEW_TAB_PAGE_METRICS_CONSTANTS_H_

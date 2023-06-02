@@ -13,6 +13,7 @@
 #include "chrome/browser/hid/hid_system_tray_icon.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/status_icons/status_icon.h"
+#include "url/origin.h"
 
 class HidStatusIcon : public HidSystemTrayIcon,
                       public StatusIconMenuModel::Delegate,

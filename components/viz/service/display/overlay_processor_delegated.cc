@@ -138,6 +138,11 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   constexpr bool is_delegated_context = true;
   delegated_status_ = DelegationStatus::kCompositedOther;
 
+  if (!features::IsDelegatedCompositingEnabled()) {
+    delegated_status_ = DelegationStatus::kCompositedFeatureDisabled;
+    return false;
+  }
+
   if (disable_delegation())
     return false;
 

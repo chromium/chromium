@@ -32,6 +32,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
+#include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_constants.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -94,10 +96,11 @@ constexpr auto kTextFieldMarginsForAppListBubble =
 
 // The default PlaceholderTextTypes used for productivity launcher. Randomly
 // selected when placeholder text would be shown.
-constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[3] = {
+constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[] = {
     SearchBoxView::PlaceholderTextType::kShortcuts,
     SearchBoxView::PlaceholderTextType::kTabs,
     SearchBoxView::PlaceholderTextType::kSettings,
+    SearchBoxView::PlaceholderTextType::kImages,
 };
 
 // PlaceholderTextTypes used for productivity launcher for cloud gaming devices.
@@ -245,6 +248,13 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   SearchBoxModel* const search_box_model =
       model_provider->search_model()->search_box();
   search_box_model_observer_.Observe(search_box_model);
+
+  if (features::IsUserEducationEnabled()) {
+    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+    // in case registration causes a help bubble to be created synchronously.
+    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
+    SetProperty(views::kElementIdentifierKey, kSearchBoxViewElementId);
+  }
 
   if (is_jelly_enabled_) {
     auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
@@ -936,6 +946,15 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
       search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
           a11y_name_template, l10n_util::GetStringUTF16(
                                   IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
+      break;
+    case PlaceholderTextType::kImages:
+      search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES)));
+      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+          a11y_name_template, l10n_util::GetStringUTF16(
+                                  IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES)));
       break;
   }
 }

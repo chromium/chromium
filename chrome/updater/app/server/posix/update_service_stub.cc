@@ -406,7 +406,7 @@ UpdateServiceStub::UpdateServiceStub(
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {
   server_.set_disconnect_handler(base::BindRepeating(
-      []() { VLOG(1) << "UpdateService client disconnected."; }));
+      [] { VLOG(1) << "UpdateService client disconnected."; }));
   if (endpoint_created_listener_for_testing) {
     server_.set_on_server_endpoint_created_callback_for_testing(  // IN-TEST
         endpoint_created_listener_for_testing);

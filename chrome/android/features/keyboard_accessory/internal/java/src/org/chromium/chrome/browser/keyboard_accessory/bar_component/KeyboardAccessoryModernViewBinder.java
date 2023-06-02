@@ -35,9 +35,6 @@ import org.chromium.ui.widget.RectProvider;
  * the {@link KeyboardAccessoryViewBinder} which will modify the view accordingly.
  */
 class KeyboardAccessoryModernViewBinder {
-    // Credit card suggestion ids are at least 17 bits long.
-    private static final int CREDIT_CARD_ID_BIT_MASK = 0xFFFF0000;
-
     static BarItemViewHolder create(ViewGroup parent, @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
@@ -179,7 +176,7 @@ class KeyboardAccessoryModernViewBinder {
     }
 
     private static boolean containsCreditCardInfo(AutofillSuggestion suggestion) {
-        return (suggestion.getSuggestionId() & CREDIT_CARD_ID_BIT_MASK) != 0
-                || suggestion.getSuggestionId() == PopupItemId.VIRTUAL_CREDIT_CARD_ENTRY;
+        return suggestion.getPopupItemId() == PopupItemId.CREDIT_CARD_ENTRY
+                || suggestion.getPopupItemId() == PopupItemId.VIRTUAL_CREDIT_CARD_ENTRY;
     }
 }

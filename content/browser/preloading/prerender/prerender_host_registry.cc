@@ -285,6 +285,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       return PreloadingEligibility::kMemoryPressure;
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
       NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
+      return PreloadingEligibility::kPreloadingDisabledByDevTools;
   }
 
   NOTREACHED_NORETURN();
@@ -498,6 +500,13 @@ int PrerenderHostRegistry::CreateAndStartHost(
   int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
 
   {
+    RenderFrameHostImpl* initiator_rfh =
+        attributes.IsBrowserInitiated()
+            ? nullptr
+            : RenderFrameHostImpl::FromFrameToken(
+                  attributes.initiator_process_id,
+                  attributes.initiator_frame_token.value());
+
     // Ensure observers are notified that a trigger occurred.
     base::ScopedClosureRunner notify_trigger(
         base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
@@ -597,6 +606,14 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
+    if (initiator_rfh && initiator_rfh->frame_tree() &&
+        !devtools_instrumentation::IsPrerenderAllowed(
+            *initiator_rfh->frame_tree())) {
+      builder.RejectAsNotEligible(
+          attributes, PrerenderFinalStatus::kPrerenderingDisabledByDevTools);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
     // Once all eligibility checks are completed, set the status to kEligible.
     if (attempt)
       attempt->SetEligibility(PreloadingEligibility::kEligible);
@@ -605,12 +622,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // Override Prerender2Holdback for speculation rules when DevTools is
     // opened to mitigate the cases in which developers are affected by
     // kPrerender2Holdback.
-    RenderFrameHostImpl* initiator_rfh =
-        attributes.IsBrowserInitiated()
-            ? nullptr
-            : RenderFrameHostImpl::FromFrameToken(
-                  attributes.initiator_process_id,
-                  attributes.initiator_frame_token.value());
     bool should_prerender2holdback_be_overridden =
         initiator_rfh &&
         RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
@@ -1592,14 +1603,13 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
     private_footprint_total_kb += pmd.os_dump().private_footprint_kb;
   }
 
-  // TODO(crbug.com/1382697): Finalize the threshold after the experiment
-  // completes. The default acceptable percent is 10% of the system memory.
+  // The default acceptable percent is 60% of the system memory.
   int acceptable_percent_of_system_memory =
       base::GetFieldTrialParamByFeatureAsInt(
           blink::features::kPrerender2MemoryControls,
           blink::features::
               kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName,
-          10);
+          60);
 
   // When the current memory usage is higher than
   // `acceptable_percent_of_system_memory` % of the system memory, cancel a

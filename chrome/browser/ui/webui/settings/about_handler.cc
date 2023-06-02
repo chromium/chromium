@@ -242,6 +242,9 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
     case VersionUpdater::DISABLED_BY_ADMIN:
       status_str = "disabled_by_admin";
       break;
+    case VersionUpdater::UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
+      status_str = "update_to_rollback_version_disallowed";
+      break;
     case VersionUpdater::NEED_PERMISSION_TO_UPDATE:
       status_str = "need_permission_to_update";
       break;

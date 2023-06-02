@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 

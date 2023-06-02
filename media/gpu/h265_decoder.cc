@@ -263,14 +263,19 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           state_ = kTryPreprocessCurrentSlice;
           if (curr_slice_hdr_->irap_pic) {
             bool need_new_buffers = false;
+            bool color_space_changed = false;
             if (!ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
-                            &need_new_buffers)) {
+                            &need_new_buffers, &color_space_changed)) {
               SET_ERROR_AND_RETURN();
             }
 
             if (need_new_buffers) {
               curr_pic_ = nullptr;
               return kConfigChange;
+            }
+            if (color_space_changed) {
+              curr_pic_ = nullptr;
+              return kColorSpaceChange;
             }
           }
         }
@@ -334,13 +339,18 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         // active stream.
         if (curr_pps_id_ == -1) {
           bool need_new_buffers = false;
-          if (!ProcessPPS(pps_id, &need_new_buffers)) {
+          bool color_space_changed = false;
+          if (!ProcessPPS(pps_id, &need_new_buffers, &color_space_changed)) {
             SET_ERROR_AND_RETURN();
           }
 
           if (need_new_buffers) {
             curr_nalu_.reset();
             return kConfigChange;
+          }
+          if (color_space_changed) {
+            curr_nalu_.reset();
+            return kColorSpaceChange;
           }
         }
 
@@ -424,6 +434,9 @@ VideoChromaSampling H265Decoder::GetChromaSampling() const {
   return chroma_sampling_;
 }
 
+VideoColorSpace H265Decoder::GetVideoColorSpace() const {
+  return picture_color_space_;
+}
 absl::optional<gfx::HDRMetadata> H265Decoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
@@ -438,7 +451,9 @@ size_t H265Decoder::GetNumReferenceFrames() const {
   return dpb_.max_num_pics();
 }
 
-bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
+bool H265Decoder::ProcessPPS(int pps_id,
+                             bool* need_new_buffers,
+                             bool* color_space_changed) {
   DVLOG(4) << "Processing PPS id:" << pps_id;
 
   const H265PPS* pps = parser_.GetPPS(pps_id);
@@ -451,6 +466,10 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
 
   if (need_new_buffers)
     *need_new_buffers = false;
+
+  if (color_space_changed) {
+    *color_space_changed = false;
+  }
 
   gfx::Size new_pic_size = sps->GetCodedSize();
   gfx::Rect new_visible_rect = sps->GetVisibleRect();
@@ -485,6 +504,14 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     return false;
   }
 
+  VideoColorSpace new_color_space;
+  // For H265, prefer the frame color space over the config.
+  if (sps->GetColorSpace().IsSpecified()) {
+    new_color_space = sps->GetColorSpace();
+  } else if (container_color_space_.IsSpecified()) {
+    new_color_space = container_color_space_;
+  }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
       profile_ != new_profile || bit_depth_ != new_bit_depth ||
       chroma_sampling_ != new_chroma_sampling) {
@@ -501,9 +528,17 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
     chroma_sampling_ = new_chroma_sampling;
+    picture_color_space_ = new_color_space;
     dpb_.set_max_num_pics(sps->max_dpb_size);
     if (need_new_buffers)
       *need_new_buffers = true;
+  }
+
+  if (new_color_space.IsSpecified() &&
+      new_color_space != picture_color_space_) {
+    DVLOG(1) << "Picture color space: " << new_color_space.ToString();
+    picture_color_space_ = new_color_space;
+    *color_space_changed = true;
   }
 
   return true;
@@ -882,10 +917,9 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
 
     curr_pic_->set_visible_rect(visible_rect_);
     curr_pic_->set_bitstream_id(stream_id_);
-    if (sps->GetColorSpace().IsSpecified())
-      curr_pic_->set_colorspace(sps->GetColorSpace());
-    else
-      curr_pic_->set_colorspace(container_color_space_);
+
+    // Set the color space for the picture.
+    curr_pic_->set_colorspace(picture_color_space_);
 
     CalcPicOutputFlags(slice_hdr);
     CalcPictureOrderCount(pps, slice_hdr);

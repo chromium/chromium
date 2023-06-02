@@ -54,8 +54,9 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
   ChromeBrowsingDataModelDelegate(Profile* profile,
                                   content::StoragePartition* storage_partition);
 
-  const raw_ptr<Profile> profile_;
-  const raw_ptr<content::StoragePartition> storage_partition_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<content::StoragePartition, DanglingUntriaged>
+      storage_partition_;
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_MODEL_DELEGATE_H_

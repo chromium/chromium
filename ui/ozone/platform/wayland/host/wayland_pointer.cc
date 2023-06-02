@@ -91,7 +91,7 @@ void WaylandPointer::Enter(void* data,
 
   if (ShouldSuppressPointerEnterOrLeaveEvents(pointer->connection_)) {
     LOG(ERROR) << "Compositor sent a spurious wl_pointer.enter event during"
-                  "a window drag 'n drop operation. IGNORING.";
+                  " a window drag 'n drop operation. IGNORING.";
     return;
   }
 
@@ -120,7 +120,7 @@ void WaylandPointer::Leave(void* data,
 
   if (ShouldSuppressPointerEnterOrLeaveEvents(pointer->connection_)) {
     LOG(ERROR) << "Compositor sent a spurious wl_pointer.leave event during"
-                  "a window drag 'n drop operation. IGNORING.";
+                  " a window drag 'n drop operation. IGNORING.";
     return;
   }
 

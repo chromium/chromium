@@ -173,9 +173,9 @@ class SegmentResultProviderTest : public testing::Test {
   TestModelProviderFactory::Data model_providers_;
   TestModelProviderFactory provider_factory_;
   MockSignalDatabase signal_database_;
-  raw_ptr<processing::MockFeatureListQueryProcessor> mock_query_processor_ =
-      nullptr;
-  raw_ptr<MockModelExecutionManager> mock_execution_manager_;
+  raw_ptr<processing::MockFeatureListQueryProcessor, DanglingUntriaged>
+      mock_query_processor_ = nullptr;
+  raw_ptr<MockModelExecutionManager, DanglingUntriaged> mock_execution_manager_;
   SignalHandler signal_handler_;
   std::unique_ptr<DefaultModelManager> default_manager_;
   std::unique_ptr<ExecutionService> execution_service_;

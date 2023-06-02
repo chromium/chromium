@@ -57,6 +57,14 @@ CastDialogView::SourceType MediaRouterGmcUiForTest::GetChosenSourceType()
   return CastDialogView::SourceType();
 }
 
+void MediaRouterGmcUiForTest::StartCasting(const std::string& sink_name) {
+  ClickOnView(GetSinkButton(sink_name));
+}
+
+void MediaRouterGmcUiForTest::StopCasting(const std::string& sink_name) {
+  NOTIMPLEMENTED();
+}
+
 std::string MediaRouterGmcUiForTest::GetRouteIdForSink(
     const std::string& sink_name) const {
   NOTIMPLEMENTED();

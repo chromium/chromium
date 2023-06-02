@@ -83,12 +83,13 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void OpenFeedbackForm();
   virtual user_education::TutorialService* GetTutorialService();
   virtual ui::ElementContext GetUiElementContext();
+  virtual void OpenPasswordManager();
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial(
       WindowOpenDisposition disposition);
 
   FeedbackCommandSettings feedback_settings_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::vector<browser_command::mojom::Command> supported_commands_;
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;

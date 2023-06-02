@@ -62,7 +62,7 @@ std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
 
 base::Time ToUTCTime(base::StringPiece utc_time_str) {
   base::Time time;
-  CHECK(base::Time::FromUTCString(utc_time_str.data(), &time))
+  CHECK(base::Time::FromUTCString(std::string(utc_time_str).c_str(), &time))
       << "Invalid UTC time string specified: " << utc_time_str;
   return time;
 }

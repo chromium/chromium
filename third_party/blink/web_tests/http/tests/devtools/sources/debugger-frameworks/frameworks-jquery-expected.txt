@@ -2,32 +2,32 @@ Tests framework blackboxing feature on jQuery.
 
 Set timer for test function.
 Call stack:
-    0) testFunction (frameworks-jquery.js:32)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepInto...
-Executing StepInto...
-Call stack:
-    0) onEachScript (frameworks-jquery.js:50)
-  * 1) each (jquery-1.11.1.min.js:2)
-  * 2) each (jquery-1.11.1.min.js:2)
-    3) testFunction (frameworks-jquery.js:34)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
     0) testFunction (frameworks-jquery.js:35)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
+Executing StepInto...
 Call stack:
-    0) onTestEvent1 (frameworks-jquery.js:40)
+    0) onEachScript (frameworks-jquery.js:53)
+  * 1) each (jquery-1.11.1.min.js:2)
+  * 2) each (jquery-1.11.1.min.js:2)
+    3) testFunction (frameworks-jquery.js:37)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) testFunction (frameworks-jquery.js:38)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepInto...
+Call stack:
+    0) onTestEvent1 (frameworks-jquery.js:43)
   * 1) dispatch (jquery-1.11.1.min.js:3)
   * 2) r.handle (jquery-1.11.1.min.js:3)
   * 3) trigger (jquery-1.11.1.min.js:3)
@@ -35,7 +35,7 @@ Call stack:
   * 5) each (jquery-1.11.1.min.js:2)
   * 6) each (jquery-1.11.1.min.js:2)
   * 7) trigger (jquery-1.11.1.min.js:3)
-    8) testFunction (frameworks-jquery.js:35)
+    8) testFunction (frameworks-jquery.js:38)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
@@ -43,7 +43,7 @@ Call stack:
 Executing StepOver...
 Executing StepOver...
 Call stack:
-    0) onTestEvent2 (frameworks-jquery.js:45)
+    0) onTestEvent2 (frameworks-jquery.js:48)
   * 1) dispatch (jquery-1.11.1.min.js:3)
   * 2) r.handle (jquery-1.11.1.min.js:3)
   * 3) trigger (jquery-1.11.1.min.js:3)
@@ -51,7 +51,7 @@ Call stack:
   * 5) each (jquery-1.11.1.min.js:2)
   * 6) each (jquery-1.11.1.min.js:2)
   * 7) trigger (jquery-1.11.1.min.js:3)
-    8) testFunction (frameworks-jquery.js:35)
+    8) testFunction (frameworks-jquery.js:38)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

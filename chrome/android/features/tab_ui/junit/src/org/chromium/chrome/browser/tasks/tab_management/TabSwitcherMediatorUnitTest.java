@@ -22,12 +22,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -104,6 +107,7 @@ public class TabSwitcherMediatorUnitTest {
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
     private static final int TAB4_ID = 357;
+    private static final int TAB_MODEL_FILTER_INDEX = 2;
 
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
@@ -148,6 +152,8 @@ public class TabSwitcherMediatorUnitTest {
     PriceMessageService mPriceMessageService;
     @Mock
     IncognitoReauthController mIncognitoReauthController;
+    @Mock
+    View mCustomViewMock;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -203,7 +209,7 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
         doReturn(mTab3).when(mTabModelFilter).getTabAt(2);
         doReturn(false).when(mTabModelFilter).isIncognito();
-        doReturn(2).when(mTabModelFilter).index();
+        doReturn(TAB_MODEL_FILTER_INDEX).when(mTabModelFilter).index();
         doReturn(3).when(mTabModelFilter).getCount();
 
         doReturn(2).when(mTabModel).index();
@@ -1066,6 +1072,30 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void testAddingCustomView_ClearsTabList_Requested_ClearsTabList() {
+        initAndAssertAllProperties();
+        mMediator.addCustomView(mCustomViewMock, null, /*clearTabList=*/true);
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+    }
+
+    @Test
+    public void testAddingCustomView_ClearsTabList_NotRequested_DoesNotClearTabList() {
+        initAndAssertAllProperties();
+        mMediator.addCustomView(mCustomViewMock, null, /*clearTabList=*/false);
+        verifyNoInteractions(mResetHandler);
+    }
+
+    @Test
+    public void testRemoveCustomView_ResetTabList() {
+        initAndAssertAllProperties();
+        mMediator.addCustomView(mCustomViewMock, null, /*clearTabList=*/true);
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+
+        mMediator.removeCustomView(mCustomViewMock);
+        verify(mResetHandler, times(1)).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
+    }
+
+    @Test
     public void testOnTabModelSelected_NewModelIncognito_ReauthSuccessful_RestoresTabList() {
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
@@ -1090,6 +1120,61 @@ public class TabSwitcherMediatorUnitTest {
         mIncognitoReauthCallbackArgumentCaptor.getValue().onIncognitoReauthFailure();
         // Verify we don't reset the tab-list with the current tab model filter again.
         verifyNoMoreInteractions(mResetHandler);
+    }
+
+    @Test
+    @SmallTest
+    public void testFocusTabForAccessibility_IsInvoked_OnIncognitoReauthSuccess() {
+        initAndAssertAllProperties();
+        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
+        doReturn(true).when(mTabModelFilter).isIncognito();
+        doReturn(true).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(false).when(mIncognitoReauthController).isReauthPageShowing();
+        doReturn(true).when(mTabModel).isIncognito();
+
+        // Mock showing overview mode.
+        doNothing().when(mTabSwitcherViewObserver).finishedShowing();
+        mMediator.finishedShowing();
+
+        // Mock that the re-auth was successful.
+        mIncognitoReauthCallbackArgumentCaptor.getValue().onIncognitoReauthSuccess();
+
+        assertThat(mModel.get(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY),
+                equalTo(TAB_MODEL_FILTER_INDEX));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    public void testFocusTabForAccessibility_IsInvoked_OnOverviewModeFinishedShowing() {
+        initAndAssertAllProperties();
+
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+
+        // Mock showing overview mode.
+        doNothing().when(mTabSwitcherViewObserver).finishedShowing();
+        mMediator.finishedShowing();
+
+        assertThat(mModel.get(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY),
+                equalTo(TAB_MODEL_FILTER_INDEX));
+    }
+
+    @Test
+    @SmallTest
+    public void testFocusTabForAccessibility_IsInvoked_OnTabModelSelected() {
+        initAndAssertAllProperties();
+
+        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+
+        // Mock showing overview mode.
+        doNothing().when(mTabSwitcherViewObserver).finishedShowing();
+        mMediator.finishedShowing();
+
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
+        assertThat(mModel.get(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY),
+                equalTo(TAB_MODEL_FILTER_INDEX));
     }
 
     private void initAndAssertAllProperties() {

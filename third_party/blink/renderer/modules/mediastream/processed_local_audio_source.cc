@@ -311,6 +311,18 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
+    // Ignore UI Gains if AGC is running in either browser or system
+    if (audio_processing_properties_.GainControlEnabled()) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() |
+          media::AudioParameters::IGNORE_UI_GAINS);
+      device_is_modified = true;
+    }
+  }
+#endif
+
   if (device_is_modified)
     SetDevice(modified_device);
 

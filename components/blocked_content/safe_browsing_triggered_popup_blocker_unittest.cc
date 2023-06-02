@@ -154,7 +154,8 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
-  raw_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_ = nullptr;
+  raw_ptr<SafeBrowsingTriggeredPopupBlocker, DanglingUntriaged> popup_blocker_ =
+      nullptr;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;

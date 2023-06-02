@@ -14,7 +14,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -86,7 +85,7 @@ class FakeWebState : public WebState {
   int GetNavigationItemCount() const override;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
-  GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
+  absl::optional<GURL> GetLastCommittedURLIfTrusted() const override;
   CRWWebViewProxyType GetWebViewProxy() const override;
 
   void AddObserver(WebStateObserver* observer) override;
@@ -136,7 +135,6 @@ class FakeWebState : public WebState {
   void SetCurrentURL(const GURL& url);
   void SetNavigationItemCount(int count);
   void SetVisibleURL(const GURL& url);
-  void SetTrustLevel(URLVerificationTrustLevel trust_level);
   void SetNavigationManager(
       std::unique_ptr<NavigationManager> navigation_manager);
   void SetWebFramesManager(
@@ -199,7 +197,6 @@ class FakeWebState : public WebState {
   FaviconStatus favicon_status_;
   GURL url_;
   std::u16string title_;
-  URLVerificationTrustLevel trust_level_ = kAbsolute;
   bool content_is_html_ = true;
   std::string mime_type_;
   std::unique_ptr<NavigationManager> navigation_manager_;

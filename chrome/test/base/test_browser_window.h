@@ -96,7 +96,6 @@ class TestBrowserWindow : public BrowserWindow {
                           int reason) override {}
   void OnTabDetached(content::WebContents* contents, bool was_active) override {
   }
-  void OnTabRestored(int command_id) override {}
   void ZoomChangedForActiveTab(bool can_show_bubble) override {}
   gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
@@ -145,9 +144,7 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsLocationBarVisible() const override;
   bool IsToolbarShowing() const override;
   bool IsBorderlessModeEnabled() const override;
-  void ShowSidePanel(
-      absl::optional<SidePanelEntryId> entry_id,
-      absl::optional<SidePanelOpenTrigger> open_trigger) override {}
+  void ShowChromeLabs() override {}
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}
@@ -289,6 +286,7 @@ class TestBrowserWindow : public BrowserWindow {
     // LocationBar:
     GURL GetDestinationURL() const override;
     bool IsInputTypedUrlWithoutScheme() const override;
+    bool IsInputTypedUrlWithHttpScheme() const override;
     WindowOpenDisposition GetWindowOpenDisposition() const override;
     ui::PageTransition GetPageTransition() const override;
     base::TimeTicks GetMatchSelectionTimestamp() const override;

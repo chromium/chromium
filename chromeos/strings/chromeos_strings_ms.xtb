@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Meja</translation>
 <translation id="1018219910092211213">Tidak dapat menyelesaikan DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
-<translation id="1022433422498218992">Kawalan Umum</translation>
+<translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Ciri baharu tersedia, gunakan kekunci Anak panah ke atas untuk mengetahui lebih lanjut.</translation>
@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Kekunci <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1435763214710588005">Menetapkan semula penggunaan data secara automatik setiap bulan pada hari yang dipilih</translation>
 <translation id="1442433966118452622">Sumber imej</translation>
+<translation id="1449035143498573192">Buka dalam Google Search</translation>
 <translation id="1451536289672181509">Peranti ialah papan kekunci.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1468664791493211953">Tawaran</translation>
@@ -113,12 +114,13 @@
 <translation id="1768959921651994223">Jenis pengesahan</translation>
 <translation id="1776228893584526149">Ton hiasan latar</translation>
 <translation id="1782199038061388045">terjemahan</translation>
-<translation id="1790209694022261219">Tetingkap dan Meja</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
+<translation id="1836553715834333258">Warna sistem</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
+<translation id="1840474674287087346">Warna desktop</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
 <translation id="1852934301711881861">Pasang Chrome OS Flex</translation>
 <translation id="1856388568474281774">Anak panah ke bawah</translation>
@@ -237,14 +239,11 @@
 <translation id="2873483161362553159">Navigasi penyemak imbas</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
-<translation id="2902312830803030883">Lagi tindakan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
 <translation id="2940811910881150316">Tidak dapat menguji peranti. Buka semula penutup untuk menguji.</translation>
-<translation id="2981143481017883351">Aset eksklusif Chromebook kini tersedia</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
-<translation id="3020183492814296499">Pintasan</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Peranti ialah kamera video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -271,6 +270,7 @@
 <translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3226657629376379887">Menu tindakan reka letak</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> eksklusif</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
 <translation id="3275729367986477355">Imej avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit fail}other{Edit fail}}</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Arahan utama</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
+<translation id="3305294846493618482">lagi</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
-<translation id="3386675685417744672">Chromebook eksklusif</translation>
 <translation id="3404249063913988450">Dayakan penyelamat skrin</translation>
 <translation id="3413935475507503304">Untuk meneruskan kemaskinian, klik Seterusnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +323,7 @@
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3639846061339007994">atas</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
+<translation id="3663574643422533538">Pilih kerja seni eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
@@ -367,12 +368,12 @@
 <translation id="404928562651467259">AMARAN</translation>
 <translation id="4054683689023980771">Memuat turun imej</translation>
 <translation id="4060260348856573701">APN Baharu</translation>
-<translation id="4079743696465895866">Pilih kerja seni eksklusif Chromebook</translation>
 <translation id="4093865285251893588">Imej profil</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pad sentuh USB</translation>
+<translation id="4113067922640381334">Kini anda boleh mengakses <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hiasan latar<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baharu</translation>
 <translation id="4117637339509843559">Mod gelap</translation>
 <translation id="4130035430755296270">Teruskan menuding untuk mendapatkan lagi pilihan reka letak</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
@@ -421,6 +422,7 @@
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
+<translation id="4500966230243561393">Warna antara muka</translation>
 <translation id="4503223151711056411">Anak panah ke kiri</translation>
 <translation id="4507392511610824664">tambahkan kecerahan</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +501,7 @@
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apabila skrin anda melahu, tunjukkan foto, masa, cuaca dan maklumat media.</translation>
+<translation id="5035083460461104704">Warna tema</translation>
 <translation id="5038292761217083259">berbilang warna papan kekunci</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +613,7 @@
 <translation id="5972388717451707488">Enjin Kemaskinian</translation>
 <translation id="5984145644188835034">Kertas Dinding Lalai</translation>
 <translation id="6017514345406065928">Hijau</translation>
+<translation id="6019566113895157499">Pintasan Kekunci</translation>
 <translation id="6034694447310538551">Dayakan tetapan semula bulanan automatik</translation>
 <translation id="6037291330010597344">Penyuap dokumen pengimbas kosong. Tambah dokumen dan cuba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
+<translation id="7633068090678117093">Imej latar belakang</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="765159867434478292">Pisah</translation>
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
@@ -855,6 +860,7 @@
 <translation id="7953669802889559161">Masukan</translation>
 <translation id="7955587717700691983">Papan kekunci Bluetooth</translation>
 <translation id="7960831585769876809">Suhu</translation>
+<translation id="7971535376154084247">Kawalan umum</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
@@ -918,6 +924,7 @@
 <translation id="8461329675984532579">Nama pembekal tempatan</translation>
 <translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
 <translation id="8476242415522716722">cahaya bawah papan kekunci</translation>
+<translation id="8476942730579767658">Tetingkap dan meja</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat menyambung melalui tembok api ke laman web HTTP daripada apl Android</translation>
@@ -932,6 +939,7 @@
 <translation id="8576249514688522074">Tidak diasalkan</translation>
 <translation id="8593058461203131755">jeda media</translation>
 <translation id="8620617069779373398">Status perayauan</translation>
+<translation id="8626489604350149811">Lagi tindakan untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
 <translation id="8651481478098336970">redam kelantangan</translation>
 <translation id="8655295600908251630">Saluran</translation>
@@ -979,6 +987,7 @@
 <translation id="8930521118335213258">Setara</translation>
 <translation id="8930622219860340959">Wayarles</translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
+<translation id="8944651180182756621">Warna pelancar</translation>
 <translation id="894617464444543719">Peranti ialah telefon.</translation>
 <translation id="8957423540740801332">kanan</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>
@@ -1012,6 +1021,7 @@
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
 <translation id="9161276708550942948">ruang</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
+<translation id="9174334653006917325">Warna UI</translation>
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9188992814426075118">Papan kekunci anda dapat memadankan kertas dinding anda secara automatik</translation>
 <translation id="9189000703457422362">Tidak dapat menyambung kepada rangkaian ini menggunakan APN yang dikesan secara automatik. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>

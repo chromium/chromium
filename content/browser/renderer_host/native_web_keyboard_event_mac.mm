@@ -38,19 +38,17 @@ size_t WebKeyboardEventTextLength(const char16_t* text) {
   return text_length;
 }
 
-}  // namepsace
+}  // namespace
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                                                int modifiers,
                                                base::TimeTicks timestamp)
-    : WebKeyboardEvent(type, modifiers, timestamp),
-      os_event(NULL),
-      skip_in_browser(false) {}
+    : WebKeyboardEvent(type, modifiers, timestamp), skip_in_browser(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const blink::WebKeyboardEvent& web_event,
     gfx::NativeView native_view)
-    : WebKeyboardEvent(web_event), os_event(nullptr), skip_in_browser(false) {
+    : WebKeyboardEvent(web_event), skip_in_browser(false) {
   NSEventType type = NSEventTypeKeyUp;
   int flags = modifiersForEvent(web_event.GetModifiers());
   if (web_event.GetType() == blink::WebInputEvent::Type::kChar ||
@@ -77,57 +75,52 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
                                                 web_event.unmodified_text)
                                      length:unmod_text_length] autorelease];
 
-  os_event = [[NSEvent keyEventWithType:type
-                               location:NSZeroPoint
-                          modifierFlags:flags
-                              timestamp:ui::EventTimeStampToSeconds(
-                                            web_event.TimeStamp())
-                           windowNumber:[[native_view.GetNativeNSView() window]
-                                            windowNumber]
-                                context:nil
-                             characters:text
-            charactersIgnoringModifiers:unmodified_text
-                              isARepeat:NO
-                                keyCode:web_event.native_key_code] retain];
+  os_event = base::apple::OwnedNSEvent([NSEvent
+                 keyEventWithType:type
+                         location:NSZeroPoint
+                    modifierFlags:flags
+                        timestamp:ui::EventTimeStampToSeconds(
+                                      web_event.TimeStamp())
+                     windowNumber:[[native_view.GetNativeNSView() window]
+                                      windowNumber]
+                          context:nil
+                       characters:text
+      charactersIgnoringModifiers:unmodified_text
+                        isARepeat:NO
+                          keyCode:web_event.native_key_code]);
   // The eventRef is necessary for MacOS code (like NSMenu) to work later in the
   // pipeline. As per documentation:
   // https://developer.apple.com/documentation/appkit/nsevent/1525143-eventref
   // "Other NSEvent objects create an EventRef when this property is first
   // accessed, if possible".
-  [os_event eventRef];
+  [os_event.Get() eventRef];
 }
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event)
-    : WebKeyboardEvent(WebKeyboardEventBuilder::Build(native_event)),
-      os_event([native_event retain]),
+    : WebKeyboardEvent(WebKeyboardEventBuilder::Build(native_event.Get())),
+      os_event(native_event),
       skip_in_browser(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(const ui::KeyEvent& key_event)
-    : NativeWebKeyboardEvent(key_event.native_event()) {
-}
+    : NativeWebKeyboardEvent(
+          base::apple::OwnedNSEvent(key_event.native_event())) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const NativeWebKeyboardEvent& other)
     : WebKeyboardEvent(other),
-      os_event([other.os_event retain]),
-      skip_in_browser(other.skip_in_browser) {
-}
+      os_event(other.os_event),
+      skip_in_browser(other.skip_in_browser) {}
 
 NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
     const NativeWebKeyboardEvent& other) {
   WebKeyboardEvent::operator=(other);
 
-  NSObject* previous = os_event;
-  os_event = [other.os_event retain];
-  [previous release];
-
+  os_event = other.os_event;
   skip_in_browser = other.skip_in_browser;
 
   return *this;
 }
 
-NativeWebKeyboardEvent::~NativeWebKeyboardEvent() {
-  [os_event release];
-}
+NativeWebKeyboardEvent::~NativeWebKeyboardEvent() = default;
 
 }  // namespace content

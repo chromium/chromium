@@ -47,7 +47,8 @@ class InitializationSubTask : public DatabaseTask {
     std::string unique_id;
 
     // The results to report.
-    raw_ptr<BackgroundFetchInitializationData> initialization_data;
+    raw_ptr<BackgroundFetchInitializationData, DanglingUntriaged>
+        initialization_data;
   };
 
   InitializationSubTask(DatabaseTaskHost* host,

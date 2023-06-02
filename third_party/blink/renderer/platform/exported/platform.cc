@@ -310,8 +310,6 @@ void Platform::CreateServiceWorkerSubresourceLoaderFactory(
     CrossVariantMojoRemote<mojom::ServiceWorkerContainerHostInterfaceBase>
         service_worker_container_host,
     const WebString& client_id,
-    mojom::blink::ServiceWorkerFetchHandlerBypassOption
-        fetch_handler_bypass_option,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {}

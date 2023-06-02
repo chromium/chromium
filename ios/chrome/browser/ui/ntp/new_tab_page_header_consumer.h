@@ -18,9 +18,6 @@
 // Exposes view and methods to drive the doodle.
 - (void)setLogoVendor:(id<LogoVendor>)logoVendor;
 
-// Tell location bar has taken focus.
-- (void)locationBarBecomesFirstResponder;
-
 // Sets whether voice search is currently enabled.
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;
 

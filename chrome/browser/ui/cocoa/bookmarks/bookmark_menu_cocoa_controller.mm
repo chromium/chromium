@@ -171,9 +171,7 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
-  AppController* controller =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  return ![controller keyWindowIsModal];
+  return ![AppController.sharedController keyWindowIsModal];
 }
 
 // NSMenu delegate method: called just before menu is displayed.

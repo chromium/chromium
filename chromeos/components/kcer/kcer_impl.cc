@@ -30,14 +30,17 @@ KcerImpl::KcerImpl(scoped_refptr<base::TaskRunner> token_task_runner,
                    base::WeakPtr<KcerToken> device_token)
     : token_task_runner_(std::move(token_task_runner)),
       user_token_(std::move(user_token)),
-      device_token_(std::move(device_token)) {}
+      device_token_(std::move(device_token)) {
+  if (user_token_.MaybeValid() || device_token_.MaybeValid()) {
+    notifier_.Initialize();
+  }
+}
 
 KcerImpl::~KcerImpl() = default;
 
 base::CallbackListSubscription KcerImpl::AddObserver(
     base::RepeatingClosure callback) {
-  // TODO(244408716): Implement.
-  return {};
+  return notifier_.AddObserver(std::move(callback));
 }
 
 void KcerImpl::GenerateRsaKey(Token token,
@@ -133,7 +136,34 @@ void KcerImpl::ExportPkcs12Cert(scoped_refptr<const Cert> cert,
 
 void KcerImpl::RemoveKeyAndCerts(PrivateKeyHandle key,
                                  StatusCallback callback) {
-  // TODO(244408716): Implement.
+  if (key.GetTokenInternal().has_value()) {
+    return RemoveKeyAndCertsWithToken(std::move(callback), std::move(key));
+  }
+
+  auto on_find_key_done =
+      base::BindOnce(&KcerImpl::RemoveKeyAndCertsWithToken,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  return PopulateTokenForKey(std::move(key), std::move(on_find_key_done));
+}
+
+void KcerImpl::RemoveKeyAndCertsWithToken(
+    StatusCallback callback,
+    base::expected<PrivateKeyHandle, Error> key_or_error) {
+  if (!key_or_error.has_value()) {
+    return std::move(callback).Run(base::unexpected(key_or_error.error()));
+  }
+  PrivateKeyHandle key = std::move(key_or_error).value();
+
+  const base::WeakPtr<KcerToken>& kcer_token =
+      GetToken(key.GetTokenInternal().value());
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::RemoveKeyAndCerts, kcer_token, std::move(key),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
@@ -156,7 +186,26 @@ void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
 
 void KcerImpl::ListKeys(base::flat_set<Token> tokens,
                         ListKeysCallback callback) {
-  // TODO(244408716): Implement.
+  if (tokens.empty()) {
+    return std::move(callback).Run(/*certs=*/{}, /*errors=*/{});
+  }
+
+  scoped_refptr<TokenResultsMerger<PublicKey>> merger =
+      internal::TokenResultsMerger<PublicKey>::Create(
+          /*results_to_receive=*/tokens.size(), std::move(callback));
+  for (Token token : tokens) {
+    auto callback_for_token = merger->GetCallback(token);
+    const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
+    if (!kcer_token.MaybeValid()) {
+      std::move(callback_for_token)
+          .Run(base::unexpected(Error::kTokenIsNotAvailable));
+    } else {
+      token_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&KcerToken::ListKeys, kcer_token,
+                                    base::BindPostTaskToCurrentDefault(
+                                        std::move(callback_for_token))));
+    }
+  }
 }
 
 void KcerImpl::ListCerts(base::flat_set<Token> tokens,
@@ -258,7 +307,37 @@ void KcerImpl::SignWithToken(
 void KcerImpl::SignRsaPkcs1Raw(PrivateKeyHandle key,
                                DigestWithPrefix digest_with_prefix,
                                SignCallback callback) {
-  // TODO(244408716): Implement.
+  if (key.GetTokenInternal().has_value()) {
+    return SignRsaPkcs1RawWithToken(std::move(digest_with_prefix),
+                                    std::move(callback), std::move(key));
+  }
+
+  auto on_find_key_done = base::BindOnce(
+      &KcerImpl::SignRsaPkcs1RawWithToken, weak_factory_.GetWeakPtr(),
+      std::move(digest_with_prefix), std::move(callback));
+  return PopulateTokenForKey(std::move(key), std::move(on_find_key_done));
+}
+
+void KcerImpl::SignRsaPkcs1RawWithToken(
+    DigestWithPrefix digest_with_prefix,
+    SignCallback callback,
+    base::expected<PrivateKeyHandle, Error> key_or_error) {
+  if (!key_or_error.has_value()) {
+    return std::move(callback).Run(base::unexpected(key_or_error.error()));
+  }
+  PrivateKeyHandle key = std::move(key_or_error).value();
+
+  const base::WeakPtr<KcerToken>& kcer_token =
+      GetToken(key.GetTokenInternal().value());
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::SignRsaPkcs1Raw, kcer_token, std::move(key),
+                     std::move(digest_with_prefix),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 base::flat_set<Token> KcerImpl::GetAvailableTokens() {

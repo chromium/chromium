@@ -164,9 +164,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       StartTabGroupTutorial();
       break;
     case Command::kOpenPasswordManager:
-      NavigateToURL(
-          GURL(chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage)),
-          disposition);
+      OpenPasswordManager();
       break;
     case Command::kNoOpCommand:
       // Nothing to do.
@@ -228,6 +226,10 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
   tutorial_service->StartTutorial(tutorial_id, context);
   tutorial_service->LogStartedFromWhatsNewPage(
       tutorial_id, tutorial_service->IsRunningTutorial());
+}
+
+void BrowserCommandHandler::OpenPasswordManager() {
+  chrome::ShowPasswordManager(chrome::FindBrowserWithProfile(profile_));
 }
 
 bool BrowserCommandHandler::BrowserSupportsCustomizeChromeSidePanel() {

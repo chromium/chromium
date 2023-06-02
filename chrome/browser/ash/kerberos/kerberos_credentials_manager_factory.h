@@ -10,7 +10,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace ash {
@@ -43,7 +43,7 @@ class KerberosCredentialsManagerFactory : public ProfileKeyedServiceFactory {
       const KerberosCredentialsManagerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<KerberosCredentialsManagerFactory>;
+  friend base::NoDestructor<KerberosCredentialsManagerFactory>;
 
   KerberosCredentialsManagerFactory();
   ~KerberosCredentialsManagerFactory() override;

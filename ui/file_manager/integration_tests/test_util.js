@@ -379,6 +379,8 @@ export let TestEntryFolderFeature;
  *
  * alternateUrl: File's Drive alternate URL. Defaults to an empty string.
  *
+ * canPin: Whether the item can be pinned or not. Defaults to true.
+ *
  * @typedef {{
  *    type: EntryType,
  *    sourceFileName: (string|undefined),
@@ -396,6 +398,7 @@ export let TestEntryFolderFeature;
  *    pinned: (boolean|undefined),
  *    availableOffline: (boolean|undefined),
  *    alternateUrl: (string|undefined),
+ *    canPin: (boolean|undefined),
  * }}
  */
 export let TestEntryInfoOptions;
@@ -429,6 +432,7 @@ export class TestEntryInfo {
     this.pinned = !!options.pinned;
     this.availableOffline = !!options.availableOffline;
     this.alternateUrl = options.alternateUrl || '';
+    this.canPin = options.canPin !== undefined ? !!options.canPin : true;
     Object.freeze(this);
   }
 
@@ -1636,6 +1640,18 @@ export const ENTRIES = {
     nameText: 'hello.txt.trashinfo',
     sizeText: '64 bytes',
     typeText: 'TRASHINFO',
+  }),
+
+  cantPinFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.txt',
+    targetPath: 'text.txt',
+    mimeType: 'text/plain',
+    lastModifiedTime: 'Mar 20, 2012, 11:40 PM',
+    nameText: 'text.txt',
+    sizeText: '51 bytes',
+    typeText: 'Plain text',
+    canPin: false,
   }),
 };
 

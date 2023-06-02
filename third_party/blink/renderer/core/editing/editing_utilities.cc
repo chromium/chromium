@@ -1146,7 +1146,8 @@ static HTMLSpanElement* CreateTabSpanElement(Document& document,
                                              Text* tab_text_node) {
   // Make the span to hold the tab.
   auto* span_element = MakeGarbageCollected<HTMLSpanElement>(document);
-  span_element->setAttribute(html_names::kStyleAttr, "white-space:pre");
+  span_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("white-space:pre"));
 
   // Add tab text to that span.
   if (!tab_text_node)
@@ -1306,7 +1307,7 @@ bool IsMailHTMLBlockquoteElement(const Node* node) {
     return false;
 
   return element->HasTagName(html_names::kBlockquoteTag) &&
-         element->getAttribute("type") == "cite";
+         element->getAttribute(html_names::kTypeAttr) == "cite";
 }
 
 bool ElementCannotHaveEndTag(const Node& node) {

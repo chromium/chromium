@@ -215,7 +215,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // see crbug.com/1177417
+    @DisabledTest(message = "https://crbug.com/1446044 and https://crbug.com/1177417")
     public void testOmniboxSuggestionContainerAppears() throws Exception {
         SearchActivity searchActivity = startSearchActivity();
 
@@ -257,8 +257,8 @@ public class SearchActivityTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // see crbug.com/1177417
     @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisabledTest(message = "https://crbug.com/1446044 and https://crbug.com/1177417")
     public void testBackPressFinishActivity_BackRefactored() throws Exception {
         SearchActivity searchActivity = startSearchActivity();
 

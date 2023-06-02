@@ -156,7 +156,18 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
           base::FeatureList::IsEnabled(features::kUseDMSAAForTiles)) {
   DCHECK(pending_raster_queries);
   DCHECK(compositor_context_provider);
-  DCHECK(worker_context_provider);
+  CHECK(worker_context_provider);
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, DMSAA is currently only enabled for vulkan until GL
+  // regressions are fixed.
+  {
+    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+    lock.emplace(worker_context_provider);
+    is_using_dmsaa_ &=
+        worker_context_provider->ContextCapabilities().using_vulkan_context;
+  }
+#endif
 }
 
 GpuRasterBufferProvider::~GpuRasterBufferProvider() = default;

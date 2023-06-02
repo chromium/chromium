@@ -6,11 +6,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from './assert_extras.js';
+import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import {Constructor} from './common/types.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {Route, Router} from './router.js';
+import {isAdvancedRoute, Route, Router} from './router.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -19,15 +20,16 @@ import {Route, Router} from './router.js';
 enum RouteState {
   // Initial state before anything has loaded yet.
   INITIAL = 'initial',
-  // A dialog that has a dedicated URL (e.g. /importData).
-  DIALOG = 'dialog',
-  // A section (basically a scroll position within the top level page, e.g,
-  // /appearance.
+  // The root Settings page, '/'.
+  ROOT = 'root',
+  // A section, basically a scroll position within the root page.
+  // After infinite scroll is removed, this is a top-level page.
+  // e.g. /network, /bluetooth, /device
   SECTION = 'section',
-  // A subpage, or sub-subpage e.g, /searchEngins.
+  // A subpage, or nested subpage, e.g. /networkDetail.
   SUBPAGE = 'subpage',
-  // The top level Settings page, '/'.
-  TOP_LEVEL = 'top-level',
+  // A navigable dialog that has a dedicated URL. Currently unused in Settings.
+  DIALOG = 'dialog',
 }
 
 function classifyRoute(route: Route|undefined): RouteState {
@@ -36,7 +38,7 @@ function classifyRoute(route: Route|undefined): RouteState {
   }
   const routes = Router.getInstance().routes;
   if (route === routes.BASIC || route === routes.ABOUT) {
-    return RouteState.TOP_LEVEL;
+    return RouteState.ROOT;
   }
   if (route.isSubpage()) {
     return RouteState.SUBPAGE;
@@ -51,7 +53,7 @@ const ALL_STATES = new Set([
   RouteState.DIALOG,
   RouteState.SECTION,
   RouteState.SUBPAGE,
-  RouteState.TOP_LEVEL,
+  RouteState.ROOT,
 ]);
 
 /**
@@ -64,12 +66,12 @@ const VALID_TRANSITIONS = new Map([
     new Set([
       RouteState.SECTION,
       RouteState.SUBPAGE,
-      RouteState.TOP_LEVEL,
+      RouteState.ROOT,
     ]),
   ],
   [RouteState.SECTION, ALL_STATES],
   [RouteState.SUBPAGE, ALL_STATES],
-  [RouteState.TOP_LEVEL, ALL_STATES],
+  [RouteState.ROOT, ALL_STATES],
 ]);
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
@@ -105,12 +107,6 @@ export const MainPageMixin = dedupingMixin(
           assertNotReached();
         }
 
-        private shouldExpandAdvanced_(route: Route): boolean {
-          const routes = Router.getInstance().routes;
-          return (this.tagName === 'OS-SETTINGS-PAGE') && routes.ADVANCED &&
-              routes.ADVANCED.contains(route);
-        }
-
         loadAdvancedPage(): Promise<Element> {
           return this.shadowRoot!
               .querySelector<SettingsIdleLoadElement>(
@@ -134,7 +130,8 @@ export const MainPageMixin = dedupingMixin(
           const waitFn = beforeNextRender.bind(null, this);
 
           return new Promise(resolve => {
-            if (this.shouldExpandAdvanced_(route)) {
+            if (this.tagName === 'MAIN-PAGE-CONTAINER' &&
+                isAdvancedRoute(route)) {
               this.dispatchCustomEvent_('hide-container');
               waitFn(async () => {
                 await this.loadAdvancedPage();
@@ -149,6 +146,10 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private async enterSubpage_(route: Route) {
+          if (isRevampWayfindingEnabled()) {
+            // Make the parent page visible to ensure the subpage is visible
+            this.showPage(route);
+          }
           this.lastScrollTop_ = this.scroller_.scrollTop;
           this.scroller_.scrollTop = 0;
           this.classList.add('showing-subpage');
@@ -180,9 +181,44 @@ export const MainPageMixin = dedupingMixin(
           });
         }
 
-        private async scrollToSection_(route: Route) {
+        /**
+         * Simple helper method to display a page/section depending on if the
+         * `OsSettingsRevampWayfinding` is enabled.
+         */
+        private activatePage(route: Route): void {
+          if (isRevampWayfindingEnabled()) {
+            this.showPage(route);
+          } else {
+            this.scrollToSection(route);
+          }
+        }
+
+        private async scrollToSection(route: Route): Promise<void> {
           const section = await this.ensureSectionForRoute_(route);
           this.dispatchCustomEvent_('showing-section', {detail: section});
+          this.dispatchCustomEvent_('show-container');
+        }
+
+        /**
+         * Effectively displays the page for the given |route|.
+         * Queries the shadow DOM for the respective os-settings-section element
+         * for the given |route| and marks it as active.
+         *
+         * NOTE: This method should only be used when the
+         * `OsSettingsRevampWayfinding` feature flag is enabled.
+         */
+        private async showPage(route: Route): Promise<void> {
+          const page = await this.ensureSectionForRoute_(route);
+
+          // Hide any previously active pages
+          const previouslyActive =
+              this.shadowRoot!.querySelectorAll('os-settings-section[active]');
+          for (const page of previouslyActive) {
+            page.toggleAttribute('active', false);
+          }
+
+          // Show the respective page for |route|
+          page.toggleAttribute('active', true);
           this.dispatchCustomEvent_('show-container');
         }
 
@@ -190,7 +226,8 @@ export const MainPageMixin = dedupingMixin(
          * Detects which state transition is appropriate for the given new/old
          * routes.
          */
-        private getStateTransition_(newRoute: Route, oldRoute?: Route) {
+        private getStateTransition_(newRoute: Route, oldRoute?: Route):
+            [RouteState, RouteState]|null {
           const containsNew = this.containsRoute(newRoute);
           const containsOld = this.containsRoute(oldRoute);
 
@@ -202,20 +239,20 @@ export const MainPageMixin = dedupingMixin(
 
           // Case where going from |this| page to an unrelated page.
           // For example:
-          //  |this| is os-settings-page AND
+          //  |this| is main-page-container AND
           //  oldRoute is /searchEngines AND
           //  newRoute is /help.
           if (containsOld && !containsNew) {
-            return [classifyRoute(oldRoute), RouteState.TOP_LEVEL];
+            return [classifyRoute(oldRoute), RouteState.ROOT];
           }
 
           // Case where return from an unrelated page to |this| page.
           // For example:
-          //  |this| is os-settings-page AND
+          //  |this| is main-page-container AND
           //  oldRoute is /help AND
           //  newRoute is /searchEngines
           if (!containsOld && containsNew) {
-            return [RouteState.TOP_LEVEL, classifyRoute(newRoute)];
+            return [RouteState.ROOT, classifyRoute(newRoute)];
           }
 
           // Case where transitioning between routes that both belong to |this|
@@ -223,98 +260,146 @@ export const MainPageMixin = dedupingMixin(
           return [classifyRoute(oldRoute), classifyRoute(newRoute)];
         }
 
-        override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+        override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
           const transition = this.getStateTransition_(newRoute, oldRoute);
           if (transition === null) {
             return;
           }
 
-          const oldState = transition[0];
-          const newState = transition[1];
+          const [oldState, newState] = transition;
           assert(VALID_TRANSITIONS.get(oldState)!.has(newState));
 
-          if (oldState === RouteState.TOP_LEVEL) {
-            if (newState === RouteState.SECTION) {
-              this.scrollToSection_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              this.enterSubpage_(newRoute);
+          if (oldState === RouteState.INITIAL) {
+            switch (newState) {
+              case RouteState.SECTION:
+                this.activatePage(newRoute);
+                return;
+
+              case RouteState.SUBPAGE:
+                this.enterSubpage_(newRoute);
+                return;
+
+              case RouteState.ROOT:
+                // TODO(b/282961146) Activate first top-level page (Network)
+                return;
+
+              // Nothing to do here for the DIALOG case.
+              case RouteState.DIALOG:
+              default:
+                return;
             }
-            // Nothing to do here for the case of RouteState.DIALOG or
-            // TOP_LEVEL. The latter happens when navigating from '/?search=foo'
-            // to '/' (clearing search results).
-            return;
+          }
+
+          if (oldState === RouteState.ROOT) {
+            switch (newState) {
+              case RouteState.SECTION:
+                this.activatePage(newRoute);
+                return;
+
+              // Navigating directly to a subpage via search on the main page
+              case RouteState.SUBPAGE:
+                this.enterSubpage_(newRoute);
+                return;
+
+              // Happens when clearing search results (Navigating from
+              // '/?search=foo' to '/')
+              case RouteState.ROOT:
+                // TODO(b/282961146) Activate first top-level page (Network)
+                return;
+
+              // Nothing to do here for the DIALOG case.
+              case RouteState.DIALOG:
+              default:
+                return;
+            }
           }
 
           if (oldState === RouteState.SECTION) {
-            if (newState === RouteState.SECTION) {
-              this.scrollToSection_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              this.enterSubpage_(newRoute);
-            } else if (newState === RouteState.TOP_LEVEL) {
-              this.scroller_.scrollTop = 0;
+            switch (newState) {
+              case RouteState.SECTION:
+                this.activatePage(newRoute);
+                return;
+
+              case RouteState.SUBPAGE:
+                this.enterSubpage_(newRoute);
+                return;
+
+              case RouteState.ROOT:
+                this.scroller_.scrollTop = 0;
+                return;
+
+              // Nothing to do here for the case of DIALOG.
+              case RouteState.DIALOG:
+              default:
+                return;
             }
-            // Nothing to do here for the case of RouteState.DIALOG.
-            return;
           }
 
           if (oldState === RouteState.SUBPAGE) {
             assert(oldRoute);
-            if (newState === RouteState.SECTION) {
-              this.enterMainPage_(oldRoute);
+            switch (newState) {
+              case RouteState.SECTION:
+                this.enterMainPage_(oldRoute);
 
-              // Scroll to the corresponding section, only if the user
-              // explicitly navigated to a section (via the menu).
-              if (!Router.getInstance().lastRouteChangeWasPopstate()) {
-                this.scrollToSection_(newRoute);
-              }
-            } else if (newState === RouteState.SUBPAGE) {
-              // Handle case where the two subpages belong to
-              // different sections, but are linked to each other. For example
-              // /storage and /accounts (in ChromeOS).
-              if (!oldRoute.contains(newRoute) &&
-                  !newRoute.contains(oldRoute)) {
-                this.enterMainPage_(oldRoute).then(() => {
-                  this.enterSubpage_(newRoute);
-                });
+                // Scroll to the corresponding section, only if the user
+                // explicitly navigated to a section (via the menu).
+                if (!Router.getInstance().lastRouteChangeWasPopstate()) {
+                  this.activatePage(newRoute);
+                }
                 return;
-              }
 
-              // Handle case of subpage to sub-subpage navigation.
-              if (oldRoute.contains(newRoute)) {
-                this.scroller_.scrollTop = 0;
+              case RouteState.SUBPAGE:
+                // Handle case where the two subpages belong to
+                // different sections, but are linked to each other. For example
+                // /displayAndMagnification linking to /display
+                if (!oldRoute.contains(newRoute) &&
+                    !newRoute.contains(oldRoute)) {
+                  this.enterMainPage_(oldRoute).then(() => {
+                    this.enterSubpage_(newRoute);
+                  });
+                  return;
+                }
+
+                // Handle case of subpage to nested subpage navigation.
+                if (oldRoute.contains(newRoute)) {
+                  this.scroller_.scrollTop = 0;
+                  return;
+                }
+                // When going from a nested subpage to its parent subpage,
+                // the scroll position is automatically restored because we
+                // focus the nested subpage's entry point.
                 return;
-              }
-              // When going from a sub-subpage to its parent subpage, scroll
-              // position is automatically restored, because we focus the
-              // sub-subpage entry point.
-            } else if (newState === RouteState.TOP_LEVEL) {
-              this.enterMainPage_(oldRoute);
-            } else if (newState === RouteState.DIALOG) {
-              // The only known case currently for such a transition is from
-              // /storage to /clearBrowserData.
-              this.enterMainPage_(oldRoute);
-            }
-            return;
-          }
 
-          if (oldState === RouteState.INITIAL) {
-            if (newState === RouteState.SECTION) {
-              this.scrollToSection_(newRoute);
-            } else if (newState === RouteState.SUBPAGE) {
-              this.enterSubpage_(newRoute);
+              case RouteState.ROOT:
+                this.enterMainPage_(oldRoute);
+                return;
+
+              // This is a supported case but there are currently no known
+              // examples of this transition in Settings.
+              case RouteState.DIALOG:
+                this.enterMainPage_(oldRoute);
+                return;
+
+              default:
+                return;
             }
-            // Nothing to do here for the case of RouteState.DIALOG and
-            // TOP_LEVEL.
-            return;
           }
 
           if (oldState === RouteState.DIALOG) {
-            if (newState === RouteState.SUBPAGE) {
-              // The only known case currently for such a transition is from
-              // /clearBrowserData back to /storage.
-              this.enterSubpage_(newRoute);
+            switch (newState) {
+              // There are currently no known examples of this transition
+              case RouteState.SUBPAGE:
+                this.enterSubpage_(newRoute);
+                return;
+
+              // There are currently no known examples of these transitions.
+              // Update when a relevant use-case exists.
+              case RouteState.ROOT:
+              case RouteState.SECTION:
+              case RouteState.DIALOG:
+              default:
+                return;
             }
-            // Nothing to do for all other cases.
           }
         }
 

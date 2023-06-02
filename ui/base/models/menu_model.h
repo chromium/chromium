@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
                        // selected.
   };
 
+  // ID to use for TYPE_TITLE items.
+  static constexpr int kTitleId = -2;
+
   MenuModel();
 
   virtual ~MenuModel();

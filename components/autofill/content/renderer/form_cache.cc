@@ -116,22 +116,23 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   std::set<FieldRendererId> observed_unique_renderer_ids;
 
-  // |parsed_forms_| is re-populated below in ProcessForm().
-  std::map<FormRendererId, FormData> old_parsed_forms =
-      std::move(parsed_forms_);
-  parsed_forms_.clear();
+  // |extracted_forms_| is re-populated below in ProcessForm().
+  std::map<FormRendererId, FormData> old_extracted_forms =
+      std::move(extracted_forms_);
+  extracted_forms_.clear();
 
   UpdateFormCacheResult r;
   r.removed_forms = base::MakeFlatSet<FormRendererId>(
-      old_parsed_forms, {}, &std::pair<const FormRendererId, FormData>::first);
+      old_extracted_forms, {},
+      &std::pair<const FormRendererId, FormData>::first);
 
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
 
   // Helper function that stores new autofillable forms in |forms|. Returns
-  // false iff the total number of fields exceeds |kMaxParseableFields|. Clears
-  // |form|'s FormData::child_frames if the total number of frames exceeds
-  // kMaxParseableChildFrames.
+  // false iff the total number of fields exceeds |kMaxExtractableFields|.
+  // Clears |form|'s FormData::child_frames if the total number of frames
+  // exceeds |kMaxExtractableChildFrames|.
   auto ProcessForm =
       [&](FormData form,
           const std::vector<WebFormControlElement>& control_elements) {
@@ -141,15 +142,17 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
         num_fields_seen += form.fields.size();
         num_frames_seen += form.child_frames.size();
 
-        // Enforce the kMaxParseableFields limit: ignore all forms after this
+        // Enforce the kMaxExtractableFields limit: ignore all forms after this
         // limit has been reached (i.e., abort parsing).
-        if (num_fields_seen > kMaxParseableFields)
+        if (num_fields_seen > kMaxExtractableFields) {
           return false;
+        }
 
-        // Enforce the kMaxParseableChildFrames limit: ignore the iframes, but
+        // Enforce the kMaxExtractableChildFrames limit: ignore the iframes, but
         // do not ignore the fields (i.e., continue parsing).
-        if (num_frames_seen > kMaxParseableChildFrames)
+        if (num_frames_seen > kMaxExtractableChildFrames) {
           form.child_frames.clear();
+        }
 
         bool has_autofillable_form_field =
             HasAutofillableFormControl(control_elements);
@@ -157,15 +160,15 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
         // Store only forms that contain iframes or fields.
         if (IsFormInteresting(form, has_autofillable_form_field)) {
           FormRendererId form_id = form.unique_renderer_id;
-          DCHECK(parsed_forms_.find(form_id) == parsed_forms_.end());
-          auto it = old_parsed_forms.find(form_id);
-          if (it == old_parsed_forms.end() ||
+          DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
+          auto it = old_extracted_forms.find(form_id);
+          if (it == old_extracted_forms.end() ||
               !FormData::DeepEqual(std::move(it->second), form)) {
             SaveInitialValues(control_elements);
             r.updated_forms.push_back(form);
           }
           r.removed_forms.erase(form_id);
-          parsed_forms_[form_id] = std::move(form);
+          extracted_forms_[form_id] = std::move(form);
         }
         return true;
       };
@@ -193,7 +196,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     }
   }
 
-  // Look for more parseable fields outside of forms. Create a synthetic form
+  // Look for more extractable fields outside of forms. Create a synthetic form
   // from them.
   std::vector<WebFormControlElement> control_elements =
       form_util::GetUnownedAutofillableFormFieldElements(document);

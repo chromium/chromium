@@ -287,7 +287,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   SignedEncryptionInfo signed_encryption_key_;
 
   ReportingServerConnector::TestEnvironment test_env_;
-  raw_ptr<ReportQueueConfiguration> report_queue_config_;
+  raw_ptr<ReportQueueConfiguration, DanglingUntriaged> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });

@@ -7,15 +7,17 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
-#include "base/mac/scoped_nsobject.h"
 
-namespace base {
-namespace ios {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace base::ios {
 
 namespace {
 // Iterates through |error|'s underlying errors and returns them in an array.
-NSArray* GetFullErrorChainForError(NSError* error) {
-  NSMutableArray* error_chain = [NSMutableArray array];
+NSArray<NSError*>* GetFullErrorChainForError(NSError* error) {
+  NSMutableArray<NSError*>* error_chain = [NSMutableArray array];
   NSError* current_error = error;
   while (current_error) {
     DCHECK([current_error isKindOfClass:[NSError class]]);
@@ -28,20 +30,19 @@ NSArray* GetFullErrorChainForError(NSError* error) {
 
 NSError* GetFinalUnderlyingErrorFromError(NSError* error) {
   DCHECK(error);
-  return [GetFullErrorChainForError(error) lastObject];
+  return GetFullErrorChainForError(error).lastObject;
 }
 
 NSError* ErrorWithAppendedUnderlyingError(NSError* original_error,
                                           NSError* underlying_error) {
   DCHECK(original_error);
   DCHECK(underlying_error);
-  NSArray* error_chain = GetFullErrorChainForError(original_error);
+  NSArray<NSError*>* error_chain = GetFullErrorChainForError(original_error);
   NSError* current_error = underlying_error;
   for (size_t idx = error_chain.count; idx > 0; --idx) {
     NSError* error = error_chain[idx - 1];
-    scoped_nsobject<NSMutableDictionary> user_info(
-        [error.userInfo mutableCopy]);
-    [user_info setObject:current_error forKey:NSUnderlyingErrorKey];
+    NSMutableDictionary* user_info = [error.userInfo mutableCopy];
+    user_info[NSUnderlyingErrorKey] = current_error;
     current_error = [NSError errorWithDomain:error.domain
                                         code:error.code
                                     userInfo:user_info];
@@ -49,5 +50,4 @@ NSError* ErrorWithAppendedUnderlyingError(NSError* original_error,
   return current_error;
 }
 
-}  // namespace ios
-}  // namespace base
+}  // namespace base::ios

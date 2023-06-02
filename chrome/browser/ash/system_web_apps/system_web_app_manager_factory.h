@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -33,7 +33,7 @@ class SystemWebAppManagerFactory : public BrowserContextKeyedServiceFactory {
   static bool IsServiceCreatedForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<SystemWebAppManagerFactory>;
+  friend base::NoDestructor<SystemWebAppManagerFactory>;
   friend class SystemWebAppManager;
 
   SystemWebAppManagerFactory();

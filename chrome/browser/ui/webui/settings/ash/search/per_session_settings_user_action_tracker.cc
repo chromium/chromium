@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/common/pref_names.h"
 
 namespace ash::settings {
 
@@ -32,9 +34,11 @@ void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
 
 }  // namespace
 
-PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker()
+PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker(
+    PrefService* pref_service)
     : metric_start_time_(base::TimeTicks::Now()),
-      window_last_active_timestamp_(base::TimeTicks::Now()) {}
+      window_last_active_timestamp_(base::TimeTicks::Now()),
+      pref_service_(pref_service) {}
 
 PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
   RecordPageActiveTime();
@@ -44,6 +48,19 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
   base::UmaHistogramCounts1000(
       "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
       changed_settings_.size());
+
+  // Record number of unique settings changed in this session.
+  absl::optional<int> total_unique_settings_changed_count =
+      UpdateSettingsPrefTotalUniqueChanged();
+
+  // If the number of total unique setting used increased, flagged by the
+  // optional variable total_unique_settings_changed_count having a value, add
+  // the datapoint to the histogram.
+  if (total_unique_settings_changed_count.has_value()) {
+    base::UmaHistogramCounts1000(
+        "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+        total_unique_settings_changed_count.value());
+  }
 }
 
 void PerSessionSettingsUserActionTracker::RecordPageFocus() {
@@ -95,7 +112,8 @@ void PerSessionSettingsUserActionTracker::RecordSearch() {
 void PerSessionSettingsUserActionTracker::RecordSettingChange(
     absl::optional<chromeos::settings::mojom::Setting> setting) {
   if (setting.has_value()) {
-    changed_settings_.insert(setting.value());
+    changed_settings_.insert(
+        base::NumberToString(static_cast<int>(setting.value())));
   }
   base::TimeTicks now = base::TimeTicks::Now();
 
@@ -140,6 +158,35 @@ void PerSessionSettingsUserActionTracker::ResetMetricsCountersAndTimestamp() {
   num_clicks_since_start_time_ = 0u;
   num_navigations_since_start_time_ = 0u;
   num_searches_since_start_time_ = 0u;
+}
+
+absl::optional<int>
+PerSessionSettingsUserActionTracker::UpdateSettingsPrefTotalUniqueChanged() {
+  // Fetch the dictionary from the pref.
+  base::Value::Dict writeable_dict =
+      pref_service_->GetDict(prefs::kTotalUniqueOsSettingsChanged).Clone();
+  int current_count = writeable_dict.size();
+
+  // Set the dictionary.
+  // Value is a constant 1 since we only want to know which Setting has been
+  // used, not how many times it has been used.
+  constexpr int value = 1;
+  for (const std::string& setting_string : changed_settings_) {
+    if (!writeable_dict.contains(setting_string)) {
+      writeable_dict.Set(setting_string, value);
+    }
+  }
+
+  // Save to pref.
+  int new_count = writeable_dict.size();
+  pref_service_->SetDict(prefs::kTotalUniqueOsSettingsChanged,
+                         std::move(writeable_dict));
+
+  // If the new size of the pref dictionary is the same as before, we do not
+  // want to record that in UMA so we will return a nullopt to flag not to add
+  // to histogram bucket.
+  return current_count == new_count ? absl::nullopt
+                                    : absl::optional<int>{new_count};
 }
 
 }  // namespace ash::settings

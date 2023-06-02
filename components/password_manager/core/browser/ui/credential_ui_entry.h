@@ -104,6 +104,9 @@ struct CredentialUIEntry {
   // The current username.
   std::u16string username;
 
+  // The user's display name, if this is a passkey. Empty otherwise.
+  std::u16string user_display_name;
+
   // The current password.
   std::u16string password;
 

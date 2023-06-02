@@ -25,7 +25,7 @@
 namespace content {
 
 // An implementation of PrivateAggregationManager used for interest group tests
-// that tracks PrivateAggregationBudgetKey::Api::kFledge reports.
+// that tracks PrivateAggregationBudgetKey::Api::kProtectedAudience reports.
 class TestInterestGroupPrivateAggregationManager
     : public PrivateAggregationManager,
       public blink::mojom::PrivateAggregationHost {
@@ -64,7 +64,9 @@ class TestInterestGroupPrivateAggregationManager
   GetLogPrivateAggregationRequestsCallback();
 
   // Returns a per-origin map of reconstructed PrivateAggregationRequests make
-  // from SendHistogramReport() calls.
+  // from SendHistogramReport() calls. Note that the requests will have been
+  // 'unbatched' -- i.e. each contribution will be in a separate report. This is
+  // done for easier equality checks in tests.
   //
   // Clears everything it returns from internal state, so future calls will only
   // return new reports. Calls RunLoop::RunUntilIdle(), since
@@ -77,12 +79,23 @@ class TestInterestGroupPrivateAggregationManager
   std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
   TakeLoggedPrivateAggregationRequests();
 
+  // Resets all internal state to the state just after construction.
+  void Reset();
+
+  void set_allow_multiple_calls_per_origin(bool value) {
+    allow_multiple_calls_per_origin_ = value;
+  }
+
  private:
   void LogPrivateAggregationRequests(
       const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
           private_aggregation_requests);
 
   const url::Origin expected_top_frame_origin_;
+
+  // Whether multiple `SendHistogramReport()` calls are permitted without a call
+  // to `TakePrivateAggregationRequests()` or `Reset()` in between.
+  bool allow_multiple_calls_per_origin_ = false;
 
   // Reports received through `SendHistogramReport()`.
   std::map<url::Origin,

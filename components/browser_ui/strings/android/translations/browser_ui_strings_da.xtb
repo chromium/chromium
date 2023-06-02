@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
-<translation id="4440642537584213025">Udvid <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Gør det nemmere at tilpasse zoom på forskellige websites</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Annuller valg</translation>
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
 <translation id="789180354981963912">Bloker tredjepartscookies i inkognitotilstand:</translation>
+<translation id="7895868624847501462">Denne handling rydder alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="DOMAIN" /> samt alle websites under domænet</translation>
 <translation id="7940722705963108451">Påmind mig</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{Der er <ph name="FPS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="FPS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="FPS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
 <translation id="8324158725704657629">Spørg ikke igen</translation>
+<translation id="8338445138528827481">Denne handling rydder alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Du kan zoome ind eller ud på websites, du besøger</translation>
 <translation id="8372893542064058268">Tillad synkronisering i baggrunden for et bestemt website.</translation>
 <translation id="8376384591331888629">Medtag tredjepartscookies på dette websites</translation>

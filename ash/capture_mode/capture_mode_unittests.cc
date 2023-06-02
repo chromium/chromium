@@ -58,7 +58,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
@@ -131,7 +130,6 @@ using ::ui::mojom::CursorType;
 
 constexpr char kEndRecordingReasonInClamshellHistogramName[] =
     "Ash.CaptureModeController.EndRecordingReason.ClamshellMode";
-constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 
 // Returns true if the software-composited cursor is enabled.
 bool IsCursorCompositingEnabled() {
@@ -139,23 +137,6 @@ bool IsCursorCompositingEnabled() {
       ->window_tree_host_manager()
       ->cursor_window_controller()
       ->is_cursor_compositing_enabled();
-}
-
-const message_center::Notification* GetPreviewNotification() {
-  const message_center::NotificationList::Notifications notifications =
-      message_center::MessageCenter::Get()->GetVisibleNotifications();
-  for (const auto* notification : notifications) {
-    if (notification->id() == kScreenCaptureNotificationId) {
-      return notification;
-    }
-  }
-  return nullptr;
-}
-
-void ClickNotification(absl::optional<int> button_index) {
-  const message_center::Notification* notification = GetPreviewNotification();
-  DCHECK(notification);
-  notification->delegate()->Click(button_index, absl::nullopt);
 }
 
 // Sets up a callback that will be triggered when a capture file (image or
@@ -171,11 +152,6 @@ void SetUpFileDeletionVerifier(base::RunLoop* loop) {
             EXPECT_FALSE(base::PathExists(path));
             loop->Quit();
           }));
-}
-
-void LeaveTabletMode() {
-  TabletModeControllerTestApi test_api;
-  test_api.LeaveTabletMode();
 }
 
 // Defines a capture client observer, that sets the input capture to the window
@@ -356,18 +332,6 @@ class CaptureModeTest : public AshTestBase {
     session_controller->SwitchActiveUser(AccountId::FromUserEmail(kUserEmail));
   }
 
-  base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
-    auto* test_delegate = CaptureModeController::Get()->delegate_for_testing();
-    base::FilePath mount_point_path;
-    EXPECT_TRUE(test_delegate->GetDriveFsMountPointPath(&mount_point_path));
-    base::FilePath folder_on_drive_fs =
-        mount_point_path.Append("root").Append(custom_folder_name);
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    const bool result = base::CreateDirectory(folder_on_drive_fs);
-    EXPECT_TRUE(result);
-    return folder_on_drive_fs;
-  }
-
   void OpenSettingsView() {
     CaptureModeSession* session =
         CaptureModeController::Get()->capture_mode_session();
@@ -409,28 +373,6 @@ class CaptureSessionWidgetClosed {
 
  private:
   base::WeakPtr<views::Widget> widget_;
-};
-
-class CaptureNotificationWaiter : public message_center::MessageCenterObserver {
- public:
-  CaptureNotificationWaiter() {
-    message_center::MessageCenter::Get()->AddObserver(this);
-  }
-  ~CaptureNotificationWaiter() override {
-    message_center::MessageCenter::Get()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // message_center::MessageCenterObserver:
-  void OnNotificationAdded(const std::string& notification_id) override {
-    if (notification_id == kScreenCaptureNotificationId) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
 };
 
 TEST_F(CaptureModeTest, StartStop) {
@@ -4288,7 +4230,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
   base::RunLoop loop;
   SetUpFileDeletionVerifier(&loop);
   const int delete_button = 1;
-  ClickNotification(delete_button);
+  ClickOnNotification(delete_button);
   loop.Run();
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
@@ -4302,7 +4244,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
     waiter.Wait();
   }
   // Click on the notification body. This should take us to the files app.
-  ClickNotification(absl::nullopt);
+  ClickOnNotification(absl::nullopt);
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kFiles, 1);
@@ -4317,7 +4259,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
   }
   const int edit_button = 0;
   // Verify clicking edit on screenshot notification.
-  ClickNotification(edit_button);
+  ClickOnNotification(edit_button);
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kBacklight, 1);
@@ -4698,6 +4640,37 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
 
   StartVideoRecordingImmediately();
   expected_behavior();
+}
+
+// Tests that the capture mode session can be started with the keyboard shortcut
+// 'Ctrl + Shift + Overview' with `kImage` as the default type and `kRegion` as
+// the default source. And the screen recording can be ended with the keyboard
+// shortcut 'Search + Shift + X'.
+TEST_F(CaptureModeTest, KeyboardShortcutTest) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kKeyboardShortcut, 0);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                                      ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  auto* controller = CaptureModeController::Get();
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kRegion);
+  controller->SetType(CaptureModeType::kVideo);
+  controller->SetSource(CaptureModeSource::kFullscreen);
+
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  event_generator->PressAndReleaseKey(ui::VKEY_X,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kKeyboardShortcut, 1);
 }
 
 namespace {

@@ -22,6 +22,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -175,55 +176,66 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
 
   void AddTopRowKey(VivaldiTopRowScanCode scancode,
                     ui::KeyboardCode key_code,
-                    mojom::TopRowKey top_row_key) {
+                    mojom::TopRowKey top_row_key,
+                    ui::TopRowActionKey action_key) {
     top_row_scan_codes_.push_back(scancode);
     top_row_keys_.push_back(top_row_key);
+    action_keys.push_back(action_key);
   }
 
   void PopulateCustomScanCodeSet1() {
     AddTopRowKey(VivaldiTopRowScanCode::kBack, ui::VKEY_F1,
-                 mojom::TopRowKey::kBack);
+                 mojom::TopRowKey::kBack, ui::TopRowActionKey::kBack);
     AddTopRowKey(VivaldiTopRowScanCode::kRefresh, ui::VKEY_F2,
-                 mojom::TopRowKey::kRefresh);
+                 mojom::TopRowKey::kRefresh, ui::TopRowActionKey::kRefresh);
     AddTopRowKey(VivaldiTopRowScanCode::kFullscreen, ui::VKEY_F3,
-                 mojom::TopRowKey::kFullscreen);
+                 mojom::TopRowKey::kFullscreen,
+                 ui::TopRowActionKey::kFullscreen);
     AddTopRowKey(VivaldiTopRowScanCode::kOverview, ui::VKEY_F4,
-                 mojom::TopRowKey::kOverview);
+                 mojom::TopRowKey::kOverview, ui::TopRowActionKey::kOverview);
     AddTopRowKey(VivaldiTopRowScanCode::kScreenshot, ui::VKEY_F5,
-                 mojom::TopRowKey::kScreenshot);
+                 mojom::TopRowKey::kScreenshot,
+                 ui::TopRowActionKey::kScreenshot);
     AddTopRowKey(VivaldiTopRowScanCode::kScreenBrightnessUp, ui::VKEY_F6,
-                 mojom::TopRowKey::kScreenBrightnessUp);
+                 mojom::TopRowKey::kScreenBrightnessUp,
+                 ui::TopRowActionKey::kScreenBrightnessUp);
     AddTopRowKey(VivaldiTopRowScanCode::kScreenBrightnessDown, ui::VKEY_F7,
-                 mojom::TopRowKey::kScreenBrightnessDown);
-    AddTopRowKey(VivaldiTopRowScanCode::kPrivacyScreenToggle, ui::VKEY_F8,
-                 mojom::TopRowKey::kPrivacyScreenToggle);
-    AddTopRowKey(VivaldiTopRowScanCode::kKeyboardBacklightUp, ui::VKEY_F9,
-                 mojom::TopRowKey::kKeyboardBacklightUp);
-    AddTopRowKey(VivaldiTopRowScanCode::kKeyboardBacklightDown, ui::VKEY_F10,
-                 mojom::TopRowKey::kKeyboardBacklightDown);
-    AddTopRowKey(VivaldiTopRowScanCode::kKeyboardBacklightToggle, ui::VKEY_F11,
-                 mojom::TopRowKey::kKeyboardBacklightToggle);
-    AddTopRowKey(VivaldiTopRowScanCode::kNextTrack, ui::VKEY_F12,
-                 mojom::TopRowKey::kNextTrack);
-    AddTopRowKey(VivaldiTopRowScanCode::kPreviousTrack, ui::VKEY_F13,
-                 mojom::TopRowKey::kPreviousTrack);
-    AddTopRowKey(VivaldiTopRowScanCode::kPlayPause, ui::VKEY_F14,
-                 mojom::TopRowKey::kPlayPause);
-    AddTopRowKey(VivaldiTopRowScanCode::kMicrophoneMute, ui::VKEY_F15,
-                 mojom::TopRowKey::kMicrophoneMute);
+                 mojom::TopRowKey::kScreenBrightnessDown,
+                 ui::TopRowActionKey::kScreenBrightnessDown);
+    AddTopRowKey(VivaldiTopRowScanCode::kKeyboardBacklightUp, ui::VKEY_F8,
+                 mojom::TopRowKey::kKeyboardBacklightUp,
+                 ui::TopRowActionKey::kKeyboardBacklightUp);
+    AddTopRowKey(VivaldiTopRowScanCode::kKeyboardBacklightDown, ui::VKEY_F9,
+                 mojom::TopRowKey::kKeyboardBacklightDown,
+                 ui::TopRowActionKey::kKeyboardBacklightDown);
+    AddTopRowKey(VivaldiTopRowScanCode::kKeyboardBacklightToggle, ui::VKEY_F10,
+                 mojom::TopRowKey::kKeyboardBacklightToggle,
+                 ui::TopRowActionKey::kKeyboardBacklightToggle);
+    AddTopRowKey(VivaldiTopRowScanCode::kNextTrack, ui::VKEY_F11,
+                 mojom::TopRowKey::kNextTrack, ui::TopRowActionKey::kNextTrack);
+    AddTopRowKey(VivaldiTopRowScanCode::kPreviousTrack, ui::VKEY_F12,
+                 mojom::TopRowKey::kPreviousTrack,
+                 ui::TopRowActionKey::kPreviousTrack);
+    AddTopRowKey(VivaldiTopRowScanCode::kPlayPause, ui::VKEY_F13,
+                 mojom::TopRowKey::kPlayPause, ui::TopRowActionKey::kPlayPause);
+    AddTopRowKey(VivaldiTopRowScanCode::kMicrophoneMute, ui::VKEY_F14,
+                 mojom::TopRowKey::kMicrophoneMute,
+                 ui::TopRowActionKey::kMicrophoneMute);
 
     device_information.keyboard_scan_codes = top_row_scan_codes_;
   }
 
   void PopulateCustomScanCodeSet2() {
     AddTopRowKey(VivaldiTopRowScanCode::kVolumeMute, ui::VKEY_F1,
-                 mojom::TopRowKey::kVolumeMute);
+                 mojom::TopRowKey::kVolumeMute,
+                 ui::TopRowActionKey::kVolumeMute);
     AddTopRowKey(VivaldiTopRowScanCode::kVolumeDown, ui::VKEY_F2,
-                 mojom::TopRowKey::kVolumeDown);
+                 mojom::TopRowKey::kVolumeDown,
+                 ui::TopRowActionKey::kVolumeDown);
     AddTopRowKey(VivaldiTopRowScanCode::kVolumeUp, ui::VKEY_F3,
-                 mojom::TopRowKey::kVolumeUp);
+                 mojom::TopRowKey::kVolumeUp, ui::TopRowActionKey::kVolumeUp);
     AddTopRowKey(VivaldiTopRowScanCode::kForward, ui::VKEY_F4,
-                 mojom::TopRowKey::kForward);
+                 mojom::TopRowKey::kForward, ui::TopRowActionKey::kForward);
 
     device_information.keyboard_scan_codes = top_row_scan_codes_;
   }
@@ -231,10 +243,22 @@ class VivaldiKeyboardTestBase : public InputDataProviderKeyboardTest {
  protected:
   std::vector<uint32_t> top_row_scan_codes_;
   std::vector<mojom::TopRowKey> top_row_keys_;
+  std::vector<ui::TopRowActionKey> action_keys;
 };
 
 TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesSet1) {
   PopulateCustomScanCodeSet1();
+
+  ui::KeyboardCapability::KeyboardInfo info;
+  info.top_row_scan_codes = top_row_scan_codes_;
+  info.top_row_action_keys = action_keys;
+  info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  info.top_row_layout =
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      ui::KeyboardDevice(device_information.input_device), std::move(info));
+
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
       &device_information, &aux_data_);
 
@@ -249,6 +273,17 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesSet1) {
 
 TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesSet2) {
   PopulateCustomScanCodeSet2();
+
+  ui::KeyboardCapability::KeyboardInfo info;
+  info.top_row_scan_codes = top_row_scan_codes_;
+  info.top_row_action_keys = action_keys;
+  info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  info.top_row_layout =
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      ui::KeyboardDevice(device_information.input_device), std::move(info));
+
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
       &device_information, &aux_data_);
 
@@ -267,23 +302,37 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesWithZeroScanCodes) {
   // Example here:
   // https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/release-firmware/fpmcu-nami/board/taniks/keyboard.c;l=40-42;drc=64643a516e916d94e8956a4beb00df709a3efe21
   AddTopRowKey(VivaldiTopRowScanCode::kBack, ui::VKEY_F1,
-               mojom::TopRowKey::kBack);
+               mojom::TopRowKey::kBack, ui::TopRowActionKey::kBack);
   AddTopRowKey(VivaldiTopRowScanCode::kRefresh, ui::VKEY_F2,
-               mojom::TopRowKey::kRefresh);
+               mojom::TopRowKey::kRefresh, ui::TopRowActionKey::kRefresh);
   // Populate with TK_ABSENT for F3-F5
   top_row_scan_codes_.push_back(0);
+  action_keys.push_back(ui::TopRowActionKey::kNone);
   top_row_scan_codes_.push_back(0);
+  action_keys.push_back(ui::TopRowActionKey::kNone);
   top_row_scan_codes_.push_back(0);
+  action_keys.push_back(ui::TopRowActionKey::kNone);
   AddTopRowKey(VivaldiTopRowScanCode::kFullscreen, ui::VKEY_F6,
-               mojom::TopRowKey::kFullscreen);
+               mojom::TopRowKey::kFullscreen, ui::TopRowActionKey::kFullscreen);
+
+  ui::KeyboardCapability::KeyboardInfo info;
+  info.top_row_scan_codes = top_row_scan_codes_;
+  info.top_row_action_keys = action_keys;
+  info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  info.top_row_layout =
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+      ui::KeyboardDevice(device_information.input_device), std::move(info));
+
   device_information.keyboard_scan_codes = top_row_scan_codes_;
 
   keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
       &device_information, &aux_data_);
 
   // In the input map, we have Back, Refresh, and Fullscreen in the correct
-  // order, but spaced out with a gap from F3-F5. This gap should be removed as
-  // a gap in the input map implies the keys do not exist.
+  // order, but spaced out with a gap from F3-F5. This gap should be removed
+  // as a gap in the input map implies the keys do not exist.
   EXPECT_EQ(0u, aux_data_.top_row_key_scancode_indexes[kBack]);
   EXPECT_EQ(1u, aux_data_.top_row_key_scancode_indexes[kRefresh]);
   EXPECT_EQ(2u, aux_data_.top_row_key_scancode_indexes[kFullscreen]);

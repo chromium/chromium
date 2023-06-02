@@ -24,6 +24,7 @@ extern const char kPolicyVTPMKey[];
 extern const char kPolicyVTPMEnabledKey[];
 extern const char kPolicyVTPMUpdateActionKey[];
 extern const char kPolicyOEMStringsKey[];
+extern const char kPolicyDisplayOrderKey[];
 
 enum class PolicyEnabledState {
   BLOCKED = 0,

@@ -16,7 +16,6 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/component_updater/component_updater_service.h"
-#import "components/component_updater/crl_set_remover.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
@@ -226,9 +225,6 @@ void RegisterComponentsForUpdate() {
   base::FilePath path;
   const bool success = base::PathService::Get(ios::DIR_USER_DATA, &path);
   DCHECK(success);
-  // Clean up any legacy CRLSet on the local disk - CRLSet used to be shipped
-  // as a component on iOS but is not anymore.
-  component_updater::DeleteLegacyCRLSet(path);
   component_updater::DeleteUrlParamFilter(path);
 
   RegisterOnDeviceHeadSuggestComponent(

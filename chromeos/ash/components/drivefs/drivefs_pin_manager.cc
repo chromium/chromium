@@ -272,7 +272,7 @@ Progress& Progress::operator=(const Progress&) = default;
 
 bool Progress::HasEnoughFreeSpace() const {
   // The free space should not go below this limit.
-  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
+  const int64_t margin = int64_t(2) << 30;
   const bool enough = required_space + margin <= free_space;
   LOG_IF(ERROR, !enough) << "Not enough space: Free space "
                          << HumanReadableSize(free_space)
@@ -828,6 +828,7 @@ void PinManager::HandleQueryItem(Id dir_id,
     if (md.shortcut_details->target_lookup_status != LookupStatus::kOk) {
       // The shortcut target is not accessible.
       progress_.skipped_items++;
+      progress_.broken_shortcuts++;
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id)
@@ -841,6 +842,7 @@ void PinManager::HandleQueryItem(Id dir_id,
     if (md.trashed) {
       // The shortcut target is in the trash bin.
       progress_.skipped_items++;
+      progress_.broken_shortcuts++;
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id)

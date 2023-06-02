@@ -42,9 +42,11 @@ PasskeyCredential CreatePasskey(
     std::vector<uint8_t> credential_id = kCredentialId1,
     std::vector<uint8_t> user_id = kUserId1,
     std::string username = kUserName1) {
-  return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone, kRpId,
-                           std::move(credential_id), std::move(user_id),
-                           std::move(username));
+  return PasskeyCredential(
+      PasskeyCredential::Source::kAndroidPhone, PasskeyCredential::RpId(kRpId),
+      PasskeyCredential::CredentialId(std::move(credential_id)),
+      PasskeyCredential::UserId(std::move(user_id)),
+      PasskeyCredential::Username(std::move(username)));
 }
 
 class MockWebAuthnRequestDelegateAndroid

@@ -1170,7 +1170,7 @@ class URLLoaderTest : public testing::Test {
   net::ScopedTestRoot scoped_test_root_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
-  raw_ptr<net::TestNetworkDelegate>
+  raw_ptr<net::TestNetworkDelegate, DanglingUntriaged>
       unowned_test_network_delegate_;  // owned by |url_request_context_|
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   URLLoaderContextForTests url_loader_context_for_tests_;
@@ -6822,6 +6822,7 @@ TEST_F(URLLoaderMockSocketTest,
        CorbDoesNotCloseSocketsWhenResourcesNotBlocked) {
   corb_enabled_ = true;
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -6838,8 +6839,11 @@ TEST_F(URLLoaderMockSocketTest,
       net::MockRead(net::SYNCHRONOUS, 2, "Hello"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator =
@@ -6853,12 +6857,13 @@ TEST_F(URLLoaderMockSocketTest,
   EXPECT_EQ(body, "Hello");
 
   // Socket should still be alive, in the socket pool.
-  EXPECT_TRUE(socket_data.socket());
+  EXPECT_TRUE(socket_data_reads_writes.socket());
 }
 
 TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
   corb_enabled_ = true;
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -6877,8 +6882,11 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator =
@@ -6892,13 +6900,14 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
   EXPECT_TRUE(body.empty());
 
   // Socket should have been destroyed, so it will not be reused.
-  EXPECT_FALSE(socket_data.socket());
+  EXPECT_FALSE(socket_data_reads_writes.socket());
 }
 
 TEST_F(URLLoaderMockSocketTest,
        CorbDoesNotCloseSocketsWhenResourcesNotBlockedAfterSniffingMimeType) {
   corb_enabled_ = true;
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -6916,8 +6925,11 @@ TEST_F(URLLoaderMockSocketTest,
       net::MockRead(net::SYNCHRONOUS, 2, "Not actually JSON"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator =
@@ -6931,12 +6943,13 @@ TEST_F(URLLoaderMockSocketTest,
   EXPECT_EQ("Not actually JSON", body);
 
   // Socket should still be alive, in the socket pool.
-  EXPECT_TRUE(socket_data.socket());
+  EXPECT_TRUE(socket_data_reads_writes.socket());
 }
 
 TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnSniffingMimeType) {
   corb_enabled_ = true;
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -6954,8 +6967,11 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnSniffingMimeType) {
       net::MockRead(net::SYNCHRONOUS, 2, "{\"x\" : 3}"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator =
@@ -6969,7 +6985,7 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnSniffingMimeType) {
   EXPECT_TRUE(body.empty());
 
   // Socket should have been destroyed, so it will not be reused.
-  EXPECT_FALSE(socket_data.socket());
+  EXPECT_FALSE(socket_data_reads_writes.socket());
 }
 
 TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
@@ -6980,6 +6996,7 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -6997,8 +7014,11 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator =
@@ -7010,16 +7030,21 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
   EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, LoadRequest(request));
 
   // Socket should have been destroyed, so it will not be reused.
-  EXPECT_FALSE(socket_data.socket());
+  EXPECT_FALSE(socket_data_reads_writes.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest,
+class URLLoaderMockSocketAuctionOnlyTest
+    : public URLLoaderMockSocketTest,
+      public testing::WithParamInterface<std::string> {};
+
+TEST_P(URLLoaderMockSocketAuctionOnlyTest,
        FetchAuctionOnlySignalsFromRendererClosesSocket) {
   auto client_security_state = NewSecurityState();
   client_security_state->local_network_request_policy =
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -7028,18 +7053,23 @@ TEST_F(URLLoaderMockSocketTest,
                      "User-Agent: \r\n"
                      "Accept-Encoding: gzip, deflate\r\n\r\n"),
   };
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: keep-alive\r\n"
+      "%s"
+      "Content-Type: text/plain\r\n"
+      "Content-Length: 23\r\n\r\n",
+      GetParam().c_str());
   net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1,
-                    "HTTP/1.1 200 OK\r\n"
-                    "Connection: keep-alive\r\n"
-                    "X-FLEDGE-Auction-Only: true\r\n"
-                    "Content-Type: text/plain\r\n"
-                    "Content-Length: 23\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator = url::Origin::Create(url);
@@ -7052,16 +7082,17 @@ TEST_F(URLLoaderMockSocketTest,
                                                       /*is_trusted=*/false));
 
   // Socket should have been destroyed, so it will not be reused.
-  EXPECT_FALSE(socket_data.socket());
+  EXPECT_FALSE(socket_data_reads_writes.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest,
+TEST_P(URLLoaderMockSocketAuctionOnlyTest,
        FetchAuctionOnlySignalsFromBrowserProcessSucceeds) {
   auto client_security_state = NewSecurityState();
   client_security_state->local_network_request_policy =
       mojom::LocalNetworkRequestPolicy::kAllow;
   set_factory_client_security_state(std::move(client_security_state));
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   const net::MockWrite kWrites[] = {
       net::MockWrite(net::SYNCHRONOUS, 0,
                      "GET / HTTP/1.1\r\n"
@@ -7070,18 +7101,23 @@ TEST_F(URLLoaderMockSocketTest,
                      "User-Agent: \r\n"
                      "Accept-Encoding: gzip, deflate\r\n\r\n"),
   };
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: keep-alive\r\n"
+      "%s"
+      "Content-Type: text/plain\r\n"
+      "Content-Length: 23\r\n\r\n",
+      GetParam().c_str());
   net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1,
-                    "HTTP/1.1 200 OK\r\n"
-                    "Connection: keep-alive\r\n"
-                    "X-FLEDGE-Auction-Only: true\r\n"
-                    "Content-Type: text/plain\r\n"
-                    "Content-Length: 23\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
-  net::SequencedSocketData socket_data(kReads, kWrites);
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator = url::Origin::Create(url);
@@ -7091,8 +7127,18 @@ TEST_F(URLLoaderMockSocketTest,
   request.request_initiator = initiator;
   EXPECT_EQ(net::OK,
             LoadRequest(request, /*body=*/nullptr, /*is_trusted=*/true));
-  EXPECT_TRUE(socket_data.socket());
+  EXPECT_TRUE(socket_data_reads_writes.socket());
 }
+
+// TODO(crbug.com/1448564): Remove old names once API users have migrated to new
+// names.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    URLLoaderMockSocketAuctionOnlyTest,
+    testing::Values(
+        "Ad-Auction-Only: true\r\n",
+        "X-FLEDGE-Auction-Only: true\r\n",
+        "Ad-Auction-Only: true\r\nX-FLEDGE-Auction-Only: true\r\n"));
 
 TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
   auto client_security_state = NewSecurityState();
@@ -7100,9 +7146,13 @@ TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
       mojom::LocalNetworkRequestPolicy::kBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
+  net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
   // No data should be read or written. Trying to do so will assert.
-  net::SequencedSocketData socket_data;
-  socket_factory_.AddSocketDataProvider(&socket_data);
+  net::SequencedSocketData socket_data_no_reads_no_writes;
+  net::SequencedSocketData socket_data_connect(
+      kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_no_reads_no_writes);
 
   GURL url("http://origin.test/");
   url::Origin initiator =
@@ -7114,7 +7164,7 @@ TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
 
   // Socket should not be closed, since it can be reused.
-  EXPECT_TRUE(socket_data.socket());
+  EXPECT_TRUE(socket_data_no_reads_no_writes.socket());
 }
 
 TEST_F(URLLoaderTest, WithDnsAliases) {

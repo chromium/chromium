@@ -14,9 +14,7 @@ found in the LICENSE file.
   android:layout_height="wrap_content"
   android:measureAllChildren="false"
   android:inAnimation="@anim/restore_tabs_view_flipper_fade_in"
-  android:outAnimation="@anim/restore_tabs_view_flipper_fade_out" 
-  android:paddingLeft="@dimen/restore_tabs_sheet_padding"
-  android:paddingRight="@dimen/restore_tabs_sheet_padding"
+  android:outAnimation="@anim/restore_tabs_view_flipper_fade_out"
   android:orientation="vertical">
 
     <include

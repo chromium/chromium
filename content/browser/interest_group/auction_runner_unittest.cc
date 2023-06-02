@@ -346,10 +346,10 @@ std::string MakeBidScript(const url::Origin& seller,
       }
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
       // Private aggregation requests with non-reserved event types will only be
       // reported for a winning bidder.
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 10n, value: 20 + bid});
       return result;
     }
@@ -442,8 +442,8 @@ std::string MakeBidScript(const url::Origin& seller,
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + bid});
     }
   )";
@@ -489,11 +489,11 @@ std::string MakeFilteringBidScript(int bid) {
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
 
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "bid-reject-reason"},
                 value: 0,
               });
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "winning-bid"},
                 value: 2,
               });
@@ -528,7 +528,7 @@ std::string MakeConstBidScript(int bid,
   return base::StringPrintf(R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "bid-reject-reason"},
                 value: 123,
               });
@@ -682,10 +682,10 @@ std::string MakeDecisionScript(
         forDebuggingOnly.reportAdAuctionWin(
             buildDebugReportUrl(debugWinReportUrl) + bid);
       }
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       // Private aggregation requests with non-reserved event types in a seller
       // script will not be reported.
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 50n, value: 60});
 
       adMetadata.fromComponentAuction = true;
@@ -694,7 +694,7 @@ std::string MakeDecisionScript(
       // Currency-adjust the bidKey in metadata if needed.
       if (auctionConfig.sellerCurrency && bid !== 0.0)
         adMetadata.bidKey += "0";
-      return {desirability: computeScore(convertedBid ? convertedBid : bid),
+      return {desirability: computeScore(bid),
               incomingBidInSellerCurrency: convertedBid,
               bid: convertedBid,
               // Only allow a component auction when the passed in ad is from
@@ -792,16 +792,11 @@ std::string MakeDecisionScript(
         }
         sendReportTo(sendReportUrl + browserSignals.bid);
       }
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
       // Private aggregation requests with non-reserved event types in seller
       // script will not be reported.
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 70n, value: 80});
-
-      // Convert the bid back into bidder currency if we're covering that.
-      if (auctionConfig.sellerCurrency) {
-        browserSignals.bid /= 10.0;
-      }
 
       return browserSignals;
     }
@@ -858,15 +853,11 @@ std::string MakeAuctionScriptNoReportUrl(
 
 const char kBasicReportResult[] = R"(
   function reportResult(auctionConfig, browserSignals) {
-    privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+    privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
     sendReportTo("https://reporting.example.com/" + browserSignals.bid);
     registerAdBeacon({
       "click": "https://reporting.example.com/" + 2*browserSignals.bid,
     });
-    // Convert the bid back into bidder currency if we're covering that.
-    if (auctionConfig.sellerCurrency) {
-      browserSignals.bid /= 10.0;
-    }
     return browserSignals;
   }
 )";
@@ -875,7 +866,7 @@ std::string MakeAuctionScriptReject2(
     const std::string& reject_reason = "not-available") {
   constexpr char kAuctionScriptRejects2[] = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       if (bid === 2)
         return {desirability: -1, rejectReason: '%s'};
       let convertedBid = auctionConfig.sellerCurrency ? bid * 10 : undefined;
@@ -1585,6 +1576,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // each InterestGroup.
   void StartAuction(const GURL& seller_decision_logic_url,
                     const std::vector<StorageInterestGroup>& bidders) {
+    // Allows multiple auctions to be run in the same test.
+    private_aggregation_manager_.Reset();
+
     auction_complete_ = false;
 
     auto auction_config =
@@ -1971,6 +1965,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 /*scoring_signals_data_version=*/absl::nullopt,
                 /*debug_loss_report_url=*/absl::nullopt,
                 /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+                /*scoring_latency=*/base::TimeDelta(),
+                /*trusted_signals_fetch_latency=*/base::TimeDelta(),
                 /*errors=*/{});
       }
     }
@@ -2743,12 +2739,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Set by UseMockWorkletService(). Non-owning reference to the
   // AuctionProcessManager that will be / has been passed to the
   // InterestGroupManager.
-  raw_ptr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
+  raw_ptr<MockAuctionProcessManager, DanglingUntriaged>
+      mock_auction_process_manager_ = nullptr;
 
   // If StartAuction() created a SameProcessAuctionProcessManager for
   // `auction_process_manager_`, this alises it.
   // Reset by other things that set `auction_process_manager_`.
-  raw_ptr<SameProcessAuctionProcessManager>
+  raw_ptr<SameProcessAuctionProcessManager, DanglingUntriaged>
       same_process_auction_process_manager_ = nullptr;
 
   // The TestInterestGroupManager is recreated and repopulated for each auction.
@@ -2985,7 +2982,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=1"),
+               "bidCurrency=USD&bid=1"),
           ReportWinUrl(/*bid=*/1,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/0,
@@ -2993,7 +2990,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                        /*made_highest_scoring_other_bid=*/false)));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -3142,7 +3139,7 @@ TEST_F(AuctionRunnerTest, Basic) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=1&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=2"),
+               "bidCurrency=USD&bid=2"),
           ReportWinUrl(/*bid=*/2,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/1,
@@ -3209,7 +3206,7 @@ TEST_F(AuctionRunnerTest, Basic) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_TRUE(result_.errors.empty());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -3733,11 +3730,11 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=2"),
+               "bidCurrency=USD&bid=2"),
           GURL("https://component2-report.test/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=2"),
+               "bidCurrency=USD&bid=2"),
           ReportWinUrl(/*bid=*/2,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/0,
@@ -3789,7 +3786,7 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -3807,11 +3804,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 1 + 1000 * inBid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 2 + 1000 * inBid,
       });
@@ -3830,11 +3827,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 12 + 1000 * browserSignals.bid,
       });
@@ -3845,11 +3842,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
     const inOffset = %d;
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 1 + 1000 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 2 + 1000 * bid,
       });
@@ -3872,11 +3869,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 12 + 1000 * browserSignals.bid,
       });
@@ -3909,12 +3906,14 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
+          // Top-level gets a bid of 18USD from the component.
           GURL("https://seller-reporting-50.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=???&"
-               "bidCurrency=CAD&bid=180"),
+               "bidCurrency=USD&bid=18"),
+          // Bid in component is 2USD.
           GURL("https://seller-reporting-20.example.com/"
                "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
-               "bidCurrency=USD&bid=20"),
+               "bidCurrency=USD&bid=2"),
           GURL("https://buyer-reporting.example.com/"
                "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
                "bidCurrency=USD&bid=2")));
@@ -3953,13 +3952,13 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
                   BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2021),
                   // scoreAd(), highest-scoring-other-bid, incoming bid 2
                   BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/2022),
-                  // reportResult(), winning-bid, browserSignals.bid is 20
+                  // reportResult(), winning-bid, browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/20,
-                                                 /*value=*/20031),
+                                                 /*value=*/2031),
                   // reportResult(), highest-scoring-other-bid,
-                  // browserSignals.bid is 20
+                  // browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/10,
-                                                 /*value=*/20032))),
+                                                 /*value=*/2032))),
           testing::Pair(
               kSeller,
               ElementsAreRequests(
@@ -3968,12 +3967,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
                                                  /*value=*/18051),
                   // scoreAd(), highest-scoring-other-bid is 0.
                   BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/18052),
-                  // reportResult(), winning-bid, browserSignals.bid is 180.
+                  // reportResult(), winning-bid, browserSignals.bid is 18.
                   BuildPrivateAggregationRequest(/*bucket=*/180,
-                                                 /*value=*/180061),
+                                                 /*value=*/18061),
                   // reportResult() highest-scoring-other-bid is 0.
                   BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/180062)))));
+                                                 /*value=*/18062)))));
 }
 
 // Test of a component auction where top-level seller and intermediate one use
@@ -3984,11 +3983,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 1 + 1000 * inBid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 2 + 1000 * inBid,
       });
@@ -4007,11 +4006,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 12 + 1000 * browserSignals.bid,
       });
@@ -4022,11 +4021,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
     const inOffset = %d;
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 1 + 1000 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 2 + 1000 * bid,
       });
@@ -4049,11 +4048,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 12 + 1000 * browserSignals.bid,
       });
@@ -4091,12 +4090,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
+          // Component's bid in top-level is 18MXN.
           GURL("https://seller-reporting-60.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=???&"
-               "bidCurrency=CAD&bid=180"),
+               "bidCurrency=MXN&bid=18"),
+          // Buyer's bid in component is 2USD.
           GURL("https://seller-reporting-40.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
-               "bidCurrency=MXN&bid=20"),
+               "bidCurrency=USD&bid=2"),
+          // Winning buyer's bid is 2USD.
           GURL("https://buyer-reporting.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
                "bidCurrency=USD&bid=2")));
@@ -4139,13 +4141,13 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
                   BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2041),
                   // scoreAd(), highest-scoring-other-bid, incoming bid 2
                   BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/2042),
-                  // reportResult(), winning-bid, browserSignals.bid is 20
+                  // reportResult(), winning-bid, browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/20,
-                                                 /*value=*/20051),
+                                                 /*value=*/2051),
                   // reportResult(), highest-scoring-other-bid,
-                  // browserSignals.bid is 20
+                  // browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/20052))),
+                                                 /*value=*/2052))),
           testing::Pair(
               kSeller,
               ElementsAreRequests(
@@ -4162,13 +4164,13 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
                   // on top-level.
                   BuildPrivateAggregationRequest(/*bucket=*/0,
                                                  /*value=*/18062),
-                  // reportResult(), winning-bid, browserSignals.bid is 180.
+                  // reportResult(), winning-bid, browserSignals.bid is 18.
                   BuildPrivateAggregationRequest(/*bucket=*/180,
-                                                 /*value=*/180071),
+                                                 /*value=*/18071),
                   // reportResult() highest-scoring-other-bid is 0, since not
                   // set on top-level.
                   BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/180072)))));
+                                                 /*value=*/18072)))));
 }
 
 // Test of currency handling in a component auction where bid is passed
@@ -4258,7 +4260,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
     const suffix = "%s";
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
         bucket: {baseValue: "bid-reject-reason"},
         value: 123 + bid,
       });
@@ -4371,15 +4373,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   const char kBidScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                           trustedBiddingSignals, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
       if (browserSignals.seller == "https://component.seller1.test") {
-        privateAggregation.reportContributionForEvent(
+        privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 10n, value: 21});
         return {ad: [], bid: 1, render: "https://component1-bid.test/",
                 allowComponentAuction: true};
       }
       if (browserSignals.seller == "https://component.seller2.test") {
-        privateAggregation.reportContributionForEvent(
+        privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 10n, value: 23});
         return {ad: [], bid: 3, render: "https://component2-bid.test/",
                 allowComponentAuction: true};
@@ -4393,8 +4395,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + browserSignals.bid});
     }
   )";
@@ -4403,7 +4405,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // on bid and seller, to make sure correct values are plumbed through.
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       if (auctionConfig.seller == "https://adstuff.publisher1.com")
         return {desirability: 20 + bid, allowComponentAuction: true};
       if (auctionConfig.seller == "https://component.seller2.test")
@@ -4417,7 +4419,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": auctionConfig.seller + "/" + 2*browserSignals.desirability,
       });
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
     }
   )";
 
@@ -4499,7 +4501,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // Bid count should only be incremented by 1.
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://component2-bid.test/"})",
+  EXPECT_EQ(R"({"renderURL":"https://component2-bid.test/"})",
             result_.winning_group_ad_metadata);
   // Currently an interest group participating twice in an auction is counted
   // twice.
@@ -4597,11 +4599,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=1"),
+               "bidCurrency=USD&bid=1"),
           GURL("https://component1-report.test/"
                "?highestScoringOtherBid=2&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=1"),
+               "bidCurrency=USD&bid=1"),
           ReportWinUrl(/*bid=*/1,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/2,
@@ -4650,7 +4652,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -4668,7 +4670,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   const char kBidScript[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
         return {ad: [], bid: 2, render: interestGroup.ads[0].renderURL,
                 allowComponentAuction: true};
       }
@@ -4679,7 +4681,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
     }
   )";
 
@@ -4687,7 +4689,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   // top-level seller signals are null.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       return {desirability: 10, allowComponentAuction: true};
     }
 
@@ -4698,7 +4700,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
         "click": auctionConfig.seller + "/" +
                    (browserSignals.topLevelSellerSignals === null),
       });
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
     }
   )";
 
@@ -4706,7 +4708,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   // value.
   const std::string kTopLevelSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       return {desirability: 10, allowComponentAuction: true};
     }
 
@@ -4715,7 +4717,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       registerAdBeacon({
         "click": auctionConfig.seller + "/" + 2 * browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
       // Note that there's no return value here.
     }
   )";
@@ -4806,7 +4808,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
   // it interpreted the incoming bid as 20 in sellerCurrency.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
               bucket: {baseValue: "bid-reject-reason"},
               value: 123,
       });
@@ -4874,7 +4876,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
       EXPECT_THAT(result_.report_urls,
                   testing::UnorderedElementsAre(
                       GURL("https://buyer-reporting.example.com/2"),
-                      GURL("https://component.seller1.test/20_3"),
+                      GURL("https://component.seller1.test/2_3"),
                       GURL("https://adstuff.publisher1.com/3")));
       EXPECT_THAT(
           result_.ad_beacon_map,
@@ -4886,7 +4888,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
               testing::Pair(
                   ReportingDestination::kComponentSeller,
                   testing::ElementsAre(testing::Pair(
-                      "click", GURL("https://component.seller1.test/40_3")))),
+                      "click", GURL("https://component.seller1.test/4_3")))),
               testing::Pair(
                   ReportingDestination::kBuyer,
                   testing::ElementsAre(testing::Pair(
@@ -5037,7 +5039,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/41)))));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -5137,7 +5139,7 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -5242,7 +5244,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/41)))));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -5362,7 +5364,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(
       result_.errors,
@@ -5530,7 +5532,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors,
               testing::ElementsAre("https://anotheradthing.com/bids.js "
@@ -5767,7 +5769,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -5874,7 +5876,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -5955,7 +5957,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
                                   "Failed to load "
@@ -6047,7 +6049,7 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -6127,7 +6129,7 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -6198,7 +6200,7 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -6276,7 +6278,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
                                   "%s `reportResult` is not a function.",
@@ -6429,7 +6431,7 @@ function reportResult(auctionConfig, browserSignals) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -7986,7 +7988,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
 
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+      EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
                 result_.winning_group_ad_metadata);
       // In the case where no SellerWorklet is available at the start of the
       // auction, the auction is blocked on scoring the ad until the
@@ -8485,6 +8487,8 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   score_ad_params = seller_worklet->WaitForScoreAd();
@@ -8501,6 +8505,8 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   // Finish the auction.
@@ -8754,6 +8760,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
 
     // Finish the auction.
@@ -8784,7 +8792,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre(kBidder2Key));
-    EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+    EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
               result_.winning_group_ad_metadata);
     CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                      .SetNumInterestGroups(2)
@@ -8988,6 +8996,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   // Top-level seller worklet scores the bid.
@@ -9008,6 +9018,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   // Top-level seller worklet returns a report url.
@@ -9200,6 +9212,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
                             /*debug_loss_report_url=*/absl::nullopt,
                             /*debug_win_report_url=*/absl::nullopt,
                             /*pa_requests=*/{},
+                            /*scoring_latency=*/base::TimeDelta(),
+                            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
                             /*errors=*/{});
 
     // The auction fails, because of the bad ComponentAuctionModifiedBidParams.
@@ -9269,6 +9283,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   auction_run_loop_->Run();
@@ -9345,6 +9361,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
               /*scoring_signals_data_version=*/absl::nullopt,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+              /*scoring_latency=*/base::TimeDelta(),
+              /*trusted_signals_fetch_latency=*/base::TimeDelta(),
               /*errors=*/{});
 
       // Finish the auction.
@@ -9370,8 +9388,9 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key));
-      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-                result_.winning_group_ad_metadata);
+      EXPECT_EQ(
+          R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
+          result_.winning_group_ad_metadata);
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
@@ -9457,6 +9476,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
               /*scoring_signals_data_version=*/absl::nullopt,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+              /*scoring_latency=*/base::TimeDelta(),
+              /*trusted_signals_fetch_latency=*/base::TimeDelta(),
               /*errors=*/{});
 
       // Finish the auction.
@@ -9482,8 +9503,9 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key));
-      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-                result_.winning_group_ad_metadata);
+      EXPECT_EQ(
+          R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
+          result_.winning_group_ad_metadata);
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
@@ -9813,6 +9835,8 @@ TEST_F(AuctionRunnerTest, BadScoreAdBidInSellerCurrency) {
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ("Invalid bid_in_seller_currency", TakeBadMessage());
@@ -9860,6 +9884,8 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   // Finish the auction.
@@ -9885,7 +9911,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -9933,6 +9959,8 @@ TEST_F(AuctionRunnerTest, Tie) {
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
 
     // Bidder2 returns a bid, which is then scored.
@@ -9953,6 +9981,8 @@ TEST_F(AuctionRunnerTest, Tie) {
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
     // received the score.
@@ -9980,8 +10010,9 @@ TEST_F(AuctionRunnerTest, Tie) {
       EXPECT_EQ(kBidder1Key, result_.winning_group_id);
       EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
       EXPECT_TRUE(result_.ad_component_descriptors.empty());
-      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-                result_.winning_group_ad_metadata);
+      EXPECT_EQ(
+          R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
+          result_.winning_group_ad_metadata);
     } else {
       seen_bidder2_win = true;
 
@@ -9994,7 +10025,7 @@ TEST_F(AuctionRunnerTest, Tie) {
       EXPECT_EQ(kBidder2Key, result_.winning_group_id);
       EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
       EXPECT_TRUE(result_.ad_component_descriptors.empty());
-      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+      EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
                 result_.winning_group_ad_metadata);
     }
 
@@ -10092,6 +10123,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     /*scoring_signals_data_version=*/absl::nullopt,
                     /*debug_loss_report_url=*/absl::nullopt,
                     /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+                    /*scoring_latency=*/base::TimeDelta(),
+                    /*trusted_signals_fetch_latency=*/base::TimeDelta(),
                     /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment()->RunUntilIdle();
@@ -10110,6 +10143,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     /*debug_loss_report_url=*/absl::nullopt,
                     /*debug_win_report_url=*/absl::nullopt,
                     /*pa_requests=*/{},
+                    /*scoring_latency=*/base::TimeDelta(),
+                    /*trusted_signals_fetch_latency=*/base::TimeDelta(),
                     /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment()->RunUntilIdle();
@@ -10133,12 +10168,12 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
         EXPECT_EQ(kBidder1Key, result_.winning_group_id);
         EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
         EXPECT_EQ(
-            R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
       } else {
         EXPECT_EQ(kBidder2Key, result_.winning_group_id);
         EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
-        EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+        EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
                   result_.winning_group_ad_metadata);
       }
     }
@@ -10395,6 +10430,8 @@ TEST_F(AuctionRunnerTest,
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   // Finish the auction.
@@ -10512,6 +10549,8 @@ TEST_F(AuctionRunnerTest,
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   // Finish the auction.
@@ -11770,6 +11809,8 @@ TEST_F(
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
 
     // Finish the auction.
@@ -11874,8 +11915,8 @@ TEST_F(
   }
 }
 
-// An auction with two successful bids. sendHistogramReport() and
-// reportContributionForEvent() are both called in all of generateBid(),
+// An auction with two successful bids. contributeToHistogram() and
+// contributeToHistogramOnEvent() are both called in all of generateBid(),
 // scoreAd(), reportWin() and reportResult().
 TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
   const char kBidScript[] = R"(
@@ -11883,63 +11924,63 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 10n, value: 20});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 11n, value: 21});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 12n, value: 22});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 100n, value: 200});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 101n, value: 201});
       return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 30n, value: 40});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 31n, value: 41});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 32n, value: 42});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 300n, value: 400});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 301n, value: 401});
     }
   )";
 
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 50n, value: 60});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 51n, value: 61});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 52n, value: 62});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 500n, value: 600});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 501n, value: 601});
       return {desirability: 2 * bid, allowComponentAuction: true};
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 70n, value: 80});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 71n, value: 81});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 72n, value: 82});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 700n, value: 800});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 701n, value: 801});
     }
   )";
@@ -12022,15 +12063,15 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 1.0, offset: 0n},
         value: 1 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0},
         value: 2 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason', offset: 0n},
         value: 3 + 100 * bid,
       });
@@ -12039,16 +12080,16 @@ TEST_F(AuctionRunnerTest,
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0,
                  offset: 0n},
         value: 12 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 13 + 100 * browserSignals.bid,
       });
@@ -12061,15 +12102,15 @@ TEST_F(AuctionRunnerTest,
       if (auctionConfig.sellerCurrency) {
         convertedBid = 10*bid;
       }
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 21 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 22 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 23 + 100 * bid,
       });
@@ -12082,15 +12123,15 @@ TEST_F(AuctionRunnerTest,
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 31 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 32 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 33 + 100 * browserSignals.bid,
       });
@@ -12123,10 +12164,6 @@ TEST_F(AuctionRunnerTest,
     //   kInvalidBid (1).
     // If sellerCurrency is on:
     //   winning-bid is 10, everything else is the same.
-    //
-    // Some things use 100 * browserSignals.bid in their
-    // reportResultcalculation, that's in seller currency, so also needs to be
-    // adjusted.
     int winning_bid = use_seller_currency ? 10 : 1;
 
     EXPECT_THAT(
@@ -12174,10 +12211,10 @@ TEST_F(AuctionRunnerTest,
                     // a supported base value in reportResult().
                     BuildPrivateAggregationRequest(
                         /*bucket=*/winning_bid,
-                        /*value=*/100 * winning_bid + 31),
+                        /*value=*/131),
                     BuildPrivateAggregationRequest(
                         /*bucket=*/0,
-                        /*value=*/100 * winning_bid + 32)))));
+                        /*value=*/132)))));
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   }
 }
@@ -12191,15 +12228,15 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 1.0, offset: 0n},
         value: 1 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0},
         value: 2 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason', offset: 0n},
         value: 3 + 100 * bid,
       });
@@ -12208,16 +12245,16 @@ TEST_F(AuctionRunnerTest,
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0,
                  offset: 0n},
         value: 12 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 13 + 100 * browserSignals.bid,
       });
@@ -12230,15 +12267,15 @@ TEST_F(AuctionRunnerTest,
       if (auctionConfig.sellerCurrency) {
         convertedBid = 10*bid;
       }
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 21 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 22 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 23 + 100 * bid,
       });
@@ -12246,15 +12283,15 @@ TEST_F(AuctionRunnerTest,
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 31 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 32 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 33 + 100 * browserSignals.bid,
       });
@@ -12341,10 +12378,10 @@ TEST_F(AuctionRunnerTest,
                     // a supported base value in reportResult().
                     BuildPrivateAggregationRequest(
                         /*bucket=*/winning_bid,
-                        /*value=*/winning_bid * 100 + 31),
+                        /*value=*/231),
                     BuildPrivateAggregationRequest(
                         /*bucket=*/highest_scoring_other_bid,
-                        /*value=*/winning_bid * 100 + 32)))));
+                        /*value=*/232)))));
   }
 }
 
@@ -12357,15 +12394,15 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(1 + 100 * bid),
         value: {baseValue: 'winning-bid', scale: 1.0, offset: 0},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(2 + 100 * bid),
         value: {baseValue: 'highest-scoring-other-bid', scale: 1.0},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(3 + 100 * bid),
         value: {baseValue: 'bid-reject-reason', offset: 0},
       });
@@ -12374,15 +12411,15 @@ TEST_F(AuctionRunnerTest,
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(11 + 100 * browserSignals.bid),
         value: {baseValue: 'winning-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(12 + 100 * browserSignals.bid),
         value: {baseValue: 'highest-scoring-other-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(13 + 100 * browserSignals.bid),
         value: {baseValue: 'bid-reject-reason'},
       });
@@ -12391,15 +12428,15 @@ TEST_F(AuctionRunnerTest,
 
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(21 + 100 * bid),
         value: {baseValue: 'winning-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(22 + 100 * bid),
         value: {baseValue: 'highest-scoring-other-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(23 + 100 * bid),
         value: {baseValue: 'bid-reject-reason'},
       });
@@ -12408,15 +12445,15 @@ TEST_F(AuctionRunnerTest,
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(31 + 100 * browserSignals.bid),
         value: {baseValue: 'winning-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(32 + 100 * browserSignals.bid),
         value: {baseValue: 'highest-scoring-other-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(33 + 100 * browserSignals.bid),
         value: {baseValue: 'bid-reject-reason'},
       });
@@ -12485,21 +12522,21 @@ TEST_F(AuctionRunnerTest,
 
   const char kBidScript[] = R"(
     const bid = %d;
-    function reportContributionForEvent() {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+    function contributeToHistogramOnEvent() {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 2.1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 2.1, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 0, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 0, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: -1, offset: 20},
       });
       // Bucket overflows due to being negative, so will be clamped to 0.
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -200, offset: 10n},
         value: 1,
       });
@@ -12508,44 +12545,44 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
       return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
     }
   )";
 
   const std::string kSellerScript = R"(
-    function reportContributionForEvent() {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+    function contributeToHistogramOnEvent() {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 2.1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 2.1, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 0, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 0, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: -1, offset: 20},
       });
       // Bucket overflows due to being negative, so will be clamped to 0.
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -200, offset: 10n},
         value: 1,
       });
     }
 
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
       return bid;
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
     }
   )";
 
@@ -12651,6 +12688,8 @@ TEST_F(AuctionRunnerTest,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt,
           std::move(score_ad_1_pa_requests),
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   PrivateAggregationRequests report_win_pa_requests;
@@ -12677,7 +12716,7 @@ TEST_F(AuctionRunnerTest,
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
 
   EXPECT_THAT(
@@ -12716,12 +12755,19 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
     bidder_worklets[i]->SetBiddingLatency(base::Milliseconds(100 * i + 10));
 
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
-        pa_requests;
-    pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        bidder_pa_requests, seller_pa_requests;
+    bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i, auction_worklet::mojom::BaseValue::kScriptRunTime,
         "reserved.always"));
-    pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+    seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i + 10,
+        auction_worklet::mojom::BaseValue::kScriptRunTime, "reserved.always"));
+    bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
         /*bucket=*/100 * i + 1,
+        auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+        "reserved.always"));
+    seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i + 11,
         auction_worklet::mojom::BaseValue::kSignalsFetchTime,
         "reserved.always"));
     bidder_worklets[i]->InvokeGenerateBidCallback(
@@ -12740,7 +12786,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
         /*duration=*/base::Seconds(5),
         /*bidding_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
-        /*debug_win_report_url=*/absl::nullopt, std::move(pa_requests));
+        /*debug_win_report_url=*/absl::nullopt, std::move(bidder_pa_requests));
     auto score_ad_params = seller_worklet->WaitForScoreAd();
     mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
         std::move(score_ad_params.score_ad_client))
@@ -12752,22 +12798,47 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
             /*bid_in_seller_currency=*/absl::nullopt,
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
-            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*debug_win_report_url=*/absl::nullopt,
+            /*pa_requests=*/std::move(seller_pa_requests),
+            /*scoring_latency=*/base::Milliseconds(100 * i + 20),
+            /*trusted_signals_fetch_latency=*/base::Milliseconds(100 * i + 21),
             /*errors=*/{});
   }
+
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      bidder_report_pa_requests, seller_report_pa_requests;
+  bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/50, auction_worklet::mojom::BaseValue::kScriptRunTime,
+      "reserved.always"));
+  seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/60, auction_worklet::mojom::BaseValue::kScriptRunTime,
+      "reserved.always"));
+  bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/51, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+      "reserved.always"));
+  seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/61, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+      "reserved.always"));
 
   // Need to flush the service pipe to make sure the AuctionRunner has
   // received the score.
   seller_worklet->Flush();
   seller_worklet->WaitForReportResult();
-  seller_worklet->InvokeReportResultCallback();
+  seller_worklet->SetReportingLatency(base::Milliseconds(200));
+  seller_worklet->InvokeReportResultCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, std::move(seller_report_pa_requests));
   mock_auction_process_manager_->WaitForWinningBidderReload();
   auto winning_bidder_worklet =
       mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
   ASSERT_TRUE(winning_bidder_worklet);
   winning_bidder_worklet->WaitForReportWin();
-  winning_bidder_worklet->InvokeReportWinCallback();
+  winning_bidder_worklet->SetReportingLatency(base::Milliseconds(250));
+  winning_bidder_worklet->InvokeReportWinCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, std::move(bidder_report_pa_requests));
   auction_run_loop_->Run();
+
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
       testing::UnorderedElementsAre(
@@ -12777,12 +12848,239 @@ TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
                                                                  /*value=*/10),
                                   BuildPrivateAggregationRequest(/*bucket=*/1,
                                                                  /*value=*/1))),
-          testing::Pair(kBidder2,
+          testing::Pair(
+              kBidder2,
+              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                                 /*value=*/110),
+                                  BuildPrivateAggregationRequest(/*bucket=*/101,
+                                                                 /*value=*/101),
+                                  BuildPrivateAggregationRequest(/*bucket=*/50,
+                                                                 /*value=*/250),
+                                  // No signals fetch for reporting, so
+                                  // value = 0.
+                                  BuildPrivateAggregationRequest(/*bucket=*/51,
+                                                                 /*value=*/0))),
+          testing::Pair(kSeller,
                         ElementsAreRequests(
-                            BuildPrivateAggregationRequest(/*bucket=*/100,
-                                                           /*value=*/110),
-                            BuildPrivateAggregationRequest(/*bucket=*/101,
-                                                           /*value=*/101)))));
+                            BuildPrivateAggregationRequest(/*bucket=*/10,
+                                                           /*value=*/20),
+                            BuildPrivateAggregationRequest(/*bucket=*/11,
+                                                           /*value=*/21),
+                            BuildPrivateAggregationRequest(/*bucket=*/110,
+                                                           /*value=*/120),
+                            BuildPrivateAggregationRequest(/*bucket=*/111,
+                                                           /*value=*/121),
+                            BuildPrivateAggregationRequest(/*bucket=*/60,
+                                                           /*value=*/200),
+                            // No signals fetch for reporting, so value = 0.
+                            BuildPrivateAggregationRequest(/*bucket=*/61,
+                                                           /*value=*/0)))));
+}
+
+TEST_F(AuctionRunnerTest, ComponentAuctionPrivateAggregationTimeMetrics) {
+  const int kNumBidders = 2;
+  UseMockWorkletService();
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/false);
+
+  StartStandardAuction();
+  mock_auction_process_manager_->WaitForWorklets(kNumBidders,
+                                                 /*num_sellers=*/2);
+
+  auto component_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  ASSERT_TRUE(component_seller_worklet);
+
+  auto top_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kSellerUrl);
+  ASSERT_TRUE(top_seller_worklet);
+
+  std::unique_ptr<MockBidderWorklet> bidder_worklets[2];
+  bidder_worklets[0] =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder_worklets[1] =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+
+  for (int i = 0; i < kNumBidders; ++i) {
+    ASSERT_TRUE(bidder_worklets[i]);
+    bidder_worklets[i]->SetBidderTrustedSignalsFetchLatency(
+        base::Milliseconds(100 * i + 1));
+    bidder_worklets[i]->SetBiddingLatency(base::Milliseconds(100 * i + 10));
+
+    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+        bidder_pa_requests, component_seller_pa_requests;
+    bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i, auction_worklet::mojom::BaseValue::kScriptRunTime,
+        "reserved.always"));
+    component_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i + 10,
+        auction_worklet::mojom::BaseValue::kScriptRunTime, "reserved.always"));
+    bidder_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i + 1,
+        auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+        "reserved.always"));
+    component_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i + 11,
+        auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+        "reserved.always"));
+    bidder_worklets[i]->InvokeGenerateBidCallback(
+        i + 1, /*bid_currency=*/absl::nullopt,
+        blink::AdDescriptor(
+            GURL(base::StringPrintf("https://ad%d.com/", i + 1))),
+        auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr(),
+        /*ad_component_descriptors=*/absl::nullopt,
+        /*duration=*/base::Seconds(5),
+        /*bidding_signals_data_version=*/absl::nullopt,
+        /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/absl::nullopt, std::move(bidder_pa_requests));
+
+    auto component_score_ad_params = component_seller_worklet->WaitForScoreAd();
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(component_score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/i + 1,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(),
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt,
+            /*pa_requests=*/std::move(component_seller_pa_requests),
+            /*scoring_latency=*/base::Milliseconds(100 * i + 20),
+            /*trusted_signals_fetch_latency=*/base::Milliseconds(100 * i + 21),
+            /*errors=*/{});
+  }
+
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      top_seller_pa_requests;
+  top_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/20, auction_worklet::mojom::BaseValue::kScriptRunTime,
+      "reserved.always"));
+  top_seller_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/21, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+      "reserved.always"));
+
+  auto top_score_ad_params = top_seller_worklet->WaitForScoreAd();
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(top_score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/1,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          /*pa_requests=*/std::move(top_seller_pa_requests),
+          /*scoring_latency=*/base::Milliseconds(30),
+          /*trusted_signals_fetch_latency=*/base::Milliseconds(31),
+          /*errors=*/{});
+
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      bidder_report_pa_requests, component_seller_report_pa_requests,
+      top_seller_report_pa_requests;
+  bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/50, auction_worklet::mojom::BaseValue::kScriptRunTime,
+      "reserved.always"));
+  component_seller_report_pa_requests.push_back(
+      BuildPrivateAggregationForBaseValue(
+          /*bucket=*/60, auction_worklet::mojom::BaseValue::kScriptRunTime,
+          "reserved.always"));
+  top_seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/70, auction_worklet::mojom::BaseValue::kScriptRunTime,
+      "reserved.always"));
+  bidder_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/51, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+      "reserved.always"));
+  component_seller_report_pa_requests.push_back(
+      BuildPrivateAggregationForBaseValue(
+          /*bucket=*/61, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+          "reserved.always"));
+  top_seller_report_pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+      /*bucket=*/71, auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+      "reserved.always"));
+
+  top_seller_worklet->WaitForReportResult();
+  top_seller_worklet->SetReportingLatency(base::Milliseconds(200));
+  top_seller_worklet->InvokeReportResultCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, std::move(top_seller_report_pa_requests));
+
+  mock_auction_process_manager_->WaitForWinningSellerReload();
+  component_seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+  component_seller_worklet->set_expect_send_pending_signals_requests_called(
+      false);
+  component_seller_worklet->WaitForReportResult();
+  component_seller_worklet->SetReportingLatency(base::Milliseconds(250));
+  component_seller_worklet->InvokeReportResultCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, std::move(component_seller_report_pa_requests));
+
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  auto winning_bidder_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(winning_bidder_worklet);
+  winning_bidder_worklet->WaitForReportWin();
+  winning_bidder_worklet->SetReportingLatency(base::Milliseconds(300));
+  winning_bidder_worklet->InvokeReportWinCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, std::move(bidder_report_pa_requests));
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                                 /*value=*/10),
+                                  BuildPrivateAggregationRequest(/*bucket=*/1,
+                                                                 /*value=*/1))),
+          testing::Pair(
+              kBidder2,
+              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                                 /*value=*/110),
+                                  BuildPrivateAggregationRequest(/*bucket=*/101,
+                                                                 /*value=*/101),
+                                  BuildPrivateAggregationRequest(/*bucket=*/50,
+                                                                 /*value=*/300),
+                                  // No signals fetch for reporting,
+                                  // so value = 0.
+                                  BuildPrivateAggregationRequest(/*bucket=*/51,
+                                                                 /*value=*/0))),
+          testing::Pair(
+              kComponentSeller1,
+              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/10,
+                                                                 /*value=*/20),
+                                  BuildPrivateAggregationRequest(/*bucket=*/11,
+                                                                 /*value=*/21),
+                                  BuildPrivateAggregationRequest(/*bucket=*/110,
+                                                                 /*value=*/120),
+                                  BuildPrivateAggregationRequest(/*bucket=*/111,
+                                                                 /*value=*/121),
+                                  BuildPrivateAggregationRequest(/*bucket=*/60,
+                                                                 /*value=*/250),
+                                  // No signals fetch for reporting,
+                                  // so value = 0.
+                                  BuildPrivateAggregationRequest(/*bucket=*/61,
+                                                                 /*value=*/0))),
+          testing::Pair(kSeller,
+                        ElementsAreRequests(
+                            BuildPrivateAggregationRequest(/*bucket=*/20,
+                                                           /*value=*/30),
+                            BuildPrivateAggregationRequest(/*bucket=*/21,
+                                                           /*value=*/31),
+                            BuildPrivateAggregationRequest(/*bucket=*/70,
+                                                           /*value=*/200),
+                            // No signals fetch for reporting, so value = 0.
+                            BuildPrivateAggregationRequest(/*bucket=*/71,
+                                                           /*value=*/0)))));
 }
 
 TEST_F(AuctionRunnerTest,
@@ -14651,11 +14949,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=40&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=4&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(4), ModeCurrency(),
@@ -14737,11 +15035,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=30&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=40")
+                                        "bidCurrency=USD&bid=4")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=3&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=4"),
+                                        "bidCurrency=USD&bid=4"),
               ReportWinUrl(
                   /*bid=*/4, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(3), ModeCurrency(),
@@ -14800,26 +15098,26 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=1&"
                        "highestScoringOtherBidCurrency=???&"
-                       "bidCurrency=???&bid=3",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec) ||
         base::Contains(result_.report_urls,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=10&"
                        "highestScoringOtherBidCurrency=EUR&"
-                       "bidCurrency=EUR&bid=30",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec)) {
       highest_scoring_other_bid = 1;
     } else if (base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=2&"
                               "highestScoringOtherBidCurrency=???&"
-                              "bidCurrency=???&bid=3",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec) ||
                base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=20&"
                               "highestScoringOtherBidCurrency=EUR&"
-                              "bidCurrency=EUR&bid=30",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
@@ -14905,11 +15203,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=10&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=1&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(1), ModeCurrency(),
@@ -14990,11 +15288,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=20&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=2&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
@@ -15048,26 +15346,26 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=1&"
                        "highestScoringOtherBidCurrency=???&"
-                       "bidCurrency=???&bid=3",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec) ||
         base::Contains(result_.report_urls,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=10&"
                        "highestScoringOtherBidCurrency=EUR&"
-                       "bidCurrency=EUR&bid=30",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec)) {
       highest_scoring_other_bid = 1;
     } else if (base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=2&"
                               "highestScoringOtherBidCurrency=???&"
-                              "bidCurrency=???&bid=3",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec) ||
                base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=20&"
                               "highestScoringOtherBidCurrency=EUR&"
-                              "bidCurrency=EUR&bid=30",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
@@ -15148,11 +15446,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=10&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=1&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(1), ModeCurrency(),
@@ -15233,11 +15531,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=20&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=2&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
@@ -15881,6 +16179,8 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
             /*scoring_signals_data_version=*/absl::nullopt,
             test_case.seller_debug_loss_report_url,
             test_case.seller_debug_win_report_url, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ(test_case.expected_error_message, TakeBadMessage());
@@ -15950,6 +16250,8 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*scoring_signals_data_version=*/absl::nullopt,
           GURL("https://seller-debug-loss-reporting.com/1"),
           GURL("https://seller-debug-win-reporting.com/1"), /*pa_requests=*/{},
+          /*scoring_latency=*/base::TimeDelta(),
+          /*trusted_signals_fetch_latency=*/base::TimeDelta(),
           /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
@@ -15967,7 +16269,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
 
   // Bidder2 lost, but debug_loss_report_urls is empty because bidder2's
@@ -16429,11 +16731,11 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
       std::string(R"(
         function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
-          privateAggregation.reportContributionForEvent("reserved.loss", {
+          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
               bucket: {baseValue: "bid-reject-reason"},
               value: 0,
             });
-          privateAggregation.reportContributionForEvent("reserved.loss", {
+          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
               bucket: {baseValue: "winning-bid"},
               value: 2,
             });
@@ -17573,6 +17875,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
             /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*trusted_signals_fetch_latency=*/base::TimeDelta(),
             /*errors=*/{});
 
     // Finish the auction.

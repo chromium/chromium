@@ -193,6 +193,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
+  VideoColorSpace GetVideoColorSpace() const override;
   absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
@@ -233,7 +234,9 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   };
 
   // Process H264 stream structures.
-  bool ProcessSPS(int sps_id, bool* need_new_buffers);
+  bool ProcessSPS(int sps_id,
+                  bool* need_new_buffers,
+                  bool* color_space_changed);
 
   // Processes a CENCv1 encrypted slice header and fills in |curr_slice_hdr_|
   // with the relevant parsed fields.
@@ -415,6 +418,8 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   uint8_t bit_depth_ = 0;
   // Chroma subsampling format of input bitstream.
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
+  // Video picture color space of input bitstream.
+  VideoColorSpace picture_color_space_;
   // HDR metadata in the bitstream.
   absl::optional<gfx::HDRMetadata> hdr_metadata_;
 

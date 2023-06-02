@@ -13,8 +13,8 @@
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_version.h"
+#include "net/log/net_log_source.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/ssl/ssl_client_cert_type.h"
 #include "services/network/public/mojom/network_param.mojom-shared.h"
 #include "url/mojom/scheme_host_port_mojom_traits.h"
 
@@ -126,15 +126,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    EnumTraits<network::mojom::SSLClientCertType, net::SSLClientCertType> {
-  static network::mojom::SSLClientCertType ToMojom(
-      net::SSLClientCertType scheme);
-  static bool FromMojom(network::mojom::SSLClientCertType scheme,
-                        net::SSLClientCertType* out);
-};
-
-template <>
 class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     StructTraits<network::mojom::SSLCertRequestInfoDataView,
                  scoped_refptr<net::SSLCertRequestInfo>> {
@@ -161,13 +152,30 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     return s->cert_authorities;
   }
 
-  static const std::vector<net::SSLClientCertType>& cert_key_types(
+  static const std::vector<uint16_t>& signature_algorithms(
       const scoped_refptr<net::SSLCertRequestInfo>& s) {
-    return s->cert_key_types;
+    return s->signature_algorithms;
   }
 
   static bool Read(network::mojom::SSLCertRequestInfoDataView data,
                    scoped_refptr<net::SSLCertRequestInfo>* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
+    StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource> {
+  static uint32_t source_id(const net::NetLogSource& params) {
+    return params.id;
+  }
+  static uint32_t source_type(const net::NetLogSource& params) {
+    return static_cast<uint32_t>(params.type);
+  }
+  static base::TimeTicks start_time(const net::NetLogSource& params) {
+    return params.start_time;
+  }
+
+  static bool Read(network::mojom::NetLogSourceDataView data,
+                   net::NetLogSource* out);
 };
 
 }  // namespace mojo

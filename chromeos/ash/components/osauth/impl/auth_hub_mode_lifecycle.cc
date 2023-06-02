@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/string_utils.h"
 
 namespace ash {
 namespace {
@@ -29,6 +30,20 @@ enum class EngineStatus {
   kStopped
 };
 
+std::ostream& operator<<(std::ostream& out, EngineStatus status) {
+  switch (status) {
+#define PRINT(s)           \
+  case EngineStatus::k##s: \
+    return out << #s;
+    PRINT(Starting)
+    PRINT(Started)
+    PRINT(Failed)
+    PRINT(ShuttingDown)
+    PRINT(Stopped)
+#undef PRINT
+  }
+}
+
 }  // namespace
 
 struct AuthHubModeLifecycle::EngineState {
@@ -40,6 +55,8 @@ AuthHubModeLifecycle::AuthHubModeLifecycle(AuthHubModeLifecycle::Owner* owner)
     : owner_(owner) {}
 
 AuthHubModeLifecycle::~AuthHubModeLifecycle() = default;
+
+AuthHubModeLifecycle::Owner::~Owner() = default;
 
 void AuthHubModeLifecycle::SwitchToMode(AuthHubMode target) {
   CHECK_NE(target, AuthHubMode::kNone);
@@ -123,7 +140,7 @@ void AuthHubModeLifecycle::OnInitializationWatchdog() {
   for (auto& engine_state : engines_) {
     if (engine_state.second.status == EngineStatus::kStarting) {
       engine_state.second.status = EngineStatus::kFailed;
-      LOG(ERROR) << "Factor " << static_cast<int>(engine_state.first)
+      LOG(ERROR) << "Factor " << engine_state.first
                  << " did not initialize in time";
       engine_state.second.engine->InitializationTimedOut();
     }
@@ -143,9 +160,8 @@ void AuthHubModeLifecycle::CheckInitializationStatus() {
         break;
       case EngineStatus::kShuttingDown:
       case EngineStatus::kStopped:
-        LOG(FATAL) << "Engine " << static_cast<int>(engine_state.first)
-                   << " is in invalid state "
-                   << static_cast<int>(engine_state.second.status);
+        LOG(FATAL) << "Engine " << engine_state.first << " is in invalid state "
+                   << engine_state.second.status;
     }
   }
   if (all_initialized) {
@@ -203,7 +219,7 @@ void AuthHubModeLifecycle::OnShutdownWatchdog() {
   for (auto& engine_state : engines_) {
     if (engine_state.second.status == EngineStatus::kShuttingDown) {
       engine_state.second.status = EngineStatus::kFailed;
-      LOG(ERROR) << "Factor " << static_cast<int>(engine_state.first)
+      LOG(ERROR) << "Factor " << engine_state.first
                  << " did not shut down in time";
       engine_state.second.engine->ShutdownTimedOut();
     }
@@ -225,9 +241,8 @@ void AuthHubModeLifecycle::CheckShutdownStatus() {
         break;
       case EngineStatus::kStarting:
       case EngineStatus::kStarted:
-        LOG(FATAL) << "Engine " << static_cast<int>(engine_state.first)
-                   << " is in invalid state "
-                   << static_cast<int>(engine_state.second.status);
+        LOG(FATAL) << "Engine " << engine_state.first << " is in invalid state "
+                   << engine_state.second.status;
     }
   }
 
@@ -252,9 +267,16 @@ bool AuthHubModeLifecycle::IsReady() {
   return stage_ == Stage::kStarted;
 }
 
-AuthHubModeLifecycle::EnginesMap AuthHubModeLifecycle::GetAvailableEngines() {
+AuthHubMode AuthHubModeLifecycle::GetCurrentMode() const {
+  if (stage_ != Stage::kStarted) {
+    return AuthHubMode::kNone;
+  }
+  return mode_;
+}
+
+AuthEnginesMap AuthHubModeLifecycle::GetAvailableEngines() {
   CHECK_EQ(stage_, Stage::kStarted);
-  AuthHubModeLifecycle::EnginesMap result;
+  AuthEnginesMap result;
   for (const auto& engine_state : engines_) {
     if (engine_state.second.status == EngineStatus::kStarted) {
       result[engine_state.first] = engine_state.second.engine.get();

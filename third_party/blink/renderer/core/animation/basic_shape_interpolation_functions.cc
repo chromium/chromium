@@ -179,6 +179,7 @@ enum CircleComponentIndex : unsigned {
   kCircleCenterXIndex,
   kCircleCenterYIndex,
   kCircleRadiusIndex,
+  kCircleHasExplicitCenterIndex,
   kCircleComponentIndexCount,
 };
 
@@ -187,6 +188,8 @@ InterpolationValue ConvertCSSValue(
   auto list = std::make_unique<InterpolableList>(kCircleComponentIndexCount);
   list->Set(kCircleCenterXIndex, ConvertCSSCoordinate(circle.CenterX()));
   list->Set(kCircleCenterYIndex, ConvertCSSCoordinate(circle.CenterY()));
+  list->Set(kCircleHasExplicitCenterIndex,
+            std::make_unique<InterpolableNumber>(!!circle.CenterX()));
 
   std::unique_ptr<InterpolableValue> radius;
   if (!(radius = ConvertCSSRadius(circle.Radius())))
@@ -203,6 +206,8 @@ InterpolationValue ConvertBasicShape(const BasicShapeCircle& circle,
   auto list = std::make_unique<InterpolableList>(kCircleComponentIndexCount);
   list->Set(kCircleCenterXIndex, ConvertCoordinate(circle.CenterX(), zoom));
   list->Set(kCircleCenterYIndex, ConvertCoordinate(circle.CenterY(), zoom));
+  list->Set(kCircleHasExplicitCenterIndex,
+            std::make_unique<InterpolableNumber>(circle.HasExplicitCenter()));
 
   std::unique_ptr<InterpolableValue> radius;
   if (!(radius = ConvertRadius(circle.Radius(), zoom)))
@@ -219,6 +224,8 @@ std::unique_ptr<InterpolableValue> CreateNeutralValue() {
   list->Set(kCircleCenterXIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kCircleCenterYIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kCircleRadiusIndex, CreateNeutralInterpolableRadius());
+  list->Set(kCircleHasExplicitCenterIndex,
+            std::make_unique<InterpolableNumber>(0));
   return std::move(list);
 }
 
@@ -233,6 +240,8 @@ scoped_refptr<BasicShape> CreateBasicShape(
       CreateCoordinate(*list.Get(kCircleCenterYIndex), conversion_data));
   circle->SetRadius(
       CreateRadius(*list.Get(kCircleRadiusIndex), conversion_data));
+  circle->SetHasExplicitCenter(
+      To<InterpolableNumber>(list.Get(kCircleHasExplicitCenterIndex))->Value());
   return circle;
 }
 
@@ -245,6 +254,7 @@ enum EllipseComponentIndex : unsigned {
   kEllipseCenterYIndex,
   kEllipseRadiusXIndex,
   kEllipseRadiusYIndex,
+  kEllipseHasExplicitCenter,
   kEllipseComponentIndexCount,
 };
 
@@ -253,6 +263,8 @@ InterpolationValue ConvertCSSValue(
   auto list = std::make_unique<InterpolableList>(kEllipseComponentIndexCount);
   list->Set(kEllipseCenterXIndex, ConvertCSSCoordinate(ellipse.CenterX()));
   list->Set(kEllipseCenterYIndex, ConvertCSSCoordinate(ellipse.CenterY()));
+  list->Set(kEllipseHasExplicitCenter,
+            std::make_unique<InterpolableNumber>(!!ellipse.CenterX()));
 
   std::unique_ptr<InterpolableValue> radius;
   if (!(radius = ConvertCSSRadius(ellipse.RadiusX())))
@@ -272,6 +284,8 @@ InterpolationValue ConvertBasicShape(const BasicShapeEllipse& ellipse,
   auto list = std::make_unique<InterpolableList>(kEllipseComponentIndexCount);
   list->Set(kEllipseCenterXIndex, ConvertCoordinate(ellipse.CenterX(), zoom));
   list->Set(kEllipseCenterYIndex, ConvertCoordinate(ellipse.CenterY(), zoom));
+  list->Set(kEllipseHasExplicitCenter,
+            std::make_unique<InterpolableNumber>(ellipse.HasExplicitCenter()));
 
   std::unique_ptr<InterpolableValue> radius;
   if (!(radius = ConvertRadius(ellipse.RadiusX(), zoom)))
@@ -292,6 +306,7 @@ std::unique_ptr<InterpolableValue> CreateNeutralValue() {
   list->Set(kEllipseCenterYIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kEllipseRadiusXIndex, CreateNeutralInterpolableRadius());
   list->Set(kEllipseRadiusYIndex, CreateNeutralInterpolableRadius());
+  list->Set(kEllipseHasExplicitCenter, std::make_unique<InterpolableNumber>(0));
   return std::move(list);
 }
 
@@ -308,6 +323,8 @@ scoped_refptr<BasicShape> CreateBasicShape(
       CreateRadius(*list.Get(kEllipseRadiusXIndex), conversion_data));
   ellipse->SetRadiusY(
       CreateRadius(*list.Get(kEllipseRadiusYIndex), conversion_data));
+  ellipse->SetHasExplicitCenter(
+      To<InterpolableNumber>(list.Get(kEllipseHasExplicitCenter))->Value());
   return ellipse;
 }
 

@@ -308,7 +308,10 @@ struct SizeInfo : BaseSizeInfo {
 };
 
 struct DeltaSizeInfo : BaseSizeInfo {
-  DeltaSizeInfo(const SizeInfo* before, const SizeInfo* after);
+  DeltaSizeInfo(const SizeInfo* before_in,
+                const SizeInfo* after_in,
+                const std::vector<std::string>* removed_sources_in,
+                const std::vector<std::string>* added_sources_in);
   ~DeltaSizeInfo() override;
   DeltaSizeInfo(const DeltaSizeInfo&);
   DeltaSizeInfo& operator=(const DeltaSizeInfo&);
@@ -325,6 +328,8 @@ struct DeltaSizeInfo : BaseSizeInfo {
 
   const SizeInfo* before = nullptr;
   const SizeInfo* after = nullptr;
+  const std::vector<std::string>* removed_sources;
+  const std::vector<std::string>* added_sources;
   std::vector<DeltaSymbol> delta_symbols;
   // Symbols created during diffing, e.g. aggregated padding symbols.
   std::deque<Symbol> owned_symbols;
@@ -365,10 +370,11 @@ struct NodeStats {
   DiffStatus GetGlobalDiffStatus() const;
 
   std::map<SectionId, Stat> child_stats;
+  DiffStatus imposed_diff_status = DiffStatus::kUnchanged;
 };
 
 struct TreeNode {
-  TreeNode();
+  explicit TreeNode(ArtifactType artifact_type);
   ~TreeNode();
 
   using CompareFunc =
@@ -378,6 +384,7 @@ struct TreeNode {
                      int depth,
                      Json::Value* out);
 
+  const ArtifactType artifact_type;
   GroupedPath id_path;
   const char* src_path = nullptr;
   const char* component = nullptr;
@@ -388,8 +395,6 @@ struct TreeNode {
   int32_t flags = 0;
   NodeStats node_stats;
   int32_t short_name_index = 0;
-
-  ArtifactType artifact_type = ArtifactType::kSymbol;
 
   std::vector<TreeNode*> children;
   TreeNode* parent = nullptr;

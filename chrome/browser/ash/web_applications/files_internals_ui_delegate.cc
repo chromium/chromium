@@ -216,5 +216,11 @@ void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFilesToOneDrive(
     // Also clear up the timestamp for when files are moved to the Cloud.
     file_manager::file_tasks::SetOfficeFileMovedToOneDrive(profile,
                                                            base::Time());
+    // Spawn the Files app Window so it clears up its localStorage.
+    auto url = ::file_manager::util::GetFileManagerURL().Resolve("");
+    ::ash::SystemAppLaunchParams params;
+    params.url = url;
+    ::ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                   params);
   }
 }

@@ -33,7 +33,8 @@ class OptimizationGuideServiceFactoryTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
     OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
-        ->DoFinalInit();
+        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
+            browser_state_.get()));
 
     ChromeBrowserState* otr_browser_state =
         browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(

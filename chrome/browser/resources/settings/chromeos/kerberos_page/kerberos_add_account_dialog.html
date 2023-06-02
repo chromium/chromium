@@ -93,11 +93,12 @@
       </cr-input>
 
       <div id="rememberPasswordContainer" hidden="[[isGuestMode_]]">
-        <cr-checkbox id="rememberPassword" checked="{{rememberPassword_}}"
-            disabled="[[!rememberPasswordEnabled_]]">
+        <cr-checkbox id="rememberPassword"
+            checked="{{rememberPasswordChecked_}}"
+            disabled="[[!rememberPasswordEnabledByPolicy_]]">
           $i18n{addKerberosAccountRememberPassword}
         </cr-checkbox>
-        <template is="dom-if" if="[[!rememberPasswordEnabled_]]">
+        <template is="dom-if" if="[[!rememberPasswordEnabledByPolicy_]]">
           <cr-policy-indicator id="rememberPasswordPolicyIndicator"
               indicator-type="userPolicy">
           </cr-policy-indicator>

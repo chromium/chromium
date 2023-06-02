@@ -127,7 +127,7 @@ bool MetricReportingManagerDelegateBase::IsAffiliated(Profile* profile) const {
 }
 
 base::TimeDelta MetricReportingManagerDelegateBase::GetInitDelay() const {
-  return InitDelayParam::Get();
+  return kInitialCollectionDelay;
 }
 
 base::TimeDelta MetricReportingManagerDelegateBase::GetInitialUploadDelay()

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 354 tests; 349 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 365 tests; 356 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -323,8 +323,17 @@ PASS Parsing origin: <git+https://github.com/foo/bar> against <about:blank>
 PASS Parsing origin: <urn:ietf:rfc:2648> against <about:blank>
 PASS Parsing origin: <tag:joe@example.org,2001:foo/bar> against <about:blank>
 PASS Parsing origin: <blob:https://example.com:443/> against <about:blank>
+PASS Parsing origin: <blob:http://example.org:88/> against <about:blank>
 PASS Parsing origin: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> against <about:blank>
 PASS Parsing origin: <blob:> against <about:blank>
+PASS Parsing origin: <blob:blob:> against <about:blank>
+PASS Parsing origin: <blob:blob:https://example.org/> against <about:blank>
+PASS Parsing origin: <blob:about:blank> against <about:blank>
+FAIL Parsing origin: <blob:file://host/path> against <about:blank> assert_equals: origin expected "null" but got "file://"
+FAIL Parsing origin: <blob:ftp://host/path> against <about:blank> assert_equals: origin expected "null" but got "ftp://host"
+FAIL Parsing origin: <blob:ws://example.org/> against <about:blank> assert_equals: origin expected "null" but got "ws://example.org"
+FAIL Parsing origin: <blob:wss://example.org/> against <about:blank> assert_equals: origin expected "null" but got "wss://example.org"
+PASS Parsing origin: <blob:http%3a//example.org/> against <about:blank>
 PASS Parsing origin: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 PASS Parsing origin: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 PASS Parsing origin: <https://user:pass[@foo/bar> against <http://example.org>
@@ -363,5 +372,7 @@ PASS Parsing origin: <turn://test/a/../b> against <about:blank>
 PASS Parsing origin: <stun://example.com:8080/pathname?search#hash> against <about:blank>
 PASS Parsing origin: <stun:///test> against <about:blank>
 PASS Parsing origin: <stun://test/a/../b> against <about:blank>
+PASS Parsing origin: <w://x:0> against <about:blank>
+PASS Parsing origin: <west://x:0> against <about:blank>
 Harness: the test ran to completion.
 

@@ -65,7 +65,6 @@ class TestClient {
   zaura_output_manager* aura_output_manager() {
     return globals().aura_output_manager.get();
   }
-  zxdg_shell_v6* xdg_shell_v6() { return globals().xdg_shell_v6.get(); }
   xdg_wm_base* xdg_wm_base() { return globals().xdg_wm_base.get(); }
   zwp_fullscreen_shell_v1* fullscreen_shell() {
     return globals().fullscreen_shell.get();

@@ -245,9 +245,11 @@ class UnifiedAudioDetailedViewControllerTest
 
     views::Slider* slider = unified_slider_view->slider();
     IconButton* slider_button = unified_slider_view->slider_button();
-    // Only the slider is focusable.
-    EXPECT_FALSE(slider_button->IsAccessibilityFocusable());
-    EXPECT_TRUE(slider->IsAccessibilityFocusable());
+    // `slider` is normally focusable, and `slider_button` is accessibility
+    // focusable.
+    EXPECT_TRUE(slider->IsFocusable());
+    EXPECT_FALSE(slider_button->IsFocusable());
+    EXPECT_TRUE(slider_button->IsAccessibilityFocusable());
 
     slider->RequestFocus();
     EXPECT_STREQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),

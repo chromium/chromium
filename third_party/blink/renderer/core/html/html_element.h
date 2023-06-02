@@ -45,7 +45,7 @@ class FormAssociated;
 class HTMLFormElement;
 class HTMLSelectMenuElement;
 class KeyboardEvent;
-class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
+class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
 
 enum TranslateAttributeMode {
   kTranslateAttributeYes,
@@ -66,9 +66,6 @@ enum class PopoverValueType {
   kHint,
   kManual,
 };
-constexpr const char* kPopoverTypeValueAuto = "auto";
-constexpr const char* kPopoverTypeValueHint = "hint";
-constexpr const char* kPopoverTypeValueManual = "manual";
 
 enum class PopoverTriggerAction {
   kNone,
@@ -117,9 +114,9 @@ class CORE_EXPORT HTMLElement : public Element {
 
   String innerText();
   void setInnerText(const String&);
-  V8UnionStringTreatNullAsEmptyStringOrTrustedScript* innerTextForBinding();
+  V8UnionStringLegacyNullToEmptyStringOrTrustedScript* innerTextForBinding();
   virtual void setInnerTextForBinding(
-      const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+      const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
           string_or_trusted_script,
       ExceptionState& exception_state);
   void setOuterText(const String&, ExceptionState&);
@@ -227,7 +224,7 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool IsPotentiallyRenderBlocking() const { return false; }
 
   // Popover API related functions.
-  void UpdatePopoverAttribute(String);
+  void UpdatePopoverAttribute(const AtomicString&);
   bool HasPopoverAttribute() const;
   // The IDL reflections:
   AtomicString popover() const;

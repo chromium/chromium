@@ -414,6 +414,8 @@ class Browser : public TabStripModelObserver,
   }
   CreationSource creation_source() const { return creation_source_; }
 
+  bool is_delete_scheduled() const { return is_delete_scheduled_; }
+
   // |window()| will return NULL if called before |CreateBrowserWindow()|
   // is done.
   BrowserWindow* window() const { return window_; }
@@ -1193,7 +1195,7 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // This Browser's window.
-  raw_ptr<BrowserWindow> window_;
+  raw_ptr<BrowserWindow, DanglingUntriaged> window_;
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;
@@ -1335,6 +1337,10 @@ class Browser : public TabStripModelObserver,
   raw_ptr<Browser> opener_browser_ = nullptr;
 
   WebContentsCollection web_contents_collection_{this};
+
+  // If true, the Browser window has been closed and this will be deleted
+  // shortly (after a PostTask).
+  bool is_delete_scheduled_ = false;
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

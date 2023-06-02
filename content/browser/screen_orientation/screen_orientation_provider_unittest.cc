@@ -85,7 +85,7 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   }
 
  private:
-  raw_ptr<WebContents> fullscreened_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> fullscreened_contents_ = nullptr;
 };
 
 void LockResultCallback(absl::optional<ScreenOrientationLockResult>* out_result,

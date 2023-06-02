@@ -46,8 +46,10 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kRelu,
     kReshape,
     kResample2d,
-    kSoftmax,
     kSigmoid,
+    kSlice,
+    kSoftmax,
+    kSplit,
     kTranspose
   };
 
@@ -123,6 +125,49 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
  private:
   Vector<uint32_t> beginning_padding_;
   Vector<uint32_t> ending_padding_;
+};
+
+class MODULES_EXPORT MLSliceOperator : public MLOperator {
+ public:
+  MLSliceOperator(MLGraphBuilder* builder,
+                  const Vector<uint32_t>& beginning_padding,
+                  const Vector<uint32_t>& ending_padding);
+
+  MLSliceOperator(const MLSliceOperator&) = delete;
+  MLSliceOperator& operator=(const MLSliceOperator&) = delete;
+
+  ~MLSliceOperator();
+
+  const Vector<uint32_t>& Starts() const;
+  const Vector<uint32_t>& Sizes() const;
+
+ private:
+  Vector<uint32_t> starts_;
+  Vector<uint32_t> sizes_;
+};
+
+class MODULES_EXPORT MLSplitOperator : public MLOperator {
+ public:
+  MLSplitOperator(MLGraphBuilder* builder,
+                  const uint32_t splits,
+                  const bindings::DictionaryBase* options = nullptr);
+  MLSplitOperator(MLGraphBuilder* builder,
+                  const Vector<uint32_t>& splits,
+                  const bindings::DictionaryBase* options = nullptr);
+
+  MLSplitOperator(const MLSplitOperator&) = delete;
+  MLSplitOperator& operator=(const MLSplitOperator&) = delete;
+
+  ~MLSplitOperator();
+
+  bool isEvenSplit() const;
+  uint32_t SplitNumber() const;
+  const Vector<uint32_t>& SplitSizes() const;
+
+ private:
+  bool is_even_split_;
+  uint32_t split_number_;
+  Vector<uint32_t> split_sizes_;
 };
 }  // namespace blink
 

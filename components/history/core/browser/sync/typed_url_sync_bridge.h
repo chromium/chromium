@@ -66,7 +66,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
                      bool expired,
                      const std::vector<URLRow>& deleted_rows,
                      const std::set<GURL>& favicon_urls) override;
-  void OnVisitUpdated(const VisitRow& visit) override;
+  void OnVisitUpdated(const VisitRow& visit, VisitUpdateReason reason) override;
   void OnVisitDeleted(const VisitRow& visit) override;
 
   // Must be called after creation and before any operations.

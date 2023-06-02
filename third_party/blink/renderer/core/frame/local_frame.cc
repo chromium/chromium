@@ -1944,13 +1944,12 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   return false;
 }
 
-void LocalFrame::WillPotentiallyStartOutermostMainFrameNavigation(
-    const KURL& url) const {
-  TRACE_EVENT1("navigation",
-               "LocalFrame::WillPotentiallyStartOutermostMainFrameNavigation",
-               "url", url);
+void LocalFrame::MaybeStartOutermostMainFrameNavigation(
+    const Vector<KURL>& urls) const {
+  TRACE_EVENT0("navigation",
+               "LocalFrame::MaybeStartOutermostMainFrameNavigation");
   mojo_handler_->NonAssociatedLocalFrameHostRemote()
-      .WillPotentiallyStartOutermostMainFrameNavigation(url);
+      .MaybeStartOutermostMainFrameNavigation(urls);
 }
 
 ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
@@ -3274,8 +3273,8 @@ void LocalFrame::PostMessageEvent(
   }
 
   message_event->initMessageEvent(
-      "message", false, false, std::move(message.message), source_origin,
-      "" /*lastEventId*/, window, ports, user_activation,
+      event_type_names::kMessage, false, false, std::move(message.message),
+      source_origin, "" /*lastEventId*/, window, ports, user_activation,
       message.delegated_capability);
 
   // If the agent cluster id had a value it means this was locked when it

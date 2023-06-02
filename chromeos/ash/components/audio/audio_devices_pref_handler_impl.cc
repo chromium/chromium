@@ -347,21 +347,6 @@ bool AudioDevicesPrefHandlerImpl::GetAudioOutputAllowedValue() const {
   return local_state_->GetBoolean(prefs::kAudioOutputAllowed);
 }
 
-bool AudioDevicesPrefHandlerImpl::GetSpeakOnMuteDetectionEnabledValue() const {
-  return local_state_->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled);
-}
-
-bool AudioDevicesPrefHandlerImpl::GetShouldShowSpeakOnMuteOptInNudgeValue()
-    const {
-  return local_state_->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge);
-}
-
-void AudioDevicesPrefHandlerImpl::SetShouldShowSpeakOnMuteOptInNudgeValue(
-    bool should_show_opt_in_nudge) {
-  local_state_->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge,
-                           should_show_opt_in_nudge);
-}
-
 void AudioDevicesPrefHandlerImpl::AddAudioPrefObserver(
     AudioPrefObserver* observer) {
   observers_.AddObserver(observer);
@@ -429,13 +414,6 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
       base::BindRepeating(&AudioDevicesPrefHandlerImpl::NotifyAudioPolicyChange,
                           base::Unretained(this));
   pref_change_registrar_.Add(prefs::kAudioOutputAllowed, callback);
-
-  // Observe the change of speak-on-mute detection pref.
-  base::RepeatingClosure speak_on_mute_callback = base::BindRepeating(
-      &AudioDevicesPrefHandlerImpl::NotifySpeakOnMuteDetectionChange,
-      base::Unretained(this));
-  pref_change_registrar_.Add(prefs::kUserSpeakOnMuteDetectionEnabled,
-                             speak_on_mute_callback);
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
@@ -546,12 +524,6 @@ void AudioDevicesPrefHandlerImpl::NotifyAudioPolicyChange() {
     observer.OnAudioPolicyPrefChanged();
 }
 
-void AudioDevicesPrefHandlerImpl::NotifySpeakOnMuteDetectionChange() {
-  for (auto& observer : observers_) {
-    observer.OnSpeakOnMuteDetectionPrefChanged();
-  }
-}
-
 // static
 void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesVolumePercent);
@@ -559,9 +531,6 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
-  registry->RegisterBooleanPref(prefs::kUserSpeakOnMuteDetectionEnabled, false);
-  registry->RegisterBooleanPref(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
-  registry->RegisterIntegerPref(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
 
   // Register the prefs backing the audio muting policies.
   // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome

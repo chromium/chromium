@@ -72,10 +72,6 @@ class AutofillDriver {
   // frame.
   virtual bool IsInAnyMainFrame() const = 0;
 
-  // Returns whether the AutofillDriver instance is associated with a fenced
-  // frame. This can be an active or non-active main frame.
-  virtual bool IsInFencedFrameRoot() const = 0;
-
   // Returns whether the AutofillDriver instance is associated with a
   // prerendered frame.
   virtual bool IsPrerendering() const = 0;
@@ -94,9 +90,9 @@ class AutofillDriver {
   // the last-queried source remembered by `ContentAutofillRouter`.
   virtual void SetShouldSuppressKeyboard(bool suppress) = 0;
 
-  // Triggers a reparse of the new forms in the AutofillAgent. This is necessary
-  // when a form is seen in a child frame and it is not known which form is its
-  // parent.
+  // Triggers a form extraction of the new forms in the AutofillAgent. This is
+  // necessary when a form is seen in a child frame and it is not known which
+  // form is its parent.
   //
   // Generally, this may happen because AutofillAgent is only notified about
   // newly created form control elements, but not about newly created or loaded
@@ -108,16 +104,16 @@ class AutofillDriver {
   // may change the iframe's frame token. Then, the frame token in the parent
   // form's FormData::child_frames may be outdated. When a form is now seen in
   // the child frame, it is not known *which form* in the parent frame is its
-  // parent form. In this scenario, a reparse should be triggered.
-  virtual void TriggerReparse() = 0;
+  // parent form. In this scenario, a form extraction should be triggered.
+  virtual void TriggerFormExtraction() = 0;
 
-  // Triggers a reparse on all frames of the same frame tree. Calls
-  // `trigger_reparse_finished_callback` when all frames reported back being
-  // done. `success == false` indicates that in some frame, a reparse was
-  // triggered while another reparse was ongoing.
-  virtual void TriggerReparseInAllFrames(
+  // Triggers a form_extraction on all frames of the same frame tree. Calls
+  // `form_extraction_finished_callback` when all frames reported back
+  // being done. `success == false` indicates that in some frame, a
+  // form_extraction was triggered while another form_extraction was ongoing.
+  virtual void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool success)>
-          trigger_reparse_finished_callback) = 0;
+          form_extraction_finished_callback) = 0;
 
   // Returns the ax tree id associated with this driver.
   virtual ui::AXTreeID GetAxTreeId() const = 0;

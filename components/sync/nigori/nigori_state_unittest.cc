@@ -4,6 +4,8 @@
 
 #include "components/sync/nigori/nigori_state.h"
 
+#include <vector>
+
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
@@ -91,6 +93,55 @@ TEST(NigoriStateTest, ShouldConvertKeystoreStateToSpecifics) {
   EXPECT_FALSE(specifics.has_custom_passphrase_time());
   EXPECT_FALSE(specifics.has_custom_passphrase_key_derivation_method());
   EXPECT_THAT(specifics.keystore_migration_time(), Eq(TimeToProtoTime(now)));
+}
+
+TEST(NigoriStateTest, ShouldConvertPublicKeyStateToSpecifics) {
+  const std::string kDefaultEncryptionKey = "defaultkey";
+  NigoriState state;
+  const std::string default_encryption_key_name =
+      state.cryptographer->EmplaceKey(kDefaultEncryptionKey,
+                                      KeyDerivationParams::CreateForPbkdf2());
+  state.cryptographer->SelectDefaultEncryptionKey(default_encryption_key_name);
+  const std::vector<uint8_t> key(32, 0xDE);
+  state.public_key = PublicKey::CreateByImport(key);
+  state.key_pair_version = 1;
+
+  NigoriSpecifics specifics = state.ToSpecificsProto();
+
+  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+              testing::ElementsAreArray(key));
+  EXPECT_THAT(specifics.public_key().version(), Eq(1));
+}
+
+TEST(NigoriStateTest, ShouldContainPublicKeyInLocalProto) {
+  const std::string kDefaultEncryptionKey = "defaultkey";
+  NigoriState state;
+  const std::string default_encryption_key_name =
+      state.cryptographer->EmplaceKey(kDefaultEncryptionKey,
+                                      KeyDerivationParams::CreateForPbkdf2());
+  state.cryptographer->SelectDefaultEncryptionKey(default_encryption_key_name);
+  const std::vector<uint8_t> key(32, 0xDE);
+  state.public_key = PublicKey::CreateByImport(key);
+  state.key_pair_version = 1;
+
+  sync_pb::NigoriModel nigori_model = state.ToLocalProto();
+
+  ASSERT_THAT(nigori_model.public_key().x25519_public_key(),
+              testing::ElementsAreArray(key));
+  ASSERT_THAT(nigori_model.public_key().version(), Eq(1));
+}
+
+TEST(NigoriStateTest, ShouldClonePublicKey) {
+  NigoriState state;
+  const std::vector<uint8_t> key(32, 0xDE);
+  state.public_key = PublicKey::CreateByImport(key);
+  state.key_pair_version = 1;
+
+  NigoriState cloned_state = state.Clone();
+
+  EXPECT_THAT(cloned_state.public_key->GetRawPublicKey(),
+              testing::ElementsAreArray(state.public_key->GetRawPublicKey()));
+  EXPECT_EQ(cloned_state.key_pair_version, state.key_pair_version);
 }
 
 }  // namespace

@@ -249,12 +249,9 @@ interface IDBCallbacks {
   SuccessDatabase(pending_associated_remote<IDBDatabase>? pending_database,
                   IDBDatabaseMetadata metadata);
 
-  // Database::Count / DeleteRange
+  // Database::Count
   // Factory::DeleteDatabase
   SuccessInteger(int64 value);
-
-  // Cursor::Continue / Advance
-  Success();
 };
 
 // The IDBDatabaseCallbacks interface is used to notification of events out of
@@ -415,19 +412,20 @@ interface IDBDatabase {
         int64 index_id,
         IDBKeyRange key_range,
         pending_associated_remote<IDBCallbacks> pending_callbacks);
+  // Correlates to IDBObjectStore::delete() and also used by devtools.
   DeleteRange(int64 transaction_id,
               int64 object_store_id,
-              IDBKeyRange key_range,
-              pending_associated_remote<IDBCallbacks> pending_callbacks);
+              IDBKeyRange key_range) => (bool success);
   // Gets the current number of an IndexedDB ObjectStore's key generator. It
   // is implemented in the browser (more priviledged) and handles requests in
   // the renderer process: WebIDBDatabaseImpl::GetKeyGeneratorCurrentNumber()
   GetKeyGeneratorCurrentNumber(int64 transaction_id,
                                int64 object_store_id,
                                pending_associated_remote<IDBCallbacks> pending_callbacks);
+  // Correlates to IDBObjectStore::clear()
   Clear(int64 transaction_id,
-        int64 object_store_id,
-        pending_associated_remote<IDBCallbacks> pending_callbacks);
+        int64 object_store_id) => (bool success);
+  // Correlates to IDBObjectStore::createIndex()
   CreateIndex(int64 transaction_id,
               int64 object_store_id,
               int64 index_id,

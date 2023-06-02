@@ -4,6 +4,7 @@
 
 package org.chromium.components.webauthn;
 
+import android.util.Pair;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Binder;
@@ -26,8 +27,6 @@ import com.google.android.gms.common.internal.ClientSettings;
 import com.google.android.gms.common.internal.GmsClient;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
-
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 
 import java.util.List;
 
@@ -57,7 +56,7 @@ import java.util.List;
  * <p>
  * Here's an example:
  * <pre>
- * Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), false);
+ * Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
  * Parcel args = call.start();
  * Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
  * args.writeStrongBinder(result);
@@ -72,6 +71,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int METHOD_BROWSER_SIGN = 5413;
     public static final int METHOD_BROWSER_ISUVPAA = 5416;
     public static final int METHOD_BROWSER_GETCREDENTIALS = 5430;
+    public static final int METHOD_BROWSER_HYBRID_SIGN = 5442;
 
     public static final int METHOD_APP_REGISTER = 5407;
     public static final int METHOD_APP_SIGN = 5408;
@@ -81,20 +81,9 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int TRANSACTION_SIGN = IBinder.FIRST_CALL_TRANSACTION + 1;
     public static final int TRANSACTION_ISUVPAA = IBinder.FIRST_CALL_TRANSACTION + 2;
     public static final int TRANSACTION_GETCREDENTIALS = IBinder.FIRST_CALL_TRANSACTION + 3;
+    public static final int TRANSACTION_HYBRID_SIGN = IBinder.FIRST_CALL_TRANSACTION + 4;
 
     private static final String TAG = "Fido2ApiCall";
-
-    private static final String APP_DESCRIPTOR =
-            "com.google.android.gms.fido.fido2.internal.regular.IFido2AppService";
-    private static final String APP_CALLBACK_DESCRIPTOR =
-            "com.google.android.gms.fido.fido2.internal.regular.IFido2AppCallbacks";
-    private static final String APP_START_SERVICE_ACTION =
-            "com.google.android.gms.fido.fido2.regular.START";
-    private static final int APP_API_ID = 148;
-    private static final Api.ClientKey<FidoClient> APP_CLIENT_KEY = new Api.ClientKey<>();
-    private static final Api<ApiOptions.NoOptions> APP_API = new Api<>("Fido.FIDO2_API",
-            new FidoClient.Builder(APP_DESCRIPTOR, APP_START_SERVICE_ACTION, APP_API_ID),
-            APP_CLIENT_KEY);
 
     private static final String BROWSER_DESCRIPTOR =
             "com.google.android.gms.fido.fido2.internal.privileged.IFido2PrivilegedService";
@@ -104,33 +93,27 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             "com.google.android.gms.fido.fido2.privileged.START";
     private static final int BROWSER_API_ID = 149;
     private static final Api.ClientKey<FidoClient> BROWSER_CLIENT_KEY = new Api.ClientKey<>();
-    private static final Api<ApiOptions.NoOptions> BROWSER_API =
+    private static final Pair<Api<ApiOptions.NoOptions>, String> BROWSER_API = Pair.create(
             new Api<>("Fido.FIDO2_PRIVILEGED_API",
                     new FidoClient.Builder(
                             BROWSER_DESCRIPTOR, BROWSER_START_SERVICE_ACTION, BROWSER_API_ID),
-                    BROWSER_CLIENT_KEY);
+                    BROWSER_CLIENT_KEY), BROWSER_DESCRIPTOR);
 
-    final boolean mAppMode;
+    private final String mDescriptor;
 
     /**
      * Construct an instance.
      *
      * @param context the Android {@link Context} for the current process.
-     * @param supportLevel Whether this code should use the privileged or non-privileged Play
-     *         Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public Fido2ApiCall(Context context, @WebAuthenticationDelegate.Support int supportLevel) {
-        super(context,
-                supportLevel == WebAuthenticationDelegate.Support.APP ? APP_API : BROWSER_API,
-                ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
-
-        assert supportLevel != WebAuthenticationDelegate.Support.NONE;
-        mAppMode = supportLevel == WebAuthenticationDelegate.Support.APP;
+    public Fido2ApiCall(Context context) {
+        super(context, BROWSER_API.first, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
+        mDescriptor = BROWSER_API.second;
     }
 
     public Parcel start() {
         Parcel p = Parcel.obtain();
-        p.writeInterfaceToken(mAppMode ? APP_DESCRIPTOR : BROWSER_DESCRIPTOR);
+        p.writeInterfaceToken(mDescriptor);
         return p;
     }
 
@@ -239,12 +222,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
 
     public static final class PendingIntentResult
             extends Binder implements Callback<PendingIntent> {
-        private final boolean mAppMode;
         private TaskCompletionSource<PendingIntent> mCompletionSource;
-
-        public PendingIntentResult(Fido2ApiCall call) {
-            mAppMode = call.mAppMode;
-        }
 
         @Override
         public void setCompletionSource(TaskCompletionSource<PendingIntent> cs) {
@@ -255,8 +233,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
-                    data.enforceInterface(
-                            mAppMode ? APP_CALLBACK_DESCRIPTOR : BROWSER_CALLBACK_DESCRIPTOR);
+                    data.enforceInterface(BROWSER_CALLBACK_DESCRIPTOR);
 
                     Status status = null;
                     if (data.readInt() != 0) {

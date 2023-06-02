@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromium ਸਿੰਕ ਤੋਂ ਡਾਟਾ</translation>
 <translation id="1722370509450468186">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ (<ph name="EMAIL" />) ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1736662517232558588">ਸਾਫ਼ ਕੀਤਾ Chromium  ਡਾਟਾ </translation>
-<translation id="177102542580335555">ਤੁਸੀਂ ਇਸ Chromium ਪ੍ਰੋਫਾਈਲ ਲਈ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="1838412507805038478">Chromium ਨੇ ਇਹ ਪੁਸ਼ਟੀ ਕੀਤੀ ਹੈ ਕਿ ਇਸ ਵੈੱਬਸਾਈਟ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="ISSUER" /> ਨੇ ਜਾਰੀ ਕੀਤਾ ਹੈ।</translation>
 <translation id="1843424232666537147">Chromium ਵਿੱਚ ਅਜਿਹੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹਨ, ਜੋ ਤੁਹਾਨੂੰ ਤੁਹਾਡਾ ਇੰਟਰਨੈੱਟ ਡਾਟਾ ਅਤੇ ਇਹ ਵਿਵਸਥਿਤ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦੀਆਂ ਹਨ ਕਿ ਤੁਸੀਂ ਕਿੰਨੀ ਜਲਦੀ ਵੈੱਬ-ਪੰਨੇ ਲੋਡ ਕਰਨ ਕਰ ਸਕਦੇ ਹੋ।
 <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ, ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="3639997914391704523">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ਵੱਲੋਂ Chromium ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਗਈ ਸੀ ਅਤੇ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
+<translation id="3661862315467204831">iOS ਵਿੱਚ Chromium ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ, ਫਿਰ "ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਐਪ" 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ Chromium ਚੁਣੋ।</translation>
 <translation id="372658070733623520">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।</translation>
 <translation id="3805899903892079518">Chromium ਦੀ ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਜਾਂ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੈ। iOS ਸੈਟਿੰਗਾਂ &gt; ਪਰਦੇਦਾਰੀ &gt; ਫ਼ੋਟੋਆਂ ਵਿੱਚ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="3827545470516145620">ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="3955621079070267756">ਕਿਸੇ ਵੀ ਐਪ ਤੋਂ Chrome ਖੋਲ੍ਹੋ</translation>
 <translation id="4043291146360695975">ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="4099085513035183040">Chromium ਬੀਟਾ 'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ</translation>

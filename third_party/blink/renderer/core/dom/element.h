@@ -283,10 +283,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void setAttribute(const QualifiedName&, const String&, ExceptionState&);
 
-  static bool ParseAttributeName(QualifiedName&,
-                                 const AtomicString& namespace_uri,
-                                 const AtomicString& qualified_name,
-                                 ExceptionState&);
+  static absl::optional<QualifiedName> ParseAttributeName(
+      const AtomicString& namespace_uri,
+      const AtomicString& qualified_name,
+      ExceptionState&);
   void setAttributeNS(const AtomicString& namespace_uri,
                       const AtomicString& qualified_name,
                       String value,
@@ -600,11 +600,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   const ComputedStyle* ParentComputedStyle() const;
 
-  // Returns a StyleRecalcChange to be combined with the outer
-  // StyleRecalcChange. This is used to recalculate the style of subsequent
-  // siblings.
-  StyleRecalcChange RecalcStyle(const StyleRecalcChange,
-                                const StyleRecalcContext&);
+  void RecalcStyle(const StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForTraversalRootAncestor();
   void RebuildLayoutTreeForTraversalRootAncestor() {
     RebuildFirstLetterLayoutTree();

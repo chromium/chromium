@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -32,7 +33,7 @@ namespace web_app {
 // reflect a fake network state. This class can be re-used when creating a
 // general dependency wrapper for the web contents system, see
 // http://b/262606416.
-class FakeWebContentsManager {
+class FakeWebContentsManager : public WebContentsManager {
  public:
   // State used to represent a page at a url, which is retrieved through
   // `LoadUrl`, `GetWebAppInstallInfo`, and
@@ -79,10 +80,11 @@ class FakeWebContentsManager {
   };
 
   FakeWebContentsManager();
-  ~FakeWebContentsManager();
+  ~FakeWebContentsManager() override;
 
-  std::unique_ptr<WebAppUrlLoader> CreateUrlLoader();
-  std::unique_ptr<WebAppDataRetriever> CreateDataRetriever();
+  std::unique_ptr<WebAppUrlLoader> CreateUrlLoader() override;
+  std::unique_ptr<WebAppDataRetriever> CreateDataRetriever() override;
+  std::unique_ptr<WebAppIconDownloader> CreateIconDownloader() override;
 
   // Set the behavior for calls to `GetIcons` from wrappers returned by this
   // fake class.
@@ -101,6 +103,7 @@ class FakeWebContentsManager {
 
  private:
   class FakeUrlLoader;
+  class FakeWebAppIconDownloader;
   class FakeWebAppDataRetriever;
 
   std::map<GURL, FakeIconState> icon_state_;

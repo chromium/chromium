@@ -5,6 +5,7 @@
   "rate_limit_max_source_registration_reporting_origins": "100",
   "rate_limit_max_attribution_reporting_origins": "10",
   "rate_limit_max_attributions": "100",
+  "rate_limit_max_reporting_origins_per_source_reporting_site": "1",
   "navigation_source_trigger_data_cardinality": "8",
   "event_source_trigger_data_cardinality": "2",
   "randomized_response_epsilon": "14",

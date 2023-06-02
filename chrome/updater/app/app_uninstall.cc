@@ -39,12 +39,6 @@
 #include "chrome/updater/posix/setup.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1431487): Remove these includes after investigation.
-#include "base/ranges/algorithm.h"
-#include "url/gurl.h"
-#endif
-
 namespace updater {
 namespace {
 
@@ -140,12 +134,6 @@ void AppUninstall::UninstallAll(int reason) {
     // currently-running version of the updater.
     uninstall_data.version = base::Version(kUpdaterVersion);
   }
-// TODO(crbug.com/1431487): Remove this code after investigation.
-#if BUILDFLAG(IS_LINUX)
-  CHECK(base::ranges::none_of(config_->PingUrl(), [](const GURL& url) {
-    return url.DomainIs("update.googleapis.com");
-  })) << "Attempted to send an uninstall ping to non-local server";
-#endif
   update_client::UpdateClientFactory(config_)->SendUninstallPing(
       uninstall_data, reason,
       base::BindOnce(

@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">ข้อมูลจากการซิงค์ Chromium</translation>
 <translation id="1722370509450468186">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี (<ph name="EMAIL" />)</translation>
 <translation id="1736662517232558588">ล้างข้อมูล Chromium แล้ว</translation>
-<translation id="177102542580335555">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานสำหรับโปรไฟล์ Chromium นี้</translation>
 <translation id="1838412507805038478">Chromium ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="1843424232666537147">Chromium มีฟีเจอร์ที่ช่วยให้คุณสามารถจัดการข้อมูลอินเทอร์เน็ตและระดับความเร็วที่คุณสามารถใช้ในการโหลดหน้าเว็บ
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">ลงชื่อเข้าใช้ Chromium ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="3639997914391704523">Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ได้ใช้ Chromium และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
+<translation id="3661862315467204831">เปิดการตั้งค่า Chromium ใน iOS จากนั้นแตะ "แอปเบราว์เซอร์เริ่มต้น" แล้วเลือก Chromium</translation>
 <translation id="372658070733623520">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chromium</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
+<translation id="3827545470516145620">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานในอุปกรณ์นี้</translation>
 <translation id="3955621079070267756">เปิด Chromium จากแอปใดก็ได้</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>

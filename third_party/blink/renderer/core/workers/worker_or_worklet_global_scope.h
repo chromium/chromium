@@ -201,6 +201,12 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
                                    const String& message,
                                    SourceLocation* location);
 
+  // Called when BestEffortServiceWorker(crbug.com/1420517) is enabled.
+  virtual absl::optional<
+      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+  FindRaceNetworkRequestURLLoaderFactory(
+      const base::UnguessableToken& token) = 0;
+
  protected:
   // Sets outside's CSP used for off-main-thread top-level worker script
   // fetch.

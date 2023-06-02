@@ -259,16 +259,16 @@ TEST_F(ValidateBlinkInterestGroupTest,
 TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   // Strings when each field has a bad URL, copied from cc file.
   const char kBadBiddingUrlError[] =
-      "biddingUrl must have the same origin as the InterestGroup owner "
+      "biddingLogicURL must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
   const char kBadBiddingWasmHelperUrlError[] =
-      "biddingWasmHelperUrl must have the same origin as the InterestGroup "
+      "biddingWasmHelperURL must have the same origin as the InterestGroup "
       "owner and have no fragment identifier or embedded credentials.";
   const char kBadUpdateUrlError[] =
-      "updateUrl must have the same origin as the InterestGroup owner "
+      "updateURL must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
   const char kBadTrustedBiddingSignalsUrlError[] =
-      "trustedBiddingSignalsUrl must have the same origin as the "
+      "trustedBiddingSignalsURL must have the same origin as the "
       "InterestGroup owner and have no query string, fragment identifier "
       "or embedded credentials.";
 
@@ -317,7 +317,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         CreateMinimalInterestGroup();
     blink_interest_group->bidding_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"biddingUrl",
+        blink_interest_group, /*expected_error_field_name=*/"biddingLogicURL",
         /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
         /*expected_error=*/kBadBiddingUrlError);
 
@@ -326,7 +326,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
     blink_interest_group->bidding_wasm_helper_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        /*expected_error_field_name=*/"biddingWasmHelperUrl",
+        /*expected_error_field_name=*/"biddingWasmHelperURL",
         /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
         /*expected_error=*/kBadBiddingWasmHelperUrlError);
 
@@ -334,7 +334,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->update_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"updateUrl",
+        blink_interest_group, /*expected_error_field_name=*/"updateURL",
         /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
         /*expected_error=*/kBadUpdateUrlError);
 
@@ -343,7 +343,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
     blink_interest_group->trusted_bidding_signals_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        /*expected_error_field_name=*/"trustedBiddingSignalsUrl",
+        /*expected_error_field_name=*/"trustedBiddingSignalsURL",
         /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
         /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
   }
@@ -355,7 +355,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   blink_interest_group->trusted_bidding_signals_url = rejected_url;
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"trustedBiddingSignalsUrl",
+      /*expected_error_field_name=*/"trustedBiddingSignalsURL",
       /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
       /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
 }

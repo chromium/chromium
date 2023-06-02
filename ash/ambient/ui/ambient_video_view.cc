@@ -65,14 +65,20 @@ AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
   ash_web_view_->Navigate(ambient_video_url);
 
   AddChildView(peripheral_ui_.get());
+  peripheral_ui_->UpdateLeftPaddingToMatchBottom();
+  // Update details label to empty string as details info is not shown for
+  // ambient video.
+  peripheral_ui_->UpdateImageDetails(u"", u"");
   peripheral_ui_jitter_timer_.Start(
       FROM_HERE, kPeripheralUiJitterPeriod, peripheral_ui_.get(),
       &AmbientSlideshowPeripheralUi::UpdateGlanceableInfoPosition);
 }
 
 AmbientVideoView::~AmbientVideoView() {
-  ambient::RecordAmbientModeVideoSmoothness(
-      ash_web_view_.get(), AmbientUiSettings(AmbientTheme::kVideo, video_));
+  AmbientUiSettings ui_settings(AmbientTheme::kVideo, video_);
+  ambient::RecordAmbientModeVideoSessionStatus(ash_web_view_.get(),
+                                               ui_settings);
+  ambient::RecordAmbientModeVideoSmoothness(ash_web_view_.get(), ui_settings);
 }
 
 }  // namespace ash

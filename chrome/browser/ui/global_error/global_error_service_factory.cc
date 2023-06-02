@@ -15,7 +15,8 @@ GlobalErrorService* GlobalErrorServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 GlobalErrorServiceFactory* GlobalErrorServiceFactory::GetInstance() {
-  return base::Singleton<GlobalErrorServiceFactory>::get();
+  static base::NoDestructor<GlobalErrorServiceFactory> instance;
+  return instance.get();
 }
 
 GlobalErrorServiceFactory::GlobalErrorServiceFactory()

@@ -733,7 +733,7 @@ TEST(CreditCardTest, Copy) {
   EXPECT_TRUE(a == b);
 }
 
-struct IsLocalDuplicateOfServerCardTestCase {
+struct IsLocalOrServerDuplicateOfTestCase {
   CreditCard::RecordType first_card_record_type;
   const char* first_card_name;
   const char* first_card_number;
@@ -749,13 +749,13 @@ struct IsLocalDuplicateOfServerCardTestCase {
   const char* second_billing_address_id;
   const char* second_card_issuer_network;
 
-  bool is_local_duplicate;
+  bool is_local_or_server_duplicate;
 };
 
-class IsLocalDuplicateOfServerCardTest
-    : public testing::TestWithParam<IsLocalDuplicateOfServerCardTestCase> {};
+class IsLocalOrServerDuplicateOfTest
+    : public testing::TestWithParam<IsLocalOrServerDuplicateOfTestCase> {};
 
-TEST_P(IsLocalDuplicateOfServerCardTest, IsLocalDuplicateOfServerCard) {
+TEST_P(IsLocalOrServerDuplicateOfTest, IsLocalOrServerDuplicateOf) {
   auto test_case = GetParam();
   CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                std::string());
@@ -776,45 +776,51 @@ TEST_P(IsLocalDuplicateOfServerCardTest, IsLocalDuplicateOfServerCard) {
   if (test_case.second_card_record_type == CreditCard::MASKED_SERVER_CARD)
     b.SetNetworkForMaskedCard(test_case.second_card_issuer_network);
 
-  EXPECT_EQ(test_case.is_local_duplicate, a.IsLocalDuplicateOfServerCard(b))
+  EXPECT_EQ(test_case.is_local_or_server_duplicate,
+            a.IsLocalOrServerDuplicateOf(b))
       << " when comparing cards " << a.Label() << " and " << b.Label();
+  // Flipping the checks for the cards to verify the functionality of
+  // IsLocalOrServerDuplicateOf.
+  EXPECT_EQ(test_case.is_local_or_server_duplicate,
+            b.IsLocalOrServerDuplicateOf(a))
+      << " when comparing cards " << b.Label() << " and " << a.Label();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     CreditCardTest,
-    IsLocalDuplicateOfServerCardTest,
+    IsLocalOrServerDuplicateOfTest,
     testing::Values(
-        IsLocalDuplicateOfServerCardTestCase{LOCAL_CARD, "", "", "", "", "",
-                                             LOCAL_CARD, "", "", "", "", "",
-                                             nullptr, false},
-        IsLocalDuplicateOfServerCardTestCase{LOCAL_CARD, "", "", "", "", "",
-                                             FULL_SERVER_CARD, "", "", "", "",
-                                             "", nullptr, true},
-        IsLocalDuplicateOfServerCardTestCase{FULL_SERVER_CARD, "", "", "", "",
-                                             "", FULL_SERVER_CARD, "", "", "",
-                                             "", "", nullptr, false},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{LOCAL_CARD, "", "", "", "", "",
+                                           LOCAL_CARD, "", "", "", "", "",
+                                           nullptr, false},
+        IsLocalOrServerDuplicateOfTestCase{LOCAL_CARD, "", "", "", "", "",
+                                           FULL_SERVER_CARD, "", "", "", "", "",
+                                           nullptr, true},
+        IsLocalOrServerDuplicateOfTestCase{FULL_SERVER_CARD, "", "", "", "", "",
+                                           FULL_SERVER_CARD, "", "", "", "", "",
+                                           nullptr, false},
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "John Dillinger", "423456789012", "01", "2010", "1",
             FULL_SERVER_CARD, "John Dillinger", "423456789012", "01", "2010",
             "1", nullptr, true},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "J Dillinger", "423456789012", "01", "2010", "1",
             FULL_SERVER_CARD, "John Dillinger", "423456789012", "01", "2010",
             "1", nullptr, false},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "", "423456789012", "01", "2010", "1", FULL_SERVER_CARD,
             "John Dillinger", "423456789012", "01", "2010", "1", nullptr, true},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "", "423456789012", "", "", "1", FULL_SERVER_CARD,
             "John Dillinger", "423456789012", "01", "2010", "1", nullptr, true},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "", "423456789012", "", "", "1", MASKED_SERVER_CARD,
             "John Dillinger", "9012", "01", "2010", "1", kVisaCard, true},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "John Dillinger", "4234-5678-9012", "01", "2010", "1",
             FULL_SERVER_CARD, "John Dillinger", "423456789012", "01", "2010",
             "1", nullptr, true},
-        IsLocalDuplicateOfServerCardTestCase{
+        IsLocalOrServerDuplicateOfTestCase{
             LOCAL_CARD, "John Dillinger", "4234-5678-9012", "01", "2010", "1",
             FULL_SERVER_CARD, "John Dillinger", "423456789012", "01", "2010",
             "2", nullptr, false}));

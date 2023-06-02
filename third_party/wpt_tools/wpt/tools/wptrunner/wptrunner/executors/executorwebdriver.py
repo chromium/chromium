@@ -32,6 +32,7 @@ from .protocol import (BaseProtocolPart,
                        WindowProtocolPart,
                        DebugProtocolPart,
                        SPCTransactionsProtocolPart,
+                       FedCMProtocolPart,
                        merge_dicts)
 
 from webdriver.client import Session
@@ -119,13 +120,20 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.webdriver.actions.release()
         handles = [item for item in self.webdriver.handles if item != self.runner_handle]
         for handle in handles:
-            try:
-                self.webdriver.window_handle = handle
-                self.webdriver.window.close()
-            except error.NoSuchWindowException:
-                pass
+            self._close_window(handle)
         self.webdriver.window_handle = self.runner_handle
         return self.runner_handle
+
+    def _close_window(self, window_handle):
+        try:
+            self.webdriver.window_handle = window_handle
+            self.webdriver.window.close()
+        except error.NoSuchWindowException:
+            pass
+
+    def open_test_window(self, window_id):
+        self.webdriver.execute_script(
+            "window.open('about:blank', '%s', 'noopener')" % window_id)
 
     def get_test_window(self, window_id, parent, timeout=5):
         """Find the test window amongst all the open windows.
@@ -150,12 +158,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
                 pass
 
             if test_window is None:
-                after = self.webdriver.handles
-                if len(after) == 2:
-                    test_window = next(iter(set(after) - {parent}))
-                elif after[0] == parent and len(after) > 2:
-                    # Hope the first one here is the test window
-                    test_window = after[1]
+                test_window = self._poll_handles_for_test_window(parent)
 
             if test_window is not None:
                 assert test_window != parent
@@ -164,6 +167,16 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             time.sleep(0.1)
 
         raise Exception("unable to find test window")
+
+    def _poll_handles_for_test_window(self, parent):
+        test_window = None
+        after = self.webdriver.handles
+        if len(after) == 2:
+            test_window = next(iter(set(after) - {parent}))
+        elif after[0] == parent and len(after) > 2:
+            # Hope the first one here is the test window
+            test_window = after[1]
+        return test_window
 
     def test_window_loaded(self):
         """Wait until the page in the new window has been loaded.
@@ -347,6 +360,34 @@ class WebDriverSPCTransactionsProtocolPart(SPCTransactionsProtocolPart):
         return self.webdriver.send_session_command("POST", "secure-payment-confirmation/set-mode", body)
 
 
+class WebDriverFedCMProtocolPart(FedCMProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def cancel_fedcm_dialog(self):
+        return self.webdriver.send_session_command("POST", "fedcm/canceldialog")
+
+    def select_fedcm_account(self, account_index):
+        body = {"accountIndex": account_index}
+        return self.webdriver.send_session_command("POST", "fedcm/selectaccount", body)
+
+    def get_fedcm_account_list(self):
+        return self.webdriver.send_session_command("GET", "fedcm/accountlist")
+
+    def get_fedcm_dialog_title(self):
+        return self.webdriver.send_session_command("GET", "fedcm/gettitle")
+
+    def get_fedcm_dialog_type(self):
+        return self.webdriver.send_session_command("GET", "fedcm/getdialogtype")
+
+    def set_fedcm_delay_enabled(self, enabled):
+        body = {"enabled": enabled}
+        return self.webdriver.send_session_command("POST", "fedcm/setdelayenabled", body)
+
+    def reset_fedcm_cooldown(self):
+        return self.webdriver.send_session_command("POST", "fedcm/resetcooldown")
+
+
 class WebDriverDebugProtocolPart(DebugProtocolPart):
     def load_devtools(self):
         raise NotImplementedError()
@@ -367,6 +408,7 @@ class WebDriverProtocol(Protocol):
                   WebDriverSetPermissionProtocolPart,
                   WebDriverVirtualAuthenticatorProtocolPart,
                   WebDriverSPCTransactionsProtocolPart,
+                  WebDriverFedCMProtocolPart,
                   WebDriverDebugProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
@@ -513,7 +555,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         parent_window = protocol.testharness.close_old_windows()
 
         # Now start the test harness
-        protocol.base.execute_script("window.open('about:blank', '%s', 'noopener')" % self.window_id)
+        protocol.testharness.open_test_window(self.window_id)
         test_window = protocol.testharness.get_test_window(self.window_id,
                                                            parent_window,
                                                            timeout=5*self.timeout_multiplier)

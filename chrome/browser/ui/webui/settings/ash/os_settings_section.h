@@ -180,8 +180,9 @@ class OsSettingsSection {
                                            OsSettingsIdentifier id,
                                            const std::string& url_to_modify);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<SearchTagRegistry, ExperimentalAsh> search_tag_registry_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  const raw_ptr<SearchTagRegistry, ExperimentalAsh> search_tag_registry_ =
+      nullptr;
 };
 
 }  // namespace ash::settings

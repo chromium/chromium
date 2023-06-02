@@ -61,12 +61,9 @@ blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
       return blink::ServiceWorkerStatusCode::kErrorAbort;
     case storage::mojom::ServiceWorkerDatabaseStatus::kErrorStorageDisconnected:
       return blink::ServiceWorkerStatusCode::kErrorStorageDisconnected;
+    case storage::mojom::ServiceWorkerDatabaseStatus::kErrorCorrupted:
+      return blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted;
     default:
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      LOG(ERROR) << "Got unexpected error code: "
-                 << static_cast<uint32_t>(status) << " (See crbug.com/1423325)";
-      base::debug::Alias(&status);
-      base::debug::DumpWithoutCrashing();
       return blink::ServiceWorkerStatusCode::kErrorFailed;
   }
 }

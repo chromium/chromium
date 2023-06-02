@@ -25,5 +25,5 @@ generate_grd("build_grdp") {
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
 }

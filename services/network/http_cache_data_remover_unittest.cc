@@ -179,7 +179,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
   RAW_PTR_EXCLUSION disk_cache::Backend* backend_ = nullptr;
 
  private:
-  raw_ptr<net::HttpCache> cache_;
+  raw_ptr<net::HttpCache, DanglingUntriaged> cache_;
 };
 
 class HttpCacheDataRemoverSplitCacheTest : public HttpCacheDataRemoverTest {

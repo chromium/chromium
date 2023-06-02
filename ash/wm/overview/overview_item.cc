@@ -33,6 +33,7 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
@@ -234,13 +235,6 @@ void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
 
   // `item_widget_` may be null during shutdown if the window is minimized.
   if (item_widget_) {
-    // When a template is being launched, this overview item will be hidden
-    // first so that the library widget fade out animation can take place. Once
-    // the fade out animation is done, the hide will be reverted. Here we need
-    // to make sure header and shadow are sync'ed with the item window.
-    UpdateHeaderLayout(OVERVIEW_ANIMATION_NONE);
-    UpdateRoundedCornersAndShadow();
-
     PerformFadeInLayer(item_widget_->GetLayer(), animate);
   }
 
@@ -395,12 +389,9 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // For non minimized windows, we simply apply the transform and update the
   // header.
   if (!transform_window_.IsMinimized()) {
+    UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
+                                       : new_animation_type);
     SetItemBounds(target_bounds, new_animation_type, is_first_update);
-    // Update header only when the overview item window is visible.
-    if (GetWindow()->IsVisible()) {
-      UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
-                                         : new_animation_type);
-    }
     return;
   }
 
@@ -1236,16 +1227,29 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
           screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
 
   if (chromeos::features::IsJellyrollEnabled()) {
-    // Adjust the `overview_item_bounds` if the window has normal or letter
-    // dimensions type to make sure it's aligned with overview item header view
-    // after the transform.
+    // Adjust the `overview_item_bounds` x position and width if the window has
+    // normal or letter dimensions type to make sure it's aligned with overview
+    // item header view after the transform.
     if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
         transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
       overview_item_bounds.set_x(transformed_bounds.x());
-      // We minus 0.5f here because sometimes the transformed window is a little
-      // bit wider than the header view on the right side.
-      // TODO(b/280085961): Investigate a proper fix for this.
-      overview_item_bounds.set_width(transformed_bounds.width() - 0.5f);
+      overview_item_bounds.set_width(transformed_bounds.width());
+    }
+
+    // Adjust the `overview_item_bounds` y position and height if the window has
+    // normal or pillar dimensions type to make sure there's no gap between the
+    // header and the window and no empty space at the end of the overview item
+    // container.
+    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
+        transform_window_.type() == OverviewGridWindowFillMode::kPillarBoxed) {
+      // The window top bar's target height with the transform.
+      float window_top_inset_target_height =
+          target_bounds.height() / screen_rect.height() * top_view_inset;
+      overview_item_bounds.set_y(
+          overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
+          window_top_inset_target_height);
+      overview_item_bounds.set_height(target_bounds.height() - kHeaderHeightDp +
+                                      window_top_inset_target_height);
     }
   }
 

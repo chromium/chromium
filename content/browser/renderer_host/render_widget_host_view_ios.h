@@ -154,6 +154,15 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void OnTouchEvent(blink::WebTouchEvent event);
   void UpdateNativeViewTree(gfx::NativeView view);
 
+  void InjectTouchEvent(const blink::WebTouchEvent& event,
+                        const ui::LatencyInfo& latency_info);
+  void InjectGestureEvent(const blink::WebGestureEvent& event,
+                          const ui::LatencyInfo& latency_info);
+  void InjectMouseEvent(const blink::WebMouseEvent& web_mouse,
+                        const ui::LatencyInfo& latency_info);
+  void InjectMouseWheelEvent(const blink::WebMouseWheelEvent& web_wheel,
+                             const ui::LatencyInfo& latency_info);
+
   void ImeSetComposition(const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& spans,
                          const gfx::Range& replacement_range,

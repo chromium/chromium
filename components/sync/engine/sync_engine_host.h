@@ -55,6 +55,9 @@ class SyncEngineHost {
 
   // Called when invalidations are enabled or disabled.
   virtual void OnInvalidationStatusChanged() = 0;
+
+  // Called when there are new data types with pending invalidations.
+  virtual void OnNewInvalidatedDataTypes() = 0;
 };
 
 }  // namespace syncer

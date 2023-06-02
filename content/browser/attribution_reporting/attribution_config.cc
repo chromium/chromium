@@ -6,9 +6,21 @@
 
 #include <cmath>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
+
+namespace {
+
+const base::FeatureParam<int> kMaxReportingOriginsPerSiteParam{
+    &blink::features::kConversionMeasurement,
+    "max_reporting_origins_per_source_reporting_site",
+    AttributionConfig::RateLimitConfig::
+        kDefaultMaxReportingOriginsPerSourceReportingSite};
+
+}
 
 bool AttributionConfig::Validate() const {
   if (max_sources_per_origin <= 0) {
@@ -34,6 +46,17 @@ bool AttributionConfig::Validate() const {
   return true;
 }
 
+AttributionConfig::RateLimitConfig::RateLimitConfig()
+    : max_reporting_origins_per_source_reporting_site(
+          kMaxReportingOriginsPerSiteParam.Get()) {
+  if (max_reporting_origins_per_source_reporting_site <= 0) {
+    max_reporting_origins_per_source_reporting_site =
+        kDefaultMaxReportingOriginsPerSourceReportingSite;
+  }
+}
+
+AttributionConfig::RateLimitConfig::~RateLimitConfig() = default;
+
 bool AttributionConfig::RateLimitConfig::Validate() const {
   if (time_window <= base::TimeDelta()) {
     return false;
@@ -48,6 +71,10 @@ bool AttributionConfig::RateLimitConfig::Validate() const {
   }
 
   if (max_attributions <= 0) {
+    return false;
+  }
+
+  if (max_reporting_origins_per_source_reporting_site <= 0) {
     return false;
   }
 
@@ -80,8 +107,15 @@ bool AttributionConfig::EventLevelLimit::Validate() const {
     return false;
   }
 
-  if (first_report_window_deadline < base::TimeDelta() ||
-      second_report_window_deadline <= first_report_window_deadline) {
+  if (first_navigation_report_window_deadline < base::TimeDelta() ||
+      second_navigation_report_window_deadline <=
+          first_navigation_report_window_deadline) {
+    return false;
+  }
+
+  if (first_event_report_window_deadline < base::TimeDelta() ||
+      second_event_report_window_deadline <=
+          first_event_report_window_deadline) {
     return false;
   }
 
@@ -121,5 +155,17 @@ bool AttributionConfig::AggregateLimit::Validate() const {
 
   return true;
 }
+
+AttributionConfig::EventLevelLimit::EventLevelLimit() = default;
+AttributionConfig::EventLevelLimit::EventLevelLimit(const EventLevelLimit&) =
+    default;
+AttributionConfig::EventLevelLimit::EventLevelLimit(EventLevelLimit&&) =
+    default;
+AttributionConfig::EventLevelLimit::~EventLevelLimit() = default;
+
+AttributionConfig::EventLevelLimit&
+AttributionConfig::EventLevelLimit::operator=(const EventLevelLimit&) = default;
+AttributionConfig::EventLevelLimit&
+AttributionConfig::EventLevelLimit::operator=(EventLevelLimit&&) = default;
 
 }  // namespace content

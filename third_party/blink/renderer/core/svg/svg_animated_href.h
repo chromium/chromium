@@ -9,10 +9,12 @@
 
 namespace blink {
 
+class SVGAnimatedPropertyBase;
+
 // This is an "access wrapper" for the 'href' attribute. The object
 // itself holds the value for 'href' in the null/default NS and wraps
-// one for 'href' in the XLink NS. Both objects are added to an
-// SVGElement's property map and hence any updates/synchronization/etc
+// one for 'href' in the XLink NS. Both objects are queryable through
+// PropertyFromAttribute(), and hence any updates/synchronization/etc
 // via the "attribute DOM" (setAttribute and friends) will operate on
 // the independent objects, while users of an 'href' value will be
 // using this interface (which essentially just selects either itself
@@ -33,8 +35,10 @@ class SVGAnimatedHref final : public SVGAnimatedString {
     return SVGAnimatedString::IsSpecified() || xlink_href_->IsSpecified();
   }
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name);
+
   static bool IsKnownAttribute(const QualifiedName&);
-  void AddToPropertyMap(SVGElement*);
 
   void Trace(Visitor*) const override;
 

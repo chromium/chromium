@@ -215,14 +215,22 @@ size_t TextInput::ConfirmCompositionText(bool keep_selection) {
   const auto& [surrounding_text, utf16_offset, cursor_pos, composition] =
       predicted_state;
 
-  if (keep_selection && cursor_pos.IsValid() &&
-      cursor_pos.IsBoundedBy(predicted_state.GetSurroundingTextRange())) {
-    delegate_->SetCursor(surrounding_text,
-                         RemoveOffset(cursor_pos, utf16_offset));
+  if (!(base::FeatureList::IsEnabled(
+            ash::features::kExoExtendedConfirmComposition) &&
+        delegate_->ConfirmComposition(keep_selection))) {
+    // Fallback to SetCursor and Commit if ConfirmComposition is not supported.
+    // TODO(b/265853952): Remove once all versions of Lacros supports
+    // ConfirmComposition.
+    if (keep_selection && cursor_pos.IsValid() &&
+        cursor_pos.IsBoundedBy(predicted_state.GetSurroundingTextRange())) {
+      delegate_->SetCursor(surrounding_text,
+                           RemoveOffset(cursor_pos, utf16_offset));
+    }
+
+    delegate_->Commit(
+        predicted_state.GetCompositionText().value_or(base::StringPiece16()));
   }
 
-  delegate_->Commit(
-      predicted_state.GetCompositionText().value_or(base::StringPiece16()));
   // Preserve the result value before updating the tracker's state.
   const size_t composition_text_length = composition.length();
   surrounding_text_tracker_.OnConfirmCompositionText(keep_selection);

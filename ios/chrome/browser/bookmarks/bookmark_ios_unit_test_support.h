@@ -15,13 +15,15 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
+class Browser;
+class GURL;
+class TestChromeBrowserState;
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
-class Browser;
-class TestChromeBrowserState;
 
 // Provides common bookmark testing infrastructure.
 class BookmarkIOSUnitTestSupport : public PlatformTest {
@@ -34,6 +36,10 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   const bookmarks::BookmarkNode* AddBookmark(
       const bookmarks::BookmarkNode* parent,
       const std::u16string& title);
+  const bookmarks::BookmarkNode* AddBookmark(
+      const bookmarks::BookmarkNode* parent,
+      const std::u16string& title,
+      const GURL& url);
   const bookmarks::BookmarkNode* AddFolder(
       const bookmarks::BookmarkNode* parent,
       const std::u16string& title);
@@ -47,8 +53,8 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  // Bookmark model for the profile storage.
-  bookmarks::BookmarkModel* profile_bookmark_model_;
+  // Bookmark model for the LocalOrSyncable storage.
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_;
   // Bookmark model for the account storage.
   bookmarks::BookmarkModel* account_bookmark_model_;
   bookmarks::ManagedBookmarkService* managed_bookmark_service_;

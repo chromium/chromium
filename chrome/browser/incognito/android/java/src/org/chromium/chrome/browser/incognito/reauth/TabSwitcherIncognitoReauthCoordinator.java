@@ -66,7 +66,7 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
     public void show() {
         prepareToshow(/*menuButtonDelegate= */ null, /*fullscreen= */ false);
         boolean success = mTabSwitcherCustomViewManager.requestView(
-                getIncognitoReauthView(), mBackPressRunnable);
+                getIncognitoReauthView(), mBackPressRunnable, /*clearTabList=*/true);
         assert success : "Unable to signal showing the re-auth screen to tab switcher.";
         mNewTabInteractabilityToken = mIncognitoReauthTopToolbarDelegate.disableNewTabButton();
     }

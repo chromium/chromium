@@ -51,11 +51,10 @@ class PostProcessor {
   // Returns -2 for all kinds of invalid cases.
   int GetIndexOfTopLabel(const proto::PredictionResult& prediction_result);
 
-  // Converts the prediction result into AnnotatedNumericResult usable by
+  // Converts the prediction result into RawResult usable by
   // clients.
-  AnnotatedNumericResult GetAnnotatedNumericResult(
-      const proto::PredictionResult& prediction_result,
-      PredictionStatus status);
+  RawResult GetRawResult(const proto::PredictionResult& prediction_result,
+                         PredictionStatus status);
 
  private:
   std::vector<std::string> GetBinaryClassifierResults(

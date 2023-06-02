@@ -6,12 +6,11 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/values.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 
 #if BUILDFLAG(USE_CUPS)
-#include "printing/backend/cups_ipp_utils.h"
+#include "printing/backend/cups_connection.h"
 #include "printing/backend/print_backend_cups_ipp.h"
 #endif  // BUILDFLAG(USE_CUPS)
 
@@ -77,11 +76,9 @@ bool PrintBackendChromeOS::IsValidPrinter(const std::string& printer_name) {
 
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::Value::Dict* print_backend_settings,
     const std::string& /*locale*/) {
 #if BUILDFLAG(USE_CUPS)
-  return base::MakeRefCounted<PrintBackendCupsIpp>(
-      CreateConnection(print_backend_settings));
+  return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
 #else
   return base::MakeRefCounted<PrintBackendChromeOS>();
 #endif  // BUILDFLAG(USE_CUPS)

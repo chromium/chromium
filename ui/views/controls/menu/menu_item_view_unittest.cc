@@ -27,6 +27,7 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -119,9 +120,9 @@ TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
   // Because all of the submenu's children are hidden, an empty menu item should
   // have been added.
   ASSERT_EQ(3u, submenu->children().size());
-  auto* empty_item = static_cast<MenuItemView*>(submenu->children().front());
+  const auto* empty_item =
+      AsViewClass<EmptyMenuMenuItem>(submenu->children().front());
   ASSERT_TRUE(empty_item);
-  ASSERT_EQ(MenuItemView::kEmptyMenuItemViewID, empty_item->GetID());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
             empty_item->title());
 }
@@ -150,13 +151,13 @@ TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
   // Because all of the submenu's children are hidden, an empty menu item should
   // have been added.
   ASSERT_EQ(3u, submenu->children().size());
-  auto* empty_item = static_cast<MenuItemView*>(submenu->children().front());
+  const auto* empty_item =
+      AsViewClass<EmptyMenuMenuItem>(submenu->children().front());
   ASSERT_TRUE(empty_item);
   // Not allowed to add an duplicated empty menu item
   // if it already has an empty menu item.
   root_menu.AddEmptyMenus();
   ASSERT_EQ(3u, submenu->children().size());
-  ASSERT_EQ(MenuItemView::kEmptyMenuItemViewID, empty_item->GetID());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
             empty_item->title());
 }
@@ -407,7 +408,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  raw_ptr<MenuItemView> menu_item_view_;
+  raw_ptr<MenuItemView, DanglingUntriaged> menu_item_view_;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -648,11 +649,6 @@ class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
  private:
   class DisallowMenuDelegate : public test::TestMenuDelegate {
    public:
-    const gfx::FontList* GetLabelFontList(int command_id) const override {
-      EXPECT_NE(1, command_id);
-      return nullptr;
-    }
-
     absl::optional<SkColor> GetLabelColor(int command_id) const override {
       EXPECT_NE(1, command_id);
       return absl::nullopt;

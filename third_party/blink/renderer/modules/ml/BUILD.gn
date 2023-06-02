@@ -43,6 +43,7 @@ blink_modules_sources("ml") {
   deps = [
     ":buildflags",
     "//components/ml/mojom:mojom_blink",
+    "//components/ml/webnn",
     "//services/webnn/public/mojom:mojom_blink",
   ]
 
@@ -75,6 +76,8 @@ blink_modules_sources("ml") {
       # renderer process.
       "webnn/ml_graph_mojo.cc",
       "webnn/ml_graph_mojo.h",
+      "webnn/ml_graph_type_converter.cc",
+      "webnn/ml_graph_type_converter.h",
     ]
   }
 }

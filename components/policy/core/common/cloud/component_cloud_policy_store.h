@@ -154,7 +154,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
                    std::string* error);
 
   const raw_ptr<Delegate> delegate_;
-  const raw_ptr<ResourceCache> cache_;
+  const raw_ptr<ResourceCache, DanglingUntriaged> cache_;
 
   // The following fields contain credentials used for validating the policy.
   std::string username_;

@@ -186,6 +186,8 @@ TEST_F(GLEXTWindowRectanglesTest, DefaultFramebuffer) {
     return;
   }
 
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
   GLint box[4] = {0, 0, 1, 1};
 
   ClearTo(255, 0, 0, 255);

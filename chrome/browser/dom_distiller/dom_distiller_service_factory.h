@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
@@ -44,7 +44,7 @@ class DomDistillerServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<DomDistillerServiceFactory>;
+  friend base::NoDestructor<DomDistillerServiceFactory>;
 
   DomDistillerServiceFactory();
   ~DomDistillerServiceFactory() override;

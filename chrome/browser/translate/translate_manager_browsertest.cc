@@ -219,8 +219,6 @@ static const char kTestScriptLoadError[] =
 
 static const char kTranslateHrefHintStatusHistogram[] =
     "Translate.HrefHint.Status";
-static const char kTranslateHrefHintPrefsFilterStatusHistogram[] =
-    "Translate.HrefHint.PrefsFilterStatus";
 
 class TranslateManagerBrowserTest : public InProcessBrowserTest {
  public:
@@ -538,11 +536,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSuccess) {
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
       1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
-      1);
 }
 
 // Test that hrefTranslate doesn't auto-translate if the originator of the
@@ -588,7 +581,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   EXPECT_EQ("", chrome_translate_client->GetLanguageState().AutoTranslateTo());
 
   histograms.ExpectTotalCount(kTranslateHrefHintStatusHistogram, 0);
-  histograms.ExpectTotalCount(kTranslateHrefHintPrefsFilterStatusHistogram, 0);
 }
 
 // Test that hrefTranslate with an unsupported language doesn't trigger.
@@ -641,11 +633,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateUnsupported) {
       static_cast<int>(TranslateBrowserMetrics::HrefTranslateStatus::
                            kNoUiShownNotAutoTranslated),
       1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
-      1);
 }
 
 // Test an href translate link to a conflicted page.
@@ -694,11 +681,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateConflict) {
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
       1);
 }
 
@@ -749,11 +731,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateNoHrefLang) {
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
       1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
-      1);
 }
 
 // Test an href translate link that's overridden by the auto translate settings.
@@ -780,11 +757,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(TranslateBrowserMetrics::HrefTranslateStatus::
                            kAutoTranslatedDifferentTargetLanguage),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
       1);
 }
 
@@ -816,11 +788,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
       1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kLanguageInBlocklist),
-      1);
 }
 
 // Test that hrefTranslate doesn't translate if the website is in the user's
@@ -840,11 +807,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSiteBlocked) {
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(TranslateBrowserMetrics::HrefTranslateStatus::
                            kNoUiShownNotAutoTranslated),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kSiteInBlocklist),
       1);
 }
 
@@ -868,11 +830,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(TranslateBrowserMetrics::HrefTranslateStatus::
                            kNoUiShownNotAutoTranslated),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kBothLanguageAndSiteInBlocklist),
       1);
 }
 
@@ -1365,11 +1322,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
       1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
-      1);
 }
 
 // Test that hrefTranslate doesn't auto-translate if the originator of the
@@ -1409,7 +1361,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   EXPECT_EQ("", chrome_translate_client->GetLanguageState().AutoTranslateTo());
 
   histograms.ExpectTotalCount(kTranslateHrefHintStatusHistogram, 0);
-  histograms.ExpectTotalCount(kTranslateHrefHintPrefsFilterStatusHistogram, 0);
 }
 
 // Test that hrefTranslate with an unsupported language doesn't trigger.
@@ -1455,11 +1406,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(TranslateBrowserMetrics::HrefTranslateStatus::
                            kNoUiShownNotAutoTranslated),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
       1);
 }
 
@@ -1508,11 +1454,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
       1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
-      1);
 }
 
 // Test an href translate link without an href lang for the landing page
@@ -1559,11 +1500,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(
           TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
       1);
 }
 
@@ -1614,11 +1550,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
       kTranslateHrefHintStatusHistogram,
       static_cast<int>(TranslateBrowserMetrics::HrefTranslateStatus::
                            kAutoTranslatedDifferentTargetLanguage),
-      1);
-  histograms.ExpectUniqueSample(
-      kTranslateHrefHintPrefsFilterStatusHistogram,
-      static_cast<int>(TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
-                           kNotInBlocklists),
       1);
 }
 

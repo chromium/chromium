@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 
 namespace content {
@@ -80,13 +81,13 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   CHECK(model_->Contains(saved_guid_));
   CHECK(tab_strip_model->group_model()->ContainsTabGroup(local_id_));
 
-  const absl::optional<int> first_tab_in_group_index_in_tabstrip =
+  const absl::optional<int> tabstrip_index_of_first_tab_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_id_)->GetFirstTab();
-  CHECK(first_tab_in_group_index_in_tabstrip.has_value());
+  CHECK(tabstrip_index_of_first_tab_in_group.has_value());
 
   const int relative_index_of_tab_in_group =
       tab_strip_model->GetIndexOfWebContents(web_contents) -
-      first_tab_in_group_index_in_tabstrip.value();
+      tabstrip_index_of_first_tab_in_group.value();
 
   base::Token token = base::Token::CreateRandom();
 
@@ -96,12 +97,51 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
                                                                 saved_guid_);
   tab.SetLocalTabID(token);
   tab.SetPosition(relative_index_of_tab_in_group);
-  model_->AddTabToGroup(saved_guid_, std::move(tab),
-                        /*update_tab_positions=*/true);
+  model_->AddTabToGroupLocally(saved_guid_, std::move(tab));
 
   // Link `web_contents` to `token`.
   web_contents_to_tab_id_map_.try_emplace(web_contents, web_contents, token,
                                           model_);
+}
+
+void LocalTabGroupListener::MoveWebContentsFromLocal(
+    TabStripModel* tab_strip_model,
+    content::WebContents* web_contents,
+    int tabstrip_index_of_moved_tab) {
+  if (paused_) {
+    return;
+  }
+
+  // Ex:        0 1   2 3 4
+  //  TabStrip: A B [ C D E ]
+  //  TabGroup:       0 1 2
+  // C represents the first tab in the group. For the tabstrip this means C is
+  // at index 2. For the tab group, C is at index 0.
+  // Moving C to index 4 in the tabstrip means it will now have an index of 2 in
+  // the tab group and SavedTabGroupModel.
+  const absl::optional<int> tabstrip_index_of_first_tab_in_group =
+      tab_strip_model->group_model()->GetTabGroup(local_id_)->GetFirstTab();
+  CHECK(tabstrip_index_of_first_tab_in_group.has_value());
+
+  // Count the number of tabs that are actually in the group between
+  // `tabstrip_index_of_first_tab_in_group` and `tabstrip_index_of_moved_tab`.
+  // We must do this because a tab group may not be contiguous in intermediate
+  // states such as when dragging a group by its header.
+  int index_in_group = 0;
+  for (int i = tabstrip_index_of_first_tab_in_group.value();
+       i < tabstrip_index_of_moved_tab; i++) {
+    if (tab_strip_model->GetTabGroupForTab(i) == local_id_) {
+      index_in_group++;
+    }
+  }
+  CHECK_GE(index_in_group, 0);
+
+  const SavedTabGroupWebContentsListener& web_contents_listener =
+      web_contents_to_tab_id_map_.at(web_contents);
+  const base::Uuid& saved_tab_guid =
+      saved_group()->GetTab(web_contents_listener.token())->saved_tab_guid();
+
+  model_->MoveTabInGroupTo(saved_guid_, saved_tab_guid, index_in_group);
 }
 
 LocalTabGroupListener::Liveness
@@ -120,8 +160,7 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   const base::Uuid tab_guid = saved_group()->GetTab(tab_id)->saved_tab_guid();
 
   web_contents_to_tab_id_map_.erase(web_contents);
-  model_->RemoveTabFromGroup(saved_guid_, tab_guid,
-                             /*update_tab_positions=*/true);
+  model_->RemoveTabFromGroupLocally(saved_guid_, tab_guid);
 
   return model_->Contains(saved_guid_) ? Liveness::kGroupExists
                                        : Liveness::kGroupDeleted;

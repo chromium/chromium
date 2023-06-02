@@ -6,6 +6,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -50,7 +52,7 @@ class DeviceCommandRebootBaseTest : public BaseBrowserTest {
 };
 }  // namespace
 
-class DeviceCommandRebootJobKioskBrowserTest
+class DeviceCommandRebootJobAutoLaunchKioskBrowserTest
     : public DeviceCommandRebootBaseTest<ash::LoginManagerTest> {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -68,23 +70,66 @@ class DeviceCommandRebootJobKioskBrowserTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobKioskBrowserTest,
-                       RebootsKioskInstantly) {
+IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobAutoLaunchKioskBrowserTest,
+                       RebootsInstantly) {
   ASSERT_TRUE(ash::LoginState::Get()->IsKioskSession());
   ASSERT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
 
-  em::RemoteCommandResult result =
-      SendRemoteCommand(RemoteCommandBuilder()
-                            .SetType(em::RemoteCommand_Type_DEVICE_REBOOT)
-                            .Build());
+  em::RemoteCommandResult result = SendRemoteCommand(
+      RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
 
-  EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }
 
-// TODO(b/225913691) Add test case for manually launched kiosk.
+class DeviceCommandRebootJobKioskBrowserTest
+    : public DeviceCommandRebootBaseTest<ash::KioskBaseTest> {
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobKioskBrowserTest,
+                       RebootsInstantly) {
+  StartAppLaunchFromLoginScreen(
+      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForAppLaunchWithOptions(false /* check launch data */,
+                              false /* terminate app */,
+                              true /* keep app open */);
+
+  ASSERT_TRUE(ash::LoginState::Get()->IsKioskSession());
+  ASSERT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  em::RemoteCommandResult result = SendRemoteCommand(
+      RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
+
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+class DeviceCommandRebootJobWebKioskBrowserTest
+    : public DeviceCommandRebootBaseTest<ash::WebKioskBaseTest> {};
+
+IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobWebKioskBrowserTest,
+                       RebootsInstantly) {
+  InitializeRegularOnlineKiosk();
+
+  ASSERT_TRUE(ash::LoginState::Get()->IsKioskSession());
+  ASSERT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  em::RemoteCommandResult result = SendRemoteCommand(
+      RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
+
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
 
 class DeviceCommandRebootJobUserBrowserTest
     : public DeviceCommandRebootBaseTest<MixinBasedInProcessBrowserTest> {
@@ -104,12 +149,10 @@ IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobUserBrowserTest,
   ASSERT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
 
-  em::RemoteCommandResult result =
-      SendRemoteCommand(RemoteCommandBuilder()
-                            .SetType(em::RemoteCommand_Type_DEVICE_REBOOT)
-                            .Build());
+  em::RemoteCommandResult result = SendRemoteCommand(
+      RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
 
-  EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }

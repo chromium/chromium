@@ -32,6 +32,7 @@
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
+<translation id="1555506416658437797">измени начините на плаќање</translation>
 <translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
 <translation id="1587325591171447154">Датотеката <ph name="FILE_NAME" /> е опасна, па затоа Chrome ја блокираше.</translation>
@@ -83,6 +84,7 @@
 <translation id="234869673307233423">Chrome не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="235650106824528204">Податоците на Chrome што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продолжи</translation>
+<translation id="2399868464369312507">Google Chrome се обидува да ги измени начините на плаќање.</translation>
 <translation id="2401189691232800402">Систем Chrome OS</translation>
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
@@ -392,6 +394,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8418845734693287262">Chrome OS не може да ги синхронизира податоците бидејќи деталите за најавување на сметката се застарени.</translation>
 <translation id="8433638294851456451">За да испратите број оттука до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
 <translation id="8451192282033883849">Со сметката управува <ph name="MANAGER_NAME" />. Администраторот може да го види и изменува овој профил на прелистувач Chrome и податоците за него, како обележувачи, историја и лозинки.</translation>
+<translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Тукушто применивме посебно безбедносно ажурирање за Google Chrome. Рестартирајте сега и ќе ви ги вратиме картичките.</translation>
 <translation id="8504220326736535258">Chrome ја блокираше датотекава бидејќи има злонамерен софтвер</translation>
 <translation id="8516431725144212809">Вашите интереси како што се проценети од Chrome</translation>
@@ -408,6 +411,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8649026945479135076">Нормално е сајтовите што ги посетувате да ги помнат работите што ве интересираат за да го персонализираат вашето доживување. Сајтовите можат и да зачувуваат податоци со Chrome за вашите интереси.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Контролира и која страница се прикажува кога ќе стартувате Chrome.</translation>
+<translation id="8684875378076460854">Chrome препорачува скенирање на датотекава бидејќи можеби е опасна</translation>
 <translation id="8686817260976772516">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Создајте профили за пријателите и семејството или поделете ги помеѓу работа и забава.</translation>
 <translation id="8712767363896337380">Речиси сте готови! Рестартирајте го Chrome за да заврши ажурирањето.</translation>
 <translation id="873133009373065397">Google Chrome не може да го одреди или постави стандардниот прелистувач</translation>

@@ -39,7 +39,7 @@ constexpr char kBudgetsTableName[] = "private_aggregation_api_budgets";
 // When updating the database's schema, please increment the schema version.
 // This will raze the database. This is not necessary for backwards-compatible
 // updates to the proto format.
-constexpr int kCurrentSchemaVersion = 1;
+constexpr int kCurrentSchemaVersion = 2;
 
 void RecordInitializationStatus(
     PrivateAggregationBudgetStorage::InitStatus status) {
@@ -57,6 +57,10 @@ base::OnceClosure PrivateAggregationBudgetStorage::CreateAsync(
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         on_done_initializing) {
   DCHECK(on_done_initializing);
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.PrivateAggregation.BudgetStorage."
+      "BeginInitializationCount",
+      /*sample=*/true);
   auto storage =
       base::WrapUnique(new PrivateAggregationBudgetStorage(db_task_runner));
   auto* raw_storage = storage.get();

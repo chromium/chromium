@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -29,7 +33,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -53,8 +56,8 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.EntityInfoProto.ActionInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.ActionInSuggestUmaType;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -81,6 +84,7 @@ public class OmniboxActionsTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
+    private @Mock OmniboxActionJni mOmniboxActionJni;
 
     private OmniboxTestUtils mOmniboxUtils;
     private Activity mTargetActivity;
@@ -97,6 +101,7 @@ public class OmniboxActionsTest {
         sActivityTestRule.loadUrl("about:blank");
         mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
     }
 
     @After
@@ -109,7 +114,9 @@ public class OmniboxActionsTest {
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
+        verifyNoMoreInteractions(mOmniboxActionJni);
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
+        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
     }
 
     /**
@@ -124,7 +131,7 @@ public class OmniboxActionsTest {
         CriteriaHelper.pollUiThread(() -> {
             var adapter = (ActionChipsAdapter) info.view.getActionChipsView().getAdapter();
             if (adapter.getItemCount() < actionIndex) return false;
-            adapter.setSelectedItem(ActionChipsAdapter.FIRST_CHIP_INDEX + actionIndex);
+            adapter.setSelectedItem(actionIndex);
             return adapter.getSelectedView().performClick();
         });
     }
@@ -138,6 +145,10 @@ public class OmniboxActionsTest {
      */
     private void setSuggestions(AutocompleteMatch... matches) {
         mOmniboxUtils.requestFocus();
+        // Ensure we start from empty suggestions list; don't carry over suggestions from previous
+        // run.
+        mOmniboxUtils.setSuggestions(AutocompleteResult.fromCache(null, null), "");
+
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(Arrays.asList(matches), null), "");
         mOmniboxUtils.checkSuggestionsShown();
@@ -154,14 +165,15 @@ public class OmniboxActionsTest {
     }
 
     private AutocompleteMatch createDummyHistoryClustersAction(String name) {
-        return createDummySuggestion(List.of(new HistoryClustersAction("hint", name)));
+        return createDummySuggestion(
+                List.of(new HistoryClustersAction(0, "hint", "accessibility", name)));
     }
 
     private AutocompleteMatch createDummyActionInSuggest(ActionInfo.ActionType... types) {
         var actions = new ArrayList<OmniboxAction>();
         for (var type : types) {
-            actions.add(
-                    new OmniboxActionInSuggest("hint", type.getNumber(), "https://www.google.com"));
+            actions.add(new OmniboxActionInSuggest(type.getNumber(), "hint", "accessibility",
+                    type.getNumber(), "https://www.google.com"));
         }
 
         return createDummySuggestion(actions);
@@ -198,14 +210,14 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL),
                 createDummyActionInSuggest(ActionInfo.ActionType.DIRECTIONS));
 
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.CALL)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.DIRECTIONS)
-                                       .build();
         mOmniboxUtils.clearFocus();
-        histogramWatcher.assertExpected();
+
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.CALL_VALUE, /*position=*/1, /*executed=*/false);
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/2, /*executed=*/false);
     }
 
     @Test
@@ -216,16 +228,14 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL),
                 createDummyActionInSuggest(ActionInfo.ActionType.DIRECTIONS));
 
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.CALL)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.DIRECTIONS)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Used",
-                                               ActionInSuggestUmaType.CALL)
-                                       .build();
         clickOnAction(0);
-        histogramWatcher.assertExpected();
+
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.CALL_VALUE, /*position=*/1, /*executed=*/true);
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/2, /*executed=*/false);
     }
 
     @Test
@@ -236,17 +246,16 @@ public class OmniboxActionsTest {
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL,
                         ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.REVIEWS));
 
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.CALL)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.DIRECTIONS)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Used",
-                                               ActionInSuggestUmaType.DIRECTIONS)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.REVIEWS)
-                                       .build();
-        clickOnAction(1);
-        histogramWatcher.assertExpected();
+        clickOnAction(2);
+
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.CALL_VALUE, /*position=*/1, /*executed=*/false);
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.DIRECTIONS_VALUE, /*position=*/1, /*executed=*/false);
+        verify(mOmniboxActionJni, times(1))
+                .recordActionShown(
+                        ActionInfo.ActionType.REVIEWS_VALUE, /*position=*/1, /*executed=*/true);
     }
 }

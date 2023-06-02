@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/search_row_modern_bg"
+    android:id="@+id/bookmark_toolbar"
+    android:layout_height="40dp"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="18dp">
+
+  <EditText
+      tools:ignore="Autofill,LabelFor"
+      android:background="@null"
+      android:hint="@string/bookmark_toolbar_search"
+      android:id="@+id/search_text"
+      android:imeOptions="flagNoExtractUi|actionSearch"
+      android:inputType="text"
+      android:layout_height="match_parent"
+      android:layout_width="match_parent"
+      android:paddingHorizontal="@dimen/bookmark_search_hint_horizontal_padding"
+      android:singleLine="true"
+      android:textColorHint="@macro/search_box_hint"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+</org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow>

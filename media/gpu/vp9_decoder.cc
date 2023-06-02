@@ -289,6 +289,14 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       return kDecodeError;
     }
 
+    VideoColorSpace new_color_space;
+    // For VP9, container color spaces override video stream color spaces.
+    if (container_color_space_.IsSpecified()) {
+      new_color_space = container_color_space_;
+    } else if (curr_frame_hdr_->GetColorSpace().IsSpecified()) {
+      new_color_space = curr_frame_hdr_->GetColorSpace();
+    }
+
     DCHECK(!new_pic_size.IsEmpty());
 
     const bool is_pic_size_different = new_pic_size != pic_size_;
@@ -334,8 +342,22 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       visible_rect_ = new_render_rect;
       profile_ = new_profile;
       bit_depth_ = curr_frame_hdr_->bit_depth;
+      picture_color_space_ = new_color_space;
       size_change_failure_counter_ = 0;
       return kConfigChange;
+    }
+
+    if (new_color_space.IsSpecified() &&
+        new_color_space != picture_color_space_ &&
+        curr_frame_hdr_->IsKeyframe()) {
+      // TODO(posciak): This requires us to be on a keyframe (see above) and is
+      // required, because VDA clients expect all surfaces to be returned before
+      // they can cycle surface sets after receiving kConfigChange.
+      // This is only an implementation detail of VDAs and can be improved.
+      ref_frames_.Clear();
+
+      picture_color_space_ = new_color_space;
+      return kColorSpaceChange;
     }
 
     scoped_refptr<VP9Picture> pic = accelerator_->CreateVP9Picture();
@@ -349,11 +371,8 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
 
     pic->set_decrypt_config(std::move(decrypt_config_));
 
-    // For VP9, container color spaces override video stream color spaces.
-    if (container_color_space_.IsSpecified())
-      pic->set_colorspace(container_color_space_);
-    else if (curr_frame_hdr_)
-      pic->set_colorspace(curr_frame_hdr_->GetColorSpace());
+    // Set the color space for the picture.
+    pic->set_colorspace(picture_color_space_);
 
     pic->frame_hdr = std::move(curr_frame_hdr_);
 
@@ -438,6 +457,10 @@ uint8_t VP9Decoder::GetBitDepth() const {
 
 VideoChromaSampling VP9Decoder::GetChromaSampling() const {
   return chroma_sampling_;
+}
+
+VideoColorSpace VP9Decoder::GetVideoColorSpace() const {
+  return picture_color_space_;
 }
 
 absl::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {

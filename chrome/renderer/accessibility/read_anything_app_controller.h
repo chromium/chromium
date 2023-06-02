@@ -58,8 +58,7 @@ class ReadAnythingAppControllerTest;
 //
 class ReadAnythingAppController
     : public gin::Wrappable<ReadAnythingAppController>,
-      public read_anything::mojom::UntrustedPage,
-      public ui::AXTreeObserver {
+      public read_anything::mojom::UntrustedPage {
  public:
   static gin::WrapperInfo kWrapperInfo;
 
@@ -67,7 +66,7 @@ class ReadAnythingAppController
   ReadAnythingAppController& operator=(const ReadAnythingAppController&) =
       delete;
 
-  // Installs v8 context for Read Anything and adds chrome.readAnything binding
+  // Installs v8 context for Read Anything and adds chrome.readingMode binding
   // to page.
   static ReadAnythingAppController* Install(content::RenderFrame* render_frame);
 
@@ -117,6 +116,8 @@ class ReadAnythingAppController
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   void OnConnected();
+  void OnCopy() const;
+  void OnScroll(bool on_selection) const;
   void OnLinkClicked(ui::AXNodeID ax_node_id) const;
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
                          int anchor_offset,

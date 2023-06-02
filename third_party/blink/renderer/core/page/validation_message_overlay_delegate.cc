@@ -188,21 +188,21 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   bool destroyed = false;
   DCHECK(!destroyed_ptr_);
   destroyed_ptr_ = &destroyed;
-  frame->ForceSynchronousDocumentInstall("text/html", data);
+  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"), data);
   if (destroyed)
     return;
   destroyed_ptr_ = nullptr;
 
-  Element& main_message = GetElementById("main-message");
+  Element& main_message = GetElementById(AtomicString("main-message"));
   main_message.setTextContent(message_);
-  Element& sub_message = GetElementById("sub-message");
+  Element& sub_message = GetElementById(AtomicString("sub-message"));
   sub_message.setTextContent(sub_message_);
 
-  Element& container = GetElementById("container");
+  Element& container = GetElementById(AtomicString("container"));
   if (WebTestSupport::IsRunningWebTest()) {
     container.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
-    GetElementById("icon").SetInlineStyleProperty(CSSPropertyID::kTransition,
-                                                  "none");
+    GetElementById(AtomicString("icon"))
+        .SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
     main_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
     sub_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
   }
@@ -217,7 +217,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   container.SetInlineStyleProperty(CSSPropertyID::kMinWidth,
                                    bubble_size_.width() / zoom_factor,
                                    CSSPrimitiveValue::UnitType::kPixels);
-  container.setAttribute(html_names::kClassAttr, "shown-initially");
+  container.setAttribute(html_names::kClassAttr,
+                         AtomicString("shown-initially"));
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
 }
 
@@ -304,7 +305,7 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
   else if (bubble_x + bubble_size_.width() > view_rect.right())
     bubble_x = view_rect.right() - bubble_size_.width();
 
-  Element& container = GetElementById("container");
+  Element& container = GetElementById(AtomicString("container"));
   container.SetInlineStyleProperty(CSSPropertyID::kLeft, bubble_x / zoom_factor,
                                    CSSPrimitiveValue::UnitType::kPixels);
   container.SetInlineStyleProperty(CSSPropertyID::kTop, bubble_y / zoom_factor,
@@ -347,24 +348,25 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
   double arrow_x = arrow_anchor_x / zoom_factor - kArrowSize;
   double arrow_anchor_percent = arrow_anchor_x * 100 / bubble_size_.width();
   if (show_bottom_arrow) {
-    GetElementById("outer-arrow-bottom")
+    GetElementById(AtomicString("outer-arrow-bottom"))
         .SetInlineStyleProperty(CSSPropertyID::kLeft, arrow_x,
                                 CSSPrimitiveValue::UnitType::kPixels);
-    GetElementById("inner-arrow-bottom")
+    GetElementById(AtomicString("inner-arrow-bottom"))
         .SetInlineStyleProperty(CSSPropertyID::kLeft, arrow_x,
                                 CSSPrimitiveValue::UnitType::kPixels);
-    container.setAttribute(html_names::kClassAttr, "shown-fully bottom-arrow");
+    container.setAttribute(html_names::kClassAttr,
+                           AtomicString("shown-fully bottom-arrow"));
     container.SetInlineStyleProperty(
         CSSPropertyID::kTransformOrigin,
         String::Format("%.2f%% bottom", arrow_anchor_percent));
   } else {
-    GetElementById("outer-arrow-top")
+    GetElementById(AtomicString("outer-arrow-top"))
         .SetInlineStyleProperty(CSSPropertyID::kLeft, arrow_x,
                                 CSSPrimitiveValue::UnitType::kPixels);
-    GetElementById("inner-arrow-top")
+    GetElementById(AtomicString("inner-arrow-top"))
         .SetInlineStyleProperty(CSSPropertyID::kLeft, arrow_x,
                                 CSSPrimitiveValue::UnitType::kPixels);
-    container.setAttribute(html_names::kClassAttr, "shown-fully");
+    container.setAttribute(html_names::kClassAttr, AtomicString("shown-fully"));
     container.SetInlineStyleProperty(
         CSSPropertyID::kTransformOrigin,
         String::Format("%.2f%% top", arrow_anchor_percent));
@@ -375,9 +377,10 @@ void ValidationMessageOverlayDelegate::StartToHide() {
   anchor_ = nullptr;
   if (!page_)
     return;
-  GetElementById("container")
+  GetElementById(AtomicString("container"))
       .classList()
-      .replace("shown-fully", "hiding", ASSERT_NO_EXCEPTION);
+      .replace(AtomicString("shown-fully"), AtomicString("hiding"),
+               ASSERT_NO_EXCEPTION);
 }
 
 bool ValidationMessageOverlayDelegate::IsHiding() const {

@@ -84,7 +84,7 @@ class AboutThisSiteService : public KeyedService {
 
  private:
   std::unique_ptr<Client> client_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
 
   base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};
 };

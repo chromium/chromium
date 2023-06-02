@@ -4,16 +4,14 @@
 
 #include "chrome/browser/ui/views/side_search/side_search_views_utils.h"
 
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 
 namespace side_search {
 
-bool IsSideSearchToggleOpen(BrowserView* browser_view) {
-  auto* coordinator = browser_view->side_panel_coordinator();
-  return coordinator->IsSidePanelShowing() &&
-         coordinator->GetCurrentEntryId() == SidePanelEntry::Id::kSideSearch;
+bool IsSideSearchToggleOpen(Browser* browser) {
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  return side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
+         side_panel_ui->GetCurrentEntryId() == SidePanelEntryId::kSideSearch;
 }
 
 }  // namespace side_search

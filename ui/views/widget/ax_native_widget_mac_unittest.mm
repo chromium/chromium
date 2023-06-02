@@ -24,6 +24,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace views {
 
 namespace {
@@ -164,9 +168,8 @@ class AXNativeWidgetMacTest : public test::WidgetTest {
 // on a retained accessibility object after the source view is deleted.
 TEST_F(AXNativeWidgetMacTest, Lifetime) {
   Textfield* view = AddChildTextfield(widget()->GetContentsView()->size());
-  base::scoped_nsobject<NSObject> ax_node(view->GetNativeViewAccessible(),
-                                          base::scoped_policy::RETAIN);
-  id<NSAccessibility> ax_obj = ToNSAccessibility(ax_node.get());
+  NSObject* ax_node = view->GetNativeViewAccessible();
+  id<NSAccessibility> ax_obj = ToNSAccessibility(ax_node);
 
   EXPECT_TRUE(AXObjectHandlesSelector(ax_obj, @selector(accessibilityValue)));
   EXPECT_NSEQ(kTestStringValue, ax_obj.accessibilityValue);
@@ -190,12 +193,11 @@ TEST_F(AXNativeWidgetMacTest, Lifetime) {
   // The only usually available array attribute is AXChildren, so go up a level
   // to the Widget to test that a bit. The default implementation just gets the
   // attribute normally and returns its size (if it's an array).
-  base::scoped_nsprotocol<id<NSAccessibility>> ax_parent(
-      ax_obj.accessibilityParent, base::scoped_policy::RETAIN);
+  id<NSAccessibility> ax_parent = ax_obj.accessibilityParent;
 
   // There are two children: a NativeFrameView and the TextField.
-  EXPECT_EQ(2u, ax_parent.get().accessibilityChildren.count);
-  EXPECT_EQ(ax_node.get(), ax_parent.get().accessibilityChildren[1]);
+  EXPECT_EQ(2u, ax_parent.accessibilityChildren.count);
+  EXPECT_EQ(ax_node, ax_parent.accessibilityChildren[1]);
 
   // If it is not an array, the default implementation throws an exception, so
   // it's impossible to test these methods further on |ax_node|, apart from the
@@ -230,7 +232,7 @@ TEST_F(AXNativeWidgetMacTest, Lifetime) {
 
   // The Widget is currently still around, but the TextField should be gone,
   // leaving just the NativeFrameView.
-  EXPECT_EQ(1u, ax_parent.get().accessibilityChildren.count);
+  EXPECT_EQ(1u, ax_parent.accessibilityChildren.count);
 }
 
 // Check that potentially keyboard-focusable elements are always leaf nodes.
@@ -687,8 +689,8 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
   EXPECT_TRUE(ax_node);
 
   // Create a native Cocoa NSSecureTextField to compare against.
-  base::scoped_nsobject<NSSecureTextField> cocoa_secure_textfield(
-      [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)]);
+  NSSecureTextField* cocoa_secure_textfield =
+      [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 10, 10)];
 
   const SEL expected_supported_selectors[] = {
     @selector(accessibilityValue),
@@ -702,7 +704,7 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
 
   for (auto* sel : expected_supported_selectors) {
     EXPECT_TRUE(AXObjectHandlesSelector(ax_node, sel));
-    EXPECT_TRUE(AXObjectHandlesSelector(cocoa_secure_textfield.get(), sel));
+    EXPECT_TRUE(AXObjectHandlesSelector(cocoa_secure_textfield, sel));
   }
 
   // TODO(https://crbug.com/939965): This should assert the same behavior of

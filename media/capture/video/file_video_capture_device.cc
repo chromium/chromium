@@ -325,7 +325,7 @@ std::unique_ptr<VideoFileParser> FileVideoCaptureDevice::GetVideoFileParser(
   return file_parser;
 }
 
-std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
+std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
     const uint8_t* frame,
     size_t frame_buffer_size,
     VideoPixelFormat* final_pixel_format) {
@@ -394,9 +394,9 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
                frame_size.height() - crop_height);
   const size_t crop_buffer_size =
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, crop_size);
-  auto crop_frame = std::make_unique<uint8_t[]>(crop_buffer_size);
+  std::vector<uint8_t> crop_frame(crop_buffer_size);
 
-  uint8_t* crop_yp = crop_frame.get();
+  uint8_t* crop_yp = crop_frame.data();
   uint8_t* crop_up =
       crop_yp +
       VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, crop_size).GetArea();
@@ -423,9 +423,9 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
   const auto& scale_size = frame_size;
   const size_t scale_buffer_size =
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, scale_size);
-  auto scale_frame = std::make_unique<uint8_t[]>(scale_buffer_size);
+  std::vector<uint8_t> scale_frame(scale_buffer_size);
 
-  uint8_t* scale_yp = scale_frame.get();
+  uint8_t* scale_yp = scale_frame.data();
   uint8_t* scale_up =
       scale_yp +
       VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, scale_size).GetArea();
@@ -652,7 +652,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
   VideoCaptureFormat ptz_format = capture_format_;
   ptz_format.pixel_format = ptz_pixel_format;
 
-  CHECK(ptz_frame);
+  CHECK(!ptz_frame.empty());
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
   if (first_ref_time_.is_null())
@@ -672,12 +672,12 @@ void FileVideoCaptureDevice::OnCaptureTask() {
       return;
     }
     ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
-    const uint8_t* src_y_plane = ptz_frame.get();
+    const uint8_t* src_y_plane = ptz_frame.data();
     const uint8_t* src_u_plane =
-        ptz_frame.get() +
+        ptz_frame.data() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea();
     const uint8_t* src_v_plane =
-        ptz_frame.get() +
+        ptz_frame.data() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea() +
         VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, buffer_size).GetArea();
     libyuv::I420ToNV12(
@@ -697,7 +697,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.
     client_->OnIncomingCapturedData(
-        ptz_frame.get(), frame_size, ptz_format, gfx::ColorSpace(),
+        ptz_frame.data(), ptz_frame.size(), ptz_format, gfx::ColorSpace(),
         0 /* clockwise_rotation */, false /* flip_y */, current_time,
         current_time - first_ref_time_);
   }
@@ -708,7 +708,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     take_photo_callbacks_.pop();
 
     mojom::BlobPtr blob =
-        RotateAndBlobify(ptz_frame.get(), frame_size, ptz_format, 0);
+        RotateAndBlobify(ptz_frame.data(), frame_size, ptz_format, 0);
     if (!blob)
       continue;
 

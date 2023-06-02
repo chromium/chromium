@@ -86,6 +86,7 @@
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
+#include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
@@ -157,6 +158,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 
 using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
@@ -207,6 +209,13 @@ absl::optional<policy::ComponentPolicyMap> GetDeviceAccountComponentPolicy(
 
 bool GetIsCurrentUserOwner() {
   return user_manager::UserManager::Get()->IsCurrentUserOwner();
+}
+
+bool IsCurrentUserEphemeral() {
+  const user_manager::UserManager* const user_manager =
+      user_manager::UserManager::Get();
+  const user_manager::User* const user = user_manager->GetPrimaryUser();
+  return user_manager->IsEphemeralUser(user);
 }
 
 bool GetUseCupsForPrinting() {
@@ -267,7 +276,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 107,
+static_assert(crosapi::mojom::Crosapi::Version_ == 108,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -327,6 +336,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::ImageWriter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::InputMethodTestInterface>(),
     MakeInterfaceVersionEntry<crosapi::mojom::InSessionAuth>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::KerberosInBrowser>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KeystoreService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::KioskSessionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::LocalPrinter>(),
@@ -611,6 +621,9 @@ void InjectBrowserInitParams(
 
   params->enable_clipboard_history_refresh =
       chromeos::features::IsClipboardHistoryRefreshEnabled();
+
+  params->is_variable_refresh_rate_enabled =
+      ::features::IsVariableRefreshRateEnabled();
 }
 
 template <typename BrowserParams>
@@ -648,6 +661,7 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
       GetDeviceAccountComponentPolicy(environment_provider);
 
   params->is_current_user_device_owner = GetIsCurrentUserOwner();
+  params->is_current_user_ephemeral = IsCurrentUserEphemeral();
   params->do_not_mux_extension_app_ids = !apps::ShouldMuxExtensionIds();
   params->enable_lacros_tts_support =
       tts_crosapi_util::ShouldEnableLacrosTtsSupport();
@@ -731,7 +745,7 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
   mojom::DeviceSettingsPtr result = mojom::DeviceSettings::New();
 
   result->attestation_for_content_protection_enabled = MojoOptionalBool::kUnset;
-  result->device_ephemeral_users_enabled = MojoOptionalBool::kUnset;
+  result->deprecated_device_ephemeral_users_enabled = MojoOptionalBool::kUnset;
   result->device_restricted_managed_guest_session_enabled =
       MojoOptionalBool::kUnset;
   if (ash::CrosSettings::IsInitialized()) {
@@ -778,9 +792,9 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
       bool ephemeral_users_enabled = false;
       if (cros_settings->GetBoolean(ash::kAccountsPrefEphemeralUsersEnabled,
                                     &ephemeral_users_enabled)) {
-        result->device_ephemeral_users_enabled = ephemeral_users_enabled
-                                                     ? MojoOptionalBool::kTrue
-                                                     : MojoOptionalBool::kFalse;
+        result->deprecated_device_ephemeral_users_enabled =
+            ephemeral_users_enabled ? MojoOptionalBool::kTrue
+                                    : MojoOptionalBool::kFalse;
       }
 
       bool device_restricted_managed_guest_session_enabled = false;

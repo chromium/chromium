@@ -27,7 +27,8 @@ Service* ServiceFactory::FindExisting(content::BrowserContext* context) {
 }
 
 ServiceFactory* ServiceFactory::GetInstance() {
-  return base::Singleton<ServiceFactory>::get();
+  static base::NoDestructor<ServiceFactory> instance;
+  return instance.get();
 }
 
 ServiceFactory::ServiceFactory()
@@ -44,7 +45,7 @@ ServiceFactory::ServiceFactory()
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
-ServiceFactory::~ServiceFactory() {}
+ServiceFactory::~ServiceFactory() = default;
 
 KeyedService* ServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

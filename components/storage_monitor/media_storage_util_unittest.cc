@@ -72,7 +72,7 @@ class MediaStorageUtilTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestStorageMonitor> monitor_;
+  raw_ptr<TestStorageMonitor, DanglingUntriaged> monitor_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 

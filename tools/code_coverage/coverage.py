@@ -55,13 +55,17 @@
   To learn more about generating code coverage reports for fuzz targets, see
   https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/efficient_fuzzer.md#Code-Coverage
 
-  * Sample workflow for running Blink web tests:
+  * Sample workflow for running Blink web platform tests:
 
   vpython3 tools/code_coverage/coverage.py blink_tests \\
-      -wt -b out/coverage -o out/report -f third_party/blink
+      -b out/coverage -o out/report -f third_party/blink -wt
 
-  If you need to pass arguments to run_web_tests.py, use
-    -wt='arguments to run_web_tests.py e.g. test directories'
+  -wt flag tells coverage script that it is a web test, and can also be
+  used to pass arguments to run_web_tests.py
+
+  vpython3 tools/code_coverage/coverage.py blink_wpt_tests \\
+      -b out/Release -o out/report
+      -wt external/wpt/webcodecs/per-frame-qp-encoding.https.any.js
 
   For more options, please refer to tools/code_coverage/coverage.py -h.
 
@@ -858,8 +862,16 @@ def _GetBinaryPathsFromTargets(targets, build_dir):
   return binary_paths
 
 
-def _GetCommandForWebTests(arguments):
+def _GetCommandForWebTests(targets, arguments):
   """Return command to run for blink web tests."""
+  assert len(targets) == 1, "Only one wpt target can be run"
+  target = targets[0]
+  expected_profraw_file_name = os.extsep.join(
+      [target, '%2m', PROFRAW_FILE_EXTENSION])
+  expected_profraw_file_path = os.path.join(
+      coverage_utils.GetCoverageReportRootDirPath(OUTPUT_DIR),
+      expected_profraw_file_name)
+
   cpu_count = multiprocessing.cpu_count()
   if sys.platform == 'win32':
     # TODO(crbug.com/1190269) - we can't use more than 56
@@ -870,8 +882,7 @@ def _GetCommandForWebTests(arguments):
   command_list = [
       'third_party/blink/tools/run_web_tests.py',
       '--additional-driver-flag=--no-sandbox',
-      '--additional-env-var=LLVM_PROFILE_FILE=%s' %
-      LLVM_PROFILE_FILE_PATH_SUBSTITUTION,
+      '--additional-env-var=LLVM_PROFILE_FILE=%s' % expected_profraw_file_path,
       '--child-processes=%d' % cpu_count, '--disable-breakpad',
       '--no-show-results', '--skip-failing-tests',
       '--target=%s' % os.path.basename(BUILD_DIR), '--timeout-ms=30000'
@@ -1104,7 +1115,7 @@ def Main():
 
   # Get .profdata file and list of binary paths.
   if args.web_tests:
-    commands = [_GetCommandForWebTests(args.web_tests)]
+    commands = [_GetCommandForWebTests(args.targets, args.web_tests)]
     profdata_file_path = _CreateCoverageProfileDataForTargets(
         args.targets, commands, args.jobs)
     binary_paths = [_GetBinaryPathForWebTests()]
@@ -1124,7 +1135,7 @@ def Main():
     # An input prof-data file(s) is already provided.
     if len(args.profdata_file) == 1:
       # If it's just one input file, use as-is.
-      profdata_file_path = args.profdata_file
+      profdata_file_path = args.profdata_file[0]
     else:
       # Otherwise, there are multiple profdata files and we need to merge them.
       profdata_file_path = _CreateCoverageProfileDataFromTargetProfDataFiles(args.profdata_file)

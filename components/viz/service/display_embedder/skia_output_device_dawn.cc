@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -26,18 +25,17 @@ namespace {
 // desktop and RGBA8Unorm for Android. Use GetPreferredSurfaceFormat when ready.
 #if BUILDFLAG(IS_ANDROID)
 constexpr SkColorType kSurfaceColorType = kRGBA_8888_SkColorType;
-constexpr SharedImageFormat kSurfaceFormat = SinglePlaneFormat::kRGBA_8888;
 constexpr wgpu::TextureFormat kSwapChainFormat =
     wgpu::TextureFormat::RGBA8Unorm;
 #else
 constexpr SkColorType kSurfaceColorType = kBGRA_8888_SkColorType;
-constexpr SharedImageFormat kSurfaceFormat = SinglePlaneFormat::kBGRA_8888;
 constexpr wgpu::TextureFormat kSwapChainFormat =
     wgpu::TextureFormat::BGRA8Unorm;
 #endif
 
 constexpr wgpu::TextureUsage kUsage =
-    wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
+    wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding |
+    wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
 
 }  // namespace
 
@@ -151,14 +149,8 @@ void SkiaOutputDeviceDawn::Present(const absl::optional<gfx::Rect>& update_rect,
 
 SkSurface* SkiaOutputDeviceDawn::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  auto texture_info = gpu::GetGraphiteTextureInfo(
-      gpu::GrContextType::kGraphiteDawn, kSurfaceFormat,
-      /*plane_index=*/0, /*mipmapped=*/false, /*root_surface=*/true);
-  skgpu::graphite::DawnTextureInfo dawn_texture_info;
-  texture_info.getDawnTextureInfo(&dawn_texture_info);
-  skgpu::graphite::BackendTexture backend_texture(
-      SkISize::Make(size_.width(), size_.height()), dawn_texture_info,
-      swap_chain_.GetCurrentTextureView().Get());
+  wgpu::Texture texture = swap_chain_.GetCurrentTexture();
+  skgpu::graphite::BackendTexture backend_texture(texture.Get());
 
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   sk_surface_ = SkSurfaces::WrapBackendTexture(
@@ -168,8 +160,12 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
 }
 
 void SkiaOutputDeviceDawn::EndPaint() {
-  GrFlushInfo flush_info;
-  sk_surface_->flush(SkSurface::BackendSurfaceAccess::kPresent, flush_info);
+  CHECK(sk_surface_);
+  if (GrDirectContext* direct_context =
+          GrAsDirectContext(sk_surface_->recordingContext())) {
+    direct_context->flush(sk_surface_,
+                          SkSurfaces::BackendSurfaceAccess::kPresent, {});
+  }
   sk_surface_.reset();
 }
 

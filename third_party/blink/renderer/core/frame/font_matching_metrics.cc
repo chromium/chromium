@@ -50,6 +50,7 @@ bool IdentifiabilityStudyShouldSampleFonts() {
       IdentifiableSurface::Type::kGenericFontLookup,
       IdentifiableSurface::Type::kLocalFontLoadPostScriptName,
       IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly,
+      IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName,
   });
 }
 
@@ -97,6 +98,8 @@ void FontMatchingMetrics::ReportSuccessfulFontFamilyMatch(
     return;
   }
   successful_font_families_.insert(font_family_name);
+  ReportLocalFontExistenceByUniqueOrFamilyName(font_family_name,
+                                               /*font_exists=*/true);
 }
 
 void FontMatchingMetrics::ReportFailedFontFamilyMatch(
@@ -105,6 +108,8 @@ void FontMatchingMetrics::ReportFailedFontFamilyMatch(
     return;
   }
   failed_font_families_.insert(font_family_name);
+  ReportLocalFontExistenceByUniqueOrFamilyName(font_family_name,
+                                               /*font_exists=*/false);
 }
 
 void FontMatchingMetrics::ReportSystemFontFamily(
@@ -139,6 +144,21 @@ void FontMatchingMetrics::ReportFailedLocalFontMatch(
   }
   local_fonts_failed_.insert(font_name);
   ReportLocalFontExistenceByUniqueNameOnly(font_name, /*font_exists=*/false);
+}
+
+void FontMatchingMetrics::ReportLocalFontExistenceByUniqueOrFamilyName(
+    const AtomicString& font_name,
+    bool font_exists) {
+  if (font_name.IsNull()) {
+    return;
+  }
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
+          IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName)) {
+    return;
+  }
+  IdentifiableTokenKey input_key(
+      IdentifiabilityBenignCaseFoldingStringToken(font_name));
+  local_font_existence_by_unique_or_family_name_.insert(input_key, font_exists);
 }
 
 void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
@@ -343,6 +363,8 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
            IdentifiableSurface::Type::kGenericFontLookup},
           {&font_load_postscript_name_,
            IdentifiableSurface::Type::kLocalFontLoadPostScriptName},
+          {&local_font_existence_by_unique_or_family_name_,
+           IdentifiableSurface::Type::kLocalFontExistenceByUniqueOrFamilyName},
           {&local_font_existence_by_unique_name_only_,
            IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly},
       };

@@ -33,6 +33,6 @@
     [CheckSecurity=ReturnValue] readonly attribute Document? contentDocument;
     readonly attribute Window? contentWindow;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString marginHeight;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString marginWidth;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString marginHeight;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString marginWidth;
 };

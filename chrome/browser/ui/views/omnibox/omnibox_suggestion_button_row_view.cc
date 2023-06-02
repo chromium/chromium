@@ -65,7 +65,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     if (base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips) ||
         features::GetChromeRefresh2023Level() ==
             features::ChromeRefresh2023Level::kLevel2) {
-      SetImageLabelSpacing(4);
+      SetImageLabelSpacing(8);
       SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
           INSETS_OMNIBOX_PILL_BUTTON));
       SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
@@ -172,13 +172,17 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     : popup_contents_view_(popup_contents_view),
       model_(model),
       model_index_(model_index) {
+  int left_margin = OmniboxMatchCellView::GetTextIndent();
+  // +4 for the focus bar width, which shifts the suggest text but isn't
+  // included in `GetTextIndent()`.
+  if (OmniboxFieldTrial::IsCr23LayoutEnabled())
+    left_margin += 4;
   int bottom_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
-      .SetInteriorMargin(gfx::Insets::TLBR(
-          0, OmniboxMatchCellView::GetTextIndent(), bottom_margin, 0))
+      .SetInteriorMargin(gfx::Insets::TLBR(0, left_margin, bottom_margin, 0))
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(

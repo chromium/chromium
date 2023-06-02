@@ -31,6 +31,7 @@ source_set("consistency_default_account") {
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin:layout",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet",
     "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",

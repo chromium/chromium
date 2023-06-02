@@ -89,9 +89,8 @@ function show(element: HTMLElement) {
  * Sets up tooltips for elements.
  *
  * @param elements Elements whose tooltips to be shown.
- * @return Elements whose tooltips have been set up.
  */
-export function setup(elements: HTMLElement[]): HTMLElement[] {
+export function setup(elements: HTMLElement[]): void {
   wrapper = dom.get('#tooltip', HTMLElement);
   for (const el of elements) {
     function handler() {
@@ -100,9 +99,10 @@ export function setup(elements: HTMLElement[]): HTMLElement[] {
         hide();
       }
     }
-    el.addEventListener('mouseout', handler);
+    el.addEventListener('mouseleave', handler);
     el.addEventListener('click', handler);
-    el.addEventListener('mouseover', () => show(el));
+    el.addEventListener('blur', handler);
+    el.addEventListener('mouseenter', () => show(el));
+    el.addEventListener('focus', () => show(el));
   }
-  return elements;
 }

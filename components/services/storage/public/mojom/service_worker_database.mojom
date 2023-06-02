@@ -13,6 +13,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_ancestor_fr
 import "third_party/blink/public/mojom/service_worker/service_worker_database.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "url/mojom/url.mojom";
@@ -74,6 +75,8 @@ struct ServiceWorkerRegistrationData {
   // to restrict the use of some powerful APIs in FencedFrames
   // (crbug.com/1276419).
   blink.mojom.AncestorFrameType ancestor_frame_type;
+
+  blink.mojom.ServiceWorkerRouterRules? router_rules;
 };
 
 // Represents a service worker script data which is stored in database.

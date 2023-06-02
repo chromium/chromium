@@ -19,6 +19,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/base/switches.h"
+#include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_image_builder.h"
@@ -129,7 +130,7 @@ class FakeDiscardableManager {
   std::map<GLuint, int32_t> textures_;
   size_t live_textures_count_ = 0;
   size_t cached_textures_limit_ = std::numeric_limits<size_t>::max();
-  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface, DanglingUntriaged> gl_ = nullptr;
 };
 
 class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
@@ -362,18 +363,18 @@ class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
   FakeRasterDarkModeFilter() {
     SkHighContrastConfig config;
     config.fInvertStyle = SkHighContrastConfig::InvertStyle::kInvertLightness;
-    color_filter_ = SkHighContrastFilter::Make(config);
+    color_filter_ = ColorFilter::MakeHighContrast(config);
   }
 
-  sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                    const SkIRect& src) const override {
+  sk_sp<ColorFilter> ApplyToImage(const SkPixmap& pixmap,
+                                  const SkIRect& src) const override {
     return color_filter_;
   }
 
-  const sk_sp<SkColorFilter> GetFilter() const { return color_filter_; }
+  const sk_sp<ColorFilter> GetFilter() const { return color_filter_; }
 
  private:
-  sk_sp<SkColorFilter> color_filter_;
+  sk_sp<ColorFilter> color_filter_;
 };
 
 SkM44 CreateMatrix(const SkSize& scale) {

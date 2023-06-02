@@ -22,10 +22,6 @@ BASE_FEATURE(kEnableEdgeDetection,
              "EnableEdgeDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableNeuralStylusReportFilter,
-             "EnableNeuralStylusReportFilter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // TODO(b/171249701): Remove this flag when we can support this in all cases.
 BASE_FEATURE(kEnableOrdinalMotion,
              "EnableOrdinalMotion",

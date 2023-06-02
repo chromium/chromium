@@ -123,7 +123,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 
   for (size_t i = 0; i < file_count; ++i) {
     int fd = files_to_register->GetFDAt(i);
-    PCHECK(0 <= fd);
+    CHECK(0 <= fd);
     int id = files_to_register->GetIDAt(i);
     const auto& region = files_to_register->GetRegionAt(i);
     bool auto_close = files_to_register->OwnsFD(fd);
@@ -134,7 +134,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     ScopedJavaLocalRef<jobject> j_file_info =
         Java_ChildProcessLauncherHelperImpl_makeFdInfo(
             env, id, fd, auto_close, region.offset, region.size);
-    PCHECK(j_file_info.obj());
+    CHECK(j_file_info.obj());
     env->SetObjectArrayElement(j_file_infos.obj(), i, j_file_info.obj());
   }
 

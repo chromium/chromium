@@ -431,6 +431,20 @@ IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserWithIFrameTest,
   CheckActivePageFrameSystemEntropy(expected_iframe_system_entropy[1]);
 }
 
+IN_PROC_BROWSER_TEST_P(LaunchNavigationBrowserWithIFrameTest,
+                       CreateEmptyFrame) {
+  Navigate("/launch_navigation_frame.html");
+  auto json_value =
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "navigationEntry.toJSON()['systemEntropy'];");
+
+  if (IsUserAgentLaunchNavTypeFeatureEnabled()) {
+    EXPECT_EQ("", json_value);
+  } else {
+    EXPECT_EQ(nullptr, json_value);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     CmdLineURLIFrameTestFeatureEnabled,
     LaunchNavigationBrowserWithIFrameTest,

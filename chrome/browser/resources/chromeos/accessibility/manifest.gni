@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates a manifest.json with some arguments.
+template("manifest") {
+  version_file = "//chrome/VERSION"
+  version_script = "//build/util/version.py"
+  template_file = invoker.input_file
+  output_file = invoker.output_file
+  key = invoker.key
+  action(target_name) {
+    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_manifest.py"
+    inputs = [
+      version_file,
+      version_script,
+    ]
+    sources = [ template_file ]
+    outputs = [ output_file ]
+    args = [
+      "--key=$key",
+      "--version_file=" + rebase_path(version_file, root_build_dir),
+      "--output_manifest=" + rebase_path(output_file, root_build_dir),
+    ]
+    if (defined(invoker.is_guest_manifest) && invoker.is_guest_manifest) {
+      args += [ "--is_guest_manifest=1" ]
+    }
+    args += rebase_path(sources, root_build_dir)
+  }
+}

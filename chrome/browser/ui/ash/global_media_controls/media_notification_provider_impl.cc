@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
+#include "ash/shell.h"
 #include "ash/system/media/media_color_theme.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_notification_provider_observer.h"
+#include "ash/system/media/media_tray.h"
+#include "ash/system/status_area_widget.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -208,6 +211,12 @@ void MediaNotificationProviderImpl::HideMediaItem(const std::string& id) {
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
   }
+}
+
+void MediaNotificationProviderImpl::HideMediaDialog() {
+  ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
+      ->media_tray()
+      ->CloseBubble();
 }
 
 void MediaNotificationProviderImpl::OnItemListChanged() {

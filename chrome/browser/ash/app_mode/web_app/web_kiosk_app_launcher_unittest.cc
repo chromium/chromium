@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/auto_reset.h"
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -26,7 +26,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -37,8 +36,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-using ash::standalone_browser::BrowserSupport;
 
 namespace ash {
 
@@ -317,8 +314,10 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
         fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kWebKioskEnableLacros);
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ::features::kWebKioskEnableLacros},
+        {});
   }
 
   void LoginWebKioskUser() {
@@ -345,10 +344,6 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
   exo::WMHelper* wm_helper() const { return wm_helper_.get(); }
 
  private:
-  base::AutoReset<bool> set_lacros_enabled_ =
-      BrowserSupport::SetLacrosEnabledForTest(true);
-  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
-      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
   raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;

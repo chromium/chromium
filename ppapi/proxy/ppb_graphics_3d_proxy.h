@@ -22,7 +22,6 @@
 
 namespace gpu {
 struct Capabilities;
-struct ContextCreationAttribs;
 }
 
 namespace ppapi {
@@ -96,7 +95,7 @@ class PPB_Graphics3D_Proxy : public InterfaceProxy {
  private:
   void OnMsgCreate(PP_Instance instance,
                    HostResource share_context,
-                   const gpu::ContextCreationAttribs& attrib_helper,
+                   const Graphics3DContextAttribs& context_attribs,
                    HostResource* result,
                    gpu::Capabilities* capabilities,
                    SerializedHandle* handle,

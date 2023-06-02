@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -71,106 +70,6 @@ CSSPaintImageGenerator* ProvideOverrideGenerator(
   return g_override_generator;
 }
 }  // namespace
-
-TEST_P(CSSPaintValueTest, ReportingCompositedUMA) {
-  HistogramTester histogram_tester;
-  NiceMock<MockCSSPaintImageGenerator>* mock_generator =
-      MakeGarbageCollected<NiceMock<MockCSSPaintImageGenerator>>();
-  base::AutoReset<MockCSSPaintImageGenerator*> scoped_override_generator(
-      &g_override_generator, mock_generator);
-  base::AutoReset<CSSPaintImageGenerator::CSSPaintImageGeneratorCreateFunction>
-      scoped_create_function(
-          CSSPaintImageGenerator::GetCreateFunctionForTesting(),
-          ProvideOverrideGenerator);
-
-  const gfx::SizeF target_size(100, 100);
-
-  SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
-  LayoutObject* target = GetLayoutObjectByElementId("target");
-  const ComputedStyle& style = *target->Style();
-
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
-  // Mark the generator as ready - GetImage should succeed when
-  // OffMainThreadCSSPaint is enabled.
-  ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
-  ON_CALL(*mock_generator, Paint(_, _, _))
-      .WillByDefault(
-          Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
-  ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
-  if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 1u);
-    histogram_tester.ExpectUniqueSample("Blink.CSSPaintValue.PaintOffThread",
-                                        true, 1u);
-  } else {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 0u);
-  }
-
-  ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), style, target_size));
-  if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
-    // Repaint, should not report histogram again.
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 1u);
-    histogram_tester.ExpectUniqueSample("Blink.CSSPaintValue.PaintOffThread",
-                                        true, 1u);
-  } else {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 0u);
-  }
-}
-
-TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
-  HistogramTester histogram_tester;
-  NiceMock<MockCSSPaintImageGenerator>* mock_generator =
-      MakeGarbageCollected<NiceMock<MockCSSPaintImageGenerator>>();
-  mock_generator->AddNativeProperty();
-  base::AutoReset<MockCSSPaintImageGenerator*> scoped_override_generator(
-      &g_override_generator, mock_generator);
-  base::AutoReset<CSSPaintImageGenerator::CSSPaintImageGeneratorCreateFunction>
-      scoped_create_function(
-          CSSPaintImageGenerator::GetCreateFunctionForTesting(),
-          ProvideOverrideGenerator);
-
-  const gfx::SizeF target_size(100, 100);
-
-  SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
-  LayoutObject* target = GetLayoutObjectByElementId("target");
-  auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
-  StyleGeneratedImage* style_image = MakeGarbageCollected<StyleGeneratedImage>(
-      *paint_value, StyleGeneratedImage::ContainerSizes());
-
-  auto builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.SetBorderImageSource(style_image);
-  auto style = builder.TakeStyle();
-
-  ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
-  EXPECT_CALL(*mock_generator, Paint(_, _, _))
-      .WillRepeatedly(
-          Return(PaintGeneratedImage::Create(PaintRecord(), target_size)));
-  // The paint worklet is not composited, and falls back to the main thread
-  // paint.
-  ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), *style, target_size));
-  if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 1u);
-    histogram_tester.ExpectUniqueSample("Blink.CSSPaintValue.PaintOffThread",
-                                        false, 1u);
-  } else {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 0u);
-  }
-
-  // Repaint, should not report histogram again.
-  ASSERT_TRUE(
-      paint_value->GetImage(*target, GetDocument(), *style, target_size));
-  if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 1u);
-    histogram_tester.ExpectUniqueSample("Blink.CSSPaintValue.PaintOffThread",
-                                        false, 1u);
-  } else {
-    histogram_tester.ExpectTotalCount("Blink.CSSPaintValue.PaintOffThread", 0u);
-  }
-}
 
 TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   NiceMock<MockCSSPaintImageGenerator>* mock_generator =

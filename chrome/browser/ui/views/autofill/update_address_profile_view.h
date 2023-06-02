@@ -25,6 +25,9 @@ class SaveUpdateAddressProfileBubbleController;
 class UpdateAddressProfileView : public AutofillBubbleBase,
                                  public LocationBarBubbleDelegateView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);
+
   UpdateAddressProfileView(
       views::View* anchor_view,
       content::WebContents* web_contents,

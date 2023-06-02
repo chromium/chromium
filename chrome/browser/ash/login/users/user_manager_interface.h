@@ -10,7 +10,6 @@ class AccountId;
 namespace ash {
 
 class MultiProfileUserController;
-class SupervisedUserManager;
 class UserImageManager;
 
 // ChromeOS specific add-ons interface for the UserManager.
@@ -26,7 +25,6 @@ class UserManagerInterface {
   virtual MultiProfileUserController* GetMultiProfileUserController() = 0;
   virtual UserImageManager* GetUserImageManager(
       const AccountId& account_id) = 0;
-  virtual SupervisedUserManager* GetSupervisedUserManager() = 0;
 };
 
 }  // namespace ash

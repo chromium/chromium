@@ -226,7 +226,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     }
 
     @VisibleForTesting
-    public void setEnableAppFlowDebugging(boolean enable) {
+    public static void setEnableAppFlowDebugging(boolean enable) {
         sEnableAppFlowDebugging = enable;
     }
 

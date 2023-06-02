@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {PerformanceTestRunner} from 'performance_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests the Timeline window filter.`);
   TestRunner.addResult(`It applies different ranges to the OverviewGrid and expects that current view reflects the change.\n`);
-  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline');
   await TestRunner.loadLegacyModule("perf_ui");
   await TestRunner.showPanel('timeline');
 

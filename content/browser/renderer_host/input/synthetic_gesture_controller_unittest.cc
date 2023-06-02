@@ -352,52 +352,65 @@ class MockSyntheticTouchscreenPinchTouchTarget
     ZOOM_OUT
   };
 
-  MockSyntheticTouchscreenPinchTouchTarget()
-      : initial_pointer_distance_(0),
-        last_pointer_distance_(0),
-        zoom_direction_(ZOOM_DIRECTION_UNKNOWN),
-        started_(false) {}
-  ~MockSyntheticTouchscreenPinchTouchTarget() override {}
+  MockSyntheticTouchscreenPinchTouchTarget() = default;
+  ~MockSyntheticTouchscreenPinchTouchTarget() override = default;
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
     MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsTouchEventType(event.GetType()));
     const WebTouchEvent& touch_event = static_cast<const WebTouchEvent&>(event);
-    ASSERT_EQ(touch_event.touches_length, 2U);
+    if ((touch_event.GetType() == WebInputEvent::Type::kTouchStart &&
+         !received_first_touch_start_) ||
+        (touch_event.GetType() == WebInputEvent::Type::kTouchEnd &&
+         received_first_touch_end_)) {
+      ASSERT_EQ(touch_event.touches_length, 1U);
+    } else {
+      ASSERT_EQ(touch_event.touches_length, 2U);
+    }
 
     if (!started_) {
       ASSERT_EQ(touch_event.GetType(), WebInputEvent::Type::kTouchStart);
 
-      start_0_ = gfx::PointF(touch_event.touches[0].PositionInWidget());
-      start_1_ = gfx::PointF(touch_event.touches[1].PositionInWidget());
-      last_pointer_distance_ = (start_0_ - start_1_).Length();
-      initial_pointer_distance_ = last_pointer_distance_;
-      EXPECT_GE(initial_pointer_distance_, GetMinScalingSpanInDips());
-
-      started_ = true;
+      if (received_first_touch_start_) {
+        start_0_ = gfx::PointF(touch_event.touches[0].PositionInWidget());
+        start_1_ = gfx::PointF(touch_event.touches[1].PositionInWidget());
+        last_pointer_distance_ = (start_0_ - start_1_).Length();
+        initial_pointer_distance_ = last_pointer_distance_;
+        EXPECT_GE(initial_pointer_distance_, GetMinScalingSpanInDips());
+        started_ = true;
+      }
     } else {
       ASSERT_NE(touch_event.GetType(), WebInputEvent::Type::kTouchStart);
       ASSERT_NE(touch_event.GetType(), WebInputEvent::Type::kTouchCancel);
 
-      gfx::PointF current_0 =
-          gfx::PointF(touch_event.touches[0].PositionInWidget());
-      gfx::PointF current_1 =
-          gfx::PointF(touch_event.touches[1].PositionInWidget());
+      if (!received_first_touch_end_) {
+        gfx::PointF current_0 =
+            gfx::PointF(touch_event.touches[0].PositionInWidget());
+        gfx::PointF current_1 =
+            gfx::PointF(touch_event.touches[1].PositionInWidget());
 
-      float pointer_distance = (current_0 - current_1).Length();
+        float pointer_distance = (current_0 - current_1).Length();
 
-      if (last_pointer_distance_ != pointer_distance) {
-        if (zoom_direction_ == ZOOM_DIRECTION_UNKNOWN)
-          zoom_direction_ =
-              ComputeZoomDirection(last_pointer_distance_, pointer_distance);
-        else
-          EXPECT_EQ(
-              zoom_direction_,
-              ComputeZoomDirection(last_pointer_distance_, pointer_distance));
+        if (last_pointer_distance_ != pointer_distance) {
+          if (zoom_direction_ == ZOOM_DIRECTION_UNKNOWN) {
+            zoom_direction_ =
+                ComputeZoomDirection(last_pointer_distance_, pointer_distance);
+          } else {
+            EXPECT_EQ(
+                zoom_direction_,
+                ComputeZoomDirection(last_pointer_distance_, pointer_distance));
+          }
+        }
+
+        last_pointer_distance_ = pointer_distance;
       }
-
-      last_pointer_distance_ = pointer_distance;
     }
+
+    received_first_touch_start_ |=
+        touch_event.GetType() == WebInputEvent::Type::kTouchStart;
+
+    received_first_touch_end_ |=
+        touch_event.GetType() == WebInputEvent::Type::kTouchEnd;
   }
 
   content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
@@ -431,12 +444,18 @@ class MockSyntheticTouchscreenPinchTouchTarget
                                                             : ZOOM_OUT;
   }
 
-  float initial_pointer_distance_;
-  float last_pointer_distance_;
-  ZoomDirection zoom_direction_;
+  float initial_pointer_distance_ = 0.f;
+  float last_pointer_distance_ = 0.f;
+  ZoomDirection zoom_direction_ = ZOOM_DIRECTION_UNKNOWN;
   gfx::PointF start_0_;
   gfx::PointF start_1_;
-  bool started_;
+  // Starting and ending pinch zoom involves two events. Much of the unit test
+  // code applies only when both fingers are pressed. These two booleans allow
+  // us to do the required bookkeeping to ensure that we know when to do work
+  // that depends on both fingers being pressed.
+  bool received_first_touch_start_ = false;
+  bool received_first_touch_end_ = false;
+  bool started_ = false;
 };
 
 class MockSyntheticTouchpadPinchTouchTarget
@@ -830,7 +849,7 @@ class SyntheticGestureControllerTestBase {
   base::TimeDelta GetTotalTime() const { return time_ - start_time_; }
 
   content::BrowserTaskEnvironment env_;
-  raw_ptr<MockSyntheticGestureTarget> target_;
+  raw_ptr<MockSyntheticGestureTarget, DanglingUntriaged> target_;
   DummySyntheticGestureControllerDelegate delegate_;
   std::unique_ptr<SyntheticGestureController> controller_;
   base::TimeTicks start_time_;

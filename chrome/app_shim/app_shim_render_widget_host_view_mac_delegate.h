@@ -7,18 +7,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
 
 @class HistorySwiper;
 @interface AppShimRenderWidgetHostViewMacDelegate
-    : NSObject <RenderWidgetHostViewMacDelegate> {
- @private
-  uint64_t _nsviewIDThatWantsHistoryOverlay;
-
-  // Responsible for 2-finger swipes history navigation.
-  base::scoped_nsobject<HistorySwiper> _historySwiper;
-}
+    : NSObject <RenderWidgetHostViewMacDelegate>
 
 - (instancetype)initWithRenderWidgetHostNSViewID:
     (uint64_t)renderWidgetHostNSViewID;

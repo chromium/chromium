@@ -6,7 +6,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -17,8 +16,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
@@ -265,64 +264,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
   SetupPeerconnectionWithLocalStream(right_tab_);
   NegotiateCall(left_tab_, right_tab_);
 
-  VerifyStatsGeneratedPromise(left_tab_);
   EXPECT_EQ(2u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
 
   DetectVideoAndHangUp();
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
-                       RunsAudioVideoWebRTCCallInTwoTabsGetStatsPromise) {
-  StartServerAndOpenTabs();
-  SetupPeerconnectionWithLocalStream(left_tab_);
-  SetupPeerconnectionWithLocalStream(right_tab_);
-  CreateDataChannel(left_tab_, "data");
-  CreateDataChannel(right_tab_, "data");
-  NegotiateCall(left_tab_, right_tab_);
-
-  std::set<std::string> missing_expected_stats;
-  for (const std::string& type : GetMandatoryStatsTypes(left_tab_)) {
-    missing_expected_stats.insert(type);
-  }
-  for (const std::string& type : VerifyStatsGeneratedPromise(left_tab_)) {
-    missing_expected_stats.erase(type);
-  }
-  EXPECT_THAT(missing_expected_stats, ::testing::IsEmpty());
-
-  DetectVideoAndHangUp();
-}
-
-class WebRtcBrowserTestIdl : public WebRtcBrowserTest {
- public:
-  WebRtcBrowserTestIdl() {
-    scoped_features_.InitAndEnableFeature(
-        blink::features::kWebRtcStatsReportIdl);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebRtcBrowserTestIdl,
-                       RunsAudioVideoWebRTCCallInTwoTabsGetStatsPromiseIDL) {
-  StartServerAndOpenTabs();
-  SetupPeerconnectionWithLocalStream(left_tab_);
-  SetupPeerconnectionWithLocalStream(right_tab_);
-  CreateDataChannel(left_tab_, "data");
-  CreateDataChannel(right_tab_, "data");
-  NegotiateCall(left_tab_, right_tab_);
-
-  std::set<std::string> missing_expected_stats;
-  for (const std::string& type : GetMandatoryStatsTypes(left_tab_)) {
-    missing_expected_stats.insert(type);
-  }
-  for (const std::string& type : VerifyStatsGeneratedPromise(left_tab_)) {
-    missing_expected_stats.erase(type);
-  }
-  EXPECT_THAT(missing_expected_stats, ::testing::IsEmpty());
-
-  DetectVideoAndHangUp();
 }
 
 IN_PROC_BROWSER_TEST_F(

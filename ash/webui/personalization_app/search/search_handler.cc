@@ -122,7 +122,7 @@ void SearchHandler::OnLocalSearchDone(
 
     search_results.push_back(mojom::SearchResult::New(
         /*id=*/search_concept->id,
-        /*text=*/l10n_util::GetStringUTF16(matching_content_id),
+        /*text=*/SearchTagRegistry::MessageIdToString(matching_content_id),
         /*relative_url=*/search_concept->relative_url,
         /*relevance_score=*/local_result.score));
   }

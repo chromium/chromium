@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -28,10 +27,6 @@
 
 namespace favicon {
 namespace {
-
-BASE_FEATURE(kFaviconsHandleSizesAny,
-             "FaviconsHandleSizesAny",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const int kLargestIconSize = 192;
 
@@ -131,8 +126,7 @@ FaviconHandler::FaviconCandidate::FromFaviconURL(
   candidate.icon_url = favicon_url.icon_url;
   candidate.icon_type = favicon_url.icon_type;
 
-  if (HasAnySize(favicon_url.icon_sizes) &&
-      base::FeatureList::IsEnabled(kFaviconsHandleSizesAny)) {
+  if (HasAnySize(favicon_url.icon_sizes)) {
     // For candidates which has the keyword "any" as part of their size
     // information, assign a score of 1.
     candidate.score = 1.0f;

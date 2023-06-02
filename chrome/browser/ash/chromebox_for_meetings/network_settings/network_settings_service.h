@@ -36,8 +36,7 @@ class NetworkSettingsService : public CfmObserver,
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
   // ServiceAdaptorDelegate implementation
-  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe,
-                     const absl::optional<std::string>&) override;
+  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
   void OnAdaptorDisconnect() override;
 
  private:

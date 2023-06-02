@@ -10,6 +10,16 @@
     outline: none;
   }
 
+  :host([overflow-scroll_]) #content {
+    overflow-x: auto;
+  }
+
+  :host([overflow-scroll_]) .layout {
+    padding-top: 2px;
+    /* 768px - 32px padding - 2px wrapper border. */
+    width: 734px;
+  }
+
   #showAllButton {
     background-color: var(--color-new-tab-page-module-background);
     border: none;
@@ -61,17 +71,17 @@
   /* At less than 768px + 2*18px side gaps, switch to the one column
      presentation. */
   @media (max-width: 803px) {
-    .small-tiles,
-    .secondary-tile,
-    .related-searches-tile {
+    :host(:not([overflow-scroll_])) .small-tiles,
+    :host(:not([overflow-scroll_])) .secondary-tile,
+    :host(:not([overflow-scroll_])) .related-searches-tile {
       display: none;
     }
 
-    .layout {
+    :host(:not([overflow-scroll_])) .layout {
       display: block;
     }
 
-    .main-tile {
+    :host(:not([overflow-scroll_])) .main-tile {
       min-height: 100%;
     }
   }
@@ -82,29 +92,29 @@
     gap: var(--gap-size);
   }
 </style>
+<ntp-module-header
+    disable-text="[[i18nRecursive('',
+                                'modulesDisableButtonText',
+                                'modulesJourneyDisable')]]"
+    dismiss-text="[[i18n('modulesDismissButtonText', cluster.label)]]"
+    show-info-button show-dismiss-button
+    on-disable-button-click="onDisableButtonClick_"
+    on-dismiss-button-click="onDismissButtonClick_"
+    on-info-button-click="onInfoButtonClick_"
+    icon-src="chrome://resources/images/icon_journeys.svg">
+  [[i18n('modulesJourneysResumeJourney', cluster.label)]]
+  <button id="showAllButton" type="button" on-click="onShowAllClick_"
+      slot="title-actions"
+      aria-label$="[[i18n('modulesJourneysShowAllAcc', cluster.label)]]">
+    [[i18n('modulesJourneysShowAll')]]
+  </button>
+  <button id="openAllInTabGroupButton" class="dropdown-item"
+      on-click="onOpenAllInTabGroupClick_"
+      slot="action-menu-items" type="button">
+    [[i18n('modulesJourneysOpenAllInNewTabGroupButtonText')]]
+  </button>
+</ntp-module-header>
 <div id="content">
-  <ntp-module-header
-      disable-text="[[i18nRecursive('',
-                                  'modulesDisableButtonText',
-                                  'modulesJourneyDisable')]]"
-      dismiss-text="[[i18n('modulesDismissButtonText', cluster.label)]]"
-      show-info-button show-dismiss-button
-      on-disable-button-click="onDisableButtonClick_"
-      on-dismiss-button-click="onDismissButtonClick_"
-      on-info-button-click="onInfoButtonClick_"
-      icon-src="chrome://resources/images/icon_journeys.svg">
-    [[i18n('modulesJourneysResumeJourney', cluster.label)]]
-    <button id="showAllButton" type="button" on-click="onShowAllClick_"
-        slot="title-actions"
-        aria-label$="[[i18n('modulesJourneysShowAllAcc', cluster.label)]]">
-      [[i18n('modulesJourneysShowAll')]]
-    </button>
-    <button id="openAllInTabGroupButton" class="dropdown-item"
-        on-click="onOpenAllInTabGroupClick_"
-        slot="action-menu-items" type="button">
-      [[i18n('modulesJourneysOpenAllInNewTabGroupButtonText')]]
-    </button>
-  </ntp-module-header>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
     <div id="layout1" class="layout">
       <ntp-history-clusters-tile class="main-tile" large-format

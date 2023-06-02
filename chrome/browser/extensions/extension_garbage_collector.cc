@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,6 +38,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 
 namespace extensions {
@@ -105,6 +107,28 @@ void CheckExtensionDirectory(const base::FilePath& path,
   }
 }
 
+// Deletes uninstalled extensions in the unpacked directory.
+// Installed unpacked extensions are not saved in the same directory structure
+// as packed extensions. For example they have no version subdirs and their root
+// folders are not named with the extension's ID, so we can't use the same logic
+// as packed extensions when deleting them. Note: This is meant to only handle
+// unpacked .zip installs and should not be called for an `extension_directory`
+// outside the profile directory because if `extension_directory` is not in
+// `installed_extension_dirs` we'll delete it. Currently there's some certainty
+// that `extension_directory` will not be outside the profile directory.
+void CheckUnpackedExtensionDirectory(
+    const base::FilePath& extension_directory,
+    const ExtensionPathsMultimap& installed_extension_dirs) {
+  // Check to see if the extension is installed and don't proceed if it is.
+  for (auto const& [_, installed_extension_dir] : installed_extension_dirs) {
+    if (extension_directory == installed_extension_dir) {
+      return;
+    }
+  }
+
+  base::DeletePathRecursively(extension_directory);
+}
+
 }  // namespace
 
 ExtensionGarbageCollector::ExtensionGarbageCollector(
@@ -147,9 +171,8 @@ void ExtensionGarbageCollector::GarbageCollectExtensionsForTest() {
 // static
 void ExtensionGarbageCollector::GarbageCollectExtensionsOnFileThread(
     const base::FilePath& install_directory,
-    const ExtensionPathsMultimap& extension_paths) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
+    const ExtensionPathsMultimap& extension_paths,
+    bool unpacked) {
   // Nothing to clean up if it doesn't exist.
   if (!base::DirectoryExists(install_directory))
     return;
@@ -161,7 +184,8 @@ void ExtensionGarbageCollector::GarbageCollectExtensionsOnFileThread(
   for (base::FilePath extension_path = enumerator.Next();
        !extension_path.empty();
        extension_path = enumerator.Next()) {
-    CheckExtensionDirectory(extension_path, extension_paths);
+    unpacked ? CheckUnpackedExtensionDirectory(extension_path, extension_paths)
+             : CheckExtensionDirectory(extension_path, extension_paths);
   }
 }
 
@@ -186,6 +210,12 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
     return;
   }
 
+  // TODO(crbug.com/1378775): Since the GC recursively deletes, insert a check
+  // so that we can't attempt to delete outside the profile directory. The
+  // problem is that in extension_garbage_collector_unittest.cc the directory
+  // containing the extension installs is not a direct subdir of the profile
+  // directory whereas this is true in production. So we can't do a simple check
+  // like that to ensure we're inside the profile directory.
   ExtensionPrefs::ExtensionsInfo extensions_info =
       extension_prefs->GetInstalledExtensionsInfo();
   std::multimap<std::string, base::FilePath> extension_paths;
@@ -203,9 +233,20 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
   ExtensionService* service =
       ExtensionSystem::Get(context_)->extension_service();
   if (!GetExtensionFileTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&GarbageCollectExtensionsOnFileThread,
-                         service->install_directory(), extension_paths))) {
+          FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
+                                    service->install_directory(),
+                                    extension_paths, /*unpacked=*/false))) {
+    NOTREACHED();
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsZipFileInstalledInProfileDir)) {
+    return;
+  }
+  if (!GetExtensionFileTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
+                                    service->unpacked_install_directory(),
+                                    extension_paths, /*unpacked=*/true))) {
     NOTREACHED();
   }
 }

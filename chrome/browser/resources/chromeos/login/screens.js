@@ -67,7 +67,6 @@ import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
 import './screens/oobe/quick_start.js';
 import './screens/oobe/update.js';
-import './screens/oobe/welcome.js';
 
 /**
  * List of screens that are used for both `oobe` and `login` flows.
@@ -185,5 +184,4 @@ export const oobeScreensList = [
   {tag: 'packaged-license-element', id: 'packaged-license'},
   {tag: 'quick-start-element', id: 'quick-start'},
   {tag: 'update-element', id: 'oobe-update'},
-  {tag: 'oobe-welcome-element', id: 'connect'},
 ];

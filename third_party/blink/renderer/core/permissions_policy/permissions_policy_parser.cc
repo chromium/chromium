@@ -245,8 +245,8 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     if (!src_origin_) {
       allowlist.self_if_matches = self_origin_->ToUrlOrigin();
     } else if (!src_origin_->IsOpaque()) {
-      allowlist.allowed_origins.emplace_back(src_origin_->ToUrlOrigin(),
-                                             /*has_subdomain_wildcard=*/false);
+      allowlist.allowed_origins.emplace_back(
+          OriginWithPossibleWildcards::FromOrigin(src_origin_->ToUrlOrigin()));
     } else {
       allowlist.matches_opaque_src = true;
     }
@@ -287,8 +287,8 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       else if (src_origin_ && EqualIgnoringASCIICase(origin_string, "'src'")) {
         if (!src_origin_->IsOpaque()) {
           origin_with_possible_wildcards =
-              OriginWithPossibleWildcards(src_origin_->ToUrlOrigin(),
-                                          /*has_subdomain_wildcard=*/false);
+              OriginWithPossibleWildcards::FromOrigin(
+                  src_origin_->ToUrlOrigin());
         } else {
           target_is_opaque = true;
         }

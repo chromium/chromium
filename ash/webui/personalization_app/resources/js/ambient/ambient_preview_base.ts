@@ -139,7 +139,7 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
     const classes = [];
 
     if (this.ambientModeEnabled_ || this.loading_) {
-      classes.push('zero-state-disabled');
+      classes.push('ambient-mode-enabled');
     }
 
     if (!this.ambientModeEnabled_) {

@@ -412,6 +412,7 @@ class FuzzedHostResolverManager : public HostResolverManager {
   // HostResolverManager implementation:
   int StartGloballyReachableCheck(const IPAddress& dest,
                                   const NetLogWithSource& net_log,
+                                  ClientSocketFactory* client_socket_factory,
                                   CompletionOnceCallback callback) override {
     int reachable_rv = is_globally_reachable_ ? OK : ERR_FAILED;
     if (start_globally_reachable_async_) {

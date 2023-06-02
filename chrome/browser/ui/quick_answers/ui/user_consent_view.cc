@@ -349,7 +349,7 @@ void UserConsentView::UpdateWidgetBounds() {
   int y = anchor_view_bounds_.y() - size.height() - kMarginDip;
   if (y < display::Screen::GetScreen()
               ->GetDisplayMatching(anchor_view_bounds_)
-              .bounds()
+              .work_area()
               .y()) {
     y = anchor_view_bounds_.bottom() + kMarginDip;
   }

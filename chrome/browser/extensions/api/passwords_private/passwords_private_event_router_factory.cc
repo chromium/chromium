@@ -22,7 +22,8 @@ PasswordsPrivateEventRouterFactory::GetForProfile(
 // static
 PasswordsPrivateEventRouterFactory*
 PasswordsPrivateEventRouterFactory::GetInstance() {
-  return base::Singleton<PasswordsPrivateEventRouterFactory>::get();
+  static base::NoDestructor<PasswordsPrivateEventRouterFactory> instance;
+  return instance.get();
 }
 
 PasswordsPrivateEventRouterFactory::PasswordsPrivateEventRouterFactory()
@@ -37,9 +38,8 @@ PasswordsPrivateEventRouterFactory::PasswordsPrivateEventRouterFactory()
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-PasswordsPrivateEventRouterFactory::
-    ~PasswordsPrivateEventRouterFactory() {
-}
+PasswordsPrivateEventRouterFactory::~PasswordsPrivateEventRouterFactory() =
+    default;
 
 KeyedService* PasswordsPrivateEventRouterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -9,7 +9,7 @@ import subprocess
 import sys
 import unittest
 
-from . import commands
+from signing import commands
 
 
 class TestCommands(unittest.TestCase):

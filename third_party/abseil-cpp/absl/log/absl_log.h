@@ -35,60 +35,69 @@
 
 #include "absl/log/internal/log_impl.h"
 
-#define ABSL_LOG(severity) ABSL_LOG_IMPL(_##severity)
-#define ABSL_PLOG(severity) ABSL_PLOG_IMPL(_##severity)
-#define ABSL_DLOG(severity) ABSL_DLOG_IMPL(_##severity)
+#define ABSL_LOG(severity) ABSL_LOG_INTERNAL_LOG_IMPL(_##severity)
+#define ABSL_PLOG(severity) ABSL_LOG_INTERNAL_PLOG_IMPL(_##severity)
+#define ABSL_DLOG(severity) ABSL_LOG_INTERNAL_DLOG_IMPL(_##severity)
 
 #define ABSL_LOG_IF(severity, condition) \
-  ABSL_LOG_IF_IMPL(_##severity, condition)
+  ABSL_LOG_INTERNAL_LOG_IF_IMPL(_##severity, condition)
 #define ABSL_PLOG_IF(severity, condition) \
-  ABSL_PLOG_IF_IMPL(_##severity, condition)
+  ABSL_LOG_INTERNAL_PLOG_IF_IMPL(_##severity, condition)
 #define ABSL_DLOG_IF(severity, condition) \
-  ABSL_DLOG_IF_IMPL(_##severity, condition)
+  ABSL_LOG_INTERNAL_DLOG_IF_IMPL(_##severity, condition)
 
-#define ABSL_LOG_EVERY_N(severity, n) ABSL_LOG_EVERY_N_IMPL(_##severity, n)
-#define ABSL_LOG_FIRST_N(severity, n) ABSL_LOG_FIRST_N_IMPL(_##severity, n)
-#define ABSL_LOG_EVERY_POW_2(severity) ABSL_LOG_EVERY_POW_2_IMPL(_##severity)
+#define ABSL_LOG_EVERY_N(severity, n) \
+  ABSL_LOG_INTERNAL_LOG_EVERY_N_IMPL(_##severity, n)
+#define ABSL_LOG_FIRST_N(severity, n) \
+  ABSL_LOG_INTERNAL_LOG_FIRST_N_IMPL(_##severity, n)
+#define ABSL_LOG_EVERY_POW_2(severity) \
+  ABSL_LOG_INTERNAL_LOG_EVERY_POW_2_IMPL(_##severity)
 #define ABSL_LOG_EVERY_N_SEC(severity, n_seconds) \
-  ABSL_LOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
+  ABSL_LOG_INTERNAL_LOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
 
-#define ABSL_PLOG_EVERY_N(severity, n) ABSL_PLOG_EVERY_N_IMPL(_##severity, n)
-#define ABSL_PLOG_FIRST_N(severity, n) ABSL_PLOG_FIRST_N_IMPL(_##severity, n)
-#define ABSL_PLOG_EVERY_POW_2(severity) ABSL_PLOG_EVERY_POW_2_IMPL(_##severity)
+#define ABSL_PLOG_EVERY_N(severity, n) \
+  ABSL_LOG_INTERNAL_PLOG_EVERY_N_IMPL(_##severity, n)
+#define ABSL_PLOG_FIRST_N(severity, n) \
+  ABSL_LOG_INTERNAL_PLOG_FIRST_N_IMPL(_##severity, n)
+#define ABSL_PLOG_EVERY_POW_2(severity) \
+  ABSL_LOG_INTERNAL_PLOG_EVERY_POW_2_IMPL(_##severity)
 #define ABSL_PLOG_EVERY_N_SEC(severity, n_seconds) \
-  ABSL_PLOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
+  ABSL_LOG_INTERNAL_PLOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
 
-#define ABSL_DLOG_EVERY_N(severity, n) ABSL_DLOG_EVERY_N_IMPL(_##severity, n)
-#define ABSL_DLOG_FIRST_N(severity, n) ABSL_DLOG_FIRST_N_IMPL(_##severity, n)
-#define ABSL_DLOG_EVERY_POW_2(severity) ABSL_DLOG_EVERY_POW_2_IMPL(_##severity)
+#define ABSL_DLOG_EVERY_N(severity, n) \
+  ABSL_LOG_INTERNAL_DLOG_EVERY_N_IMPL(_##severity, n)
+#define ABSL_DLOG_FIRST_N(severity, n) \
+  ABSL_LOG_INTERNAL_DLOG_FIRST_N_IMPL(_##severity, n)
+#define ABSL_DLOG_EVERY_POW_2(severity) \
+  ABSL_LOG_INTERNAL_DLOG_EVERY_POW_2_IMPL(_##severity)
 #define ABSL_DLOG_EVERY_N_SEC(severity, n_seconds) \
-  ABSL_DLOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
+  ABSL_LOG_INTERNAL_DLOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
 
 #define ABSL_LOG_IF_EVERY_N(severity, condition, n) \
-  ABSL_LOG_IF_EVERY_N_IMPL(_##severity, condition, n)
+  ABSL_LOG_INTERNAL_LOG_IF_EVERY_N_IMPL(_##severity, condition, n)
 #define ABSL_LOG_IF_FIRST_N(severity, condition, n) \
-  ABSL_LOG_IF_FIRST_N_IMPL(_##severity, condition, n)
+  ABSL_LOG_INTERNAL_LOG_IF_FIRST_N_IMPL(_##severity, condition, n)
 #define ABSL_LOG_IF_EVERY_POW_2(severity, condition) \
-  ABSL_LOG_IF_EVERY_POW_2_IMPL(_##severity, condition)
+  ABSL_LOG_INTERNAL_LOG_IF_EVERY_POW_2_IMPL(_##severity, condition)
 #define ABSL_LOG_IF_EVERY_N_SEC(severity, condition, n_seconds) \
-  ABSL_LOG_IF_EVERY_N_SEC_IMPL(_##severity, condition, n_seconds)
+  ABSL_LOG_INTERNAL_LOG_IF_EVERY_N_SEC_IMPL(_##severity, condition, n_seconds)
 
 #define ABSL_PLOG_IF_EVERY_N(severity, condition, n) \
-  ABSL_PLOG_IF_EVERY_N_IMPL(_##severity, condition, n)
+  ABSL_LOG_INTERNAL_PLOG_IF_EVERY_N_IMPL(_##severity, condition, n)
 #define ABSL_PLOG_IF_FIRST_N(severity, condition, n) \
-  ABSL_PLOG_IF_FIRST_N_IMPL(_##severity, condition, n)
+  ABSL_LOG_INTERNAL_PLOG_IF_FIRST_N_IMPL(_##severity, condition, n)
 #define ABSL_PLOG_IF_EVERY_POW_2(severity, condition) \
-  ABSL_PLOG_IF_EVERY_POW_2_IMPL(_##severity, condition)
+  ABSL_LOG_INTERNAL_PLOG_IF_EVERY_POW_2_IMPL(_##severity, condition)
 #define ABSL_PLOG_IF_EVERY_N_SEC(severity, condition, n_seconds) \
-  ABSL_PLOG_IF_EVERY_N_SEC_IMPL(_##severity, condition, n_seconds)
+  ABSL_LOG_INTERNAL_PLOG_IF_EVERY_N_SEC_IMPL(_##severity, condition, n_seconds)
 
 #define ABSL_DLOG_IF_EVERY_N(severity, condition, n) \
-  ABSL_DLOG_IF_EVERY_N_IMPL(_##severity, condition, n)
+  ABSL_LOG_INTERNAL_DLOG_IF_EVERY_N_IMPL(_##severity, condition, n)
 #define ABSL_DLOG_IF_FIRST_N(severity, condition, n) \
-  ABSL_DLOG_IF_FIRST_N_IMPL(_##severity, condition, n)
+  ABSL_LOG_INTERNAL_DLOG_IF_FIRST_N_IMPL(_##severity, condition, n)
 #define ABSL_DLOG_IF_EVERY_POW_2(severity, condition) \
-  ABSL_DLOG_IF_EVERY_POW_2_IMPL(_##severity, condition)
+  ABSL_LOG_INTERNAL_DLOG_IF_EVERY_POW_2_IMPL(_##severity, condition)
 #define ABSL_DLOG_IF_EVERY_N_SEC(severity, condition, n_seconds) \
-  ABSL_DLOG_IF_EVERY_N_SEC_IMPL(_##severity, condition, n_seconds)
+  ABSL_LOG_INTERNAL_DLOG_IF_EVERY_N_SEC_IMPL(_##severity, condition, n_seconds)
 
 #endif  // ABSL_LOG_ABSL_LOG_H_

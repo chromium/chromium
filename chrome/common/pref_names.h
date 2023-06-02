@@ -15,7 +15,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -25,7 +24,6 @@
 namespace prefs {
 
 // Profile prefs. Please add Local State prefs below instead.
-extern const char kChildAccountStatusKnown[];
 extern const char kPreinstalledApps[];
 extern const char kSafeBrowsingForTrustedSourcesEnabled[];
 extern const char kDisableScreenshots[];
@@ -358,6 +356,7 @@ extern const char kUpdateRequiredWarningPeriod[];
 extern const char kSystemProxyUserTrafficHostAndPort[];
 extern const char kEduCoexistenceArcMigrationCompleted[];
 extern const char kSharedStorage[];
+extern const char kTotalUniqueOsSettingsChanged[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kDeskAPIThirdPartyAccessEnabled[];
@@ -703,6 +702,7 @@ extern const char kWebAppsDailyMetrics[];
 extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsAppAgnosticIphState[];
+extern const char kWebAppsAppAgnosticMlState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
 extern const char kWebAppsDidMigrateDefaultChromeApps[];
 extern const char kWebAppsUninstalledDefaultChromeApps[];
@@ -863,6 +863,7 @@ extern const char kHSTSPolicyBypassList[];
 extern const char kPostQuantumEnabled[];
 extern const char kEncryptedClientHelloEnabled[];
 extern const char kInsecureHashesInTLSHandshakesEnabled[];
+extern const char kRSAKeyUsageForLocalAnchorsEnabled[];
 
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kDnsOverHttpsMode[];
@@ -1238,6 +1239,7 @@ extern const char kDesktopSharingHubEnabled[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kLastWhatsNewVersion[];
+extern const char kHasShownRefreshWhatsNew[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1293,6 +1295,8 @@ extern const char kOutOfProcessSystemDnsResolutionEnabled[];
 
 extern const char kHttpAllowlist[];
 extern const char kHttpsUpgradesEnabled[];
+
+extern const char kHoverCardImagesEnabled[];
 
 }  // namespace prefs
 

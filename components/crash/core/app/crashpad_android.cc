@@ -335,6 +335,8 @@ bool GetHandlerTrampoline(std::string* handler_trampoline,
 #define CURRENT_ABI "x86_64"
 #elif defined(__aarch64__)
 #define CURRENT_ABI "arm64-v8a"
+#elif defined(__riscv) && (__riscv_xlen == 64)
+#define CURRENT_ABI "riscv64"
 #else
 #error "Unsupported target abi"
 #endif

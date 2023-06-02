@@ -112,24 +112,22 @@ class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
                                     .Set("errorCode", 0)
                                     .Set("loadTime", 0)
                                     .Set("readyTime", 0);
-
-    std::vector<base::Value> translate_ready_params;
-    translate_ready_params.push_back(base::Value("TranslateMessage"));
-    translate_ready_params.emplace_back(std::move(translate_ready_dict));
-    web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
-                                       translate_ready_params);
+    web_frame_->CallJavaScriptFunction(
+        "common.sendWebKitMessage",
+        base::Value::List()
+            .Append("TranslateMessage")
+            .Append(std::move(translate_ready_dict)));
 
     auto translate_status_dict = base::Value::Dict()
                                      .Set("command", "status")
                                      .Set("errorCode", 0)
                                      .Set("pageSourceLanguage", "fr")
                                      .Set("translationTime", 0);
-
-    std::vector<base::Value> translate_status_params;
-    translate_status_params.push_back(base::Value("TranslateMessage"));
-    translate_status_params.emplace_back(std::move(translate_status_dict));
-    web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
-                                       translate_status_params);
+    web_frame_->CallJavaScriptFunction(
+        "common.sendWebKitMessage",
+        base::Value::List()
+            .Append("TranslateMessage")
+            .Append(std::move(translate_status_dict)));
   }
 
   void StartTranslation(const std::string& source,

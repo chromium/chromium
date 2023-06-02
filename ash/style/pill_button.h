@@ -70,22 +70,24 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
     // PillButton with default-elevated text and background colors, a leading
     // icon.
-    kDefaultElevatedWithIconLeading = kDefault | kIconLeading,
+    kDefaultElevatedWithIconLeading = kDefaultElevated | kIconLeading,
     // PillButton with default-elevated text and background colors, a following
     // icon.
-    kDefaultElevatedWithIconFollowing = kDefault | kIconFollowing,
+    kDefaultElevatedWithIconFollowing = kDefaultElevated | kIconFollowing,
     // PillButton with default-elevated text and background colors, a large
     // button size, a leading icon.
-    kDefaultElevatedLargeWithIconLeading = kDefault | kLarge | kIconLeading,
+    kDefaultElevatedLargeWithIconLeading =
+        kDefaultElevated | kLarge | kIconLeading,
     // PillButton with default-elevated text and background colors, a large
     // button size, a following icon.
-    kDefaultElevatedLargeWithIconFollowing = kDefault | kLarge | kIconFollowing,
+    kDefaultElevatedLargeWithIconFollowing =
+        kDefaultElevated | kLarge | kIconFollowing,
     // PillButton with default-elevated text and background colors, no icon.
-    kDefaultElevatedWithoutIcon = kDefault,
+    kDefaultElevatedWithoutIcon = kDefaultElevated,
     // PillButton with default-elevated text and background colors, a large
     // button size,
     // no icon.
-    kDefaultElevatedLargeWithoutIcon = kDefault | kLarge,
+    kDefaultElevatedLargeWithoutIcon = kDefaultElevated | kLarge,
 
     // PillButton with primary text and background colors, a leading icon.
     kPrimaryWithIconLeading = kPrimary | kIconLeading,
@@ -175,7 +177,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  void OnThemeChanged() override;
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
 

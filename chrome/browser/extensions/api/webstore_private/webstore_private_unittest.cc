@@ -318,7 +318,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
   ExtensionService* extension_service() { return service_; }
 
  private:
-  raw_ptr<ExtensionService> service_ = nullptr;
+  raw_ptr<ExtensionService, DanglingUntriaged> service_ = nullptr;
 };
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,

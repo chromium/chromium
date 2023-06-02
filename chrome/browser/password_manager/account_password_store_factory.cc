@@ -128,7 +128,8 @@ AccountPasswordStoreFactory::GetForProfile(Profile* profile,
 
 // static
 AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
-  return base::Singleton<AccountPasswordStoreFactory>::get();
+  static base::NoDestructor<AccountPasswordStoreFactory> instance;
+  return instance.get();
 }
 
 AccountPasswordStoreFactory::AccountPasswordStoreFactory()

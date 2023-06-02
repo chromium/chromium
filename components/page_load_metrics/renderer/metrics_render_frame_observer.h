@@ -26,6 +26,10 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
+namespace blink {
+struct JavaScriptFrameworkDetectionResult;
+}  // namespace blink
+
 namespace page_load_metrics {
 
 class PageTimingMetricsSender;
@@ -57,6 +61,8 @@ class MetricsRenderFrameObserver
       blink::UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
+  void DidObserveJavaScriptFrameworks(
+      const blink::JavaScriptFrameworkDetectionResult&) override;
   void DidObserveSubresourceLoad(
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(

@@ -166,8 +166,6 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
     {"edu_coexistence_template.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS},
     {"edu_coexistence_css.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS},
-    {"an_error_occurred.svg", IDR_CHROME_OS_AN_ERROR_OCCURRED_SVG},
-    {"no_network.svg", IDR_CHROME_OS_NO_NETWORK_SVG},
     {"account_manager_signin_blocked_by_policy.svg",
      IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
 

@@ -173,8 +173,8 @@ class WebAppShortcutManager {
 
   const raw_ptr<Profile> profile_;
 
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
   raw_ptr<WebAppFileHandlerManager, DanglingUntriaged> file_handler_manager_ =
       nullptr;
   raw_ptr<WebAppProtocolHandlerManager, DanglingUntriaged>

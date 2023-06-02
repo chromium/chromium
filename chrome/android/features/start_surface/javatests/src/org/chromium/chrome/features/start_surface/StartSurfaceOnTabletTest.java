@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesGridLayout;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.tab.Tab;
@@ -361,14 +363,16 @@ public class StartSurfaceOnTabletTest {
 
         Resources res = cta.getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
-        int expectedVerticalMargin =
-                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_margin_tablet);
+        int expectedTopMargin =
+                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
+        int expectedBottomMargin =
+                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
-        Assert.assertEquals(expectedVerticalMargin, marginLayoutParams.topMargin);
-        Assert.assertEquals(expectedVerticalMargin, marginLayoutParams.bottomMargin);
+        Assert.assertEquals(expectedTopMargin, marginLayoutParams.topMargin);
+        Assert.assertEquals(expectedBottomMargin, marginLayoutParams.bottomMargin);
     }
 
     @Test
@@ -452,28 +456,32 @@ public class StartSurfaceOnTabletTest {
         int expectedContainerTwoSideMarginLandscape =
                 res.getDimensionPixelSize(org.chromium.chrome.R.dimen.ntp_search_box_start_margin)
                         * 2
-                + res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen
-                                .mvt_container_to_ntp_right_extra_margin_two_feed_tablet)
-                + res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed);
+                + res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed) / 2
+                        * 2;
         int expectedContainerTwoSideMarginPortrait =
-                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed)
-                + res.getDimensionPixelSize(
-                        org.chromium.chrome.R.dimen
-                                .mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
+                res.getDimensionPixelSize(org.chromium.chrome.R.dimen.tile_grid_layout_bleed) / 2
+                * 2;
+        int expectedContainerRightExtraMargin = res.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen
+                        .mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
         // Verifies the margins of the module most visited tiles and its inner view are correct.
         verifyMostVisitedTileMargin(expectedContainerTwoSideMarginLandscape,
-                expectedContainerTwoSideMarginPortrait, 0, 0, /*isScrollable=*/true, ntp);
+                expectedContainerTwoSideMarginPortrait, expectedContainerRightExtraMargin, 0, 0,
+                /*isScrollable=*/true, ntp);
 
         int expectedMvtBottomMargin = res.getDimensionPixelSize(
                 org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
-        int expectedSingleTabCardTopAndBottomMargin = res.getDimensionPixelSize(
-                org.chromium.chrome.R.dimen
-                        .single_tab_card_top_and_bottom_margin_carousel_mvt_tablet);
+        int expectedSingleTabCardTopMargin = -res.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.single_tab_card_top_margin_tablet);
+        int expectedSingleTabCardBottomMargin =
+                res.getDimensionPixelOffset(
+                        org.chromium.chrome.R.dimen.single_tab_card_bottom_margin_tablet)
+                - res.getDimensionPixelOffset(
+                        org.chromium.chrome.R.dimen.feed_header_tab_list_view_top_bottom_margin);
         // Verifies the vertical margins of the module most visited tiles and single tab card are
         // correct.
         verifyMvtAndSingleTabCardVerticalMargins(expectedMvtBottomMargin,
-                -expectedSingleTabCardTopAndBottomMargin, expectedSingleTabCardTopAndBottomMargin,
+                expectedSingleTabCardTopMargin, expectedSingleTabCardBottomMargin,
                 /*isNtpHomepage=*/true, ntp);
     }
 
@@ -530,17 +538,22 @@ public class StartSurfaceOnTabletTest {
                 org.chromium.chrome.R.dimen.tile_grid_layout_portrait_edge_margin_tablet);
         // Verifies the margins of the module most visited tiles and its inner view are correct.
         verifyMostVisitedTileMargin(expectedContainerTwoSideMargin, expectedContainerTwoSideMargin,
-                expectedLandScapeEdgeMargin, expectedPortraitEdgeMargin, /*isScrollable=*/false,
+                0, expectedLandScapeEdgeMargin, expectedPortraitEdgeMargin, /*isScrollable=*/false,
                 ntp);
 
         int expectedMvtBottomMargin = res.getDimensionPixelSize(
                 org.chromium.chrome.R.dimen.mvt_container_bottom_margin_tablet);
-        int expectedSingleTabCardTopAndBottomMargin = res.getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.single_tab_card_top_and_bottom_margin_grid_mvt_tablet);
+        int expectedSingleTabCardTopMargin = -res.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.single_tab_card_top_margin_tablet);
+        int expectedSingleTabCardBottomMargin =
+                res.getDimensionPixelOffset(
+                        org.chromium.chrome.R.dimen.single_tab_card_bottom_margin_tablet)
+                - res.getDimensionPixelOffset(
+                        org.chromium.chrome.R.dimen.feed_header_tab_list_view_top_bottom_margin);
         // Verifies the vertical margins of the module most visited tiles and single tab card are
         // correct.
         verifyMvtAndSingleTabCardVerticalMargins(expectedMvtBottomMargin,
-                -expectedSingleTabCardTopAndBottomMargin, expectedSingleTabCardTopAndBottomMargin,
+                expectedSingleTabCardTopMargin, expectedSingleTabCardBottomMargin,
                 /*isNtpHomepage=*/true, ntp);
     }
 
@@ -580,6 +593,9 @@ public class StartSurfaceOnTabletTest {
      *        most visited tiles container when the tablet is in landscape.
      * @param expectedContainerTwoSideMarginPortrait The expected sum of two side margins of the
      *        most visited tiles container when the tablet is in portrait.
+     * @param expectedContainerRightExtraMargin The extra value might be added to the right margin
+     *        of the most visited tiles container when there is a half-tile element at the end of
+     *        the scrollable most visited tiles.
      * @param expectedEdgeMarginLandScape The expected edge margin of the most visited tiles element
      *        to the MV tiles layout when the tablet is in landscape.
      * @param expectedEdgeMarginPortrait The expected edge margin of the most visited tiles element
@@ -588,8 +604,9 @@ public class StartSurfaceOnTabletTest {
      * @param ntp The current {@link NewTabPage}.
      */
     private void verifyMostVisitedTileMargin(int expectedContainerTwoSideMarginLandScape,
-            int expectedContainerTwoSideMarginPortrait, int expectedEdgeMarginLandScape,
-            int expectedEdgeMarginPortrait, boolean isScrollable, NewTabPage ntp) {
+            int expectedContainerTwoSideMarginPortrait, int expectedContainerRightExtraMargin,
+            int expectedEdgeMarginLandScape, int expectedEdgeMarginPortrait, boolean isScrollable,
+            NewTabPage ntp) {
         NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
         View mvTilesContainer =
                 ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
@@ -604,8 +621,9 @@ public class StartSurfaceOnTabletTest {
         waitForScreenOrientation("\"landscape\"");
         // Verifies the margins added for the most visited tiles are correct.
         verifyMostVisitedTileMarginImpl(ntpLayout, mvTilesContainer, mvTilesLayout, mvTileItem1,
-                mvTileItem2, expectedContainerTwoSideMarginLandScape, expectedEdgeMarginLandScape,
-                mvTilesItemWidth, isScrollable);
+                mvTileItem2, expectedContainerTwoSideMarginLandScape,
+                expectedContainerRightExtraMargin, expectedEdgeMarginLandScape, mvTilesItemWidth,
+                isScrollable);
 
         // Start off in portrait screen orientation.
         mActivityTestRule.getActivity().setRequestedOrientation(
@@ -613,8 +631,9 @@ public class StartSurfaceOnTabletTest {
         waitForScreenOrientation("\"portrait\"");
         // Verifies the margins added for the most visited tiles are correct.
         verifyMostVisitedTileMarginImpl(ntpLayout, mvTilesContainer, mvTilesLayout, mvTileItem1,
-                mvTileItem2, expectedContainerTwoSideMarginPortrait, expectedEdgeMarginPortrait,
-                mvTilesItemWidth, isScrollable);
+                mvTileItem2, expectedContainerTwoSideMarginPortrait,
+                expectedContainerRightExtraMargin, expectedEdgeMarginPortrait, mvTilesItemWidth,
+                isScrollable);
     }
 
     /**
@@ -627,6 +646,10 @@ public class StartSurfaceOnTabletTest {
      * @param mvTileItem2 The second element of the most visited tile.
      * @param expectedContainerTwoSideMargin The expected sum of two side margins of the
      *                                       most visited tiles container.
+     * @param expectedContainerRightExtraMargin The extra value might be added to the right margin
+     *                                          of the most visited tiles container when there is
+     *                                          a half-tile element at the end of the scrollable
+     *                                          most visited tiles.
      * @param expectedEdgeMargin The expected edge margin of the most visited tiles element
      *                           to the MV tiles layout.
      * @param mvTilesItemWidth The width of the elements in the most visited tile.
@@ -634,39 +657,76 @@ public class StartSurfaceOnTabletTest {
      */
     private void verifyMostVisitedTileMarginImpl(View ntpLayout, View mvTilesContainer,
             View mvTilesLayout, View mvTileItem1, View mvTileItem2,
-            int expectedContainerTwoSideMargin, int expectedEdgeMargin, int mvTilesItemWidth,
-            boolean isScrollable) {
+            int expectedContainerTwoSideMargin, int expectedContainerRightExtraMargin,
+            int expectedEdgeMargin, int mvTilesItemWidth, boolean isScrollable) {
         int mvtContainerWidth = mvTilesContainer.getWidth();
         int mvTilesLayoutWidth = mvTilesLayout.getWidth();
         int mvt1LeftMargin = ((MarginLayoutParams) mvTileItem1.getLayoutParams()).leftMargin;
         int mvt2LeftMargin = ((MarginLayoutParams) mvTileItem2.getLayoutParams()).leftMargin;
 
-        Assert.assertEquals("The container's margin with respect to the layout of the new tab "
-                        + "page is incorrect.",
-                expectedContainerTwoSideMargin, ntpLayout.getWidth() - mvtContainerWidth);
-
         if (isScrollable) {
             Assert.assertTrue("The width of the most visited tiles layout is wrong.",
-                    mvtContainerWidth < mvTilesLayoutWidth);
-            int mvtWithPadding = mvTilesItemWidth + mvt2LeftMargin;
-            int visibleMvtNum = mvtContainerWidth / mvtWithPadding;
-            Assert.assertEquals("It fails to meet the requirement that half of "
-                            + "the most visited tiles element should be at the end of the MV tiles "
-                            + "when the new tab page is initially loaded.",
-                    mvtContainerWidth - visibleMvtNum * mvtWithPadding, mvTilesItemWidth / 2,
-                    mvTilesItemWidth / 20);
+                    mvtContainerWidth <= mvTilesLayoutWidth);
+            int tileNum =
+                    ((ViewGroup) ntpLayout.findViewById(org.chromium.chrome.R.id.mv_tiles_layout))
+                            .getChildCount();
+            int minIntervalMargin = ntpLayout.getResources().getDimensionPixelOffset(
+                    org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
+            boolean isHalfMvt = tileNum * mvTilesItemWidth + (tileNum - 1) * minIntervalMargin
+                    > mvtContainerWidth;
+            if (isHalfMvt) {
+                Assert.assertEquals(
+                        "The container's margin with respect to the layout of the new tab "
+                                + "page is incorrect.",
+                        expectedContainerTwoSideMargin + expectedContainerRightExtraMargin,
+                        ntpLayout.getWidth() - mvtContainerWidth, 3);
+                int mvtWithPadding = mvTilesItemWidth + mvt2LeftMargin;
+                int visibleMvtNum = mvtContainerWidth / mvtWithPadding;
+                Assert.assertEquals("It fails to meet the requirement that half of "
+                                + "the most visited tiles element should be at the end of the MV "
+                                + "tiles when the new tab page is initially loaded with too many "
+                                + "tile elements.",
+                        mvtContainerWidth - visibleMvtNum * mvtWithPadding, mvTilesItemWidth / 2,
+                        mvTilesItemWidth / 20);
+            } else {
+                Assert.assertTrue(
+                        "The container's margin with respect to the layout of the new tab "
+                                + "page is incorrect.",
+                        expectedContainerTwoSideMargin <= ntpLayout.getWidth() - mvtContainerWidth);
+                Assert.assertEquals("It fails to meet the requirement that all of "
+                                + "the most visited tiles element should be fitted in the MV tiles "
+                                + "when the new tab page is initially loaded without too many tile "
+                                + "elements.",
+                        mvtContainerWidth,
+                        tileNum * mvTilesItemWidth + (tileNum - 1) * mvt2LeftMargin);
+            }
         } else {
+            Assert.assertEquals("The container's margin with respect to the "
+                            + "layout of the new tab page is incorrect.",
+                    expectedContainerTwoSideMargin, ntpLayout.getWidth() - mvtContainerWidth, 3);
             Assert.assertTrue("The width of the most visited tiles layout is wrong.",
                     mvtContainerWidth == mvTilesLayoutWidth);
-            Assert.assertEquals("The edge margin of the most visited tiles element to "
-                            + "the MV tiles layout is wrong.",
-                    mvt1LeftMargin, expectedEdgeMargin);
+            int minHorizontalSpacing = ((MostVisitedTilesGridLayout) mvTilesLayout)
+                                               .getMinHorizontalSpacingForTesting();
+            int maxHorizontalSpacing = ((MostVisitedTilesGridLayout) mvTilesLayout)
+                                               .getMaxHorizontalSpacingForTesting();
+            int numColumns = MathUtils.clamp((mvTilesLayoutWidth + minHorizontalSpacing)
+                            / (mvTilesItemWidth + minHorizontalSpacing),
+                    1, MostVisitedTilesCoordinator.MAX_TILE_COLUMNS_FOR_GRID);
             int expectedIntervalPadding =
-                    (mvTilesLayoutWidth - mvTilesItemWidth * 4 - expectedEdgeMargin * 2) / 3;
-            Assert.assertEquals(
-                    "The padding between each element of the most visited tiles is incorrect.",
-                    expectedIntervalPadding,
-                    mvt2LeftMargin - mvTilesItemWidth - expectedEdgeMargin);
+                    Math.round((float) (mvTilesLayoutWidth - mvTilesItemWidth * numColumns
+                                       - expectedEdgeMargin * 2)
+                            / Math.max(1, numColumns - 1));
+            if (expectedIntervalPadding >= minHorizontalSpacing
+                    && expectedIntervalPadding <= maxHorizontalSpacing) {
+                Assert.assertEquals("The edge margin of the most visited tiles element to "
+                                + "the MV tiles layout is wrong.",
+                        expectedEdgeMargin, mvt1LeftMargin, 1);
+                Assert.assertEquals(
+                        "The padding between each element of the most visited tiles is incorrect.",
+                        expectedIntervalPadding,
+                        mvt2LeftMargin - mvTilesItemWidth - expectedEdgeMargin);
+            }
         }
     }
 

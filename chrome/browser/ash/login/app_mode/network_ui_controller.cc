@@ -65,9 +65,13 @@ NetworkUiController::NetworkUiController(
     Observer& observer,
     LoginDisplayHost* host,
     AppLaunchSplashScreenView* splash_screen)
-    : observer_(observer), host_(host), splash_screen_view_(splash_screen) {}
+    : observer_(observer), host_(host), splash_screen_view_(splash_screen) {
+  splash_screen_view_->SetDelegate(this);
+}
 
-NetworkUiController::~NetworkUiController() = default;
+NetworkUiController::~NetworkUiController() {
+  splash_screen_view_->SetDelegate(nullptr);
+}
 
 void NetworkUiController::SetProfile(Profile* profile) {
   profile_ = profile;

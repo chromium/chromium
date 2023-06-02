@@ -242,7 +242,6 @@ builder(
             apply_configs = [
                 "dcheck",
                 "mb",
-                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
@@ -250,7 +249,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    xcode = xcode.x14betabots,
 )
 
 builder(
@@ -282,7 +280,6 @@ builder(
             apply_configs = [
                 "dcheck",
                 "mb",
-                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
@@ -290,7 +287,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    xcode = xcode.x14betabots,
 )
 
 builder(

@@ -278,7 +278,7 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
    * Transfers focus to the input. Called when a non button element on the
    * PIN button area is clicked to prevent focus from leaving the input.
    */
-  private onRootTap_(): void {
+  private onRootClick_(): void {
     // Focus the input and place the selected region to its exact previous
     // location, as this function will not be called by something that will also
     // modify the input value.
@@ -294,9 +294,9 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
   }
 
   /**
-   * Called when a keypad number has been tapped.
+   * Called when a keypad number has been clicked.
    */
-  private onNumberTap_(event: Event): void {
+  private onNumberClick_(event: Event): void {
     const button = event.target;
     assertInstanceof(button, CrButtonElement);
     const numberValue = button.getAttribute('value');
@@ -367,7 +367,7 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
    * touch. Note: This does not support repeatedly backspacing by holding down
    * the space or enter key like touch or mouse does.
    */
-  private onBackspaceTap_(event: Event): void {
+  private onBackspaceClick_(event: Event): void {
     if (!receivedEventFromKeyboard(event)) {
       return;
     }

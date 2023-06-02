@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -24,6 +25,8 @@ class MdTextButton;
 }  // namespace views
 
 class DesktopMediaPickerViews;
+
+BASE_DECLARE_FEATURE(kShareThisTabDialog);
 
 // Dialog view used for DesktopMediaPickerViews.
 //
@@ -46,6 +49,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
       delete;
   ~DesktopMediaPickerDialogView() override;
 
+  void RecordUmaDismissal() const;
+
   // Called by parent (DesktopMediaPickerViews) when it's destroyed.
   void DetachParent();
 
@@ -57,10 +62,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void OnSourceListLayoutChanged();
   void OnDelegatedSourceListDismissed();
   void OnCanReselectChanged(const DesktopMediaListController* controller);
-
-  // Relevant for UMA. (E.g. for DesktopMediaPickerViews to report
-  // when the dialog gets dismissed.)
-  DialogType GetDialogType() const;
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -140,6 +141,9 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DialogType dialog_type_;
 
   absl::optional<content::DesktopMediaID> accepted_source_;
+
+  // For recording dialog-duration UMA histograms.
+  const base::TimeTicks dialog_open_time_;
 };
 
 // Implementation of DesktopMediaPicker for Views.

@@ -1066,7 +1066,8 @@ TEST_P(PaintChunksToCcLayerTest, EmptyChunkRect) {
 static sk_sp<cc::PaintFilter> MakeFilter(gfx::RectF bounds) {
   PaintFilter::CropRect rect(gfx::RectFToSkRect(bounds));
   return sk_make_sp<ColorFilterPaintFilter>(
-      SkColorFilters::Blend(SK_ColorBLUE, SkBlendMode::kSrc), nullptr, &rect);
+      cc::ColorFilter::MakeBlend(SkColors::kBlue, SkBlendMode::kSrc), nullptr,
+      &rect);
 }
 
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {

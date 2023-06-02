@@ -2289,8 +2289,6 @@ void Detach(AXPlatformNodeAuraLinuxObject* atk_object) {
     return;
 
   atk_object->m_object = nullptr;
-  atk_object_notify_state_change(ATK_OBJECT(atk_object), ATK_STATE_DEFUNCT,
-                                 TRUE);
 }
 
 }  //  namespace atk_object

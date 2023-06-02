@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
+
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_VISIBLE;
@@ -17,10 +20,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -71,6 +76,14 @@ class TabListContainerViewBinder {
             view.setShadowTopOffset(model.get(SHADOW_TOP_OFFSET));
         } else if (BOTTOM_PADDING == propertyKey) {
             view.setBottomPadding(model.get(BOTTOM_PADDING));
+        } else if (FOCUS_TAB_INDEX_FOR_ACCESSIBILITY == propertyKey) {
+            int index = model.get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
+            RecyclerView.ViewHolder selectedViewHolder =
+                    view.findViewHolderForAdapterPosition(index);
+            if (selectedViewHolder == null) return;
+            View focusView = selectedViewHolder.itemView;
+            focusView.requestFocus();
+            focusView.sendAccessibilityEvent(TYPE_VIEW_FOCUSED);
         }
     }
 

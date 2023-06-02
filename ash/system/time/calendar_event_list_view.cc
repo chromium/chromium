@@ -226,11 +226,13 @@ void CalendarEventListView::OnEventsFetched(
 }
 
 std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
-    std::list<google_apis::calendar::CalendarEvent> events) {
+    std::list<google_apis::calendar::CalendarEvent> events,
+    int parent_view_id) {
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kChildEventListBetweenChildSpacing));
+  container->SetID(parent_view_id);
 
   const int events_size = events.size();
   for (SingleDayEventList::iterator it = events.begin(); it != events.end();
@@ -269,10 +271,12 @@ void CalendarEventListView::UpdateListItems() {
     // and early return (the following methods in `UpdateListItems` handle empty
     // state etc).
     if (!multi_day_events.empty()) {
-      content_view_->AddChildView(CreateChildEventListView(multi_day_events));
+      content_view_->AddChildView(CreateChildEventListView(
+          multi_day_events, kEventListMultiDayEventsContainer));
     }
     if (!all_other_events.empty()) {
-      content_view_->AddChildView(CreateChildEventListView(all_other_events));
+      content_view_->AddChildView(CreateChildEventListView(
+          all_other_events, kEventListSameDayEventsContainer));
     }
 
     content_view_->InvalidateLayout();

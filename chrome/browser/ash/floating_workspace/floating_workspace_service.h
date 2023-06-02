@@ -60,7 +60,9 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Used in constructor for initializations
   void Init();
-  void InitForTest(TestFloatingWorkspaceVersion version);
+  void InitForTest(
+      TestFloatingWorkspaceVersion version,
+      raw_ptr<desks_storage::DeskSyncService> fake_desk_sync_service);
 
   // Add subscription to foreign session changes.
   void SubscribeToForeignSessionUpdates();
@@ -149,6 +151,11 @@ class FloatingWorkspaceService : public KeyedService,
   void OnTemplateUploaded(
       desks_storage::DeskModel::AddOrUpdateEntryStatus status,
       std::unique_ptr<DeskTemplate> new_entry);
+
+  // Get the associated floating workspace uuid for the current device. Return
+  // an absl::nullopt if there is no floating workspace uuid that is associated
+  // with the current device.
+  absl::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 

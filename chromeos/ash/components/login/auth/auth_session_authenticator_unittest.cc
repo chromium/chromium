@@ -260,15 +260,14 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
         local_state_.registry());
   }
 
-  void CreateAuthenticator(bool is_ephemeral_mount_enforced) {
+  void CreateAuthenticator() {
     auto owned_safe_mode_delegate = std::make_unique<MockSafeModeDelegate>();
     safe_mode_delegate_ = owned_safe_mode_delegate.get();
     ON_CALL(*safe_mode_delegate_, IsSafeMode).WillByDefault(Return(false));
     RegisterPrefs();
     authenticator_ = base::MakeRefCounted<AuthSessionAuthenticator>(
         &auth_status_consumer_, std::move(owned_safe_mode_delegate),
-        /*user_recorder=*/base::DoNothing(), is_ephemeral_mount_enforced,
-        &local_state_);
+        /*user_recorder=*/base::DoNothing(), &local_state_);
   }
 
   MockUserDataAuthClient& userdataauth() { return userdataauth_; }
@@ -312,7 +311,7 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
 // Test the `CompleteLogin()` method in the new regular user scenario.
 TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -338,7 +337,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
       .WillOnce(ReplyWith(ListAuthFactorsReply()));
 
   // Act.
-  authenticator().CompleteLogin(std::move(user_context));
+  authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -349,7 +348,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
 // Test the `CompleteLogin()` method in the existing regular user scenario.
 TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -371,7 +370,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
 
   // Act.
-  authenticator().CompleteLogin(std::move(user_context));
+  authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -384,7 +383,7 @@ TEST_F(AuthSessionAuthenticatorTest,
        CompleteLoginRegularExistingPasswordChange) {
   feature_list_.InitAndDisableFeature(ash::features::kCryptohomeRecovery);
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -406,7 +405,7 @@ TEST_F(AuthSessionAuthenticatorTest,
       .WillOnce(ReplyWith(BuildAuthenticateFactorFailureReply()));
 
   // Act.
-  authenticator().CompleteLogin(std::move(user_context));
+  authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
   const UserContext got_user_context =
       on_password_change_detected_future().Get();
 
@@ -421,7 +420,7 @@ TEST_F(AuthSessionAuthenticatorTest,
        CompleteLoginRegularExistingPasswordChangeRecoveryEnabled) {
   feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecovery);
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -443,7 +442,7 @@ TEST_F(AuthSessionAuthenticatorTest,
       .WillOnce(ReplyWith(BuildAuthenticateFactorFailureReply()));
 
   // Act.
-  authenticator().CompleteLogin(std::move(user_context));
+  authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
   const UserContext got_user_context =
       on_password_change_detected_future().Get();
 
@@ -455,7 +454,7 @@ TEST_F(AuthSessionAuthenticatorTest,
 // Test the `CompleteLogin()` method in the ephemeral user scenario.
 TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -480,7 +479,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
       .WillOnce(ReplyWith(ListAuthFactorsReply()));
 
   // Act.
-  authenticator().CompleteLogin(std::move(user_context));
+  authenticator().CompleteLogin(/*ephemeral=*/true, std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -492,7 +491,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
 // requested while having stale persistent data for the same user.
 TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -531,7 +530,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
   }
 
   // Act.
-  authenticator().CompleteLogin(std::move(user_context));
+  authenticator().CompleteLogin(/*ephemeral=*/true, std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -542,7 +541,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
 // Test the `AuthenticateToLogin()` method in the successful scenario.
 TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -565,7 +564,8 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
 
   // Act.
-  authenticator().AuthenticateToLogin(std::move(user_context));
+  authenticator().AuthenticateToLogin(/*ephemeral=*/false,
+                                      std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -577,7 +577,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
 // scenario.
 TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -596,7 +596,8 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
       .WillOnce(ReplyWith(BuildAuthenticateFactorFailureReply()));
 
   // Act.
-  authenticator().AuthenticateToLogin(std::move(user_context));
+  authenticator().AuthenticateToLogin(/*ephemeral=*/false,
+                                      std::move(user_context));
   const AuthFailure auth_failure = on_auth_failure_future().Get();
 
   // Assert.
@@ -606,7 +607,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
 // Test the `LoginOffTheRecord()` method in the successful scenario.
 TEST_F(AuthSessionAuthenticatorTest, LoginOffTheRecord) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   EXPECT_CALL(userdataauth(), PrepareGuestVault(_, _))
       .WillOnce(ReplyWith(PrepareGuestVaultReply()));
 
@@ -618,7 +619,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginOffTheRecord) {
 // Test the `LoginAsPublicSession()` method in the successful scenario.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, kAccountId);
   EXPECT_CALL(
       userdataauth(),
@@ -645,12 +646,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
 // homedir needs to be created.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
   // Arrange.
-
-  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
-  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
-  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
-  // accounts anymore.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+  CreateAuthenticator();
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
                                                      AUTH_INTENT_DECRYPT),
@@ -683,12 +679,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
 // homedir already exists.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
   // Arrange.
-
-  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
-  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
-  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
-  // accounts anymore.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+  CreateAuthenticator();
   KeyData key_data;
   key_data.set_type(KeyData::KEY_TYPE_KIOSK);
   EXPECT_CALL(userdataauth(),
@@ -718,12 +709,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
 // Test the `LoginAsKioskAccount()` method in the ephemeral kiosk scenario.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
   // Arrange.
-
-  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
-  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
-  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
-  // accounts anymore.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   EXPECT_CALL(
       userdataauth(),
       StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_EPHEMERAL_USER,
@@ -749,12 +735,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
 // kiosk is requested while having stale persistent data for the same user.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
   // Arrange.
-
-  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
-  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
-  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
-  // accounts anymore.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   {
     testing::InSequence seq;
     EXPECT_CALL(userdataauth(),
@@ -793,7 +774,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
 // Test the `AuthenticateToUnlock()` method in the successful scenario.
 TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -813,7 +794,8 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
       .WillOnce(ReplyWith(BuildAuthenticateFactorSuccessReply()));
 
   // Act.
-  authenticator().AuthenticateToUnlock(std::move(user_context));
+  authenticator().AuthenticateToUnlock(/*ephemeral=*/false,
+                                       std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -825,7 +807,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
 // ephemeral user with the configured password.
 TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -846,7 +828,8 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
       .WillOnce(ReplyWith(BuildAuthenticateFactorSuccessReply()));
 
   // Act.
-  authenticator().AuthenticateToUnlock(std::move(user_context));
+  authenticator().AuthenticateToUnlock(/*ephemeral=*/true,
+                                       std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -858,7 +841,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
 // Managed Guest Session with the configured password (e.g., Imprivata).
 TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_PUBLIC_ACCOUNT, kAccountId);
   EXPECT_CALL(
@@ -878,7 +861,8 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
       .WillOnce(ReplyWith(BuildAuthenticateFactorSuccessReply()));
 
   // Act.
-  authenticator().AuthenticateToUnlock(std::move(user_context));
+  authenticator().AuthenticateToUnlock(/*ephemeral=*/true,
+                                       std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -890,7 +874,7 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
 // scenario.
 TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  CreateAuthenticator();
   auto user_context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_REGULAR, kAccountId);
   user_context->SetKey(Key(kPassword));
@@ -909,7 +893,8 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
       .WillOnce(ReplyWith(BuildAuthenticateFactorFailureReply()));
 
   // Act.
-  authenticator().AuthenticateToUnlock(std::move(user_context));
+  authenticator().AuthenticateToUnlock(/*ephemeral=*/false,
+                                       std::move(user_context));
   const AuthFailure auth_failure = on_auth_failure_future().Get();
 
   // Assert.

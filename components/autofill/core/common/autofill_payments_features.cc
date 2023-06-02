@@ -181,6 +181,13 @@ BASE_FEATURE(kAutofillFillMerchantPromoCodeFields,
              "AutofillFillMerchantPromoCodeFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, legal term of save card view and virtual card enroll view will
+// be moved before action buttons and icon will be moved after titles in those
+// views.
+BASE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment,
+             "AutofillMoveLegalTermsAndIconForNewCardEnrollment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will offer saving a card to the users when the Chrome
 // detects a card number with the last 4 digits that matches an existing server
 // card but has a different expiration date.
@@ -270,6 +277,14 @@ const base::FeatureParam<int>
     kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays{
         &kAutofillEnforceDelaysInStrikeDatabase,
         "autofill_virtual_card_enroll_delay_in_strike_database_in_days", 7};
+
+#if BUILDFLAG(IS_IOS)
+// When enabled, use two '•' when displaying the last four digits of a credit
+// card number. (E.g., '•• 8888' rather than '•••• 8888').
+BASE_FEATURE(kAutofillUseTwoDotsForLastFourDigits,
+             "AutofillUseTwoDotsForLastFourDigits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

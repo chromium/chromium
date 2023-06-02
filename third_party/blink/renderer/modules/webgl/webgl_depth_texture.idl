@@ -26,8 +26,7 @@
 // https://www.khronos.org/registry/webgl/extensions/WEBGL_depth_texture/
 
 [
-    LegacyNoInterfaceObject,
-    DoNotCheckConstants
+    LegacyNoInterfaceObject
 ] interface WebGLDepthTexture {
     const unsigned long UNSIGNED_INT_24_8_WEBGL = 0x84FA;
 };

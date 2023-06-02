@@ -167,9 +167,9 @@ namespace autofill::internal {
 // - If G is remote to F and a navigation causes G's render process to be
 //   swapped, then F may continue to refer to G by the same RemoteFrameToken
 //   as before even if G's LocalFrameToken has changed.
-// The first example is the reason why UpdateTreeOfRendererForm() may trigger a
-// reparse in a parent frame. The second example is the reason why we do not
-// cache LocalFrameTokens.
+// The first example is the reason why UpdateTreeOfRendererForm() sometimes
+// triggers form re-extraction in a parent frame. The second example is the
+// reason why we do not cache LocalFrameTokens.
 class FormForest {
  public:
   // A FrameData is a frame node in the form tree. Its children are FormData
@@ -214,7 +214,7 @@ class FormForest {
     // empty FrameData is created when a parent form can Resolve() a child's
     // LocalFrameToken and no form from that child frame has been seen yet.
     // However, if |child_forms| is non-empty, then driver is non-null.
-    raw_ptr<AutofillDriver> driver = nullptr;
+    raw_ptr<AutofillDriver, DanglingUntriaged> driver = nullptr;
   };
 
   FormForest();
@@ -260,9 +260,8 @@ class FormForest {
   // The |field_type_map| should contain the field types of the fields in
   // |browser_form|.
   //
-  // There are two modes that determine whether a field is *safe to fill*.
-  // By default, a field is safe to fill iff at least one of the conditions
-  // (1–3) and additionally condition (4) hold:
+  // A field is *safe to fill* iff at least one of the conditions (1–3) and
+  // additionally condition (4) hold:
   //
   // (1) The field's origin is the |triggered_origin|.
   // (2) The field's origin is the main origin, the field's type in
@@ -271,16 +270,8 @@ class FormForest {
   //     frame.
   // (3) The |triggered_origin| is the main origin and the policy-controlled
   //     feature shared-autofill is enabled in the field's frame.
-  // (4) No frame on the shortest path from the field on which Autofill was
-  //     triggered to the field in question, except perhaps the shallowest
-  //     frame, is a fenced frame.
-  //
-  // If the Finch parameter relax_shared_autofill is true, the restriction to
-  // the main origin in condition 3 is lifted. Thus, conditions (2) and (3)
-  // reduce to the following:
-  //
-  // (2+3) The policy-controlled feature shared-autofill is enabled in the
-  //       field's document.
+  // (4) The field is in the same frame tree as the field on which Autofill was
+  //     triggered.
   //
   // The *origin of a field* is the origin of the frame that contains the
   // corresponding form-control element.

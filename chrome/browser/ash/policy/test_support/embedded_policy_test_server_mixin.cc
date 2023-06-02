@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/policy/test_support/policy_test_server_constants.h"
 #include "chrome/browser/browser_process.h"
@@ -38,6 +38,15 @@ namespace {
 std::string GetBrandSerialId(const std::string& device_brand_code,
                              const std::string& device_serial_number) {
   return device_brand_code + "_" + device_serial_number;
+}
+
+std::unique_ptr<ash::attestation::AttestationFlow> CreateFakeAttestationFlow() {
+  std::string valid_certificate;
+  attestation::GetFakeCertificatePEM(/*expiry=*/base::Days(10),
+                                     &valid_certificate);
+
+  return std::make_unique<attestation::FakeAttestationFlow>(
+      std::move(valid_certificate));
 }
 
 }  // namespace
@@ -160,14 +169,10 @@ void EmbeddedPolicyTestServerMixin::SetPolicyFetchError(int net_error_code) {
 }
 
 void EmbeddedPolicyTestServerMixin::SetFakeAttestationFlow() {
-  std::string valid_certificate;
-  attestation::GetFakeCertificatePEM(base::Days(10), &valid_certificate);
-
-  g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->SetAttestationFlowForTesting(
-          std::make_unique<attestation::FakeAttestationFlow>(
-              std::move(valid_certificate)));
+  auto factory = base::BindRepeating(CreateFakeAttestationFlow);
+  attestation_flow_override_ = std::make_unique<
+      ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting>(
+      std::move(factory));
 }
 
 void EmbeddedPolicyTestServerMixin::SetAvailableLicenses(

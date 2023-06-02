@@ -54,6 +54,7 @@
 #include "cc/trees/managed_memory_policy.h"
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "cc/trees/raster_capabilities.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/task_runner_provider.h"
 #include "cc/trees/throttle_decider.h"
@@ -104,12 +105,6 @@ class SynchronousTaskGraphRunner;
 class TaskGraphRunner;
 class UIResourceBitmap;
 class Viewport;
-
-enum class GpuRasterizationStatus {
-  ON,
-  OFF_FORCED,
-  OFF_DEVICE,
-};
 
 // LayerTreeHost->Proxy callback interface.
 class LayerTreeHostImplClient {
@@ -422,7 +417,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                        const gfx::PointF& scroll_offset);
   void SetNeedUpdateGpuRasterizationStatus();
   bool NeedUpdateGpuRasterizationStatusForTesting() const {
-    return need_update_gpu_rasterization_status_;
+    return raster_caps().need_update_gpu_rasterization_status;
   }
 
   // ProtectedSequenceSynchronizer implementation.
@@ -595,7 +590,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   LayerTreeFrameSink* layer_tree_frame_sink() const {
     return layer_tree_frame_sink_;
   }
-  int max_texture_size() const { return max_texture_size_; }
+  int max_texture_size() const { return raster_caps().max_texture_size; }
   void ReleaseLayerTreeFrameSink();
 
   int RequestedMSAASampleCount() const;
@@ -603,18 +598,19 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   virtual bool InitializeFrameSink(LayerTreeFrameSink* layer_tree_frame_sink);
   TileManager* tile_manager() { return &tile_manager_; }
 
-  void GetGpuRasterizationCapabilities(bool* gpu_rasterization_enabled,
-                                       bool* gpu_rasterization_supported,
-                                       bool* can_use_msaa,
-                                       bool* supports_disable_msaa);
-  bool use_gpu_rasterization() const { return use_gpu_rasterization_; }
+  const RasterCapabilities& raster_caps() const { return raster_caps_; }
+  void GetGpuRasterizationCapabilities(RasterCapabilities& gpu_raster_caps);
+  bool use_gpu_rasterization() const {
+    return raster_caps().use_gpu_rasterization;
+  }
 
   GpuRasterizationStatus gpu_rasterization_status() const {
-    return gpu_rasterization_status_;
+    return raster_caps().gpu_rasterization_status;
   }
 
   bool create_low_res_tiling() const {
-    return settings_.create_low_res_tiling && !use_gpu_rasterization_;
+    return settings_.create_low_res_tiling &&
+           !raster_caps().use_gpu_rasterization;
   }
   ResourcePool* resource_pool() { return resource_pool_.get(); }
   ImageAnimationController* image_animation_controller() {
@@ -888,7 +884,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return paint_worklet_tracker_;
   }
 
-  bool can_use_msaa() const { return can_use_msaa_; }
+  bool can_use_msaa() const { return raster_caps().can_use_msaa; }
 
   Viewport& viewport() const { return *viewport_.get(); }
 
@@ -1095,9 +1091,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // A pointer used for communicating with and submitting output to the display
   // compositor.
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
-  // The maximum size (either width or height) that any texture can be. Also
-  // holds a reasonable value for software compositing bitmaps.
-  int max_texture_size_ = 0;
 
   // The following scoped variables must not outlive the
   // |layer_tree_frame_sink_|.
@@ -1108,13 +1101,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<viz::ContextCacheController::ScopedVisibility>
       worker_context_visibility_;
 
-  bool can_use_msaa_ = false;
-  bool supports_disable_msaa_ = false;
+  RasterCapabilities raster_caps_;
 
-  bool need_update_gpu_rasterization_status_ = false;
-  bool use_gpu_rasterization_ = false;
-  GpuRasterizationStatus gpu_rasterization_status_ =
-      GpuRasterizationStatus::OFF_DEVICE;
   std::unique_ptr<RasterBufferProvider> raster_buffer_provider_;
   std::unique_ptr<ResourcePool> resource_pool_;
   std::unique_ptr<RasterQueryQueue> pending_raster_queries_;
@@ -1333,8 +1321,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool downsample_metrics_ = true;
   base::MetricsSubSampler metrics_subsampler_;
-
-  const bool use_dmsaa_for_tiles_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

@@ -64,11 +64,6 @@ SVGFilterPrimitiveStandardAttributes::SVGFilterPrimitiveStandardAttributes(
           SVGLength::Initial::kPercent100)),
       result_(MakeGarbageCollected<SVGAnimatedString>(this,
                                                       svg_names::kResultAttr)) {
-  AddToPropertyMap(x_);
-  AddToPropertyMap(y_);
-  AddToPropertyMap(width_);
-  AddToPropertyMap(height_);
-  AddToPropertyMap(result_);
 }
 
 void SVGFilterPrimitiveStandardAttributes::Trace(Visitor* visitor) const {
@@ -197,6 +192,37 @@ void InvalidateFilterPrimitiveParent(SVGElement& element) {
   if (!svg_parent)
     return;
   svg_parent->Invalidate();
+}
+
+SVGAnimatedPropertyBase*
+SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kXAttr) {
+    return x_.Get();
+  } else if (attribute_name == svg_names::kYAttr) {
+    return y_.Get();
+  } else if (attribute_name == svg_names::kWidthAttr) {
+    return width_.Get();
+  } else if (attribute_name == svg_names::kHeightAttr) {
+    return height_.Get();
+  } else if (attribute_name == svg_names::kResultAttr) {
+    return result_.Get();
+  } else {
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    for (auto* property : (SVGAnimatedPropertyBase*[]){
+             x_.Get(), y_.Get(), width_.Get(), height_.Get(), result_.Get()}) {
+      if (property->NeedsSynchronizeAttribute()) {
+        property->SynchronizeAttribute();
+      }
+    }
+  }
+  SVGElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

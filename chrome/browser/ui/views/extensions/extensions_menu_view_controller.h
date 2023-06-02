@@ -44,12 +44,16 @@ class ExtensionsMenuViewController
   void OpenMainPage() override;
   void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;
+  void OnSiteSettingsToggleButtonPressed(bool is_on) override;
   void OnSiteAccessSelected(
       extensions::ExtensionId extension_id,
       extensions::PermissionsManager::UserSiteAccess site_access) override;
   void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
                                  bool is_on) override;
+  void OnReloadPageButtonClicked() override;
   void OnAllowExtensionClicked(
+      const extensions::ExtensionId& extension_id) override;
+  void OnDismissExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
 
   // TabStripModelObserver:
@@ -81,6 +85,8 @@ class ExtensionsMenuViewController
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
+  void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
+                                    const url::Origin& origin) override;
 
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;

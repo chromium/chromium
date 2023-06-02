@@ -5,13 +5,21 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 
+#include <jni.h>
+
 #include "content/public/browser/web_contents.h"
+
+class TouchToFillPasswordGenerationDelegate;
 
 class TouchToFillPasswordGenerationBridge {
  public:
   virtual ~TouchToFillPasswordGenerationBridge() = default;
 
-  virtual bool Show(content::WebContents* web_contents) = 0;
+  virtual bool Show(
+      content::WebContents* web_contents,
+      base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate_) = 0;
+  virtual void Hide() = 0;
+  virtual void OnDismissed(JNIEnv* env) = 0;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_

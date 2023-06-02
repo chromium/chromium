@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -28,7 +28,7 @@ class LorgnetteScannerManagerFactory : public ProfileKeyedServiceFactory {
   static LorgnetteScannerManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<LorgnetteScannerManagerFactory>;
+  friend base::NoDestructor<LorgnetteScannerManagerFactory>;
 
   LorgnetteScannerManagerFactory();
   ~LorgnetteScannerManagerFactory() override;

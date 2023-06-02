@@ -247,13 +247,6 @@ TEST_F(BulkLeakCheckServiceTest, FailedToCreateCheckWithError) {
 
   EXPECT_EQ(BulkLeakCheckService::State::kSignedOut, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts
-      ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
-  expected_counts["PasswordManager.BulkCheck.Error"] = 1;
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
-      expected_counts);
   histogram_tester().ExpectUniqueSample("PasswordManager.BulkCheck.Error",
                                         LeakDetectionError::kNotSignIn, 1);
 
@@ -299,9 +292,6 @@ TEST_F(BulkLeakCheckServiceTest, CancelSomething) {
   EXPECT_EQ(0u, service().GetPendingChecksCount());
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.BulkCheck.CanceledTime", kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled",
-      TestCredentials().size(), 1);
 
   service().RemoveObserver(&observer);
 }
@@ -455,13 +445,6 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithError) {
 
   EXPECT_EQ(BulkLeakCheckService::State::kServiceError, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts
-      ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
-  expected_counts["PasswordManager.BulkCheck.Error"] = 1;
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
-      expected_counts);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.BulkCheck.Error",
       LeakDetectionError::kInvalidServerResponse, 1);
@@ -487,13 +470,6 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithQuotaLimit) {
 
   EXPECT_EQ(BulkLeakCheckService::State::kQuotaLimit, service().GetState());
   EXPECT_EQ(0u, service().GetPendingChecksCount());
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts
-      ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
-  expected_counts["PasswordManager.BulkCheck.Error"] = 1;
-  EXPECT_THAT(
-      histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
-      expected_counts);
   histogram_tester().ExpectUniqueSample("PasswordManager.BulkCheck.Error",
                                         LeakDetectionError::kQuotaLimit, 1);
 

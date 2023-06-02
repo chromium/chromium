@@ -17,7 +17,8 @@ constexpr const char kComponentSep = '>';
 constexpr const char kPathSep = '/';
 }  // namespace
 
-TreeBuilder::TreeBuilder(SizeInfo* size_info) : diff_mode_(false) {
+TreeBuilder::TreeBuilder(SizeInfo* size_info)
+    : diff_mode_(false), root_(ArtifactType::kDirectory) {
   symbols_.reserve(size_info->raw_symbols.size());
   for (const Symbol& sym : size_info->raw_symbols) {
     symbols_.push_back(&sym);
@@ -25,10 +26,21 @@ TreeBuilder::TreeBuilder(SizeInfo* size_info) : diff_mode_(false) {
   size_info_ = size_info;
 }
 
-TreeBuilder::TreeBuilder(DeltaSizeInfo* size_info) : diff_mode_(true) {
+TreeBuilder::TreeBuilder(DeltaSizeInfo* size_info)
+    : diff_mode_(true), root_(ArtifactType::kDirectory) {
   symbols_.reserve(size_info->delta_symbols.size());
   for (const DeltaSymbol& sym : size_info->delta_symbols) {
     symbols_.push_back(&sym);
+  }
+  if (size_info->removed_sources) {
+    for (const auto& s : *size_info->removed_sources) {
+      source_to_diff_status_[s] = DiffStatus::kRemoved;
+    }
+  }
+  if (size_info->added_sources) {
+    for (const auto& s : *size_info->added_sources) {
+      source_to_diff_status_[s] = DiffStatus::kAdded;
+    }
   }
   size_info_ = size_info;
 }
@@ -45,7 +57,6 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   sep_ = separator;
 
   // Initialize tree root.
-  root_.artifact_type = ArtifactType::kDirectory;
   root_.id_path = GroupedPath{"", ""};
   _parents[root_.id_path] = &root_;
 
@@ -159,8 +170,7 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
       node_stats += NodeStats(*sym);
       continue;
     }
-    TreeNode* symbol_node = new TreeNode();
-    symbol_node->artifact_type = ArtifactType::kSymbol;
+    TreeNode* symbol_node = new TreeNode(ArtifactType::kSymbol);
     symbol_node->id_path =
         GroupedPath{"", sym->IsDex() ? sym->TemplateName() : sym->FullName()};
     symbol_node->size = sym->Pss();
@@ -180,13 +190,17 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
 
   TreeNode* file_node = _parents[grouped_path];
   if (file_node == nullptr || grouped_path.path.empty()) {
-    file_node = new TreeNode();
-    file_node->artifact_type = ArtifactType::kFile;
+    file_node = new TreeNode(ArtifactType::kFile);
     file_node->id_path = grouped_path;
     file_node->short_name_index =
         file_node->id_path.size() - file_node->id_path.ShortName(sep_).size();
     _parents[file_node->id_path] = file_node;
     file_node->node_stats = node_stats;
+    auto it = source_to_diff_status_.find(grouped_path.path);
+    std::string p(grouped_path.path);
+    if (it != source_to_diff_status_.end()) {
+      file_node->node_stats.imposed_diff_status = it->second;
+    }
   }
 
   for (TreeNode* symbol_node : symbol_nodes) {
@@ -206,11 +220,10 @@ TreeNode* TreeBuilder::GetOrMakeParentNode(TreeNode* child_node) {
 
   TreeNode*& parent = _parents[parent_path];
   if (parent == nullptr) {
-    parent = new TreeNode();
+    parent = new TreeNode(ArtifactTypeFromChild(child_node->id_path));
     parent->id_path = parent_path;
     parent->short_name_index =
         parent->id_path.size() - parent->id_path.ShortName(sep_).size();
-    parent->artifact_type = ArtifactTypeFromChild(child_node->id_path);
   }
   if (child_node->parent != parent) {
     AttachToParent(child_node, parent);
@@ -312,7 +325,7 @@ void TreeBuilder::JoinDexMethodClasses(TreeNode* node) {
         // which for class nodes would be as "org.x.y.ClassName" even if that
         // node's parent is the file "a/b/c". So if we want an id_path of the
         // form "a/b/c/ClassName$0", we have to create it.
-        class_node = new TreeNode();
+        class_node = new TreeNode(ArtifactType::kJavaClass);
         owned_strings_.push_back(std::string(node->id_path.path) + "/" +
                                  std::string(class_id_path));
         class_node->id_path =
@@ -321,7 +334,6 @@ void TreeBuilder::JoinDexMethodClasses(TreeNode* node) {
             short_name_index + node->id_path.size() + 1;
         class_node->src_path = node->src_path;
         class_node->component = node->component;
-        class_node->artifact_type = ArtifactType::kJavaClass;
         _parents[class_node->id_path] = class_node;
       }
 

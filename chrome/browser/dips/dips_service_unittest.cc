@@ -5,6 +5,7 @@
 #include "chrome/browser/dips/dips_service.h"
 
 #include "base/files/file_util.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
@@ -269,8 +270,9 @@ class DIPSServiceStateRemovalTest : public testing::Test {
   base::SimpleTestClock clock_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<content_settings::CookieSettings> cookie_settings_ = nullptr;
-  raw_ptr<DIPSService> service_ = nullptr;
+  raw_ptr<content_settings::CookieSettings, DanglingUntriaged>
+      cookie_settings_ = nullptr;
+  raw_ptr<DIPSService, DanglingUntriaged> service_ = nullptr;
 };
 
 TEST_F(DIPSServiceStateRemovalTest,
@@ -291,8 +293,9 @@ TEST_F(DIPSServiceStateRemovalTest,
       /*final_url=*/GURL("http://c.test/"),
       /*length=*/1, /*is_partial_chain=*/false);
 
-  GetService()->HandleRedirectChain(std::move(complete_redirects),
-                                    std::move(complete_chain));
+  GetService()->HandleRedirectChain(
+      std::move(complete_redirects), std::move(complete_chain),
+      base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
   // Expect one call to Observer.OnChainHandled when handling a complete chain.
   EXPECT_EQ(observer->handle_call_count, 1u);
@@ -316,8 +319,9 @@ TEST_F(DIPSServiceStateRemovalTest,
       /*final_url=*/GURL("http://c.test/"),
       /*length=*/1, /*is_partial_chain=*/true);
 
-  GetService()->HandleRedirectChain(std::move(partial_redirects),
-                                    std::move(partial_chain));
+  GetService()->HandleRedirectChain(
+      std::move(partial_redirects), std::move(partial_chain),
+      base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
   // Expect no calls to Observer.OnChainHandled when handling a partial chain.
   EXPECT_EQ(observer->handle_call_count, 0u);
@@ -336,9 +340,9 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce,
-                                       false);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
+      false, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(url).has_value());
 
@@ -386,9 +390,9 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce,
-                                       false);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
+      false, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(url).has_value());
 
@@ -429,14 +433,19 @@ TEST_F(DIPSServiceStateRemovalTest,
 
   Add3PCExceptionAs3P(excepted_3p_url);
 
+  int stateful_bounce_count = 0;
+  base::RepeatingCallback<void(const GURL&)> increment_bounce =
+      base::BindLambdaForTesting(
+          [&](const GURL& final_url) { stateful_bounce_count++; });
+
   // Record bounces for sites.
   base::Time bounce = base::Time::FromDoubleT(2);
   GetService()->RecordBounceForTesting(
       excepted_3p_url, GURL("https://initial.com"), GURL("https://final.com"),
-      bounce, false);
+      bounce, true, increment_bounce);
   GetService()->RecordBounceForTesting(
       non_excepted_url, GURL("https://initial.com"), GURL("https://final.com"),
-      bounce, false);
+      bounce, false, increment_bounce);
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(excepted_3p_url).has_value());
   EXPECT_TRUE(GetDIPSState(non_excepted_url).has_value());
@@ -474,6 +483,9 @@ TEST_F(DIPSServiceStateRemovalTest,
   EXPECT_THAT(ukm_recorder,
               EntryUrlsAre("DIPS.Deletion", {"http://excepted-as-3p.com/",
                                              "http://not-excepted.com/"}));
+
+  // Expect one recorded bounce, for the stateful redirect.
+  EXPECT_EQ(stateful_bounce_count, 1);
 }
 
 TEST_F(DIPSServiceStateRemovalTest,
@@ -491,23 +503,32 @@ TEST_F(DIPSServiceStateRemovalTest,
 
   Add3PCExceptionAs1P(excepted_1p_url);
 
+  int stateful_bounce_count = 0;
+  base::RepeatingCallback<void(const GURL&)> increment_bounce =
+      base::BindLambdaForTesting(
+          [&](const GURL& final_url) { stateful_bounce_count++; });
+
   base::Time bounce = base::Time::FromDoubleT(2);
   // Record a bounce through redirect_url_1 that starts on an excepted
   // URL.
   GetService()->RecordBounceForTesting(redirect_url_1, excepted_1p_url,
-                                       non_excepted_url, bounce, false);
+                                       non_excepted_url, bounce, true,
+                                       increment_bounce);
   // Record a bounce through redirect_url_1 that ends on an excepted
   // URL.
   GetService()->RecordBounceForTesting(redirect_url_1, non_excepted_url,
-                                       excepted_1p_url, bounce, false);
+                                       excepted_1p_url, bounce, true,
+                                       increment_bounce);
   // Record a bounce through redirect_url_2 that does not start or
   // end on an excepted URL.
   GetService()->RecordBounceForTesting(redirect_url_2, non_excepted_url,
-                                       non_excepted_url, bounce, false);
+                                       non_excepted_url, bounce, true,
+                                       increment_bounce);
   // Record a bounce through redirect_url_3 that does not start or
   // end on an excepted URL. Record an interaction on this URL as well.
   GetService()->RecordBounceForTesting(redirect_url_3, non_excepted_url,
-                                       non_excepted_url, bounce, false);
+                                       non_excepted_url, bounce, true,
+                                       increment_bounce);
   GetService()
       ->storage()
       ->AsyncCall(&DIPSStorage::RecordInteraction)
@@ -523,15 +544,21 @@ TEST_F(DIPSServiceStateRemovalTest,
   // Record a bounce through redirect_url_2 that starts on an
   // excepted URL. This should clear the DB entry for redirect_url_2.
   GetService()->RecordBounceForTesting(redirect_url_2, excepted_1p_url,
-                                       non_excepted_url, bounce, false);
+                                       non_excepted_url, bounce, true,
+                                       increment_bounce);
   EXPECT_FALSE(GetDIPSState(redirect_url_2).has_value());
 
   // Record a bounce through redirect_url_3 that starts on an
   // excepted URL. This should not clear the DB entry for redirect_url_3 as it
   // has a recorded interaction.
   GetService()->RecordBounceForTesting(redirect_url_3, excepted_1p_url,
-                                       non_excepted_url, bounce, false);
+                                       non_excepted_url, bounce, true,
+                                       increment_bounce);
   EXPECT_TRUE(GetDIPSState(redirect_url_3).has_value());
+
+  // Expect two non-exempted stateful redirects: the first bounces through
+  // redirect_url_2 and redirect_url_3.
+  EXPECT_EQ(stateful_bounce_count, 2);
 }
 
 TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
@@ -543,9 +570,9 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = Now();
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce,
-                                       false);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
+      false, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(url).has_value());
 
@@ -614,9 +641,9 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce,
-                                       false);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
+      false, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
 
   // Set the current time to just after the bounce happened.
@@ -654,9 +681,9 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Disallowed) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce_time = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce_time,
-                                       true);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce_time,
+      true, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
 
   // Time-travel to after the grace period has ended for the bounce.
@@ -691,7 +718,8 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs1P) {
   Add3PCExceptionAs1P(excepted_1p_url);
   base::Time bounce_time = base::Time::FromDoubleT(2);
   GetService()->RecordBounceForTesting(
-      url, excepted_1p_url, GURL("https://final.com"), bounce_time, true);
+      url, excepted_1p_url, GURL("https://final.com"), bounce_time, true,
+      base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
 
   // Time-travel to after the grace period has ended for the bounce.
@@ -726,7 +754,7 @@ TEST_F(DIPSServiceHistogramTest, Deletion_ExceptedAs3P) {
   base::Time bounce_time = base::Time::FromDoubleT(2);
   GetService()->RecordBounceForTesting(
       excepted_3p_url, GURL("https://initial.com"), GURL("https://final.com"),
-      bounce_time, true);
+      bounce_time, true, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
 
   // Time-travel to after the grace period has ended for the bounce.
@@ -758,9 +786,9 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce_time = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce_time,
-                                       true);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce_time,
+      true, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
 
   // Time-travel to after the grace period has ended for the bounce.
@@ -792,9 +820,9 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Ignored) {
   // Record a bounce.
   GURL url;
   base::Time bounce_time = base::Time::FromDoubleT(2);
-  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
-                                       GURL("https://final.com"), bounce_time,
-                                       true);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce_time,
+      true, base::BindRepeating([](const GURL& final_url) {}));
   WaitOnStorage();
 
   // Time-travel to after the grace period has ended for the bounce.

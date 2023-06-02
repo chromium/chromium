@@ -25,7 +25,6 @@
 #include "base/logging.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_logging.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"

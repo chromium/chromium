@@ -40,12 +40,18 @@ constexpr char kExpiry[] = "expiry";
 constexpr char kFilterData[] = "filter_data";
 constexpr char kSourceEventId[] = "source_event_id";
 
-absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
+[[nodiscard]] bool ParseTimeDeltaInSeconds(
     const base::Value::Dict& registration,
-    base::StringPiece key) {
-  if (absl::optional<int64_t> seconds = ParseInt64(registration, key))
-    return base::Seconds(*seconds);
-  return absl::nullopt;
+    base::StringPiece key,
+    absl::optional<base::TimeDelta>& out) {
+  absl::optional<int64_t> value;
+  if (ParseInt64(registration, key, value)) {
+    out = value ? absl::make_optional(base::Seconds(*value)) : absl::nullopt;
+    return true;
+  } else {
+    out = absl::nullopt;
+    return false;
+  }
 }
 
 void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
@@ -59,7 +65,7 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
 }  // namespace
 
 void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError2", error);
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError3", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
@@ -92,8 +98,9 @@ SourceRegistration::Parse(base::Value::Dict registration) {
 
   base::expected<FilterData, SourceRegistrationError> filter_data =
       FilterData::FromJSON(registration.Find(kFilterData));
-  if (!filter_data.has_value())
+  if (!filter_data.has_value()) {
     return base::unexpected(filter_data.error());
+  }
   result.filter_data = std::move(*filter_data);
 
   base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
@@ -102,18 +109,34 @@ SourceRegistration::Parse(base::Value::Dict registration) {
     return base::unexpected(aggregation_keys.error());
   result.aggregation_keys = std::move(*aggregation_keys);
 
-  result.source_event_id =
-      ParseUint64(registration, kSourceEventId).value_or(0);
+  absl::optional<uint64_t> source_event_id;
+  if (!ParseUint64(registration, kSourceEventId, source_event_id)) {
+    return base::unexpected(
+        SourceRegistrationError::kSourceEventIdValueInvalid);
+  }
+  result.source_event_id = source_event_id.value_or(0);
 
-  result.priority = ParsePriority(registration);
+  absl::optional<int64_t> priority;
+  if (!ParsePriority(registration, priority)) {
+    return base::unexpected(SourceRegistrationError::kPriorityValueInvalid);
+  }
+  result.priority = priority.value_or(0);
 
-  result.expiry = ParseTimeDeltaInSeconds(registration, kExpiry);
+  if (!ParseTimeDeltaInSeconds(registration, kExpiry, result.expiry)) {
+    return base::unexpected(SourceRegistrationError::kExpiryValueInvalid);
+  }
 
-  result.event_report_window =
-      ParseTimeDeltaInSeconds(registration, kEventReportWindow);
+  if (!ParseTimeDeltaInSeconds(registration, kEventReportWindow,
+                               result.event_report_window)) {
+    return base::unexpected(
+        SourceRegistrationError::kEventReportWindowValueInvalid);
+  }
 
-  result.aggregatable_report_window =
-      ParseTimeDeltaInSeconds(registration, kAggregatableReportWindow);
+  if (!ParseTimeDeltaInSeconds(registration, kAggregatableReportWindow,
+                               result.aggregatable_report_window)) {
+    return base::unexpected(
+        SourceRegistrationError::kAggregatableReportWindowValueInvalid);
+  }
 
   result.debug_key = ParseDebugKey(registration);
 

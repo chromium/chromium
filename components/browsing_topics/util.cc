@@ -51,16 +51,6 @@ browsing_topics::HmacKey& GetHmacKeyOverrideForTesting() {
 
 }  // namespace
 
-absl::optional<size_t> GetTaxonomySize() {
-  if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 1) {
-    // Taxonomy version 1 has 349 topics.
-    // https://github.com/jkarlin/topics/blob/main/taxonomy_v1.md
-    return 349;
-  }
-
-  return absl::nullopt;
-}
-
 HmacKey GenerateRandomHmacKey() {
   if (g_hmac_key_overridden)
     return GetHmacKeyOverrideForTesting();

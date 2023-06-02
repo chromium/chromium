@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -19,14 +20,15 @@ public class PasswordMigrationWarningCoordinator {
 
     public PasswordMigrationWarningCoordinator(
             @Nullable Context context, BottomSheetController sheetController) {
-        mMediator.initialize(
-                PasswordMigrationWarningProperties.createDefaultModel(mMediator::onDismissed));
+        PropertyModel model = PasswordMigrationWarningProperties.createDefaultModel(
+                mMediator::onDismissed, mMediator);
+        mMediator.initialize(model);
         setUpModelChangeProcessors(
-                mMediator.getModel(), new PasswordMigrationWarningView(context, sheetController));
+                model, new PasswordMigrationWarningView(context, sheetController));
     }
 
     public void showWarning() {
-        mMediator.showWarning();
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
     }
 
     static void setUpModelChangeProcessors(PropertyModel model, PasswordMigrationWarningView view) {

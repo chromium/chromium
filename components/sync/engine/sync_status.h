@@ -75,6 +75,9 @@ struct SyncStatus {
   // The unique identifier for the invalidation client.
   std::string invalidator_client_id;
 
+  // Data types having pending invalidations.
+  ModelTypeSet invalidated_data_types;
+
   // Time of next retry if sync scheduler is throttled or in backoff.
   base::Time retry_time;
 

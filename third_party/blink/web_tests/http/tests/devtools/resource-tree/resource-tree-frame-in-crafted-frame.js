@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that frame inside crafted frame doesn't cause 'MainFrameNavigated' event and correctly attaches to frame tree. crbug/259036\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
 
   var frameId = Symbol('frameId');

@@ -27,6 +27,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -56,11 +57,11 @@ void RecordBudgetValidity(ValidityStatus status) {
 }
 
 void ComputeAndRecordBudgetValidity(
-    google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
-        hourly_budgets,
-    int64_t earliest_window_in_scope_start,
+    google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
+        budget_entries,
+    int64_t earliest_window_in_larger_scope_start,
     int64_t current_window_start) {
-  if (hourly_budgets->empty()) {
+  if (budget_entries->empty()) {
     RecordBudgetValidity(ValidityStatus::kValidAndEmpty);
     return;
   }
@@ -70,43 +71,50 @@ void ComputeAndRecordBudgetValidity(
 
   ValidityStatus status = ValidityStatus::kValid;
 
-  for (proto::PrivateAggregationBudgetPerHour& elem : *hourly_budgets) {
-    int64_t hour_start = elem.hour_start_timestamp();
+  for (proto::PrivateAggregationBudgetEntry& elem : *budget_entries) {
+    int64_t entry_start = elem.entry_start_timestamp();
     int budget = elem.budget_used();
 
     if (budget <= 0) {
       RecordBudgetValidity(ValidityStatus::kContainsNonPositiveValue);
       return;
 
-    } else if (hour_start % kWindowDuration != 0) {
-      RecordBudgetValidity(ValidityStatus::kContainsTimestampNotRoundedToHour);
+    } else if (entry_start % kWindowDuration != 0) {
+      RecordBudgetValidity(
+          ValidityStatus::kContainsTimestampNotRoundedToMinute);
       return;
 
-    } else if (budget >
-               blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get()) {
+    } else if (budget > PrivateAggregationBudgeter::kSmallerScopeValues
+                            .max_budget_per_scope) {
+      // It should not be possible for any one-minute period to have usage
+      // exceeding the ten-minute limit.
       RecordBudgetValidity(ValidityStatus::kContainsValueExceedingLimit);
       return;
 
-    } else if (hour_start >= current_window_start + kWindowDuration) {
+    } else if (entry_start >= current_window_start + kWindowDuration) {
       RecordBudgetValidity(ValidityStatus::kContainsTimestampInFuture);
       return;
 
-    } else if (hour_start < earliest_window_in_scope_start) {
+    } else if (entry_start < earliest_window_in_larger_scope_start) {
+      // Data older than 24 hours is no longer needed (for either scope).
       status = ValidityStatus::kValidButContainsStaleWindow;
     }
   }
 
+  // As the budget data for both scopes is stored in the same entries, we expect
+  // to maintain data for a period representing up to 24 hours in duration.
   constexpr int64_t kMaximumWindowStartDifference =
-      PrivateAggregationBudgeter::kBudgetScopeDuration.InMicroseconds() -
+      PrivateAggregationBudgeter::kLargerScopeValues.budget_scope_duration
+          .InMicroseconds() -
       kWindowDuration;
   const auto minmax = base::ranges::minmax(
-      *hourly_budgets, /*comp=*/{},
-      &proto::PrivateAggregationBudgetPerHour::hour_start_timestamp);
+      *budget_entries, /*comp=*/{},
+      &proto::PrivateAggregationBudgetEntry::entry_start_timestamp);
 
   DCHECK_EQ(kMaximumWindowStartDifference,
-            current_window_start - earliest_window_in_scope_start);
-  if (minmax.second.hour_start_timestamp() -
-          minmax.first.hour_start_timestamp() >
+            current_window_start - earliest_window_in_larger_scope_start);
+  if (minmax.second.entry_start_timestamp() -
+          minmax.first.entry_start_timestamp() >
       kMaximumWindowStartDifference) {
     RecordBudgetValidity(ValidityStatus::kSpansMoreThanADay);
     return;
@@ -115,15 +123,52 @@ void ComputeAndRecordBudgetValidity(
   RecordBudgetValidity(status);
 }
 
-google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
-GetHourlyBudgets(PrivateAggregationBudgetKey::Api api,
+google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
+GetBudgetEntries(PrivateAggregationBudgetKey::Api api,
                  proto::PrivateAggregationBudgets& budgets) {
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kFledge:
-      return budgets.mutable_fledge_budgets();
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      return budgets.mutable_protected_audience_budgets();
     case PrivateAggregationBudgetKey::Api::kSharedStorage:
       return budgets.mutable_shared_storage_budgets();
   }
+}
+
+void CleanUpStaleBudgetEntries(
+    google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
+        budget_entries,
+    const int64_t earliest_window_in_larger_scope_start) {
+  auto new_end = base::ranges::remove_if(
+      *budget_entries, [&earliest_window_in_larger_scope_start](
+                           const proto::PrivateAggregationBudgetEntry& elem) {
+        return elem.entry_start_timestamp() <
+               earliest_window_in_larger_scope_start;
+      });
+  budget_entries->erase(new_end, budget_entries->end());
+}
+
+void CleanUpStaleReportingOrigins(
+    google::protobuf::RepeatedPtrField<proto::ReportingOrigin>*
+        reporting_origins,
+    const int64_t earliest_window_in_larger_scope_start) {
+  auto new_end = base::ranges::remove_if(
+      *reporting_origins, [&earliest_window_in_larger_scope_start](
+                              const proto::ReportingOrigin& elem) {
+        return elem.last_used_timestamp() <
+               earliest_window_in_larger_scope_start;
+      });
+  reporting_origins->erase(new_end, reporting_origins->end());
+}
+
+// `current_window_start` should be in microseconds since the Windows epoch,
+// e.g. a value returned by `SerializeTimeForStorage()`. Returns a value in
+// microseconds since the Windows epoch.
+int64_t CalculateEarliestWindowStartInScope(
+    int64_t current_window_start,
+    base::TimeDelta budget_scope_duration) {
+  return current_window_start +
+         PrivateAggregationBudgetKey::TimeWindow::kDuration.InMicroseconds() -
+         budget_scope_duration.InMicroseconds();
 }
 
 }  // namespace
@@ -263,9 +308,6 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
-  const int kMaxBudgetPerScope =
-      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get();
-
   switch (storage_status_) {
     case StorageStatus::kPendingInitialization:
     case StorageStatus::kInitializing:
@@ -282,46 +324,54 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     std::move(on_done).Run(RequestResult::kInvalidRequest);
     return;
   }
-  if (additional_budget > kMaxBudgetPerScope) {
+  static_assert(
+      kSmallerScopeValues.max_budget_per_scope <
+          kLargerScopeValues.max_budget_per_scope,
+      "The larger scope must have a larger budget than the smaller scope.");
+  if (additional_budget > kSmallerScopeValues.max_budget_per_scope) {
     std::move(on_done).Run(RequestResult::kRequestedMoreThanTotalBudget);
     return;
   }
 
-  std::string origin_key = budget_key.origin().Serialize();
+  std::string site_key = net::SchemefulSite(budget_key.origin()).Serialize();
 
   // If there is no budget proto stored for this origin already, we use the
   // default initialization of `budgets` (untouched by `TryGetData()`).
   proto::PrivateAggregationBudgets budgets;
-  storage_->budgets_data()->TryGetData(origin_key, &budgets);
-
-  google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
-      hourly_budgets = GetHourlyBudgets(budget_key.api(), budgets);
-  DCHECK(hourly_budgets);
+  storage_->budgets_data()->TryGetData(site_key, &budgets);
 
   const int64_t current_window_start =
       SerializeTimeForStorage(budget_key.time_window().start_time());
-  DCHECK_EQ(current_window_start % base::Time::kMicrosecondsPerHour, 0);
+  DCHECK_EQ(current_window_start % base::Time::kMicrosecondsPerMinute, 0);
 
   // Budget windows must start on or after this timestamp to be counted in the
-  // current day.
-  const int64_t earliest_window_in_scope_start =
-      current_window_start +
-      PrivateAggregationBudgetKey::TimeWindow::kDuration.InMicroseconds() -
-      kBudgetScopeDuration.InMicroseconds();
+  // current 10 minutes and day (for the smaller and larger scopes,
+  // respectively).
+  int64_t earliest_window_in_smaller_scope_start =
+      CalculateEarliestWindowStartInScope(
+          current_window_start, kSmallerScopeValues.budget_scope_duration);
+  int64_t earliest_window_in_larger_scope_start =
+      CalculateEarliestWindowStartInScope(
+          current_window_start, kLargerScopeValues.budget_scope_duration);
 
-  ComputeAndRecordBudgetValidity(hourly_budgets, earliest_window_in_scope_start,
+  google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
+      budget_entries = GetBudgetEntries(budget_key.api(), budgets);
+
+  ComputeAndRecordBudgetValidity(budget_entries,
+                                 earliest_window_in_larger_scope_start,
                                  current_window_start);
 
-  proto::PrivateAggregationBudgetPerHour* window_for_key = nullptr;
-  base::CheckedNumeric<int> total_budget_used = 0;
+  proto::PrivateAggregationBudgetEntry* window_for_key = nullptr;
+  base::CheckedNumeric<int> total_budget_used_smaller_scope = 0;
+  base::CheckedNumeric<int> total_budget_used_larger_scope = 0;
   bool should_clean_up_stale_budgets = false;
 
-  for (proto::PrivateAggregationBudgetPerHour& elem : *hourly_budgets) {
-    if (elem.hour_start_timestamp() < earliest_window_in_scope_start) {
+  for (proto::PrivateAggregationBudgetEntry& elem : *budget_entries) {
+    if (elem.entry_start_timestamp() < earliest_window_in_larger_scope_start) {
       should_clean_up_stale_budgets = true;
       continue;
     }
-    if (elem.hour_start_timestamp() == current_window_start) {
+    if (elem.entry_start_timestamp() == current_window_start) {
       window_for_key = &elem;
     }
 
@@ -331,46 +381,86 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
       return;
     }
 
-    total_budget_used += elem.budget_used();
+    if (elem.entry_start_timestamp() >=
+        earliest_window_in_smaller_scope_start) {
+      total_budget_used_smaller_scope += elem.budget_used();
+    }
+    total_budget_used_larger_scope += elem.budget_used();
   }
 
-  total_budget_used += additional_budget;
+  total_budget_used_smaller_scope += additional_budget;
+  total_budget_used_larger_scope += additional_budget;
 
   RequestResult budget_increase_request_result;
-  if (!total_budget_used.IsValid()) {
+  if (!total_budget_used_smaller_scope.IsValid() ||
+      !total_budget_used_larger_scope.IsValid()) {
     budget_increase_request_result = RequestResult::kBadValuesOnDisk;
-  } else if (total_budget_used.ValueOrDie() > kMaxBudgetPerScope) {
-    budget_increase_request_result = RequestResult::kInsufficientBudget;
+
+  } else if (total_budget_used_smaller_scope.ValueOrDie() >
+             kSmallerScopeValues.max_budget_per_scope) {
+    budget_increase_request_result =
+        RequestResult::kInsufficientSmallerScopeBudget;
+
+  } else if (total_budget_used_larger_scope.ValueOrDie() >
+             kLargerScopeValues.max_budget_per_scope) {
+    budget_increase_request_result =
+        RequestResult::kInsufficientLargerScopeBudget;
+
   } else {
     budget_increase_request_result = RequestResult::kApproved;
   }
 
   if (budget_increase_request_result == RequestResult::kApproved) {
     if (!window_for_key) {
-      window_for_key = hourly_budgets->Add();
-      window_for_key->set_hour_start_timestamp(current_window_start);
+      window_for_key = budget_entries->Add();
+      window_for_key->set_entry_start_timestamp(current_window_start);
       window_for_key->set_budget_used(0);
     }
     int budget_used_for_key = window_for_key->budget_used() + additional_budget;
     DCHECK_GT(budget_used_for_key, 0);
-    DCHECK_LE(budget_used_for_key, kMaxBudgetPerScope);
+    DCHECK_LE(budget_used_for_key, kSmallerScopeValues.max_budget_per_scope);
     window_for_key->set_budget_used(budget_used_for_key);
   }
 
   if (should_clean_up_stale_budgets) {
-    auto new_end = std::remove_if(
-        hourly_budgets->begin(), hourly_budgets->end(),
-        [&earliest_window_in_scope_start](
-            const proto::PrivateAggregationBudgetPerHour& elem) {
-          return elem.hour_start_timestamp() < earliest_window_in_scope_start;
-        });
-    hourly_budgets->erase(new_end, hourly_budgets->end());
+    CleanUpStaleBudgetEntries(budget_entries,
+                              earliest_window_in_larger_scope_start);
   }
 
-  if (budget_increase_request_result == RequestResult::kApproved ||
-      should_clean_up_stale_budgets) {
-    storage_->budgets_data()->UpdateData(origin_key, budgets);
+  google::protobuf::RepeatedPtrField<proto::ReportingOrigin>*
+      reporting_origins_for_deletion =
+          budgets.mutable_reporting_origins_for_deletion();
+
+  CleanUpStaleReportingOrigins(reporting_origins_for_deletion,
+                               earliest_window_in_larger_scope_start);
+
+  if (budget_increase_request_result == RequestResult::kApproved) {
+    std::string reporting_origin_serialized = budget_key.origin().Serialize();
+    proto::ReportingOrigin* reporting_origin_entry = nullptr;
+
+    auto reporting_origin_entry_it = base::ranges::find_if(
+        *reporting_origins_for_deletion,
+        [&reporting_origin_serialized](const proto::ReportingOrigin& elem) {
+          return elem.origin() == reporting_origin_serialized;
+        });
+    if (reporting_origin_entry_it != reporting_origins_for_deletion->end()) {
+      reporting_origin_entry = &*reporting_origin_entry_it;
+    }
+
+    if (!reporting_origin_entry) {
+      reporting_origin_entry = reporting_origins_for_deletion->Add();
+      reporting_origin_entry->set_origin(
+          std::move(reporting_origin_serialized));
+    }
+    reporting_origin_entry->set_last_used_timestamp(current_window_start);
   }
+
+  base::UmaHistogramCounts100(
+      "PrivacySandbox.PrivateAggregation.Budgeter."
+      "NumReportingOriginsStoredPerSite",
+      reporting_origins_for_deletion->size());
+
+  storage_->budgets_data()->UpdateData(site_key, budgets);
   std::move(on_done).Run(budget_increase_request_result);
 }
 
@@ -411,54 +501,90 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     return;
   }
 
-  std::vector<std::string> origins_to_delete;
+  // Ensure we round down to capture any time windows that partially overlap.
+  const int64_t serialized_delete_begin = SerializeTimeForStorage(
+      PrivateAggregationBudgetKey::TimeWindow(delete_begin).start_time());
 
-  for (const auto& [origin_key, budgets] :
+  // No need to round up as we compare against the time window's start time.
+  const int64_t serialized_delete_end = SerializeTimeForStorage(delete_end);
+
+  std::vector<std::string> sites_to_delete;
+
+  for (const auto& [site_key, budgets] :
        storage_->budgets_data()->GetAllCached()) {
-    if (filter.is_null() ||
-        filter.Run(blink::StorageKey::CreateFromStringForTesting(origin_key))) {
-      origins_to_delete.push_back(origin_key);
+    for (const proto::ReportingOrigin& elem :
+         budgets.reporting_origins_for_deletion()) {
+      // If the filter matches the origin and the origin was last used on or
+      // after the beginning of the deletion window, we include this site.
+      // This may result in more data being deleted than strictly necessary.
+      if ((filter.is_null() ||
+           filter.Run(blink::StorageKey::CreateFirstParty(
+               url::Origin::Create(GURL(elem.origin()))))) &&
+          (is_all_time_covered ||
+           serialized_delete_begin <= elem.last_used_timestamp())) {
+        sites_to_delete.push_back(site_key);
+        break;
+      }
     }
   }
 
   if (is_all_time_covered) {
-    storage_->budgets_data()->DeleteData(origins_to_delete);
+    storage_->budgets_data()->DeleteData(sites_to_delete);
 
     // Runs `done` once flushing is complete.
     storage_->budgets_data()->FlushDataToDisk(std::move(done));
     return;
   }
 
-  // Ensure we round down to capture any time windows that partially overlap.
-  int64_t serialized_delete_begin = SerializeTimeForStorage(
-      PrivateAggregationBudgetKey::TimeWindow(delete_begin).start_time());
+  const int64_t earliest_window_in_larger_scope_start =
+      CalculateEarliestWindowStartInScope(
+          /*current_window_start=*/SerializeTimeForStorage(
+              PrivateAggregationBudgetKey::TimeWindow(base::Time::Now())
+                  .start_time()),
+          kLargerScopeValues.budget_scope_duration);
 
-  // No need to round up as we compare against the time window's start time.
-  int64_t serialized_delete_end = SerializeTimeForStorage(delete_end);
-
-  for (const std::string& origin_key : origins_to_delete) {
+  for (const std::string& site_key : sites_to_delete) {
     proto::PrivateAggregationBudgets budgets;
-    storage_->budgets_data()->TryGetData(origin_key, &budgets);
+    storage_->budgets_data()->TryGetData(site_key, &budgets);
 
     static constexpr PrivateAggregationBudgetKey::Api kAllApis[] = {
-        PrivateAggregationBudgetKey::Api::kFledge,
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
         PrivateAggregationBudgetKey::Api::kSharedStorage};
 
     for (PrivateAggregationBudgetKey::Api api : kAllApis) {
-      google::protobuf::RepeatedPtrField<
-          proto::PrivateAggregationBudgetPerHour>* hourly_budgets =
-          GetHourlyBudgets(api, budgets);
-      DCHECK(hourly_budgets);
+      google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
+          budget_entries = GetBudgetEntries(api, budgets);
+      DCHECK(budget_entries);
 
-      auto new_end = std::remove_if(
-          hourly_budgets->begin(), hourly_budgets->end(),
-          [=](const proto::PrivateAggregationBudgetPerHour& elem) {
-            return elem.hour_start_timestamp() >= serialized_delete_begin &&
-                   elem.hour_start_timestamp() <= serialized_delete_end;
+      auto new_end = base::ranges::remove_if(
+          *budget_entries,
+          [=](const proto::PrivateAggregationBudgetEntry& elem) {
+            return elem.entry_start_timestamp() >= serialized_delete_begin &&
+                   elem.entry_start_timestamp() <= serialized_delete_end;
           });
-      hourly_budgets->erase(new_end, hourly_budgets->end());
+      budget_entries->erase(new_end, budget_entries->end());
+
+      CleanUpStaleBudgetEntries(budget_entries,
+                                earliest_window_in_larger_scope_start);
     }
-    storage_->budgets_data()->UpdateData(origin_key, budgets);
+
+    for (proto::ReportingOrigin& elem :
+         *budgets.mutable_reporting_origins_for_deletion()) {
+      // If the last used time is in the deletion window, we update it to the
+      // start of the window. We do this even for reporting origins that don't
+      // match the filter as the whole site's data was deleted. This may result
+      // in more data being deleted than strictly necessary.
+      if (elem.last_used_timestamp() >= serialized_delete_begin &&
+          elem.last_used_timestamp() <= serialized_delete_end) {
+        elem.set_last_used_timestamp(serialized_delete_begin);
+      }
+    }
+
+    CleanUpStaleReportingOrigins(
+        budgets.mutable_reporting_origins_for_deletion(),
+        earliest_window_in_larger_scope_start);
+
+    storage_->budgets_data()->UpdateData(site_key, budgets);
   }
 
   // Force the database to be flushed immediately instead of waiting up to

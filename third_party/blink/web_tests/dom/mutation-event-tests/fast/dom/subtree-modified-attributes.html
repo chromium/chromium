@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<body>
+<script src="../../../../resources/js-test.js"></script>
+<script>
+description('DOMSubtreeModified should fire when attributes are added or removed, but not modified (see bug 81141)');
+
+var div = document.createElement('div');
+document.body.appendChild(div);
+var expected = false;
+div.addEventListener('DOMSubtreeModified', function(evt) {
+    shouldBeTrue('expected');
+});
+expected = true;
+div.setAttribute('foo', 'bar');
+expected = false;
+div.setAttribute('foo', 'baz');
+expected = true;
+div.removeAttribute('foo');
+
+var attr = document.createAttribute('bar');
+attr.value = 'foo';
+expected = true;
+div.setAttributeNode(attr);
+expected = false;
+attr.value = 'bar';
+expected = true;
+div.removeAttributeNode(attr);
+</script>
+</body>

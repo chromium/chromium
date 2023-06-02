@@ -66,8 +66,8 @@ class HistoryClustersPageHandler
           ranking_signals);
 
   mojo::Receiver<ntp::history_clusters::mojom::PageHandler> receiver_;
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   base::CancelableTaskTracker hide_visits_task_tracker_;
   std::unique_ptr<CartProcessor> cart_processor_;

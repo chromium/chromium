@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 340 tests; 329 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 364 tests; 353 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -161,6 +161,26 @@ PASS scroll-behavior (type: discrete) has testInterpolation function
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with linear easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with effect easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with keyframe easing
+PASS scrollbar-gutter (type: discrete) has testInterpolation function
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with linear easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with effect easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with keyframe easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable both-edges" with linear easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable both-edges" with effect easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable both-edges" with keyframe easing
+PASS scrollbar-gutter uses discrete animation when animating between "stable" and "stable both-edges" with linear easing
+PASS scrollbar-gutter uses discrete animation when animating between "stable" and "stable both-edges" with effect easing
+PASS scrollbar-gutter uses discrete animation when animating between "stable" and "stable both-edges" with keyframe easing
+PASS scrollbar-width (type: discrete) has testInterpolation function
+PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with linear easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with effect easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with keyframe easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "none" with linear easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "none" with effect easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "none" with keyframe easing
+PASS scrollbar-width uses discrete animation when animating between "thin" and "none" with linear easing
+PASS scrollbar-width uses discrete animation when animating between "thin" and "none" with effect easing
+PASS scrollbar-width uses discrete animation when animating between "thin" and "none" with keyframe easing
 PASS shape-outside (type: discrete) has testInterpolation function
 PASS shape-outside uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
 PASS shape-outside uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
@@ -327,6 +347,10 @@ PASS white-space (type: discrete) has testInterpolation function
 PASS white-space uses discrete animation when animating between "pre" and "nowrap" with linear easing
 PASS white-space uses discrete animation when animating between "pre" and "nowrap" with effect easing
 PASS white-space uses discrete animation when animating between "pre" and "nowrap" with keyframe easing
+PASS white-space-collapse (type: discrete) has testInterpolation function
+PASS white-space-collapse uses discrete animation when animating between "collapse" and "preserve" with linear easing
+PASS white-space-collapse uses discrete animation when animating between "collapse" and "preserve" with effect easing
+PASS white-space-collapse uses discrete animation when animating between "collapse" and "preserve" with keyframe easing
 PASS word-break (type: discrete) has testInterpolation function
 PASS word-break uses discrete animation when animating between "keep-all" and "break-all" with linear easing
 PASS word-break uses discrete animation when animating between "keep-all" and "break-all" with effect easing

@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use gnrt_lib::*;
+#![deny(warnings)]
+#![forbid(unsafe_op_in_unsafe_fn)]
+#![forbid(unsafe_code)]
 
 mod download;
 mod gen;
 mod util;
 
 use anyhow::{Context, Result};
-use clap::arg;
+use clap::{arg, Arg};
+use gnrt_lib::*;
 
 fn main() -> Result<()> {
     let mut logger_builder = env_logger::Builder::new();
@@ -26,8 +29,21 @@ fn main() -> Result<()> {
                 .arg(arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit \
                 immediately"))
                 .arg(
-                    arg!(--"for-std" "(WIP) Generate build files for Rust std library instead of \
-                third_party/rust"),
+                    Arg::new("for-std")
+                        .long("for-std")
+                        .value_parser(clap::value_parser!(String))
+                        .value_name("RUST_SRC_ROOT")
+                        .num_args(0..=1)
+                        .default_missing_value("")
+                        .help(
+                            "(WIP) Generate build files for Rust std library instead of \
+                            third_party/rust. If RUST_SRC_ROOT is specified (relative \
+                            to the root of the Chromium repo) the rules are generated from the \
+                            Cargo files in that directory. Typically //third_party/rust_src/src \
+                            to generate rules for a Rust roll. The default, when not specified, \
+                            is to generate the rules from the current Rust toolchain in \
+                            //third_party/rust-toolchain.",
+                        ),
                 ),
         )
         .subcommand(

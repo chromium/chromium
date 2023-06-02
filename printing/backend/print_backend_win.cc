@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_hglobal.h"
@@ -605,7 +604,6 @@ bool PrintBackendWin::IsValidPrinter(const std::string& printer_name) {
 
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::Value::Dict* print_backend_settings,
     const std::string& /*locale*/) {
   return base::MakeRefCounted<PrintBackendWin>();
 }

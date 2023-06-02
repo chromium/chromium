@@ -77,7 +77,7 @@ class MediaPlaylistTestBuilder : public PlaylistTestBuilder<MediaPlaylist> {
   void VerifyExpectations(const MediaPlaylist& playlist,
                           const base::Location& from) const override;
 
-  raw_ptr<const MultivariantPlaylist> parent_ = nullptr;
+  raw_ptr<const MultivariantPlaylist, DanglingUntriaged> parent_ = nullptr;
   std::vector<SegmentExpectations> segment_expectations_;
 };
 

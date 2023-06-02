@@ -14,6 +14,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {ActivationStateType, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -36,6 +37,12 @@ Polymer({
      * @type {!OncMojo.NetworkStateProperties|undefined}
      */
     networkState: Object,
+
+    /**
+     * If set, hotspot state within this object will be used to update the
+     * hotspot icon.
+     */
+    hotspotInfo: Object,
 
     /**
      * If set, the device state for the network type. Otherwise it defaults to
@@ -73,7 +80,7 @@ Polymer({
     ariaLabel: {
       type: String,
       reflectToAttribute: true,
-      computed: 'computeAriaLabel_(locale, networkState)',
+      computed: 'computeAriaLabel_(locale, networkState, hotspotInfo)',
     },
 
     /** @private {boolean} */
@@ -101,9 +108,20 @@ Polymer({
     // NOTE: computeAriaLabel_() follows a very similar logic structure and both
     // functions should be updated together.
 
-    if (!this.networkState) {
+    if (!this.networkState && !this.hotspotInfo) {
       return '';
     }
+
+    if (this.hotspotInfo) {
+      if (this.hotspotInfo.state === HotspotState.kEnabled) {
+        return 'hotspot-on';
+      }
+      if (this.hotspotInfo.state === HotspotState.kEnabling) {
+        return 'hotspot-connecting';
+      }
+      return 'hotspot-off';
+    }
+
     const type = this.networkState.type;
     if (type === NetworkType.kEthernet) {
       return 'ethernet';
@@ -157,6 +175,12 @@ Polymer({
   computeAriaLabel_(locale, networkState) {
     // NOTE: getIconClass_() follows a very similar logic structure and both
     // functions should be updated together.
+
+    if (this.hotspotInfo) {
+      // TODO(b/284324373): Finalize aria labels for hotspot and update them
+      // here.
+      return 'hotspot';
+    }
 
     if (!this.networkState) {
       return '';
@@ -247,7 +271,7 @@ Polymer({
    * @private
    */
   showTechnology_() {
-    if (!this.networkState) {
+    if (!this.networkState || this.hotspotInfo) {
       return false;
     }
     return !this.showRoaming_() &&
@@ -260,7 +284,7 @@ Polymer({
    * @private
    */
   getTechnology_() {
-    if (!this.networkState) {
+    if (!this.networkState || this.hotspotInfo) {
       return '';
     }
     if (this.networkState.type === NetworkType.kCellular) {
@@ -310,7 +334,7 @@ Polymer({
    * @private
    */
   showSecure_() {
-    if (!this.networkState) {
+    if (!this.networkState || this.hotspotInfo) {
       return false;
     }
     if (!this.isListItem &&
@@ -339,7 +363,7 @@ Polymer({
    * @private
    */
   showIcon_() {
-    return !!this.networkState;
+    return !!this.networkState || !!this.hotspotInfo;
   },
 
   /**

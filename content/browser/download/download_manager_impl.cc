@@ -245,7 +245,8 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         absl::nullopt /* navigation_id */, ukm::kInvalidSourceIdObj,
         &maybe_proxy_factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
-        nullptr /* factory_override */);
+        nullptr /* factory_override */,
+        nullptr /* navigation_response_task_runner */);
 
     // If anyone above indicated that they care about proxying, pass the
     // intermediate pipe along to the NetworkDownloadPendingURLLoaderFactory.
@@ -1245,7 +1246,8 @@ int DownloadManagerImpl::BlockingShutdownCount() {
           it.second->GetDangerType() !=
               download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
           it.second->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+              download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
+          !download->IsInsecure()) {
         ++count;
       }
     }

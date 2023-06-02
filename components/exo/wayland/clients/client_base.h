@@ -204,8 +204,6 @@ class ClientBase {
   std::unique_ptr<wl_shell_surface> shell_surface_;
   std::unique_ptr<xdg_surface> xdg_surface_;
   std::unique_ptr<xdg_toplevel> xdg_toplevel_;
-  std::unique_ptr<zxdg_surface_v6> zxdg_surface_;
-  std::unique_ptr<zxdg_toplevel_v6> zxdg_toplevel_;
   std::unique_ptr<wl_pointer> wl_pointer_;
   std::unique_ptr<zcr_pointer_stylus_v2> zcr_pointer_stylus_;
   Globals globals_;

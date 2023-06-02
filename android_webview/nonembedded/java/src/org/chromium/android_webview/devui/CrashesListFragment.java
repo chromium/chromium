@@ -36,12 +36,12 @@ import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.crash.CrashInfo;
-import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
-import org.chromium.android_webview.common.crash.CrashUploadUtil;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.android_webview.devui.util.WebViewCrashInfoCollector;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo.UploadState;
+import org.chromium.android_webview.nonembedded.crash.CrashUploadUtil;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;

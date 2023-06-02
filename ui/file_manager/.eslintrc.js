@@ -14,9 +14,7 @@ module.exports = {
       '@typescript-eslint',
     ],
     'rules': {
-      // TODO(b/265863256): Re-enable when TypeScript annotations complication
-      // has been fixed.
-      '@typescript-eslint/no-unused-vars': 'off',
+      // rule override goes here.
     },
   }],
 };

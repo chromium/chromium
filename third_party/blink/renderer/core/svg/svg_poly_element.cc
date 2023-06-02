@@ -33,9 +33,7 @@ SVGPolyElement::SVGPolyElement(const QualifiedName& tag_name,
       points_(MakeGarbageCollected<SVGAnimatedPointList>(
           this,
           svg_names::kPointsAttr,
-          MakeGarbageCollected<SVGPointList>())) {
-  AddToPropertyMap(points_);
-}
+          MakeGarbageCollected<SVGPointList>())) {}
 
 SVGPointListTearOff* SVGPolyElement::pointsFromJavascript() {
   return points_->baseVal();
@@ -78,6 +76,23 @@ void SVGPolyElement::SvgAttributeChanged(
   }
 
   SVGGeometryElement::SvgAttributeChanged(params);
+}
+
+SVGAnimatedPropertyBase* SVGPolyElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kPointsAttr) {
+    return points_.Get();
+  } else {
+    return SVGGeometryElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGPolyElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{points_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGeometryElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

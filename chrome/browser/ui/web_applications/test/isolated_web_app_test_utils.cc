@@ -44,6 +44,7 @@ namespace web_app {
 namespace {
 constexpr base::StringPiece kTestManifest = R"({
       "name": "Simple Isolated App",
+      "version": "$1",
       "id": "/",
       "scope": "/",
       "start_url": "/",
@@ -136,8 +137,10 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
-      url_info, DevModeProxy{.proxy_url = proxy_origin}, /*keep_alive=*/nullptr,
-      /*profile_keep_alive=*/nullptr, future.GetCallback());
+      url_info, DevModeProxy{.proxy_url = proxy_origin},
+      /*expected_version=*/absl::nullopt,
+      /*optional_keep_alive=*/nullptr,
+      /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
   CHECK(future.Get().has_value()) << future.Get().error();
 
@@ -233,10 +236,12 @@ TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
           key_pair_.public_key));
 }
 
-TestSignedWebBundle BuildDefaultTestSignedWebBundle() {
+TestSignedWebBundle BuildDefaultTestSignedWebBundle(
+    const base::Version& version) {
   TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
       web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey));
-  builder.AddManifest(kTestManifest);
+  builder.AddManifest(base::ReplaceStringPlaceholders(
+      kTestManifest, {version.GetString()}, nullptr));
   builder.AddPngImage(kTestIconUrl, GetTestIconInString());
   return builder.Build();
 }
@@ -252,8 +257,8 @@ AppId AddDummyIsolatedAppToRegistry(Profile* profile,
   const AppId app_id = isolated_web_app->app_id();
   isolated_web_app->SetName(name);
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()}));
+  isolated_web_app->SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
 
   ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
   update->CreateApp(std::move(isolated_web_app));

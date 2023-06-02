@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +32,8 @@ SendTabToSelfClientService* SendTabToSelfClientServiceFactory::GetForProfile(
 // static
 SendTabToSelfClientServiceFactory*
 SendTabToSelfClientServiceFactory::GetInstance() {
-  return base::Singleton<SendTabToSelfClientServiceFactory>::get();
+  static base::NoDestructor<SendTabToSelfClientServiceFactory> instance;
+  return instance.get();
 }
 
 SendTabToSelfClientServiceFactory::SendTabToSelfClientServiceFactory()
@@ -48,7 +49,8 @@ SendTabToSelfClientServiceFactory::SendTabToSelfClientServiceFactory()
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
 }
 
-SendTabToSelfClientServiceFactory::~SendTabToSelfClientServiceFactory() {}
+SendTabToSelfClientServiceFactory::~SendTabToSelfClientServiceFactory() =
+    default;
 
 // BrowserStateKeyedServiceFactory implementation.
 KeyedService* SendTabToSelfClientServiceFactory::BuildServiceInstanceFor(

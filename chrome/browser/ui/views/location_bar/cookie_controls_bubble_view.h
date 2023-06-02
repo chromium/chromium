@@ -54,6 +54,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
                        int allowed_cookies,
                        int blocked_cookies) override;
   void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
+  void OnStatefulBounceCountChanged(int bounce_count) override;
 
  private:
   enum class IntermediateStep {
@@ -96,6 +97,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
   IntermediateStep intermediate_step_ = IntermediateStep::kNone;
 
   absl::optional<int> blocked_cookies_;
+  absl::optional<int> stateful_bounces_;
 
   raw_ptr<views::ImageView> header_view_ = nullptr;
   raw_ptr<views::Label> text_ = nullptr;

@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -78,6 +79,9 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -512,6 +516,12 @@ bool IsSubtreePrunedForAccessibility(const Element* node) {
 
   if (node->IsPseudoElement()) {
     if (!AXObjectCacheImpl::IsRelevantPseudoElement(*node))
+      return true;
+  }
+
+  if (const HTMLSlotElement* slot =
+          ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+    if (!AXObjectCacheImpl::IsRelevantSlotElement(*slot))
       return true;
   }
 
@@ -1131,6 +1141,57 @@ bool AXObjectCacheImpl::ShouldCreateAXMenuListFor(LayoutObject* layout_object) {
 }
 
 // static
+bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
+  // A <slot> descendant of a node that is still in the DOM but no longer
+  // rendered will return true for Node::isConnected() and false for
+  // AXObject::IsDetached(). But from the perspective of platform ATs, this
+  // subtree is not connected and is detached unless it is canvas fallback
+  // content. In order to detect this condition, we look to the first non-slot
+  // parent. If it has a layout object, the <slot>'s contents are rendered.
+  // If it doesn't, but it's in the canvas subtree, those contents should be
+  // treated as canvas fallback content.
+  //
+  // The alternative way to determine whether the <slot> is still relevant for
+  // rendering is to iterate FlatTreeTraversal::Parent until you get to the last
+  // parent, and see if it's a document. If it is not a document, then it is not
+  // relevant. This seems much slower than just checking GetLayoutObject() as it
+  // needs to iterate the parent chain. However, checking GetLayoutObject()
+  // could produce null in the case of something that is
+  // content-visibility:auto. This means that any slotted content inside
+  // content-visibility:auto may be removed from the AX tree depending on
+  // whether it was recently rendered.
+  //
+  // TODO(accessibility) This fails for the web test
+  // detach-locked-slot-children-crash.html with --force-renderer-accessibility.
+  // See web_tests/FlagExpectations/force-renderer-accessibility.
+  // There should be a better way to accomplish this.
+  // Could a new function be added to the slot element?
+  const Node* parent = LayoutTreeBuilderTraversal::Parent(slot);
+  if (const HTMLSlotElement* parent_slot =
+          ToHTMLSlotElementIfSupportsAssignmentOrNull(parent)) {
+    return AXObjectCacheImpl::IsRelevantSlotElement(*parent_slot);
+  }
+
+  if (parent && parent->GetLayoutObject())
+    return true;
+
+  const Element* parent_element = DynamicTo<Element>(parent);
+  if (!parent_element)
+    return false;
+
+  // Authors can include elements as "Fallback content" inside a <canvas> in
+  // order to provide an alternative means to interact with the canvas using
+  // a screen reader. Those should always be included.
+  if (parent_element->IsInCanvasSubtree())
+    return true;
+
+  // LayoutObject::CreateObject() will not create an object for elements
+  // with display:contents. If we do not include a <slot> for that reason,
+  // any descendants will be not be included in the accessibility tree.
+  return parent_element->HasDisplayContentsStyle();
+}
+
+// static
 bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   DCHECK(node.IsPseudoElement());
   if (!node.GetLayoutObject())
@@ -1375,6 +1436,13 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // Give the AXObject its ID and initialize.
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
+
+  // Only rebuild the child list of the parent if we had to compute
+  // the parent here, and it wasn't passed in as context. In other situations,
+  // we should know about the child already.
+  if (parent && parent != parent_if_known) {
+    parent->ChildrenChangedWithCleanLayout();
+  }
 
   return new_obj;
 }
@@ -1940,7 +2008,8 @@ void AXObjectCacheImpl::SelectionChanged(Node* node) {
 void AXObjectCacheImpl::UpdateReverseTextRelations(
     const AXObject* relation_source,
     const Vector<String>& target_ids) {
-  relation_cache_->UpdateReverseTextRelations(relation_source, target_ids);
+  relation_cache_->UpdateReverseTextRelations(relation_source->GetNode(),
+                                              target_ids);
 }
 
 void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
@@ -2141,19 +2210,17 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     }
   }
 
-  // Once we have reached the threshold number of roles that forces a data
-  // table, invalidate the AXTable if it was previously a layout table, so that
-  // its subtree recomputes roles.
-  if (IsA<HTMLTableRowElement>(node)) {
-    if (auto* table_element =
-            Traversal<HTMLTableElement>::FirstAncestor(*node)) {
-      if (table_element->rows()->length() >=
-          AXObjectCacheImpl::kDataTableHeuristicMinRows) {
-        if (AXObject* ax_table = Get(table_element)) {
-          if (ax_table->RoleValue() == ax::mojom::blink::Role::kLayoutTable)
-            HandleRoleChangeWithCleanLayout(table_element);
-        }
+  // Check if a row or cell's table changed to or from a data table.
+  if (IsA<HTMLTableRowElement>(node) || IsA<HTMLTableCellElement>(node)) {
+    Element* parent = node->parentElement();
+    while (parent) {
+      if (DynamicTo<HTMLTableElement>(parent)) {
+        break;
       }
+      parent = parent->parentElement();
+    }
+    if (parent) {
+      UpdateTableRoleWithCleanLayout(parent);
     }
   }
 }
@@ -2403,13 +2470,15 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
     UpdateTreeIfNeededOnce();
   }
 
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  for (const auto& entry : objects_) {
-    const AXObject* object = entry.value;
-    DCHECK(!object->HasDirtyDescendants())
-        << "No children in the tree should require an update at this point.";
-  }
-#endif
+  // TODO(chrishtr): re-enable this once crbug.com/1446721 is fixed.
+  // #if EXPENSIVE_DCHECKS_ARE_ON()
+  //   for (const auto& entry : objects_) {
+  //     const AXObject* object = entry.value;
+  //     DCHECK(!object->HasDirtyDescendants())
+  //         << "No children in the tree should require an update at this
+  //         point.";
+  //   }
+  // #endif
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
@@ -3824,6 +3893,18 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
       !obj->GetDocument()->View() ||
       !obj->GetDocument()->View()->GetFrame().GetPage()) {
     return nullptr;
+  }
+
+  // A <slot> descendant of a node that is still in the DOM but no longer
+  // rendered will return true for Node::isConnected() and false for
+  // AXObject::IsDetached(). But from the perspective of platform ATs, this
+  // subtree is not connected and is detached.
+  // TODO(accessibility): The relevance check probably applies to all nodes
+  // not just slot elements.
+  if (const HTMLSlotElement* slot =
+          ToHTMLSlotElementIfSupportsAssignmentOrNull(obj->GetNode())) {
+    if (!AXObjectCacheImpl::IsRelevantSlotElement(*slot))
+      return nullptr;
   }
 
   // Ensure still in tree.

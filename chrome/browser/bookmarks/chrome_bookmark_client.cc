@@ -119,6 +119,13 @@ ChromeBookmarkClient::GetLoadManagedNodeCallback() {
   return managed_bookmark_service_->GetLoadManagedNodeCallback();
 }
 
+bookmarks::metrics::StorageStateForUma
+ChromeBookmarkClient::GetStorageStateForUma() {
+  return bookmark_sync_service_->IsTrackingMetadata()
+             ? bookmarks::metrics::StorageStateForUma::kSyncEnabled
+             : bookmarks::metrics::StorageStateForUma::kLocalOnly;
+}
+
 bool ChromeBookmarkClient::CanSetPermanentNodeTitle(
     const bookmarks::BookmarkNode* permanent_node) {
   return !managed_bookmark_service_ ||

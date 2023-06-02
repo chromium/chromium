@@ -1987,9 +1987,7 @@ ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
   key.elevation_mode = background_elevation_;
 #endif
   key.user_color = GetUserColor();
-  if (color_mode_override_) {
-    key.color_mode = color_mode_override_.value();
-  }
+  key.color_mode = GetColorMode();
   return key;
 }
 
@@ -2002,6 +2000,23 @@ absl::optional<SkColor> Widget::GetUserColor() const {
 const ui::ColorProvider* Widget::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
       GetColorProviderKey());
+}
+
+ui::ColorProviderManager::ColorMode Widget::GetColorMode() const {
+  if (color_mode_override_.has_value()) {
+    return color_mode_override_.value();
+  }
+
+  // All children should share the color mode of their parent unless explicitly
+  // overridden.
+  if (parent_) {
+    return parent_->GetColorMode();
+  }
+
+  // In the default case fall back to the system's default color mode.
+  return GetNativeTheme()->ShouldUseDarkColors()
+             ? ui::ColorProviderManager::ColorMode::kDark
+             : ui::ColorProviderManager::ColorMode::kLight;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

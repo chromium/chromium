@@ -54,7 +54,7 @@ struct CONTENT_EXPORT FileSystemAccessWriteItem {
   // FileSystemAccessPermissionContext::PerformAfterWriteChecks(), in which
   // case they will be filled by that method.
   raw_ptr<WebContents> web_contents = nullptr;
-  raw_ptr<BrowserContext> browser_context = nullptr;
+  raw_ptr<BrowserContext, DanglingUntriaged> browser_context = nullptr;
 };
 
 }  // namespace content

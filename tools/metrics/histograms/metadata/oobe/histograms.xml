@@ -697,6 +697,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.{OsDataType}"
+    enum="BooleanEnabled" expires_after="2024-05-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the selected data type to sync during the OS Sync consent screen in
+    OOBE flow with Lacros enabled.
+  </summary>
+  <token key="OsDataType">
+    <variant name="SyncApps"/>
+    <variant name="SyncSettings"/>
+    <variant name="SyncWallpaper"/>
+    <variant name="SyncWifi"/>
+  </token>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything"
+    enum="BooleanEnabled" expires_after="2024-05-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Indicate if sync all os types is enabled for the sync consent OOBE when
+    Lacros enabled.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.SyncConsentScreen.LoadingTime" units="ms"
     expires_after="2023-11-01">
   <owner>osamafathy@google.com</owner>

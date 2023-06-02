@@ -246,7 +246,7 @@ class TransformationPatchGenerator {
  protected:
   raw_ptr<Element> old_element_;
   raw_ptr<Element> new_element_;
-  raw_ptr<TransformationPatcher> patcher_;
+  raw_ptr<TransformationPatcher, DanglingUntriaged> patcher_;
 };
 
 }  // namespace

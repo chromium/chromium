@@ -21,16 +21,14 @@ class TestWebUIJsBridgeUI : public WebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-// WebUIController for WebUIJsBridge unittests.
-class TestWebUIJsBridgeIncorrectUI : public WebUIController {
+// Additional WebUIController for WebUIJsBridge unittests.
+class TestWebUIJsBridgeUI2 : public WebUIController {
  public:
-  explicit TestWebUIJsBridgeIncorrectUI(WebUI* web_ui)
-      : WebUIController(web_ui) {}
-  ~TestWebUIJsBridgeIncorrectUI() override = default;
+  explicit TestWebUIJsBridgeUI2(WebUI* web_ui) : WebUIController(web_ui) {}
+  ~TestWebUIJsBridgeUI2() override = default;
 
-  TestWebUIJsBridgeIncorrectUI(const TestWebUIJsBridgeIncorrectUI&) = delete;
-  TestWebUIJsBridgeIncorrectUI& operator=(const TestWebUIJsBridgeIncorrectUI&) =
-      delete;
+  TestWebUIJsBridgeUI2(const TestWebUIJsBridgeUI2&) = delete;
+  TestWebUIJsBridgeUI2& operator=(const TestWebUIJsBridgeUI2&) = delete;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

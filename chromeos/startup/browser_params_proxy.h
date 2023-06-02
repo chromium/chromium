@@ -106,6 +106,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCurrentUserDeviceOwner() const;
 
+  bool IsCurrentUserEphemeral() const;
+
   bool DoNotMuxExtensionAppIds() const;
 
   bool EnableLacrosTtsSupport() const;
@@ -133,6 +135,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
   bool IsUploadOfficeToCloudEnabled() const;
 
   bool EnableClipboardHistoryRefresh() const;
+
+  bool IsVariableRefreshRateEnabled() const;
 
  private:
   friend base::NoDestructor<BrowserParamsProxy>;

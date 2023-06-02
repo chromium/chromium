@@ -14,6 +14,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.PopupItemId;
 import org.chromium.ui.DropdownItem;
 
 /**
@@ -98,9 +99,9 @@ public class AwAutofillClient {
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String name, String label, int uniqueId) {
+            String name, String label, @PopupItemId int popupItemId) {
         array[index] = new AutofillSuggestion(name, label, /* itemTag= */ "", DropdownItem.NO_ICON,
-                false /* isIconAtLeft */, uniqueId, false /* isDeletable */,
+                false /* isIconAtLeft */, popupItemId, false /* isDeletable */,
                 false /* isMultilineLabel */, false /* isBoldLabel */, /* featureForIPH= */ "");
     }
 

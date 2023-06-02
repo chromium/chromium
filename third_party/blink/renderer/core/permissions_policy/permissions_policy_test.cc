@@ -201,17 +201,21 @@ class PermissionsPolicyParserParsingTest
       for (size_t j = 0; j < actual_declaration.allowed_origins.size(); ++j) {
         const url::Origin origin = url::Origin::Create(
             GURL(expected_declaration.allowed_origins[j].origin));
-        EXPECT_EQ(actual_declaration.allowed_origins[j].csp_source.scheme,
-                  origin.scheme());
-        EXPECT_EQ(actual_declaration.allowed_origins[j].csp_source.host,
+        EXPECT_EQ(
+            actual_declaration.allowed_origins[j].CSPSourceForTest().scheme,
+            origin.scheme());
+        EXPECT_EQ(actual_declaration.allowed_origins[j].CSPSourceForTest().host,
                   origin.host());
-        if (actual_declaration.allowed_origins[j].csp_source.port !=
+        if (actual_declaration.allowed_origins[j].CSPSourceForTest().port !=
             url::PORT_UNSPECIFIED) {
-          EXPECT_EQ(actual_declaration.allowed_origins[j].csp_source.port,
-                    origin.port());
+          EXPECT_EQ(
+              actual_declaration.allowed_origins[j].CSPSourceForTest().port,
+              origin.port());
         }
         EXPECT_EQ(
-            actual_declaration.allowed_origins[j].csp_source.is_host_wildcard,
+            actual_declaration.allowed_origins[j]
+                .CSPSourceForTest()
+                .is_host_wildcard,
             expected_declaration.allowed_origins[j].has_subdomain_wildcard);
       }
     }
@@ -1042,17 +1046,14 @@ class FeaturePolicyMutationTest : public testing::Test {
   ParsedPermissionsPolicy test_policy = {
       {mojom::blink::PermissionsPolicyFeature::kFullscreen,
        /*allowed_origins=*/
-       {blink::OriginWithPossibleWildcards(url_origin_a_,
-                                           /*has_subdomain_wildcard=*/false),
-        blink::OriginWithPossibleWildcards(url_origin_b_,
-                                           /*has_subdomain_wildcard=*/false)},
+       {blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_),
+        blink::OriginWithPossibleWildcards::FromOrigin(url_origin_b_)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
       {mojom::blink::PermissionsPolicyFeature::kGeolocation,
        /*=allowed_origins*/
-       {blink::OriginWithPossibleWildcards(url_origin_a_,
-                                           /*has_subdomain_wildcard=*/false)},
+       {blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false}};

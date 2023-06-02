@@ -349,7 +349,7 @@ class HashRealTimeService : public KeyedService {
       get_network_context_;
 
   // Unowned object used for getting and storing cache entries.
-  raw_ptr<VerdictCacheManager> cache_manager_;
+  raw_ptr<VerdictCacheManager, DanglingUntriaged> cache_manager_;
 
   // Unowned object used for getting OHTTP key.
   raw_ptr<OhttpKeyService> ohttp_key_service_;

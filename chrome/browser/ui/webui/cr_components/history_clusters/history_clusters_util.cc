@@ -29,9 +29,10 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
   source->AddBoolean("inSidePanel", in_side_panel);
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile);
-  source->AddBoolean("isHistoryClustersEnabled",
-                     history_clusters_service &&
-                         history_clusters_service->IsJourneysEnabled());
+  source->AddBoolean(
+      "isHistoryClustersEnabled",
+      history_clusters_service &&
+          history_clusters_service->is_journeys_feature_flag_enabled());
   source->AddBoolean(kIsHistoryClustersVisibleKey,
                      prefs->GetBoolean(history_clusters::prefs::kVisible));
   source->AddBoolean(
@@ -39,10 +40,6 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       prefs->IsManagedPreference(history_clusters::prefs::kVisible));
   source->AddBoolean("isHistoryClustersDebug",
                      history_clusters::GetConfig().user_visible_debug);
-  source->AddBoolean("isHideVisitsEnabled",
-                     history_clusters::GetConfig().hide_visits);
-  source->AddBoolean("isHideVisitsIconEnabled",
-                     history_clusters::GetConfig().hide_visits_icon);
   source->AddBoolean(
       "isHistoryClustersImagesEnabled",
       history_clusters::GetConfig().images &&
@@ -63,6 +60,7 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       {"disableHistoryClusters", IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL},
       {"enableHistoryClusters", IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL},
       {"hideFromCluster", IDS_HISTORY_CLUSTERS_HIDE_PAGE},
+      {"hideAllVisits", IDS_HISTORY_CLUSTERS_HIDE_VISITS},
       {"historyClustersTabLabel", IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL},
       {"historyListTabLabel", IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL},
       {"loadMoreButtonLabel", IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL},

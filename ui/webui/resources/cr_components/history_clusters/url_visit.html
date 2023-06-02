@@ -27,6 +27,20 @@
     --cr-icon-image: url(chrome://resources/cr_components/history_clusters/hide_source_gm_grey_24dp.svg);
   }
 
+  :host([in-side-panel_]) .hide-visit-icon {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+  }
+
+  .icon-more-vert {
+    --cr-icon-button-margin-start: 0;
+  }
+
+  :host([in-side-panel_]) .icon-more-vert {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+  }
+
   #header {
     align-items: center;
     display: flex;
@@ -136,11 +150,11 @@
     <cr-icon-button class="hide-visit-icon"
         title$="[[i18n('hideFromCluster')]]"
         on-click="onHideSelfButtonClick_"
-        hidden="[[!showHideVisitIcon_]]"></cr-icon-button>
+        hidden="[[!fromPersistence]]"></cr-icon-button>
     <cr-icon-button id="actionMenuButton" class="icon-more-vert"
         title$="[[i18n('actionMenuDescription')]]" aria-haspopup="menu"
         on-click="onActionMenuButtonClick_"
-        hidden="[[!showActionMenuButton_]]">
+        hidden="[[!allowDeletingHistory_]]">
     </cr-icon-button>
   </div>
 </div>
@@ -148,10 +162,6 @@
 <cr-lazy-render id="actionMenu">
   <template>
     <cr-action-menu role-description="[[i18n('actionMenuDescription')]]">
-      <button id="hideSelfButton" class="dropdown-item" hidden="[[!showHideVisitMenu_]]"
-          on-click="onHideSelfButtonClick_">
-        [[i18n('hideFromCluster')]]
-      </button>
       <button id="removeSelfButton" class="dropdown-item" hidden="[[!allowDeletingHistory_]]"
           on-click="onRemoveSelfButtonClick_">
         [[i18n('removeFromHistory')]]

@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -960,7 +961,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   AllowInterestGroupContentBrowserClient content_browser_client_;
   TestKAnonymityServiceDelegate k_anon_delegate_;
   raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
-  raw_ptr<InterestGroupManagerImpl> manager_;
+  raw_ptr<InterestGroupManagerImpl, DanglingUntriaged> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().
@@ -4049,7 +4050,7 @@ function scoreAd(
   ASSERT_EQ(1u,
             storage_interest_group->bidding_browser_signals->prev_wins.size());
   ASSERT_EQ(
-      R"({"render_url":"https://example.com/render"})",
+      R"({"renderURL":"https://example.com/render"})",
       storage_interest_group->bidding_browser_signals->prev_wins[0]->ad_json);
 
   // The auction should also trigger a k-anon "join" for the winning ad.
@@ -4788,51 +4789,100 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_bidding_logic_url.bidding_url =
       GURL(base::StringPrintf("%s/bidding.js", kOriginStringA));
 
+  blink::InterestGroup updated_interest_group_bidding_wasm_helper_url =
+      CreateInterestGroup();
+  updated_interest_group_bidding_wasm_helper_url.update_url = kUpdateUrlA;
+  updated_interest_group_bidding_wasm_helper_url.priority = 1.0;
+  updated_interest_group_bidding_wasm_helper_url.bidding_wasm_helper_url =
+      GURL(base::StringPrintf("%s/bidding.wasm", kOriginStringA));
+
+  blink::InterestGroup updated_interest_group_trusted_bidding_signals_url =
+      CreateInterestGroup();
+  updated_interest_group_trusted_bidding_signals_url.update_url = kUpdateUrlA;
+  updated_interest_group_trusted_bidding_signals_url.priority = 1.0;
+  updated_interest_group_trusted_bidding_signals_url
+      .trusted_bidding_signals_url =
+      GURL(base::StringPrintf("%s/signals.json", kOriginStringA));
+
   struct TestCase {
     const std::string update_contents;
-    const blink::InterestGroup& expected_group;
+    const raw_ref<const blink::InterestGroup> expected_group;
   } kTestCases[] = {
       // ***
       // ads renderURL
       // ***
       {R"("ads": [{"renderUrl": "https://example.com/render"}])",
-       updated_interest_group_ads},
+       raw_ref(updated_interest_group_ads)},
       {R"("ads": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render"}])",
-       updated_interest_group_ads},
+       raw_ref(updated_interest_group_ads)},
       {R"("ads": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render2"}])",
-       initial_interest_group},
-      {R"("ads": [{}])", initial_interest_group},
+       raw_ref(initial_interest_group)},
+      {R"("ads": [{}])", raw_ref(initial_interest_group)},
       // ***
       // adComponents renderURL
       // ***
       {R"("adComponents": [{"renderUrl": "https://example.com/render"}])",
-       updated_interest_group_ad_components},
+       raw_ref(updated_interest_group_ad_components)},
       {R"("adComponents": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render"}])",
-       updated_interest_group_ad_components},
+       raw_ref(updated_interest_group_ad_components)},
       {R"("adComponents": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render2"}])",
-       initial_interest_group},
-      {R"("adComponents": [{}])", initial_interest_group},
+       raw_ref(initial_interest_group)},
+      {R"("adComponents": [{}])", raw_ref(initial_interest_group)},
       // ***
       // biddingLogicURL
       // ***
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js")",
                           kOriginStringA),
-       updated_interest_group_bidding_logic_url},
+       raw_ref(updated_interest_group_bidding_logic_url)},
       {base::StringPrintf(R"("biddingLogicURL": "%s/bidding.js")",
                           kOriginStringA),
-       updated_interest_group_bidding_logic_url},
+       raw_ref(updated_interest_group_bidding_logic_url)},
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
                           R"("biddingLogicURL": "%s/bidding.js")",
                           kOriginStringA, kOriginStringA),
-       updated_interest_group_bidding_logic_url},
+       raw_ref(updated_interest_group_bidding_logic_url)},
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
                           R"("biddingLogicURL": "%s/bidding2.js")",
                           kOriginStringA, kOriginStringA),
-       initial_interest_group},
+       raw_ref(initial_interest_group)},
+      // ***
+      // biddingWasmHelperURL
+      // ***
+      {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm")",
+                          kOriginStringA),
+       raw_ref(updated_interest_group_bidding_wasm_helper_url)},
+      {base::StringPrintf(R"("biddingWasmHelperURL": "%s/bidding.wasm")",
+                          kOriginStringA),
+       raw_ref(updated_interest_group_bidding_wasm_helper_url)},
+      {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
+                          R"("biddingWasmHelperURL": "%s/bidding.wasm")",
+                          kOriginStringA, kOriginStringA),
+       raw_ref(updated_interest_group_bidding_wasm_helper_url)},
+      {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
+                          R"("biddingWasmHelperURL": "%s/bidding2.wasm")",
+                          kOriginStringA, kOriginStringA),
+       raw_ref(initial_interest_group)},
+      // ***
+      // trustedBiddingSignalsURL
+      // ***
+      {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json")",
+                          kOriginStringA),
+       raw_ref(updated_interest_group_trusted_bidding_signals_url)},
+      {base::StringPrintf(R"("trustedBiddingSignalsURL": "%s/signals.json")",
+                          kOriginStringA),
+       raw_ref(updated_interest_group_trusted_bidding_signals_url)},
+      {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json",)"
+                          R"("trustedBiddingSignalsURL": "%s/signals.json")",
+                          kOriginStringA, kOriginStringA),
+       raw_ref(updated_interest_group_trusted_bidding_signals_url)},
+      {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json",)"
+                          R"("trustedBiddingSignalsURL": "%s/signals2.json")",
+                          kOriginStringA, kOriginStringA),
+       raw_ref(initial_interest_group)},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -4851,7 +4901,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
         GetInterestGroupsForOwner(kOriginA);
     ASSERT_EQ(groups.size(), 1u);
     EXPECT_TRUE(
-        groups[0].interest_group.IsEqualForTesting(test_case.expected_group));
+        groups[0].interest_group.IsEqualForTesting(*test_case.expected_group));
 
     // Reset for the next iteration.
     JoinInterestGroupAndFlush(initial_interest_group);
@@ -6619,8 +6669,7 @@ function reportResult() {
       blink::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
       std::vector<blink::OriginWithPossibleWildcards>{
-          blink::OriginWithPossibleWildcards(kOriginA,
-                                             /*has_subdomain_wildcard=*/false)},
+          blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
       /*self_if_matches=*/absl::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
@@ -6703,9 +6752,7 @@ class AdAuctionServiceImplPrivateAggregationEnabledTest
     : public AdAuctionServiceImplTest {
  public:
   AdAuctionServiceImplPrivateAggregationEnabledTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    feature_list_.InitAndEnableFeature(blink::features::kPrivateAggregationApi);
   }
 
  protected:
@@ -6713,12 +6760,13 @@ class AdAuctionServiceImplPrivateAggregationEnabledTest
 };
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
-       PrivateAggregationReportForwarded) {
+       PrivateAggregationReportsForwarded) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -6772,21 +6820,26 @@ function scoreAd(
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_callback, Run)
-      .WillRepeatedly(
-          testing::Invoke([this](AggregatableReportRequest request,
-                                 PrivateAggregationBudgetKey budget_key) {
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
-            EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
-            EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kFledge);
-            EXPECT_EQ(budget_key.origin(), kOriginA);
-          }));
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 2u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.payload_contents().contributions[1].bucket, 3);
+        EXPECT_EQ(request.payload_contents().contributions[1].value, 4);
+        EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kProtectedAudience);
+        EXPECT_EQ(budget_key.origin(), kOriginA);
+        run_loop.Quit();
+      }));
 
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   EXPECT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
+  run_loop.Run();
 }
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
@@ -6802,7 +6855,7 @@ function generateBid(
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return bid;
 }
 )";
@@ -6830,9 +6883,7 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6858,12 +6909,8 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false),
-            blink::OriginWithPossibleWildcards(
-                kOriginC,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6886,7 +6933,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -6923,9 +6970,7 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6951,12 +6996,8 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false),
-            blink::OriginWithPossibleWildcards(
-                kOriginC,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6992,8 +7033,8 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.reportContributionForEvent("reserved.win",
-                                                {bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogramOnEvent("reserved.win",
+                                                  {bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7046,12 +7087,12 @@ function scoreAd(
 }
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
-       PrivateAggregationExtensionsUseCounterNotLoggedOnSendHistogramReport) {
+       PrivateAggregationExtensionsUseCounterNotLoggedOnContributeToHistogram) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7112,7 +7153,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({});
+  privateAggregation.contributeToHistogram({});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7163,7 +7204,7 @@ function scoreAd(
       .Times(0);
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
 
-  // There should've been a sendHistogramReport() error.
+  // There should've been a contributeToHistogram() error.
   EXPECT_EQ(auction_result, absl::nullopt);
 }
 
@@ -7175,9 +7216,9 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.reportContributionForEvent("reserved.win",
-                                                {bucket: 1n, value: 2});
-  privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+  privateAggregation.contributeToHistogramOnEvent("reserved.win",
+                                                  {bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7185,9 +7226,9 @@ function generateBid(
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
-  privateAggregation.reportContributionForEvent("reserved.win",
-                                                {bucket: 7n, value: 8});
+  privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
+  privateAggregation.contributeToHistogramOnEvent("reserved.win",
+                                                  {bucket: 7n, value: 8});
   return bid;
 }
 )";
@@ -7251,7 +7292,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7294,7 +7335,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7442,7 +7483,7 @@ function scoreAd(
       ASSERT_EQ(
           1u,
           storage_interest_group->bidding_browser_signals->prev_wins.size());
-      ASSERT_EQ(R"({"render_url":"https://example.com/render"})",
+      ASSERT_EQ(R"({"renderURL":"https://example.com/render"})",
                 storage_interest_group->bidding_browser_signals->prev_wins[0]
                     ->ad_json);
       EXPECT_THAT(

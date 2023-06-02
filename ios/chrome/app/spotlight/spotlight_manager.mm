@@ -69,7 +69,7 @@
 - (void)resyncIndex {
   [_bookmarkManager reindexBookmarksIfNeeded];
   [_actionsManager indexActions];
-  [self.readingListManager clearAndReindexReadingListWithCompletionBlock:nil];
+  [self.readingListManager clearAndReindexReadingList];
 }
 
 - (void)bookmarkUpdated {

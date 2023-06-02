@@ -107,7 +107,7 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
 
  private:
-  raw_ptr<TestShortcutManager> shortcut_manager_;
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
 };
 
 // `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app

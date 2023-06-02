@@ -16,7 +16,7 @@ import {recordSettingChange} from '../../metrics_recorder.js';
 import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './pin_to_shelf_item.html.js';
 
-class AppManagementPinToShelfItemElement extends PolymerElement {
+export class AppManagementPinToShelfItemElement extends PolymerElement {
   static get is() {
     return 'app-management-pin-to-shelf-item';
   }

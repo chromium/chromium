@@ -245,6 +245,15 @@ public class TabStateFileManager {
                         "Failed to read tab user agent from tab state. "
                                 + "Assuming user agent is TabUserAgent.UNSET");
             }
+            try {
+                tabState.lastNavigationCommittedTimestampMillis = stream.readLong();
+            } catch (EOFException eof) {
+                tabState.lastNavigationCommittedTimestampMillis = TabState.TIMESTAMP_NOT_SET;
+                Log.w(TAG,
+                        "Failed to read last navigation committed timestamp from tab state."
+                                + " Assuming last navigation committed timestamp is"
+                                + " TabState.TIMESTAMP_NOT_SET");
+            }
             return tabState;
         } finally {
             stream.close();
@@ -309,6 +318,7 @@ public class TabStateFileManager {
                     state.tabLaunchTypeAtCreation != null ? state.tabLaunchTypeAtCreation : -1);
             dataOutputStream.writeInt(state.rootId);
             dataOutputStream.writeInt(state.userAgent);
+            dataOutputStream.writeLong(state.lastNavigationCommittedTimestampMillis);
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.SaveTime", SystemClock.elapsedRealtime() - startTime);
         } catch (FileNotFoundException e) {

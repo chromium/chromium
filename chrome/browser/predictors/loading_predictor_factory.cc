@@ -19,7 +19,8 @@ LoadingPredictor* LoadingPredictorFactory::GetForProfile(Profile* profile) {
 
 // static
 LoadingPredictorFactory* LoadingPredictorFactory::GetInstance() {
-  return base::Singleton<LoadingPredictorFactory>::get();
+  static base::NoDestructor<LoadingPredictorFactory> instance;
+  return instance.get();
 }
 
 LoadingPredictorFactory::LoadingPredictorFactory()
@@ -35,7 +36,7 @@ LoadingPredictorFactory::LoadingPredictorFactory()
   DependsOn(PredictorDatabaseFactory::GetInstance());
 }
 
-LoadingPredictorFactory::~LoadingPredictorFactory() {}
+LoadingPredictorFactory::~LoadingPredictorFactory() = default;
 
 KeyedService* LoadingPredictorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

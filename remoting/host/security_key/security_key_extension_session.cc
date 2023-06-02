@@ -161,7 +161,8 @@ void SecurityKeyExtensionSession::ProcessDataMessage(
   std::string response;
   const base::Value::List* bytes_list = message_data.FindList(kDataPayload);
   if (bytes_list && ConvertListToString(*bytes_list, &response)) {
-    HOST_LOG << "Sending security key response: " << GetCommandCode(response);
+    HOST_LOG << "Processing security key response: "
+             << GetCommandCode(response);
     security_key_auth_handler_->SendClientResponse(connection_id, response);
   } else {
     LOG(WARNING) << "Could not extract response data from message.";
@@ -192,6 +193,8 @@ void SecurityKeyExtensionSession::SendMessageToClient(
     const std::string& data) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(client_stub_);
+
+  HOST_LOG << "Sending security key request: " << GetCommandCode(data);
 
   base::Value::Dict request_dict;
   request_dict.Set(kMessageType, kDataMessage);

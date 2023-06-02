@@ -81,6 +81,7 @@ class ComponentCloudPolicyUpdaterTest : public testing::Test {
 
   const PolicyNamespace kTestPolicyNS{POLICY_DOMAIN_EXTENSIONS, kTestExtension};
   base::test::TaskEnvironment task_env_;
+  std::unique_ptr<ResourceCache> cache_;
   std::unique_ptr<ComponentCloudPolicyStore> store_;
   MockComponentCloudPolicyStoreDelegate store_delegate_;
   network::TestURLLoaderFactory loader_factory_;
@@ -90,7 +91,6 @@ class ComponentCloudPolicyUpdaterTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ResourceCache> cache_;
   std::string public_key_;
 };
 

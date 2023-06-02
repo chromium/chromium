@@ -144,24 +144,23 @@ class _IRBuilder(object):
             else:
                 assert False
 
-        named_constructors = self._build_named_constructors(node)
+        legacy_factory_functions = self._build_legacy_factory_function(node)
 
-        return Interface.IR(
-            identifier=identifier,
-            is_partial=bool(node.GetProperty('PARTIAL')),
-            is_mixin=bool(node.GetProperty('MIXIN')),
-            inherited=inherited,
-            attributes=attributes,
-            constants=constants,
-            constructors=constructors,
-            named_constructors=named_constructors,
-            operations=operations,
-            iterable=iterable,
-            maplike=maplike,
-            setlike=setlike,
-            extended_attributes=extended_attributes,
-            component=self._component,
-            debug_info=self._build_debug_info(node))
+        return Interface.IR(identifier=identifier,
+                            is_partial=bool(node.GetProperty('PARTIAL')),
+                            is_mixin=bool(node.GetProperty('MIXIN')),
+                            inherited=inherited,
+                            attributes=attributes,
+                            constants=constants,
+                            constructors=constructors,
+                            legacy_factory_functions=legacy_factory_functions,
+                            operations=operations,
+                            iterable=iterable,
+                            maplike=maplike,
+                            setlike=setlike,
+                            extended_attributes=extended_attributes,
+                            component=self._component,
+                            debug_info=self._build_debug_info(node))
 
     def _build_namespace(self, node):
         child_nodes = list(node.GetChildren())
@@ -274,19 +273,19 @@ class _IRBuilder(object):
         }
         return build_functions[node.GetClass()](node)
 
-    def _build_named_constructors(self, node):
+    def _build_legacy_factory_function(self, node):
         assert node.GetClass() == 'Interface'
-        named_constructors = []
+        legacy_factory_functions = []
 
         for child in node.GetChildren():
             if child.GetClass() == 'ExtAttributes':
                 interface_ext_attrs = child.GetChildren()
                 break
         else:
-            return named_constructors
+            return legacy_factory_functions
 
         for ext_attr in interface_ext_attrs:
-            if ext_attr.GetName() != 'NamedConstructor':
+            if ext_attr.GetName() != 'LegacyFactoryFunction':
                 continue
             call_node = ext_attr.GetChildren()[0]
             assert call_node.GetClass() == 'Call'
@@ -295,15 +294,14 @@ class _IRBuilder(object):
             return_type = self._idl_type_factory.reference_type(
                 Identifier(node.GetName()))
             assert not child_nodes
-            named_constructors.append(
-                Constructor.IR(
-                    identifier=Identifier(call_node.GetName()),
-                    arguments=arguments,
-                    return_type=return_type,
-                    component=self._component,
-                    debug_info=self._build_debug_info(node)))
+            legacy_factory_functions.append(
+                Constructor.IR(identifier=Identifier(call_node.GetName()),
+                               arguments=arguments,
+                               return_type=return_type,
+                               component=self._component,
+                               debug_info=self._build_debug_info(node)))
 
-        return named_constructors
+        return legacy_factory_functions
 
     def _build_dictionary(self, node):
         child_nodes = list(node.GetChildren())

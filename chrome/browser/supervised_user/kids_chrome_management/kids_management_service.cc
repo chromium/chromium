@@ -28,9 +28,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/features.h"
@@ -248,7 +248,7 @@ void KidsManagementService::StopFetchFamilyMembers() {
 }
 
 void KidsManagementService::ConsumeListFamilyMembers(
-    KidsExternalFetcherStatus status,
+    supervised_user::ProtoFetcherStatus status,
     std::unique_ptr<ListFamilyMembersResponse> response) {
   if (status.IsTransientError()) {
     list_family_members_backoff_.InformOfRequest(false);

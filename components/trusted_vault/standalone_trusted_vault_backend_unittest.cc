@@ -24,7 +24,7 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/sync/base/features.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
@@ -287,8 +287,9 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
   const base::FilePath deprecated_file_path_;
-  raw_ptr<testing::NiceMock<MockDelegate>> delegate_;
-  raw_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection_;
+  raw_ptr<testing::NiceMock<MockDelegate>, DanglingUntriaged> delegate_;
+  raw_ptr<testing::NiceMock<MockTrustedVaultConnection>, DanglingUntriaged>
+      connection_;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };
@@ -316,7 +317,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldInvokeGetIsRecoverabilityDegradedCallbackImmediately) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -347,7 +348,7 @@ TEST_F(
   // |pending_get_is_recoverability_degraded_| logic.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -389,7 +390,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // |pending_get_is_recoverability_degraded_| logic.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
   // The TaskEnvironment is needed because this test initializes the handler,
   // which works with time.
   base::test::SingleThreadTaskEnvironment environment{
@@ -2097,7 +2098,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultVerifyDeviceRegistration);
+      kSyncTrustedVaultVerifyDeviceRegistration);
 
   base::test::SingleThreadTaskEnvironment environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

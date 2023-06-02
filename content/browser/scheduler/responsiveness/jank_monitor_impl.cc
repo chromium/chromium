@@ -259,7 +259,8 @@ void JankMonitorImpl::OnJankStarted(const void* opaque_identifier) {
     observer.OnJankStarted();
 }
 
-void JankMonitorImpl::OnJankStopped(const void* opaque_identifier) {
+void JankMonitorImpl::OnJankStopped(
+    MayBeDangling<const void> opaque_identifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
   DCHECK_NE(opaque_identifier, nullptr);
   if (janky_task_id_ != opaque_identifier)
@@ -279,8 +280,13 @@ void JankMonitorImpl::NotifyJankStopIfNecessary(const void* opaque_identifier) {
   }
 
   monitor_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&JankMonitorImpl::OnJankStopped,
-                                base::RetainedRef(this), opaque_identifier));
+      FROM_HERE,
+      base::BindOnce(&JankMonitorImpl::OnJankStopped, base::RetainedRef(this),
+                     // It is relatively safe to have `UnsafeDangling` here
+                     // because the ptr is only used as an identifier, and since
+                     // the events should be coming in order, it is unlikely
+                     // that we encounter issue with memory being reused.
+                     base::UnsafeDangling(opaque_identifier)));
 }
 
 JankMonitorImpl::ThreadExecutionState::TaskMetadata::~TaskMetadata() = default;

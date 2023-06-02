@@ -57,9 +57,12 @@ class CONTENT_EXPORT AttributionOsLevelManager {
 
   virtual ~AttributionOsLevelManager() = default;
 
-  virtual void Register(const OsRegistration&,
+  using RegisterCallback =
+      base::OnceCallback<void(const OsRegistration&, bool success)>;
+
+  virtual void Register(OsRegistration,
                         bool is_debug_key_allowed,
-                        base::OnceCallback<void(bool success)>) = 0;
+                        RegisterCallback) = 0;
 
   // Clears storage data with the OS.
   // Note that `done` is not run if `AttributionOsLevelManager` is destroyed
@@ -74,6 +77,7 @@ class CONTENT_EXPORT AttributionOsLevelManager {
 
  protected:
   [[nodiscard]] static bool ShouldInitializeApiState();
+  [[nodiscard]] static bool ShouldUseOsWebSource();
 };
 
 class CONTENT_EXPORT NoOpAttributionOsLevelManager
@@ -81,9 +85,9 @@ class CONTENT_EXPORT NoOpAttributionOsLevelManager
  public:
   ~NoOpAttributionOsLevelManager() override;
 
-  void Register(const OsRegistration&,
+  void Register(OsRegistration,
                 bool is_debug_key_allowed,
-                base::OnceCallback<void(bool success)>) override;
+                RegisterCallback) override;
 
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,

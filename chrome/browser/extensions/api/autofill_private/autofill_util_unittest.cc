@@ -17,6 +17,9 @@ using testing::Return;
 
 namespace extensions::autofill_util {
 
+using MockCallbackAfterSuccessfulUserAuth =
+    base::MockCallback<CallbackAfterSuccessfulUserAuth>;
+
 class AutofillUtilTest : public InProcessBrowserTest {
  public:
   AutofillUtilTest() = default;
@@ -34,39 +37,43 @@ class AutofillUtilTest : public InProcessBrowserTest {
       mock_device_authenticator_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    AutofillUtilTest,
-    AuthenticateUserOnMandatoryReuathToggled_SuccessfulAuth) {
+IN_PROC_BROWSER_TEST_F(AutofillUtilTest, AuthenticateUser_SuccessfulAuth) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_result_callback;
+  const std::u16string mock_prompt_message = u"This is a mock message";
 
   ON_CALL(*mock_device_authenticator_, AuthenticateWithMessage)
       .WillByDefault(
           testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
-  EXPECT_CALL(result_callback, Run(true));
+  EXPECT_CALL(mock_result_callback, Run(true));
+  EXPECT_CALL(*mock_device_authenticator_,
+              AuthenticateWithMessage(mock_prompt_message, testing::_))
+      .Times(1);
 
-  AuthenticateUserOnMandatoryReauthToggled(mock_device_authenticator_,
-                                           result_callback.Get());
+  AuthenticateUser(mock_device_authenticator_, mock_prompt_message,
+                   mock_result_callback.Get());
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(
-    AutofillUtilTest,
-    AuthenticateUserOnMandatoryReuathToggled_UnSuccessfulAuth) {
+IN_PROC_BROWSER_TEST_F(AutofillUtilTest, AuthenticateUser_UnSuccessfulAuth) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_result_callback;
+  const std::u16string mock_prompt_message = u"This is a mock message";
 
   ON_CALL(*mock_device_authenticator_, AuthenticateWithMessage)
       .WillByDefault(
           testing::WithArg<1>([](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
-  EXPECT_CALL(result_callback, Run(false));
+  EXPECT_CALL(mock_result_callback, Run(false));
+  EXPECT_CALL(*mock_device_authenticator_,
+              AuthenticateWithMessage(mock_prompt_message, testing::_))
+      .Times(1);
 
-  AuthenticateUserOnMandatoryReauthToggled(mock_device_authenticator_,
-                                           result_callback.Get());
+  AuthenticateUser(mock_device_authenticator_, mock_prompt_message,
+                   mock_result_callback.Get());
 #endif
 }
 

@@ -20,7 +20,7 @@ class TestHistoryClustersService : public HistoryClustersService {
   ~TestHistoryClustersService() override;
 
   // HistoryClustersService:
-  bool IsJourneysEnabled() const override;
+  bool IsJourneysEnabledAndVisible() const override;
   std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
       QueryClustersFilterParams filter_params,

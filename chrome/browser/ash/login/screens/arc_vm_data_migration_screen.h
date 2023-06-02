@@ -36,7 +36,7 @@ enum class ArcVmDataMigrationScreenSetupFailure {
   kStopVmFailure = 1,
   kStopUpstartJobsFailure = 2,
   kGetFreeDiskSpaceFailure = 3,
-  kGetAndroidDataSizeFailure = 4,
+  kGetAndroidDataInfoFailure = 4,
   kCreateDiskImageDBusFailure = 5,
   kCreateDiskImageGeneralFailure = 6,
   kArcVmDataMigratorStartFailure = 7,
@@ -79,8 +79,9 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
 
-  void OnGetAndroidDataSizeResponse(uint64_t free_disk_space,
-                                    absl::optional<int64_t> response);
+  void OnGetAndroidDataInfoResponse(
+      uint64_t free_disk_space,
+      absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response);
 
   void CheckBatteryState();
 

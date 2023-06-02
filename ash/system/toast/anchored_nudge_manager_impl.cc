@@ -4,15 +4,87 @@
 
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 
+#include <algorithm>
+#include <memory>
+#include <string>
+
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "base/containers/contains.h"
+#include "ui/aura/window.h"
+#include "ui/events/event.h"
+#include "ui/events/event_observer.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/event_monitor.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
 namespace ash {
+
+///////////////////////////////////////////////////////////////////////////////
+//  NudgeHoverObserver
+class AnchoredNudgeManagerImpl::NudgeHoverObserver : public ui::EventObserver {
+ public:
+  NudgeHoverObserver(aura::Window* widget_window,
+                     const std::string& nudge_id,
+                     HoverStateChangeCallback hover_state_change_callback,
+                     AnchoredNudgeManagerImpl* anchored_Nudge_mananger)
+      : event_monitor_(views::EventMonitor::CreateWindowMonitor(
+            /*event_observer=*/this,
+            widget_window,
+            {ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED})),
+        nudge_id_(nudge_id),
+        hover_state_change_callback_(std::move(hover_state_change_callback)),
+        anchored_nudge_manager_(anchored_Nudge_mananger) {}
+
+  NudgeHoverObserver(const NudgeHoverObserver&) = delete;
+
+  NudgeHoverObserver& operator=(const NudgeHoverObserver&) = delete;
+
+  ~NudgeHoverObserver() override = default;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    switch (event.type()) {
+      case ui::ET_MOUSE_ENTERED:
+        anchored_nudge_manager_->OnNudgeHoverStateChanged(
+            /*nudge_id=*/nudge_id_,
+            /*is_hovering=*/true);
+        if (!hover_state_change_callback_.is_null()) {
+          std::move(hover_state_change_callback_).Run(true);
+        }
+        break;
+      case ui::ET_MOUSE_EXITED:
+        anchored_nudge_manager_->OnNudgeHoverStateChanged(
+            /*nudge_id=*/nudge_id_,
+            /*is_hovering=*/false);
+        if (!hover_state_change_callback_.is_null()) {
+          std::move(hover_state_change_callback_).Run(false);
+        }
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+ private:
+  // While this `EventMonitor` object exists, this object will only look for
+  // `ui::ET_MOUSE_ENTERED` and `ui::ET_MOUSE_EXITED` events that occur in the
+  // `widget_window` indicated in the constructor.
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+
+  const std::string nudge_id_;
+
+  // This is run whenever the mouse enters or exits the observed window with a
+  // parameter to indicate whether the window is being hovered.
+  HoverStateChangeCallback hover_state_change_callback_;
+  AnchoredNudgeManagerImpl* const anchored_nudge_manager_;
+};
 
 // A view observer that is used to close the nudge's widget whenever its
 // `anchor_view` is deleted.
@@ -114,7 +186,7 @@ AnchoredNudgeManagerImpl::~AnchoredNudgeManagerImpl() {
   CloseAllNudges();
 }
 
-void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
+void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   std::string id = nudge_data.id;
   CHECK(!id.empty());
 
@@ -131,8 +203,15 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
 
   const bool has_infinite_duration = nudge_data.has_infinite_duration;
 
-  auto anchored_nudge =
-      std::make_unique<AnchoredNudge>(/*delegate=*/this, nudge_data);
+  // Chain callbacks with `Cancel()` so nudge is dismissed on button pressed.
+  // TODO(b/285023559): Add `ChainedCancelCallback` class so we don't have to
+  // manually modify the provided callbacks.
+  nudge_data.dismiss_callback =
+      ChainCancelCallback(nudge_data.dismiss_callback, id);
+  nudge_data.second_button_callback =
+      ChainCancelCallback(nudge_data.second_button_callback, id);
+
+  auto anchored_nudge = std::make_unique<AnchoredNudge>(nudge_data);
   auto* anchored_nudge_ptr = anchored_nudge.get();
   shown_nudges_[id] = anchored_nudge_ptr;
 
@@ -160,11 +239,13 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
   anchor_view_observers_[id] = std::make_unique<AnchorViewObserver>(
       anchored_nudge_ptr, anchor_view, this);
 
+  nudge_hover_observers_[id] = std::make_unique<NudgeHoverObserver>(
+      anchored_nudge_widget->GetNativeWindow(), id,
+      std::move(nudge_data.hover_state_change_callback), this);
+
   // Only nudges that expire should be able to persist on hover (i.e. nudges
   // with infinite duration persist regardless of hover).
   if (!has_infinite_duration) {
-    anchored_nudge_ptr->AddHoverObserver(
-        anchored_nudge_widget->GetNativeWindow());
     StartDismissTimer(id);
   }
 }
@@ -187,6 +268,7 @@ void AnchoredNudgeManagerImpl::CloseAllNudges() {
 void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
     const std::string& id) {
   dismiss_timers_.erase(id);
+  nudge_hover_observers_.erase(id);
   anchor_view_observers_.erase(id);
   nudge_widget_observers_.erase(id);
   shown_nudges_.erase(id);
@@ -194,10 +276,15 @@ void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
 
 void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,
                                                         bool is_hovering) {
-  if (is_hovering) {
-    StopDismissTimer(id);
-  } else {
-    StartDismissTimer(id);
+  // If |has_infinite_duration| is true then no dismiss timer will be created
+  // for the nudge. Adding the check to prevent stopping a non-exist timer or
+  // creating new timer when hover event happens.
+  if (base::Contains(dismiss_timers_, id)) {
+    if (is_hovering) {
+      StopDismissTimer(id);
+    } else {
+      StartDismissTimer(id);
+    }
   }
 }
 
@@ -205,16 +292,38 @@ bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
   return base::Contains(shown_nudges_, id);
 }
 
-const std::u16string& AnchoredNudgeManagerImpl::GetNudgeText(
+const std::u16string& AnchoredNudgeManagerImpl::GetNudgeTextForTest(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
   return shown_nudges_[id]->GetText();
 }
 
-views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorView(
+views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorViewForTest(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
   return shown_nudges_[id]->GetAnchorView();
+}
+
+views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeDismissButtonForTest(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id]->GetDismissButton();
+}
+
+views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondButtonForTest(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id]->GetSecondButton();
+}
+
+base::RepeatingClosure AnchoredNudgeManagerImpl::ChainCancelCallback(
+    base::RepeatingClosure callback,
+    const std::string& id) {
+  return callback ? std::move(callback).Then(
+                        base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
+                                            base::Unretained(this), id))
+                  : base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
+                                        base::Unretained(this), id);
 }
 
 void AnchoredNudgeManagerImpl::StartDismissTimer(const std::string& id) {

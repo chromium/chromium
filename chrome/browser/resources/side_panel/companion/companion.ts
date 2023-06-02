@@ -32,9 +32,11 @@ enum ParamType {
   // Arguments for MethodType.kOnPromoAction.
   PROMO_ACTION = 'promoAction',
   PROMO_TYPE = 'promoType',
+  EXPS_PROMO_URL = 'expsPromoUrl',
 
   // Arguments for MethodType.kOnPhFeedback.
   PH_FEEDBACK = 'phFeedback',
+  REPORTING_URL = 'reportingUrl',
 
   // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
@@ -183,8 +185,11 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnPromoAction) {
     const promoType = data[ParamType.PROMO_TYPE];
     const promoAction = data[ParamType.PROMO_ACTION];
+    const expsPromoUrl = new Url();
+    expsPromoUrl.url = data[ParamType.EXPS_PROMO_URL] || '';
     if (validatePromoArguments(promoType, promoAction)) {
-      companionProxy.handler.onPromoAction(promoType, promoAction);
+      companionProxy.handler.onPromoAction(
+          promoType, promoAction, expsPromoUrl);
     }
   } else if (methodType === MethodType.kOnExpsOptInStatusAvailable) {
     companionProxy.handler.onExpsOptInStatusAvailable(
@@ -210,7 +215,10 @@ function onCompanionMessageEvent(event: MessageEvent) {
     companionProxy.handler.onCqCandidatesAvailable(
         data[ParamType.CQ_TEXT_DIRECTIVES]);
   } else if (methodType === MethodType.kOnPhFeedback) {
-    companionProxy.handler.onPhFeedback(data[ParamType.PH_FEEDBACK]);
+    const reportingUrl = new Url();
+    reportingUrl.url = data[ParamType.REPORTING_URL] || '';
+    companionProxy.handler.onPhFeedback(
+        data[ParamType.PH_FEEDBACK], reportingUrl);
   } else if (methodType === MethodType.kOnCqJumptagClicked) {
     companionProxy.handler.onCqJumptagClicked(data[ParamType.CQ_JUMPTAG_TEXT]);
   }

@@ -17,7 +17,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -126,7 +126,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
     if (!gpu_memory_buffer_) {
       gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-          resource_size_, viz::BufferFormat(format_.resource_format()),
+          resource_size_,
+          viz::SinglePlaneSharedImageFormatToBufferFormat(format_),
           kBufferUsage, gpu::kNullSurfaceHandle, shutdown_event_);
       // Note that GpuMemoryBuffer allocation can fail.
       // https://crbug.com/554541
@@ -191,7 +192,9 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     const gpu::Capabilities& caps =
         compositor_context_provider_->ContextCapabilities();
     backing->texture_target = gpu::GetBufferTextureTarget(
-        kBufferUsage, BufferFormat(resource.format().resource_format()), caps);
+        kBufferUsage,
+        viz::SinglePlaneSharedImageFormatToBufferFormat(resource.format()),
+        caps);
     backing->overlay_candidate = true;
     // This RasterBufferProvider will modify the resource outside of the
     // GL command stream. So resources should not become available for reuse

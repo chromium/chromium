@@ -13,7 +13,8 @@
 
 // static
 SigninManagerFactory* SigninManagerFactory::GetInstance() {
-  return base::Singleton<SigninManagerFactory>::get();
+  static base::NoDestructor<SigninManagerFactory> instance;
+  return instance.get();
 }
 
 // static

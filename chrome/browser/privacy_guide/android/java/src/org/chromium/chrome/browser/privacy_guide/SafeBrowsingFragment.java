@@ -95,7 +95,8 @@ public class SafeBrowsingFragment extends Fragment
 
     private void displayBottomSheet(View sheetContent) {
         PrivacyGuideBottomSheetView bottomSheet = new PrivacyGuideBottomSheetView(sheetContent);
-        mBottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
+        // TODO(crbug.com/1287979): Re-enable animation once bug is fixed
+        mBottomSheetController.requestShowContent(bottomSheet, /* animate= */ false);
     }
 
     public void setBottomSheetController(BottomSheetController bottomSheetController) {

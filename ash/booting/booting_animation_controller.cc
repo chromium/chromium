@@ -11,9 +11,11 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -52,6 +54,12 @@ BootingAnimationController::BootingAnimationController() {
 BootingAnimationController::~BootingAnimationController() = default;
 
 void BootingAnimationController::Show() {
+  // If data fetch failed, notify caller immediately without showing the widget.
+  if (data_fetch_failed_.has_value() && data_fetch_failed_.value()) {
+    std::move(animation_played_callback_).Run();
+    return;
+  }
+
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params;
   params.delegate = new views::WidgetDelegate;  // Takes ownership.
@@ -72,28 +80,36 @@ void BootingAnimationController::Show() {
   // background.
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   widget_->Init(std::move(params));
-
-  if (animation_data_.empty()) {
-    LOG(ERROR) << "Booting animation isn't ready yet.";
-    start_once_ready_ = true;
-    return;
-  }
-  StartAnimation();
+  widget_->SetContentsView(std::make_unique<BootingAnimationView>());
+  // Show widget even if the animation isn't ready yet. This prevents other UI
+  // to be shown.
+  widget_->Show();
 }
 
 void BootingAnimationController::ShowAnimationWithEndCallback(
     base::OnceClosure callback) {
   animation_played_callback_ = std::move(callback);
+  // Show the widget early to prevent UI blinks. The animation will start once
+  // its data is fetched and device is ready.
+  Show();
 
   // Don't wait for GPU to be ready in non-ChromeOS environment.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
-    is_gpu_ready_ = true;
-    scoped_display_configurator_observer_.Reset();
+    IgnoreGpuReadiness();
+    return;
   }
 
-  if (!scoped_display_configurator_observer_.IsObserving()) {
-    Show();
+  // If we are still waiting for the signal from DisplayConfigurator wait for
+  // not more than a few seconds and play the animation anyway.
+  if (!IsDeviceReady()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&BootingAnimationController::IgnoreGpuReadiness,
+                       weak_factory_.GetWeakPtr()),
+        base::TimeDelta(base::Seconds(5)));
+    return;
   }
+  StartAnimation();
 }
 
 void BootingAnimationController::Finish() {
@@ -113,8 +129,9 @@ void BootingAnimationController::OnDisplayModeChanged(
   }
 
   scoped_display_configurator_observer_.Reset();
+  CHECK(IsDeviceReady());
   if (!animation_played_callback_.is_null()) {
-    Show();
+    StartAnimation();
   }
 }
 
@@ -138,30 +155,68 @@ void BootingAnimationController::AnimationCycleEnded(
 void BootingAnimationController::OnAnimationDataFetched(std::string data) {
   if (data.empty()) {
     LOG(ERROR) << "No booting animation file available.";
+    data_fetch_failed_ = true;
+    // Notify caller immediately that there is no animation file.
+    if (!animation_played_callback_.is_null()) {
+      std::move(animation_played_callback_).Run();
+    }
     return;
   }
 
+  data_fetch_failed_ = false;
   animation_data_ = std::move(data);
 
-  if (start_once_ready_) {
+  // Only start if we haven't exited earlier already and the device is ready to
+  // show.
+  if (!animation_played_callback_.is_null() && IsDeviceReady()) {
     StartAnimation();
   }
 }
 
 void BootingAnimationController::StartAnimation() {
-  CHECK(!animation_played_callback_.is_null() && is_gpu_ready_);
-  if (was_shown_) {
+  if (!data_fetch_failed_.has_value()) {
+    LOG(ERROR) << "Booting animation isn't ready yet.";
     return;
   }
 
+  CHECK(!animation_played_callback_.is_null() && IsDeviceReady());
+  if (was_shown_) {
+    return;
+  }
   was_shown_ = true;
-  start_once_ready_ = false;
-  BootingAnimationView* view = widget_->SetContentsView(
-      std::make_unique<BootingAnimationView>(animation_data_));
+
+  BootingAnimationView* view =
+      static_cast<BootingAnimationView*>(widget_->GetContentsView());
+  view->SetAnimatedImage(animation_data_);
+  // If there is no animated image set at this point it means that data file
+  // is invalid and we need to finish the animation immediately.
+  auto* animated_image = view->GetAnimatedImage();
+  if (!animated_image) {
+    std::move(animation_played_callback_).Run();
+    return;
+  }
+
   // Observe animation to know when it finishes playing.
-  scoped_animation_observer_.Observe(view->GetAnimatedImage());
-  widget_->Show();
+  scoped_animation_observer_.Observe(animated_image);
   view->Play();
+}
+
+void BootingAnimationController::IgnoreGpuReadiness() {
+  // Don't do anything if the device is ready.
+  if (IsDeviceReady()) {
+    return;
+  }
+  LOG(ERROR) << "Ignore the readinees of the GPU and play the animation.";
+
+  is_gpu_ready_ = true;
+  scoped_display_configurator_observer_.Reset();
+  if (!animation_played_callback_.is_null()) {
+    StartAnimation();
+  }
+}
+
+bool BootingAnimationController::IsDeviceReady() const {
+  return is_gpu_ready_ && !scoped_display_configurator_observer_.IsObserving();
 }
 
 }  // namespace ash

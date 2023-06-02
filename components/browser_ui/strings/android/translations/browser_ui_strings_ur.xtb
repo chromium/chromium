@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">فریق ثالث کی کوکیز کی اجازت دیں</translation>
 <translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
 <translation id="4434045419905280838">پوپ اپس اور ری ڈائریکٹس</translation>
-<translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> کو پھیلائیں</translation>
 <translation id="4468959413250150279">کسی مخصوص سائٹ کیلئے آواز بند کریں۔</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# کوکی}other{# کوکیز}}</translation>
 <translation id="4478158430052450698">مختلف سائٹس کے لیے زوم کو حسب ضرورت بنانا آسان بنائیں</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>
 <translation id="7882806643839505685">کسی مخصوص سائٹ کیلئے آواز کی اجازت دیں۔</translation>
 <translation id="789180354981963912">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں:</translation>
+<translation id="7895868624847501462">یہ کارروائی کوکیز سمیت تمام مقامی ڈیٹا کو صاف کرے گی اور <ph name="DOMAIN" /> کے لیے تمام اجازتوں اور اس کے تحت سبھی سائٹس کو ری سیٹ کرے گی</translation>
 <translation id="7940722705963108451">مجھے یاد دلائیں</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> سائٹ <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}other{<ph name="FPS_MEMBERS_COUNT" /> سائٹس <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}}</translation>
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">کیپشنز</translation>
 <translation id="8300705686683892304">ایپ کے زیر انتظام ہیں</translation>
 <translation id="8324158725704657629">دوبارہ مت پوچھیں</translation>
+<translation id="8338445138528827481">یہ کارروائی کوکیز سمیت تمام مقامی ڈیٹا کو صاف کرے گی اور <ph name="ORIGIN" /> کے لیے تمام اجازتوں کو ری سیٹ کرے گی</translation>
 <translation id="8362795839483915693">آپ ان سائٹس پر زوم ان یا زوم آؤٹ کر سکتے ہیں جنہیں آپ ملاحظہ کرتے ہیں</translation>
 <translation id="8372893542064058268">کسی مخصوص سائٹ کیلئے پس منظر کی مطابقت پذیری کی اجازت دیں۔</translation>
 <translation id="8376384591331888629">اس سائٹ میں فریق ثالث کوکیز سمیت</translation>

@@ -80,7 +80,7 @@ class ProfileTokenWebSigninInterceptor : public WebSigninInterceptor,
 
   void OnNewSignedInProfileCreated(Profile* new_profile);
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Delegate> delegate_;
   std::unique_ptr<TokenManagedProfileCreator> profile_creator_;
 

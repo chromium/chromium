@@ -5,6 +5,7 @@
 #include "ui/base/models/menu_model.h"
 
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ui {
 
@@ -81,7 +82,10 @@ std::u16string MenuModel::GetAccessibleNameAt(size_t index) const {
 }
 
 const gfx::FontList* MenuModel::GetLabelFontListAt(size_t index) const {
-  return nullptr;
+  return (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE)
+             ? &ui::ResourceBundle::GetSharedInstance().GetFontList(
+                   ui::ResourceBundle::BoldFont)
+             : nullptr;
 }
 
 // Default implementation ignores the event flags.

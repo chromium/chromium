@@ -32,12 +32,6 @@ class CompositorTimingHistory::UMAReporter {
   virtual void AddBeginImplFrameLatency(base::TimeDelta delta) = 0;
   virtual void AddDrawDuration(base::TimeDelta duration) = 0;
 
-  // crbug.com/758439: the following functions are used to report timing in
-  // certain conditions targeting blink / compositor animations.
-  // Only the renderer would get the meaningful data.
-  virtual void AddDrawIntervalWithCustomPropertyAnimations(
-      base::TimeDelta duration) = 0;
-
   virtual void AddImplFrameDeadlineType(
       CompositorTimingHistory::DeadlineMode deadline_mode) = 0;
 };
@@ -329,13 +323,6 @@ class RendererUMAReporter : public CompositorTimingHistory::UMAReporter {
                                              interval);
   }
 
-  void AddDrawIntervalWithCustomPropertyAnimations(
-      base::TimeDelta interval) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(
-        "Scheduling.Renderer.DrawIntervalWithCustomPropertyAnimations",
-        interval);
-  }
-
   void AddBeginImplFrameLatency(base::TimeDelta delta) override {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(
         "Scheduling.Renderer.BeginImplFrameLatency", delta);
@@ -361,9 +348,6 @@ class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
   // browser rendering fps is not at 60.
   void AddDrawInterval(base::TimeDelta interval) override {}
 
-  void AddDrawIntervalWithCustomPropertyAnimations(
-      base::TimeDelta interval) override {}
-
   void AddBeginImplFrameLatency(base::TimeDelta delta) override {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(
         "Scheduling.Browser.BeginImplFrameLatency", delta);
@@ -385,8 +369,6 @@ class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
  public:
   ~NullUMAReporter() override = default;
   void AddDrawInterval(base::TimeDelta interval) override {}
-  void AddDrawIntervalWithCustomPropertyAnimations(
-      base::TimeDelta inverval) override {}
   void AddBeginImplFrameLatency(base::TimeDelta delta) override {}
   void AddDrawDuration(base::TimeDelta duration) override {}
   void AddImplFrameDeadlineType(
@@ -771,8 +753,7 @@ void CompositorTimingHistory::WillDraw() {
   draw_start_time_ = Now();
 }
 
-void CompositorTimingHistory::DidDraw(bool used_new_active_tree,
-                                      bool has_custom_property_animations) {
+void CompositorTimingHistory::DidDraw() {
   DCHECK_NE(base::TimeTicks(), draw_start_time_);
   base::TimeTicks draw_end_time = Now();
   base::TimeDelta draw_duration = draw_end_time - draw_start_time_;
@@ -807,16 +788,9 @@ void CompositorTimingHistory::DidDraw(bool used_new_active_tree,
           draw_end_time);
       g_num_long_draw_intervals++;
     }
-    if (has_custom_property_animations &&
-        previous_frame_had_custom_property_animations_)
-      uma_reporter_->AddDrawIntervalWithCustomPropertyAnimations(draw_interval);
   }
-  previous_frame_had_custom_property_animations_ =
-      has_custom_property_animations;
   draw_end_time_prev_ = draw_end_time;
 
-  if (used_new_active_tree)
-    new_active_tree_draw_end_time_prev_ = draw_end_time;
   draw_start_time_ = base::TimeTicks();
 }
 

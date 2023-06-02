@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str} from '../../common/js/util.js';
+import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -79,10 +79,12 @@ export class VolumeInfoImpl {
     this.fakeEntries_ = {};
 
     if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
-      this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
-          new FakeEntryImpl(
-              str('DRIVE_OFFLINE_COLLECTION_LABEL'),
-              VolumeManagerCommon.RootType.DRIVE_OFFLINE);
+      if (!util.isDriveFsBulkPinningEnabled()) {
+        this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
+            new FakeEntryImpl(
+                str('DRIVE_OFFLINE_COLLECTION_LABEL'),
+                VolumeManagerCommon.RootType.DRIVE_OFFLINE);
+      }
 
       this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME] =
           new FakeEntryImpl(

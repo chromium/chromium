@@ -134,7 +134,7 @@ class SyncCycleContext {
  private:
   base::ObserverList<SyncEngineEventListener>::Unchecked listeners_;
 
-  const raw_ptr<ServerConnectionManager> connection_manager_;
+  const raw_ptr<ServerConnectionManager, DanglingUntriaged> connection_manager_;
 
   // We use this to stuff extensions activity into CommitMessages so the server
   // can correlate commit traffic with extension-related bookmark mutations.
@@ -158,7 +158,7 @@ class SyncCycleContext {
 
   // We use this to get debug info to send to the server for debugging
   // client behavior on server side.
-  const raw_ptr<DebugInfoGetter> debug_info_getter_;
+  const raw_ptr<DebugInfoGetter, DanglingUntriaged> debug_info_getter_;
 
   raw_ptr<ModelTypeRegistry> model_type_registry_;
 

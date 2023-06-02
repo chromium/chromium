@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/remote_cocoa/app_shim/alert.h"
@@ -60,7 +61,7 @@ class JavaScriptAppModalDialogCocoa
 
   // Mojo interface to the NSAlert.
   mojo::Remote<remote_cocoa::mojom::AlertBridge> alert_bridge_remote_;
-  remote_cocoa::mojom::AlertBridge* alert_bridge_;
+  raw_ptr<remote_cocoa::mojom::AlertBridge, DanglingUntriaged> alert_bridge_;
 
   std::unique_ptr<javascript_dialogs::AppModalDialogController> controller_;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;

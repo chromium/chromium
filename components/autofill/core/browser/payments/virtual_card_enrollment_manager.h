@@ -42,7 +42,7 @@ struct VirtualCardEnrollmentFields {
   // GetDetailsForEnrollResponse. The |card_art_image| object is owned by
   // PersonalDataManager if it is the card art, or by the resource bundle if it
   // is the network icon.
-  raw_ptr<const gfx::ImageSkia> card_art_image = nullptr;
+  raw_ptr<const gfx::ImageSkia, DanglingUntriaged> card_art_image = nullptr;
   // The Google-specific legal messages that the user must accept before
   // opting-in to virtual card enrollment.
   LegalMessageLines google_legal_message;
@@ -350,11 +350,11 @@ class VirtualCardEnrollmentManager {
   // The associated personal data manager, used to save and load personal data
   // to/from the web database. Weak reference. May be nullptr, which indicates
   // OTR.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
 
   // The associated |payments_client_| that is used for all requests to the
   // server.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  raw_ptr<payments::PaymentsClient, DanglingUntriaged> payments_client_;
 
   // The database that is used to count instrument_id-keyed strikes to suppress
   // prompting users to enroll in virtual cards.

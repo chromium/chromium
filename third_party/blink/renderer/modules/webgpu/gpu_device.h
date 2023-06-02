@@ -79,7 +79,8 @@ class GPUDevice final : public EventTargetWithInlineData,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
                      WGPUDevice dawn_device,
-                     const GPUDeviceDescriptor* descriptor);
+                     const GPUDeviceDescriptor* descriptor,
+                     GPUDeviceLostInfo* lost_info = nullptr);
 
   GPUDevice(const GPUDevice&) = delete;
   GPUDevice& operator=(const GPUDevice&) = delete;

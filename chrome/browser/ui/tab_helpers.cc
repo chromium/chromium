@@ -54,6 +54,7 @@
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -501,10 +502,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
   HighEfficiencyChipTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
-      base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
-    ThumbnailTabHelper::CreateForWebContents(web_contents);
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kMemoryUsageInHovercards)) {
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        ResourceUsageTabHelper::CreateForWebContents(web_contents);
   }
+  ThumbnailTabHelper::CreateForWebContents(web_contents);
+
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
   if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled()) {
     ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);

@@ -1,7 +1,7 @@
 {%- macro not_null(kind, name) %}
 {%- if kind|is_typemapped_kind and kind|is_struct_kind and kind|nullable_is_same_kind %}
 {%-   set data_view = kind|get_qualified_name_for_kind ~ "DataView" %}
-{%-   set data_type = kind|cpp_wrapper_type(ignore_nullable=True) %}
+{%-   set data_type = kind|to_unnullable_kind|cpp_wrapper_type %}
 {%-   if data_type|truncate(16, true, '', 0) == '::scoped_refptr<' %}
 {{name}}
 {%-   else %}

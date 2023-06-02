@@ -1313,7 +1313,8 @@ class UserContextGatedTest : public ExtensionApiUnittest {
         enterprise_signals::features::kNewEvSignalsEnabled);
   }
 
-  raw_ptr<device_signals::MockSignalsAggregator> mock_aggregator_;
+  raw_ptr<device_signals::MockSignalsAggregator, DanglingUntriaged>
+      mock_aggregator_;
   base::test::ScopedFeatureList scoped_features_;
   base::HistogramTester histogram_tester_;
 };

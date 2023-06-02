@@ -81,7 +81,7 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<RenderFrameHost> main_rfh_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> main_rfh_ = nullptr;
   mojo::Remote<mojom::Echo> echo_remote_;
   bool is_echo_impl_alive_ = false;
 };

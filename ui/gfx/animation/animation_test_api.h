@@ -53,7 +53,7 @@ class AnimationContainerTestApi {
   void IncrementTime(base::TimeDelta delta);
 
  private:
-  raw_ptr<AnimationContainer> container_;
+  raw_ptr<AnimationContainer, DanglingUntriaged> container_;
 };
 
 }  // namespace gfx

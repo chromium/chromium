@@ -225,6 +225,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   config.additional_args.push_back(base::StringPrintf(
       "--enable-features=%s:chosen_feature/IPH_iOSHistoryOnOverflowMenuFeature",
       feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
 
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.

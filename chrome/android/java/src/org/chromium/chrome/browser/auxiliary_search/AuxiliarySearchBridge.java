@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchGroup;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -38,10 +38,10 @@ public class AuxiliarySearchBridge {
     /**
      * @return AuxiliarySearchGroup for bookmarks, which is necessary for the auxiliary search.
      */
-    public @Nullable AuxiliarySearchGroup getBookmarksSearchableData() {
+    public @Nullable AuxiliarySearchBookmarkGroup getBookmarksSearchableData() {
         if (mNativeBridge != 0) {
             try {
-                return AuxiliarySearchGroup.parseFrom(
+                return AuxiliarySearchBookmarkGroup.parseFrom(
                         AuxiliarySearchBridgeJni.get().getBookmarksSearchableData(mNativeBridge));
 
             } catch (InvalidProtocolBufferException e) {

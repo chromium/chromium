@@ -16,7 +16,8 @@ namespace enterprise_reporting {
 // static
 CloudProfileReportingServiceFactory*
 CloudProfileReportingServiceFactory::GetInstance() {
-  return base::Singleton<CloudProfileReportingServiceFactory>::get();
+  static base::NoDestructor<CloudProfileReportingServiceFactory> instance;
+  return instance.get();
 }
 
 // static

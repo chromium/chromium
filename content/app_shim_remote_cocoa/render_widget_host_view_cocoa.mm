@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/apple/owned_objc.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
@@ -707,7 +708,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // and the following NSEventTypeMouseExited event should have the same pointer
   // type. For NSEventTypeMouseExited and NSEventTypeMouseEntered events, they
   // do not have a subtype. We decide their pointer types by checking if we
-  // recevied a NSEventTypeTabletProximity event.
+  // received a NSEventTypeTabletProximity event.
   NSEventType type = [theEvent type];
   if (type == NSEventTypeMouseEntered || type == NSEventTypeMouseExited) {
     _pointerType = _isStylusEnteringProximity
@@ -956,7 +957,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // Don't cancel child popups; the key events are probably what's triggering
   // the popup in the first place.
 
-  NativeWebKeyboardEvent event(theEvent);
+  NativeWebKeyboardEvent event((base::apple::OwnedNSEvent(theEvent)));
   ui::LatencyInfo latency_info;
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kChar) {
@@ -1101,7 +1102,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // Indicates if we should send the key event and corresponding editor commands
   // after processing the input method result.
-  BOOL delayEventUntilAfterImeCompostion = NO;
+  BOOL delayEventUntilAfterImeComposition = NO;
 
   // To emulate Windows, over-write |event.windowsKeyCode| to VK_PROCESSKEY
   // while an input method is composing or inserting a text.
@@ -1122,7 +1123,7 @@ void ExtractUnderlines(NSAttributedString* string,
     // We shouldn't do this if a new marked text was set by the input method,
     // otherwise the new marked text might be cancelled by webkit.
     if (_hasEditCommands && !_hasMarkedText)
-      delayEventUntilAfterImeCompostion = YES;
+      delayEventUntilAfterImeComposition = YES;
   } else {
     _hostHelper->ForwardKeyboardEventWithCommands(event, latency_info,
                                                   std::move(_editCommands));
@@ -1177,10 +1178,10 @@ void ExtractUnderlines(NSAttributedString* string,
   // edit commands here. This usually occurs when the input method wants to
   // finish current composition session but still wants the application to
   // handle the key event. See http://crbug.com/48161 for reference.
-  if (delayEventUntilAfterImeCompostion) {
-    // If |delayEventUntilAfterImeCompostion| is YES, then a fake key down event
-    // with windowsKeyCode == 0xE5 has already been sent to webkit.
-    // So before sending the real key down event, we need to send a fake key up
+  if (delayEventUntilAfterImeComposition) {
+    // If |delayEventUntilAfterImeComposition| is YES, then a fake key down
+    // event with windowsKeyCode == 0xE5 has already been sent to webkit. So
+    // before sending the real key down event, we need to send a fake key up
     // event to balance it.
     NativeWebKeyboardEvent fakeEvent = event;
     fakeEvent.SetType(blink::WebInputEvent::Type::kKeyUp);
@@ -1204,7 +1205,7 @@ void ExtractUnderlines(NSAttributedString* string,
       event.text[1] = 0;
       event.skip_in_browser = true;
       _hostHelper->ForwardKeyboardEvent(event, latency_info);
-    } else if ((!textInserted || delayEventUntilAfterImeCompostion) &&
+    } else if ((!textInserted || delayEventUntilAfterImeComposition) &&
                event.text[0] != '\0' &&
                ((modifierFlags & kCtrlCmdKeyMask) ||
                 (_hasEditCommands && _editCommands.empty()))) {
@@ -1554,7 +1555,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   _host->OnFirstResponderChanged(true);
 
-  // Cancel any onging composition text which was left before we lost focus.
+  // Cancel any ongoing composition text which was left before we lost focus.
   // TODO(suzhe): We should do it in -resignFirstResponder: method, but
   // somehow that method won't be called when switching among different tabs.
   // See http://crbug.com/47209
@@ -1579,7 +1580,7 @@ void ExtractUnderlines(NSAttributedString* string,
     _host->RequestShutdown();
   }
 
-  // We should cancel any onging composition whenever RWH's Blur() method gets
+  // We should cancel any ongoing composition whenever RWH's Blur() method gets
   // called, because in this case, webkit will confirm the ongoing composition
   // internally.
   [self cancelComposition];

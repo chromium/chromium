@@ -11,21 +11,25 @@
 #include <stdint.h>
 #include <sys/xattr.h>
 
+#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/mach_o_image_reader_mac.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace safe_browsing {
 
 namespace {
 
-// OS X code signing data can be stored in extended attributes as well. This is
+// macOS code signing data can be stored in extended attributes as well. This is
 // a list of the extended attributes slots currently used in Security.framework,
 // from codesign.h (see the kSecCS_* constants).
 const char* const xattrs[] = {
@@ -40,21 +44,25 @@ const char* const xattrs[] = {
 // The name of the localization strings file.
 const char kStringsFile[] = ".lproj/InfoPlist.strings";
 
-// Convenience function to get the appropriate path from a variety of NSObject
-// types. For resources, code signing seems to give back an NSURL in which
-// the path is relative to the bundle root. So in this case, we take the
+// Convenience function to get the appropriate path from a variety of Core
+// Foundation types. For resources, code signing seems to give back a URL in
+// which the path is relative to the bundle root. So in this case, we take the
 // relative component, otherwise we take the entire path.
-bool GetPathFromNSObject(id obj, std::string* output) {
-  if (NSString* str = base::mac::ObjCCast<NSString>(obj)) {
-    output->assign([str fileSystemRepresentation]);
+bool GetPathFromCFObject(CFTypeRef obj, std::string* output) {
+  // Dealing with file system representations in Core Foundation is a pain;
+  // cheat by bridging to Foundation types.
+  id ns_obj = (__bridge id)obj;
+
+  if (NSString* str = base::mac::ObjCCast<NSString>(ns_obj)) {
+    output->assign(str.fileSystemRepresentation);
     return true;
   }
-  if (NSURL* url = base::mac::ObjCCast<NSURL>(obj)) {
-    output->assign([[url path] fileSystemRepresentation]);
+  if (NSURL* url = base::mac::ObjCCast<NSURL>(ns_obj)) {
+    output->assign(url.path.fileSystemRepresentation);
     return true;
   }
-  if (NSBundle* bundle = base::mac::ObjCCast<NSBundle>(obj)) {
-    output->assign([[bundle bundlePath] fileSystemRepresentation]);
+  if (NSBundle* bundle = base::mac::ObjCCast<NSBundle>(ns_obj)) {
+    output->assign(bundle.bundlePath.fileSystemRepresentation);
     return true;
   }
   return false;
@@ -66,7 +74,7 @@ void ExtractSignatureInfo(const base::FilePath& path,
                           ClientDownloadRequest_SignatureInfo* signature) {
   scoped_refptr<BinaryFeatureExtractor> bfe = new BinaryFeatureExtractor();
 
-  // If Chrome ever opts into the OS X "kill" semantics, this
+  // If Chrome ever opts into the macOS "kill" semantics, this
   // call has to change. `ExtractImageFeatures` maps the file, which will
   // cause Chrome to be killed before it can report on the invalid file.
   // This call will need to read(2) the binary into a buffer.
@@ -92,18 +100,21 @@ void ExtractSignatureInfo(const base::FilePath& path,
   }
 }
 
-// Process the NSError information about any files that were altered.
+// Process the CFErrorRef information about any files that were altered.
 void ReportAlteredFiles(
-    id detail,
+    CFTypeRef detail,
     const base::FilePath& bundle_path,
     ClientIncidentReport_IncidentData_BinaryIntegrityIncident* incident) {
-  if (NSArray* arr = base::mac::ObjCCast<NSArray>(detail)) {
-    for (id obj in arr)
-      ReportAlteredFiles(obj, bundle_path, incident);
+  if (CFArrayRef array = base::mac::CFCast<CFArrayRef>(detail)) {
+    for (CFIndex i = 0; i < CFArrayGetCount(array); ++i) {
+      ReportAlteredFiles(CFArrayGetValueAtIndex(array, i), bundle_path,
+                         incident);
+    }
   } else {
     std::string path_str;
-    if (!GetPathFromNSObject(detail, &path_str))
+    if (!GetPathFromCFObject(detail, &path_str)) {
       return;
+    }
     std::string relative_path;
     base::FilePath path(path_str);
     // If the relative path calculation fails, at least take the basename.
@@ -131,22 +142,16 @@ void ReportAlteredFiles(
 
 MacSignatureEvaluator::MacSignatureEvaluator(
     const base::FilePath& signed_object_path)
-    : path_(signed_object_path),
-      requirement_str_(),
-      has_requirement_(false),
-      code_(nullptr),
-      requirement_(nullptr) {}
+    : path_(signed_object_path), has_requirement_(false) {}
 
 MacSignatureEvaluator::MacSignatureEvaluator(
     const base::FilePath& signed_object_path,
     const std::string& requirement)
     : path_(signed_object_path),
       requirement_str_(requirement),
-      has_requirement_(true),
-      code_(nullptr),
-      requirement_(nullptr) {}
+      has_requirement_(true) {}
 
-MacSignatureEvaluator::~MacSignatureEvaluator() {}
+MacSignatureEvaluator::~MacSignatureEvaluator() = default;
 
 bool MacSignatureEvaluator::GetRelativePathComponent(
     const base::FilePath& parent,
@@ -175,21 +180,18 @@ bool MacSignatureEvaluator::GetRelativePathComponent(
 }
 
 bool MacSignatureEvaluator::Initialize() {
-  base::scoped_nsobject<NSURL> code_url([[NSURL alloc]
-      initFileURLWithPath:base::SysUTF8ToNSString(path_.value())]);
+  base::ScopedCFTypeRef<CFURLRef> code_url = base::mac::FilePathToCFURL(path_);
   if (!code_url)
     return false;
 
-  if (SecStaticCodeCreateWithPath(base::mac::NSToCFCast(code_url.get()),
-                                  kSecCSDefaultFlags,
+  if (SecStaticCodeCreateWithPath(code_url, kSecCSDefaultFlags,
                                   code_.InitializeInto()) != errSecSuccess) {
     return false;
   }
 
   if (has_requirement_) {
     if (SecRequirementCreateWithString(
-            base::mac::NSToCFCast(base::SysUTF8ToNSString(requirement_str_)),
-            kSecCSDefaultFlags,
+            base::SysUTF8ToCFStringRef(requirement_str_), kSecCSDefaultFlags,
             requirement_.InitializeInto()) != errSecSuccess) {
       return false;
     }
@@ -221,25 +223,26 @@ bool MacSignatureEvaluator::PerformEvaluation(
     if (!exec_url)
       return false;
 
-    exec_path = base::FilePath(
-        [[base::mac::CFToNSCast(exec_url) path] fileSystemRepresentation]);
+    exec_path =
+        base::mac::NSURLToFilePath(base::apple::CFToNSPtrCast(exec_url));
     if (exec_path != path_) {
-      ReportAlteredFiles(base::mac::CFToNSCast(exec_url), path_, incident);
+      ReportAlteredFiles(exec_url, path_, incident);
     } else {
-      // We may be examing a flat executable file, so extract any signature.
+      // We may be examining a flat executable file, so extract any signature.
       ExtractSignatureInfo(path_, incident->mutable_image_headers(),
                            incident->mutable_signature());
     }
   }
 
   if (errors) {
-    NSDictionary* info = [base::mac::CFToNSCast(errors.get()) userInfo];
+    base::ScopedCFTypeRef<CFDictionaryRef> info(CFErrorCopyUserInfo(errors));
     static const CFStringRef keys[] = {
         kSecCFErrorResourceAltered, kSecCFErrorResourceMissing,
     };
     for (CFStringRef key : keys) {
-      if (id detail = info[base::mac::CFToNSCast(key)])
+      if (CFTypeRef detail = CFDictionaryGetValue(info, key)) {
         ReportAlteredFiles(detail, path_, incident);
+      }
     }
   }
 

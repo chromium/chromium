@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
@@ -19,7 +18,6 @@
 // part always displayed and containing the location bar.
 @interface PrimaryToolbarViewController
     : AdaptiveToolbarViewController <SharingPositioner,
-                                     FullscreenUIElement,
                                      KeyCommandActions,
                                      ToolbarAnimatee,
                                      ViewRevealingAnimatee>

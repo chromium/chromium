@@ -145,12 +145,12 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
-  raw_ptr<UnittestProfileManager> profile_manager_ = nullptr;
+  raw_ptr<UnittestProfileManager, DanglingUntriaged> profile_manager_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<Profile> signed_in_profile_ = nullptr;
-  raw_ptr<Profile> added_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> signed_in_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> added_profile_ = nullptr;
   base::OnceClosure profile_added_closure_;
   bool creator_callback_called_ = false;
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -272,7 +272,8 @@ void CalendarUpNextView::Layout() {
   // scrollable, we need to set it's preferred size here so it's bigger
   // than the `scroll_view_` and therefore scrolls. See
   // https://crbug.com/1384131.
-  if (content_view_) {
+  // For single events we want it to be constrained to the scroll view width.
+  if (content_view_ && displayed_events_.size() > 1) {
     content_view_->SizeToPreferredSize();
   }
 

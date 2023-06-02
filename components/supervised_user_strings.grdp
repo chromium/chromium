@@ -91,5 +91,11 @@
       <message name="IDS_SUPERVISED_USER_NOT_SIGNED_IN" desc="Message to be shown to a supervised user who is not signed in to Chrome">
         Please start and sign in to Chrome so that Chrome can check whether you are allowed to access this site.
       </message>
+      <message name="IDS_PARENT_BLOCKED_SITE_BANNER_TITLE" desc="The banner title for the first time a user is blocked from a website because of parental controls">
+        New: Family Link choices for Chrome apply here
+      </message>
+      <message name="IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE" desc="The banner message for the first time a user is blocked from a website because of parental controls">
+        The settings your parent chose are now keeping you safer online
+      </message>
 
 </grit-part>

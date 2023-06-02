@@ -6,11 +6,11 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_TEST_UTILS_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_TEST_UTILS_H_
 
-#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
 
 namespace supervised_user {
 
-// Test utility for overriding configurations for KidsExternalFetcher.
+// Test utility for overriding configurations for ProtoFetcher.
 class FetcherTestConfigBuilder {
  public:
   static FetcherTestConfigBuilder FromConfig(const FetcherConfig& from_config);

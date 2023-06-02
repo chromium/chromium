@@ -21,23 +21,6 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
     syncer::ModelType type,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_full_sync_mode,
-    PrefService* pref_service,
-    syncer::SyncService* sync_service)
-    : ModelTypeController(type, std::move(delegate_for_full_sync_mode)),
-      pref_service_(pref_service),
-      sync_service_(sync_service) {
-  DCHECK(type == syncer::AUTOFILL_WALLET_DATA ||
-         type == syncer::AUTOFILL_WALLET_METADATA ||
-         type == syncer::AUTOFILL_WALLET_OFFER ||
-         type == syncer::AUTOFILL_WALLET_USAGE);
-  SubscribeToPrefChanges();
-  sync_service_->AddObserver(this);
-}
-
-AutofillWalletModelTypeController::AutofillWalletModelTypeController(
-    syncer::ModelType type,
-    std::unique_ptr<syncer::ModelTypeControllerDelegate>
-        delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_transport_mode,
     PrefService* pref_service,

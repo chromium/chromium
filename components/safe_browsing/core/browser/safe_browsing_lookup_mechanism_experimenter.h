@@ -248,6 +248,7 @@ class SafeBrowsingLookupMechanismExperimenter
   void OnHashDatabaseCheckCompleteInternal(
       bool timed_out,
       absl::optional<SBThreatType> threat_type,
+      absl::optional<bool> matched_high_confidence_allowlist,
       absl::optional<SBThreatType> locally_cached_results_threat_type,
       absl::optional<bool> real_time_request_failed);
   // Kicks off the next hash-prefix database lookup available from the
@@ -300,6 +301,7 @@ class SafeBrowsingLookupMechanismExperimenter
   void StoreCheckResults(
       bool timed_out,
       absl::optional<SBThreatType> threat_type,
+      absl::optional<bool> matched_high_confidence_allowlist,
       absl::optional<SBThreatType> locally_cached_results_threat_type,
       absl::optional<bool> real_time_request_failed,
       CheckToRun::RunDetails& run_details);

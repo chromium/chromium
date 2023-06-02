@@ -110,7 +110,7 @@ SAMLResponseParser::SAMLResponseParser(
                              base::SequencedTaskRunner::GetCurrentDefault()),
       callback_(std::move(callback)) {
   body_consumer_watcher_.Watch(
-      body_, MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      *body_, MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(&SAMLResponseParser::OnBodyReady,
                           weak_ptr_factory_.GetWeakPtr()));
   body_consumer_watcher_.ArmOrNotify();
@@ -121,11 +121,11 @@ SAMLResponseParser::~SAMLResponseParser() = default;
 void SAMLResponseParser::OnBodyReady(MojoResult) {
   uint32_t num_bytes = 0;
   MojoResult result =
-      body_.ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
+      body_->ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
   switch (result) {
     case MOJO_RESULT_OK: {
       std::string response(num_bytes, '\0');
-      body_.ReadData(response.data(), &num_bytes, MOJO_READ_DATA_FLAG_PEEK);
+      body_->ReadData(response.data(), &num_bytes, MOJO_READ_DATA_FLAG_PEEK);
       data_decoder::DataDecoder::ParseXmlIsolated(
           response,
           data_decoder::mojom::XmlParser::WhitespaceBehavior::

@@ -60,9 +60,8 @@ static const PlaybackSpeed kPlaybackSpeeds[] = {
 
 const QualifiedName& PlaybackRateAttrName() {
   // Save the playback rate in an attribute.
-  DEFINE_STATIC_LOCAL(
-      QualifiedName, playback_rate_attr,
-      (g_null_atom, AtomicString("data-playback-rate"), g_null_atom));
+  DEFINE_STATIC_LOCAL(QualifiedName, playback_rate_attr,
+                      (AtomicString("data-playback-rate")));
   return playback_rate_attr;
 }
 

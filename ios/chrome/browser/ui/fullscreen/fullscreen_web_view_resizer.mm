@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_resizer.h"
 
 #import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
@@ -110,13 +111,16 @@
 
   CGRect newFrame = UIEdgeInsetsInsetRect(webView.superview.bounds, insets);
 
-  // Make sure the frame has changed to avoid a loop as the frame property is
-  // actually monitored by this object.
-  if (std::fabs(newFrame.origin.x - webView.frame.origin.x) < 0.01 &&
-      std::fabs(newFrame.origin.y - webView.frame.origin.y) < 0.01 &&
-      std::fabs(newFrame.size.width - webView.frame.size.width) < 0.01 &&
-      std::fabs(newFrame.size.height - webView.frame.size.height) < 0.01)
-    return;
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    // Make sure the frame has changed to avoid a loop as the frame property is
+    // actually monitored by this object.
+    if (std::fabs(newFrame.origin.x - webView.frame.origin.x) < 0.01 &&
+        std::fabs(newFrame.origin.y - webView.frame.origin.y) < 0.01 &&
+        std::fabs(newFrame.size.width - webView.frame.size.width) < 0.01 &&
+        std::fabs(newFrame.size.height - webView.frame.size.height) < 0.01) {
+      return;
+    }
+  }
 
   // Update the content offset of the scroll view to match the padding
   // that will be included in the frame.
@@ -144,9 +148,13 @@
   if (!webState->GetView())
     return;
 
+  NSKeyValueObservingOptions options = 0;
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
+  }
   [webState->GetView() addObserver:self
                         forKeyPath:@"frame"
-                           options:0
+                           options:options
                            context:nil];
 }
 
@@ -157,6 +165,18 @@
                        context:(void*)context {
   if (![keyPath isEqualToString:@"frame"] || object != _webState->GetView())
     return;
+
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    NSValue* oldValue =
+        base::mac::ObjCCast<NSValue>(change[NSKeyValueChangeOldKey]);
+    NSValue* newValue =
+        base::mac::ObjCCast<NSValue>(change[NSKeyValueChangeNewKey]);
+    // If the value is unchanged -- if the old and new values are equal --
+    // then return without notifying observers.
+    if (oldValue && newValue && [newValue isEqualToValue:oldValue]) {
+      return;
+    }
+  }
 
   [self updateForCurrentState];
 }

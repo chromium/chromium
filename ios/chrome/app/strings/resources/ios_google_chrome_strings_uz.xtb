@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="2736805085127235148">Chrome bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
 <translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
+<translation id="2840432500933227975">iOSda Chrome sozlamalarini ochib, keyin “Birlamchi brauzer ILOVASI” ustiga bosib, Chromeni tanlang.</translation>
 <translation id="2869959624320573933">Chrome hisobiga kirish</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> brauzerini tanlang.</translation>
 <translation id="3030414234702425231">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chrome maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Bunda Chrome har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="3706101708757577809">Siz endi Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="3720541637541300822">Chrome yopilganda, Inkognito varaqlar qulflansin</translation>
+<translation id="3827545470516145620">Bu qurilmada standart xavfsizlik sozlamasi amal qiladi</translation>
 <translation id="384394811301901750">Google Chrome hozir kamerangizdan foydalana olmaydi.</translation>
 <translation id="3980220367029651214">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chrome ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chrome ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>
 <translation id="3984746313391923992">Tashkilotingiz Chrome hisobidan chiqishingizni talab qilmoqda.</translation>
@@ -150,7 +152,6 @@ Bularni hisobga olish kerak:
   • Chromeda nosozlik yuz bersa, u haqidagi maʼlumotlar, shuningdek, ayrim shaxsiy axborotlar ham yuboriladi
 
   • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Bu Chrome profili standart xavfsizlik tizimi bilan himoyalangan</translation>
 <translation id="9112744793181547300">Chrome asosiy brauzer sifatida tanlansinmi?</translation>
 <translation id="9122931302567044771">Bunda Chrome har safar saytning kompyuter versiyasini talab qiladi.</translation>
 </translationbundle>

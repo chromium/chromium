@@ -114,7 +114,6 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
   void LogLaunchFinishedAfterStreamUpdate(
       feedwire::DiscoverLaunchResult result) override;
   void LogLoadMoreStarted() override;
-  void LogLoadMoreIndicatorShown() override;
   void LogLoadMoreActionUploadRequestStarted() override;
   void LogLoadMoreRequestSent() override;
   void LogLoadMoreResponseReceived(int64_t server_receive_timestamp_ns,
@@ -170,6 +169,8 @@ class TestSurfaceBase : public FeedStreamSurface {
   absl::optional<feedui::StreamUpdate> initial_state;
   // The last stream update received.
   absl::optional<feedui::StreamUpdate> update;
+  // All stream updates.
+  std::vector<feedui::StreamUpdate> all_updates;
 
   TestReliabilityLoggingBridge reliability_logging_bridge;
 

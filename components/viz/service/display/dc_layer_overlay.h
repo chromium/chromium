@@ -78,16 +78,14 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
                              const QuadList::Iterator& it,
                              const gfx::Rect& quad_rectangle_in_root_space,
                              bool is_overlay,
-                             QuadList::Iterator* new_it,
-                             size_t* new_index,
                              gfx::Rect* damage_rect,
                              OverlayCandidateList* dc_layer_overlays,
                              bool is_page_fullscreen_mode);
 
   // Returns an iterator to the element after |it|.
-  QuadList::Iterator ProcessForOverlay(const gfx::RectF& display_rect,
-                                       AggregatedRenderPass* render_pass,
-                                       const QuadList::Iterator& it);
+  void ProcessForOverlay(const gfx::RectF& display_rect,
+                         AggregatedRenderPass* render_pass,
+                         const QuadList::Iterator& it);
   void ProcessForUnderlay(const gfx::RectF& display_rect,
                           AggregatedRenderPass* render_pass,
                           const gfx::Rect& quad_rectangle,
@@ -126,7 +124,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // candidates.
   void RemoveClearVideoQuadCandidatesIfMoving(
       const QuadList* quad_list,
-      std::vector<size_t>* candidate_index_list);
+      std::vector<QuadList::Iterator>& candidates);
 
   bool has_overlay_support_;
   bool system_hdr_enabled_ = false;

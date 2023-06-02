@@ -159,6 +159,7 @@ source_set("unit_tests") {
     "autofill_controller_js_unittest.mm",
     "autofill_controller_unittest.mm",
     "autofill_java_script_feature_unittest.mm",
+    "child_frame_registration_java_script_feature_unittest.mm",
     "form_input_accessory_view_handler_unittest.mm",
     "form_structure_browsertest.mm",
     "form_suggestion_controller_unittest.mm",

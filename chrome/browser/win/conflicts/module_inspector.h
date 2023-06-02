@@ -27,9 +27,8 @@ class SequencedTaskRunner;
 // the SequencedTaskRunner where it was created.
 //
 // The inspection of all modules is quite expensive in terms of resources, so it
-// is done after startup, one by one, in a utility process. If needed, it is
-// possible to skip waiting for startup to be finished by calling
-// ForceStartInspection().
+// is done one by one, in a utility process, only if it is needed (when
+// StartInspection() is called).
 //
 // This class is not thread safe and it enforces safety via a SEQUENCE_CHECKER.
 class ModuleInspector : public ModuleDatabaseObserver {
@@ -51,12 +50,12 @@ class ModuleInspector : public ModuleDatabaseObserver {
 
   ~ModuleInspector() override;
 
+  // Starts the background inspection of modules.
+  void StartInspection();
+
   // Adds the module to the queue of modules to inspect. Starts the inspection
   // process if the |queue_| is empty.
   void AddModule(const ModuleInfoKey& module_key);
-
-  // Skips waiting for startup to be finished.
-  void ForceStartInspection();
 
   // Returns true if ModuleInspector is not doing anything right now.
   bool IsIdle();
@@ -79,10 +78,6 @@ class ModuleInspector : public ModuleDatabaseObserver {
  private:
   // Ensures the |remote_util_win_| instance is bound to the UtilWin service.
   void EnsureUtilWinServiceBound();
-
-  // Invoked when Chrome has finished starting up to initiate the inspection of
-  // queued modules.
-  void OnStartupFinished();
 
   // Invoked when the InspectionResultsCache is available.
   void OnInspectionResultsCacheRead(
@@ -115,9 +110,9 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // The modules are put in queue until they are sent for inspection.
   base::queue<ModuleInfoKey> queue_;
 
-  // Indicates if Chrome has finished starting up. Used to delay the background
-  // inspection tasks in order to not negatively impact startup performance.
-  bool is_after_startup_;
+  // Indicates inspection was started. Used to delay the background inspection
+  // tasks until the results have been requested (by calling StartInspection()).
+  bool is_started_;
 
   // A callback used to initialize |remote_util_win_|.
   UtilWinFactoryCallback util_win_factory_callback_;

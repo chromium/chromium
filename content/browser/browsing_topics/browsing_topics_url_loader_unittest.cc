@@ -15,9 +15,11 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
 namespace content {
@@ -27,9 +29,14 @@ namespace {
 using FollowRedirectParams =
     network::TestURLLoaderFactory::TestURLLoader::FollowRedirectParams;
 
-constexpr char kExpectedHeaderForOrigin1[] = "1;v=\"chrome.1:1:2\"";
+constexpr char kExpectedHeaderForEmptyTopics[] =
+    "();p=P0000000000000000000000000000000";
 
-constexpr char kExpectedHeaderForOrigin2[] = "2;v=\"chrome.3:4:5\"";
+constexpr char kExpectedHeaderForOrigin1[] =
+    "(1);v=chrome.1:1:2, ();p=P00000000000";
+
+constexpr char kExpectedHeaderForOrigin2[] =
+    "(2);v=chrome.1:1:2, ();p=P00000000000";
 
 class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
  public:
@@ -59,15 +66,20 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
         blink::mojom::EpochTopicPtr result_topic =
             blink::mojom::EpochTopic::New();
         result_topic->topic = 2;
-        result_topic->config_version = "chrome.3";
-        result_topic->taxonomy_version = "4";
-        result_topic->model_version = "5";
-        result_topic->version = "chrome.3:4:5";
+        result_topic->config_version = "chrome.1";
+        result_topic->taxonomy_version = "1";
+        result_topic->model_version = "2";
+        result_topic->version = "chrome.1:1:2";
         topics.push_back(std::move(result_topic));
       }
     }
 
     return true;
+  }
+
+  int NumVersionsInTopicsEpochs(
+      content::RenderFrameHost* main_frame) const override {
+    return 1;
   }
 
   size_t handle_topics_web_api_count() const {
@@ -118,16 +130,10 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
               browser_context());
     }
 
-    mojo::Remote<network::mojom::URLLoaderFactory> factory;
-    proxied_url_loader_factory.Clone(factory.BindNewPipeAndPassReceiver());
-    auto pending_factory =
-        std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-            factory.Unbind());
-
     return subresource_proxying_url_loader_service_->GetFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
         /*frame_tree_node_id=*/0,
-        network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
+        proxied_url_loader_factory.GetSafeWeakWrapper(),
         /*render_frame_host=*/nullptr,
         /*prefetched_signed_exchange_cache=*/nullptr);
   }
@@ -157,24 +163,21 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
         NavigationSimulator::CreateBrowserInitiated(url, web_contents());
 
     blink::ParsedPermissionsPolicy policy;
-    policy.emplace_back(blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
-                        /*allowed_origins=*/
-                        std::vector<blink::OriginWithPossibleWildcards>{
-                            blink::OriginWithPossibleWildcards(
-                                url::Origin::Create(GURL("https://google.com")),
-                                /*has_subdomain_wildcard=*/false),
-                            blink::OriginWithPossibleWildcards(
-                                url::Origin::Create(GURL("https://foo1.com")),
-                                /*has_subdomain_wildcard=*/false),
-                            blink::OriginWithPossibleWildcards(
-                                url::Origin::Create(GURL("https://foo2.com")),
-                                /*has_subdomain_wildcard=*/false),
-                            blink::OriginWithPossibleWildcards(
-                                url::Origin::Create(GURL("https://foo3.com")),
-                                /*has_subdomain_wildcard=*/false)},
-                        /*self_if_matches=*/absl::nullopt,
-                        /*matches_all_origins=*/false,
-                        /*matches_opaque_src=*/false);
+    policy.emplace_back(
+        blink::mojom::PermissionsPolicyFeature::kBrowsingTopics,
+        /*allowed_origins=*/
+        std::vector<blink::OriginWithPossibleWildcards>{
+            blink::OriginWithPossibleWildcards::FromOrigin(
+                url::Origin::Create(GURL("https://google.com"))),
+            blink::OriginWithPossibleWildcards::FromOrigin(
+                url::Origin::Create(GURL("https://foo1.com"))),
+            blink::OriginWithPossibleWildcards::FromOrigin(
+                url::Origin::Create(GURL("https://foo2.com"))),
+            blink::OriginWithPossibleWildcards::FromOrigin(
+                url::Origin::Create(GURL("https://foo3.com")))},
+        /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false);
 
     simulator->SetPermissionsPolicyHeader(std::move(policy));
 
@@ -445,7 +448,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, EmptyTopics) {
   bool has_topics_header = pending_request->request.headers.GetHeader(
       "Sec-Browsing-Topics", &topics_header_value);
   EXPECT_TRUE(has_topics_header);
-  EXPECT_TRUE(topics_header_value.empty());
+  EXPECT_EQ(topics_header_value, kExpectedHeaderForEmptyTopics);
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
@@ -920,12 +923,11 @@ TEST_F(BrowsingTopicsURLLoaderTest, ReportBadMessageOnInvalidRequest) {
 
   EXPECT_FALSE(remote_url_loader_factory.is_connected());
   EXPECT_EQ(0, proxied_url_loader_factory.NumPending());
-  EXPECT_EQ(
-      "Unexpected `resource_request_in` in "
-      "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): it's not a "
-      "prefetch or browsing_topics request.",
-      received_error);
-
+  EXPECT_THAT(
+      received_error,
+      testing::HasSubstr(
+          "Unexpected `resource_request_in` in "
+          "SubresourceProxyingURLLoaderService::CreateLoaderAndStart()"));
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 

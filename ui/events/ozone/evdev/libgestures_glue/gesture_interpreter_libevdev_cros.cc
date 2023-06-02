@@ -552,6 +552,11 @@ void GestureInterpreterLibevdevCros::DispatchMouseButton(unsigned int button,
       PointerDetails(EventPointerType::kMouse), StimeToTimeTicks(time)));
 }
 
+void GestureInterpreterLibevdevCros::SetReceivedValidKeyboardInputCallback(
+    base::RepeatingCallback<void(uint64_t)> callback) {
+  received_keyboard_input_ = std::move(callback);
+}
+
 void GestureInterpreterLibevdevCros::DispatchChangedKeys(
     unsigned long* new_key_state,
     stime_t timestamp) {
@@ -573,6 +578,14 @@ void GestureInterpreterLibevdevCros::DispatchChangedKeys(
       // Ignore digi buttons (e.g. BTN_TOOL_FINGER).
       if (key >= BTN_DIGI && key < BTN_WHEEL)
         continue;
+
+      // Checks for a key press that could only have occurred from a
+      // non-imposter keyboard. Disables Imposter flag and triggers a callback
+      // which will update the dispatched list of keyboards with this new
+      // information.
+      if (received_keyboard_input_) {
+        received_keyboard_input_.Run(key);
+      }
 
       // Dispatch key press or release to keyboard.
       dispatcher_->DispatchKeyEvent(KeyEventParams(

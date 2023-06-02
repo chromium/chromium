@@ -180,8 +180,7 @@ void ProfilePickerSignedInFlowController::
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email_),
       /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false, GetProfileColor(),
-      std::move(proceed_callback));
+      /*show_link_data_option=*/false, std::move(proceed_callback));
 }
 
 bool ProfilePickerSignedInFlowController::IsInitialized() const {

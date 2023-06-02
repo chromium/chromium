@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<div id="g"></div>
+<script>
+description("This test ensures that any tree mutation in the load event handler cannot harm the tree consistency.")
+var docElement = document.documentElement;
+
+textareaElement = document.createElement("textarea");
+iframeElement = document.createElement("iframe");
+
+var loadEventFired = false;
+textareaElement.appendChild(iframeElement);
+iframeElement.addEventListener("load", function () { iframeElement.innerHTML = "X"; loadEventFired = true; }, false);
+textareaElement.addEventListener("DOMNodeInserted", function () { document.implementation.createDocument("", "", null).adoptNode(textareaElement) }, false);
+document.documentElement.appendChild(textareaElement); // The DOMNodeInserted event is triggered here through innerHTML = "X"
+document.getElementById("g").appendChild(textareaElement);
+shouldBeTrue("loadEventFired");
+debug("PASS unless crash.");
+</script>
+</body>
+</html>

@@ -1,9 +1,11 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {TestRunner} from 'test_runner';
+import {CPUProfilerTestRunner} from 'cpu_profiler_test_runner';
 (async function() {
   TestRunner.addResult(`Tests missing samples are replaced with neighbor stacks.`);
-  await TestRunner.loadTestModule('cpu_profiler_test_runner');
   const profile = {
     startTime: 1000,
     endTime: 4000,

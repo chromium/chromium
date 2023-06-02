@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Omnibox suggestions -->
-    <dimen name="omnibox_suggestion_bg_elevation">@dimen/default_elevation_1</dimen>
+    <dimen name="omnibox_suggestion_bg_elevation">@dimen/default_elevation_0</dimen>
+    <dimen name="omnibox_suggestion_bg_elevation_modern">@dimen/default_elevation_1</dimen>
     <dimen name="omnibox_suggestion_dropdown_bg_elevation">@dimen/default_elevation_0</dimen>
 </resources>

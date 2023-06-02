@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
@@ -55,8 +55,8 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
-        gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
-        /*progress_reporter=*/nullptr);
+        context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
+        context_state_->feature_info(), /*progress_reporter=*/nullptr);
   }
 
  protected:
@@ -169,7 +169,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   // Create a Dawn Metal device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
@@ -313,7 +313,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a Dawn Metal device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
@@ -403,7 +403,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Create dawn device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
@@ -540,8 +540,8 @@ class IOSurfaceImageBackingFactoryWithFormatTestBase
         feature_info->feature_flags().chromium_image_ycbcr_p010;
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
-        gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
-        &progress_reporter_);
+        context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
+        context_state_->feature_info(), &progress_reporter_);
   }
 
   viz::SharedImageFormat get_format() { return GetParam(); }
@@ -1011,11 +1011,13 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
 
 const auto kSinglePlaneFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::SinglePlaneFormat::kRGBA_1010102);
 
 const auto kGMBFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::MultiPlaneFormat::kNV12,
                       viz::MultiPlaneFormat::kP010);

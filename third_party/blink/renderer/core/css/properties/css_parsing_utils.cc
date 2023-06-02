@@ -1882,6 +1882,9 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
                                       Color& result) {
   CSSValueID function_id = range.Peek().FunctionId();
   DCHECK(function_id == CSSValueID::kLab || function_id == CSSValueID::kOklab);
+  Color::ColorSpace color_space = (function_id == CSSValueID::kLab)
+                                      ? Color::ColorSpace::kLab
+                                      : Color::ColorSpace::kOklab;
   context.Count(WebFeature::kCSSColorLabOklab);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume lightness, either a percentage or a number or "none"
@@ -1903,14 +1906,22 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
     }
   }
 
+  // If the values for a or b are percentages they need to be mapped onto the
+  // correct ranges. https://www.w3.org/TR/css-color-4/#specifying-lab-lch
+  const double ab_coefficient_for_percentages =
+      (color_space == Color::ColorSpace::kLab) ? 1.25 : 0.004;
   absl::optional<double> ab[2];
   for (absl::optional<double>& i : ab) {
     if (ConsumeIdent<CSSValueID::kNone>(args)) {
       continue;
     }
-    if (CSSPrimitiveValue* value =
-            ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
-        value) {
+    if (CSSPrimitiveValue* value_percent =
+            ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+        value_percent) {
+      i = value_percent->GetDoubleValue() * ab_coefficient_for_percentages;
+    } else if (CSSPrimitiveValue* value = ConsumeNumber(
+                   args, context, CSSPrimitiveValue::ValueRange::kAll);
+               value) {
       i = value->GetDoubleValue();
     } else {
       return false;
@@ -1919,9 +1930,6 @@ static bool ParseLABOrOKLABParameters(CSSParserTokenRange& range,
 
   absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
 
-  Color::ColorSpace color_space = (function_id == CSSValueID::kLab)
-                                      ? Color::ColorSpace::kLab
-                                      : Color::ColorSpace::kOklab;
   result = Color::FromColorSpace(color_space, lightness, ab[0], ab[1], alpha);
   return args.AtEnd();
 }
@@ -1931,6 +1939,10 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
                                       Color& result) {
   CSSValueID function_id = range.Peek().FunctionId();
   DCHECK(function_id == CSSValueID::kLch || function_id == CSSValueID::kOklch);
+  Color::ColorSpace color_space = (function_id == CSSValueID::kLch)
+                                      ? Color::ColorSpace::kLch
+                                      : Color::ColorSpace::kOklch;
+
   context.Count(WebFeature::kCSSColorLchOklch);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume lightness, either a percentage or a number
@@ -1952,11 +1964,20 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
     }
   }
 
+  // If the value for chroma is a percentage it needs to be mapped onto the
+  // correct range. https://www.w3.org/TR/css-color-4/#specifying-lab-lch
+  const double chroma_coefficient_for_percentages =
+      (color_space == Color::ColorSpace::kLch) ? 1.5 : 0.004;
   absl::optional<double> chroma;
   if (!ConsumeIdent<CSSValueID::kNone>(args)) {
-    if (CSSPrimitiveValue* value =
-            ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
-        value) {
+    if (CSSPrimitiveValue* value_percent =
+            ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+        value_percent) {
+      chroma =
+          value_percent->GetDoubleValue() * chroma_coefficient_for_percentages;
+    } else if (CSSPrimitiveValue* value = ConsumeNumber(
+                   args, context, CSSPrimitiveValue::ValueRange::kAll);
+               value) {
       chroma = std::max(0.0, value->GetDoubleValue());
     } else {
       return false;
@@ -1975,9 +1996,6 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
 
   absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
 
-  Color::ColorSpace color_space = (function_id == CSSValueID::kLch)
-                                      ? Color::ColorSpace::kLch
-                                      : Color::ColorSpace::kOklch;
   result = Color::FromColorSpace(color_space, lightness, chroma, hue, alpha);
   return args.AtEnd();
 }
@@ -1986,10 +2004,6 @@ static bool ConsumeColorInterpolationSpace(
     CSSParserTokenRange& args,
     Color::ColorSpace& color_space,
     Color::HueInterpolationMethod& hue_interpolation) {
-  if (!RuntimeEnabledFeatures::CSSColor4Enabled()) {
-    return false;
-  }
-
   if (!ConsumeIdent<CSSValueID::kIn>(args)) {
     return false;
   }
@@ -2056,10 +2070,6 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
                                          const CSSParserContext& context) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kColorMix);
   context.Count(WebFeature::kCSSColorMixFunction);
-
-  if (!RuntimeEnabledFeatures::CSSColor4Enabled()) {
-    return nullptr;
-  }
 
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
@@ -2277,21 +2287,18 @@ static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& range,
       break;
     case CSSValueID::kLab:
     case CSSValueID::kOklab:
-      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseLABOrOKLABParameters(color_range, context, result)) {
+      if (!ParseLABOrOKLABParameters(color_range, context, result)) {
         return false;
       }
       break;
     case CSSValueID::kLch:
     case CSSValueID::kOklch:
-      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseLCHOrOKLCHParameters(color_range, context, result)) {
+      if (!ParseLCHOrOKLCHParameters(color_range, context, result)) {
         return false;
       }
       break;
     case CSSValueID::kColor:
-      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseColorFunctionParameters(color_range, context, result)) {
+      if (!ParseColorFunctionParameters(color_range, context, result)) {
         return false;
       }
       break;
@@ -2431,8 +2438,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     return ConsumeColorContrast(range, context, accept_quirky_colors);
   }
 
-  if (RuntimeEnabledFeatures::CSSColor4Enabled() &&
-      range.Peek().FunctionId() == CSSValueID::kColorMix) {
+  if (range.Peek().FunctionId() == CSSValueID::kColorMix) {
     CSSValue* color = ConsumeColorMixFunction(range, context);
     return color;
   }
@@ -6415,7 +6421,8 @@ cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenRange& args) {
                                                       wind_rule);
 }
 
-CSSValue* ConsumePathFunction(CSSParserTokenRange& range) {
+CSSValue* ConsumePathFunction(CSSParserTokenRange& range,
+                              EmptyPathStringHandling empty_handling) {
   // FIXME: Add support for <url>, <basic-shape>, <geometry-box>.
   if (range.Peek().FunctionId() != CSSValueID::kPath) {
     return nullptr;
@@ -6429,10 +6436,19 @@ CSSValue* ConsumePathFunction(CSSParserTokenRange& range) {
     return nullptr;
   }
 
-  range = function_range;
+  // https://drafts.csswg.org/css-shapes-1/#funcdef-basic-shape-path
+  // A path data string that does not conform to the to the grammar
+  // and parsing rules of SVG 1.1, or that does conform but defines
+  // an empty path, is invalid and causes the entire path() to be invalid.
   if (byte_stream->IsEmpty()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
+    if (empty_handling == EmptyPathStringHandling::kTreatAsNone) {
+      range = function_range;
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    }
+    return nullptr;
   }
+  range = function_range;
+
   return MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(byte_stream));
 }
 
@@ -6445,6 +6461,9 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
   CSSPrimitiveValue* angle = nullptr;
   CSSIdentifierValue* size = nullptr;
   CSSIdentifierValue* contain = nullptr;
+  bool position = false;
+  CSSValue* x = nullptr;
+  CSSValue* y = nullptr;
   while (!function_args.AtEnd()) {
     if (!angle) {
       angle =
@@ -6468,6 +6487,13 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
         continue;
       }
     }
+    if (!position && ConsumeIdent<CSSValueID::kAt>(function_args)) {
+      position = ConsumePosition(function_args, context, UnitlessQuirk::kForbid,
+                                 absl::optional<WebFeature>(), x, y);
+      if (position) {
+        continue;
+      }
+    }
     return nullptr;
   }
   if (!angle) {
@@ -6477,7 +6503,8 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
     size = CSSIdentifierValue::Create(CSSValueID::kClosestSide);
   }
   range = function_range;
-  return MakeGarbageCollected<cssvalue::CSSRayValue>(*angle, *size, contain);
+  return MakeGarbageCollected<cssvalue::CSSRayValue>(*angle, *size, contain, x,
+                                                     y);
 }
 
 CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,
@@ -6592,7 +6619,7 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
     offset_path = ConsumeUrl(range, context);
   }
   if (!offset_path) {
-    offset_path = ConsumePathFunction(range);
+    offset_path = ConsumePathFunction(range, EmptyPathStringHandling::kFailure);
   }
 
   if (!coord_box && RuntimeEnabledFeatures::CSSOffsetPathCoordBoxEnabled()) {
@@ -6623,7 +6650,7 @@ CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {
     return ConsumeIdent(range);
   }
 
-  return ConsumePathFunction(range);
+  return ConsumePathFunction(range, EmptyPathStringHandling::kTreatAsNone);
 }
 
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,

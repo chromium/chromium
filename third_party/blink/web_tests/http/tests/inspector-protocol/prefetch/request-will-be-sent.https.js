@@ -33,7 +33,7 @@
 
   let prefetchRequestId = await testPromise.then((result) => {
     let prefetchRequestId = undefined;
-    const stabilizeNames = [...TestRunner.stabilizeNames, 'wallTime', 'requestTime', 'responseTime', 'Date', 'receiveHeadersEnd', 'sendStart', 'sendEnd', 'ETag', 'Last-Modified', 'User-Agent', 'headersText'];
+    const stabilizeNames = [...TestRunner.stabilizeNames, 'wallTime', 'requestTime', 'responseTime', 'Date', 'receiveHeadersStart', 'receiveHeadersEnd', 'sendStart', 'sendEnd', 'ETag', 'Last-Modified', 'User-Agent', 'headersText'];
     let {requestIds, events} = result;
     for(let i=0; i<requestIds.length; ++i) {
       testRunner.log(`Message ${i}`);

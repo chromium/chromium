@@ -209,9 +209,15 @@ bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
   // OriginAgentClusters are enabled by default if OriginAgentCluster and
   // kOriginAgentClusterDefaultEnabled are enabled, and if there is no
   // enterprise policy forbidding it.
+  // This also returns true if kOriginKeyedProcessesByDefault is enabled,
+  // because it depends on having OriginAgentClusters by default. This can be
+  // handled here because this function is the only place that
+  // kOriginAgentClusterDefaultEnabled is directly checked.
   return IsOriginAgentClusterEnabled() &&
-         base::FeatureList::IsEnabled(
-             blink::features::kOriginAgentClusterDefaultEnabled) &&
+         (base::FeatureList::IsEnabled(
+              blink::features::kOriginAgentClusterDefaultEnabled) ||
+          base::FeatureList::IsEnabled(
+              features::kOriginKeyedProcessesByDefault)) &&
          !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
              browser_context);
 }

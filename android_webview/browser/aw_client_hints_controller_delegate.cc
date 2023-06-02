@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "base/notreached.h"
@@ -32,15 +33,17 @@ const char kClientHintsCachedPerOriginMap[] =
 }  // namespace prefs
 
 AwClientHintsControllerDelegate::AwClientHintsControllerDelegate(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    PrefService* context_pref_service)
+    : context_pref_service_(context_pref_service) {}
 
 AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() = default;
 
 blink::UserAgentMetadata
-AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
-    const PrefService* pref_service) {
-  auto metadata = embedder_support::GetUserAgentMetadata(pref_service);
+AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand() {
+  // embedder_support::GetUserAgentMetadata() can accept a browser local_state
+  // PrefService argument, but doesn't need one. Either way, it shouldn't be the
+  // context_pref_service_ that this class holds.
+  auto metadata = embedder_support::GetUserAgentMetadata();
   std::string major_version = version_info::GetMajorVersionNumber();
 
   // Use the major version number as a greasing seed
@@ -79,9 +82,10 @@ void AwClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
   }
 
   // Add stored hints to the enabled list.
-  if (pref_service_->HasPrefPath(prefs::kClientHintsCachedPerOriginMap)) {
+  if (context_pref_service_->HasPrefPath(
+          prefs::kClientHintsCachedPerOriginMap)) {
     auto* const client_hints_list =
-        pref_service_->GetDict(prefs::kClientHintsCachedPerOriginMap)
+        context_pref_service_->GetDict(prefs::kClientHintsCachedPerOriginMap)
             .FindList(origin.Serialize());
     if (client_hints_list) {
       for (const auto& client_hint : *client_hints_list) {
@@ -134,7 +138,7 @@ bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
 
 blink::UserAgentMetadata
 AwClientHintsControllerDelegate::GetUserAgentMetadata() {
-  return GetUserAgentMetadataOverrideBrand(pref_service_);
+  return GetUserAgentMetadataOverrideBrand();
 }
 
 void AwClientHintsControllerDelegate::PersistClientHints(
@@ -164,13 +168,15 @@ void AwClientHintsControllerDelegate::PersistClientHints(
     client_hints_list.Append(static_cast<int>(entry));
   }
   base::Value::Dict ch_per_origin;
-  if (pref_service_->HasPrefPath(prefs::kClientHintsCachedPerOriginMap)) {
+  if (context_pref_service_->HasPrefPath(
+          prefs::kClientHintsCachedPerOriginMap)) {
     ch_per_origin =
-        pref_service_->GetDict(prefs::kClientHintsCachedPerOriginMap).Clone();
+        context_pref_service_->GetDict(prefs::kClientHintsCachedPerOriginMap)
+            .Clone();
   }
   ch_per_origin.Set(primary_origin.Serialize(), std::move(client_hints_list));
-  pref_service_->SetDict(prefs::kClientHintsCachedPerOriginMap,
-                         std::move(ch_per_origin));
+  context_pref_service_->SetDict(prefs::kClientHintsCachedPerOriginMap,
+                                 std::move(ch_per_origin));
   network::LogClientHintsPersistenceMetrics(persistence_started,
                                             client_hints.size());
 }

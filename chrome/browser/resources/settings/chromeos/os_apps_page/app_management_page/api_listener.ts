@@ -16,9 +16,20 @@ let initialized = false;
 async function init() {
   assert(!initialized);
 
-  const {apps: initialApps} =
-      await AppManagementBrowserProxy.getInstance().handler.getApps();
-  const initialState = createInitialState(initialApps);
+  // Call two async functions and wait for both of them.
+  const getAppsPromise =
+      AppManagementBrowserProxy.getInstance().handler.getApps();
+  const getSubAppToParentMapPromise =
+      AppManagementBrowserProxy.getInstance().handler.getSubAppToParentMap();
+
+  const responses =
+      await Promise.all([getAppsPromise, getSubAppToParentMapPromise]);
+
+  const {apps: initialApps} = responses[0];
+  const {subAppToParentMap: initialSubAppToParentMap} = responses[1];
+
+  const initialState =
+      createInitialState(initialApps, initialSubAppToParentMap);
   AppManagementStore.getInstance().init(initialState);
 
   const callbackRouter = AppManagementBrowserProxy.getInstance().callbackRouter;

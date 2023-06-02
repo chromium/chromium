@@ -10,10 +10,10 @@
  */
 #ifndef AOM_CONFIG_H_
 #define AOM_CONFIG_H_
-#define ARCH_ARM 0
-#define ARCH_PPC 0
-#define ARCH_X86 0
-#define ARCH_X86_64 1
+#define AOM_ARCH_ARM 0
+#define AOM_ARCH_PPC 0
+#define AOM_ARCH_X86 0
+#define AOM_ARCH_X86_64 1
 #define CONFIG_ACCOUNTING 0
 #define CONFIG_ANALYZER 0
 #define CONFIG_AV1_DECODER 1

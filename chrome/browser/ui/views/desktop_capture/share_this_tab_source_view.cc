@@ -23,19 +23,16 @@ constexpr int kPreviewWidth = 320;
 constexpr int kPreviewHeight = 240;
 constexpr int kPadding = 8;
 constexpr int kFaviconWidth = 16;
-constexpr int kFaviconHeight = kFaviconWidth;
 constexpr int kFaviconTabTitleRowHeight = 20;
 
 // Derived UI measurements
-constexpr int kFaviconExtraPadding =
-    (kFaviconTabTitleRowHeight - kFaviconHeight) / 2;
 constexpr gfx::Rect kPreviewRect(kPadding,
                                  kPadding,
                                  kPreviewWidth,
                                  kPreviewHeight);
+// TODO(crbug.com/1447461): Align favicon height properly with label.
 constexpr gfx::Rect kFaviconRect(kPadding,
-                                 kPreviewRect.bottom() + kPadding +
-                                     kFaviconExtraPadding,
+                                 kPreviewRect.bottom() + kPadding,
                                  kFaviconWidth,
                                  kFaviconTabTitleRowHeight);
 constexpr gfx::Rect kTabTitleMaxRect(kFaviconRect.right() + kPadding,

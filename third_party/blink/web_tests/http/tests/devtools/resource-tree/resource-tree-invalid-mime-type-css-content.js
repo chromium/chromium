@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that content is correctly shown for css loaded with invalid mime type in quirks mode. https://bugs.webkit.org/show_bug.cgi?id=80528\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('resources');
   await TestRunner.addStylesheetTag('resources/stylesheet-text-plain.php');
   await TestRunner.waitForUISourceCode('stylesheet-text-plain.php');

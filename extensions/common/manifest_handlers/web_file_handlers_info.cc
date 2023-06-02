@@ -166,6 +166,18 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
       file_handler.icons = std::move(manifest_file_handler.icons);
     }
 
+    // `launch_type` is an optional string that defaults to "single-client".
+    file_handler.launch_type = std::move(manifest_file_handler.launch_type);
+    if (!file_handler.launch_type.has_value()) {
+      file_handler.launch_type = "single-client";
+    } else {
+      const std::string launch_type = file_handler.launch_type.value();
+      if (launch_type != "single-client" && launch_type != "multiple-clients") {
+        *error = get_error(i, "`launch_type` must have a valid value.");
+        return nullptr;
+      }
+    }
+
     // Append file handlers.
     info->file_handlers.emplace_back(std::move(file_handler));
   }

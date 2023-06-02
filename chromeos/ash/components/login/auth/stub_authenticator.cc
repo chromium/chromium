@@ -29,6 +29,7 @@ StubAuthenticator::StubAuthenticator(AuthStatusConsumer* consumer,
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 void StubAuthenticator::CompleteLogin(
+    bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
   if (expected_user_context_ != *user_context)
     NOTREACHED();
@@ -36,6 +37,7 @@ void StubAuthenticator::CompleteLogin(
 }
 
 void StubAuthenticator::AuthenticateToLogin(
+    bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
   // Don't compare the entire |expected_user_context_| to |user_context| because
   // during non-online re-auth |user_context| does not have a gaia id.
@@ -77,6 +79,7 @@ void StubAuthenticator::AuthenticateToLogin(
 }
 
 void StubAuthenticator::AuthenticateToUnlock(
+    bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
   if (expected_user_context_.GetAccountId() == user_context->GetAccountId() &&
       (*expected_user_context_.GetKey() == *user_context->GetKey() ||
@@ -183,6 +186,7 @@ void StubAuthenticator::RecoverEncryptedData(
 }
 
 void StubAuthenticator::ResyncEncryptedData(
+    bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));

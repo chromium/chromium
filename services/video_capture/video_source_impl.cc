@@ -82,6 +82,9 @@ void VideoSourceImpl::CreatePushSubscription(
 
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!receivers_.empty()) {
+    return;
+  }
 
   if (device_status_ != DeviceStatus::kStoppingAsynchronously) {
     // We need to stop devices when VideoSource remote discarded with active
@@ -89,11 +92,9 @@ void VideoSourceImpl::OnClientDisconnected() {
     device_factory_->StopDevice(device_id_);
   }
 
-  if (receivers_.empty()) {
-    // Note: Invoking this callback may synchronously trigger the destruction of
-    // |this|, so no more member access should be done after it.
-    on_last_binding_closed_cb_.Run();
-  }
+  // Note: Invoking this callback may synchronously trigger the destruction of
+  // |this|, so no more member access should be done after it.
+  on_last_binding_closed_cb_.Run();
 }
 
 void VideoSourceImpl::StartDeviceWithSettings(

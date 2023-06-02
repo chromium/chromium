@@ -4,12 +4,18 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -29,11 +35,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -49,6 +57,8 @@ public class PasswordMigrationWarningViewTest {
 
     @Mock
     private Callback<Integer> mDismissCallback;
+    @Mock
+    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
 
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
@@ -62,7 +72,8 @@ public class PasswordMigrationWarningViewTest {
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
-            mModel = PasswordMigrationWarningProperties.createDefaultModel(mDismissCallback);
+            mModel = PasswordMigrationWarningProperties.createDefaultModel(
+                    mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(
                     mActivityTestRule.getActivity(), mBottomSheetController);
             PropertyModelChangeProcessor.create(mModel, mView,
@@ -96,6 +107,45 @@ public class PasswordMigrationWarningViewTest {
 
         // The dismiss callback was called.
         verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+    }
+
+    @Test
+    @MediumTest
+    public void testShowsIntroScreen() {
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // Setting the introduction screen.
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
+        // The test waits for the fragment containing the button to be attached.
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.acknowledge_password_migration_button)
+                        != null);
+        onView(withId(R.id.migration_warning_sheet_subtitle)).check(matches(isDisplayed()));
+        onView(withId(R.id.acknowledge_password_migration_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.password_migration_more_options_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testShowsOptionsScreen() {
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // Setting the options screen.
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN));
+        // The test waits for the fragment containing the button to be attached.
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.password_migration_cancel_button)
+                        != null);
+        onView(withId(R.id.radio_button_layout)).check(matches(isDisplayed()));
+        RadioButtonWithDescription signInOrSyncButton =
+                mActivityTestRule.getActivity().findViewById(R.id.radio_sign_in_or_sync);
+        assertTrue(signInOrSyncButton.isChecked());
+        onView(withId(R.id.password_migration_next_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.password_migration_cancel_button)).check(matches(isDisplayed()));
     }
 
     private @SheetState int getBottomSheetState() {

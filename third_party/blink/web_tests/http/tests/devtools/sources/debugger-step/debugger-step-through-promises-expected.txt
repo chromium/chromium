@@ -2,54 +2,54 @@ Tests that debugger will step through Promise handlers while not stepping into V
 
 Set timer for test function.
 Call stack:
-    0) p1 (debugger-step-through-promises.js:19)
+    0) p1 (debugger-step-through-promises.js:22)
     [Promise.then]
-    0) testFunction (debugger-step-through-promises.js:16)
+    0) testFunction (debugger-step-through-promises.js:19)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) p1 (debugger-step-through-promises.js:20)
+    0) p1 (debugger-step-through-promises.js:23)
     [Promise.then]
-    0) testFunction (debugger-step-through-promises.js:16)
+    0) testFunction (debugger-step-through-promises.js:19)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) p2 (debugger-step-through-promises.js:24)
+    0) p2 (debugger-step-through-promises.js:27)
     [Promise.then]
-    0) testFunction (debugger-step-through-promises.js:21)
+    0) testFunction (debugger-step-through-promises.js:24)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepOver...
 Call stack:
-    0) p2 (debugger-step-through-promises.js:24)
+    0) p2 (debugger-step-through-promises.js:27)
     [Promise.then]
-    0) testFunction (debugger-step-through-promises.js:21)
+    0) testFunction (debugger-step-through-promises.js:24)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepOver...
 Call stack:
-    0) p3 (debugger-step-through-promises.js:29)
+    0) p3 (debugger-step-through-promises.js:32)
     [Promise.then]
-    0) testFunction (debugger-step-through-promises.js:26)
+    0) testFunction (debugger-step-through-promises.js:29)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepOver...
 Call stack:
-    0) p3 (debugger-step-through-promises.js:29)
+    0) p3 (debugger-step-through-promises.js:32)
     [Promise.then]
-    0) testFunction (debugger-step-through-promises.js:26)
+    0) testFunction (debugger-step-through-promises.js:29)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

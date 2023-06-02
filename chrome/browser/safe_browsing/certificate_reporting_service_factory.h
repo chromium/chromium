@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_SERVICE_FACTORY_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,8 +47,7 @@ class CertificateReportingServiceFactory : public ProfileKeyedServiceFactory {
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      CertificateReportingServiceFactory>;
+  friend base::NoDestructor<CertificateReportingServiceFactory>;
 
   CertificateReportingServiceFactory();
   ~CertificateReportingServiceFactory() override;

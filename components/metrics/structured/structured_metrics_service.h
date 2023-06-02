@@ -11,10 +11,19 @@
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 #include "components/metrics/structured/structured_metrics_scheduler.h"
+#include "components/metrics/unsent_log_store.h"
 
 FORWARD_DECLARE_TEST(StructuredMetricsServiceTest, RotateLogs);
 
 class PrefRegistrySimple;
+
+namespace metrics {
+class StructuredMetricsServiceTestBase;
+class TestStructuredMetricsServiceDisabled;
+
+FORWARD_DECLARE_TEST(TestStructuredMetricsServiceDisabled,
+                     ValidStateWhenDisabled);
+}  // namespace metrics
 
 namespace metrics::structured {
 
@@ -22,10 +31,9 @@ namespace metrics::structured {
 // Structured Metric events.
 class StructuredMetricsService final {
  public:
-  StructuredMetricsService(
-      base::raw_ptr<MetricsProvider> system_profile_provider,
-      MetricsServiceClient* client,
-      PrefService* local_state);
+  StructuredMetricsService(MetricsProvider* system_profile_provider,
+                           MetricsServiceClient* client,
+                           PrefService* local_state);
 
   ~StructuredMetricsService();
 
@@ -48,11 +56,19 @@ class StructuredMetricsService final {
     return reporting_service_->reporting_active();
   }
 
+  bool recording_enabled() const { return recorder_->recording_enabled(); }
+
+  StructuredMetricsRecorder* recorder() { return recorder_.get(); }
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
   friend class StructuredMetricsServiceTest;
+  friend class metrics::StructuredMetricsServiceTestBase;
+
   FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
+  FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsServiceDisabled,
+                           ValidStateWhenDisabled);
 
   StructuredMetricsService(MetricsServiceClient* client,
                            PrefService* local_state,
@@ -77,7 +93,7 @@ class StructuredMetricsService final {
   static std::string SerializeLog(const ChromeUserMetricsExtension& uma_proto);
 
   // Retrieves the storage parameters to control the reporting service.
-  static reporting::StorageLimits GetLogStoreLimits();
+  static UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits();
 
   // Manages on-device recording of events.
   std::unique_ptr<StructuredMetricsRecorder> recorder_;

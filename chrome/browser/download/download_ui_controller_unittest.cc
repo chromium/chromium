@@ -161,7 +161,7 @@ class DownloadUIControllerTest : public ChromeRenderViewHostTestHarness {
   RAW_PTR_EXCLUSION download::DownloadItem* notified_item_;
   base::WeakPtrFactory<download::DownloadItem*> notified_item_receiver_factory_;
 
-  raw_ptr<HistoryAdapter> history_adapter_;
+  raw_ptr<HistoryAdapter, DanglingUntriaged> history_adapter_;
 };
 
 // static

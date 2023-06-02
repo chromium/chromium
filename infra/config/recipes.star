@@ -252,10 +252,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:reclient_goma_comparison",
-)
-
-build_recipe(
     name = "recipe:reclient_reclient_comparison",
 )
 

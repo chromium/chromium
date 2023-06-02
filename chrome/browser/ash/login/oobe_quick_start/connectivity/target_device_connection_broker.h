@@ -94,9 +94,14 @@ class TargetDeviceConnectionBroker {
     virtual void WaitForUserVerification(
         AwaitUserVerificationCallback callback) = 0;
 
+    // Retrieve CryptAuth ID from BootstrapConfigurations response.
+    std::string get_phone_instance_id() { return phone_instance_id_; }
+
    protected:
     AuthenticatedConnection() = default;
     virtual ~AuthenticatedConnection() = default;
+
+    std::string phone_instance_id_;
   };
 
   // Clients of TargetDeviceConnectionBroker should implement this interface,
@@ -198,6 +203,9 @@ class TargetDeviceConnectionBroker {
   // are needed to resume the Quick Start connection after the target device
   // reboots.
   virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
+
+  // Gets the 3 digits of the discoverable name. e.g.: Chromebook (123)
+  virtual std::string GetSessionIdDisplayCode() = 0;
 
  protected:
   void MaybeNotifyFeatureStatus();

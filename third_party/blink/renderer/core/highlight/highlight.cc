@@ -39,8 +39,9 @@ void Highlight::ScheduleRepaintsInContainingHighlightRegistries() const {
 Highlight* Highlight::addForBinding(ScriptState*,
                                     AbstractRange* range,
                                     ExceptionState&) {
-  if (highlight_ranges_.insert(range).is_new_entry)
+  if (highlight_ranges_.insert(range).is_new_entry) {
     ScheduleRepaintsInContainingHighlightRegistries();
+  }
   return this;
 }
 

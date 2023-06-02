@@ -189,7 +189,7 @@ template <class Comparator>
 void GetMostRecentEntries(
     BookmarkModel* model,
     size_t limit,
-    std::set<const BookmarkNode*, Comparator>* nodes_set) {
+    std::multiset<const BookmarkNode*, Comparator>* nodes_set) {
   ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
@@ -394,7 +394,7 @@ void GetMostRecentlyAddedEntries(BookmarkModel* model,
   // std::set is used here since insert element into std::vector is slower than
   // std::set, so we use std::set to find the most recent bookmarks, and then
   // return to users as std::vector.
-  std::set<const BookmarkNode*, decltype(&MoreRecentlyAdded)> nodes_set(
+  std::multiset<const BookmarkNode*, decltype(&MoreRecentlyAdded)> nodes_set(
       &MoreRecentlyAdded);
   GetMostRecentEntries(model, count, &nodes_set);
 
@@ -413,9 +413,15 @@ void GetMostRecentlyUsedEntries(BookmarkModel* model,
   // std::set, so we use std::set to find the most recent bookmarks, and then
   // return to users as std::vector.
   auto lastUsedComp = [](const BookmarkNode* n1, const BookmarkNode* n2) {
+    if (n1->date_last_used() == n2->date_last_used()) {
+      // Both bookmarks have same used date, we compare added date instead,
+      // normally this happens when both bookmarks are never used.
+      return n1->date_added() > n2->date_added();
+    }
     return n1->date_last_used() > n2->date_last_used();
   };
-  std::set<const BookmarkNode*, decltype(lastUsedComp)> nodes_set(lastUsedComp);
+  std::multiset<const BookmarkNode*, decltype(lastUsedComp)> nodes_set(
+      lastUsedComp);
   GetMostRecentEntries(model, count, &nodes_set);
 
   nodes->reserve(nodes_set.size());

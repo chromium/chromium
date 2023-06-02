@@ -6,15 +6,45 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+static_library("family_preferences_service") {
+  sources = [
+    "family_preferences_service.cc",
+    "family_preferences_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/common",
+  ]
+}
+
+static_library("list_family_members_service") {
+  sources = [
+    "list_family_members_service.cc",
+    "list_family_members_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser:fetcher",
+    "//components/supervised_user/core/browser/proto",
+  ]
+}
+
 static_library("fetcher") {
   sources = [
-    "kids_access_token_fetcher.cc",
-    "kids_access_token_fetcher.h",
-    "kids_external_fetcher.cc",
-    "kids_external_fetcher.h",
-    "kids_external_fetcher_config.cc",
-    "kids_external_fetcher_config.h",
-    "kids_external_fetcher_requests.h",
+    "api_access_token_fetcher.cc",
+    "api_access_token_fetcher.h",
+    "fetcher_config.cc",
+    "fetcher_config.h",
+    "proto_fetcher.cc",
+    "proto_fetcher.h",
   ]
   deps = [
     "//base",
@@ -99,10 +129,13 @@ source_set("test_support") {
   sources = [
     "fetcher_config_test_utils.cc",
     "fetcher_config_test_utils.h",
+    "kids_chrome_management_test_utils.cc",
+    "kids_chrome_management_test_utils.h",
   ]
   deps = [
     ":fetcher",
     "//base",
+    "//components/supervised_user/core/browser/proto",
     "//net/traffic_annotation",
     "//url",
   ]
@@ -111,10 +144,12 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "kids_access_token_fetcher_unittest.cc",
-    "kids_external_fetcher_unittest.cc",
+    "api_access_token_fetcher_unittest.cc",
+    "family_preferences_service_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
+    "list_family_members_service_unittest.cc",
     "parental_control_metrics_unittest.cc",
+    "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_metrics_service_unittest.cc",
@@ -126,7 +161,9 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":family_preferences_service",
     ":fetcher",
+    ":list_family_members_service",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -134,6 +171,7 @@ source_set("unit_tests") {
     "//components/resources:components_resources",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
+    "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
     "//components/sync:test_support",
     "//services/network:test_support",

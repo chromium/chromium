@@ -57,6 +57,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -81,6 +82,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -568,7 +570,10 @@ public class PasswordCheckViewTest {
 
     @Test
     @MediumTest
-    public void testClickingDeleteInMoreMenuTriggersHandler() {
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
+            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU)
+    public void
+    testClickingDeleteInMoreMenuTriggersHandler() {
         runOnUiThreadBlocking(() -> mModel.get(ITEMS).add(buildCredentialItem(ANA)));
         waitForListViewToHaveLength(1);
 

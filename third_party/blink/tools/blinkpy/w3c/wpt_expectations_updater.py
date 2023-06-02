@@ -25,7 +25,7 @@ from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models.test_expectations import (
-    ParseError, SystemConfigurationRemover, TestExpectations)
+    ParseError, SystemConfigurationEditor, TestExpectations)
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
@@ -557,7 +557,7 @@ class WPTExpectationsUpdater:
                 }
         Returns: None
         """
-        # SystemConfigurationRemover now only works on generic test expectations
+        # SystemConfigurationEditor now only works on generic test expectations
         # files. This is good enough for now
         path = self.port.path_to_generic_test_expectations_file()
         test_expectations = TestExpectations(
@@ -565,7 +565,7 @@ class WPTExpectationsUpdater:
             expectations_dict={
                 path: self.host.filesystem.read_text_file(path),
             })
-        system_remover = SystemConfigurationRemover(test_expectations)
+        system_remover = SystemConfigurationEditor(test_expectations)
         for test, versions in configs_to_remove.items():
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()

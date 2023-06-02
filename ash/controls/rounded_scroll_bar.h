@@ -66,7 +66,7 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   void HideScrollBar();
 
   // Called when the thumb hover/pressed state changed.
-  void OnThumbStateChanged();
+  void OnThumbStateChanged(views::Button::ButtonState old_state);
 
   // Called when the thumb bounds (position or size) changed.
   void OnThumbBoundsChanged();

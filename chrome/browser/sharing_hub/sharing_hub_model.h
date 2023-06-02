@@ -77,8 +77,6 @@ class SharingHubModel {
   void PopulateFirstPartyActions();
   void PopulateThirdPartyActions();
 
-  bool DoShowSendTabToSelfForWebContents(content::WebContents* web_contents);
-
   // A list of Sharing Hub first party actions in order in which they appear.
   std::vector<SharingHubAction> first_party_action_list_;
 

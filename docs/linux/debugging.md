@@ -40,8 +40,8 @@ symbol_level = 2
 #### GDB setup
 
 The Chrome build requires some GDB configuration for it to be able to find
-source files. See [gdbinit](gdbinit.md) to configure GDB. There is a similar
-process for [LLDB](lldbinit.md).
+source files. See [gdbinit](../gdbinit.md) to configure GDB. There is a similar
+process for [LLDB](../lldbinit.md).
 
 ### Basic browser process debugging
 
@@ -282,7 +282,7 @@ three) but you'll still need to use `--plugin-launcher` or another approach.
 ### Printing Chromium types
 
 gdb 7 lets us use Python to write pretty-printers for Chromium types. See
-[gdbinit](https://chromium.googlesource.com/chromium/src/+/main/docs/gdbinit.md)
+[gdbinit](../gdbinit.md)
 to enable pretty-printing of Chromium types.  This will import Blink
 pretty-printers as well.
 

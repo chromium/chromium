@@ -1162,7 +1162,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
   const std::string& mime_type = "application/json";
 
   const char response[] =
-      R"({"continue_on": "https://idp.example/continuation"})";
+      R"({"continue_on": "https://idp.test/an-absolute-url-for-continuation"})";
   GURL token_endpoint(kTestTokenEndpoint);
   AddResponse(token_endpoint, http_status, mime_type, response);
 
@@ -1170,12 +1170,38 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
   auto callback = base::BindLambdaForTesting(
       [&](FetchStatus status, const std::string& token_response) {});
 
-  auto on_continue =
-      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {
-        // Checks that we got a continuation url event back.
-        EXPECT_EQ("https://idp.example/continuation", url.spec());
-        run_loop.Quit();
-      });
+  auto on_continue = base::BindLambdaForTesting([&](FetchStatus status,
+                                                    const GURL& url) {
+    // Checks that we got a continuation url event back.
+    EXPECT_EQ("https://idp.test/an-absolute-url-for-continuation", url.spec());
+    run_loop.Quit();
+  });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), std::move(on_continue));
+  run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({"continue_on": "/a-relative-url-for-continuation"})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus status, const std::string& token_response) {});
+
+  auto on_continue = base::BindLambdaForTesting([&](FetchStatus status,
+                                                    const GURL& url) {
+    // Checks that we got a continuation url event back.
+    EXPECT_EQ("https://idp.test/a-relative-url-for-continuation", url.spec());
+    run_loop.Quit();
+  });
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",

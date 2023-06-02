@@ -68,9 +68,9 @@ class MockAutofillAgent : public mojom::AutofillAgent {
                              std::move(handle)));
   }
 
-  MOCK_METHOD(void, TriggerReparse, (), (override));
+  MOCK_METHOD(void, TriggerFormExtraction, (), (override));
   MOCK_METHOD(void,
-              TriggerReparseWithResponse,
+              TriggerFormExtractionWithResponse,
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
@@ -216,7 +216,7 @@ class ContentAutofillDriverFactoryTest_WithTwoFrames
   content::RenderFrameHost* child_rfh() { return child_rfh_; }
 
  private:
-  raw_ptr<content::RenderFrameHost> child_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> child_rfh_ = nullptr;
 };
 
 TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {
@@ -281,26 +281,23 @@ TEST_F(ContentAutofillDriverFactoryTest, TabHidden) {
   factory_->OnVisibilityChanged(content::Visibility::HIDDEN);
 }
 
-// Test case with one frame, with BFcache and AutofillAcrossIframes enabled or
-// disabled depending on the parameter.
+// Test case with one frame, with BFcache enabled or disabled depending on the
+// parameter.
 class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes
     : public ContentAutofillDriverFactoryTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool>> {
  public:
   ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes() {
     std::vector<base::test::FeatureRef> enabled;
     // Allow BackForwardCache for all devices regardless of their memory.
     std::vector<base::test::FeatureRef> disabled =
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
-    (autofill_across_iframes() ? enabled : disabled)
-        .push_back(features::kAutofillAcrossIframes);
     (use_bfcache() ? enabled : disabled)
         .push_back(::features::kBackForwardCache);
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   bool use_bfcache() { return std::get<0>(GetParam()); }
-  bool autofill_across_iframes() { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -309,7 +306,7 @@ class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes
 INSTANTIATE_TEST_SUITE_P(
     ContentAutofillDriverFactoryTest,
     ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
-    testing::Combine(testing::Bool(), testing::Bool()));
+    testing::Combine(testing::Bool()));
 
 // Tests that that a same-documentation navigation does not touch the factory's
 // router.

@@ -142,7 +142,8 @@ class VerdictCacheManagerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
-  raw_ptr<MockSafeBrowsingSyncObserver> raw_sync_observer_ = nullptr;
+  raw_ptr<MockSafeBrowsingSyncObserver, DanglingUntriaged> raw_sync_observer_ =
+      nullptr;
 };
 
 TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedVerdict) {

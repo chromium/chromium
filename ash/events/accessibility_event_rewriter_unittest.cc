@@ -210,7 +210,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
-  void RecordEventRemappedToRightClick() override {}
+  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
 
@@ -614,7 +614,7 @@ class SwitchAccessAccessibilityEventRewriterTest
     return false;
   }
 
-  void RecordEventRemappedToRightClick() override {}
+  void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
 

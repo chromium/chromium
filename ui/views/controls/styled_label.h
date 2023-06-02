@@ -77,7 +77,7 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
-    raw_ptr<View> custom_view = nullptr;
+    raw_ptr<View, DanglingUntriaged> custom_view = nullptr;
   };
 
   // Sizing information for laying out the label based on a particular width.

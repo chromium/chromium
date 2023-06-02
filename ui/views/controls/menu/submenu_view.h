@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -143,7 +144,10 @@ class VIEWS_EXPORT SubmenuView : public View,
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
 
   // Returns the parent menu item we're showing children for.
-  MenuItemView* GetMenuItem();
+  const MenuItemView* GetMenuItem() const;
+  MenuItemView* GetMenuItem() {
+    return const_cast<MenuItemView*>(std::as_const(*this).GetMenuItem());
+  }
 
   // Set the drop item and position.
   void SetDropMenuItem(MenuItemView* item, MenuDelegate::DropPosition position);

@@ -91,12 +91,15 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // Returns the allowlist match result previously set by
   // |SetAllowlistResultForUrl|. It crashes if the allowlist match result for
   // the |gurl| is not set in advance.
-  bool CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
-      const std::string& metric_variation) override {
+      const std::string& metric_variation,
+      base::OnceCallback<void(bool)> callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
-    return urls_allowlist_match_[url];
+    sb_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
   }
 
   // Helper functions.
@@ -252,7 +255,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
             /*get_user_population_callback=*/base::BindRepeating([]() {
               return ChromeUserPopulation();
             }),
-            /*referrer_chain_provider=*/nullptr) {}
+            /*referrer_chain_provider=*/nullptr,
+            /*pref_service=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(

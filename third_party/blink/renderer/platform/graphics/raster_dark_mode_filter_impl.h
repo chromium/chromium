@@ -26,8 +26,8 @@ class PLATFORM_EXPORT RasterDarkModeFilterImpl
   static RasterDarkModeFilterImpl& Instance();
 
   // RasterDarkModeFilter API.
-  sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
-                                    const SkIRect& src) const override;
+  sk_sp<cc::ColorFilter> ApplyToImage(const SkPixmap& pixmap,
+                                      const SkIRect& src) const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RasterDarkModeFilterImplTest, ApplyToImageAPI);

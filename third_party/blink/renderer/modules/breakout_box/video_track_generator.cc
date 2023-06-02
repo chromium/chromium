@@ -25,6 +25,15 @@ VideoTrackGenerator* VideoTrackGenerator::Create(
                                       "Invalid context");
     return nullptr;
   }
+  // The implementation of VideoTrackGenerator in worker is a work in
+  // progress. It is known to have security issues at the moment, so
+  // don't allow it - developers will have to remove this check when
+  // the project is resumed.
+  if (!ExecutionContext::From(script_state)->IsWindow()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "VideoTrackGenerator in worker does not work yet");
+  }
 
   return MakeGarbageCollected<VideoTrackGenerator>(script_state,
                                                    exception_state);

@@ -22,14 +22,8 @@ class ASH_EXPORT DeskBarView : public DeskBarViewBase {
   DeskBarView(const DeskBarView&) = delete;
   DeskBarView& operator=(const DeskBarView&) = delete;
 
-  ~DeskBarView() override;
-
   // views::View:
   const char* GetClassName() const override;
-
-  // TODO(b/277969403): Improve and simplify state transition for desk bar view.
-  void UpdateNewMiniViews(bool initializing_bar_view,
-                          bool expanding_bar_view) override;
 };
 
 }  // namespace ash

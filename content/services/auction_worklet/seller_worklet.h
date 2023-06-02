@@ -267,12 +267,15 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
+        base::TimeDelta scoring_latency,
+        base::TimeDelta trusted_signals_fetch_latency,
         std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
         base::OnceCallback<void(absl::optional<std::string> signals_for_winner,
                                 absl::optional<GURL> report_url,
                                 base::flat_map<std::string, GURL> ad_beacon_map,
                                 PrivateAggregationRequests pa_requests,
+                                base::TimeDelta reporting_latency,
                                 std::vector<std::string> errors)>;
 
     V8State(
@@ -308,6 +311,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         uint32_t browser_signal_bidding_duration_msecs,
         const absl::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
+        base::TimeDelta trusted_signals_fetch_latency,
         base::ScopedClosureRunner cleanup_score_ad_task,
         ScoreAdCallbackInternal callback);
 
@@ -364,6 +368,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
+        base::TimeDelta scoring_latency,
+        base::TimeDelta trusted_signals_fetch_latency,
         std::vector<std::string> errors);
 
     void PostReportResultCallbackToUserThread(
@@ -372,6 +378,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         absl::optional<GURL> report_url,
         base::flat_map<std::string, GURL> ad_beacon_map,
         PrivateAggregationRequests pa_requests,
+        base::TimeDelta reporting_latency,
         std::vector<std::string> errors);
 
     static void PostResumeToUserThread(
@@ -445,6 +452,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta scoring_latency,
+      base::TimeDelta trusted_signals_fetch_latency,
       std::vector<std::string> errors);
 
   // Removes `task` from `score_ad_tasks_` only. Used in case where the
@@ -474,6 +483,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       absl::optional<GURL> report_url,
       base::flat_map<std::string, GURL> ad_beacon_map,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta reporting_latency,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script has loaded.

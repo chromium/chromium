@@ -482,4 +482,33 @@ absl::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
   return absl::nullopt;
 }
 
+bool HighlightStyleUtils::TextFragmentHasVisualOverflow(const Node* node) {
+  const ComputedStyle& style = node->ComputedStyleRef();
+  if (!style.HighlightData()) {
+    return false;
+  }
+  const ComputedStyle* pseudo_style = style.HighlightData()->TargetText();
+  if (!pseudo_style) {
+    return false;
+  }
+  return (pseudo_style->HasAppliedTextDecorations() ||
+          pseudo_style->HasVisualOverflowingEffect());
+}
+
+bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
+    const Node* node,
+    const AtomicString& pseudo_argument) {
+  const ComputedStyle& style = node->ComputedStyleRef();
+  if (!style.HighlightData()) {
+    return false;
+  }
+  const ComputedStyle* pseudo_style =
+      style.HighlightData()->CustomHighlight(pseudo_argument);
+  if (!pseudo_style) {
+    return false;
+  }
+  return (pseudo_style->HasAppliedTextDecorations() ||
+          pseudo_style->HasVisualOverflowingEffect());
+}
+
 }  // namespace blink

@@ -78,6 +78,7 @@ PersistentNotificationStatus ConvertServiceWorkerStatus(
     case blink::ServiceWorkerStatusCode::kErrorDisallowed:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       return PersistentNotificationStatus::kServiceWorkerError;
   }
   NOTREACHED();
@@ -146,6 +147,7 @@ void DispatchNotificationEventOnRegistration(
     case blink::ServiceWorkerStatusCode::kErrorDisallowed:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       status = PersistentNotificationStatus::kServiceWorkerError;
       break;
     case blink::ServiceWorkerStatusCode::kOk:

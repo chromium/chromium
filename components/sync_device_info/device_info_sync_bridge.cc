@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
@@ -484,14 +483,9 @@ absl::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     device_info_synced_callback_list_.clear();
   }
 
-  if (has_tombstone_for_local_device) {
-    const bool should_reupload_device_info = !reuploaded_on_tombstone_;
-    base::UmaHistogramBoolean("Sync.LocalDeviceInfoDeletionReuploaded",
-                              should_reupload_device_info);
-    if (should_reupload_device_info) {
-      SendLocalData();
-      reuploaded_on_tombstone_ = true;
-    }
+  if (has_tombstone_for_local_device && !reuploaded_on_tombstone_) {
+    SendLocalData();
+    reuploaded_on_tombstone_ = true;
   }
 
   return absl::nullopt;

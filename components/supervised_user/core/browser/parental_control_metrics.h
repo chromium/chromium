@@ -12,7 +12,6 @@ class PrefService;
 
 namespace supervised_user {
 class SupervisedUserURLFilter;
-}  // namespace supervised_user
 
 // A class for recording web filter metrics for Family Link users on Chrome
 // browser at the beginning of the first active session daily.
@@ -32,5 +31,7 @@ class ParentalControlMetrics : public SupervisedUserMetricsService::Observer {
   const raw_ptr<PrefService> user_prefs_;
   const raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
 };
+
+}  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PARENTAL_CONTROL_METRICS_H_

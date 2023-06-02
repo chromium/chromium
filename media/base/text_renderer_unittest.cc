@@ -170,7 +170,7 @@ class TextRendererTest : public testing::Test {
     }
   }
 
-  void OnDestroyTextTrack(unsigned idx) { text_tracks_[idx] = NULL; }
+  void OnDestroyTextTrack(unsigned idx) { text_tracks_[idx] = nullptr; }
 
   void Play() { text_renderer_->StartPlaying(); }
 

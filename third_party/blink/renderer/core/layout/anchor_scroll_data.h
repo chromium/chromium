@@ -90,7 +90,7 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   bool IsFallbackPositionValid(
       const gfx::Vector2dF& accumulated_scroll_offset) const;
 
-  void InvalidateLayout();
+  void InvalidateLayoutAndPaint();
   void InvalidatePaint();
 
   // ValidateSnapshot is called every frame, but AnchorScrollData only needs

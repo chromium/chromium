@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -27,7 +27,7 @@ class RemoteAppsManagerFactory : public ProfileKeyedServiceFactory {
   static RemoteAppsManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<RemoteAppsManagerFactory>;
+  friend base::NoDestructor<RemoteAppsManagerFactory>;
 
   RemoteAppsManagerFactory();
   RemoteAppsManagerFactory(const RemoteAppsManagerFactory&) = delete;

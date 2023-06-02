@@ -13,6 +13,11 @@
           box-sizing: border-box;
           color: var(--cr-secondary-text-color);
         }
+
+        :host-context([chrome-refresh-2023]):host {
+          background-color: transparent;
+          border-bottom: none;
+        }
       }
 
       h1 {
@@ -138,7 +143,7 @@
       <div id="leftSpacer">
         <template is="dom-if" if="[[showMenu]]" restamp>
           <cr-icon-button id="menuButton" class="no-overlap"
-              iron-icon="cr20:menu" on-click="onMenuTap_"
+              iron-icon="cr20:menu" on-click="onMenuClick_"
               aria-label$="[[menuLabel]]"
               title="[[menuLabel]]">
           </cr-icon-button>

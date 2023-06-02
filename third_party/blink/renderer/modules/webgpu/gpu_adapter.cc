@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
@@ -168,13 +169,16 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
     case WGPURequestDeviceStatus_Success: {
       DCHECK(dawn_device);
 
+      GPUDeviceLostInfo* device_lost_info = nullptr;
       if (is_consumed_) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kInvalidStateError,
-            "The adapter is invalid because it has already been used to create "
-            "a device. NOTE: The behavior in this error case may change in a "
-            "future release."));
-        break;
+        // Immediately force the device to be lost.
+        // TODO: Ideally this should be handled in Dawn, which can return an
+        // error device.
+        device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
+            WGPUDeviceLostReason_Undefined,
+            StringFromASCIIAndUTF8(
+                "The adapter is invalid because it has already been used to "
+                "create a device. A lost device has been returned."));
       }
       is_consumed_ = true;
 
@@ -182,7 +186,15 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
           ExecutionContext::From(script_state);
       auto* device = MakeGarbageCollected<GPUDevice>(
           execution_context, GetDawnControlClient(), this, dawn_device,
-          descriptor);
+          descriptor, device_lost_info);
+
+      if (device_lost_info) {
+        // Ensure the Dawn device is marked as lost as well.
+        device->InjectError(
+            WGPUErrorType_DeviceLost,
+            "Device was marked as lost due to a stale adapter.");
+      }
+
       resolver->Resolve(device);
 
       ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
@@ -193,10 +205,26 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
 
     case WGPURequestDeviceStatus_Error:
     case WGPURequestDeviceStatus_Unknown:
-      DCHECK_EQ(dawn_device, nullptr);
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError,
-          StringFromASCIIAndUTF8(error_message)));
+      if (dawn_device) {
+        // Immediately force the device to be lost.
+        auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
+            WGPUDeviceLostReason_Undefined,
+            StringFromASCIIAndUTF8(error_message));
+        ExecutionContext* execution_context =
+            ExecutionContext::From(script_state);
+        auto* device = MakeGarbageCollected<GPUDevice>(
+            execution_context, GetDawnControlClient(), this, dawn_device,
+            descriptor, device_lost_info);
+        // Resolve with the lost device.
+        resolver->Resolve(device);
+      } else {
+        // If a device is not returned, that means that an error occurred while
+        // validating features or limits, and as a result the promise should be
+        // rejected with an OperationError.
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError,
+            StringFromASCIIAndUTF8(error_message)));
+      }
       break;
     default:
       NOTREACHED();

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -14,6 +15,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -23,6 +25,8 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/test_data_directory.h"
 
 namespace content {
 
@@ -500,5 +504,75 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Wasm) {
     })
   )"));
 }
+
+struct WebSocketTestParam {
+  net::SpawnedTestServer::Type type;
+  std::string expected_result;
+};
+
+class ContentSecurityPolicyIsolatedAppWebSocketBrowserTest
+    : public ContentSecurityPolicyIsolatedAppBrowserTest,
+      public testing::WithParamInterface<WebSocketTestParam> {};
+
+// Disabled on Android, since we have problems starting up the WebSocket test
+// server on the host.
+//
+// TODO(crbug.com/1448866): Enable the test after solving the WebSocket server
+// issue.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CheckCsp DISABLED_CheckCsp
+#else
+#define MAYBE_CheckCsp CheckCsp
+#endif
+IN_PROC_BROWSER_TEST_P(ContentSecurityPolicyIsolatedAppWebSocketBrowserTest,
+                       MAYBE_CheckCsp) {
+  auto websocket_test_server = std::make_unique<net::SpawnedTestServer>(
+      GetParam().type, net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(websocket_test_server->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kAppHost, "/cross-origin-isolated.html")));
+
+  // The |websocket_url| will echo the message we send to it.
+  GURL websocket_url = websocket_test_server->GetURL("echo-with-no-extension");
+
+  EXPECT_EQ(GetParam().expected_result,
+            EvalJs(shell(), JsReplace(R"(
+    new Promise(async (resolve) => {
+      document.addEventListener('securitypolicyviolation', e => {
+        resolve('violation');
+      });
+
+      try {
+        new WebSocket($1).onopen = () => resolve('allowed');
+      } catch (e) {
+        resolve('exception: ' + e);
+      }
+    })
+  )",
+                                      websocket_url)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ContentSecurityPolicyIsolatedAppWebSocketBrowserTest,
+    ::testing::Values(
+        WebSocketTestParam{.type = net::SpawnedTestServer::TYPE_WS,
+                           .expected_result = "violation"},
+        WebSocketTestParam{.type = net::SpawnedTestServer::TYPE_WSS,
+                           .expected_result = "allowed"}),
+    [](const testing::TestParamInfo<
+        ContentSecurityPolicyIsolatedAppWebSocketBrowserTest::ParamType>& info)
+        -> std::string {
+      switch (info.param.type) {
+        case net::SpawnedTestServer::TYPE_WS:
+          return "Ws";
+        case net::SpawnedTestServer::TYPE_WSS:
+          return "Wss";
+        default:
+          NOTREACHED_NORETURN();
+      }
+    });
 
 }  // namespace content

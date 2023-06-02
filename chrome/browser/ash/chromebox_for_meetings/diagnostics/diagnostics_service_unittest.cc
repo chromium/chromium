@@ -97,8 +97,7 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
     EXPECT_TRUE(adaptor_remote_.is_connected());
 
     adaptor_remote_->OnBindService(
-        diagnostics_remote_.BindNewPipeAndPassReceiver().PassPipe(),
-        absl::nullopt);
+        diagnostics_remote_.BindNewPipeAndPassReceiver().PassPipe());
     EXPECT_TRUE(diagnostics_remote_.is_connected());
 
     return diagnostics_remote_;

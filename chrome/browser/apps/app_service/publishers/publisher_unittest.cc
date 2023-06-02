@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,12 +52,10 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 
-using ash::standalone_browser::BrowserSupport;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -476,7 +473,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  raw_ptr<web_app::TestWebAppUrlLoader> url_loader_ = nullptr;
+  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged> url_loader_ =
+      nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -668,7 +666,8 @@ class LegacyPackagedAppLacrosNotPrimaryPublisherTest : public PublisherTest {
  public:
   LegacyPackagedAppLacrosNotPrimaryPublisherTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kLacrosPrimary);
+    scoped_feature_list_.InitWithFeatures({ash::features::kLacrosSupport},
+                                          {ash::features::kLacrosPrimary});
   }
 
   LegacyPackagedAppLacrosNotPrimaryPublisherTest(
@@ -677,15 +676,29 @@ class LegacyPackagedAppLacrosNotPrimaryPublisherTest : public PublisherTest {
       const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
   ~LegacyPackagedAppLacrosNotPrimaryPublisherTest() override = default;
 
+  void SetUp() override {
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    // Login a user. The "email" must match the TestingProfile's
+    // GetProfileUserName() so that profile() will be the primary profile.
+    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->LoginUser(account_id);
+
+    PublisherTest::SetUp();
+
+    ASSERT_FALSE(crosapi::browser_util::IsLacrosPrimaryBrowser());
+  }
+
  private:
-  const base::AutoReset<bool> resetter_ =
-      BrowserSupport::SetLacrosEnabledForTest(true);
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_F(LegacyPackagedAppLacrosNotPrimaryPublisherTest,
        LegacyPackagedAppsOnApps) {
-  ASSERT_FALSE(crosapi::browser_util::IsLacrosPrimaryBrowser());
-
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
@@ -716,7 +729,8 @@ class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
  public:
   LegacyPackagedAppLacrosPrimaryPublisherTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kLacrosPrimary);
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
   }
 
   LegacyPackagedAppLacrosPrimaryPublisherTest(
@@ -725,14 +739,28 @@ class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
       const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
   ~LegacyPackagedAppLacrosPrimaryPublisherTest() override = default;
 
+  void SetUp() override {
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    // Login a user. The "email" must match the TestingProfile's
+    // GetProfileUserName() so that profile() will be the primary profile.
+    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->LoginUser(account_id);
+
+    PublisherTest::SetUp();
+
+    ASSERT_TRUE(crosapi::browser_util::IsLacrosPrimaryBrowser());
+  }
+
  private:
-  base::AutoReset<bool> set_lacros_enabled_ =
-      BrowserSupport::SetLacrosEnabledForTest(true);
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_F(LegacyPackagedAppLacrosPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
-  ASSERT_TRUE(crosapi::browser_util::IsLacrosPrimaryBrowser());
-
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
@@ -754,7 +782,9 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   StandaloneBrowserPublisherTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppsCrosapi, ash::features::kLacrosPrimary}, {});
+        {features::kWebAppsCrosapi, ash::features::kLacrosSupport,
+         ash::features::kLacrosPrimary},
+        {});
   }
 
   StandaloneBrowserPublisherTest(const StandaloneBrowserPublisherTest&) =
@@ -836,8 +866,6 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   }
 
  private:
-  base::AutoReset<bool> set_lacros_enabled_ =
-      BrowserSupport::SetLacrosEnabledForTest(true);
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

@@ -388,6 +388,13 @@ BetweenStreetsNode::BetweenStreetsNode(AddressComponent* parent)
 
 BetweenStreetsNode::~BetweenStreetsNode() = default;
 
+AdminLevel2Node::AdminLevel2Node(AddressComponent* parent)
+    : AddressComponent(ADDRESS_HOME_ADMIN_LEVEL2,
+                       parent,
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+
+AdminLevel2Node::~AdminLevel2Node() = default;
+
 AddressNode::AddressNode() : AddressNode(nullptr) {}
 
 AddressNode::AddressNode(const AddressNode& other) : AddressNode() {

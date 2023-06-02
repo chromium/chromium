@@ -50,9 +50,6 @@ specific_include_rules = {
     "+components/printing/browser/print_to_pdf",
     "+third_party/blink/public/mojom/window_features",
   ],
-  "headless_select_file_dialog_factory.*": [
-    "+ui/shell_dialogs",
-  ],
   "command_line_handler.cc": [
     "+third_party/blink/public/common/switches.h",
   ]

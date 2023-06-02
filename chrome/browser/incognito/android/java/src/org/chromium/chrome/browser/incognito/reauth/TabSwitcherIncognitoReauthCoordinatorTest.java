@@ -85,7 +85,7 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
                 mIncognitoReauthViewMock);
 
         when(mTabSwitcherCustomViewManagerMock.requestView(
-                     mIncognitoReauthViewMock, mBackPressRunnableMock))
+                     mIncognitoReauthViewMock, mBackPressRunnableMock, /*clearTabList=*/true))
                 .thenReturn(true);
         when(mIncognitoReauthTopToolbarDelegateMock.disableNewTabButton())
                 .thenReturn(/*token= */ 1);
@@ -93,7 +93,8 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
         mTabSwitcherIncognitoReauthCoordinator.show();
 
         verify(mTabSwitcherCustomViewManagerMock, times(1))
-                .requestView(mIncognitoReauthViewMock, mBackPressRunnableMock);
+                .requestView(
+                        mIncognitoReauthViewMock, mBackPressRunnableMock, /*clearTabList=*/true);
         verify(mIncognitoReauthTopToolbarDelegateMock, times(1)).disableNewTabButton();
     }
 

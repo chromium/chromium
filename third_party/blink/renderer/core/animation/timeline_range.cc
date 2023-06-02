@@ -51,6 +51,11 @@ TimelineRange::ScrollOffsets TimelineRange::ConvertNamedRange(
   double align_subject_end_view_end =
       align_subject_start_view_end + subject_size_;
 
+  // TODO(crbug.com/1448294): This needs to account for when the subject (or an
+  // ancestor) is position: sticky and stuck to the viewport during entry/exit
+  // or before entry/cover. Currently, we only handle stickiness during the
+  // "contain" range (see ViewTimeline::CalculateOffsets).
+
   switch (named_range) {
     case TimelineOffset::NamedRange::kNone:
     case TimelineOffset::NamedRange::kCover:

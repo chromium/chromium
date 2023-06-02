@@ -247,6 +247,7 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":app_hooks_java",
       "//chrome/browser/accessibility/hierarchysnapshotter/android:delegate_public_impl_java",
+      "//chrome/browser/auxiliary_search:delegate_public_impl_java",
       "//chrome/browser/feed/android:hooks_public_impl_java",
       "//chrome/browser/feedback/android:delegate_public_impl_java",
       "//chrome/browser/lens:delegate_public_impl_java",
@@ -305,6 +306,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/android/messages:java",
       "//chrome/browser/autofill/android:java",
+      "//chrome/browser/auxiliary_search:java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/banners/android:java",
       "//chrome/browser/battery/android:java",
@@ -401,6 +403,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/night_mode:java",
       "//chrome/browser/ui/android/omnibox:java",
       "//chrome/browser/ui/android/page_info:java",
+      "//chrome/browser/ui/android/page_insights:java",
       "//chrome/browser/ui/android/quickactionsearchwidget:java",
       "//chrome/browser/ui/android/searchactivityutils:java",
       "//chrome/browser/ui/android/signin:java",
@@ -416,7 +419,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/webauthn/android:java",
       "//chrome/browser/xsurface:java",
       "//components/autofill/android:autofill_java",
-      "//components/autofill/android:prefeditor_autofill_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",
@@ -940,6 +942,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/omaha/android:java",
       "//chrome/browser/optimization_guide/android:java",
       "//chrome/browser/partnercustomizations:java",
+      "//chrome/browser/partnercustomizations:junit",
       "//chrome/browser/password_edit_dialog/android:junit",
       "//chrome/browser/password_entry_edit/android/internal:junit",
       "//chrome/browser/password_manager/android:java",
@@ -978,6 +981,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tabpersistence:junit",
       "//chrome/browser/thumbnail:java",
       "//chrome/browser/touch_to_fill/common/android:junit",
+      "//chrome/browser/touch_to_fill/password_generation/android/internal:junit",
       "//chrome/browser/touch_to_fill/payments/android/internal:junit",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/internal:junit",
@@ -1023,7 +1027,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/autofill/android:autofill_features_java",
       "//components/autofill/android:main_autofill_java",
-      "//components/autofill/android:prefeditor_autofill_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",
@@ -1228,12 +1231,12 @@ if (current_toolchain == default_toolchain) {
       "//cc:cc_java",
       "//chrome/android:chrome_java",
       "//chrome/browser/android/browserservices/intents:java",
+      "//chrome/browser/autofill/android:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/test/android:chrome_java_integration_test_support",
-      "//components/autofill/android:prefeditor_autofill_java",
       "//components/payments/content/android:java",
       "//components/payments/content/android:java_resources",
       "//components/payments/content/android:service_java",
@@ -1414,6 +1417,12 @@ if (current_toolchain == default_toolchain) {
     data = [ "//chrome/test/data/android/" ]
   }
 
+  flatbuffer_java_library(
+      "critical_persisted_tab_data_flatbuffer_test_v1_java") {
+    root_dir = "javatests/src/org/chromium/chrome/browser/tab/state/"
+    sources = [ "$root_dir/critical_persisted_tab_data_test_v1.fbs" ]
+  }
+
   android_library("chrome_test_java") {
     testonly = true
     resources_package = "org.chromium.chrome.test"
@@ -1429,6 +1438,7 @@ if (current_toolchain == default_toolchain) {
       ":browser_java_test_support",
       ":chrome_app_java_resources",
       ":chrome_test_util_java",
+      ":critical_persisted_tab_data_flatbuffer_test_v1_java",
       ":delegate_public_impl_java",
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
@@ -1584,7 +1594,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
       "//components/autofill/android:autofill_java",
-      "//components/autofill/android:prefeditor_autofill_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",
@@ -1712,6 +1721,7 @@ if (current_toolchain == default_toolchain) {
       "//net/android:net_java",
       "//net/android:net_java_test_support",
       "//services:services_javatests",
+      "//services/device/public/java:device_feature_list_java",
       "//services/device/public/java:geolocation_java",
       "//services/device/public/java:geolocation_java_test_support",
       "//services/device/public/mojom:mojom_java",
@@ -2642,6 +2652,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/appmenu/internal:unit_device_javatests",
       "//chrome/browser/ui/android/night_mode:unit_device_javatests",
       "//chrome/browser/ui/android/omnibox:unit_device_javatests",
+      "//chrome/browser/ui/android/page_insights:unit_device_javatests",
       "//chrome/browser/ui/android/searchactivityutils:unit_device_javatests",
       "//chrome/browser/ui/android/signin:unit_device_javatests",
       "//chrome/browser/ui/messages/android:unit_device_javatests",
@@ -2977,6 +2988,7 @@ if (current_toolchain == default_toolchain) {
     args = [
       "--product",
       "chrome_android",
+      "--zero-tests-executed-ok",
       "--browser-apk",
       "@WrappedPath(apks/ChromePublic.apk)",
       "-v",

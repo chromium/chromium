@@ -81,6 +81,13 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   Member<HTMLTableSectionElement> tbody_;
   Member<HTMLTableCellElement> td_;
   int line_number_;
+
+  const AtomicString class_doctype_{"html-doctype"};
+  const AtomicString class_end_of_file_{"html-end-of-file"};
+  const AtomicString class_tag_{"html-tag"};
+  const AtomicString class_attribute_name_{"html-attribute-name"};
+  const AtomicString class_attribute_value_{"html-attribute-value"};
+  const AtomicString class_comment_{"html-comment"};
 };
 
 }  // namespace blink

@@ -1,2 +1,3 @@
 HTTP/1.1 200 OK
 Use-As-Dictionary: match="/shared_dictionary/path/*"
+Access-Control-Allow-Origin: *

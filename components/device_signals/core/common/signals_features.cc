@@ -19,17 +19,6 @@ const base::FeatureParam<bool> kDisableAntiVirus{&kNewEvSignalsEnabled,
 const base::FeatureParam<bool> kDisableHotfix{&kNewEvSignalsEnabled,
                                               "DisableHotfix", false};
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-// Enables the consent promo for sharing device signal when a managed user
-// signs in on an unmanaged device. This occurs after the sign-in intercept
-// and before the sync promo (if enabled)
-// This feature also requires UnmanagedDeviceSignalsConsentFlowEnabled policy to
-// be enabled
-BASE_FEATURE(kDeviceSignalsPromoAfterSigninIntercept,
-             "DeviceSignalsPromoAfterSigninIntercept",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
   // AntiVirus and Hotfix are considered "Launched". So only rely on the value
   // of the kill-switch to control the feature's behavior.
@@ -55,5 +44,20 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
 
   return !disable_function;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables the triggering of device signals consent dialog when conditions met
+// This feature also requires UnmanagedDeviceSignalsConsentFlowEnabled policy to
+// be enabled
+BASE_FEATURE(kDeviceSignalsConsentDialog,
+             "DeviceSignalsConsentDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsConsentDialogEnabled() {
+  return base::FeatureList::IsEnabled(kDeviceSignalsConsentDialog);
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_signals::features

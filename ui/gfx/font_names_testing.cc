@@ -44,8 +44,10 @@ const char kSymbolFontName[] = "Symbol";
 const char kCJKFontName[] = "Noto Sans CJK JP";
 #elif BUILDFLAG(IS_ANDROID)
 const char kCJKFontName[] = "serif";
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
 const char kCJKFontName[] = "Heiti SC";
+#elif BUILDFLAG(IS_IOS)
+const char kCJKFontName[] = "PingFang SC";
 #else
 const char kCJKFontName[] = "SimSun";
 #endif

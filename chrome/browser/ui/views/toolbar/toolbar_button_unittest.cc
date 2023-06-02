@@ -164,7 +164,7 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
  protected:
-  raw_ptr<TestToolbarButton> button_ = nullptr;
+  raw_ptr<TestToolbarButton, DanglingUntriaged> button_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> widget_;

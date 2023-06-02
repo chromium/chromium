@@ -53,7 +53,7 @@ class GPUTexture : public DawnObject<WGPUTexture> {
 
   WGPUTextureDimension Dimension() { return dimension_; }
   WGPUTextureFormat Format() { return format_; }
-  WGPUTextureUsage Usage() { return usage_; }
+  WGPUTextureUsageFlags Usage() { return usage_; }
 
   void DissociateMailbox();
 
@@ -65,7 +65,7 @@ class GPUTexture : public DawnObject<WGPUTexture> {
 
   WGPUTextureDimension dimension_;
   WGPUTextureFormat format_;
-  WGPUTextureUsage usage_;
+  WGPUTextureUsageFlags usage_;
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
 };
 

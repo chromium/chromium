@@ -81,7 +81,7 @@ JavaScriptResultCallback CreateBoolCallback(base::OnceCallback<void(BOOL)>);
 // If |callback| is not null, it will be called when the result of the
 // command is received, or immediately if the command cannot be executed.
 void ExecuteJavaScriptFunction(const std::string& name,
-                               const std::vector<base::Value>& parameters,
+                               const base::Value::List& parameters,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback);
 

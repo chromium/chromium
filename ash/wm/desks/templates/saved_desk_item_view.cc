@@ -229,7 +229,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
           views::Builder<views::View>()
               .CopyAddressTo(&hover_container_)
               .SetUseDefaultFillLayout(true)
-              .SetVisible(false))
+              .SetVisible(true))
       .BuildChildren();
 
   SetPaintToLayer();
@@ -303,6 +303,9 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   hover_container_->layer()->SetFillsBoundsOpaquely(false);
   icon_container_view_->layer()->SetFillsBoundsOpaquely(false);
+
+  hover_container_->layer()->SetOpacity(0.0f);
+  icon_container_view_->layer()->SetOpacity(1.0f);
 }
 
 SavedDeskItemView::~SavedDeskItemView() {
@@ -330,10 +333,8 @@ void SavedDeskItemView::UpdateHoverButtonsVisibility(
   }
 
   if (hover_container_should_be_visible_) {
-    hover_container_->SetVisible(true);
     AnimateHover(hover_container_->layer(), icon_container_view_->layer());
   } else {
-    icon_container_view_->SetVisible(true);
     AnimateHover(icon_container_view_->layer(), hover_container_->layer());
   }
 }
@@ -390,9 +391,6 @@ void SavedDeskItemView::RevertSavedDeskName() {
 void SavedDeskItemView::UpdateSavedDesk(
     const DeskTemplate& updated_saved_desk) {
   saved_desk_ = updated_saved_desk.Clone();
-
-  hover_container_->SetVisible(false);
-  icon_container_view_->SetVisible(true);
 
   auto new_name = saved_desk_->template_name();
   DCHECK(!new_name.empty());
@@ -463,8 +461,6 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   should_commit_name_changes_ = true;
 
   // Hide the hover container when we are modifying the saved desk name.
-  hover_container_->SetVisible(false);
-  icon_container_view_->SetVisible(true);
   hover_container_->layer()->SetOpacity(0.0f);
   icon_container_view_->layer()->SetOpacity(1.0f);
 
@@ -592,25 +588,11 @@ void SavedDeskItemView::UpdateSavedDeskName() {
   }
 }
 
-void SavedDeskItemView::OnHoverAnimationEnded() {
-  hover_container_->SetVisible(hover_container_should_be_visible_);
-  icon_container_view_->SetVisible(!hover_container_should_be_visible_);
-}
-
 void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,
                                      ui::Layer* layer_to_hide) {
   views::AnimationBuilder()
       .SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET)
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<SavedDeskItemView> view) {
-            if (view)
-              view->OnHoverAnimationEnded();
-          },
-          weak_ptr_factory_.GetWeakPtr()))
       .Once()
-      .SetOpacity(layer_to_show, 0.0f)
-      .SetOpacity(layer_to_hide, 1.0f)
-      .Then()
       .SetDuration(base::Milliseconds(kFadeDurationMs))
       .SetOpacity(layer_to_show, 1.0f)
       .SetOpacity(layer_to_hide, 0.0f);

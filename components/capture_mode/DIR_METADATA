@@ -1,0 +1,10 @@
+team_email: "chromeos-wm-corexp@google.com"
+buganizer: {
+  component_id:1253115
+}
+buganizer_public: {
+  component_id:1253131
+}
+monorail {
+  component: "UI>Shell>ScreenCapture"
+}

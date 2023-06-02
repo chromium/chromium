@@ -21,7 +21,8 @@ MediaHistoryKeyedService* MediaHistoryKeyedServiceFactory::GetForProfile(
 // static
 MediaHistoryKeyedServiceFactory*
 MediaHistoryKeyedServiceFactory::GetInstance() {
-  return base::Singleton<MediaHistoryKeyedServiceFactory>::get();
+  static base::NoDestructor<MediaHistoryKeyedServiceFactory> instance;
+  return instance.get();
 }
 
 MediaHistoryKeyedServiceFactory::MediaHistoryKeyedServiceFactory()

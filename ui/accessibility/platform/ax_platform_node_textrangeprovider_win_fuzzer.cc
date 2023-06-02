@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
-#include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"

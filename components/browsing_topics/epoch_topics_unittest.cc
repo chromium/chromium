@@ -34,8 +34,8 @@ EpochTopics CreateTestEpochTopics() {
       TopicAndDomains(Topic(100), {HashedDomain(1)}));
 
   EpochTopics epoch_topics(std::move(top_topics_and_observing_domains),
-                           kPaddedTopTopicsStartIndex, kTaxonomySize,
-                           kTaxonomyVersion, kModelVersion, kCalculationTime);
+                           kPaddedTopTopicsStartIndex, kTaxonomyVersion,
+                           kModelVersion, kCalculationTime);
 
   return epoch_topics;
 }
@@ -51,8 +51,8 @@ TEST_F(EpochTopicsTest, CandidateTopicForSite_InvalidIndividualTopics) {
   }
 
   EpochTopics epoch_topics(std::move(top_topics_and_observing_domains),
-                           kPaddedTopTopicsStartIndex, kTaxonomySize,
-                           kTaxonomyVersion, kModelVersion, kCalculationTime);
+                           kPaddedTopTopicsStartIndex, kTaxonomyVersion,
+                           kModelVersion, kCalculationTime);
   EXPECT_FALSE(epoch_topics.empty());
 
   CandidateTopic candidate_topic = epoch_topics.CandidateTopicForSite(

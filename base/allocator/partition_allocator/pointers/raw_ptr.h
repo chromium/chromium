@@ -551,6 +551,8 @@ template <typename T, RawPtrTraits Traits>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
  public:
   using Impl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
+  // Needed to make gtest Pointee matcher work with raw_ptr.
+  using element_type = T;
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC)
   // See comment at top about `PA_RAW_PTR_CHECK()`.
@@ -1186,6 +1188,13 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
 
+// This flag is used to tag a subset of dangling pointers. Similarly to
+// DanglingUntriaged, those pointers are known to be dangling. However, we also
+// detected that those raw_ptr's were never released (either by calling
+// raw_ptr's destructor or by resetting its value), which can ultimately put
+// pressure on the BRP quarantine.
+constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
+
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
@@ -1224,7 +1233,6 @@ struct iterator_traits<raw_ptr<T, Traits>> {
   using iterator_category = std::random_access_iterator_tag;
 };
 
-#if defined(_LIBCPP_VERSION)
 // Specialize std::pointer_traits. The latter is required to obtain the
 // underlying raw pointer in the std::to_address(pointer) overload.
 // Implementing the pointer_traits is the standard blessed way to customize
@@ -1249,7 +1257,6 @@ struct pointer_traits<::raw_ptr<T, Traits>> {
     return p.get();
   }
 };
-#endif  // defined(_LIBCPP_VERSION)
 
 }  // namespace std
 

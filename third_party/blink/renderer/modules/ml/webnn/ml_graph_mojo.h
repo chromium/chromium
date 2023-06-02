@@ -9,7 +9,6 @@
 #include "services/webnn/public/mojom/webnn_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -57,12 +56,11 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // Return `CreatGraphResult::kNotSupported` with `mojo::NullRemote` on
   // non-supported input configuration.
   void OnCreateWebNNGraph(ScriptPromiseResolver* resolver,
-                          const MLNamedOperands* named_outputs,
                           MLContext::CreateWebNNGraphResult result,
                           mojo::PendingRemote<webnn::mojom::blink::WebNNGraph>);
 
-  // The `WebNNGraph` mojo interface is used to build and execute graph in the
-  // WebNN Service.
+  // The `WebNNGraph` is compiled graph that can be executed by the hardware
+  // accelerated OS machine learning API.
   HeapMojoRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
 };
 

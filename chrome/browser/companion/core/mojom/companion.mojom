@@ -84,6 +84,9 @@ enum PhFeedback {
 
   // User clicked thumbs down.
   kThumbsDown = 2,
+
+  // User clicked report content.
+  kReportContent = 3,
 };
 
 // Data for uploading an image query.
@@ -135,8 +138,12 @@ interface CompanionPageHandler {
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 
-  // Called to notify the browser about user action on a promo.
-  OnPromoAction(PromoType promo_type, PromoAction promo_action);
+  // Called to notify the browser about user action of type `promo_action` on a
+  // promo of type `promo_type`.
+  // `exps_promo_url` is optionally used to pass the URL to be loaded for exps
+  // opt-in.
+  OnPromoAction(PromoType promo_type, PromoAction promo_action,
+                                      url.mojom.Url? exps_promo_url);
 
   // Called to notify the browser that user has clicked on region search button.
   OnRegionSearchClicked();
@@ -174,7 +181,9 @@ interface CompanionPageHandler {
   OnCqCandidatesAvailable(array<string> text_directives);
 
   // Called in response to user feedback action on the PH surface.
-  OnPhFeedback(PhFeedback ph_feedback);
+  // `reporting_url` is optionally used to pass the URL to use for reporting
+  // content.
+  OnPhFeedback(PhFeedback ph_feedback, url.mojom.Url? reporting_url);
 
   // Called to notify the browser that the user has clicked on a jumptag.
   // `text_directive` is the URL fragment for highlighting and scrolling-to.

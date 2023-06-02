@@ -82,8 +82,9 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest, UninstallSelf) {
 
 // Tests chrome.management.uninstall with a real user gesture
 // (i.e. browserAction.onClicked event).
+// TODO(https://crbug.com/1449383): Disabled due to flakes.
 IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest,
-                       UninstallViaBrowserAction) {
+                       DISABLED_UninstallViaBrowserAction) {
   const Extension* extension_b = LoadExtension(test_data_dir_.AppendASCII(
       "management/uninstall_via_browser_action/extension_b"));
   ASSERT_TRUE(extension_b);

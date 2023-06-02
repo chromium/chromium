@@ -53,7 +53,8 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
   }
 
   SchemaRegistry schema_registry_;
-  raw_ptr<MockMachineLevelUserCloudPolicyStore> store_ = nullptr;
+  raw_ptr<MockMachineLevelUserCloudPolicyStore, DanglingUntriaged> store_ =
+      nullptr;
   std::unique_ptr<MachineLevelUserCloudPolicyManager> manager_;
 };
 

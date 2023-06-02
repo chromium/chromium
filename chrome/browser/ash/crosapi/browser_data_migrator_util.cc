@@ -569,55 +569,49 @@ void DryRunToCollectUMA(const base::FilePath& profile_data_dir) {
       remain_in_ash_items.total_size + deletable_items.total_size;
   browser_data_migrator_util::RecordTotalSize(total_items_size);
 
-  const int64_t total_copy_size_for_copy_migration =
-      need_copy_items.total_size + lacros_items.total_size;
-  const int64_t total_copy_size_for_move_migration = need_copy_items.total_size;
-
-  base::UmaHistogramCustomCounts(
-      kDryRunCopyMigrationTotalCopySize,
-      total_copy_size_for_copy_migration / 1024 / 1024, 1, 10000, 100);
-  base::UmaHistogramCustomCounts(
-      kDryRunMoveMigrationTotalCopySize,
-      total_copy_size_for_move_migration / 1024 / 1024, 1, 10000, 100);
-
   RecordTargetItemSizes(deletable_items.items);
   RecordTargetItemSizes(remain_in_ash_items.items);
   RecordTargetItemSizes(lacros_items.items);
   RecordTargetItemSizes(need_copy_items.items);
 
-  // TODO(crbug.com/1416750): Retire copy migration related UMAs.
-  base::UmaHistogramBoolean(
-      kDryRunCopyMigrationHasEnoughDiskSpace,
-      HasEnoughDiskSpace(lacros_items.total_size + need_copy_items.total_size,
-                         profile_data_dir));
-  base::UmaHistogramBoolean(
-      kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace,
-      HasEnoughDiskSpace(lacros_items.total_size + need_copy_items.total_size -
-                             deletable_items.total_size,
-                         profile_data_dir));
   const int64_t extra_bytes_created_by_move =
       EstimatedExtraBytesCreated(profile_data_dir);
-  base::UmaHistogramBoolean(
-      kDryRunMoveMigrationHasEnoughDiskSpace,
-      HasEnoughDiskSpace(extra_bytes_created_by_move, profile_data_dir));
-  base::UmaHistogramBoolean(kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace,
-                            HasEnoughDiskSpace(extra_bytes_created_by_move -
-                                                   deletable_items.total_size,
-                                               profile_data_dir));
-
   const int64_t free_disk_space =
       base::SysInfo::AmountOfFreeDiskSpace(profile_data_dir);
-  const int64_t extra_space_reserved_for_move_migration =
-      free_disk_space - extra_bytes_created_by_move +
-      deletable_items.total_size - kBuffer;
-  if (extra_space_reserved_for_move_migration > 0) {
+  const int64_t free_disk_space_after_delete =
+      free_disk_space + deletable_items.total_size;
+  const int64_t free_disk_space_after_migration =
+      free_disk_space_after_delete - extra_bytes_created_by_move;
+
+  base::UmaHistogramCustomCounts(kDryRunExtraDiskSpaceOccupiedByMove,
+                                 extra_bytes_created_by_move / 1024 / 1024, 1,
+                                 10000, 100);
+  base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceAfterDelete,
+                                 free_disk_space_after_delete / 1024 / 1024, 1,
+                                 10000, 100);
+  base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceAfterMigration,
+                                 free_disk_space_after_migration / 1024 / 1024,
+                                 -10000, 10000, 200);
+
+  if (free_disk_space_after_migration < (int64_t)kBuffer) {
     base::UmaHistogramCustomCounts(
-        kDryRunMoveMigrationExtraSpaceReserved,
-        extra_space_reserved_for_move_migration / 1024 / 1024, 1, 10000, 100);
-  } else {
+        kDryRunExtraDiskSpaceOccupiedByMoveLowDiskUser,
+        extra_bytes_created_by_move / 1024 / 1024, 1, 10000, 100);
+    base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceLowDiskUser,
+                                   free_disk_space / 1024 / 1024, 1, 10000,
+                                   100);
+    base::UmaHistogramCustomCounts(kDryRunFreeDiskSpaceAfterDeleteLowDiskUser,
+                                   free_disk_space_after_delete / 1024 / 1024,
+                                   1, 10000, 100);
     base::UmaHistogramCustomCounts(
-        kDryRunMoveMigrationExtraSpaceRequired,
-        -extra_space_reserved_for_move_migration / 1024 / 1024, 1, 10000, 100);
+        kDryRunProfileDirSizeLowDiskUser,
+        ComputeDirectorySizeWithoutLinks(profile_data_dir) / 1024 / 1024, 1,
+        10000, 100);
+    base::UmaHistogramCustomCounts(
+        kDryRunMyFilesDirSizeLowDiskUser,
+        ComputeDirectorySizeWithoutLinks(profile_data_dir.Append("MyFiles")) /
+            1024 / 1024,
+        1, 10000, 100);
   }
 }
 

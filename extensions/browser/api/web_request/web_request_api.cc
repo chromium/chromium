@@ -741,6 +741,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
     const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
@@ -819,7 +820,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       &request_id_generator_, std::move(navigation_ui_data),
       std::move(navigation_id), ukm_source_id, std::move(proxied_receiver),
       std::move(target_factory_remote), std::move(header_client_receiver),
-      proxies_.get(), type);
+      proxies_.get(), type, std::move(navigation_response_task_runner));
   return true;
 }
 
@@ -2807,8 +2808,9 @@ bool ExtensionWebRequestEventRouter::ProcessDeclarativeRules(
     rules_registry->ready().Post(
         FROM_HERE,
         base::BindOnce(&ExtensionWebRequestEventRouter::OnRulesRegistryReady,
-                       base::Unretained(this), browser_context, event_name,
-                       request->id, request_stage));
+                       base::Unretained(this),
+                       base::UnsafeDanglingUntriaged(browser_context),
+                       event_name, request->id, request_stage));
     BlockedRequest& blocked_request = blocked_requests_[request->id];
     blocked_request.num_handlers_blocking++;
     blocked_request.request = request;

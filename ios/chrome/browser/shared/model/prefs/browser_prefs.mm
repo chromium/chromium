@@ -74,7 +74,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial.h"
 #import "ios/chrome/browser/ui/ntp/synced_segments_field_trial.h"
 #import "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -146,13 +146,14 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   set_up_list_prefs::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
-  new_tab_page_retention_field_trial::RegisterLocalStatePrefs(registry);
+  new_tab_page_field_trial::RegisterLocalStatePrefs(registry);
   synced_segments_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
   component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
       registry);
   segmentation_platform::SegmentationPlatformService::RegisterLocalStatePrefs(
       registry);
+  optimization_guide::prefs::RegisterLocalStatePrefs(registry);
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());
@@ -194,6 +195,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterListPref(prefs::kOverflowMenuNewDestinations,
                              PrefRegistry::LOSSY_PREF);
+  registry->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
 
   // Preferences related to Enterprise policies.
   registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
@@ -290,6 +292,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [SigninPromoViewMediator registerBrowserStatePrefs:registry];
 
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, true);
+  registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
+                                true);
   registry->RegisterBooleanPref(kDataSaverEnabled, false);
   registry->RegisterBooleanPref(
       prefs::kEnableDoNotTrack, false,

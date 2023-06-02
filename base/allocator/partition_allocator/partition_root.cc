@@ -921,6 +921,16 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
          PartitionOptions::UseConfigurablePool::kIfAvailable) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!flags.use_configurable_pool || IsConfigurablePoolAvailable());
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    flags.memory_tagging_enabled_ =
+        opts.memory_tagging == PartitionOptions::MemoryTagging::kEnabled;
+    // Memory tagging is not supported in the configurable pool because MTE
+    // stores tagging information in the high bits of the pointer, it causes
+    // issues with components like V8's ArrayBuffers which use custom pointer
+    // representations. All custom representations encountered so far rely on an
+    // "is in configurable pool?" check, so we use that as a proxy.
+    PA_CHECK(!flags.memory_tagging_enabled_ || !flags.use_configurable_pool);
+#endif
 
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
@@ -958,6 +968,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       if (!ref_count_size) {
         ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       }
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      if (IsMemoryTaggingEnabled()) {
+        ref_count_size = internal::base::bits::AlignUp(
+            ref_count_size, internal::kMemTagGranuleSize);
+      }
+      flags.ref_count_size = ref_count_size;
+#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
       flags.extras_size += ref_count_size;
       flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
@@ -1137,6 +1154,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
                 internal::PartitionPageSize());
 #endif
 
+  PA_DCHECK(new_slot_size > internal::kMaxMemoryTaggingSize);
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
@@ -1151,9 +1169,10 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(slot_start + current_slot_size,
-                               recommit_slot_size_growth,
-                               PageAccessibilityDisposition::kRequireUpdate);
+    // Direct map never uses tagging, as size is always >kMaxMemoryTaggingSize.
+    RecommitSystemPagesForData(
+        slot_start + current_slot_size, recommit_slot_size_growth,
+        PageAccessibilityDisposition::kRequireUpdate, false);
     // The recommited system pages had been already reserved and all the
     // entries in the reservation offset table (for entire reservation_size
     // region) have been already initialized.

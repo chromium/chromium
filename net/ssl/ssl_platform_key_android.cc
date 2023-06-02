@@ -170,4 +170,29 @@ scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
       GetSSLPlatformKeyTaskRunner());
 }
 
+std::vector<std::string> SignatureAlgorithmsToJavaKeyTypes(
+    base::span<const uint16_t> algorithms) {
+  std::vector<std::string> key_types;
+  bool has_rsa = false, has_ec = false;
+  for (uint16_t alg : algorithms) {
+    switch (SSL_get_signature_algorithm_key_type(alg)) {
+      case EVP_PKEY_RSA:
+        if (!has_rsa) {
+          // https://developer.android.com/reference/android/security/keystore/KeyProperties#KEY_ALGORITHM_RSA
+          key_types.push_back("RSA");
+          has_rsa = true;
+        }
+        break;
+      case EVP_PKEY_EC:
+        if (!has_ec) {
+          // https://developer.android.com/reference/android/security/keystore/KeyProperties#KEY_ALGORITHM_EC
+          key_types.push_back("EC");
+          has_ec = true;
+        }
+        break;
+    }
+  }
+  return key_types;
+}
+
 }  // namespace net

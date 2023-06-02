@@ -17,7 +17,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
@@ -161,8 +160,13 @@ void DisplayOverlayController::OnNudgeDismissed() {
   touch_injector_->set_show_nudge(false);
 }
 
-bool DisplayOverlayController::HasButtonOptionsMenu() const {
-  return button_options_menu_ != nullptr;
+void DisplayOverlayController::AddButtonOptionsMenu(Action* action) {
+  if (!IsBeta() ||
+      (button_options_menu_ && button_options_menu_->action() == action)) {
+    return;
+  }
+  RemoveButtonOptionsMenu();
+  button_options_menu_ = ButtonOptionsMenu::Show(this, action);
 }
 
 void DisplayOverlayController::RemoveButtonOptionsMenu() {
@@ -456,33 +460,6 @@ DisplayOverlayController::GetOverlayMenuEntryBounds() {
   return absl::optional<gfx::Rect>(menu_entry_->GetBoundsInScreen());
 }
 
-void DisplayOverlayController::AddActionEditMenu(ActionView* anchor,
-                                                 ActionType action_type) {
-  auto* overlay_widget = GetOverlayWidget();
-  DCHECK(overlay_widget);
-  if (!overlay_widget) {
-    return;
-  }
-  auto* parent_view = overlay_widget->GetContentsView();
-  DCHECK(parent_view);
-  if (!parent_view) {
-    return;
-  }
-  auto action_edit_menu =
-      ActionEditMenu::BuildActionEditMenu(this, anchor, action_type);
-  if (action_edit_menu) {
-    action_edit_menu_ = parent_view->AddChildView(std::move(action_edit_menu));
-  }
-}
-
-void DisplayOverlayController::RemoveActionEditMenu() {
-  if (!action_edit_menu_) {
-    return;
-  }
-  action_edit_menu_->parent()->RemoveChildViewT(action_edit_menu_);
-  action_edit_menu_ = nullptr;
-}
-
 void DisplayOverlayController::AddEditMessage(const base::StringPiece& message,
                                               MessageType message_type) {
   // There is no instance for unittest.
@@ -574,6 +551,16 @@ void DisplayOverlayController::OnActionRemoved(Action* action) {
 
 int DisplayOverlayController::GetInputMappingListSize() {
   return input_mapping_view_->children().size();
+}
+
+void DisplayOverlayController::AddTouchInjectorObserver(
+    TouchInjectorObserver* observer) {
+  touch_injector_->AddObserver(observer);
+}
+
+void DisplayOverlayController::RemoveTouchInjectorObserver(
+    TouchInjectorObserver* observer) {
+  touch_injector_->RemoveObserver(observer);
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
@@ -671,7 +658,7 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!action_edit_menu_ && !message_ && !input_menu_view_ && !nudge_view_) {
+  if (!message_ && !input_menu_view_ && !nudge_view_) {
     return;
   }
 
@@ -680,13 +667,6 @@ void DisplayOverlayController::ProcessPressedEvent(
   auto origin =
       touch_injector_->window()->GetRootWindow()->GetBoundsInScreen().origin();
   root_location.Offset(origin.x(), origin.y());
-
-  if (action_edit_menu_) {
-    auto bounds = action_edit_menu_->GetBoundsInScreen();
-    if (!bounds.Contains(root_location)) {
-      RemoveActionEditMenu();
-    }
-  }
 
   if (message_) {
     auto bounds = message_->GetBoundsInScreen();

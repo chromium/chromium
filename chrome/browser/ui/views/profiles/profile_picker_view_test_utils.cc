@@ -203,9 +203,16 @@ void WaitForPickerLoadStop(const GURL& url) {
 }
 
 void WaitForPickerClosed() {
-  if (!ProfilePicker::IsOpen())
-    return;
-  ViewDeletedWaiter(ProfilePicker::GetViewForTesting()).Wait();
+  if (auto* view = ProfilePicker::GetViewForTesting()) {
+    ViewDeletedWaiter(view).Wait();
+
+    // The profile picker might still be open if for example it was scheduled to
+    // reopen on closure. But the view should not be the same anyway (it would
+    // just be null in most cases).
+    ASSERT_NE(view, ProfilePicker::GetViewForTesting());
+  } else {
+    ASSERT_FALSE(ProfilePicker::IsOpen());
+  }
 }
 
 EnterpriseProfileWelcomeHandler* ExpectPickerWelcomeScreenType(

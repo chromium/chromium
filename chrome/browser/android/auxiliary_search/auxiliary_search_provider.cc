@@ -65,7 +65,7 @@ AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 
 base::android::ScopedJavaLocalRef<jbyteArray>
 AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
-  auxiliary_search::AuxiliarySearchGroup group;
+  auxiliary_search::AuxiliarySearchBookmarkGroup group;
   std::string serialized_group;
 
   GetBookmarks(BookmarkModelFactory::GetForBrowserContext(profile_.get()),
@@ -80,15 +80,15 @@ AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
 
 void AuxiliarySearchProvider::GetBookmarks(
     bookmarks::BookmarkModel* model,
-    auxiliary_search::AuxiliarySearchGroup* group) const {
+    auxiliary_search::AuxiliarySearchBookmarkGroup* group) const {
   std::vector<const BookmarkNode*> nodes;
   bookmarks::GetMostRecentlyUsedEntries(model, kMaxBookmarksCount, &nodes);
   for (const BookmarkNode* node : nodes) {
-    auxiliary_search::AuxiliarySearchGroup_Entry* entry = group->add_entry();
-    entry->set_title(base::UTF16ToUTF8(node->GetTitle()));
-    entry->set_url(node->url().spec());
+    auxiliary_search::AuxiliarySearchBookmarkGroup_Bookmark* bookmark =
+        group->add_bookmark();
+    bookmark->set_title(base::UTF16ToUTF8(node->GetTitle()));
+    bookmark->set_url(node->url().spec());
   }
-  group->set_group_type(auxiliary_search::GroupType::BOOKMARK_GROUP);
 }
 
 // static
@@ -100,4 +100,9 @@ jlong JNI_AuxiliarySearchBridge_GetForProfile(
 
   return reinterpret_cast<intptr_t>(
       AuxiliarySearchProviderFactory::GetForProfile(profile));
+}
+
+// static
+void AuxiliarySearchProvider::EnsureFactoryBuilt() {
+  AuxiliarySearchProviderFactory::GetInstance();
 }

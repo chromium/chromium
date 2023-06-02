@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Leyfa fótspor þriðja aðilla</translation>
 <translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
 <translation id="4434045419905280838">Sprettigluggar og framsendingar</translation>
-<translation id="4440642537584213025">Stækka <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Slökkva á hljóði á tilteknu vefsvæði.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# fótspor}one{# fótspor}other{# fótspor}}</translation>
 <translation id="4478158430052450698">Einfaldaðu sérsnið aðdráttar fyrir mismunandi vefsvæði</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Hætta við val</translation>
 <translation id="7882806643839505685">Leyfa hljóð á tilteknu vefsvæði.</translation>
 <translation id="789180354981963912">Loka á fótspor þriðju aðila í huliðsstillingu:</translation>
+<translation id="7895868624847501462">Þessi aðgerð hreinsar öll staðbundin gögn, þar á meðal fótspor, og endurstillir allar heimildir fyrir <ph name="DOMAIN" /> og öll undirvefsvæði þess</translation>
 <translation id="7940722705963108451">Minna mig á</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}one{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}other{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}}</translation>
 <translation id="7986741934819883144">Velja tengilið</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Skjátextar</translation>
 <translation id="8300705686683892304">Stjórnað af forriti</translation>
 <translation id="8324158725704657629">Ekki spyrja aftur</translation>
+<translation id="8338445138528827481">Þessi aðgerð hreinsar öll staðbundin gögn, þar á meðal fótspor, og endurstillir allar heimildir fyrir <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">Þú getur aukið eða minnkað aðdrátt á vefsvæðum sem þú opnar</translation>
 <translation id="8372893542064058268">Leyfa bakgrunnssamstillingu fyrir ákveðið vefsvæði.</translation>
 <translation id="8376384591331888629">Hafa fótspor þriðju aðila á þessu vefsvæði með</translation>

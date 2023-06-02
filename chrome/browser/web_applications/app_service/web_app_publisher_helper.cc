@@ -74,6 +74,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -109,7 +110,6 @@
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -404,9 +404,9 @@ void UninstallImpl(WebAppProvider* provider,
     return;
   }
 
-  WebAppDialogManager& web_app_dialog_manager =
-      web_app_ui_manager->dialog_manager();
-  if (web_app_dialog_manager.CanUserUninstallWebApp(app_id)) {
+  if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
+    WebAppDialogManager& web_app_dialog_manager =
+        web_app_ui_manager->dialog_manager();
     webapps::WebappUninstallSource webapp_uninstall_source =
         WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
             uninstall_source);
@@ -785,7 +785,7 @@ void WebAppPublisherHelper::UninstallWebApp(
 
   DCHECK(provider_);
   DCHECK(
-      provider_->install_finalizer().CanUserUninstallWebApp(web_app->app_id()));
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
   webapps::WebappUninstallSource webapp_uninstall_source =
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
   provider_->install_finalizer().UninstallWebApp(
@@ -1226,7 +1226,13 @@ apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
     case blink::mojom::DisplayMode::kBrowser:
       return apps::WindowMode::kBrowser;
     case blink::mojom::DisplayMode::kTabbed:
-      return apps::WindowMode::kTabbedWindow;
+      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+          base::FeatureList::IsEnabled(
+              features::kDesktopPWAsTabStripSettings)) {
+        return apps::WindowMode::kTabbedWindow;
+      } else {
+        [[fallthrough]];
+      }
     case blink::mojom::DisplayMode::kMinimalUi:
     case blink::mojom::DisplayMode::kStandalone:
     case blink::mojom::DisplayMode::kFullscreen:

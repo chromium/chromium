@@ -8,7 +8,6 @@ enum CanvasHighDynamicRangeMode {
 };
 
 // SMPTE ST 2086 color volume metadata.
-[RuntimeEnabled=CanvasHDR]
 dictionary CanvasSmpteSt2086Metadata {
   required float redPrimaryX;
   required float redPrimaryY;
@@ -22,7 +21,6 @@ dictionary CanvasSmpteSt2086Metadata {
   required float maximumLuminance;
 };
 
-[RuntimeEnabled=CanvasHDR]
 dictionary CanvasHighDynamicRangeOptions {
   CanvasHighDynamicRangeMode mode = "default";
 

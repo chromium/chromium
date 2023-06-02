@@ -14,6 +14,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -57,10 +60,15 @@ void CookieControlsBubbleView::ShowBubble(
     content_settings::CookieControlsController* controller,
     CookieControlsStatus status) {
   DCHECK(web_contents);
-  if (g_instance)
+  if (g_instance) {
     return;
+  }
 
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.Opened"));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  profile->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened, true);
+
   g_instance =
       new CookieControlsBubbleView(anchor_view, web_contents, controller);
   g_instance->SetHighlightedButton(highlighted_button);
@@ -84,8 +92,9 @@ void CookieControlsBubbleView::OnStatusChanged(
     OnCookiesCountChanged(allowed_cookies, blocked_cookies);
     return;
   }
-  if (new_status != CookieControlsStatus::kEnabled)
+  if (new_status != CookieControlsStatus::kEnabled) {
     intermediate_step_ = IntermediateStep::kNone;
+  }
   status_ = new_status;
   enforcement_ = new_enforcement;
   blocked_cookies_ = blocked_cookies;
@@ -96,10 +105,16 @@ void CookieControlsBubbleView::OnCookiesCountChanged(int allowed_cookies,
                                                      int blocked_cookies) {
   // The blocked cookie count changes quite frequently, so avoid unnecessary
   // UI updates if possible.
-  if (blocked_cookies_ == blocked_cookies)
+  if (blocked_cookies_ == blocked_cookies) {
     return;
+  }
 
   blocked_cookies_ = blocked_cookies;
+  GetBubbleFrameView()->UpdateWindowTitle();
+}
+
+void CookieControlsBubbleView::OnStatefulBounceCountChanged(int bounce_count) {
+  stateful_bounces_ = bounce_count;
   GetBubbleFrameView()->UpdateWindowTitle();
 }
 
@@ -152,14 +167,16 @@ void CookieControlsBubbleView::UpdateUi() {
                             base::Unretained(this)));
     extra_view_ = SetExtraView(std::move(link));
     blocked_cookies_.reset();
+    stateful_bounces_.reset();
   } else {
     DCHECK_EQ(status_, CookieControlsStatus::kDisabledForSite);
     header_view_->SetVisible(true);
     header_view_->SetImage(
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_COOKIE_BLOCKING_OFF_HEADER));
-    if (extra_view_)
+    if (extra_view_) {
       extra_view_->SetVisible(false);
+    }
   }
 
   SetButtonLabel(
@@ -181,8 +198,9 @@ void CookieControlsBubbleView::UpdateUi() {
   // The show_disable_cookie_blocking_ui_ state has a different title
   // configuration. To avoid jumping UI, don't resize the bubble. This should be
   // safe as the bubble in this state has less content than in Enabled state.
-  if (intermediate_step_ != IntermediateStep::kTurnOffButton)
+  if (intermediate_step_ != IntermediateStep::kTurnOffButton) {
     SizeToContents();
+  }
 }
 
 void CookieControlsBubbleView::CloseBubble() {
@@ -247,13 +265,16 @@ std::u16string CookieControlsBubbleView::GetWindowTitle() const {
       // Determine title based on status_ instead.
     }
   }
+
+  int cookie_count =
+      blocked_cookies_.value_or(0) + stateful_bounces_.value_or(0);
   switch (status_) {
     case CookieControlsStatus::kEnabled:
       return l10n_util::GetPluralStringFUTF16(
           (controller_ && controller_->FirstPartyCookiesBlocked()
                ? IDS_COOKIE_CONTROLS_DIALOG_TITLE_ALL_BLOCKED
                : IDS_COOKIE_CONTROLS_DIALOG_TITLE),
-          blocked_cookies_.value_or(0));
+          cookie_count);
     case CookieControlsStatus::kDisabledForSite:
       return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_DIALOG_TITLE_OFF);
     case CookieControlsStatus::kUninitialized:
@@ -267,16 +288,19 @@ void CookieControlsBubbleView::WindowClosing() {
   // |cookie_bubble_| can be a new bubble by this point (as Close(); doesn't
   // call this right away). Only set to nullptr when it's this bubble.
   bool this_bubble = g_instance == this;
-  if (this_bubble)
+  if (this_bubble) {
     g_instance = nullptr;
+  }
 
-  if (controller_)
+  if (controller_) {
     controller_->OnUiClosing();
+  }
 }
 
 void CookieControlsBubbleView::OnDialogAccepted() {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
 
   if (intermediate_step_ == IntermediateStep::kTurnOffButton) {
     controller_->OnCookieBlockingEnabledForSite(false);

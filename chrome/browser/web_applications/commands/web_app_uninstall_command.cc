@@ -14,14 +14,15 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/remove_web_app_job.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_uninstall_job.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
@@ -53,12 +54,12 @@ WebAppUninstallCommand::WebAppUninstallCommand(
     absl::optional<WebAppManagement::Type> management_type_or_all,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
-    Profile* profile)
+    Profile& profile)
     : WebAppCommandTemplate<AllAppsLock>("WebAppUninstallCommand"),
       lock_description_(std::make_unique<AllAppsLockDescription>()),
       app_id_(app_id),
       callback_(std::move(callback)),
-      profile_prefs_(profile->GetPrefs()) {
+      profile_(profile) {
   // Initializing data for uninstallation tracking.
   queued_uninstalls_.emplace_back(app_id_, management_type_or_all,
                                   uninstall_source);
@@ -127,7 +128,7 @@ void WebAppUninstallCommand::StartWithLock(std::unique_ptr<AllAppsLock> lock) {
             app->management_to_external_config_map();
         auto it = config_map.find(WebAppManagement::kDefault);
         if (it != config_map.end()) {
-          UserUninstalledPreinstalledWebAppPrefs(profile_prefs_)
+          UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
               .Add(app_id, it->second.install_urls);
         } else {
           base::UmaHistogramBoolean(
@@ -155,11 +156,6 @@ base::Value WebAppUninstallCommand::ToDebugValue() const {
   base::Value::Dict uninstall_info;
   uninstall_info.Set("command_data", debug_log_.Clone());
   return base::Value(std::move(uninstall_info));
-}
-
-void WebAppUninstallCommand::SetRemoveManagementTypeCallbackForTesting(
-    RemoveManagementTypeCallback callback) {
-  management_type_removed_callback_for_testing_ = std::move(callback);
 }
 
 WebAppUninstallCommand::UninstallInfo::UninstallInfo(
@@ -212,26 +208,10 @@ void WebAppUninstallCommand::Uninstall(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   QueueSubAppsForUninstallIfAny(app_id);
-
-  auto* web_app = lock_->registrar().GetAppById(app_id);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<base::FilePath> app_profile_path;
-  if (web_app->chromeos_data().has_value()) {
-    app_profile_path = web_app->chromeos_data()->app_profile_path;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  auto uninstall_job = WebAppUninstallJob::CreateAndStart(
-      app_id, url::Origin::Create(web_app->start_url()),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  apps_pending_uninstall_[app_id] = RemoveWebAppJob::Start(
+      uninstall_source, app_id, *lock_, profile_.get(),
       base::BindOnce(&WebAppUninstallCommand::OnSingleUninstallComplete,
-                     weak_factory_.GetWeakPtr(), app_id, uninstall_source),
-      lock_->os_integration_manager(), lock_->sync_bridge(),
-      lock_->icon_manager(), lock_->registrar(), lock_->install_manager(),
-      lock_->translation_manager(), *profile_prefs_, uninstall_source);
-  apps_pending_uninstall_[app_id] = std::move(uninstall_job);
+                     weak_factory_.GetWeakPtr(), app_id, uninstall_source));
 }
 
 void WebAppUninstallCommand::QueueSubAppsForUninstallIfAny(
@@ -258,27 +238,26 @@ void WebAppUninstallCommand::RemoveManagementTypeAfterOsUninstallRegistration(
     }
   }
 
-  if (management_type_removed_callback_for_testing_)
-    std::move(management_type_removed_callback_for_testing_).Run(app_id);
+  lock_->install_manager().NotifyWebAppSourceRemovedForTesting(app_id);
 
   // Registering an OS uninstall is also an "uninstall", so the
   // state is updated for the command.
   OnSingleUninstallComplete(app_id, uninstall_source,
-                            webapps::UninstallResultCode::kSuccess);
+                            /*success=*/true);
 }
 
 void WebAppUninstallCommand::OnSingleUninstallComplete(
     const AppId& app_id,
     webapps::WebappUninstallSource source,
-    webapps::UninstallResultCode code) {
+    bool success) {
   DCHECK(base::Contains(apps_pending_uninstall_, app_id));
   apps_pending_uninstall_.erase(app_id);
 
   if (source == webapps::WebappUninstallSource::kSync) {
-    base::UmaHistogramBoolean("Webapp.SyncInitiatedUninstallResult",
-                              code == webapps::UninstallResultCode::kSuccess);
+    base::UmaHistogramBoolean("Webapp.SyncInitiatedUninstallResult", success);
   }
-  uninstall_results_[app_id] = code;
+  uninstall_results_[app_id] = success ? webapps::UninstallResultCode::kSuccess
+                                       : webapps::UninstallResultCode::kError;
   AppendUninstallResultsToDebugLog(app_id);
   MaybeFinishUninstallAndDestruct();
 }

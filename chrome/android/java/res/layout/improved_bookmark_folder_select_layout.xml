@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/improved_folder_row"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingVertical="18dp"
+        android:foreground="@drawable/bookmark_touch_ripple"
+        android:focusable="true"
+        android:clickable="true" >
+
+        <!-- TODO(crbug.com/1448927): Rename this class for clarity. -->
+        <org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderView
+            android:id="@+id/image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="@dimen/improved_bookmark_row_size"
+            android:layout_height="@dimen/improved_bookmark_row_size"
+            android:scaleType="center"
+            app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+            app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+            android:background="@drawable/rounded_rectangle_surface_0"
+            android:importantForAccessibility="no"
+            android:focusable="false"
+            android:clickable="false" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/image"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:importantForAccessibility="no"
+            android:focusable="false" />
+
+        <ImageView
+            android:id="@+id/end_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:src="@drawable/chevron_right"
+            android:importantForAccessibility="no"
+            android:focusable="false" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRow>

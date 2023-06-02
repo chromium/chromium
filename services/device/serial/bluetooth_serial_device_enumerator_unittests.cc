@@ -10,11 +10,12 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,8 +50,8 @@ class BluetoothSerialDeviceEnumeratorTest : public testing::Test {
   BluetoothSerialDeviceEnumeratorTest() = default;
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableBluetoothSerialPortProfileInSerialApi);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> adapter_runner() {
@@ -59,6 +60,7 @@ class BluetoothSerialDeviceEnumeratorTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -142,7 +144,8 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
                     serial_port_info.path);
           EXPECT_EQ(kTestDeviceName, serial_port_info.display_name);
           EXPECT_EQ(absl::nullopt, serial_port_info.serial_number);
-          EXPECT_EQ(mojom::DeviceType::SPP_DEVICE, serial_port_info.type);
+          EXPECT_EQ(mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM,
+                    serial_port_info.type);
           EXPECT_FALSE(serial_port_info.has_vendor_id);
           EXPECT_EQ(0x0, serial_port_info.vendor_id);
           EXPECT_FALSE(serial_port_info.has_product_id);

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -114,12 +113,7 @@
                        tracker:feature_engagement::TrackerFactory::
                                    GetForBrowserState(
                                        self.browser->GetBrowserState())];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.mediator.dispatcher =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
 
-  self.mediator.webStateList = self.browser->GetWebStateList();
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());

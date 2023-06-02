@@ -15,7 +15,6 @@
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
-#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/pwa_install_path_tracker.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -224,6 +223,26 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Tracks that the IPH has been shown. Only used on Android.
   void TrackIphWasShown();
+
+  // Tracks whether the current site URL obtained from the web_contents is fully
+  // installed. The only difference from IsWebAppConsideredInstalled() is that
+  // the former considers the scope obtained from a manifest as check for if an
+  // app is already installed.
+  virtual bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const = 0;
+
+  // Tracks whether the current site URL obtained from the web_contents is not
+  // locally installed.
+  virtual bool IsAppPartiallyInstalledForSiteUrl(
+      const GURL& site_url) const = 0;
+
+  // The user has ignored the installation dialog and it went away due to
+  // another interaction (e.g. the tab was changed, page navigated, etc).
+  virtual void SaveInstallationIgnoredForMl(const GURL& manifest_id) = 0;
+  // The user has taken active action on the dialog to make it go away.
+  virtual void SaveInstallationDismissedForMl(const GURL& manifest_id) = 0;
+  virtual void SaveInstallationAcceptedForMl(const GURL& manifest_id) = 0;
+  virtual bool IsMlPromotionBlockedByHistoryGuardrail(
+      const GURL& manifest_id) = 0;
 
  protected:
   explicit AppBannerManager(content::WebContents* web_contents);
@@ -459,10 +478,6 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Fetches the data required to display a banner for the current page.
   raw_ptr<InstallableManager, DanglingUntriaged> manager_;
-
-  // Measures site UKMs once the AppBannerManager triggers a pipeline and
-  // triggers a ML model to promote installability of an app.
-  raw_ptr<MLInstallabilityPromoter, DanglingUntriaged> ml_promoter_;
 
   // The manifest object. This is never null, it will instead be an empty
   // manifest so callers don't have to worry about null checks.

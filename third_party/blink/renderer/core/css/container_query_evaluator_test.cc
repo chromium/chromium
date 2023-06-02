@@ -56,21 +56,23 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     return &style_rule->GetContainerQuery();
   }
 
+  ContainerQueryEvaluator* CreateEvaluatorForType(unsigned container_type) {
+    ComputedStyleBuilder builder(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
+    builder.SetContainerType(container_type);
+    ContainerElement().SetComputedStyle(builder.TakeStyle());
+    return MakeGarbageCollected<ContainerQueryEvaluator>(ContainerElement());
+  }
+
   bool Eval(String query,
             double width,
             double height,
             unsigned container_type,
             PhysicalAxes contained_axes) {
-    ComputedStyleBuilder builder(
-        *GetDocument().GetStyleResolver().InitialStyleForElement());
-    builder.SetContainerType(container_type);
-    ContainerElement().SetComputedStyle(builder.TakeStyle());
-
     ContainerQuery* container_query = ParseContainer(query);
     DCHECK(container_query);
-    auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+    ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(container_type);
     evaluator->SizeContainerChanged(
-        GetDocument(), ContainerElement(),
         PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
     return evaluator->Eval(*container_query).value;
   }
@@ -94,9 +96,9 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
                             false);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
 
-    auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+    auto* evaluator =
+        MakeGarbageCollected<ContainerQueryEvaluator>(ContainerElement());
     evaluator->SizeContainerChanged(
-        GetDocument(), ContainerElement(),
         PhysicalSize(LayoutUnit(100), LayoutUnit(100)),
         PhysicalAxes{kPhysicalAxisNone});
 
@@ -114,8 +116,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
         *GetDocument().GetStyleResolver().InitialStyleForElement());
     builder.SetContainerType(container_type);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
-    return evaluator->SizeContainerChanged(GetDocument(), ContainerElement(),
-                                           size, axes);
+    return evaluator->SizeContainerChanged(size, axes);
   }
 
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,
@@ -206,7 +207,7 @@ TEST_F(ContainerQueryEvaluatorTest, SizeContainerChanged) {
   ASSERT_TRUE(container_query_100);
   ASSERT_TRUE(container_query_200);
 
-  auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_inline_size);
   SizeContainerChanged(evaluator, size_100, type_size, horizontal);
 
   EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_100));
@@ -288,10 +289,9 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
 
-  auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_inline_size);
   EXPECT_EQ(Change::kNone,
-            evaluator->SizeContainerChanged(GetDocument(), container_element,
-                                            size_100, horizontal));
+            evaluator->SizeContainerChanged(size_100, horizontal));
 
   ContainerQuery* foo_bar_query = ParseContainer("style(--foo: bar)");
   ContainerQuery* size_bar_foo_query =
@@ -364,7 +364,7 @@ TEST_F(ContainerQueryEvaluatorTest, ClearResults) {
   ASSERT_TRUE(container_query_style);
   ASSERT_TRUE(container_query_size_and_style);
 
-  auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_inline_size);
   SizeContainerChanged(evaluator, size_100, type_size, horizontal);
 
   EXPECT_EQ(0u, GetResults(evaluator).size());
@@ -545,7 +545,7 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   ContainerQuery* query_max_300px = ParseContainer("(max-width: 300px)");
   ASSERT_TRUE(query_min_200px);
 
-  auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_inline_size);
   SizeContainerChanged(evaluator, size_100, type_size, horizontal);
 
   EvalAndAdd(evaluator, *query_min_200px);
@@ -721,6 +721,49 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
                     ->Selector(),
                 &GetDocument()),
             outer_size);
+}
+
+TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="container-type: sticky size">
+      <div style="container-name:outer;container-type: sticky">
+        <div style="container-name:outer">
+          <div style="container-type: sticky">
+            <div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* sticky_size = ParentNode::firstElementChild(*GetDocument().body());
+  Element* outer_sticky = ParentNode::firstElementChild(*sticky_size);
+  Element* outer = ParentNode::firstElementChild(*outer_sticky);
+  Element* inner_sticky = ParentNode::firstElementChild(*outer);
+  Element* inner = ParentNode::firstElementChild(*inner_sticky);
+
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner,
+          ParseContainer("state(stuck: top) and style(--foo: bar)")->Selector(),
+          &GetDocument()),
+      inner_sticky);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner,
+                ParseContainer("outer state(stuck: top) and style(--foo: bar)")
+                    ->Selector(),
+                &GetDocument()),
+            outer_sticky);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner,
+          ParseContainer("state(stuck: top) and (width > 0px)")->Selector(),
+          &GetDocument()),
+      sticky_size);
 }
 
 TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {

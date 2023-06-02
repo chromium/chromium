@@ -86,11 +86,16 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
 
 TestWebContents::~TestWebContents() = default;
 
-TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() {
-  auto* instance = WebContentsImpl::GetPrimaryMainFrame();
+const TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() const {
+  const auto* const instance = WebContentsImpl::GetPrimaryMainFrame();
   DCHECK(instance->IsTestRenderFrameHost())
       << "You may want to instantiate RenderViewHostTestEnabler.";
-  return static_cast<TestRenderFrameHost*>(instance);
+  return static_cast<const TestRenderFrameHost*>(instance);
+}
+
+TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() {
+  return const_cast<TestRenderFrameHost*>(
+      std::as_const(*this).GetPrimaryMainFrame());
 }
 
 TestRenderViewHost* TestWebContents::GetRenderViewHost() {

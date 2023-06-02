@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -20,6 +21,8 @@ source_set("browser") {
     "autofill_java_script_feature.mm",
     "autofill_switches.cc",
     "autofill_switches.h",
+    "child_frame_registration_java_script_feature.h",
+    "child_frame_registration_java_script_feature.mm",
     "credit_card_util.h",
     "credit_card_util.mm",
     "form_suggestion.h",
@@ -35,6 +38,7 @@ source_set("browser") {
 
   deps = [
     ":autofill_js",
+    ":child_frame_registration_ts",
     ":suggestion_controller_js",
     ":util",
     "//base",
@@ -81,6 +85,17 @@ source_set("util") {
 optimize_js("autofill_js") {
   primary_script = "resources/autofill_controller.js"
   sources = [ "resources/autofill_controller.js" ]
+}
+
+optimize_ts("child_frame_registration_ts") {
+  visibility = [ ":browser" ]
+
+  sources = [ "resources/child_frame_registration.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 optimize_js("suggestion_controller_js") {

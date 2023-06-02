@@ -56,6 +56,8 @@ struct CORE_EXPORT LogicalSize {
   }
 };
 
+constexpr LogicalSize kIndefiniteLogicalSize(kIndefiniteSize, kIndefiniteSize);
+
 inline LogicalSize operator-(const LogicalSize& a, const NGBoxStrut& b) {
   return {a.inline_size - b.InlineSum(), a.block_size - b.BlockSum()};
 }

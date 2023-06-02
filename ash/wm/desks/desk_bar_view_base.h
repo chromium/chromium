@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_drag_proxy.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -219,6 +220,15 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // this function, and rename this function by removing the prefix CrOSNext.
   void UpdateLibraryButtonVisibilityCrOSNext();
 
+  // Called to update state of `button` and apply the scale animation to the
+  // button. For the new desk button, this is called when the make the new desk
+  // button a drop target for the window being dragged or at the end of the
+  // drag. For the library button, this is called when the library is clicked at
+  // the expanded state. Please note this will only be used to switch the states
+  // of the `button` between the expanded and active.
+  void UpdateDeskIconButtonState(CrOSNextDeskIconButton* button,
+                                 CrOSNextDeskIconButton::State target_state);
+
   // Updates the visibility state of the close buttons on all the mini_views as
   // a result of mouse and gesture events.
   void OnHoverStateMayHaveChanged();
@@ -228,34 +238,82 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // the desk model when needed.
   bool ShouldShowLibraryUi();
 
-  // Called to update state of `button` and apply the scale animation to the
-  // button. For the new desk button, this is called when the make the new desk
-  // button a drop target for the window being dragged or at the end of the
-  // drag. For the library button, this is called when the library is clicked at
-  // the expanded state. Please note this will only be used to switch the states
-  // of the `button` between the expanded and active.
-  virtual void UpdateDeskIconButtonState(
-      CrOSNextDeskIconButton* button,
-      CrOSNextDeskIconButton::State target_state);
+  // Called when an item is being dragged in overview mode to update whether it
+  // is currently intersecting with this view, and the `screen_location` of the
+  // current drag position.
+  void SetDragDetails(const gfx::Point& screen_location,
+                      bool dragged_item_over_bar);
 
-  virtual void UpdateNewMiniViews(bool initializing_bar_view,
-                                  bool expanding_bar_view);
+  // Handle the mouse press event from a desk preview.
+  void HandlePressEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  // Handle the gesture long press event from a desk preview.
+  void HandleLongPressEvent(DeskMiniView* mini_view,
+                            const ui::LocatedEvent& event);
+  // Handle the drag event from a desk preview.
+  void HandleDragEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  // Handle the release event from a desk preview. Return true if a drag event
+  // is ended.
+  bool HandleReleaseEvent(DeskMiniView* mini_view,
+                          const ui::LocatedEvent& event);
 
-  virtual void SwitchToZeroState();
+  // Finalize any unfinished drag & drop. Initialize a new drag proxy.
+  void InitDragDesk(DeskMiniView* mini_view,
+                    const gfx::PointF& location_in_screen);
+  // Start to drag. Scale up the drag proxy. `is_mouse_dragging` is true when
+  // triggered by mouse/trackpad, false when triggered by touch.
+  void StartDragDesk(DeskMiniView* mini_view,
+                     const gfx::PointF& location_in_screen,
+                     bool is_mouse_dragging);
+  // Reorder desks according to the drag proxy's location.
+  void ContinueDragDesk(DeskMiniView* mini_view,
+                        const gfx::PointF& location_in_screen);
+  // If the desk is dropped by user (`end_by_user` = true), scale down and snap
+  // back the drag proxy. Otherwise, directly finalize the drag & drop. Note
+  // that when we want to end the current drag immediately, if the drag is
+  // initialized but did not start, `FinalizeDragDesk` should be use; if the
+  // drag started, `EndDragDesk` should be used with `end_by_user` = false.
+  void EndDragDesk(DeskMiniView* mini_view, bool end_by_user);
+  // Reset the drag view and the drag proxy.
+  void FinalizeDragDesk();
 
-  virtual void SwitchToExpandedState();
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
-  virtual void HandlePressEvent(DeskMiniView* mini_view,
-                                const ui::LocatedEvent& event);
+  // This is used for the initialization, the expansion, or just the update of
+  // child components.
+  // Given input parameter values of {`initializing_bar_view`,
+  // `expanding_bar_view`}, this does different things as following.
+  //    1. {false, false}
+  //      When a desk is added from the expanded state, the bar remains
+  //      expanded.
+  //    2. {true, false}
+  //      When the bar is being initialized, the bar will switch to either the
+  //      zero state or the expanded state.
+  //    3. {false, true}
+  //      When the bar is being expanded, the bar will switch to the expanded
+  //      state. This is when a desk is added from the zero state, or by the
+  //      interaction of bar UI, such as clicking the default desk button,
+  //      dragging overview item over new desk button, clicking the library
+  //      button, etc.
+  //    4. {true, true}
+  //      Not a valid input.
+  // TODO(b/277969403): Improve and simplify this overloaded function by moving
+  // logic to `SwitchToZeroState` and `SwitchToExpandedState`.
+  void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
 
-  virtual void HandleLongPressEvent(DeskMiniView* mini_view,
-                                    const ui::LocatedEvent& event);
+  // Animates the bar from the expanded state to the zero state. It refreshes
+  // the bounds of the desk bar widget, and also updates child UI components,
+  // including desk mini views, the new desk button, and the library button.
+  void SwitchToZeroState();
 
-  virtual void HandleDragEvent(DeskMiniView* mini_view,
-                               const ui::LocatedEvent& event);
-
-  virtual bool HandleReleaseEvent(DeskMiniView* mini_view,
-                                  const ui::LocatedEvent& event);
+  // Animates the bar from the zero state to the expanded state.
+  void SwitchToExpandedState();
 
  protected:
   friend class DeskBarScrollViewLayout;
@@ -304,6 +362,12 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Scrollview callbacks.
   void OnContentsScrolled();
   void OnContentsScrollEnded();
+
+  // If drag a desk over a scroll button (i.e., the desk intersects the button),
+  // scroll the desk bar. If the desk is dropped or leaves the button, end
+  // scroll. Return true if the scroll is triggered. Return false if the scroll
+  // is ended.
+  bool MaybeScrollByDraggedDesk();
 
   const Type type_ = Type::kOverview;
 
@@ -384,6 +448,9 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Observes mouse events on the desk bar widget and updates the states of the
   // mini_views accordingly.
   std::unique_ptr<DeskBarHoverObserver> hover_observer_;
+
+  // Drag proxy for the dragged desk.
+  std::unique_ptr<DeskDragProxy> drag_proxy_;
 
   // ScrollView callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

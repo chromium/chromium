@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -57,7 +57,7 @@ class DnsProbeServiceFactory : public ProfileKeyedServiceFactory {
       const base::TickClock* tick_clock);
 
  private:
-  friend struct base::DefaultSingletonTraits<DnsProbeServiceFactory>;
+  friend base::NoDestructor<DnsProbeServiceFactory>;
 
   DnsProbeServiceFactory();
   ~DnsProbeServiceFactory() override;

@@ -12,15 +12,13 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
-struct BrowserInfo;
 class DevToolsClient;
 class Status;
 
 // Tracks the opening and closing of JavaScript dialogs (e.g., alerts).
 class JavaScriptDialogManager : public DevToolsEventListener {
  public:
-  explicit JavaScriptDialogManager(DevToolsClient* client,
-                                   const BrowserInfo* browser_info);
+  explicit JavaScriptDialogManager(DevToolsClient* client);
 
   JavaScriptDialogManager(const JavaScriptDialogManager&) = delete;
   JavaScriptDialogManager& operator=(const JavaScriptDialogManager&) = delete;

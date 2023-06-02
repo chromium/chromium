@@ -30,6 +30,14 @@ class DownloadDisplay {
   // Returns whether it is currently in fullscreen and the view that hosts the
   // download display is hidden.
   virtual bool IsFullscreenWithParentViewHidden() = 0;
+  // Whether we should show the exclusive access bubble upon starting a download
+  // in fullscreen mode. If the user cannot exit fullscreen, there is no point
+  // in showing an exclusive access bubble telling the user to exit fullscreen
+  // to view their downloads, because exiting is impossible. If we are in
+  // immersive fullscreen mode, we don't need to show the exclusive access
+  // bubble because we will just temporarily reveal the toolbar when the
+  // downloads finish.
+  virtual bool ShouldShowExclusiveAccessBubble() = 0;
 
  protected:
   virtual ~DownloadDisplay();

@@ -4,7 +4,21 @@
 
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/system_node_impl.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager::user_tuning {
 
@@ -21,11 +35,22 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
       ++memory_percent_threshold_reached_count_;
     }
 
-    void NotifyMemoryMetricsRefreshed() override { ++memory_refreshed_count_; }
+    void NotifyMemoryMetricsRefreshed(
+        ProxyAndPmfKbVector proxies_and_pmf) override {
+      pages_pmf_kb_.clear();
+      std::transform(
+          proxies_and_pmf.begin(), proxies_and_pmf.end(),
+          std::back_inserter(pages_pmf_kb_),
+          [](const std::pair<WebContentsProxy, uint64_t>& proxy_and_pmf) {
+            return proxy_and_pmf.second;
+          });
+      ++memory_refreshed_count_;
+    }
 
     int tab_count_threshold_reached_count_ = 0;
     int memory_percent_threshold_reached_count_ = 0;
     int memory_refreshed_count_ = 0;
+    std::vector<uint64_t> pages_pmf_kb_;
   };
 
   void SetUp() override {
@@ -104,9 +129,26 @@ TEST_F(UserPerformanceTuningNotifierTest, TestMemoryThresholdTriggered) {
 
 TEST_F(UserPerformanceTuningNotifierTest, TestMemoryAvailableTriggered) {
   // Memory Metrics are available
+  auto process1 = CreateNode<ProcessNodeImpl>();
+  auto page1 = CreateNode<PageNodeImpl>();
+  auto frame1 = CreateFrameNodeAutoId(process1.get(), page1.get());
+  frame1->SetPrivateFootprintKbEstimate(10);
+
+  auto process2 = CreateNode<ProcessNodeImpl>();
+  auto page2 = CreateNode<PageNodeImpl>();
+  auto frame2 = CreateFrameNodeAutoId(process2.get(), page2.get());
+  frame2->SetPrivateFootprintKbEstimate(20);
+
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(1, receiver_->memory_refreshed_count_);
+
+  std::vector<uint64_t> expected_pmf_kb{
+      frame1->private_footprint_kb_estimate(),
+      frame2->private_footprint_kb_estimate()};
+  EXPECT_EQ(std::size(expected_pmf_kb), receiver_->pages_pmf_kb_.size());
+  EXPECT_THAT(expected_pmf_kb,
+              testing::UnorderedElementsAreArray(receiver_->pages_pmf_kb_));
 
   // When memory metrics are available again, the notifier should be
   // triggered again

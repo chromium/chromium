@@ -26,20 +26,22 @@ base::Token MakeUniqueToken() {
 
 SavedTabGroup CreateDefaultEmptySavedTabGroup() {
   return SavedTabGroup(std::u16string(u"default_group"),
-                       tab_groups::TabGroupColorId::kGrey, {});
+                       tab_groups::TabGroupColorId::kGrey, {}, absl::nullopt);
 }
 
 SavedTabGroupTab CreateDefaultSavedTabGroupTab(const base::Uuid& group_guid) {
-  return SavedTabGroupTab(GURL("www.google.com"), u"Default Title", group_guid);
+  return SavedTabGroupTab(GURL("www.google.com"), u"Default Title", group_guid,
+                          /*position=*/absl::nullopt);
 }
 
 void AddTabToEndOfGroup(
     SavedTabGroup& group,
     absl::optional<base::Uuid> saved_guid = absl::nullopt,
     absl::optional<base::Token> local_tab_id = absl::nullopt) {
-  group.AddTab(SavedTabGroupTab(
+  group.AddTabLocally(SavedTabGroupTab(
       GURL(url::kAboutBlankURL), std::u16string(u"default_title"),
-      group.saved_guid(), &group, saved_guid, local_tab_id));
+      group.saved_guid(), /*position=*/group.saved_tabs().size(), saved_guid,
+      local_tab_id));
 }
 }  // namespace
 
@@ -91,8 +93,8 @@ TEST(SavedTabGroupTest, AddTabLocallyDisrespectsPositions) {
   tab_2.SetPosition(0);
 
   // Add both tabs to the group.
-  group.AddTab(std::move(tab_1), /*update_tab_positions=*/true);
-  group.AddTab(std::move(tab_2), /*update_tab_positions=*/true);
+  group.AddTabLocally(std::move(tab_1));
+  group.AddTabLocally(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Locally added groups will be added into their preferred positions if
@@ -100,12 +102,12 @@ TEST(SavedTabGroupTest, AddTabLocallyDisrespectsPositions) {
   // possible, and have their position updated to reflect this.
   SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], first_tab);
-  EXPECT_EQ(first_tab->position(), 0);
+  EXPECT_EQ(first_tab->position(), 0u);
 
   // Expect tab_2 to be at the front of the group.
   SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], second_tab);
-  EXPECT_EQ(second_tab->position(), 1);
+  EXPECT_EQ(second_tab->position(), 1u);
 }
 
 TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
@@ -118,19 +120,19 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Add both tabs to the group.
-  group.AddTab(std::move(tab_1));
-  group.AddTab(std::move(tab_2));
+  group.AddTabLocally(std::move(tab_1));
+  group.AddTabLocally(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Verify tab_2 has a position of 1.
   {
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[1], second_tab);
-    EXPECT_EQ(second_tab->position(), 1);
+    EXPECT_EQ(second_tab->position(), 1u);
   }
 
   // Remove tab_1 from the group.
-  group.RemoveTab(tab_1_saved_guid, /*update_tab_positions=*/true);
+  group.RemoveTabLocally(tab_1_saved_guid);
 
   // Verify only tab_2 is in the group.
   EXPECT_EQ(group.saved_tabs().size(), 1u);
@@ -142,7 +144,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
     // Expect tab two to be at the front of the group.
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[0], second_tab);
-    EXPECT_EQ(second_tab->position(), 0);
+    EXPECT_EQ(second_tab->position(), 0u);
   }
 }
 
@@ -159,19 +161,19 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   tab_1.SetPosition(1);
   tab_2.SetPosition(0);
 
-  group.AddTab(std::move(tab_1), /*update_tab_positions=*/false);
-  group.AddTab(std::move(tab_2), /*update_tab_positions=*/false);
+  group.AddTabFromSync(std::move(tab_1));
+  group.AddTabFromSync(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Expect tab one to be at the end of the group.
   SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], first_tab);
-  EXPECT_EQ(first_tab->position(), 1);
+  EXPECT_EQ(first_tab->position(), 1u);
 
   // Expect tab two to be at the front of the group.
   SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], second_tab);
-  EXPECT_EQ(second_tab->position(), 0);
+  EXPECT_EQ(second_tab->position(), 0u);
 }
 
 TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
@@ -184,19 +186,19 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Add both tabs to the group.
-  group.AddTab(std::move(tab_1));
-  group.AddTab(std::move(tab_2));
+  group.AddTabLocally(std::move(tab_1));
+  group.AddTabLocally(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Verify tab_2 has a position of 1.
   {
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[1], second_tab);
-    EXPECT_EQ(second_tab->position(), 1);
+    EXPECT_EQ(second_tab->position(), 1u);
   }
 
   // Remove tab_1 from the group.
-  group.RemoveTab(tab_1_saved_guid, /*update_tab_positions=*/false);
+  group.RemoveTabFromSync(tab_1_saved_guid);
 
   // Verify only tab_2 is in the group.
   EXPECT_EQ(group.saved_tabs().size(), 1u);
@@ -208,6 +210,6 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
     // Expect tab two to be at the front of the group.
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[0], second_tab);
-    EXPECT_EQ(second_tab->position(), 1);
+    EXPECT_EQ(second_tab->position(), 1u);
   }
 }

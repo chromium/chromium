@@ -11,10 +11,14 @@ source_set("coordinator") {
     "lens_modal_animator.mm",
   ]
   deps = [
+    ":lens_availability",
     ":lens_entrypoint",
     "//base",
     "//components/lens",
     "//components/prefs",
+    "//components/search_engines",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -23,6 +27,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin:signin",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web:web",

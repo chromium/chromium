@@ -374,7 +374,7 @@ absl_cc_test(
     absl::flags_parse
     absl::flags_reflection
     absl::flags_usage_internal
-    absl::raw_logging_internal
+    absl::log
     absl::scoped_set_env
     absl::span
     absl::strings

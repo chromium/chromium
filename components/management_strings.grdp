@@ -150,8 +150,8 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_CRASH_REPORTS" desc="Message stating that administrators see the numbers and causes of the crashes that occurred on the device recently.">
       Numbers and causes of the crashes that occurred recently
     </message>
-    <message name="IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY" desc="Message stating that administrators see application install information and activity times.">
-      Apps installed and how often they are used
+    <message name="IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY" desc="Message stating that administrators see application install or uninstall information and activity times.">
+      Apps installed or uninstalled and how often they are used
     </message>
     <message name="IDS_MANAGEMENT_REPORT_PRINTING" desc="Message stating that administrators can see names of printed files.">
       Names of files that you print
@@ -317,6 +317,13 @@
     </message>
     <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature.">
       URLs of pages you visit are sent to Google Cloud or third parties for analysis. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.
+    </message>
+  </if>
+
+  <!-- Strings related to Chrome Enterprise Device Signals Sharing -->
+  <if expr="is_win or is_linux or is_macosx">
+    <message name="IDS_MANAGEMENT_DEVICE_SIGNALS_DISCLOSURE" desc="Disclosure message explaining that device signals can be shared.">
+      Information about your browser, OS, device, installed software, and files
     </message>
   </if>
 </grit-part>

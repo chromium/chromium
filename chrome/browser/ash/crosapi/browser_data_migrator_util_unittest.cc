@@ -846,12 +846,9 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, DryRunToCollectUMA) {
   histogram_tester.ExpectBucketCount(
       kDryRunNoCopyDataSize, kTextFileContent.size() * 2 / 1024 / 1024, 1);
 
-  histogram_tester.ExpectTotalCount(kDryRunCopyMigrationHasEnoughDiskSpace, 1);
-  histogram_tester.ExpectTotalCount(
-      kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace, 1);
-  histogram_tester.ExpectTotalCount(kDryRunMoveMigrationHasEnoughDiskSpace, 1);
-  histogram_tester.ExpectTotalCount(
-      kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace, 1);
+  histogram_tester.ExpectTotalCount(kDryRunExtraDiskSpaceOccupiedByMove, 1);
+  histogram_tester.ExpectTotalCount(kDryRunFreeDiskSpaceAfterDelete, 1);
+  histogram_tester.ExpectTotalCount(kDryRunFreeDiskSpaceAfterMigration, 1);
 }
 
 TEST(BrowserDataMigratorUtilTest, UpdatePreferencesKeyByType) {

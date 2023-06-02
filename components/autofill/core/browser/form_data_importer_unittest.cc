@@ -773,7 +773,8 @@ class FormDataImporterTestBase {
   // as the destructor of the clients FormDataImporter relies on it.
   std::unique_ptr<PersonalDataManager> personal_data_manager_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
-  raw_ptr<MockVirtualCardEnrollmentManager> virtual_card_enrollment_manager_;
+  raw_ptr<MockVirtualCardEnrollmentManager, DanglingUntriaged>
+      virtual_card_enrollment_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

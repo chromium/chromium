@@ -8,6 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "chrome/browser/supervised_user/child_accounts/family_preferences_service_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -22,7 +24,8 @@ ChildAccountService* ChildAccountServiceFactory::GetForProfile(
 
 // static
 ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
-  return base::Singleton<ChildAccountServiceFactory>::get();
+  static base::NoDestructor<ChildAccountServiceFactory> instance;
+  return instance.get();
 }
 
 ChildAccountServiceFactory::ChildAccountServiceFactory()
@@ -35,11 +38,17 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
+  DependsOn(supervised_user::FamilyPreferencesServiceFactory::GetInstance());
+  DependsOn(supervised_user::ListFamilyMembersServiceFactory::GetInstance());
 }
 
 ChildAccountServiceFactory::~ChildAccountServiceFactory() = default;
 
 KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new ChildAccountService(static_cast<Profile*>(profile));
+    content::BrowserContext* context) const {
+  Profile* profile = static_cast<Profile*>(context);
+  return new ChildAccountService(
+      profile,
+      supervised_user::FamilyPreferencesServiceFactory::GetForProfile(profile),
+      supervised_user::ListFamilyMembersServiceFactory::GetForProfile(profile));
 }

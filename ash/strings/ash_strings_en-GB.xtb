@@ -29,7 +29,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
 <translation id="1111021433905331574">You can change the colour of your keyboard backlight in Settings &gt; <ph name="APP_TITLE" /></translation>
-<translation id="1112998165730922436">Casting is paused</translation>
+<translation id="1117719261843403176">Toggle mobile data. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1142002900084379065">Recent photos</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
@@ -49,6 +49,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
 <translation id="1190678134285018527">Device needs to go back to previous version</translation>
 <translation id="1195412055398077112">overscan</translation>
+<translation id="1195667586424773550">Drag the link to the tab's address bar</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199716647557067911">Are you sure that you want to turn off Switch Access?</translation>
 <translation id="1201402288615127009">Next</translation>
@@ -85,12 +86,14 @@ Here are some things that you can try to get started.</translation>
 <translation id="1294929383540927798">Change the lock-screen notification settings</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">RECOMMENDED APPS</translation>
+<translation id="1311294419381837540">You are casting a tab. You can pause or stop casting at any time.</translation>
 <translation id="1312604459020188865">Signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Always show shelf</translation>
 <translation id="132346741904777634">Camera snapped to the top-left corner. Conflict with system surface.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connected</translation>
 <translation id="1340378040547539434">Zoom out on page</translation>
 <translation id="1341651618736211726">Overflow</translation>
+<translation id="1344141078024003905">You are casting your screen. You can pause or stop casting your screen at any time.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1360220746312242196">When searching a page, go to previous match for search</translation>
@@ -142,7 +145,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1604857178818051494">Pause media</translation>
 <translation id="1610778689852195798">'Undo'</translation>
 <translation id="1611993646327628135">On</translation>
-<translation id="1618835956950524778">Highlight Launcher button on shelf</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Switch Access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="163517899691012366">Notifications are muted when Do Not Disturb is on</translation>
@@ -198,6 +200,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Turn on location access</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> was un-pinned</translation>
+<translation id="183465528887726323">Connect to mobile data to use hotspot.</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1862380676329487333">Update and sign out</translation>
@@ -283,6 +286,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2269016722240250274">An application is using your microphone</translation>
 <translation id="2277103315734023688">Seek forwards</translation>
 <translation id="2282073721614284166">Open link in tab</translation>
+<translation id="2284237890386182187">On, no devices connected</translation>
 <translation id="2292698582925480719">Display scale</translation>
 <translation id="229397294990920565">Mobile data is turning off…</translation>
 <translation id="2295777434187870477">Mic is on, toggling will mute input.</translation>
@@ -302,9 +306,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360398059912971776">battery</translation>
+<translation id="2361210043495191221">Toggle Wi-Fi <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2367972762794486313">Show apps</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
+<translation id="2382875860893882175">Casting is currently paused. You can resume casting or stop casting at any time.</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
 <translation id="2397416548179033562">Show Chrome menu</translation>
 <translation id="240006516586367791">Media controls</translation>
@@ -321,7 +327,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2440978926514840421">GIF recording taken</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
 <translation id="24452542372838207">Expand notification</translation>
-<translation id="2448312741937722512">Types</translation>
+<translation id="2448312741937722512">Type</translation>
 <translation id="2449089818483227734">Low battery</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2455994958736234930">Add www. and .com to the address bar, then open website</translation>
@@ -336,9 +342,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2514415433888497495">Stop <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Unlock the windows</translation>
+<translation id="2528111225373402384">Hotspot settings</translation>
 <translation id="2530896289327917474">Turn caret browsing on or off</translation>
 <translation id="2531025035050312891">device slow</translation>
-<translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="254900897760075745">Copy selected content to clipboard</translation>
 <translation id="2549711466868162843">Improve lighting</translation>
 <translation id="2549985041256363841">Start recording</translation>
@@ -389,7 +395,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2785499565474703580">One device connected</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selected</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
@@ -427,7 +432,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2970920913501714344">Install apps, extensions and themes</translation>
 <translation id="2977598380246111477">Next number</translation>
 <translation id="2985148236010982088">See all apps</translation>
-<translation id="29859347674873492">Open Help in Explore app</translation>
 <translation id="2992327365391326550">Device's microphone button is turned off.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -441,6 +445,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3036649622769666520">Open Files</translation>
 <translation id="3038571455154067151">To sign in, enter your Family Link parental access code</translation>
 <translation id="3039939407102840004">Stylus battery at <ph name="PERCENTAGE" /> per cent.</translation>
+<translation id="304097922505898963">Open Key Shortcuts app</translation>
 <translation id="3045488863354895414">Good afternoon,</translation>
 <translation id="3047761520276763270">Try saying:</translation>
 <translation id="3055162170959710888">You used this device for <ph name="USED_TIME" /> today</translation>
@@ -507,7 +512,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="334927402682780278">Select text from cursor to end of line</translation>
 <translation id="3349345708646875009">Open task manager</translation>
-<translation id="3351879221545518001">You are currently casting the screen.</translation>
 <translation id="3354555338129305222">why is my device slow</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
 <translation id="3365977133351922112">Your phone is too far away. Bring your phone closer.</translation>
@@ -519,11 +523,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Additional settings</translation>
 <translation id="3405101454990027959">Turn on microphone access</translation>
+<translation id="3408735331120433841">You are currently casting your screen.</translation>
 <translation id="3409584356742878290">Show or hide Developer tools inspector</translation>
 <translation id="3410336247007142655">Show Dark theme settings</translation>
 <translation id="3413817803639110246">Nothing to see just yet</translation>
 <translation id="3417835166382867856">Search tabs</translation>
-<translation id="3423744722495840645">Open/close Launcher</translation>
 <translation id="3428447136709161042">Disconnect from <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swipe from the right to go back</translation>
 <translation id="3431517721463707585">Desk 14</translation>
@@ -550,8 +554,8 @@ Here are some things that you can try to get started.</translation>
 <translation id="3526440770046466733">Open link in new tab and stay in current tab</translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
 <translation id="3533126039236445965">Apps in shelf</translation>
+<translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3542066395059568317">You’ll see recommendations so that you can continue where you left off. You can right-click to remove recommendations.</translation>
-<translation id="3546121235777416274">Focus on the picture-in-picture window</translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3554215588514239132">Show or hide Developer tools panel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
@@ -672,6 +676,7 @@ Connect your device to power.</translation>
 <translation id="4028481283645788203">Password required for more security</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">You're sharing your screen</translation>
+<translation id="4049230407053723315">Quick Settings</translation>
 <translation id="4057003836560082631">Browser tab <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off for an app}other{Off for # apps}}</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
@@ -709,6 +714,7 @@ Connect your device to power.</translation>
 <translation id="4215497585250573029">VPN settings</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
+<translation id="4231053948789591973">Casting is currently paused. You can resume casting or stop casting your screen at any time.</translation>
 <translation id="423685346499232137">Can't copy or paste content at this time</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
@@ -759,6 +765,7 @@ Connect your device to power.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="4451374464530248585">The Alt + Down Arrow keyboard shortcut has changed. To use the Page Down key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Down Arrow.</translation>
+<translation id="4453876312474547652">You’ll see the clipboard when you press and hold Ctrl + V. You can turn off this shortcut by disabling the #clipboard-history-longpress flag in chrome://flags (os://flags if using Lacros).</translation>
 <translation id="4455051983450390249">View your phone's notifications on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
@@ -838,6 +845,7 @@ Connect your device to power.</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="478959186716341421">Casting</translation>
+<translation id="4798622944000246716">Your mobile network doesn't support hotspot.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Disconnect</translation>
 <translation id="4814539958450445987">Login Screen</translation>
@@ -1053,7 +1061,6 @@ Connect your device to power.</translation>
 <translation id="5760866832697883462">Connect your <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Toggle marker. <ph name="STATE_TEXT" /> Use the trackpad, touchscreen or stylus to draw onscreen.</translation>
 <translation id="576341972084747908">Download dangerous <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Shelf Party is off.</translation>
 <translation id="576453121877257266">Night Light is on.</translation>
 <translation id="5764569119212455782">Switch to last language selected</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
@@ -1108,6 +1115,7 @@ Connect your device to power.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> of <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Highlight next item on shelf</translation>
 <translation id="6018164090099858612">Exiting mirror mode</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Scroll left</translation>
 <translation id="6022924867608035986">Clear search box text</translation>
 <translation id="602472752137106327">Show windows from all desks, radio button selected</translation>
@@ -1141,6 +1149,7 @@ Connect your device to power.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6137566720514957455">Open remove dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirm download</translation>
+<translation id="6143578372829139382">Share to YouTube</translation>
 <translation id="6154006699632741460">Peripheral not supported</translation>
 <translation id="6156960295318603523">Language Settings</translation>
 <translation id="615957422585914272">Show on-screen keyboard</translation>
@@ -1201,6 +1210,8 @@ Connect your device to power.</translation>
 <translation id="6452181791372256707">Reject</translation>
 <translation id="6453179446719226835">Language has been changed</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
+<translation id="6464094930452079790">images</translation>
+<translation id="6469104339369989396">Toggle hotspot.</translation>
 <translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6483727822843292440">Go through windows from the least-used window</translation>
@@ -1259,7 +1270,6 @@ New install</translation>
 <translation id="6707693040195709527">Device change to previous version is overdue</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6723839937902243910">Power</translation>
-<translation id="6727005317916125192">Previous pane</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1277,7 +1287,6 @@ New install</translation>
 <translation id="6782182743534150858">Desk 13</translation>
 <translation id="6782919488259222803">Search current page</translation>
 <translation id="6786750046913594791">Close folder</translation>
-<translation id="6787839852456839824">Keyboard shortcuts</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="679368458793552943">Zoom in when magnifier is on</translation>
 <translation id="6801878137098616817">Recently edited</translation>
@@ -1307,7 +1316,6 @@ New install</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6920245099716267363">Toggle hotspot. Hotspot is on, 1 device connected.</translation>
 <translation id="6931576957638141829">Save to</translation>
-<translation id="6941333068993625698">Submit feedback</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6945922087561257829">Your phone is using a mobile network. Make sure your phone and Chromebook are on the same Wi-Fi network and then try again. <ph name="LEARN_MORE" /></translation>
@@ -1327,7 +1335,6 @@ New install</translation>
 <translation id="7014684956566476813">Connected to a device named <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Come back at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desk 6</translation>
-<translation id="7025325401470358758">Next pane</translation>
 <translation id="7025533177575372252">Connect your <ph name="DEVICE_NAME" /> with your phone</translation>
 <translation id="7026338066939101231">Decrement</translation>
 <translation id="7029814467594812963">Exit session</translation>
@@ -1356,7 +1363,6 @@ New install</translation>
 <translation id="7126996685418858413">Opened in the past week</translation>
 <translation id="7130207228079676353">MOST LIKELY</translation>
 <translation id="7131634465328662194">You will automatically be signed out.</translation>
-<translation id="7138316363520807689">Save current tab as bookmark</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144942256906679589">Battery status</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1381,7 +1387,6 @@ New install</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
 <translation id="7313193732017069507">Expand camera</translation>
-<translation id="731589979057211264">Shelf Party is on.</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
@@ -1450,7 +1455,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7609951632080598826">Calendar view, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera reconnected.</translation>
-<translation id="7611271430932669992">Move focus to pop-ups and dialogues</translation>
 <translation id="761736749114493194">Toggle camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Camera snapped to the bottom-right corner</translation>
@@ -1503,10 +1507,10 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7860671499921112077">Swipe up with three fingers to enter Overview</translation>
 <translation id="7862292329216937261">To use the device as a guest, you'll need to sign out and then select Browse as guest at the bottom of the screen.</translation>
 <translation id="7866482334467279021">on</translation>
-<translation id="7868900307798234037">Unlocking with fingerprint</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>
+<translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="7884902759927478774">Cancel tab dragging</translation>
 <translation id="7886169021410746335">Adjust privacy settings</translation>
 <translation id="7886277072580235377">Your Internet session will be cleared when you sign out. <ph name="LEARN_MORE" /></translation>
@@ -1595,14 +1599,12 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
 <translation id="8230305195727960608">Colour inversion mode</translation>
-<translation id="8233140502441622270">Open keyboard shortcuts app</translation>
 <translation id="8236042855478648955">Time for a break</translation>
 <translation id="8239034820133090126">Activate desk on right</translation>
 <translation id="8246282815785366524">Welcome back, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Reset to update</translation>
-<translation id="826107067893790409">Press Enter to unlock for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
@@ -1616,7 +1618,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> window selected</translation>
 <translation id="8349964124165471584">Open link in new window</translation>
 <translation id="8351131234907093545">Create note</translation>
-<translation id="8364673525741149932">Toggle Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> in use.</translation>
 <translation id="8369166482916924789">Saved desk, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Forward by letter</translation>
@@ -1808,12 +1809,14 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="925832987464884575">Hide previews</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately</translation>
 <translation id="938963181863597773">What's on my calendar?</translation>
+<translation id="945383118875625837">Drag link to bookmarks bar</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="953431725143473984">Shut down the device?</translation>
 <translation id="954052413789300507">Not enough space for <ph name="FILENAME" />. Free up space.</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Go to end of document</translation>
+<translation id="987589956647469042">Mobile data is turned on</translation>
 <translation id="989374776391122812">Camera and audio controls</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

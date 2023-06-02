@@ -55,8 +55,10 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
     auto navigation = NavigationSimulator::CreateBrowserInitiated(
         origin_.GetURL(), web_contents());
     std::vector<blink::OriginWithPossibleWildcards> allowlist;
-    if (enabled)
-      allowlist.emplace_back(origin_, /*has_subdomain_wildcard=*/false);
+    if (enabled) {
+      allowlist.emplace_back(
+          blink::OriginWithPossibleWildcards::FromOrigin(origin_));
+    }
     navigation->SetPermissionsPolicyHeader({{feature, allowlist,
                                              /*self_if_matches=*/absl::nullopt,
                                              /*matches_all_origins=*/false,

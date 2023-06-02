@@ -51,7 +51,7 @@ class HighEfficiencyModeTest
   }
 
  private:
-  raw_ptr<HighEfficiencyModePolicy> policy_;
+  raw_ptr<HighEfficiencyModePolicy, DanglingUntriaged> policy_;
 
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       other_page_node_;

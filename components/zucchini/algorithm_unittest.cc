@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/bit_cast.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace zucchini {
@@ -16,11 +17,11 @@ namespace {
 // Casting functions to specify signed 8-bit and 16-bit integer constants.
 // For example, signed8(0xFF) == int8_t(-1).
 inline int8_t signed8(uint8_t v) {
-  return *reinterpret_cast<const int8_t*>(&v);
+  return base::bit_cast<int8_t>(v);
 }
 
 inline int32_t signed16(uint16_t v) {
-  return *reinterpret_cast<const int16_t*>(&v);
+  return base::bit_cast<int16_t>(v);
 }
 
 }  // namespace

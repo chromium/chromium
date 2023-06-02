@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/idle/action_runner.h"
+#include "chrome/browser/enterprise/idle/idle_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -58,7 +59,7 @@ class ShowDialogAction : public Action {
 
   void Run(Profile* profile, Continuation continuation) override {
     base::TimeDelta timeout =
-        profile->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout);
+        IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout();
     continuation_ = std::move(continuation);
     // Action object's lifetime extends until it calls `continuation_`, so
     // passing `this` as a raw pointer is safe.
@@ -237,7 +238,8 @@ class ClearBrowsingDataAction : public Action,
   }
 
   base::flat_set<ActionType> action_types_;
-  raw_ptr<content::BrowsingDataRemover> browsing_data_remover_for_testing_;
+  raw_ptr<content::BrowsingDataRemover, DanglingUntriaged>
+      browsing_data_remover_for_testing_;
   base::ScopedObservation<content::BrowsingDataRemover,
                           content::BrowsingDataRemover::Observer>
       observation_{this};
@@ -291,9 +293,10 @@ class ShowBubbleAction : public Action {
     if (browser && browser->profile() == profile &&
         !base::Contains(action_types_, ActionType::kCloseBrowsers)) {
       // A browser for this profile has focus. Show the bubble there.
-      ShowIdleBubble(browser,
-                     profile->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout),
-                     ActionsToActionSet(action_types_));
+      ShowIdleBubble(
+          browser,
+          IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout(),
+          ActionsToActionSet(action_types_));
     } else {
       // No active browser for this profile. Show the bubble when a browser
       // gains focus, or on next startup. Let IdleServide::BrowserObserver do

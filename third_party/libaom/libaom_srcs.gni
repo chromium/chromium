@@ -568,7 +568,7 @@ aom_dsp_encoder_intrin_avx2 = [
 ]
 
 aom_dsp_encoder_intrin_neon = [
-  "//third_party/libaom/source/libaom/aom_dsp/arm/sad4d_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/sadxd_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/sad_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/masked_sad_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/subpel_variance_neon.c",

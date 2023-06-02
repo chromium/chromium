@@ -70,9 +70,6 @@ static std::pair<std::u16string, absl::optional<GURL>> GetMessageForStatus(
     case AllowStatus::kUserPrefBlocked:
       return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_ADMIN),
               absl::nullopt};
-    case AllowStatus::kBlockedOnStable:
-      return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHANNEL),
-              GURL("https://support.google.com/chromebook/answer/1086915")};
     case AllowStatus::kBlockedByFlag:
       return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG),
               absl::nullopt};

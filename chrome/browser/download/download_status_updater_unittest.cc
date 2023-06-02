@@ -205,7 +205,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // Pointer so we can verify that destruction triggers appropriate
   // changes.
-  raw_ptr<TestDownloadStatusUpdater> updater_;
+  raw_ptr<TestDownloadStatusUpdater, DanglingUntriaged> updater_;
 
   // Thread so that the DownloadManager (which is a DeleteOnUIThread
   // object) can be deleted.

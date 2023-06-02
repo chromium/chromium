@@ -851,9 +851,10 @@ void RestrictedCookieManager::CookiesEnabledFor(
 
 void RestrictedCookieManager::InstallReceiver(
     mojo::PendingReceiver<mojom::RestrictedCookieManager> pending_receiver,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceClosure on_disconnect_callback) {
   DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(pending_receiver));
+  receiver_.Bind(std::move(pending_receiver), std::move(task_runner));
   receiver_.set_disconnect_handler(std::move(on_disconnect_callback));
 }
 

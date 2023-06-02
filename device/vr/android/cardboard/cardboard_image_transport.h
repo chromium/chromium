@@ -25,8 +25,9 @@ class MailboxToSurfaceBridge;
 class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
     : public XrImageTransportBase {
  public:
-  explicit CardboardImageTransport(
-      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
+  CardboardImageTransport(
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge,
+      const gfx::Size& display_size);
 
   CardboardImageTransport(const CardboardImageTransport&) = delete;
   CardboardImageTransport& operator=(const CardboardImageTransport&) = delete;
@@ -37,19 +38,22 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   // get this out of the CardboardSDK object and we can then pass an unowned
   // pointer to the SDK here and in CardboardRenderLoop to get this, but we need
   // to consider that design.
-  mojom::VRFieldOfViewPtr GetFOV(CardboardEye eye, const gfx::Size& frame_size);
+  mojom::VRFieldOfViewPtr GetFOV(CardboardEye eye);
+  gfx::Transform GetMojoFromView(CardboardEye eye,
+                                 gfx::Transform mojo_from_viewer);
 
   // Take the current WebXr Rendering Frame and render it to the supplied
   // framebuffer.
-  void Render(WebXrPresentationState* webxr,
-              GLuint framebuffer,
-              const gfx::Size& frame_size);
+  void Render(WebXrPresentationState* webxr, GLuint framebuffer);
 
  private:
   void DoRuntimeInitialization() override;
-  void InitializeDistortionMesh(const gfx::Size& frame_size);
+  void UpdateDistortionMesh();
 
-  gfx::Size surface_size_;
+  // Display size is the size of the actual display in pixels, and is needed for
+  // creating the distortion mesh. It should not be influenced by the WebXR
+  // framebufferScaleFactor.
+  gfx::Size display_size_ = {0, 0};
 
   // TODO(https://crbug.com/1429088): We should avoid holding cardboard types
   // directly if possible.
@@ -66,7 +70,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransportFactory {
  public:
   virtual ~CardboardImageTransportFactory() = default;
   virtual std::unique_ptr<CardboardImageTransport> Create(
-      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge);
+      std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge,
+      const gfx::Size& display_size);
 };
 
 }  // namespace device

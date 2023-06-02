@@ -5,7 +5,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"

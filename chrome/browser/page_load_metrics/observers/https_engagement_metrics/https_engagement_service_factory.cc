@@ -4,7 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service.h"
 
 // static
@@ -16,7 +16,8 @@ HttpsEngagementService* HttpsEngagementServiceFactory::GetForBrowserContext(
 
 // static
 HttpsEngagementServiceFactory* HttpsEngagementServiceFactory::GetInstance() {
-  return base::Singleton<HttpsEngagementServiceFactory>::get();
+  static base::NoDestructor<HttpsEngagementServiceFactory> instance;
+  return instance.get();
 }
 
 HttpsEngagementServiceFactory::HttpsEngagementServiceFactory()
@@ -29,7 +30,7 @@ HttpsEngagementServiceFactory::HttpsEngagementServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-HttpsEngagementServiceFactory::~HttpsEngagementServiceFactory() {}
+HttpsEngagementServiceFactory::~HttpsEngagementServiceFactory() = default;
 
 KeyedService* HttpsEngagementServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

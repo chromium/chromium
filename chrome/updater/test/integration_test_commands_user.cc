@@ -264,10 +264,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunUninstallCmdLine(updater_scope_);
   }
 
-  void SetUpTestService() const override {}
-
-  void TearDownTestService() const override {}
-
   void RunHandoff(const std::string& app_id) const override {
     updater::test::RunHandoff(updater_scope_, app_id);
   }

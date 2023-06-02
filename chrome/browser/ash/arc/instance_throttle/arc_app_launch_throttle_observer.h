@@ -54,6 +54,7 @@ class ArcAppLaunchThrottleObserver
 
   // ash::ArcWindowWatcher::ArcWindowDisplayObserver
   void OnArcWindowDisplayed(const std::string& package_name) override;
+  void OnWillDestroyWatcher() override;
 
  private:
   void OnLaunchedOrRequestExpired(const std::string& name);

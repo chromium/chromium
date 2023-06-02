@@ -62,14 +62,16 @@ public class TabContentManager {
     // GridTabSwitcherThumbnailFetchingResult enum in enums.xml if these change.
     @IntDef({ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1,
             ThumbnailFetchingResult.GOT_NOTHING,
-            ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG})
+            ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG,
+            ThumbnailFetchingResult.GOT_JPEG_ON_REFETCH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ThumbnailFetchingResult {
         int GOT_JPEG = 0;
         int GOT_ETC1 = 1;
         int GOT_NOTHING = 2;
         int GOT_DIFFERENT_ASPECT_RATIO_JPEG = 3;
-        int NUM_ENTRIES = 4;
+        int GOT_JPEG_ON_REFETCH = 4;
+        int NUM_ENTRIES = 5;
     }
 
     // This is to accommodate for pixel rounding errors.
@@ -434,20 +436,73 @@ public class TabContentManager {
         });
     }
 
+    private boolean shouldRefetchForAspectRatio(@NonNull Size thumbnailSize, @NonNull Bitmap jpeg) {
+        // Pixel difference between the real aspect ratio and the actual aspect ratio.
+        final int aspectRatioPixelError = Math.abs(
+                (int) Math.round(jpeg.getHeight() * getTabCaptureAspectRatio()) - jpeg.getWidth());
+        // Allow a pixel error proportional to the size of the thumbnail that will be shown.
+        // thumbnailSize will be within a factor of 2 of the size of jpeg due to resizeJpeg.
+        final int aspectRatioAllowedError =
+                (int) Math.round(Math.min(thumbnailSize.getWidth(), thumbnailSize.getHeight())
+                        * PIXEL_TOLERANCE_PERCENT);
+
+        return aspectRatioPixelError >= aspectRatioAllowedError;
+    }
+
+    private void refetchEtc1(int tabId, @NonNull Callback<Bitmap> callback, boolean emitMetrics) {
+        TabContentManagerJni.get().getEtc1TabThumbnail(
+                mNativeTabContentManager, tabId, getTabCaptureAspectRatio(), (etc1) -> {
+                    if (emitMetrics) {
+                        if (etc1 != null) {
+                            recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_ETC1);
+                        } else {
+                            recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_NOTHING);
+                        }
+                    }
+                    callback.onResult(etc1);
+                });
+    }
+
+    /**
+     * Wait for the JPEG in native by using the capture progress tracker. Once available execute the
+     * callback.
+     * @param tabId The Tab ID to wait for a JPEG of.
+     * @param thumbnailSize The size of thumbnail that will be shown.
+     * @param callback The callback to execute once native has finished any pending JPEG capture
+     *                 tasks for the tab.
+     */
+    private void refetchJpeg(
+            int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+        // Wait for the JPEG in native to be ready.
+        TabContentManagerJni.get().waitForJpegTabThumbnail(
+                mNativeTabContentManager, tabId, (maybeAvailable) -> {
+                    if (!maybeAvailable) {
+                        recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_NOTHING);
+                        callback.onResult(null);
+                        return;
+                    }
+                    // It may be available. Fetch it using getJpegForTab, but don't fallback any
+                    // further if still not available.
+                    PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
+                        Bitmap bitmap = getJpegForTab(tabId, thumbnailSize);
+                        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
+                            if (bitmap == null) {
+                                recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_NOTHING);
+                            } else {
+                                recordThumbnailFetchingResult(
+                                        ThumbnailFetchingResult.GOT_JPEG_ON_REFETCH);
+                            }
+                            callback.onResult(bitmap);
+                        });
+                    });
+                });
+    }
+
     private void onBitmapRead(@NonNull int tabId, @NonNull Size thumbnailSize, Bitmap jpeg,
             @NonNull Callback<Bitmap> callback) {
         TraceEvent.finishAsync("GetTabThumbnailFromDisk", tabId);
         if (jpeg != null) {
-            // Pixel difference between the real aspect ratio and the actual aspect ratio.
-            final int aspectRatioPixelError =
-                    Math.abs((int) Math.round(jpeg.getHeight() * getTabCaptureAspectRatio())
-                            - jpeg.getWidth());
-            // Allow a pixel error proportional to the size of the thumbnail that will be shown.
-            // thumbnailSize will be within a factor of 2 of the size of jpeg due to resizeJpeg.
-            final int aspectRatioAllowedError =
-                    (int) Math.round(Math.min(thumbnailSize.getWidth(), thumbnailSize.getHeight())
-                            * PIXEL_TOLERANCE_PERCENT);
-            if (aspectRatioPixelError >= aspectRatioAllowedError) {
+            if (shouldRefetchForAspectRatio(thumbnailSize, jpeg)) {
                 recordThumbnailFetchingResult(
                         ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
 
@@ -455,27 +510,37 @@ public class TabContentManager {
                     callback.onResult(jpeg);
                     return;
                 }
+
                 if (!mSnapshotsEnabled) return;
 
-                TabContentManagerJni.get().getEtc1TabThumbnail(
-                        mNativeTabContentManager, tabId, getTabCaptureAspectRatio(), callback);
+                // TODO(crbug/1434775): If the aspect ratio was proportional to the Tab's
+                // content area rather than being fixed then there would be two options
+                // 1) There is an in-flight capture of a correct sized JPEG (use refetchJpeg).
+                // 2) The on-disk JPEG is the same aspect ratio as the ETC1 and will have
+                //    to be scaled best effort to match the current size.
+                // This would allow for the removal of ETC1 refetch altogether. With the current
+                // aspect ratio behavior it is instead necessary to keep ETC1 refetch as it
+                // should be possible to generate a JPEG with a better aspect ratio match.
+
+                refetchEtc1(tabId, callback, false);
                 return;
             }
-            recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_JPEG);
 
+            recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_JPEG);
             callback.onResult(jpeg);
             return;
         }
         if (mNativeTabContentManager == 0 || !mSnapshotsEnabled) return;
-        TabContentManagerJni.get().getEtc1TabThumbnail(
-                mNativeTabContentManager, tabId, getTabCaptureAspectRatio(), (etc1) -> {
-                    if (etc1 != null) {
-                        recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_ETC1);
-                    } else {
-                        recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_NOTHING);
-                    }
-                    callback.onResult(etc1);
-                });
+
+        if (sThumbnailCacheRefactor.isEnabled()) {
+            // Wait for any in-flight JPEG to capture. Otherwise there isn't a thumbnail for the
+            // tab.
+            refetchJpeg(tabId, thumbnailSize, callback);
+        } else {
+            // Generate a thumbnail from the ETC1. This masks a race condition between the thumbnail
+            // being captured and an ETC1 or JPEG version of it being available.
+            refetchEtc1(tabId, callback, true);
+        }
     }
 
     private static void recordThumbnailFetchingResult(@ThumbnailFetchingResult int result) {
@@ -637,6 +702,8 @@ public class TabContentManager {
         void invalidateIfChanged(long nativeTabContentManager, int tabId, GURL url);
         void updateVisibleIds(long nativeTabContentManager, int[] priority, int primaryTabId);
         void removeTabThumbnail(long nativeTabContentManager, int tabId);
+        void waitForJpegTabThumbnail(
+                long nativeTabContentManager, int tabId, Callback<Boolean> callback);
         void getEtc1TabThumbnail(long nativeTabContentManager, int tabId, double aspectRatio,
                 Callback<Bitmap> callback);
         void setCaptureMinRequestTimeForTesting(long nativeTabContentManager, int timeMs);

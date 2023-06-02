@@ -23,7 +23,7 @@ TEST(Mp4MuxerContextTest, Default) {
       std::make_unique<OutputPositionTracker>(base::BindRepeating(
           [](std::string* written_data, base::OnceClosure run_loop_quit,
              base::StringPiece data) {
-            written_data->append(data.data(), data.size());
+            written_data->append(data);
             std::move(run_loop_quit).Run();
           },
           &written_data, run_loop.QuitClosure()));
@@ -34,8 +34,6 @@ TEST(Mp4MuxerContextTest, Default) {
 
   mp4_context.SetVideoIndex(1);
   mp4_context.SetAudioIndex(2);
-  mp4_context.SetCurrentFragmentMoofOffset(12345);
-  mp4_context.SetCurrentFragmentMdatOffset(12345678);
 
   std::string str1 = "abc";
   mp4_context.GetOutputPositionTracker().WriteString(str1);
@@ -45,10 +43,6 @@ TEST(Mp4MuxerContextTest, Default) {
   EXPECT_TRUE(mp4_context.GetAudioIndex().has_value());
   EXPECT_EQ(mp4_context.GetVideoIndex(), static_cast<size_t>(1));
   EXPECT_EQ(mp4_context.GetAudioIndex(), static_cast<size_t>(2));
-  EXPECT_EQ(mp4_context.GetCurrentFragmentMoofOffset(),
-            static_cast<size_t>(12345));
-  EXPECT_EQ(mp4_context.GetCurrentFragmentMdatOffset(),
-            static_cast<size_t>(12345678));
   EXPECT_EQ(str1, written_data);
 }
 

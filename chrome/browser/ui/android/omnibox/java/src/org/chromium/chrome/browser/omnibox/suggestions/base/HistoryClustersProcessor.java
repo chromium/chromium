@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewPrope
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -119,7 +119,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
         List<OmniboxAction> actions = suggestion.getActions();
         if (actions.size() != 1) return null;
         OmniboxAction action = actions.get(0);
-        if (action.actionId == OmniboxActionType.HISTORY_CLUSTERS) {
+        if (action.actionId == OmniboxActionId.HISTORY_CLUSTERS) {
             return HistoryClustersAction.from(action);
         }
         return null;

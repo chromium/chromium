@@ -81,7 +81,7 @@ constexpr char kAccountNameKey[] = "name";
 constexpr char kAccountGivenNameKey[] = "given_name";
 constexpr char kAccountPictureKey[] = "picture";
 constexpr char kAccountApprovedClientsKey[] = "approved_clients";
-constexpr char kHintsKey[] = "hints";
+constexpr char kHintsKey[] = "login_hints";
 
 // Keys in 'branding' 'icons' dictionary in accounts endpoint.
 constexpr char kIdpBrandingIconUrl[] = "url";
@@ -518,6 +518,7 @@ void OnAccountsRequestParsed(
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
+    const GURL& token_url,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
@@ -536,10 +537,7 @@ void OnTokenRequestParsed(
   }
 
   if (continue_on) {
-    GURL url(*continue_on);
-    // TODO(crbug.com/1429083): support relative urls.
-    // TODO(crbug.com/1429083): check that the continue_on url is
-    // same-origin with the idp origin.
+    GURL url = token_url.Resolve(*continue_on);
     if (url.is_valid()) {
       std::move(continue_on_callback)
           .Run({ParseStatus::kSuccess, fetch_status.response_code},
@@ -690,7 +688,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
-                     std::move(continue_on)),
+                     std::move(continue_on), token_url),
       maxResponseSizeInKiB * 1024);
 }
 

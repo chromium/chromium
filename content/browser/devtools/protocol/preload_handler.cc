@@ -162,6 +162,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::MemoryPressureOnTrigger;
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
       return Preload::PrerenderFinalStatusEnum::MemoryPressureAfterTriggered;
+    case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
+      return Preload::PrerenderFinalStatusEnum::PrerenderingDisabledByDevTools;
   }
 }
 

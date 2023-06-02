@@ -118,7 +118,8 @@ MultiDeviceSetupClient* MultiDeviceSetupClientFactory::GetForProfile(
 
 // static
 MultiDeviceSetupClientFactory* MultiDeviceSetupClientFactory::GetInstance() {
-  return base::Singleton<MultiDeviceSetupClientFactory>::get();
+  static base::NoDestructor<MultiDeviceSetupClientFactory> instance;
+  return instance.get();
 }
 
 KeyedService* MultiDeviceSetupClientFactory::BuildServiceInstanceFor(

@@ -42,7 +42,7 @@ namespace {
 void RecordBudgeterResultHistogram(
     PrivateAggregationBudgeter::RequestResult request_result) {
   base::UmaHistogramEnumeration(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       request_result);
 }
 

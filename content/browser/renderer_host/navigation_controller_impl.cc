@@ -78,7 +78,6 @@
 #include "content/browser/renderer_host/system_entropy_utils.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/trace_utils.h"
@@ -268,11 +267,12 @@ absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
   return absl::make_optional(params.origin);
 }
 
-bool IsValidURLForNavigation(bool is_main_frame,
+bool IsValidURLForNavigation(FrameTreeNode* node,
                              const GURL& virtual_url,
                              const GURL& dest_url) {
   // Don't attempt to navigate if the virtual URL is non-empty and invalid.
-  if (is_main_frame && !virtual_url.is_valid() && !virtual_url.is_empty()) {
+  if (node->IsOutermostMainFrame() && !virtual_url.is_valid() &&
+      !virtual_url.is_empty()) {
     LOG(WARNING) << "Refusing to load for invalid virtual URL: "
                  << virtual_url.possibly_invalid_spec();
     return false;
@@ -303,6 +303,22 @@ bool IsValidURLForNavigation(bool is_main_frame,
     LOG(WARNING) << "Refusing to load renderer debug URL: "
                  << dest_url.possibly_invalid_spec();
     return false;
+  }
+
+  // Guests only support navigations to known-safe schemes. This check already
+  // exists in the extensions layer, where it also dispatches proper events to
+  // the guest's embedder (see WebViewGuest::LoadURLWithParams).  This check is
+  // for defense-in-depth to ensure that no other places in the codebase
+  // accidentally navigate guests to schemes such as WebUI, which is not
+  // supported.  See https://crbug.com/1444221.
+  if (node->current_frame_host()->GetSiteInstance()->IsGuest()) {
+    auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
+    if (!cpsp->IsWebSafeScheme(dest_url.scheme()) &&
+        !dest_url.SchemeIs(url::kAboutScheme)) {
+      LOG(WARNING) << "Refusing to load unsafe URL in a guest: "
+                   << dest_url.possibly_invalid_spec();
+      return false;
+    }
   }
 
   return true;
@@ -1798,7 +1814,6 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
       request ? request->common_params().initiator_base_url : absl::nullopt,
       request ? request->GetRedirectChain() : redirects, params.page_state,
       params.method, params.post_id, nullptr /* blob_url_loader_factory */,
-      (request ? request->GetSubresourceWebBundleNavigationInfo() : nullptr),
       ComputePolicyContainerPoliciesForFrameEntry(
           rfh, request && request->IsSameDocument(),
           request ? request->common_params().url : params.url));
@@ -1932,7 +1947,6 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         Referrer(*params.referrer), initiator_origin, initiator_base_url,
         request->GetRedirectChain(), params.page_state, params.method,
         params.post_id, nullptr /* blob_url_loader_factory */,
-        request->GetSubresourceWebBundleNavigationInfo(),
         // We will set the document policies later in this function.
         nullptr /* policy_container_policies */,
         // Try to preserve protect_url_in_navigation_api from the previous
@@ -2283,7 +2297,6 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       Referrer(*params.referrer), initiator_origin, initiator_base_url,
       request->GetRedirectChain(), params.page_state, params.method,
       params.post_id, nullptr /* blob_url_loader_factory */,
-      request->GetSubresourceWebBundleNavigationInfo(),
       std::move(policy_container_policies), protect_url_in_navigation_api);
 
   std::unique_ptr<NavigationEntryImpl> new_entry =
@@ -2775,9 +2788,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* commit_origin */, referrer, initiator_origin,
         initiator_base_url, std::vector<GURL>(), blink::PageState(), method, -1,
-        blob_url_loader_factory,
-        nullptr /* subresource_web_bundle_navigation_info */,
-        nullptr /* policy_container_policies */);
+        blob_url_loader_factory, nullptr /* policy_container_policies */);
   } else {
     // Main frame case.
     // If `node` is the outermost main frame, it rewrites a virtual url in order
@@ -2819,9 +2830,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         static_cast<SiteInstanceImpl*>(source_site_instance), url,
         absl::nullopt /* origin */, referrer, initiator_origin,
         initiator_base_url, std::vector<GURL>(), blink::PageState(), method, -1,
-        blob_url_loader_factory,
-        nullptr /* subresource_web_bundle_navigation_info */,
-        nullptr /* policy_container_policies */,
+        blob_url_loader_factory, nullptr /* policy_container_policies */,
         false /* protect_url_in_navigation_api */);
   }
 
@@ -3747,7 +3756,6 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         params.url, absl::nullopt, params.referrer, params.initiator_origin,
         params.initiator_base_url, params.redirect_chain, blink::PageState(),
         "GET", -1, blob_url_loader_factory,
-        nullptr /* subresource_web_bundle_navigation_info */,
         // If in NavigateWithoutEntry we later determine that this navigation is
         // a conversion of a new navigation into a reload, we will set the right
         // document policies there.
@@ -3875,9 +3883,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(node->IsOutermostMainFrame(), virtual_url,
-                               url_to_load))
+  if (!IsValidURLForNavigation(node, virtual_url, url_to_load)) {
     return nullptr;
+  }
 
   // Look for a pending commit that is to another document in this
   // FrameTreeNode. If one exists, then the last committed URL will not be the
@@ -4044,8 +4052,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(frame_tree_node->IsOutermostMainFrame(),
-                               entry->GetVirtualURL(), dest_url)) {
+  if (!IsValidURLForNavigation(frame_tree_node, entry->GetVirtualURL(),
+                               dest_url)) {
     return nullptr;
   }
 

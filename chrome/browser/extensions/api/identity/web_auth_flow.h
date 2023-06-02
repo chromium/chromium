@@ -177,6 +177,8 @@ class WebAuthFlow : public content::WebContentsObserver,
 
   bool IsObservingProviderWebContents() const;
 
+  bool DisplayAuthPageInPopupWindow();
+
   void DisplayInfoBar();
   void CloseInfoBar();
 

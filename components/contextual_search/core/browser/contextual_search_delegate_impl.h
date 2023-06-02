@@ -169,7 +169,7 @@ class ContextualSearchDelegateImpl
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Holds the TemplateURLService. Not owned.
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
 
   // The field trial helper instance, always set up by the constructor.
   std::unique_ptr<ContextualSearchFieldTrial> field_trial_;

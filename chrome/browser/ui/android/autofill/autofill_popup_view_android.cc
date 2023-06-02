@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
@@ -144,7 +145,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         base::android::ConvertUTF16ToJavaString(env, sublabel),
         base::android::ConvertUTF16ToJavaString(env, secondary_sublabel),
         base::android::ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
-        suggestion.is_icon_at_start, suggestion.frontend_id.as_int(),
+        suggestion.is_icon_at_start, suggestion.frontend_id.as_popup_item_id(),
         is_deletable, is_label_multiline, /*isLabelBold*/ false,
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }

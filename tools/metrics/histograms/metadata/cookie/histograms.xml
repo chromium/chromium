@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CrossSiteRedirectDowngradeChangesInclusionAge"
-    units="minutes" expires_after="2023-09-17">
+    units="minutes" expires_after="2023-11-19">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.DomainSet" enum="Boolean" expires_after="2023-09-03">
+<histogram name="Cookie.DomainSet" enum="Boolean" expires_after="2023-11-19">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -846,13 +846,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SameSiteNoneSizeBytes" units="bytes"
-    expires_after="2023-08-13">
+    expires_after="2023-10-25">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     Size of SameSite=None cookies in bytes. Counted whenever a cookie is set via
     CookieMonster::SetCanonicalCookie.
   </summary>
+</histogram>
+
+<histogram name="Cookie.SameSiteNoneSizeBytes.{IsPartitioned}" units="bytes"
+    expires_after="2023-10-25">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Size of SameSite=None {IsPartitioned} cookies in bytes. Counted whenever a
+    cookie is set via CookieMonster::SetCanonicalCookie.
+  </summary>
+  <token key="IsPartitioned">
+    <variant name="Partitioned"/>
+    <variant name="Unpartitioned"/>
+  </token>
 </histogram>
 
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"

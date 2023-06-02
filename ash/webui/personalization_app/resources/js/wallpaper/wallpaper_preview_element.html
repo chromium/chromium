@@ -19,6 +19,8 @@
     display: flex;
     flex-flow: row nowrap;
     grid-area: label;
+    /* Avoid undefined behavior before the app UI is fully rendered.*/
+    height: 44px;
     justify-content: space-between;
     margin-top: 12px;
   }
@@ -84,6 +86,11 @@
     max-width: 460px;
     min-width: 278px;
   }
+
+  iron-icon[icon='personalization:managed2'] {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+  }
 </style>
 <div class="preview-container" id="container">
   <template is="dom-if" if="[[loading_]]">
@@ -112,17 +119,34 @@
       </div>
     </template>
     <template is="dom-if" if="[[policyControlled_]]">
-      <div id="wallpaperLabel">
-        <p>$i18n{wallpaperLabel}</p>
-        <iron-icon icon="personalization:managed" title="$i18n{managedSetting}">
-        </iron-icon>
-      </div>
-      <div id="imageContainer" class="photo-images-container">
-        <div class="photo-images-border"></div>
-        <img alt$="[[getImageAltDescription_(image_)]]"
-            aria-description="$i18n{managedSetting}"
-            src$="[[getWallpaperSrc_(image_)]]">
-      </div>
+      <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
+        <div id="wallpaperLabel">
+          <p>$i18n{wallpaperLabel}</p>
+          <iron-icon icon="personalization:managed" title="$i18n{managedSetting}">
+          </iron-icon>
+        </div>
+        <div id="imageContainer" class="photo-images-container">
+          <div class="photo-images-border"></div>
+          <img alt$="[[getImageAltDescription_(image_)]]"
+              aria-description="$i18n{managedSetting}"
+              src$="[[getWallpaperSrc_(image_)]]">
+        </div>
+      </template>
+      <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
+        <div id="wallpaperLabel" class="disabled">
+          <p>$i18n{wallpaperLabel}</p>
+          <iron-icon icon="personalization:managed2" disabled
+              title="$i18n{managedSetting}">
+          </iron-icon>
+        </div>
+        <div id="imageContainer" class="photo-images-container">
+          <div class="photo-images-border"></div>
+          <img alt$="[[getImageAltDescription_(image_)]]"
+              aria-description="$i18n{managedSetting}"
+              class="disabled"
+              src$="[[getWallpaperSrc_(image_)]]">
+        </div>
+      </template>
     </template>
   </template>
   <slot></slot>

@@ -56,7 +56,8 @@ class CdmServiceBrokerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockCdmServiceClient> mock_cdm_service_client_ = nullptr;
+  raw_ptr<MockCdmServiceClient, DanglingUntriaged> mock_cdm_service_client_ =
+      nullptr;
   mojo::Remote<mojom::CdmServiceBroker> remote_;
   std::unique_ptr<CdmServiceBroker> broker_;
 };

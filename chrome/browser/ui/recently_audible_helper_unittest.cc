@@ -118,8 +118,8 @@ class RecentlyAudibleHelperTest : public testing::Test {
   TestingProfile testing_profile_;
 
   // A test WebContents and its associated helper.
-  raw_ptr<content::WebContents> contents_;
-  raw_ptr<RecentlyAudibleHelper> helper_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
+  raw_ptr<RecentlyAudibleHelper, DanglingUntriaged> helper_;
   base::CallbackListSubscription subscription_;
 
   std::list<bool> recently_audible_messages_;

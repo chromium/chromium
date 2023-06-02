@@ -22,7 +22,7 @@ import java.util.Objects;
 class PhoneCaptureStateToken {
     private final @ColorInt int mTint;
     private final int mTabCount;
-    private final ButtonData mOptionalButtonData;
+    private final int mOptionalButtonDataHashCode;
     private final @VisualState int mVisualState;
     private final VisibleUrlText mVisibleUrlText;
     private final @DrawableRes int mSecurityIcon;
@@ -39,7 +39,7 @@ class PhoneCaptureStateToken {
             boolean isPaintPreview, float progress, int unfocusedLocationBarLayoutWidth) {
         mTint = tint;
         mTabCount = tabCount;
-        mOptionalButtonData = optionalButtonData;
+        mOptionalButtonDataHashCode = Objects.hashCode(optionalButtonData);
         mVisualState = visualState;
         mVisibleUrlText = visibleUrlText;
         mSecurityIcon = securityIcon;
@@ -65,7 +65,7 @@ class PhoneCaptureStateToken {
             return ToolbarSnapshotDifference.TINT;
         } else if (mTabCount != that.mTabCount) {
             return ToolbarSnapshotDifference.TAB_COUNT;
-        } else if (!Objects.equals(mOptionalButtonData, that.mOptionalButtonData)) {
+        } else if (mOptionalButtonDataHashCode != that.mOptionalButtonDataHashCode) {
             return ToolbarSnapshotDifference.OPTIONAL_BUTTON;
         } else if (mVisualState != that.mVisualState) {
             return ToolbarSnapshotDifference.VISUAL_STATE;

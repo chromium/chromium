@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -196,6 +197,8 @@ class EventRouter
 
   // Broadcast to Files app frontend that file tasks might have changed.
   void BroadcastOnAppsUpdatedEvent();
+
+  drivefs::SyncState GetDriveSyncStateForPath(const base::FilePath& drive_path);
 
   // Use this method for unit tests to bypass checking if there are any SWA
   // windows.

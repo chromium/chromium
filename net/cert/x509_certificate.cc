@@ -298,6 +298,21 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
   return results;
 }
 
+scoped_refptr<X509Certificate> X509Certificate::CloneWithDifferentIntermediates(
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates) {
+  // If intermediates are the same, return another reference to the same
+  // object. Note that this only does a pointer equality comparison on the
+  // CRYPTO_BUFFERs, which is generally sufficient, but in some edge cases
+  // buffers have equal contents but with different addresses. This is
+  // acceptable as this is just an optimization.
+  if (intermediates == intermediate_ca_certs_) {
+    return this;
+  }
+
+  return base::WrapRefCounted(
+      new X509Certificate(*this, std::move(intermediates)));
+}
+
 void X509Certificate::Persist(base::Pickle* pickle) const {
   DCHECK(cert_buffer_);
   // This would be an absolutely insane number of intermediates.
@@ -710,9 +725,17 @@ X509Certificate::X509Certificate(
       cert_buffer_(std::move(cert_buffer)),
       intermediate_ca_certs_(std::move(intermediates)) {}
 
+X509Certificate::X509Certificate(
+    const X509Certificate& other,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates)
+    : parsed_(other.parsed_),
+      cert_buffer_(bssl::UpRef(other.cert_buffer_)),
+      intermediate_ca_certs_(std::move(intermediates)) {}
+
 X509Certificate::~X509Certificate() = default;
 
 X509Certificate::ParsedFields::ParsedFields() = default;
+X509Certificate::ParsedFields::ParsedFields(const ParsedFields&) = default;
 X509Certificate::ParsedFields::ParsedFields(ParsedFields&&) = default;
 X509Certificate::ParsedFields::~ParsedFields() = default;
 

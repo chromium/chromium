@@ -270,8 +270,12 @@ void SignedWebBundleReader::ReadMetadata(ReadErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
+  CHECK(integrity_block_size_in_bytes_.has_value())
+      << "The integrity block must have been read before reading metadata.";
+  uint64_t metadata_offset = integrity_block_size_in_bytes_.value();
+
   parser_->ParseMetadata(
-      /*offset=*/base::checked_cast<int64_t>(*integrity_block_size_in_bytes_),
+      metadata_offset,
       base::BindOnce(&SignedWebBundleReader::OnMetadataParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

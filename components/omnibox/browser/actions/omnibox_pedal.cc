@@ -321,7 +321,9 @@ OmniboxActionId OmniboxPedal::ActionId() const {
 base::android::ScopedJavaLocalRef<jobject> OmniboxPedal::GetOrCreateJavaObject(
     JNIEnv* env) const {
   if (!j_omnibox_action_) {
-    j_omnibox_action_.Reset(BuildOmniboxPedal(env, strings_.hint, PedalId()));
+    j_omnibox_action_.Reset(
+        BuildOmniboxPedal(env, reinterpret_cast<intptr_t>(this), strings_.hint,
+                          strings_.accessibility_hint, PedalId()));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

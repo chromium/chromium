@@ -69,6 +69,20 @@ enum class MultiWordSuggestionType {
   kMaxValue = kCompletion,
 };
 
+// Must match with IMEAssistiveMultiWordSuggestionState in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MultiWordSuggestionState {
+  kOther = 0,
+  kValid = 1,
+  kStaleAndUserEditedText = 2,
+  kStaleAndUserDeletedText = 3,
+  kStaleAndUserAddedMatchingText = 4,
+  kStaleAndUserAddedDifferentText = 5,
+  kMaxValue = kStaleAndUserAddedDifferentText,
+};
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_

@@ -50,6 +50,7 @@ class ModuleDatabaseTest : public testing::Test {
     module_database_->module_inspector_.SetUtilWinFactoryCallbackForTesting(
         base::BindRepeating(&ModuleDatabaseTest::CreateUtilWinService,
                             base::Unretained(this)));
+    module_database_->StartInspection();
   }
 
   ~ModuleDatabaseTest() override {

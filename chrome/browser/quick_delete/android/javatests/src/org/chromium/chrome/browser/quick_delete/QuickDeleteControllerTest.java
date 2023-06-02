@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -112,6 +113,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1446002")
     public void testNavigateToTabSwitcher_WhenClickingDelete() throws IOException {
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.positive_button)).perform(click());
@@ -123,6 +125,7 @@ public class QuickDeleteControllerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1446002")
     public void testSnackbarShown_WhenClickingDelete() throws IOException {
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.positive_button)).perform(click());
@@ -194,6 +197,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1448217")
     public void testBrowsingDataDeletion_onClickedDelete() throws Exception {
         resetCookies();
         loadSiteDataUrl();

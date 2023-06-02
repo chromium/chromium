@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <AppKit/AppKit.h>
-
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
+
+#include <AppKit/AppKit.h>
 
 #include <vector>
 
@@ -132,6 +131,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // Used as a convenience to access
   // NativeWidgetMacNSWindowHost::GetNSWindowMojo().
   // Dangling in ImmersiveModeControllerMacBrowserTest.ToggleFullscreen.
+  // Dangling when executing DownloadBubbleInteractiveUiTest.* (with Mac
+  // immersive mode enabled).
   raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow, DanglingUntriaged>
       ns_window_mojo_ = nullptr;  // weak
 
@@ -433,6 +434,9 @@ class ImmersiveModeTabbedControllerMac : public ImmersiveModeControllerMac {
 };
 
 void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
+  if (enabled == IsEnabled()) {
+    return;
+  }
   BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
   if (enabled) {
     tab_container_observation_.Observe(browser_view->tab_overlay_view());

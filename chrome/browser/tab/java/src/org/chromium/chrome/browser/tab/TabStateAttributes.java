@@ -52,7 +52,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
     /** Whether or not the TabState has changed. */
     @DirtinessState
-    private int mDirtinessState;
+    private int mDirtinessState = DirtinessState.CLEAN;
     private WebContentsObserver mWebContentsObserver;
     private boolean mPendingLowPrioritySave;
 
@@ -90,13 +90,12 @@ public class TabStateAttributes extends TabWebContentsUserData {
         super(tab);
         mTab = tab;
         if (creationState == null || creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {
-            mDirtinessState = DirtinessState.DIRTY;
+            updateIsDirty(DirtinessState.DIRTY);
         } else if (creationState == TabCreationState.LIVE_IN_FOREGROUND
                 || creationState == TabCreationState.LIVE_IN_BACKGROUND) {
-            mDirtinessState = DirtinessState.UNTIDY;
+            updateIsDirty(DirtinessState.UNTIDY);
         } else {
             assert creationState == TabCreationState.FROZEN_ON_RESTORE;
-            mDirtinessState = DirtinessState.CLEAN;
         }
         // TODO(crbug/1374456): Should this also handle mTab.getPendingLoadParams(), and ignore
         //                      URL updates when the URL matches the pending load?

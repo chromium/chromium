@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/typography.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -41,6 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -201,8 +204,10 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         /*thickness=*/1,
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kSeparatorColor)));
+        chromeos::features::IsJellyEnabled()
+            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOutline)
+            : AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kSeparatorColor)));
   }
 
   void AddRowToImageContainerView() {
@@ -254,8 +259,7 @@ END_METADATA
 // SharesheetHeaderView --------------------------------------------------------
 
 SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
-                                           Profile* profile,
-                                           bool show_content_previews)
+                                           Profile* profile)
     : profile_(profile),
       intent_(std::move(intent)),
       thumbnail_loader_(profile) {
@@ -279,11 +283,10 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
 
   const bool has_files = !intent_->files.empty();
   // The image view is initialised first to ensure its left most placement.
-  if (show_content_previews) {
-    auto file_count = intent_->files.size();
-    image_preview_ =
-        AddChildView(std::make_unique<SharesheetImagePreview>(file_count));
-  }
+  auto file_count = intent_->files.size();
+  image_preview_ =
+      AddChildView(std::make_unique<SharesheetImagePreview>(file_count));
+
   // A separate view is created for the share title and preview string views.
   text_view_ = AddChildView(std::make_unique<views::View>());
   text_view_->SetID(HEADER_VIEW_TEXT_PREVIEW_ID);
@@ -291,27 +294,32 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
       views::BoxLayout::Orientation::kVertical,
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
-  text_view_->AddChildView(CreateShareLabel(
-      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
-      CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary),
-      gfx::ALIGN_LEFT));
-  if (show_content_previews) {
-    ShowTextPreview();
-    if (has_files) {
-      ResolveImages();
-    } else {
-      DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
-      const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kIconColorProminent);
-      gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
-          GetTextVectorIcon(),
-          sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);
-      image_preview_->GetImageViewAt(0)->SetImage(
-          CreateMimeTypeIcon(file_type_icon, kImagePreviewFullSize));
-      image_preview_->SetBackgroundColorForIndex(0, icon_color);
-    }
+  text_view_->AddChildView(
+      chromeos::features::IsJellyEnabled()
+          ? CreateShareLabel(
+                l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+                TypographyToken::kCrosTitle1, cros_tokens::kCrosSysOnSurface,
+                gfx::ALIGN_LEFT)
+          : CreateShareLabel(
+                l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+                CONTEXT_SHARESHEET_BUBBLE_TITLE, kTitleTextLineHeight,
+                AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kTextColorPrimary),
+                gfx::ALIGN_LEFT));
+
+  ShowTextPreview();
+  if (has_files) {
+    ResolveImages();
+  } else {
+    DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
+    const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kIconColorProminent);
+    gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
+        GetTextVectorIcon(),
+        sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);
+    image_preview_->GetImageViewAt(0)->SetImage(
+        CreateMimeTypeIcon(file_type_icon, kImagePreviewFullSize));
+    image_preview_->SetBackgroundColorForIndex(0, icon_color);
   }
 }
 
@@ -427,12 +435,15 @@ SharesheetHeaderView::ExtractShareText() {
 
 std::unique_ptr<views::Label> SharesheetHeaderView::CreatePreviewLabel(
     const std::u16string& text) {
-  auto label = CreateShareLabel(
-      text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary),
-      gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY);
-  return label;
+  return chromeos::features::IsJellyEnabled()
+             ? CreateShareLabel(text, TypographyToken::kCrosBody2,
+                                cros_tokens::kCrosSysOnSurfaceVariant,
+                                gfx::ALIGN_LEFT)
+             : CreateShareLabel(
+                   text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
+                   AshColorProvider::Get()->GetContentLayerColor(
+                       AshColorProvider::ContentLayerType::kTextColorPrimary),
+                   gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY);
 }
 
 const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
@@ -440,7 +451,7 @@ const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
     case (TextPlaceholderIcon::kGenericText):
       return chromeos::kTextIcon;
     case (TextPlaceholderIcon::kLink):
-      return kSharesheetLinkIcon;
+      return kLinkIcon;
   }
 }
 

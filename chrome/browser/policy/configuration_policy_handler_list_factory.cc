@@ -318,6 +318,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDataUrlInSvgUseEnabled,
     prefs::kDataUrlInSvgUseEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kPolicyTestPageEnabled,
+    policy_prefs::kPolicyTestPageEnabled,
+    base::Value::Type::BOOLEAN},
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,
@@ -826,6 +829,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::INTEGER },
   { key::kEncryptedClientHelloEnabled,
     prefs::kEncryptedClientHelloEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kRSAKeyUsageForLocalAnchorsEnabled,
+    prefs::kRSAKeyUsageForLocalAnchorsEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSSLErrorOverrideAllowed,
     prefs::kSSLErrorOverrideAllowed,
@@ -1840,9 +1846,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     base::Value::Type::BOOLEAN},
-  { key::kEventPathEnabled,
-    policy_prefs::kEventPathEnabled,
-    base::Value::Type::BOOLEAN},
   { key::kOffsetParentNewSpecBehaviorEnabled,
     policy_prefs::kOffsetParentNewSpecBehaviorEnabled,
     base::Value::Type::BOOLEAN},
@@ -1895,6 +1898,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kGoogleSearchSidePanelEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+  { key::kBeforeunloadEventCancelByPreventDefaultEnabled,
+    policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

@@ -1470,6 +1470,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAAllowedTest, SessionType) {
   EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAForContentBlockedTest,
@@ -1496,7 +1497,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAForContentBlockedTest,
       IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // EncryptedMediaSupportedTypesWidevineHwSecureTest tests Widevine with hardware
 // secure decryption support.

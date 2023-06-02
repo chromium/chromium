@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/strings/string_piece.h"
+#include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"
 #include "components/allocation_recorder/crash_handler/stream_data_source_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
@@ -23,7 +24,7 @@ struct StreamDataSourceFactoryMock
   MOCK_METHOD(
       std::unique_ptr<::crashpad::MinidumpUserExtensionStreamDataSource>,
       CreateReportStream,
-      (),
+      (const base::debug::tracer::AllocationTraceRecorder&),
       (const override));
 #endif
 
@@ -32,6 +33,17 @@ struct StreamDataSourceFactoryMock
       CreateErrorMessage,
       (base::StringPiece error_message),
       (const override));
+};
+
+struct AllocationRecorderHolderMock
+    : public allocation_recorder::crash_handler::AllocationRecorderHolder {
+  AllocationRecorderHolderMock();
+  ~AllocationRecorderHolderMock() override;
+
+  MOCK_METHOD(allocation_recorder::crash_handler::Result,
+              Initialize,
+              (const ::crashpad::ProcessSnapshot& process_snapshot),
+              (override));
 };
 
 }  // namespace allocation_recorder::testing::crash_handler

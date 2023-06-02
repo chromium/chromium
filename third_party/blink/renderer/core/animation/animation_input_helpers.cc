@@ -90,8 +90,8 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToPresentationAttribute(
     return CSSPropertyID::kInvalid;
 
   String unprefixed_property = RemoveSVGPrefix(property);
-  if (SVGElement::IsAnimatableCSSProperty(QualifiedName(
-          g_null_atom, AtomicString(unprefixed_property), g_null_atom))) {
+  if (SVGElement::IsAnimatableCSSProperty(
+          QualifiedName(AtomicString(unprefixed_property)))) {
     return CssPropertyID(element->GetExecutionContext(), unprefixed_property);
   }
   return CSSPropertyID::kInvalid;
@@ -211,7 +211,7 @@ const AttributeNameMap& GetSupportedAttributes() {
 
 QualifiedName SvgAttributeName(const String& property) {
   DCHECK(!IsSVGPrefixed(property));
-  return QualifiedName(g_null_atom, AtomicString(property), g_null_atom);
+  return QualifiedName(AtomicString(property));
 }
 
 const QualifiedName* AnimationInputHelpers::KeyframeAttributeToSVGAttribute(

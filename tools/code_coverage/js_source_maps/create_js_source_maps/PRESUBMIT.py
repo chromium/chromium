@@ -8,7 +8,6 @@ details on the presubmit API built into gcl.
 """
 import sys
 
-USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -34,11 +33,8 @@ def CheckLint(input_api, output_api):
 
 
 def CheckUnittests(input_api, output_api):
-  results = input_api.canned_checks.RunUnitTests(
-      input_api,
-      output_api, [
-          input_api.os_path.join(input_api.PresubmitLocalPath(), 'test',
-                                 'create_js_source_maps_test.py')
-      ],
-      run_on_python2=False)
+  results = input_api.canned_checks.RunUnitTests(input_api, output_api, [
+      input_api.os_path.join(input_api.PresubmitLocalPath(), 'test',
+                             'create_js_source_maps_test.py')
+  ])
   return results

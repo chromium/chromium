@@ -109,8 +109,10 @@ export class Review extends View {
     try {
       await new Promise<void>((resolve, reject) => {
         image.onload = () => resolve();
-        image.onerror = (e) =>
-            reject(new Error(`Failed to load review document image: ${e}`));
+        image.addEventListener('error', (e) => {
+          const msg = `Failed to load review document image: ${e.message}`;
+          reject(new Error(msg));
+        }, {once: true});
         image.src = URL.createObjectURL(blob);
       });
     } catch (e) {

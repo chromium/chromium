@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
@@ -62,7 +62,7 @@ void DecoderListener::SetEventWaitTimeout(base::TimeDelta timeout) {
   event_timeout_ = timeout;
 }
 
-bool DecoderListener::Initialize(const Video* video) {
+bool DecoderListener::Initialize(const VideoBitstream* video) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video);
   DVLOGF(4);

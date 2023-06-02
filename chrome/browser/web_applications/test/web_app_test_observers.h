@@ -53,6 +53,10 @@ class WebAppInstallManagerObserverAdapter
                                    base::StringPiece old_name)>;
   void SetWebAppManifestUpdateDelegate(WebAppManifestUpdateDelegate delegate);
 
+  using WebAppSourceRemovedDelegate =
+      base::RepeatingCallback<void(const AppId& app_id)>;
+  void SetWebAppSourceRemovedDelegate(WebAppSourceRemovedDelegate delegate);
+
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
   void OnWebAppManifestUpdated(const AppId& app_id,
@@ -62,6 +66,7 @@ class WebAppInstallManagerObserverAdapter
       const AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
+  void OnWebAppSourceRemovedForTesting(const AppId& app_id) override;
 
  protected:
   // Helper method for subclasses to allow easy waiting on `wait_loop_`.
@@ -84,6 +89,8 @@ class WebAppInstallManagerObserverAdapter
 
  private:
   WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
+  WebAppSourceRemovedDelegate app_source_removed_delegate_;
+
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};
 

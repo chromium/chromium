@@ -39,6 +39,8 @@ class AmbientSlideshowPeripheralUi : public views::View,
   // the desired frequency to prevent screen burn.
   void UpdateGlanceableInfoPosition();
 
+  void UpdateLeftPaddingToMatchBottom();
+
   void UpdateImageDetails(const std::u16string& details,
                           const std::u16string& related_details);
 

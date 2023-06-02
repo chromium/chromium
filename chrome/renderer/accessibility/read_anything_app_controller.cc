@@ -364,7 +364,7 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
-  chrome->Set(context, gin::StringToV8(isolate, "readAnything"), handle.ToV8())
+  chrome->Set(context, gin::StringToV8(isolate, "readingMode"), handle.ToV8())
       .Check();
   return controller;
 }
@@ -422,7 +422,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 
   // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  std::string script = "chrome.readAnything.showLoading();";
+  std::string script = "chrome.readingMode.showLoading();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 
   // When the UI first constructs, this function may be called before tree_id
@@ -516,7 +516,7 @@ void ReadAnythingAppController::Draw() {
   // -- that is, it is awaiting distillation or never requested distillation.
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  std::string script = "chrome.readAnything.updateContent();";
+  std::string script = "chrome.readingMode.updateContent();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
@@ -525,7 +525,7 @@ void ReadAnythingAppController::DrawSelection() {
   // -- that is, it is awaiting distillation or never requested distillation.
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  std::string script = "chrome.readAnything.updateSelection();";
+  std::string script = "chrome.readingMode.updateSelection();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
@@ -534,7 +534,7 @@ void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
 
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  std::string script = "chrome.readAnything.updateTheme();";
+  std::string script = "chrome.readingMode.updateTheme();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
@@ -571,6 +571,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
+      .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
+      .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("isSelectable", &ReadAnythingAppController::isSelectable)
       .SetMethod("onSelectionChange",
@@ -745,6 +747,14 @@ void ReadAnythingAppController::OnConnected() {
       page_handler_.BindNewPipeAndPassReceiver());
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(
       std::move(page_handler_factory_receiver));
+}
+
+void ReadAnythingAppController::OnCopy() const {
+  page_handler_->OnCopy();
+}
+
+void ReadAnythingAppController::OnScroll(bool on_selection) const {
+  model_.OnScroll(on_selection, /* from_reading_mode= */ true);
 }
 
 void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {

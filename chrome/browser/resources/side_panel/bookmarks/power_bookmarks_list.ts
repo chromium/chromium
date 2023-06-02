@@ -27,6 +27,9 @@ import '//resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {BookmarkProductInfo} from '//bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
+import {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -39,17 +42,15 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util_ts.js';
 import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 import {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 import {PowerBookmarksDragManager} from './power_bookmarks_drag_manager.js';
 import {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import {editingDisabledByPolicy, Label, PowerBookmarksService} from './power_bookmarks_service.js';
-import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
 const ADD_FOLDER_ACTION_UMA = 'Bookmarks.FolderAddedFromSidePanel';
 const ADD_URL_ACTION_UMA = 'Bookmarks.AddedFromSidePanel';
@@ -86,6 +87,8 @@ export interface PowerBookmarksListElement {
     sortMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
     disabledFeatureDialog: CrDialogElement,
+    topLevelEmptyState: SpEmptyStateElement,
+    folderEmptyState: SpEmptyStateElement,
   };
 }
 
@@ -237,7 +240,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setAttribute('role', 'tree');
+    this.setAttribute('role', 'application');
     listenOnce(this.$.powerBookmarksContainer, 'dom-change', () => {
       setTimeout(() => this.bookmarksApi_.showUi(), 0);
     });
@@ -689,7 +692,9 @@ export class PowerBookmarksListElement extends PolymerElement {
         this.push('activeFolderPath_', event.detail.bookmark);
         // Cancel search when changing active folder.
         this.$.searchField.setValue('');
-        this.$.shownBookmarksIronList.focusItem(0);
+        afterNextRender(this, () => {
+          this.$.shownBookmarksIronList.focusItem(0);
+        });
       } else {
         this.bookmarksApi_.openBookmark(
             event.detail.bookmark.id, this.activeFolderPath_.length, {
@@ -766,12 +771,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     return false;
   }
 
-  private shouldShowEmptySearchState_() {
+  private shouldShowEmptySearchState_(): boolean {
     return this.hasActiveLabels_() || !!this.searchQuery_;
   }
 
+  private shouldShowTopLevelEmptyState_(): boolean {
+    return this.guestMode_ ||
+        (this.shownBookmarks_.length === 0 &&
+         (!!this.searchQuery_ || this.activeFolderPath_.length === 0));
+  }
+
   private shouldHideCard_(): boolean {
-    return this.shouldHideHeader_() && this.shownBookmarks_.length === 0;
+    return this.guestMode_ ||
+        (this.shouldHideHeader_() && this.shownBookmarks_.length === 0);
   }
 
   private shouldHideHeader_(): boolean {

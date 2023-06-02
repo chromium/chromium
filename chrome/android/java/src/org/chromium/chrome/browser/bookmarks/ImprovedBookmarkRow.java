@@ -149,12 +149,17 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mAccessoryViewGroup.removeAllViews();
         if (view == null) return;
 
+        // The view might already have a parent, since the items in BookmarkManager's model list
+        // can be rebound to other views. In that case, remove the view from its parent before
+        // adding it as a sub-view to prevent crashing.
+        if (view.getParent() != null) {
+            ((ViewGroup) view.getParent()).removeView(view);
+        }
         mAccessoryViewGroup.addView(view);
     }
 
     void setListMenuButtonDelegate(ListMenuButtonDelegate listMenuButtonDelegate) {
         mMoreButton.setDelegate(listMenuButtonDelegate);
-        mMoreButton.setVisibility(View.VISIBLE);
     }
 
     void setPopupListener(PopupMenuShownListener listener) {

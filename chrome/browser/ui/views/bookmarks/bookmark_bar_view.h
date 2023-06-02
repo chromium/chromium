@@ -117,6 +117,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void GetAnchorPositionForButton(views::MenuButton* button,
                                   views::MenuAnchorPosition* anchor);
 
+  // Returns the size of the leading margin of the bookmarks bar.
+  int GetLeadingMargin() const;
+
   // Returns the button responsible for showing bookmarks in the
   // "Other Bookmarks" folder.
   views::MenuButton* other_bookmarks_button() const {

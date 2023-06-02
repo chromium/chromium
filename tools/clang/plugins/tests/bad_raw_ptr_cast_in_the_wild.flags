@@ -1,0 +1,1 @@
+-ferror-limit=0 -Xclang -plugin-arg-find-bad-constructs -Xclang check-bad-raw-ptr-cast

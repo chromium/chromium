@@ -90,7 +90,7 @@ class NtpFeedContentFetcherTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<NtpFeedContentFetcher> ntp_feed_content_fetcher_;
   signin::IdentityTestEnvironment identity_test_env_;
-  raw_ptr<TestFeedNetwork> feed_network_;
+  raw_ptr<TestFeedNetwork, DanglingUntriaged> feed_network_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   TestingPrefServiceSimple profile_prefs_;

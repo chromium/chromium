@@ -417,6 +417,7 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
+          isPasskey: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -444,6 +445,7 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
+          isPasskey: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -473,6 +475,7 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
+          isPasskey: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -500,6 +503,7 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
+          isPasskey: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -529,6 +533,7 @@ var availableTests = [
             signonRealm: 'https://example.com',
           },
           isAndroidCredential: false,
+          isPasskey: false,
           username: 'alice',
           changePasswordUrl: 'https://example.com/.well-known/change-password',
           compromisedInfo: {
@@ -555,6 +560,7 @@ var availableTests = [
             signonRealm: '',
           },
           isAndroidCredential: true,
+          isPasskey: false,
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,

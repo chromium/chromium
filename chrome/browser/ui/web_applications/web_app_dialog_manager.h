@@ -35,7 +35,6 @@ class WebAppDialogManager {
 
   using Callback = base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
-  bool CanUserUninstallWebApp(const AppId& app_id) const;
   // The uninstall dialog will be modal to |parent_window|, or a non-modal if
   // |parent_window| is nullptr.
   void UninstallWebApp(const AppId& app_id,

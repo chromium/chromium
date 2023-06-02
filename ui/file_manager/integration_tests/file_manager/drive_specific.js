@@ -682,6 +682,17 @@ testcase.driveAvailableOfflineActionBar = async () => {
   await remoteCall.waitForElement(
       appId, '#file-list .pinned[file-name="hello.txt"]');
 
+
+  // Hover cursor over the pinned icon.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId,
+      ['#file-list .pinned[file-name="hello.txt"] .inline-status']));
+
+  // Verify the correct tooltip is displayed.
+  const tooltip = await remoteCall.waitForElement(
+      appId, ['files-tooltip[visible=true]', '#label']);
+  chrome.test.assertEq('Available offline', tooltip.text);
+
   // Check the "Available Offline" toggle is enabled and checked.
   await remoteCall.waitForElement(
       appId,
@@ -737,8 +748,11 @@ testcase.driveLinkToDirectory = async () => {
   await remoteCall.waitUntilSelected(appId, 'G');
   await remoteCall.waitForElement(appId, '.table-row[selected]');
 
-  // Ensure the "G" directory has the shortcut class applied.
-  await remoteCall.waitForElement(appId, '#file-list [file-name="G"].shortcut');
+  if ((await sendTestMessage({name: 'isDriveShortcutsEnabled'})) === 'true') {
+    // Ensure the "G" directory has the shortcut class applied.
+    await remoteCall.waitForElement(
+        appId, '#file-list [file-name="G"].shortcut');
+  }
 
   // Open the link
   chrome.test.assertTrue(
@@ -925,13 +939,21 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
     syncStatus: 'in_progress',
   });
 
-  // On `DriveFsTestVolume::SetFileSyncStatus`, the fake event setting the
-  // path's status hardcodes the progress as 50 bytes / 100 bytes transferred.
+  const pieProgressQuery = '[data-sync-status=in_progress] .progress';
+
   // Verify this data reaches the UI as a progress value of 50%.
-  const inlineStatus = await remoteCall.waitForElement(
-      appId, '[data-sync-status=in_progress] .progress');
+  const inlineStatus = await remoteCall.waitForElement(appId, pieProgressQuery);
 
   chrome.test.assertEq(Number(inlineStatus.attributes['progress']), 0.5);
+
+  // Hover cursor over the pie progress icon.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [pieProgressQuery]));
+
+  // Verify the correct tooltip is displayed.
+  const tooltip = await remoteCall.waitForElement(
+      appId, ['files-tooltip[visible=true]', '#label']);
+  chrome.test.assertEq('Syncing - 50%', tooltip.text);
 
   // Fake the file finishing syncing.
   await sendTestMessage({
@@ -1017,8 +1039,10 @@ testcase.driveInlineSyncStatusParentFolder = async () => {
     syncStatus: 'error',
   });
   // States:
-  // toBeUploaded - syncing in progress
-  // toFailUploading - syncing failed
+  // some_folder - syncing in progress
+  // some_folder/toBeUploaded - syncing in progress
+  // some_folder/toFailUploading - syncing failed (when file fail to sync, their
+  // status changes back to "queued")
 
   // Verify the "sync failed" icon is displayed in the parent folder.
   // (failed > in progress)
@@ -1037,6 +1061,159 @@ testcase.driveInlineSyncStatusParentFolder = async () => {
   // Verify the "sync failed" icon is still displayed in the parent folder.
   // (failed > completed)
   await remoteCall.waitForElement(appId, syncFailedQuery);
+};
+
+/**
+ * Tests that the inline sync status "in progress" icon is displayed in "My
+ * Drive" as the file starts syncing then disappears as it finishes syncing
+ * (i.e., the file reaches 100% progress).
+ */
+testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
+  const toBeUploaded = new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'video.ogv',
+    thumbnailFileName: 'image.png',
+    targetPath: 'toBeUploaded.ogv',
+    mimeType: 'video/ogg',
+    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
+    nameText: 'toBeUploaded.ogv',
+    sizeText: '59 KB',
+    typeText: 'OGG video',
+    availableOffline: true,
+  });
+
+  // Open Files app on Drive and copy over entry to be uploaded.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [toBeUploaded]);
+
+  // Fake the file starting to sync.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${toBeUploaded.targetPath}`,
+    progress: 50,
+  });
+
+  // Verify this data reaches the UI as a progress value of 50%.
+  const inlineStatus = await remoteCall.waitForElement(
+      appId, '[data-sync-status=in_progress] .progress');
+
+  chrome.test.assertEq(Number(inlineStatus.attributes['progress']), 0.5);
+
+  // Fake the file finishing syncing.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${toBeUploaded.targetPath}`,
+    progress: 100,
+  });
+
+  // Verify the "sync in progress" icon is no longer displayed.
+  await remoteCall.waitForElementLost(appId, '[data-sync-status=in_progress]');
+};
+
+/**
+ * Tests that the inline sync status icons are displayed in Drive on parent
+ * folders containing entries and that child entries' statuses are aggregated
+ * respecting the order of precedence (failed > in progress > completed).
+ */
+testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
+  const parentDir = new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'some_folder',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    nameText: 'some_folder',
+    sizeText: '--',
+    typeText: 'Folder',
+  });
+
+  const toBeUploaded = new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'video.ogv',
+    thumbnailFileName: 'image.png',
+    targetPath: 'some_folder/toBeUploaded.ogv',
+    mimeType: 'video/ogg',
+    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
+    nameText: 'toBeUploaded.ogv',
+    sizeText: '59 KB',
+    typeText: 'OGG video',
+    availableOffline: true,
+  });
+
+  const toFailUploading = new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'video.ogv',
+    thumbnailFileName: 'image.png',
+    targetPath: 'some_folder/toFailUploading.ogv',
+    mimeType: 'video/ogg',
+    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
+    nameText: 'toFailUploading.ogv',
+    sizeText: '59 KB',
+    typeText: 'OGG video',
+    availableOffline: true,
+  });
+
+  // Open Files app on Drive and copy over entry to be uploaded.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [parentDir, toBeUploaded, toFailUploading]);
+
+  // Fake syncing both files to Drive.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${toBeUploaded.targetPath}`,
+    progress: 50,
+  });
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${toFailUploading.targetPath}`,
+    progress: 50,
+  });
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${parentDir.targetPath}`,
+    progress: 50,
+  });
+  // States:
+  // some_folder - syncing in progress
+  // some_folder/toBeUploaded - syncing in progress
+  // some_folder/toFailUploading - syncing in progress
+
+  const syncInProgressQuery = '[data-sync-status=in_progress]';
+  const syncQueuedQuery = '[data-sync-status=queued]';
+
+  // Verify the "sync in progress" icon is displayed in the parent "some_folder"
+  // folder.
+  await remoteCall.waitForElement(appId, syncInProgressQuery);
+
+  // Go inside the some_folder folder.
+  await navigateWithDirectoryTree(appId, '/My Drive/some_folder');
+
+  // Fake toFailUploading.ogv failing to sync to Drive.
+  await sendTestMessage({
+    name: 'setDriveSyncError',
+    path: `/root/${toFailUploading.targetPath}`,
+  });
+  // States:
+  // some_folder - syncing in progress
+  // some_folder/toBeUploaded - syncing in progress
+  // some_folder/toFailUploading - syncing failed (when file fail to sync, their
+  // status changes back to "queued")
+
+  // Verify the "sync queued" icon is displayed.
+  // (failed > in progress)
+  await remoteCall.waitForElement(appId, syncQueuedQuery);
+
+  // Fake root/some_folder/world.ogv finishing syncing.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${toBeUploaded.targetPath}`,
+    progress: 100,
+  });
+  // States:
+  // toBeUploaded - syncing completed
+  // toFailUploading - syncing failed
+
+  // Verify the "sync queued" icon is still displayed in the parent folder.
+  // (failed > completed)
+  await remoteCall.waitForElement(appId, syncQueuedQuery);
 };
 
 /**
@@ -1308,9 +1485,9 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
-  // Mock the free space returned by spaced to be 1 GB and enable the bulk
+  // Mock the free space returned by spaced to be 4 GB and enable the bulk
   // pinning preference
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
 
   // Wait for both the pinned toggle and the pinned command to become hidden and
@@ -1344,9 +1521,9 @@ testcase.driveFolderShouldShowOfflineTickWhenBulkPinningEnabled = async () => {
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="A"]:not(.pinned)');
 
-  // Mock the free space returned by spaced to be 1 GB and enable the bulk
-  // pinning preference
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  // Mock the free space returned by spaced to be 4 GB and enable the bulk
+  // pinning preference.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
 
   // Wait for the folder to show up as pinned (the underlying folder will not
@@ -1397,7 +1574,7 @@ testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.sharedWithMeDirectory]);
 
   // Enable the bulk pinning preference first.
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
   await remoteCall.waitForBulkPinningStage('Syncing');
 
@@ -1464,9 +1641,9 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
-  // Mock the free space returned by spaced to be 1 GB and enable the bulk
+  // Mock the free space returned by spaced to be 4 GB and enable the bulk
   // pinning preference.
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
   await remoteCall.waitForBulkPinningStage('Syncing');
 
@@ -1487,4 +1664,27 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
       '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
+};
+
+/**
+ * Tests that files that can't be pinned should have the correct CSS class
+ * applied to them. When they go back to being able to be pinned (e.g. from Docs
+ * offline coming back online) then ensure the inline icon is updated.
+ */
+testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
+    async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.cantPinFile]);
+
+  // Ensure the `cant_pin.txt` file has the cant-pin class.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="text.txt"].cant-pin');
+
+  // Update the file metadata to ensure the file can now be pinned.
+  await sendTestMessage(
+      {name: 'setCanPin', path: '/root/text.txt', canPin: true});
+
+  // Wait for the `.cant-pin` class to be removed.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="text.txt"]:not(.cant-pin)');
 };

@@ -52,7 +52,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       NOTREACHED();
       return nullptr;
     case PaintFilter::Type::kColorFilter:
-      return sk_make_sp<ColorFilterPaintFilter>(SkLumaColorFilter::Make(),
+      return sk_make_sp<ColorFilterPaintFilter>(ColorFilter::MakeLuma(),
                                                 image_filter, &crop_rect);
     case PaintFilter::Type::kBlur:
       return sk_make_sp<BlurPaintFilter>(0.1f, 0.2f, SkTileMode::kClamp,

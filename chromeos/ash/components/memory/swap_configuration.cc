@@ -8,31 +8,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
 namespace ash {
-
-BASE_FEATURE(kCrOSTuneMinFilelist,
-             "CrOSTuneMinFilelist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kCrOSMinFilelistMb{&kCrOSTuneMinFilelist,
-                                                 "CrOSMinFilelistMb", -1};
-
-BASE_FEATURE(kCrOSTuneRamVsSwapWeight,
-             "CrOSTuneRamVsSwapWeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kCrOSRamVsSwapWeight{&kCrOSTuneRamVsSwapWeight,
-                                                   "CrOSRamVsSwapWeight", -1};
-
-BASE_FEATURE(kCrOSTuneExtraFree,
-             "CrOSTuneExtraFree",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kCrOSExtraFreeMb{&kCrOSTuneExtraFree,
-                                               "CrOSExtraFreeMb", -1};
 
 // There are going to be 2 separate experiments for memory pressure signal, one
 // for ARC enabled users and one for ARC disabled users.
@@ -106,80 +84,6 @@ const ZramWritebackParams ZramWritebackParams::Get() {
 
 namespace {
 
-constexpr const char kMinFilelist[] = "min_filelist";
-constexpr const char kRamVsSwapWeight[] = "ram_vs_swap_weight";
-constexpr const char kExtraFree[] = "extra_free";
-
-void OnSwapParameterSet(std::string parameter,
-                        absl::optional<std::string> res) {
-  LOG_IF(ERROR, !res.has_value())
-      << "Setting swap paramter " << parameter << " failed.";
-  LOG_IF(ERROR, res.has_value() && !res.value().empty())
-      << "Setting swap parameter " << parameter
-      << " returned error: " << res.value();
-}
-
-void ConfigureMinFilelistIfEnabled() {
-  if (!base::FeatureList::IsEnabled(kCrOSTuneMinFilelist)) {
-    return;
-  }
-
-  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-  CHECK(debugd_client);
-
-  int min_mb = kCrOSMinFilelistMb.Get();
-  if (min_mb < 0) {
-    LOG(ERROR) << "Min Filelist MB is enabled with an invalid value: "
-               << min_mb;
-    return;
-  }
-
-  VLOG(1) << "Setting min filelist to " << min_mb << "MB";
-  debugd_client->SetSwapParameter(
-      kMinFilelist, min_mb, base::BindOnce(&OnSwapParameterSet, kMinFilelist));
-}
-
-void ConfigureRamVsSwapWeightIfEnabled() {
-  if (!base::FeatureList::IsEnabled(kCrOSTuneRamVsSwapWeight))
-    return;
-
-  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-  CHECK(debugd_client);
-
-  int swap_weight = kCrOSRamVsSwapWeight.Get();
-  if (swap_weight < 0) {
-    LOG(ERROR) << "Ram vs Swap weight must be greater than or equal to 0, "
-                  "invalid value: "
-               << swap_weight;
-    return;
-  }
-
-  VLOG(1) << "Setting ram vs swap weight to: " << swap_weight;
-  debugd_client->SetSwapParameter(
-      kRamVsSwapWeight, swap_weight,
-      base::BindOnce(&OnSwapParameterSet, kRamVsSwapWeight));
-}
-
-void ConfigureExtraFreeIfEnabled() {
-  if (!base::FeatureList::IsEnabled(kCrOSTuneExtraFree))
-    return;
-
-  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-  CHECK(debugd_client);
-
-  int extra_free = kCrOSExtraFreeMb.Get();
-  if (extra_free < 0) {
-    LOG(ERROR)
-        << "Extra free must be greater than or equal to 0, invalid value: "
-        << extra_free;
-    return;
-  }
-
-  VLOG(1) << "Setting extra_free mb to: " << extra_free;
-  debugd_client->SetSwapParameter(
-      kExtraFree, extra_free, base::BindOnce(&OnSwapParameterSet, kExtraFree));
-}
-
 void OnMemoryMarginsSet(bool result, uint64_t critical, uint64_t moderate) {
   if (!result) {
     LOG(ERROR) << "Unable to set critical memory margins via resourced";
@@ -239,9 +143,6 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
 
 void ConfigureSwap(bool arc_enabled) {
   ConfigureResourcedPressureThreshold(arc_enabled);
-  ConfigureExtraFreeIfEnabled();
-  ConfigureRamVsSwapWeightIfEnabled();
-  ConfigureMinFilelistIfEnabled();
 }
 
 }  // namespace ash

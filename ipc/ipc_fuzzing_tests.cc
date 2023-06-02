@@ -147,7 +147,7 @@ class SimpleListener : public IPC::Listener {
     other_ = s;
   }
  protected:
-  raw_ptr<IPC::Sender> other_;
+  raw_ptr<IPC::Sender, DanglingUntriaged> other_;
 };
 
 enum {

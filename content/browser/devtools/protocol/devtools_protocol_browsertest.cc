@@ -1684,6 +1684,27 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectorTargetCrashedNavigate) {
   WaitForNotification("Inspector.targetReloadedAfterCrash", true);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetGetTargetsAfterCrash) {
+  set_agent_host_can_close();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), url_a, 1);
+  Attach();
+  SendCommandSync("Inspector.enable");
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
+
+  {
+    ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
+    WaitForNotification("Inspector.targetCrashed");
+  }
+
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
+}
+
 // Same as in DevToolsProtocolTest.InspectorTargetCrashedNavigate, but with a
 // cross-process navigation at the end.
 // Regression test for https://crbug.com/990315

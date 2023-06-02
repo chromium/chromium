@@ -19,15 +19,18 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 
 import java.util.List;
 
 /**
  * The base class for credit card settings.
  */
-abstract class AutofillCreditCardEditor extends AutofillEditorBase {
+abstract class AutofillCreditCardEditor
+        extends AutofillEditorBase implements FragmentHelpAndFeedbackLauncher {
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+
     protected CreditCard mCard;
     protected Spinner mBillingAddress;
     protected int mInitialBillingAddressPos;
@@ -48,7 +51,7 @@ abstract class AutofillCreditCardEditor extends AutofillEditorBase {
                 getActivity(), android.R.layout.simple_spinner_item);
         profilesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        AutofillProfile noSelection = new AutofillProfile();
+        AutofillProfile noSelection = AutofillProfile.builder().build();
         noSelection.setLabel(getActivity().getString(R.string.select));
         profilesAdapter.add(noSelection);
 
@@ -105,12 +108,16 @@ abstract class AutofillCreditCardEditor extends AutofillEditorBase {
             return true;
         }
         if (item.getItemId() == R.id.help_menu_id) {
-            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                    .show(getActivity(), getActivity().getString(R.string.help_context_autofill),
-                            null);
+            mHelpAndFeedbackLauncher.show(
+                    getActivity(), getActivity().getString(R.string.help_context_autofill), null);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }

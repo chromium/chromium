@@ -12,11 +12,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
@@ -47,6 +49,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private final ProfileDataCache mProfileDataCache;
     private final PropertyModel mModel;
     private final AccountManagerFacade mAccountManagerFacade;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     private @Nullable String mSelectedAccountName;
     private @Nullable String mDefaultAccountName;
@@ -58,11 +61,13 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
     AccountPickerBottomSheetMediator(WindowAndroid windowAndroid,
             AccountPickerDelegate accountPickerDelegate, Runnable onDismissButtonClicked,
-            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
 
         mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked,
@@ -248,7 +253,16 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
         if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
                 || viewState == ViewState.SIGNIN_GENERAL_ERROR) {
-            signIn();
+            if (BuildInfo.getInstance().isAutomotive) {
+                mDeviceLockActivityLauncher.launchDeviceLockActivity(mActivity, true,
+                        mSelectedAccountName, mWindowAndroid, (resultCode, data) -> {
+                            if (resultCode == Activity.RESULT_OK) {
+                                signIn();
+                            }
+                        });
+            } else {
+                signIn();
+            }
         } else if (viewState == ViewState.NO_ACCOUNTS) {
             addAccount();
         } else if (viewState == ViewState.SIGNIN_AUTH_ERROR) {

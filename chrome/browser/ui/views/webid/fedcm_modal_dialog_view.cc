@@ -15,120 +15,44 @@
 
 FedCmModalDialogView::FedCmModalDialogView(
     content::WebContents* web_contents,
-    const GURL& url,
     FedCmModalDialogView::Observer* observer)
-    : web_contents_(web_contents),
-      observer_(observer),
-      curr_origin_(url::Origin::Create(url)) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  Init(url);
+    : source_window_(web_contents), observer_(observer) {}
+
+FedCmModalDialogView::~FedCmModalDialogView() = default;
+
+content::WebContents* FedCmModalDialogView::ShowPopupWindow(const GURL& url) {
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::NEW_POPUP,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false);
+  popup_window_ =
+      source_window_->GetDelegate()->OpenURLFromTab(source_window_, params);
+
+  constexpr int kPopupWindowWidth = 512;
+  constexpr int kPopupWindowHeight = 450;
+  gfx::Rect source_window_rect = source_window_->GetContainerBounds();
+  int x_coordinate = source_window_rect.x() +
+                     ((source_window_rect.width() - kPopupWindowWidth) / 2);
+  int y_coordinate = source_window_rect.y();
+  popup_window_->GetDelegate()->SetContentsBounds(
+      popup_window_, gfx::Rect(x_coordinate, y_coordinate, kPopupWindowWidth,
+                               kPopupWindowHeight));
+
+  Observe(popup_window_);
+
+  return popup_window_;
 }
 
-FedCmModalDialogView::~FedCmModalDialogView() {
-  // Let the observer know that this object is being destroyed.
-  if (observer_) {
-    observer_->OnFedCmModalDialogViewDestroyed();
-  }
-}
-
-// static
-FedCmModalDialogView* FedCmModalDialogView::ShowFedCmModalDialog(
-    content::WebContents* web_contents,
-    const GURL& url,
-    FedCmModalDialogView::Observer* observer) {
-  // This dialog owns itself. DialogDelegateView will delete |dialog| instance.
-  FedCmModalDialogView* dialog =
-      new FedCmModalDialogView(web_contents, url, observer);
-  constrained_window::ShowWebModalDialogViews(dialog, web_contents);
-  return dialog;
-}
-
-void FedCmModalDialogView::CloseFedCmModalDialog() {
-  contents_wrapper_->GetWidget()->Close();
-}
-
-content::WebContents* FedCmModalDialogView::GetWebViewWebContents() {
-  DCHECK(web_view_);
-  return web_view_->GetWebContents();
-}
-
-void FedCmModalDialogView::RemoveObserver() {
-  observer_ = nullptr;
-}
-
-void FedCmModalDialogView::Init(const GURL& url) {
-  constexpr int kDialogMinWidth = 512;
-  constexpr int kDialogHeight = 450;
-  constexpr int kVerticalInset = 8;
-  constexpr int kHeaderHorizontalInset = 16;
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
-  auto contents_wrapper = std::make_unique<views::View>();
-  contents_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  contents_wrapper->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalInset, kHeaderHorizontalInset, kVerticalInset,
-                        kHeaderHorizontalInset)));
-
-  auto* header_view =
-      contents_wrapper->AddChildView(std::make_unique<views::View>());
-  header_view = PopulateSheetHeaderView(header_view, url);
-
-  web_view_ = contents_wrapper->AddChildView(
-      std::make_unique<views::WebView>(web_contents_->GetBrowserContext()));
-  web_view_->SetPreferredSize(gfx::Size(kDialogMinWidth, kDialogHeight));
-  web_view_->LoadInitialURL(url);
-
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      web_view_->GetWebContents());
-  web_modal::WebContentsModalDialogManager::FromWebContents(
-      web_view_->GetWebContents())
-      ->SetDelegate(this);
-
-  Observe(web_view_->GetWebContents());
-
-  contents_wrapper_ = AddChildView(std::move(contents_wrapper));
-}
-
-views::View* FedCmModalDialogView::PopulateSheetHeaderView(
-    views::View* container,
-    const GURL& url) {
-  views::TableLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::TableLayout>());
-  layout->AddRows(1, views::TableLayout::kFixedSize);
-
-  // Origin column.
-  layout->AddColumn(
-      views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
-      /*horizontal_resize=*/1.0, views::TableLayout::ColumnSize::kUsePreferred,
-      /*fixed_width=*/0,
-      /*min_width=*/0);
-  layout->AddRows(1, views::TableLayout::kFixedSize);
-
-  // Add the origin label.
-  origin_label_ = container->AddChildView(std::make_unique<views::Label>(
-      url_formatter::FormatOriginForSecurityDisplay(
-          curr_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
-  origin_label_->SetElideBehavior(gfx::ELIDE_HEAD);
-  origin_label_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-
-  return container;
-}
-
-void FedCmModalDialogView::PrimaryPageChanged(content::Page& page) {
-  const url::Origin origin = page.GetMainDocument().GetLastCommittedOrigin();
-  if (!origin_label_ || origin.IsSameOriginWith(curr_origin_)) {
+void FedCmModalDialogView::ClosePopupWindow() {
+  if (!popup_window_) {
     return;
   }
 
-  // Update the origin label.
-  origin_label_->SetText(url_formatter::FormatOriginForSecurityDisplay(
-      origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  curr_origin_ = origin;
+  popup_window_->Close();
 }
 
-BEGIN_METADATA(FedCmModalDialogView, views::DialogDelegateView)
-END_METADATA
+void FedCmModalDialogView::WebContentsDestroyed() {
+  // Let the observer know that the pop-up window has been destroyed.
+  if (observer_) {
+    observer_->OnPopupWindowDestroyed();
+  }
+}

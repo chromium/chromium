@@ -20,7 +20,8 @@ WebAppsCrosapi* WebAppsCrosapiFactory::GetForProfile(Profile* profile) {
 
 // static
 WebAppsCrosapiFactory* WebAppsCrosapiFactory::GetInstance() {
-  return base::Singleton<WebAppsCrosapiFactory>::get();
+  static base::NoDestructor<WebAppsCrosapiFactory> instance;
+  return instance.get();
 }
 
 // static

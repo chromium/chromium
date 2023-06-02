@@ -805,6 +805,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html"));
+  test_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_FALSE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
@@ -815,6 +816,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html?allowed=true"));
+  test_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_FALSE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
@@ -825,6 +827,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html?ad=true"));
+  test_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
@@ -835,6 +838,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html"));
+  test_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,

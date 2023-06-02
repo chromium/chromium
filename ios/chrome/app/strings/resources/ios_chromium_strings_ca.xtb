@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Dades de la sincronització de Chromium</translation>
 <translation id="1722370509450468186">La contrasenya es desarà al teu compte (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dades de Chromium esborrades</translation>
-<translation id="177102542580335555">Tindràs protecció de seguretat estàndard per a aquest perfil de Chromium</translation>
 <translation id="1838412507805038478">Chromium ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
 <translation id="1843424232666537147">Chromium té funcions que t'ajuden a gestionar les teves dades d'Internet i la rapidesa amb què es carreguen les pàgines web.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="3639997914391704523">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ha utilitzat Chromium en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
+<translation id="3661862315467204831">Obre la configuració de Chromium a iOS, toca Aplicació de navegador predeterminada i selecciona Chromium.</translation>
 <translation id="372658070733623520">Per utilitzar i desar les dades de Chromium al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
+<translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
 <translation id="3955621079070267756">Obre Chromium des de qualsevol aplicació</translation>
 <translation id="4043291146360695975">Les contrasenyes es desen al gestor de contrasenyes només en aquest dispositiu.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>

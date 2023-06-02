@@ -461,13 +461,13 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     DCHECK(self.delegate.passwordManagerClient);
     NSString* value = [rawSuggestion.value
         stringByAppendingString:kPasswordFormSuggestionSuffix];
-    FormSuggestion* suggestion =
-        [FormSuggestion suggestionWithValue:value
-                         displayDescription:rawSuggestion.displayDescription
-                                       icon:nil
-                                 identifier:0
-                          backendIdentifier:nil
-                             requiresReauth:YES];
+    FormSuggestion* suggestion = [FormSuggestion
+        suggestionWithValue:value
+         displayDescription:rawSuggestion.displayDescription
+                       icon:nil
+                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+          backendIdentifier:nil
+             requiresReauth:YES];
     [suggestions addObject:suggestion];
   }
   absl::optional<PasswordDropdownState> suggestionState;
@@ -485,7 +485,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
         suggestionWithValue:suggestPassword
          displayDescription:nil
                        icon:nil
-                 identifier:autofill::PopupItemId::kGeneratePasswordEntry
+                popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
           backendIdentifier:nil
              requiresReauth:NO];
 
@@ -533,7 +533,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       feature->GetWebFramesManager(_webState)->GetFrameWithId(
           SysNSStringToUTF8(frameID));
 
-  switch (suggestion.identifier) {
+  switch (suggestion.popupItemId) {
     case autofill::PopupItemId::kAllSavedPasswordsEntry: {
       completion();
       password_manager::metrics_util::LogPasswordDropdownItemSelected(

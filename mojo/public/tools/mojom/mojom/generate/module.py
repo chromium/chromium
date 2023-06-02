@@ -298,6 +298,35 @@ class ReferenceKind(Kind):
 
     return nullable_kind
 
+  def MakeUnnullableKind(self):
+    assert self.is_nullable
+
+    if self == NULLABLE_STRING:
+      return STRING
+    if self == NULLABLE_HANDLE:
+      return HANDLE
+    if self == NULLABLE_DCPIPE:
+      return DCPIPE
+    if self == NULLABLE_DPPIPE:
+      return DPPIPE
+    if self == NULLABLE_MSGPIPE:
+      return MSGPIPE
+    if self == NULLABLE_SHAREDBUFFER:
+      return SHAREDBUFFER
+    if self == NULLABLE_PLATFORMHANDLE:
+      return PLATFORMHANDLE
+
+    unnullable_kind = type(self)()
+    unnullable_kind.shared_definition = self.shared_definition
+    if self.spec is not None:
+      assert self.spec[0] == '?'
+      unnullable_kind.spec = self.spec[1:]
+    unnullable_kind.is_nullable = False
+    unnullable_kind.parent_kind = self.parent_kind
+    unnullable_kind.module = self.module
+
+    return unnullable_kind
+
   def __eq__(self, rhs):
     return (isinstance(rhs, ReferenceKind) and super().__eq__(rhs))
 
@@ -1740,6 +1769,10 @@ def IsPendingAssociatedReceiverKind(kind):
 
 def IsEnumKind(kind):
   return isinstance(kind, Enum)
+
+
+def IsValueKind(kind):
+  return isinstance(kind, ValueKind)
 
 
 def IsReferenceKind(kind):

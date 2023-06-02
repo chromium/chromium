@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
@@ -27,7 +27,7 @@ class MenuManagerFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<MenuManagerFactory>;
+  friend base::NoDestructor<MenuManagerFactory>;
 
   MenuManagerFactory();
   ~MenuManagerFactory() override;

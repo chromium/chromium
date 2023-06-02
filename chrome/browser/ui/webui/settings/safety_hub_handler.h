@@ -72,7 +72,7 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // Sends the list of unused site permissions to review to the WebUI.
   void SendUnusedSitePermissionsReviewList();
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_HUB_HANDLER_H_

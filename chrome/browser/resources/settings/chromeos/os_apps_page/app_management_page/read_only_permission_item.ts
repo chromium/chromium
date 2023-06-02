@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+
 import {App, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {getPermission, getPermissionValueAsTriState} from 'chrome://resources/cr_components/app_management/util.js';
@@ -96,6 +98,19 @@ export class AppManagementReadOnlyPermissionItemElement extends
       case TriState.kAsk:
         return this.i18n('appManagementPermissionAsk');
     }
+  }
+
+  private isManaged_(
+      app: App|undefined,
+      permissionType: PermissionTypeIndex|undefined): boolean {
+    if (app === undefined || permissionType === undefined) {
+      return false;
+    }
+
+    const permission = getPermission(app, permissionType);
+    assert(permission);
+
+    return permission.isManaged;
   }
 }
 

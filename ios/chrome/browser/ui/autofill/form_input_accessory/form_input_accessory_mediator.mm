@@ -273,15 +273,14 @@ using base::UmaHistogramEnumeration;
   }
 
   // Return early if the URL can't be verified.
-  web::URLVerificationTrustLevel trustLevel;
-  const GURL pageURL(webState->GetCurrentURL(&trustLevel));
-  if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
+  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL) {
     [self reset];
     return;
   }
 
   // Return early, pause and reset if the url is not HTML.
-  if (!web::UrlHasWebScheme(pageURL) || !webState->ContentIsHTML()) {
+  if (!web::UrlHasWebScheme(*pageURL) || !webState->ContentIsHTML()) {
     [self reset];
     return;
   }
@@ -415,14 +414,13 @@ using base::UmaHistogramEnumeration;
   }
 
   // Return early if the URL can't be verified.
-  web::URLVerificationTrustLevel trustLevel;
-  const GURL pageURL(_webState->GetCurrentURL(&trustLevel));
-  if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
+  absl::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
+  if (!pageURL) {
     return NO;
   }
 
   // Return early if the url is not HTML.
-  if (!web::UrlHasWebScheme(pageURL) || !_webState->ContentIsHTML()) {
+  if (!web::UrlHasWebScheme(*pageURL) || !_webState->ContentIsHTML()) {
     return NO;
   }
 

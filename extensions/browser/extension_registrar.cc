@@ -54,6 +54,12 @@ ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
 
 ExtensionRegistrar::~ExtensionRegistrar() = default;
 
+void ExtensionRegistrar::Shutdown() {
+  // Setting to `nullptr`, because this raw pointer may become dangling once
+  // the `ExtensionSystem` keyed service is destroyed.
+  extension_system_ = nullptr;
+}
+
 void ExtensionRegistrar::AddExtension(
     scoped_refptr<const Extension> extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

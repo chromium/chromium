@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/apple/owned_objc.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -97,7 +98,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   const char* kArrowDownScrollDown = "40,false,false,true,false\n9844";
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToEndOfDocument"), blink::WebString());
-  SendNativeKeyEvent(NativeWebKeyboardEvent(arrowDownKeyDown));
+  SendNativeKeyEvent(
+      NativeWebKeyboardEvent(base::apple::OwnedNSEvent(arrowDownKeyDown)));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
@@ -109,7 +111,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToBeginningOfDocument"),
       blink::WebString());
-  SendNativeKeyEvent(NativeWebKeyboardEvent(arrowUpKeyDown));
+  SendNativeKeyEvent(
+      NativeWebKeyboardEvent(base::apple::OwnedNSEvent(arrowUpKeyDown)));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
@@ -125,7 +128,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   const char* kArrowDownNoScroll = "40,false,false,true,false\n100";
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToEndOfDocument"), blink::WebString());
-  SendNativeKeyEvent(NativeWebKeyboardEvent(arrowDownKeyDown));
+  SendNativeKeyEvent(
+      NativeWebKeyboardEvent(base::apple::OwnedNSEvent(arrowDownKeyDown)));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,
@@ -137,7 +141,8 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   blink_widget->AddEditCommandForNextKeyEvent(
       blink::WebString::FromLatin1("moveToBeginningOfDocument"),
       blink::WebString());
-  SendNativeKeyEvent(NativeWebKeyboardEvent(arrowUpKeyDown));
+  SendNativeKeyEvent(
+      NativeWebKeyboardEvent(base::apple::OwnedNSEvent(arrowUpKeyDown)));
   base::RunLoop().RunUntilIdle();
   ExecuteJavaScriptForTests("scroll.textContent = window.pageYOffset");
   output = TestWebFrameContentDumper::DumpWebViewAsText(web_view_,

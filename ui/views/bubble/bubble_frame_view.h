@@ -59,6 +59,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
  public:
   METADATA_HEADER(BubbleFrameView);
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
+
   enum class PreferredArrowAdjustment { kMirror, kOffset };
 
   BubbleFrameView(const gfx::Insets& title_margins,
@@ -357,7 +360,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   raw_ptr<ProgressBar> progress_indicator_ = nullptr;
 
   // The optional header view.
-  raw_ptr<View> header_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> header_view_ = nullptr;
 
   // A view to contain the footnote view, if it exists.
   raw_ptr<FootnoteContainerView, DanglingUntriaged> footnote_container_ =

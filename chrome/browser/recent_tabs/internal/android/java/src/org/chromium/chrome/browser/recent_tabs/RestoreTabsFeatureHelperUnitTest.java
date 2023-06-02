@@ -27,6 +27,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -46,6 +48,8 @@ public class RestoreTabsFeatureHelperUnitTest {
     @Mock
     ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
     @Mock
+    FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock
     private Profile mProfile;
     @Mock
     private Tracker mTracker;
@@ -64,8 +68,10 @@ public class RestoreTabsFeatureHelperUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
         jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
-
+        jniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        when(mFaviconHelperJniMock.init()).thenReturn(1L);
         when(mForeignSessionHelperJniMock.init(mProfile)).thenReturn(1L);
+
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mController = RestoreTabsControllerFactory.createInstance(
                 mActivity, mProfile, mListener, mTabCreatorManager, mBottomSheetController);

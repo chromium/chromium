@@ -25,20 +25,6 @@ class BorealisUtilTest : public testing::Test {
   ~BorealisUtilTest() override { display::Screen::SetScreenInstance(nullptr); }
 
  protected:
-  GURL GetFeedbackFormUrl(TestingProfile* profile,
-                          const std::string& app_id,
-                          const std::string& window_title) {
-    base::RunLoop run_loop;
-    GURL returned_url;
-    FeedbackFormUrl(profile, app_id, window_title,
-                    base::BindLambdaForTesting([&](GURL url) {
-                      returned_url = url;
-                      run_loop.Quit();
-                    }));
-    run_loop.Run();
-    return returned_url;
-  }
-
   display::test::TestScreen test_screen_;
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -63,53 +49,14 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
   EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
 }
 
-TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
-  TestingProfile profile;
+TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsTrueForNonGameBorealisApp) {
+  EXPECT_TRUE(IsNonGameBorealisApp(
+      "borealis_anon:org.chromium.guest_os.borealis.xid.100"));
+}
 
+TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsFalseForGames) {
   EXPECT_FALSE(
-      GetFeedbackFormUrl(&profile,
-                         "borealis_anon:org.chromium.guest_os.borealis.xid.100",
-                         "CoolApp")
-          .is_valid());
-}
-
-TEST_F(BorealisUtilTest, FeedbackFormUrlPrefillsWindowTitle) {
-  TestingProfile profile;
-
-  EXPECT_THAT(GetFeedbackFormUrl(
-                  &profile, "borealis_anon:org.chromium.guest_os.borealis.app",
-                  "CoolApp")
-                  .spec(),
-              testing::HasSubstr("=CoolApp"));
-}
-
-TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
-  TestingProfile profile;
-
-  GURL url = GetFeedbackFormUrl(
-      &profile, "borealis_anon:org.chromium.guest_os.borealis.app", "CoolApp");
-
-  // Count the number of query parameters beginning with "entry"; these are
-  // form fields that we're prefilling.
-  int entries = 0;
-  net::QueryIterator it(url);
-  while (!it.IsAtEnd()) {
-    if (base::StartsWith(it.GetKey(), "entry")) {
-      ++entries;
-
-      // All prefilled entries should have a value.
-      EXPECT_THAT(it.GetValue(), testing::Not(testing::IsEmpty()));
-    }
-    it.Advance();
-  }
-  EXPECT_EQ(entries, 2);  // we currently prefill this many form fields.
-
-  std::string json_string;
-  EXPECT_TRUE(
-      net::GetValueForKeyInQuery(url, kDeviceInformationKey, &json_string));
-  auto json_root = base::JSONReader::Read(json_string);
-  // We currently add this many key/value pairs to the JSON field.
-  EXPECT_EQ(json_root.value().GetDict().size(), 7u);
+      IsNonGameBorealisApp("borealis_anon:org.chromium.guest_os.borealis.app"));
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {

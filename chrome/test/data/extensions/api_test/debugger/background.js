@@ -325,6 +325,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     });
   },
 
+  /* TODO(crbug.com/1434257): This test is flaky.
   async function offlineErrorPage() {
     const url = 'http://127.0.0.1//extensions/api_test/debugger/inspected.html';
     const tab = await openTab(url);
@@ -405,6 +406,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     chrome.debugger.onEvent.addListener(onEvent);
     chrome.debugger.attach(debuggee, protocolVersion, onAttach);
   },
+  */
 
   function autoAttachToOOPIF() {
     if (!config.customArg) {

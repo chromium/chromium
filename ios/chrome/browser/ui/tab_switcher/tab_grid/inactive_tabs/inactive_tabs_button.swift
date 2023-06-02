@@ -19,19 +19,25 @@ struct InactiveTabsButton: View {
     @Published var count: Int?
   }
   @ObservedObject var state: State
-  @Environment(\.sizeCategory) var sizeCategory
+  @Environment(\.dynamicTypeSize) var typeSize
 
   var body: some View {
     Button {
       state.action?()
     } label: {
-      if sizeCategory < .accessibilityMedium {
+      if typeSize < .accessibility1 {
         regularLayout()
       } else {
         xxlLayout()
       }
     }
     .buttonStyle(InactiveTabsButtonStyle())
+    // Make the accessibility label explicit.
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel([titleString, subtitleString, counterString]
+                          .compactMap { $0 }
+                          .joined(separator: ", "))
+    .accessibilityIdentifier(kInactiveTabsButtonAccessibilityIdentifier)
   }
 
   /// MARK - Layouts
@@ -69,21 +75,17 @@ struct InactiveTabsButton: View {
   /// Displays the button title.
   @ViewBuilder
   private func title() -> some View {
-    Text(L10nUtils.string(messageId: IDS_IOS_INACTIVE_TABS_BUTTON_TITLE))
+    Text(titleString)
       .foregroundColor(.white)
   }
 
   /// Displays the button subtitle.
   @ViewBuilder
   private func subtitle() -> some View {
-    if let daysThreshold = state.daysThreshold {
-      Text(
-        L10nUtils.formatString(
-          messageId: IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
-          argument: String(daysThreshold))
-      )
-      .font(.footnote)
-      .foregroundColor(.textSecondary)
+    if let subtitleString {
+      Text(subtitleString)
+        .font(.footnote)
+        .foregroundColor(.textSecondary)
     }
   }
 
@@ -93,8 +95,8 @@ struct InactiveTabsButton: View {
   /// If the count is not set, this returns nothing.
   @ViewBuilder
   private func counter() -> some View {
-    if let count = state.count {
-      Text(count > 99 ? "99+" : "\(count)")
+    if let counterString {
+      Text(counterString)
         .foregroundColor(.textSecondary)
     }
   }
@@ -137,6 +139,33 @@ struct InactiveTabsButton: View {
         )
         .cornerRadius(Dimensions.cornerRadius)
         .environment(\.colorScheme, .dark)
+    }
+  }
+
+  /// MARK - Strings
+
+  /// String for the title.
+  private var titleString: String {
+    L10nUtils.string(messageId: IDS_IOS_INACTIVE_TABS_BUTTON_TITLE)
+  }
+
+  /// Optional string for the subtitle.
+  private var subtitleString: String? {
+    if let daysThreshold = state.daysThreshold {
+      return L10nUtils.formatString(
+        messageId: IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
+        argument: String(daysThreshold))
+    } else {
+      return nil
+    }
+  }
+
+  /// Optional string for the counter.
+  private var counterString: String? {
+    if let count = state.count {
+      return count > 99 ? "99+" : "\(count)"
+    } else {
+      return nil
     }
   }
 }

@@ -81,7 +81,7 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
                     ->AppendChild("subframe");
   }
 
-  raw_ptr<content::RenderFrameHost> subframe_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> subframe_;
 };
 
 TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {

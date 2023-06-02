@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_proxy.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
@@ -15,7 +15,8 @@ namespace ash {
 
 // static
 CupsPrintersManagerFactory* CupsPrintersManagerFactory::GetInstance() {
-  return base::Singleton<CupsPrintersManagerFactory>::get();
+  static base::NoDestructor<CupsPrintersManagerFactory> instance;
+  return instance.get();
 }
 
 // static

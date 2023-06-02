@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">angol (USA) billentyűzet Dvorak kiosztással</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – gazdagép</translation>
 <translation id="1521655867290435174">Google Táblázatok</translation>
-<translation id="1538729222189715449">Linux-fájlok megnyitása…</translation>
 <translation id="1547964879613821194">kanadai angol</translation>
 <translation id="1556189134700913550">Alkalmazás az összesre</translation>
 <translation id="1561842594491319104">Chrome-eszközök</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google-webhely</translation>
 <translation id="1853795129690976061">Ez a mappa meg van osztva a Linux rendszerrel</translation>
 <translation id="1864756863218646478">A fájl nem található.</translation>
+<translation id="1877377730633446520">Ehhez körülbelül <ph name="REQUIRED_SPACE" /> tárhelyre lesz szükség. Jelenleg <ph name="FREE_SPACE" /> áll rendelkezésére.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, csatlakozás</translation>
 <translation id="1920670151694390848">malajálam, betű szerinti átírás</translation>
 <translation id="1920798810075583923">Görögdinnye</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
 <translation id="2001796770603320721">Kezelés a Drive-ban</translation>
+<translation id="2004942826429452291">A fájlok a felhőben és ezen a Chromebookon lesznek tárolva.</translation>
 <translation id="2009067268969781306">A meghajtó formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="2025955442973426285">tigrinya</translation>
 <translation id="2037845485764049925">orosz</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Eszközbeállítások</translation>
 <translation id="2084809735218147718">A köszönet jelét mutató ember</translation>
 <translation id="2088690981887365033">VPN-hálózat</translation>
+<translation id="2089751716171649322">Könnyen hozzáférhet Google Drive-fájljaihoz offline állapotban</translation>
 <translation id="2111134541987263231">Kapcsolja be az <ph name="BEGIN_BOLD" />Engedélyezés inkognitó módban<ph name="END_BOLD" /> beállítást.</translation>
 <translation id="2114191879048183086">A rendszer töröl <ph name="NUMBER_OF_ITEMS" /> fájlt, a visszaállításuk nem lehetséges.</translation>
 <translation id="2122305276694332719">A rejtett hálózatra való automatikus csatlakozás láthatóvá teszi mások számára az eszközt és bizonyos hálózati beállításokat, ezért nem ajánlott a használata.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Telepítés Linux segítségével</translation>
 <translation id="2225536596944493418">Biztosan törli ezt a(z) <ph name="NUMBER_OF_ITEMS" /> elemet?</translation>
 <translation id="2230062665678605299">Nem sikerült létrehozni a(z) "<ph name="FOLDER_NAME" />" könyvtárat. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Google Drive-gyorsítótár kiürítve.</translation>
 <translation id="2239068707900391003">Ember kávéval</translation>
 <translation id="2251368349685848079">Visszaállítás a kukából</translation>
 <translation id="2278133026967558505">Fájlhozzáférés minden webhely és URL számára</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Ne most</translation>
 <translation id="3486821258960016770">mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
+<translation id="3501954296166022751">Google Drive-fájljai offline is hozzáférhetők</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="3511705761158917664">Felkészülés <ph name="NUMBER_OF_ITEMS" /> elem szinkronizálására…</translation>
 <translation id="3522708245912499433">portugál</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">A beállítás módosítása az összes megosztott hálózatot érinti</translation>
 <translation id="3737576078404241332">Eltávolítás az oldalsávról</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
-<translation id="3780536599611287598">Nincs jogosultsága fájlok áthelyezésére a(z) „<ph name="FOLDER_NAME" />” mappába.</translation>
 <translation id="3786301125658655746">Ön jelenleg offline állapotban van</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3793469551756281394">Fennmaradó idő kb. <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />…</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Egyéni névszerverek</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, a rendszergazdája kezeli, csatlakozás</translation>
 <translation id="4470564870223067757">Hangul 2 készlet</translation>
+<translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4474142134969976028">Nincs egyezés</translation>
 <translation id="4477002475007461989">román</translation>
 <translation id="4477219268485577442">bolgár fonetikus</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avokádó</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elem visszaállítása</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Az inkognitó mód használatához szervezetének szüksége van egy bővítményre}other{Az inkognitó mód használatához szervezetének szüksége van bizonyos bővítményekre}}</translation>
-<translation id="4823651846660089135">Az eszköz csak olvasható</translation>
 <translation id="4826849268470072925">tamil, ITRANS</translation>
 <translation id="482932175346970750">Írja be a <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kifejezést a böngészőbe.</translation>
 <translation id="4843566743023903107">Chromebase-ek</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5500122897333236901">izlandi</translation>
 <translation id="5508696409934741614">Pöttyök</translation>
+<translation id="5519161320735100193">A Google Drive beállításai</translation>
 <translation id="5522908512596376669">A fájllista nézete listanézetre változott.</translation>
 <translation id="5524517123096967210">A fájl nem olvasható.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> kép</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Összes bejegyzés eltávolítva a kijelöltek közül.</translation>
 <translation id="5838825566232597749">USA „Workman” nemzetközi</translation>
 <translation id="5845721951356578987">Ápoló</translation>
+<translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5861477046012235702">Játékos</translation>
 <translation id="5864471791310927901">DHCP-keresés sikertelen</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Webproxy automatikus észlelése</translation>
 <translation id="6337014272874260727">A gyorsfájlok között való kitűzés megszüntetése</translation>
 <translation id="6339145975392024142">Amerikai nemzetközi (PC)</translation>
-<translation id="6346310558342052870">Korlátozott hozzáférés</translation>
 <translation id="6356685157277930264">Fájlokkal kapcsolatos visszajelzésre vonatkozó ablak</translation>
 <translation id="6358884629796491903">Sárkány</translation>
 <translation id="636254897931573416">Érvénytelen érték: Domainvégződés – egyezés</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7806708061868529807">héber</translation>
 <translation id="78104721049218340">thai, kedmanee-billentyűzettel</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Hiba történt a hálózat konfigurálásakor</translation>
 <translation id="7839804798877833423">E fájlok lekérése mintegy <ph name="FILE_SIZE" />-nyi mobiladat-forgalmat fog generálni.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">A partíció formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">A Saját meghajtón lévő fájljai automatikusan szinkronizálódnak a Chromebookkal, így internetkapcsolat nélkül is hozzájuk férhet.</translation>
 <translation id="7925247922861151263">AAA-ellenőrzés sikertelen</translation>
 <translation id="7925686952655276919">Ne használjon mobiladatokat a szinkronizáláshoz</translation>
 <translation id="7928710562641958568">Eszköz kiadása</translation>
+<translation id="7933875256234974853">Felkészülés Drive-fájlok szinkronizálására…</translation>
 <translation id="7943385054491506837">USA Colemak</translation>
 <translation id="7953739707111622108">Ezt az eszközt nem lehet megnyitni, mert a fájlrendszer nem ismerhető fel.</translation>
 <translation id="7969525169268594403">szlovén</translation>
 <translation id="7972920761225148017">francia (Svájc)</translation>
 <translation id="7973962044839454485">Nem sikerült a PPP-hitelesítés helytelen felhasználónév vagy jelszó miatt</translation>
 <translation id="7980421588063892270">angol (USA) billentyűzet Colemak kiosztással</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> fájl szinkronizálása…</translation>
 <translation id="8000066093800657092">Nincs hálózat</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Méret</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">dán</translation>
 <translation id="8949925099261528566">Csatlakozva, nincs internet-hozzáférés</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
+<translation id="8971742885766657349">Szinkronizálás – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">kínai (hagyományos) pinjin</translation>
 <translation id="8998871447376656508">Nincs elég szabad tárhelye a Google Drive-on a feltöltés befejezéséhez.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Telepítés sikeresen megkezdve.</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="9219908252191632183">Hold</translation>
+<translation id="937795003075802289">1 fájl szinkronizálása…</translation>
 <translation id="938470336146445890">Kérjük, telepítsen felhasználói tanúsítványt.</translation>
 <translation id="939736085109172342">Új mappa</translation>
 <translation id="943972244133411984">Módosította</translation>

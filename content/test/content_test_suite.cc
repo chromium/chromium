@@ -9,9 +9,9 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "content/browser/webui/content_web_ui_configs.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/common/network_service_util.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
 #include "media/base/media.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +47,7 @@ void ContentTestSuite::Initialize() {
 
   InitializeResourceBundle();
 
-  ForceInProcessNetworkService(true);
+  ForceInProcessNetworkService();
 
   ContentTestSuiteBase::Initialize();
   {

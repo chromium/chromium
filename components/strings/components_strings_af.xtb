@@ -211,6 +211,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1442987760062738829">Pons</translation>
 <translation id="1446396933673057385">Akkuraatheidkontrole</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Die instellings wat jou ouer gekies het, hou jou nou veiliger aanlyn</translation>
 <translation id="1453974140256777690">Teks wat jy plak of aanheg word na Google Cloud of derde partye gestuur om ontleed te word. Dit kan byvoorbeeld vir sensitiewe data geskandeer word.</translation>
 <translation id="1455413310270022028">Uitveër</translation>
 <translation id="1459693405370120464">Weer</translation>
@@ -268,6 +269,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1569487616857761740">Voer vervaldatum in</translation>
 <translation id="1569694109004336106">Google Chrome probeer tans om Windows Hello aan te skakel om wagwoorde in te vul.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> dm.</translation>
+<translation id="1576277203042721907">Shopping-insigte</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Kon nie hierdie webbladsy vertoon nie.</translation>
 <translation id="1584492003828271317">Terwyl jy blaai, sal hierdie instelling, werfvoorgestelde advertensies, jou webkoekie-instellings, en of die werf wat jy bekyk advertensies personaliseer, bepaal of ’n advertensie wat jy sien, gepersonaliseer word</translation>
@@ -979,6 +981,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3380864720620200369">Kliënt-ID:</translation>
 <translation id="3381668585148405088">Verifieer jou aankoop</translation>
 <translation id="3383566085871012386">Huidige volgorde van belangrikheid</translation>
+<translation id="3384522979010096022">Jou organisasie laat jou nie toe om hierdie werf te bekyk nie</translation>
 <translation id="3387261909427947069">Betaalmetodes</translation>
 <translation id="3391030046425686457">Afleweringadres</translation>
 <translation id="3391482648489541560">lêerwysiging</translation>
@@ -1102,7 +1105,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3676592649209844519">Toestel-ID:</translation>
 <translation id="3677008721441257057">Het jy bedoel &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Versoek kon nie onderteken word nie</translation>
-<translation id="3678342917559046352">Ongeldige uitbreiding: daar word verwag dat die waarde een van die volgende vorms sal hê: &lt;extension_id&gt; of &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Maak bladsy in 'n nuwe incognitovenster oop (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Sertifikaatinligting</translation>
 <translation id="3681421644246505351">Chrome neem kennis van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis.</translation>
@@ -1132,6 +1134,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3740319564441798148">Langafstandbus- en spoorvervoer</translation>
 <translation id="3743765582345153106">Verifieer altyd wanneer jy outvul gebruik</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
+<translation id="3744212718085287312">Maak dit volgende keer veiliger met ’n virtuele kaart?</translation>
 <translation id="3744286742364977428">Lêers wat jy aflaai, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word.</translation>
 <translation id="3744899669254331632">Jy kan <ph name="SITE" /> nie nou onmiddelllik besoek nie, omdat die webwerf deurmekaar eiebewyse gestuur het wat Chrome nie kan verwerk nie. Netwerkfoute en -aanvalle is gewoonlik tydelik, so hierdie bladsy sal waarskynlik later werk.</translation>
 <translation id="3748148204939282805">Aanvallers op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan jou dalk mislei om iets gevaarlik te doen, soos om sagteware te installeer of jou persoonlike inligting bekend te maak (byvoorbeeld: wagwoorde, foonnommers of kredietkaartinligting). <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1240,6 +1243,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4040350669425716613">Kolleges en universiteite</translation>
 <translation id="4047351652147966654">18x24 dm.</translation>
+<translation id="404831776305217138">Opdatering-URL vir uitbreiding met ID “<ph name="EXTENSION_ID" />” is ongeldig of gebruik ’n ongesteunde skema. Gesteunde skemas is: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> en <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Jy sal dit in alle Google-produkte kan gebruik</translation>
 <translation id="405399507749852140">Kry kennisgewings as die prys op enige werf daal</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1267,6 +1271,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="410148943680000050">Lessenaarpublisering</translation>
 <translation id="4103249731201008433">Toestelreeksnommer is ongeldig</translation>
 <translation id="4106133539597032659">Skep Werf-knoppie; druk Enter om vinnig 'n nuwe werf in Google Sites te skep</translation>
+<translation id="4106887816571530227">Ingebedde inhoud word nie toegelaat nie</translation>
 <translation id="4110652170750985508">Gaan jou betaling na</translation>
 <translation id="4111546256784973544">Verfbal</translation>
 <translation id="4112140312785995938">Soek agtertoe</translation>
@@ -1346,7 +1351,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="425582637250725228">Veranderinge wat jy aangebring het, sal dalk nie gestoor word nie.</translation>
-<translation id="425869179292622354">Maak dit veiliger met 'n virtuele kaart?</translation>
 <translation id="4258748452823770588">Swak handtekening</translation>
 <translation id="4261046003697461417">Aantekeninge kan nie op beskermde dokumente gemaak word nie</translation>
 <translation id="4265872034478892965">Toegelaat deur jou administrateur</translation>
@@ -1605,6 +1609,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4876305945144899064">Geen gebruikernaam nie</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Geen}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" />-soektog</translation>
+<translation id="4877521229462766300">Laat ingebedde inhoud toe?</translation>
 <translation id="4879491255372875719">Outomaties (verstek)</translation>
 <translation id="4880827082731008257">Soekgeskiedenis</translation>
 <translation id="4881695831933465202">Maak oop</translation>
@@ -1802,6 +1807,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5314967030527622926">Brosjuremaker</translation>
 <translation id="5316812925700871227">Draai antikloksgewys</translation>
 <translation id="5317780077021120954">Berg</translation>
+<translation id="5323043727018853753">Ingebedde inhoud word toegelaat</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> uit <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Jou blaaier word nie bestuur nie</translation>
 <translation id="5332219387342487447">Versendingmetode</translation>
@@ -2179,6 +2185,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6306713302480826305">Hierdie adres sal op hierdie en jou ander aangemelde toestelle uitgevee word</translation>
 <translation id="6312113039770857350">Webbladsy is nie beskikbaar nie</translation>
 <translation id="6316226860534107313">Bromponies en kragfietse</translation>
+<translation id="6316723751983724988">Nuut: Family Link-keuses vir Chrome geld hier</translation>
 <translation id="63172326633386613">Bestuur toeganklikheidsinstellings</translation>
 <translation id="6319249456820053699">Kameras en videokameras</translation>
 <translation id="6321917430147971392">Gaan jou DNS-instellings na</translation>
@@ -2286,6 +2293,8 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6569060085658103619">Jy bekyk tans 'n uitbreidingbladsy</translation>
 <translation id="6569366777234823130">Dramaflieks</translation>
 <translation id="6573200754375280815">Dubbelpons regs</translation>
+<translation id="6576181918031900030">Begin uitsaai</translation>
+<translation id="6578434528542148658">Ongeldige uitbreiding-ID.</translation>
 <translation id="657902945730878902">Skets en inkleur</translation>
 <translation id="6579630537141957243">Koppel MIDI-toestel?</translation>
 <translation id="6579990219486187401">Ligpienk</translation>
@@ -2730,6 +2739,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7598391785903975535">Minder as <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan tans nie hierdie versoek hanteer nie.</translation>
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
+<translation id="7601297359530599375">Jy koppel hierdie werf gewoonlik veilig, maar Chrome kon nie hierdie keer ’n veilige verbinding gebruik nie. ’n Aanvaller probeer dalk afluister of jou netwerkverbinding wysig. <ph name="BEGIN_LEARN_MORE_LINK" />Kom meer te wete<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Waarde is buite die reeks <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Verval: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
@@ -2830,6 +2840,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7822320754433038727">Jag en skiet</translation>
 <translation id="782886543891417279">Die Wi-Fi wat jy gebruik (<ph name="WIFI_NAME" />), kan vereis dat jy sy aanmeldbladsy besoek.</translation>
 <translation id="7840103971441592723">Skermskoot het begin</translation>
+<translation id="784137052867620416">Shopping-insigte</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 program (<ph name="EXAMPLE_APP_1" />)}=2{2 programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">’n Werf wat jy besoek, kan Chrome later vir jou onderwerpe vra om die advertensies wat jy sien, te personaliseer. Chrome deel tot 3 onderwerpe terwyl dit jou blaaigeskiedenis en identiteit beskerm.</translation>
@@ -2963,7 +2974,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8190193880870196235">Bestuur deur 'n uitbreiding</translation>
 <translation id="8194797478851900357">Ontdoen skuif</translation>
 <translation id="8200772114523450471">Hervat</translation>
-<translation id="8201077131113104583">Ongeldige opdatering-URL vir uitbreiding met ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Bestellingopsomming</translation>
 <translation id="8202370299023114387">Konflik</translation>
 <translation id="8208363704094329105">300x400 mm</translation>
@@ -2975,6 +2985,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8217748145574471584">Mensehulpbronne</translation>
 <translation id="8218327578424803826">Toegewysde ligging:</translation>
 <translation id="8228419419708659934">Tweebladsyaansig</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> wil toegang tot ’n toestel in jou netwerk hê:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportspeletjies</translation>
@@ -3023,7 +3034,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8298115750975731693">Die Wi-Fi wat jy gebruik (<ph name="WIFI_NAME" />), kan vereis dat jy <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> besoek.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />"-afdeling is gewys</translation>
 <translation id="830498451218851433">Halfgevou</translation>
-<translation id="8307888238279532626">Programme wat geïnstalleer is en hoe gereeld hulle gebruik word</translation>
 <translation id="831997045666694187">Aand</translation>
 <translation id="8321476692217554900">kennisgewings</translation>
 <translation id="8329068931308448247">Koevert #14</translation>

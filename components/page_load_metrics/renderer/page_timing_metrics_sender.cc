@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
@@ -82,6 +83,12 @@ void PageTimingMetricsSender::DidObserveLoadingBehavior(
     return;
   }
   metadata_->behavior_flags |= behavior;
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::DidObserveJavaScriptFrameworks(
+    const blink::JavaScriptFrameworkDetectionResult& result) {
+  metadata_->framework_detection_result = result;
   EnsureSendTimer();
 }
 

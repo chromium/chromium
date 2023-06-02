@@ -64,6 +64,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/tween.h"
@@ -290,7 +291,10 @@ void Tab::Layout() {
   UpdateIconVisibility();
 
   int start = contents_rect.x();
-  if (extra_padding_before_content_) {
+
+  // ChromeRefresh doesnt respect this extra padding since it has exact values
+  // for left/right padding.
+  if (extra_padding_before_content_ && !features::IsChromeRefresh2023()) {
     constexpr int kExtraLeftPaddingToBalanceCloseButtonPadding = 4;
     start += kExtraLeftPaddingToBalanceCloseButtonPadding;
   }
@@ -747,7 +751,7 @@ absl::optional<SkColor> Tab::GetGroupColor() const {
       controller_->GetGroupColorId(group().value()));
 }
 
-SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
+ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
   const ui::ColorProvider* color_provider = GetColorProvider();
   if (!color_provider)
     return gfx::kPlaceholderColor;
@@ -786,10 +790,9 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
         kColorTabAlertAudioPlayingInactiveFrameActive},
        {kColorTabAlertAudioPlayingActiveFrameInactive,
         kColorTabAlertAudioPlayingActiveFrameActive}}};
-  return color_provider->GetColor(
-      color_ids[group][tab_style_views()->GetApparentActiveState() ==
-                       TabActive::kActive]
-               [controller_->ShouldPaintAsActiveFrame()]);
+  return color_ids[group][tab_style_views()->GetApparentActiveState() ==
+                          TabActive::kActive]
+                  [controller_->ShouldPaintAsActiveFrame()];
 }
 
 bool Tab::IsActive() const {

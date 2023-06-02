@@ -69,11 +69,12 @@ bool TestSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
-bool TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    const std::string& metric_variation) {
+    const std::string& metric_variation,
+    base::OnceCallback<void(bool)> callback) {
   NOTIMPLEMENTED();
-  return false;
+  std::move(callback).Run(false);
 }
 
 bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(

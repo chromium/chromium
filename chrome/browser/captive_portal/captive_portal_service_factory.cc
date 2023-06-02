@@ -16,7 +16,8 @@ CaptivePortalServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 CaptivePortalServiceFactory* CaptivePortalServiceFactory::GetInstance() {
-  return base::Singleton<CaptivePortalServiceFactory>::get();
+  static base::NoDestructor<CaptivePortalServiceFactory> instance;
+  return instance.get();
 }
 
 CaptivePortalServiceFactory::CaptivePortalServiceFactory()
@@ -29,8 +30,7 @@ CaptivePortalServiceFactory::CaptivePortalServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-CaptivePortalServiceFactory::~CaptivePortalServiceFactory() {
-}
+CaptivePortalServiceFactory::~CaptivePortalServiceFactory() = default;
 
 KeyedService* CaptivePortalServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

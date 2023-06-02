@@ -273,7 +273,25 @@ all other OS specific variables will be false.
 type URL
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [CHAR_LIMIT=40][iOS only]">
+              Search or Type URL
+            </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME" desc="Name for the chrome shortcuts widget" meaning="String that appears as title in the installation window for the Chrome Shortcuts widget [iOS only]">
+        Chrome Shortcuts
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPHONE" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPhone [iOS only]">
+          Start a new search or open your most visited sites from your iPhone homepage.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DESCRIPTION_IPAD" desc="Description for the chrome shortcuts widget" meaning="String that appears as description in the installation window for the Chrome Shortcuts widget for the iPad [iOS only]">
+          Start a new search or open your most visited sites from your iPad homepage.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [iOS only]">
         Search or Type URL
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_OPEN_SHORTCUT_LABEL" desc="Open shortcut label for the shortcuts widget, please use WEBSITE_PLACEHOLDER in the translated string as a placeholder for the title of the website which is to be opened [CHAR_LIMIT=40]" meaning="Open shortcut label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
+            Open WEBSITE_PLACEHOLDER
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=40]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=40][iOS only]">
+          No shortcuts available
       </message>
     </messages>
   </release>

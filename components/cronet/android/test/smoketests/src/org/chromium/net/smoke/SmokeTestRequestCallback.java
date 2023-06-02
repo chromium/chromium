@@ -4,7 +4,7 @@
 
 package org.chromium.net.smoke;
 
-import static junit.framework.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
 
 import android.os.ConditionVariable;
 
@@ -118,7 +118,7 @@ class SmokeTestRequestCallback extends UrlRequest.Callback {
     }
 
     private void done(State finalState, UrlResponseInfo responseInfo) {
-        assertTrue(mState == State.NotSet);
+        assertThat(mState).isEqualTo(State.NotSet);
         mResponseInfo = responseInfo;
         mState = finalState;
         mDone.open();

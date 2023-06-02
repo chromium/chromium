@@ -510,6 +510,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   static const char kGeometricPrecisionRendering[];
   virtual void DisableAcceleration() {}
 
+  // Override to prematurely disable acceleration because of a readback.
+  // BaseRenderingContext2D automatically disables acceleration after a number
+  // of readbacks, this can be overridden to disable acceleration earlier than
+  // would typically happen.
+  virtual bool ShouldDisableAccelerationBecauseOfReadback() const {
+    return false;
+  }
+
   virtual bool IsPaint2D() const { return false; }
   void WillOverwriteCanvas(OverdrawOp);
   virtual void WillOverwriteCanvas() = 0;

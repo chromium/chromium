@@ -555,9 +555,19 @@ bool RenderViewHostImpl::CreateRenderView(
     params->type = mojom::ViewWidgetType::kTopLevel;
   }
 
+  // Send the current page's browsing context group to the renderer. It is
+  // guaranteed to be consistent for the entire FrameTree, main frame and
+  // subframes. For this reason we simply use the main frame's browsing context
+  // group. Note that we cannot use this RenderViewHost's site_instance_group(),
+  // which may not match in a popup case. For example, if A opens a
+  // cross-browsing-context-group popup to B, the RenderViewHost for the opener
+  // in B's process should have A's BrowsingContextGroupInfo, which is the
+  // current page in the opener.
   params->browsing_context_group_info = blink::BrowsingContextGroupInfo(
-      site_instance_group()->browsing_instance_token(),
-      site_instance_group()->coop_related_group_token());
+      frame_tree_->GetMainFrame()->GetSiteInstance()->browsing_instance_token(),
+      frame_tree_->GetMainFrame()
+          ->GetSiteInstance()
+          ->coop_related_group_token());
 
   // RenderViewHostImpl is reused after a crash, so reset any endpoint that
   // might be a leftover from a crash.

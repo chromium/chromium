@@ -34,9 +34,6 @@ class UIDisplayedEventManager {
   static bool IsEventHandleInitialized();
 
   // A single instance of the handle in this process.
-  //
-  // TODO(sorin): fix the static user-defined type instance. It may go away
-  // with the rest of the class, https://crbug.com/1016986.
   static ScopedKernelHANDLE& GetUIDisplayedEvent();
 };
 

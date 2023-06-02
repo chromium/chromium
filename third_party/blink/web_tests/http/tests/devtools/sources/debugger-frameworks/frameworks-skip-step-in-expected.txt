@@ -2,40 +2,40 @@ Tests the skip stack frames feature when stepping.
 
 Set timer for test function.
 Call stack:
-    0) test1 (frameworks-skip-step-in.js:29)
-    1) testFunction (frameworks-skip-step-in.js:17)
+    0) test1 (frameworks-skip-step-in.js:32)
+    1) testFunction (frameworks-skip-step-in.js:20)
 
 Call stack:
-    0) test2 (frameworks-skip-step-in.js:35)
-    1) testFunction (frameworks-skip-step-in.js:17)
+    0) test2 (frameworks-skip-step-in.js:38)
+    1) testFunction (frameworks-skip-step-in.js:20)
 
 Call stack:
-    0) callback (frameworks-skip-step-in.js:22)
+    0) callback (frameworks-skip-step-in.js:25)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:10)
-    3) test3 (frameworks-skip-step-in.js:40)
-    4) testFunction (frameworks-skip-step-in.js:17)
+    3) test3 (frameworks-skip-step-in.js:43)
+    4) testFunction (frameworks-skip-step-in.js:20)
 
 Call stack:
-    0) callback (frameworks-skip-step-in.js:22)
+    0) callback (frameworks-skip-step-in.js:25)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:10)
-    3) test4 (frameworks-skip-step-in.js:46)
-    4) testFunction (frameworks-skip-step-in.js:17)
+    3) test4 (frameworks-skip-step-in.js:49)
+    4) testFunction (frameworks-skip-step-in.js:20)
 
 Call stack:
-    0) callback (frameworks-skip-step-in.js:22)
+    0) callback (frameworks-skip-step-in.js:25)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:13)
   * 3) Framework.safeRun (framework.js:10)
-    4) test5 (frameworks-skip-step-in.js:52)
-    5) testFunction (frameworks-skip-step-in.js:17)
+    4) test5 (frameworks-skip-step-in.js:55)
+    5) testFunction (frameworks-skip-step-in.js:20)
 
 Call stack:
-    0) callback (frameworks-skip-step-in.js:22)
+    0) callback (frameworks-skip-step-in.js:25)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:10)
-    3) test6 (frameworks-skip-step-in.js:58)
-    4) testFunction (frameworks-skip-step-in.js:17)
+    3) test6 (frameworks-skip-step-in.js:61)
+    4) testFunction (frameworks-skip-step-in.js:20)
 
 

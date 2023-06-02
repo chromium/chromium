@@ -218,9 +218,21 @@ class BrowserList {
   // A vector of the browsers that are currently in the closing state.
   BrowserSet currently_closing_browsers_;
 
+  // If an observer is added while iterating over them and notifying, it should
+  // not be notified as it probably already saw the Browser* being added/removed
+  // in the BrowserList.
+  struct ObserverListTraits : base::internal::LeakyLazyInstanceTraits<
+                                  base::ObserverList<BrowserListObserver>> {
+    static base::ObserverList<BrowserListObserver>* New(void* instance) {
+      return new (instance) base::ObserverList<BrowserListObserver>(
+          base::ObserverListPolicy::EXISTING_ONLY);
+    }
+  };
+
   // A list of observers which will be notified of every browser addition and
   // removal across all BrowserLists.
-  static base::LazyInstance<base::ObserverList<BrowserListObserver>>::Leaky
+  static base::LazyInstance<base::ObserverList<BrowserListObserver>,
+                            ObserverListTraits>
       observers_;
 
   static BrowserList* instance_;

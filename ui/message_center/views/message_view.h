@@ -250,6 +250,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   bool is_nested() const { return is_nested_; }
 
   int bottom_radius() const { return bottom_radius_; }
+  int top_radius() const { return top_radius_; }
 
   views::SlideOutController* slide_out_controller_for_test() {
     return &slide_out_controller_;

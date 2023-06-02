@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<div id="container">
+<div id="sample">foobar</div>baz
+</div>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+function $(id) { return document.getElementById(id); }
+
+function removingHandler()
+{
+    document.removeEventListener('DOMNodeRemovedFromDocument', removingHandler, true);
+    var range = document.createRange();
+    range.setStart($('sample').nextSibling, 1);
+    range.insertNode(document.createTextNode('FOO'));
+}
+
+document.addEventListener('DOMNodeRemovedFromDocument', removingHandler, true);
+
+var range = document.createRange();
+range.setStart($('sample'), 0);
+range.setEnd($('sample').nextSibling, 3);
+range.deleteContents();
+
+document.body.innerHTML = 'PASS; NOT CRASHED';
+</script>

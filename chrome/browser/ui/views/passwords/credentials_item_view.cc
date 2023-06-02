@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -130,10 +132,24 @@ CredentialsItemView::CredentialsItemView(
     lower_label_ = text_container->AddChildView(std::move(lower_label));
   }
 
+  // Add info icon with a tooltip providing the source of the credential if
+  // this is not an exact match.
   if (password_manager_util::GetMatchType(*form) !=
       password_manager_util::GetLoginMatchType::kExact) {
-    info_icon_ = AddChildView(std::make_unique<views::TooltipIcon>(
-        base::UTF8ToUTF16(form->url.DeprecatedGetOriginAsURL().spec())));
+    auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+        form->signon_realm);
+    if (facet.IsValidAndroidFacetURI()) {
+      std::u16string app_name = base::UTF8ToUTF16(form->app_display_name);
+      if (app_name.empty()) {
+        app_name = l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_PASSWORDS_ANDROID_APP,
+            base::UTF8ToUTF16(facet.android_package_name()));
+      }
+      info_icon_ = AddChildView(std::make_unique<views::TooltipIcon>(app_name));
+    } else {
+      info_icon_ = AddChildView(std::make_unique<views::TooltipIcon>(
+          base::UTF8ToUTF16(form->url.DeprecatedGetOriginAsURL().spec())));
+    }
   }
 
   if (!upper_text.empty() && !lower_text.empty())

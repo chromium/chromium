@@ -146,9 +146,11 @@ class ShellToplevelWrapper {
   // screen coordinates.
   virtual bool SupportsScreenCoordinates() const = 0;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Enables screen coordinates support. This is no-op if the server does not
   // support the screen coordinates.
   virtual void EnableScreenCoordinates() = 0;
+#endif
 
   // Sets/usets a native window to float state. This places it on top of other
   // windows.

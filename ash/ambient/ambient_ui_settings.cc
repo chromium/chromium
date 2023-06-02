@@ -104,7 +104,7 @@ void AmbientUiSettings::WriteToPrefService(PrefService& pref_service) const {
 }
 
 std::string AmbientUiSettings::ToString() const {
-  std::string output(ash::ToString(theme_).data());
+  std::string output(ash::ToString(theme_));
   if (theme_ == AmbientTheme::kVideo) {
     CHECK(video_);
     base::StrAppend(&output, {".", ash::ToString(*video_)});

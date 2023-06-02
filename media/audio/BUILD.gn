@@ -246,6 +246,8 @@ source_set("audio") {
 
   if (is_android) {
     sources += [
+      "android/aaudio_input.cc",
+      "android/aaudio_input.h",
       "android/aaudio_output.cc",
       "android/aaudio_output.h",
       "android/aaudio_stream_wrapper.cc",

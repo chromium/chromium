@@ -32,6 +32,7 @@
  ਦੀ ਲੋੜ ਹੈ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="1553358976309200471">Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="1555506416658437797">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ।</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇਸ Chrome ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੈ। ਇਸ ਨਾਲ <ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਨਵਾਂ Chrome ਪ੍ਰੋਫਾਈਲ ਬਣਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="1587223624401073077">Google Chrome ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤ ਰਿਹਾ ਹੈ।</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ਖਤਰਨਾਕ ਹੈ, ਇਸ ਲਈ Chrome ਨੇ ਇਸਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
@@ -83,6 +84,7 @@
 <translation id="234869673307233423">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="235650106824528204">ਇਸ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਦੇ ਦੌਰਾਨ ਤਿਆਰ ਕੀਤਾ ਕੋਈ ਵੀ Chrome ਡਾਟਾ (ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਰਚਨਾ) ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="2399868464369312507">Google Chrome ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2401189691232800402">ChromeOS ਸਿਸਟਮ</translation>
 <translation id="2467438592969358367">Google Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਹ ਕਰਨ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="2485422356828889247">ਅਣਸਥਾਪਤ ਕਰੋ</translation>
@@ -392,6 +394,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8418845734693287262">ChromeOS ਤੁਹਾਡਾ ਡਾਟਾ ਸਿੰਕ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤਾ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ।</translation>
 <translation id="8433638294851456451">ਇੱਥੋਂ ਆਪਣੇ Android ਫ਼ੋਨ 'ਤੇ ਨੰਬਰ ਭੇਜਣ ਲਈ, ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="8451192282033883849">ਤੁਹਾਡਾ ਖਾਤਾ <ph name="MANAGER_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ Chrome ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਇਸਦੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਇਸਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ।</translation>
+<translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome ਲਈ ਇੱਕ ਖਾਸ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਹੁਣੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਸੀ। ਹੁਣ ਇਸਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਾਂਗੇ।</translation>
 <translation id="8504220326736535258">Chrome ਨੇ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਕਿਉਂਕਿ ਇਸ ਵਿੱਚ ਮਾਲਵੇਅਰ ਹੈ</translation>
 <translation id="8516431725144212809">Chrome ਦੇ ਅੰਦਾਜ਼ੇ ਮੁਤਾਬਕ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ</translation>
@@ -408,6 +411,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8649026945479135076">ਤੁਹਾਡੇ ਅਨੁਭਵ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ, ਤੁਹਾਡੀ ਦਿਲਚਸਪੀ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਯਾਦ ਰੱਖਣਾ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਲਈ ਆਮ ਗੱਲ ਹੈ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ। ਸਾਈਟਾਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ Chrome ਵਿੱਚ ਜਾਣਕਾਰੀ ਵੀ ਸਟੋਰ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="8669527147644353129">Google Chrome ਸਹਾਇਕ</translation>
 <translation id="8679801911857917785">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
+<translation id="8684875378076460854">Chrome ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਸਕੈਨ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਹਾਨੀਕਾਰਕ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="8686817260976772516">Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਨਾਲ ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ Chrome ਸਮੱਗਰੀ ਨੂੰ ਵੱਖ ਕਰ ਸਕਦੇ ਹੋ। ਦੋਸਤਾਂ ਅਤੇ ਪਰਿਵਾਰ ਲਈ ਪ੍ਰੋਫਾਈਲਾਂ ਬਣਾਓ ਜਾਂ ਕਾਰਜ ਅਤੇ ਮੌਜ-ਮਸਤੀ ਵਿੱਚ ਵੰਡੋ।</translation>
 <translation id="8712767363896337380">ਲਗਭਗ ਅੱਪ-ਟੂ-ਡੇਟ! ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ।</translation>
 <translation id="873133009373065397">Google Chrome ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪਤਾ ਨਹੀਂ ਲਗਾ ਸਕਦਾ ਹੈ ਜਾਂ ਉਸਨੂੰ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ ਹੈ</translation>

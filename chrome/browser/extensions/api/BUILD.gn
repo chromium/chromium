@@ -84,3 +84,14 @@ function_registration("api_registration") {
     deps += [ "//chrome/browser/chromeos/extensions:constants" ]
   }
 }
+
+if (is_win) {
+  # The ampersand in the filename is required to exercise the code that properly
+  # launches Native Hosts with paths containing characters that are problematic
+  # for cmd.exe. crbug.com/335558
+  executable("native_messaging_test_echo_&_host") {
+    testonly = true
+    sources = [ "messaging/native_messaging_test_echo_host.cc" ]
+    deps = [ "//base" ]
+  }
+}

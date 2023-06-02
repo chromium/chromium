@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_SCREEN_CAPTURE_NOTIFICATION_UI_ASH_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_SCREEN_CAPTURE_NOTIFICATION_UI_ASH_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 namespace ash {
@@ -33,6 +34,8 @@ class ScreenCaptureNotificationUIAsh : public ScreenCaptureNotificationUI {
 
   const std::u16string text_;
   base::OnceClosure stop_callback_;
+
+  base::WeakPtrFactory<ScreenCaptureNotificationUIAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

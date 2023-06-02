@@ -160,6 +160,7 @@ public class RestoreTabsMediator {
 
         // After selecting a device, rebuild all the tab list items for the new selection.
         setTabListItems();
+        mModel.set(RestoreTabsProperties.NUM_TABS_DESELECTED, 0);
     }
 
     /**
@@ -232,6 +233,8 @@ public class RestoreTabsMediator {
         } else if (screenType == RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN) {
             mModel.set(RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(RestoreTabsProperties.REVIEW_TABS_MODEL_LIST));
+            mModel.set(RestoreTabsProperties.DETAIL_SCREEN_TITLE,
+                    R.string.restore_tabs_review_tabs_screen_sheet_title);
             mModel.set(RestoreTabsProperties.REVIEW_TABS_SCREEN_DELEGATE,
                     createReviewTabsScreenDelegate());
         } else {

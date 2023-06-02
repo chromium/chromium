@@ -166,6 +166,8 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     throw 'Wrong renderURL ' + browserSignals.renderURL;
   if (browserSignals.renderUrl !== "https://example.com/render")
     throw 'Wrong renderUrl ' + browserSignals.renderUrl;
+  if (browserSignals.bidCurrency != 'USD')
+      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
 
   // Fields that vary by method.
   if (isScoreAd) {
@@ -180,18 +182,12 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
       throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
-    if (browserSignals.bidCurrency != 'USD')
-      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
     if (Object.keys(browserSignals).length !== 13) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
-    // sellerCurrency is CAD, but the incombing bid is in USD, and no conversion
-    // is provided, so the bid is blanked.
-    if (browserSignals.bidCurrency !== 'CAD')
-      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
-    if (browserSignals.bid !== 0)
+    if (browserSignals.bid !== 2)
       throw 'Wrong bid ' + browserSignals.bid;
     if (browserSignals.desirability !== 13)
       throw 'Wrong desireability ' + browserSignals.desirability;

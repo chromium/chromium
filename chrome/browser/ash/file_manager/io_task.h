@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_
 
+#include <cstddef>
+#include <ostream>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,6 +66,8 @@ enum class OperationType {
   kZip,
 };
 
+std::ostream& operator<<(std::ostream& out, OperationType op);
+
 // The type of Data Protection policy error that occurred.
 enum class PolicyErrorType {
   // Error caused by Data Leak Prevention policy.
@@ -92,13 +97,17 @@ struct ConflictPauseParams {
 
   // The conflict copy or move target URL.
   std::string conflict_target_url;
+
+  bool operator==(const ConflictPauseParams& other) const;
 };
 
 // I/O task state::PAUSED parameters when paused to show a policy warning.
 // Currently, only supported by CopyOrMovePolicyIOTask.
 struct PolicyPauseParams {
   // One of kDlp, kEnterpriseConnectors.
-  PolicyErrorType type;
+  policy::Policy type;
+
+  bool operator==(const PolicyPauseParams& other) const;
 };
 
 // I/O task state::PAUSED parameters. Only one of conflict or policy params
@@ -111,6 +120,8 @@ struct PauseParams {
 
   PauseParams(PauseParams&& other);
   PauseParams& operator=(PauseParams&& other);
+
+  bool operator==(const PauseParams& other) const;
 
   ~PauseParams();
 
@@ -133,7 +144,7 @@ struct ConflictResumeParams {
 // Resume I/O task parameters when paused because of a policy.
 struct PolicyResumeParams {
   // One of kDlp, kEnterpriseConnectors.
-  PolicyErrorType type;
+  policy::Policy type;
 };
 
 // Resume I/O task parameters.
@@ -251,6 +262,14 @@ class ProgressStatus {
   // The estimate time to finish the operation.
   double remaining_seconds = 0;
 
+  // Number of `sources` scanned - must be <= `sources.size()`. Only used when
+  // in kScanning `state`. When scanning files, the progress is roughly the
+  // percentage of the number of scanned items out of the total items. This
+  // isn't always accurate, e.g. when uploading entire folders or because some
+  // items are not scanned at all. The goal is to show the user that some
+  // progress is happening.
+  size_t sources_scanned = 0;
+
   // Whether notifications should be shown on progress status.
   bool show_notification = true;
 
@@ -323,10 +342,13 @@ class DummyIOTask : public IOTask {
               bool show_notification = true);
   ~DummyIOTask() override;
 
+  // IOTask overrides:
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
-
+  void Pause(PauseParams pause_params) override;
+  void Resume(ResumeParams resume_params) override;
   void Cancel() override;
+  void CompleteWithError(PolicyErrorType policy_error) override;
 
  private:
   void DoProgress();

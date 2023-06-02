@@ -172,7 +172,7 @@ class WebAppUiManager {
   virtual void TriggerInstallDialog(content::WebContents* web_contents) = 0;
 
  private:
-  base::ObserverList<WebAppUiManagerObserver> observers_;
+  base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;
 
   base::WeakPtrFactory<WebAppUiManager> weak_ptr_factory_{this};
 };

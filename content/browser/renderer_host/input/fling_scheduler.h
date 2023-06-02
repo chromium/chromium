@@ -41,7 +41,7 @@ class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
 
  protected:
   virtual ui::Compositor* GetCompositor();
-  raw_ptr<RenderWidgetHostImpl> host_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> host_;
   base::WeakPtr<FlingController> fling_controller_;
   raw_ptr<ui::Compositor> observed_compositor_ = nullptr;
 

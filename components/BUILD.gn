@@ -47,6 +47,23 @@ if (is_ios) {
     }
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
+
+  if (use_blink) {
+    bundle_data("components_tests_distiller_bundle_data") {
+      testonly = true
+      sources = [
+        "//third_party/chaijs/chai.js",
+        "//third_party/dom_distiller_js/dist/test/data/out/domdistillerjstest.js",
+        "//third_party/dom_distiller_js/dist/test/data/war/test.html",
+        "//third_party/mocha/mocha.js",
+        "dom_distiller/core/javascript/dom_distiller_viewer.js",
+        "dom_distiller/core/javascript/domdistiller.js",
+        "dom_distiller/core/javascript/extract_features.js",
+      ]
+      outputs = [ "{{bundle_resources_dir}}/" +
+                  "{{source_root_relative_dir}}/{{source_file_part}}" ]
+    }
+  }
 }
 
 # Omit Lacros because it allows //components to depend on //chrome, which in
@@ -374,6 +391,7 @@ test("components_unittests") {
       "//components/query_tiles:unit_tests",
       "//components/reporting/resources:unit_tests",
       "//components/services/heap_profiling:unit_tests",
+      "//components/services/storage:tests",
       "//components/tracing:unit_tests",
       "//components/translate/content/browser:unit_tests",
       "//components/translate/content/renderer:unit_tests",
@@ -411,6 +429,9 @@ test("components_unittests") {
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
     ]
+    if (use_blink) {
+      deps += [ ":components_tests_distiller_bundle_data" ]
+    }
   } else {  #!is_ios
     deps += [
       "//components/background_sync:unit_tests",
@@ -450,7 +471,6 @@ test("components_unittests") {
       "//components/security_interstitials/content:unit_tests",
       "//components/services/paint_preview_compositor:unit_tests",
       "//components/services/quarantine:unit_tests",
-      "//components/services/storage:tests",
       "//components/site_engagement/content:unit_tests",
       "//components/site_isolation:unit_tests",
       "//components/spellcheck/browser:unit_tests",
@@ -906,7 +926,13 @@ if (use_blink) {
     }
 
     if (is_ios) {
-      deps += [ ":components_tests_pak_bundle_data" ]
+      deps += [
+        ":components_tests_distiller_bundle_data",
+        ":components_tests_pak_bundle_data",
+        "test:dom_distiller_test_bundle_data",
+        "test:url_rewrite_test_bundle_data",
+        "//content/test:content_test_bundle_data",
+      ]
     }
 
     if (enable_pdf) {

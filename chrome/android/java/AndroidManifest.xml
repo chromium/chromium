@@ -184,6 +184,7 @@ by a child template that "extends" this file.
         android:icon="@drawable/ic_launcher"
         android:roundIcon="@drawable/ic_launcher_round"
         android:label="{% block application_label %}@string/app_name{% endblock %}"
+        android:memtagMode="async"
         android:largeHeap="false"
         android:manageSpaceActivity="@string/manage_space_activity"
         android:supportsRtl="true"
@@ -457,13 +458,13 @@ by a child template that "extends" this file.
         </receiver>
 
         <!-- Phishing Protection related -->
-        <receiver android:name="org.chromium.chrome.browser.safe_browsing.PasswordProtectionBroadcastReceiver" 
+        <receiver android:name="org.chromium.chrome.browser.safe_browsing.PasswordProtectionBroadcastReceiver"
         android:exported="true"
         android:permission="com.google.android.gms.permission.INTERNAL_BROADCAST">
             <intent-filter>
                 <action android:name="com.android.chrome.safe_browsing.LOGIN" />
             </intent-filter>
-        </receiver> 
+        </receiver>
 
         <!-- Upgrade related -->
         <receiver android:name="org.chromium.chrome.browser.upgrade.PackageReplacedBroadcastReceiver"
@@ -618,6 +619,11 @@ by a child template that "extends" this file.
         </activity>
         {% endif %}
         <activity android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
+            android:theme="@style/Theme.Chromium.DialogWhenLarge"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="false">
+        </activity>
+        <activity android:name="org.chromium.chrome.browser.device_lock.DeviceLockActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:exported="false">

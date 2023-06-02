@@ -51,6 +51,7 @@ struct WebTransportError;
 namespace download {
 struct DownloadCreateInfo;
 class DownloadItem;
+class DownloadUrlParameters;
 }  // namespace download
 
 namespace content {
@@ -176,6 +177,9 @@ void OnNavigationRequestFailed(
     const network::URLLoaderCompletionStatus& status);
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
 
+void ApplyNetworkOverridesForDownload(
+    RenderFrameHostImpl* rfh,
+    download::DownloadUrlParameters* parameters);
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item);
 
@@ -187,6 +191,7 @@ void BackForwardCacheNotUsed(
 void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
 void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
+bool IsPrerenderAllowed(FrameTree& frame_tree);
 void WillInitiatePrerender(FrameTree& frame_tree);
 void DidActivatePrerender(
     const NavigationRequest& nav_request,
@@ -404,8 +409,7 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
                           bool* intercept,
                           bool* disable_delay);
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host,
-                                bool auto_reauthn);
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
 
 }  // namespace devtools_instrumentation
 

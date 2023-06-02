@@ -336,6 +336,8 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
 void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
 }
 
+void PageInfo::OnStatefulBounceCountChanged(int bounce_count) {}
+
 void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
   DCHECK(status_ != CookieControlsStatus::kDisabled);
   DCHECK(status_ != CookieControlsStatus::kUninitialized);
@@ -1087,19 +1089,36 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   }
 
   // Check if a user decision has been made to allow or deny certificates with
-  // errors on this site.
+  // errors on this site, or made a decision to allow HTTP for this site.
   StatefulSSLHostStateDelegate* delegate =
       delegate_->GetStatefulSSLHostStateDelegate();
   DCHECK(delegate);
-  // Only show an SSL decision revoke button if the user has chosen to bypass
-  // SSL host errors for this host in the past, and we're not presently on a
-  // Safe Browsing error (since otherwise it's confusing which warning you're
-  // re-enabling).
   DCHECK(web_contents_);
-  show_ssl_decision_revoke_button_ =
-      delegate->HasAllowException(
+  bool has_cert_allow_exception = delegate->HasCertAllowException(
+      url.host(), web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
+  bool has_http_allow_exception = delegate->IsHttpAllowedForHost(
+      url.host(), web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
+
+  // HTTP allowlist entries can be added because of silent HTTPS-Upgrades
+  // without the user proceeding through a warning. Only show a warning decision
+  // revocation button for HTTP allowlist entries added because HTTPS was
+  // enforced by HTTPS-First Mode.
+  bool is_https_enforced =
+      delegate->IsHttpsEnforcedForHost(
           url.host(),
-          web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) &&
+          web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) ||
+      delegate_->IsHttpsFirstModeEnabled();
+
+  bool has_warning_bypass_exception =
+      has_cert_allow_exception ||
+      (has_http_allow_exception && is_https_enforced);
+
+  // Only show a warning decision revocation button if the user has chosen to
+  // bypass SSL host errors / HTTP warnings for this host in the past, and we're
+  // not presently on a Safe Browsing error (since otherwise it's confusing
+  // which warning you're re-enabling).
+  show_ssl_decision_revoke_button_ =
+      has_warning_bypass_exception &&
       visible_security_state.malicious_content_status ==
           security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }

@@ -35,7 +35,6 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/ellipse_shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/polygon_shape.h"

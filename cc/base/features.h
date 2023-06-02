@@ -65,6 +65,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 // commit is running concurrently on the impl thread.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBlockingCommit);
 
+// When enabled, LayerTreeImpl will not preserve the last mutation. This map
+// of the last mutated value should not be necessary as animations are always
+// ticked after the commit which should restore their animated values. Removing
+// this should improve performance and reduce technical complexity.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNoPreserveLastMutation);
+
 // When enabled, DroppedFrameCounter will use an adjusted sliding window
 // interval specified by field trial params.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlidingWindowForDroppedFrameCounter);

@@ -4272,15 +4272,8 @@ class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
  public:
   QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {}
   ~QuickActionShowBubbleTest() override = default;
-  // ShelfLayoutManagerTestBase:
-  void SetUp() override {
-    ShelfLayoutManagerTestBase::SetUp();
-    scoped_features_.InitAndEnableFeature(
-        app_list_features::kQuickActionShowBubbleLauncher);
-  }
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
 };
 
@@ -5074,7 +5067,7 @@ TEST_F(ShelfLayoutManagerWithEcheTest, AutoHideShelfWithEcheHidden) {
       GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
       u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
-      eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN);
+      eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS);
   status_area->eche_tray()->ShowBubble();
   UpdateAutoHideStateNow();
 

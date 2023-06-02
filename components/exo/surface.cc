@@ -228,8 +228,10 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   void OnWindowDestroyed(aura::Window* window) override { delete this; }
   void OnWindowTargetVisibilityChanged(bool visible) override {}
   void OnWindowOcclusionChanged(
-      aura::Window::OcclusionState GetOcclusionState) override {
-    surface_->OnWindowOcclusionChanged();
+      aura::Window::OcclusionState old_occlusion_state,
+      aura::Window::OcclusionState new_occlusion_state) override {
+    surface_->OnWindowOcclusionChanged(old_occlusion_state,
+                                       new_occlusion_state);
   }
   bool HasHitTestMask() const override { return true; }
   void GetHitTestMask(SkPath* mask) const override {
@@ -1748,9 +1750,20 @@ void Surface::SetFrameLocked(bool lock) {
     observer.OnFrameLockingChanged(this, lock);
 }
 
-void Surface::OnWindowOcclusionChanged() {
+void Surface::OnWindowOcclusionChanged(
+    aura::Window::OcclusionState old_occlusion_state,
+    aura::Window::OcclusionState new_occlusion_state) {
   if (!state_.basic_state.is_tracking_occlusion)
     return;
+
+  // The first occlusion calculation happens without a buffer yet attached to
+  // the surface so ignore this change. This avoids `OcclusionState::HIDDEN`
+  // being sent , which will be immediately followed by
+  // `OcclusionState::VISIBLE` anyway once buffer is attached.
+  if (old_occlusion_state == aura::Window::OcclusionState::UNKNOWN &&
+      new_occlusion_state == aura::Window::OcclusionState::HIDDEN) {
+    return;
+  }
 
   for (SurfaceObserver& observer : observers_)
     observer.OnWindowOcclusionChanged(this);

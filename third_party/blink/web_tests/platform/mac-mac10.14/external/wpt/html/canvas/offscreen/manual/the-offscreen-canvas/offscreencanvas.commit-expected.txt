@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Test that calling OffscreenCanvas's commit pushes its contents to its placeholder.
-PASS Test that calling commit on an OffscreenCanvas that is not transferred from a HTMLCanvasElement is a noop.
-Harness: the test ran to completion.
-

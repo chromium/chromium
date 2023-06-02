@@ -48,11 +48,6 @@ test("ash_webui_unittests") {
     "//ui/gl:test_support",
   ]
 
-  # Tests for Camera App only work on Chrome OS device but not linux-chromeos.
-  if (is_chromeos_device) {
-    deps += [ "//ash/webui/camera_app_ui:unit_tests" ]
-  }
-
   data_deps = [
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",

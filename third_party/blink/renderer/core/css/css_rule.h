@@ -79,7 +79,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kPositionFallbackRule = 22,
     kTryRule = 23,
     kFontFeatureRule = 24,
-    kInitialRule = 25,
+    kStartingStyleRule = 25,
   };
 
   virtual Type GetType() const = 0;

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Script shouldn't run with type="text/javascript&#x000B;" (parser-inserted) assert_false: expected false got true
+PASS Script shouldn't run with type="text/javascript&#x0085;" (parser-inserted)
+PASS Script shouldn't run with type="text/javascript&#x00A0;" (parser-inserted)
+FAIL Script shouldn't run with type="text/javascript&#x1680;" (parser-inserted) assert_false: expected false got true
+FAIL Script shouldn't run with type="text/javascript&#x3000;" (parser-inserted) assert_false: expected false got true
+Harness: the test ran to completion.
+

@@ -8,7 +8,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
 import {BookmarkFolderElement} from 'chrome://bookmarks-side-panel.top-chrome/bookmark_folder.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {BookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
-import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
+import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {down, keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

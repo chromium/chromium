@@ -81,7 +81,8 @@ generate_grd("build_grdp") {
 
   if (optimize_webui) {
     deps = [ ":build_min_js" ]
-    manifest_files = [ "$target_gen_dir/minify_js_manifest.json" ]
+    manifest_files = filter_include(get_target_outputs(":build_min_js"),
+                                    [ "*_manifest.json" ])
   } else {
     input_files += js_files
   }

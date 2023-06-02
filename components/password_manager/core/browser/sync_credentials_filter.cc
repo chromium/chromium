@@ -12,6 +12,8 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -39,30 +41,45 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
   const signin::IdentityManager* identity_manager =
       client_->GetIdentityManager();
 
-  if (base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    // If kEnablePasswordsAccountStorage is enabled, then don't allow saving the
-    // password if it corresponds to the primary account. Note that if the user
-    // is just signing in to the first Gaia account, then IdentityManager might
-    // not know about the account yet.
-    if (sync_util::IsGaiaCredentialPage(form.signon_realm)) {
-      CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-      if (primary_account.IsEmpty() ||
-          gaia::AreEmailsSame(base::UTF16ToUTF8(form.username_value),
-                              primary_account.email)) {
-        return false;
-      }
-    }
-  } else {
+  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
+    // Legacy code path, subject to clean-up.
     // If kEnablePasswordsAccountStorage is NOT enabled, then don't allow saving
     // the password for the sync account specifically.
-    if (sync_util::IsSyncAccountCredential(form.url, form.username_value,
-                                           sync_service, identity_manager)) {
-      return false;
-    }
+    return !sync_util::IsSyncAccountCredential(form.url, form.username_value,
+                                               sync_service, identity_manager);
   }
 
+  if (!sync_util::IsGaiaCredentialPage(form.signon_realm)) {
+    return true;
+  }
+
+  // The requirement to fulfill is "don't offer to save a Gaia password inside
+  // its own account".
+  // Let's assume that if the browser is signed-in, new passwords are saved to
+  // the primary signed-in account. Per sync_util::GetAccountForSaving(), that's
+  // not always true, but let's not overcomplicate.
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (!primary_account.IsEmpty()) {
+    // This returns false when `primary_account` just signed-in on the web and
+    // already made it to the IdentityManager.
+    return !gaia::AreEmailsSame(base::UTF16ToUTF8(form.username_value),
+                                primary_account.email);
+  }
+
+// The browser is signed-out and the web just signed-in.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On desktop, this normally leads to immediate browser sign-in, in which case
+  // we shouldn't offer saving. One exception is if browser sign-in is disabled.
+  return !client_->GetPrefs()->GetBoolean(prefs::kSigninAllowed);
+#else
+  // On mobile, sign-in via the web page doesn't lead to browser sign-in, so
+  // offer saving.
+  // (Navigating to the Gaia web page opens Chrome UI which must be accepted to
+  // perform browser+web sign-in. The code path here is only hit if that UI was
+  // suppressed/ dismissed and the user interacted directly with the page.)
   return true;
+#endif
 }
 
 bool SyncCredentialsFilter::ShouldSaveGaiaPasswordHash(

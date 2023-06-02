@@ -108,7 +108,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     const FramePolicy& frame_policy,
     const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy,
     const base::span<const mojom::blink::PermissionsPolicyFeature>
-        required_permissions_to_load) {
+        effective_enabled_permissions) {
   const url::Origin origin =
       execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
@@ -209,7 +209,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
       // the required policies, which is checked separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
       permissions_policy = PermissionsPolicy::CreateForFencedFrame(
-          origin, required_permissions_to_load);
+          origin, effective_enabled_permissions);
     } else {
       auto* parent_permissions_policy = frame.Tree().Parent()
                                             ? frame.Tree()

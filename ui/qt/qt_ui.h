@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
@@ -88,10 +89,13 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   // QtInterface::Delegate:
   void FontChanged() override;
   void ThemeChanged() override;
+  void ScaleFactorMaybeChanged() override;
 
  private:
   void AddNativeColorMixer(ui::ColorProvider* provider,
                            const ui::ColorProviderManager::Key& key);
+
+  void ScaleFactorMaybeChangedImpl();
 
   absl::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
 
@@ -114,6 +118,11 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   std::unique_ptr<QtInterface> shim_;
 
   std::unique_ptr<QtNativeTheme> native_theme_;
+
+  bool scale_factor_task_active_ = false;
+  double scale_factor_ = 1.0;
+
+  base::WeakPtrFactory<QtUi> weak_factory_{this};
 };
 
 // This should be the only symbol exported from this component.

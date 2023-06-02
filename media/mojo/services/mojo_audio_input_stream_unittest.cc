@@ -184,7 +184,7 @@ class MojoAudioInputStreamTest : public Test {
   base::CancelableSyncSocket local_;
   std::unique_ptr<TestCancelableSyncSocket> foreign_socket_;
   base::ReadOnlySharedMemoryRegion mem_;
-  raw_ptr<StrictMock<MockDelegate>> delegate_ = nullptr;
+  raw_ptr<StrictMock<MockDelegate>, DanglingUntriaged> delegate_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION AudioInputDelegate::EventHandler* delegate_event_handler_ =

@@ -108,6 +108,7 @@ def __step_config(ctx, step_config):
             },
             "restat": True,
             "remote": True,
+            "timeout": "2m",
             "output_local": True,
             "platform": {
                 # mojo_bindings_generators.py will run faster on n2-highmem-8

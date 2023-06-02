@@ -55,3 +55,7 @@ bool CroshSystemAppDelegate::ShouldShowInSearch() const {
 bool CroshSystemAppDelegate::ShouldHaveTabStrip() const {
   return true;
 }
+
+bool CroshSystemAppDelegate::UseSystemThemeColor() const {
+  return false;
+}

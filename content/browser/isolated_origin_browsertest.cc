@@ -123,7 +123,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   // isolation state would currently be used for a navigation to |url| in
   // |site_instance| in the test, based on the current state in the
   // BrowsingInstance.
-  OriginAgentClusterIsolationState DetermineOriginAgentClusterIsolation(
+  static OriginAgentClusterIsolationState DetermineOriginAgentClusterIsolation(
       SiteInstanceImpl* site_instance,
       const GURL& url) {
     OriginAgentClusterIsolationState isolation_request =
@@ -375,6 +375,36 @@ class OriginKeyedProcessByDefaultTest : public OriginIsolationOptInHeaderTest {
   OriginKeyedProcessByDefaultTest& operator=(OriginKeyedProcessByDefaultTest&) =
       delete;
 
+  void SetUpOnMainThread() override {
+    OriginIsolationOptInHeaderTest::SetUpOnMainThread();
+    // Constructing a new BrowserClient also installs it; the old BrowserClient
+    // is restored when the new one destructs.
+    browser_client_ =
+        std::make_unique<OriginAgentClusterByDefaultContentBrowserClient>();
+  }
+
+ protected:
+  // A custom ContentBrowserClient to allow tests to simulate turning off
+  // OriginAgentClusterByDefault.
+  class OriginAgentClusterByDefaultContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    bool ShouldDisableOriginAgentClusterDefault(
+        BrowserContext* browser_context) override {
+      return should_disable_origin_agent_cluster_default_;
+    }
+
+    void SetShouldDisableOriginAgentClusterDefault(bool should_disable) {
+      should_disable_origin_agent_cluster_default_ = should_disable;
+    }
+
+   private:
+    bool should_disable_origin_agent_cluster_default_ = false;
+  };
+
+  std::unique_ptr<OriginAgentClusterByDefaultContentBrowserClient>
+      browser_client_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -621,6 +651,96 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
       browser_context, url::Origin::Create(non_isolated_sub_origin)));
 }
 
+// A test to verify that an origin with a trailing dot in the domain name
+// doesn't crash when it opts-out of origin isolation when
+// kOriginAgentClusterDefaultEnabled is enabled.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       TrailingDotDomainOptOutDoesNotCrash) {
+  GURL dotted_nonisolated_url(
+      https_server()->GetURL("a.com.", "/isolate_origin"));
+
+  // Set header to opt this domain out of default OriginAgentCluster.
+  SetHeaderValue("?0");
+  EXPECT_TRUE(NavigateToURL(shell(), dotted_nonisolated_url));
+  url::Origin origin(url::Origin::Create(dotted_nonisolated_url));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+}
+
+// A test to confirm that "a.com." is treated as a separate host (and hence
+// a separate origin) from "a.com". See example at
+// https://url.spec.whatwg.org/#concept-domain.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       TrailingDotDomainIsolatesSeparately1) {
+  GURL main_frame_url(https_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(foo.com,foo.com)"));
+  GURL isolated_url(https_server()->GetURL("a.com", "/isolate_origin"));
+  GURL dotted_isolated_url(https_server()->GetURL("a.com.", "/isolate_origin"));
+  SetHeaderValue("?1");
+
+  // Create page with sibling iframes.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  EXPECT_EQ(2u, root->child_count());
+  FrameTreeNode* child0_frame_node = root->child_at(0);
+  FrameTreeNode* child1_frame_node = root->child_at(1);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child0_frame_node, isolated_url));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child1_frame_node, dotted_isolated_url));
+
+  url::Origin child0_origin(url::Origin::Create(isolated_url));
+  url::Origin child1_origin(url::Origin::Create(dotted_isolated_url));
+  EXPECT_NE(isolated_url, dotted_isolated_url);
+  EXPECT_NE(child0_origin, child1_origin);
+
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(child0_origin));
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(child1_origin));
+
+  scoped_refptr<SiteInstanceImpl> child0_site_instance =
+      child0_frame_node->current_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child1_site_instance =
+      child1_frame_node->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(child0_site_instance, child1_site_instance);
+  EXPECT_NE(child0_site_instance->GetProcess(),
+            child1_site_instance->GetProcess());
+}
+
+// A test similar to TrailingDotDomainIsolatesSeparately1, but this time the
+// "a.com" domain does not opt-in via a header, and does not get an origin-
+// keyed process. Thus, it ends up in a separate process from "a.com.".
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       TrailingDotDomainIsolatesSeparately2) {
+  GURL main_frame_url(https_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(foo.com,foo.com)"));
+  GURL non_isolated_url(https_server()->GetURL("a.com", "/title1.html"));
+  GURL dotted_isolated_url(https_server()->GetURL("a.com.", "/isolate_origin"));
+
+  // Create page with sibling iframes.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  EXPECT_EQ(2u, root->child_count());
+  FrameTreeNode* child0_frame_node = root->child_at(0);
+  FrameTreeNode* child1_frame_node = root->child_at(1);
+  SetHeaderValue("?1");
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child0_frame_node, dotted_isolated_url));
+  SetHeaderValue("");
+  EXPECT_TRUE(NavigateToURLFromRenderer(child1_frame_node, non_isolated_url));
+
+  url::Origin child0_origin(url::Origin::Create(dotted_isolated_url));
+  url::Origin child1_origin(url::Origin::Create(non_isolated_url));
+
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(child0_origin));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(child1_origin));
+
+  scoped_refptr<SiteInstanceImpl> child0_site_instance =
+      child0_frame_node->current_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child1_site_instance =
+      child1_frame_node->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(child0_site_instance, child1_site_instance);
+  EXPECT_NE(child0_site_instance->GetProcess(),
+            child1_site_instance->GetProcess());
+}
+
 // A test to confirm that if an Origin-Agent-Cluster header is encountered (but
 // not committed) as part of a redirect, that it does not opt-in to
 // OriginAgentCluster isolation. The setup in this test is subtle, since in
@@ -704,6 +824,34 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
           1)));
 }
 
+// A test to ensure that origins whose host has a trailing dot pass the
+// validation checks for explicit opt-ins and opt-outs. This is an
+// `OriginKeyedProcessByDefaultTest` test in order that the explicit opt-out
+// will be tracked. Note: failure for either part of this test will involve
+// crashing on a CHECK in
+// ChildProcessSecurityPolicyImpl::AddOriginIsolationStateForBrowsingInstance():
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
+                       HostWithTrailingDotAllowed) {
+  // Explicit opt-in with a trailing dot.
+  SetHeaderValue("?1");
+  GURL opt_in_url(https_server()->GetURL("opt-in.foo.com.", "/isolate_origin"));
+  url::Origin opt_in_origin(url::Origin::Create(opt_in_url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(opt_in_origin));
+  EXPECT_TRUE(NavigateToURL(shell(), opt_in_url));
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(opt_in_origin));
+
+  // Explicit opt-out with a trailing dot.
+  SetHeaderValue("?0");
+  GURL opt_out_url(
+      https_server()->GetURL("opt-out.foo.com.", "/isolate_origin"));
+  url::Origin opt_out_origin(url::Origin::Create(opt_out_url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(opt_out_origin));
+  EXPECT_TRUE(NavigateToURL(shell(), opt_out_url));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(opt_out_origin));
+}
+
 // A simple test that, when OAC-by-default is enabled with process-isolation, an
 // origin that receives default OAC is put in an origin-keyed process.
 IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
@@ -755,6 +903,9 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
             root_site_instance->GetProcess());
   EXPECT_TRUE(child_isolation_state.is_origin_agent_cluster());
   EXPECT_TRUE(child_isolation_state.requires_origin_keyed_process());
+  EXPECT_EQ(
+      root_site_instance->GetIsolationContext().default_isolation_state(),
+      child_site_instance->GetIsolationContext().default_isolation_state());
   EXPECT_TRUE(
       child_site_instance->GetSiteInfo().requires_origin_keyed_process());
   EXPECT_TRUE(child_site_instance->GetSiteInfo()
@@ -873,16 +1024,23 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node, default_not_isolated_url));
 
-  auto* site_instance =
+  auto* child_site_instance =
       child_frame_node->current_frame_host()->GetSiteInstance();
+  // The child should be in a separate process from the main frame despite
+  // opting-out, because the child is now in a site-keyed process while the
+  // main frame is in an origin-keyed process (as verified below).
+  EXPECT_NE(child_site_instance->GetProcess(),
+            root->current_frame_host()->GetSiteInstance()->GetProcess());
+
   OriginAgentClusterIsolationState isolation_state =
-      DetermineOriginAgentClusterIsolation(site_instance,
+      DetermineOriginAgentClusterIsolation(child_site_instance,
                                            default_not_isolated_url);
   EXPECT_FALSE(isolation_state.is_origin_agent_cluster());
   EXPECT_FALSE(isolation_state.requires_origin_keyed_process());
-  EXPECT_FALSE(site_instance->GetSiteInfo().requires_origin_keyed_process());
   EXPECT_FALSE(
-      site_instance->GetSiteInfo().requires_origin_keyed_process_by_default());
+      child_site_instance->GetSiteInfo().requires_origin_keyed_process());
+  EXPECT_FALSE(child_site_instance->GetSiteInfo()
+                   .requires_origin_keyed_process_by_default());
 
   // Verify the explicit opt-out is being tracked.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -896,6 +1054,140 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
             isolation_state2);
   EXPECT_FALSE(isolation_state2->is_origin_agent_cluster());
   EXPECT_FALSE(isolation_state2->requires_origin_keyed_process());
+}
+
+namespace {
+
+void TestDefaultIsolationForFrame(
+    FrameTreeNode* ftn,
+    const GURL& default_isolated_url,
+    bool expect_origin_agent_cluster,
+    bool expect_requires_origin_keyed_process,
+    bool expect_default_requires_origin_keyed_process) {
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto* site_instance = ftn->current_frame_host()->GetSiteInstance();
+  OriginAgentClusterIsolationState isolation_state =
+      IsolatedOriginTestBase::DetermineOriginAgentClusterIsolation(
+          site_instance, default_isolated_url);
+  const SiteInfo& site_info = site_instance->GetSiteInfo();
+  EXPECT_EQ(expect_origin_agent_cluster,
+            isolation_state.is_origin_agent_cluster());
+  EXPECT_EQ(expect_requires_origin_keyed_process,
+            isolation_state.requires_origin_keyed_process());
+  EXPECT_EQ(expect_requires_origin_keyed_process,
+            site_info.requires_origin_keyed_process());
+  EXPECT_EQ(expect_default_requires_origin_keyed_process,
+            site_info.requires_origin_keyed_process_by_default());
+
+  // Verify that we're not explicitly tracking the origin we isolated by
+  // default.
+  IsolationContext isolation_context = site_instance->GetIsolationContext();
+  EXPECT_EQ(static_cast<OriginAgentClusterIsolationState*>(nullptr),
+            policy->LookupOriginIsolationStateForTesting(
+                isolation_context.browsing_instance_id(),
+                url::Origin::Create(default_isolated_url)));
+}
+
+}  // namespace
+
+// This test verifies that locking the definition of default isolation to
+// individual BrowsingInstances works correctly when the underlying feature
+// is changed dynamically.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
+                       DynamicEnterprisePolicyChange) {
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  SetHeaderValue("");
+  GURL default_isolated_url(
+      https_server()->GetURL("isolated.foo.com", "/title1.html"));
+
+  // Setup first BrowsingInstance. This one will have default isolation with
+  // origin_agent_cluster and requests_origin_keyed_process (by default) true.
+  Shell* shell1 = shell();
+  auto* web_contents1 = static_cast<WebContentsImpl*>(shell1->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell1, test_url));
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(web_contents1).size());
+  FrameTreeNode* root1 = web_contents1->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node1 = root1->child_at(0);
+
+  // Load a frame into the first BrowsingInstance.
+  // Even though this request has no OriginAgentCluster header, it should get
+  // process-isolated OAC by default.
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node1, default_isolated_url));
+  EXPECT_NE(
+      child_frame_node1->current_frame_host()->GetSiteInstance()->GetProcess(),
+      root1->current_frame_host()->GetSiteInstance()->GetProcess());
+
+  {
+    SCOPED_TRACE("child_frame_node1");
+    TestDefaultIsolationForFrame(
+        child_frame_node1, default_isolated_url,
+        /*expect_origin_agent_cluster=*/true,
+        /*expect_requires_origin_keyed_process=*/true,
+        /*expect_default_requires_origin_keyed_process=*/true);
+  }
+
+  // Dynamically disable the feature to simulate the enterprise policy being
+  // dynamically changed.
+  browser_client_->SetShouldDisableOriginAgentClusterDefault(true);
+
+  // Create a second BrowsingInstance. This one will have default isolation with
+  // origin_agent_cluster = false and requests_origin_keyed_process (by default)
+  // false.
+  Shell* shell2 = CreateBrowser();
+  auto* web_contents2 = static_cast<WebContentsImpl*>(shell2->web_contents());
+
+  // Load a frame into the second BrowsingInstance.
+  // This request also has no OriginAgentCluster header, but it should not get
+  // OAC by default, nor request process-isolation.
+  EXPECT_TRUE(NavigateToURL(shell2, test_url));
+  FrameTreeNode* root2 = web_contents2->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node2 = root2->child_at(0);
+  // We navigate to `default_isolated_url` again so that we're using the same
+  // urls in both parts of the test, but we don't expect it to be isolated in
+  // this BrowsingInstance.
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node2, default_isolated_url));
+  EXPECT_EQ(
+      child_frame_node2->current_frame_host()->GetSiteInstance()->GetProcess(),
+      root2->current_frame_host()->GetSiteInstance()->GetProcess());
+
+  {
+    SCOPED_TRACE("child_frame_node2");
+    TestDefaultIsolationForFrame(
+        child_frame_node2, default_isolated_url,
+        /*expect_origin_agent_cluster=*/false,
+        /*expect_requires_origin_keyed_process=*/false,
+        /*expect_default_requires_origin_keyed_process=*/false);
+  }
+
+  // We expect the default isolation to be different in the two
+  // BrowsingInstances.
+  EXPECT_NE(root1->current_frame_host()
+                ->GetSiteInstance()
+                ->GetIsolationContext()
+                .default_isolation_state(),
+            root2->current_frame_host()
+                ->GetSiteInstance()
+                ->GetIsolationContext()
+                .default_isolation_state());
+
+  // Another navigation in root1 should respect the origin-keyed default used by
+  // that BrowsingInstance and not the current site-keyed default.
+  GURL default_isolated_url2(
+      https_server()->GetURL("isolated.bar.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell1, test_url));
+  {
+    SCOPED_TRACE("root1");
+    TestDefaultIsolationForFrame(
+        root1, default_isolated_url2,
+        /*expect_origin_agent_cluster=*/true,
+        /*expect_requires_origin_keyed_process=*/true,
+        /*expect_default_requires_origin_keyed_process=*/true);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {

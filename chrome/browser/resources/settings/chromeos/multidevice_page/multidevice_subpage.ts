@@ -36,7 +36,7 @@ import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, Ph
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_subpage.html.js';
 
-interface SettingsMultideviceSubpageElement {
+export interface SettingsMultideviceSubpageElement {
   $: {
     forgetDeviceDialog: CrDialogElement,
   };
@@ -45,7 +45,7 @@ interface SettingsMultideviceSubpageElement {
 const SettingsMultideviceSubpageElementBase = MultiDeviceFeatureMixin(
     DeepLinkingMixin(RouteObserverMixin(PolymerElement)));
 
-class SettingsMultideviceSubpageElement extends
+export class SettingsMultideviceSubpageElement extends
     SettingsMultideviceSubpageElementBase {
   static get is() {
     return 'settings-multidevice-subpage' as const;

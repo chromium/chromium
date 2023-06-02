@@ -4,21 +4,18 @@
 
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/prefs/pref_service.h"
@@ -162,21 +159,19 @@ void ChromeOSSystemProfileProvider::WriteDemoModeDimensionMetrics(
   }
   metrics::SystemProfileProto::DemoModeDimensions* demo_mode_dimensions =
       system_profile_proto->mutable_demo_mode_dimensions();
-  PrefService* pref = g_browser_process->local_state();
-  std::string demo_country = pref->GetString(prefs::kDemoModeCountry);
-  demo_mode_dimensions->set_country(demo_country);
+  demo_mode_dimensions->set_country(ash::demo_mode::Country());
 
   metrics::SystemProfileProto_DemoModeDimensions_Retailer* retailer =
       demo_mode_dimensions->mutable_retailer();
-  retailer->set_retailer_id(pref->GetString(prefs::kDemoModeRetailerId));
-  retailer->set_store_id(pref->GetString(prefs::kDemoModeStoreId));
+  retailer->set_retailer_id(ash::demo_mode::RetailerName());
+  retailer->set_store_id(ash::demo_mode::StoreNumber());
 
-  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
+  if (ash::demo_mode::IsCloudGamingDevice()) {
     demo_mode_dimensions->add_customization_facet(
         metrics::
             SystemProfileProto_DemoModeDimensions_CustomizationFacet_CLOUD_GAMING_DEVICE);
   }
-  if (ash::features::IsFeatureAwareDeviceDemoModeEnabled()) {
+  if (ash::demo_mode::IsFeatureAwareDevice()) {
     demo_mode_dimensions->add_customization_facet(
         metrics::
             SystemProfileProto_DemoModeDimensions_CustomizationFacet_FEATURE_AWARE_DEVICE);

@@ -6,11 +6,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
-#include "chrome/browser/ash/input_method/ime_rules_config.h"
+#include "chrome/browser/ash/input_method/field_trial.h"
+#include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
@@ -127,6 +129,7 @@ const char* kDeniedUrlsForDiacritics[] = {
     "chrome-untrusted://crosh/",     // Crosh app
     "chrome-untrusted://terminal/",  // Terminal app
 };
+
 const char* kDeniedDomainsForDiacritics[] = {
     "localhost",            // Lots of dev apps on localhost (e.g. code-server)
     "cider.corp.google",    // Cider
@@ -242,7 +245,34 @@ bool IsMatchedSubDomainWithPathPrefix(
   return false;
 }
 
-void ReturnEnabledSuggestions(
+}  // namespace
+
+AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
+    GetUrlCallback get_url,
+    GetFocusedWindowPropertiesCallback get_window_properties)
+    : get_url_(std::move(get_url)),
+      get_window_properties_(std::move(get_window_properties)),
+      denylist_(DenylistAdditions{
+          .autocorrect_denylist_json =
+              GetFieldTrialParam(features::kAutocorrectByDefault,
+                                 ParamName::kDenylist),
+          .multi_word_denylist_json =
+              GetFieldTrialParam(features::kAssistMultiWord,
+                                 ParamName::kDenylist)}) {}
+
+AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
+
+void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
+    FetchEnabledSuggestionsCallback callback,
+    const TextInputMethod::InputContext& context) {
+  WindowProperties window_properties = get_window_properties_.Run();
+  get_url_.Run(
+      base::BindOnce(&AssistiveSuggesterClientFilter::ReturnEnabledSuggestions,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     window_properties, context));
+}
+
+void AssistiveSuggesterClientFilter::ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     WindowProperties window_properties,
     const TextInputMethod::InputContext& context,
@@ -273,7 +303,7 @@ void ReturnEnabledSuggestions(
 
   // Deny-list (will block if matched, otherwise allow)
   bool multi_word_suggestions_allowed =
-      !IsAssistiveInputDisabled(current_url) &&
+      !denylist_.Contains(*current_url) &&
       !IsMatchedApp(kDeniedAppsForMultiwordSuggester, window_properties) &&
       !IsMatchedExactUrl(kDeniedUrlsForMultiwordSuggester, current_url);
 
@@ -290,24 +320,6 @@ void ReturnEnabledSuggestions(
       .personal_info_suggestions = personal_info_suggestions_allowed,
       .diacritic_suggestions = diacritic_suggestions_allowed,
   });
-}
-
-}  // namespace
-
-AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
-    GetUrlCallback get_url,
-    GetFocusedWindowPropertiesCallback get_window_properties)
-    : get_url_(std::move(get_url)),
-      get_window_properties_(std::move(get_window_properties)) {}
-
-AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
-
-void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
-    FetchEnabledSuggestionsCallback callback,
-    const TextInputMethod::InputContext& context) {
-  WindowProperties window_properties = get_window_properties_.Run();
-  get_url_.Run(base::BindOnce(ReturnEnabledSuggestions, std::move(callback),
-                              window_properties, context));
 }
 
 }  // namespace input_method

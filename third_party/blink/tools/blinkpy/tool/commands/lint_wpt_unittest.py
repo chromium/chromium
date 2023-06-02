@@ -195,6 +195,16 @@ class LintWPTTest(LoggingTestCase):
             """, 'variant.html.ini')
         self.assertEqual(errors, [])
 
+    def test_allow_reftest_error(self):
+        errors = self._check_metadata(
+            """\
+            [reftest.html]
+              # ERROR indicates a failure mode in the harness, whereas FAIL
+              # indicates a product issue.
+              expected: [FAIL, ERROR]
+            """, 'reftest.html.ini')
+        self.assertEqual(errors, [])
+
     def test_valid_dir_metadata(self):
         errors = self._check_metadata(
             """\
@@ -361,7 +371,7 @@ class LintWPTTest(LoggingTestCase):
     def test_reftest_metadata_bad_values(self):
         errors = self._check_metadata("""\
             [reftest.html]
-              expected: ERROR
+              expected: OK
               fuzzy: [0-1:0-2, reftest-ref.html:20;200-300, @False]
               implementation-status: [implementing]
             """)
@@ -370,7 +380,7 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(name, 'META-BAD-VALUE')
         self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(description,
-                         "Test key 'expected' has invalid value 'ERROR'")
+                         "Test key 'expected' has invalid value 'OK'")
         name, description, path, _ = fuzzy_error1
         self.assertEqual(name, 'META-BAD-VALUE')
         self.assertEqual(path, 'reftest.html.ini')
@@ -454,6 +464,22 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(description,
                          "Test key 'restart-after' always has value '@True'")
+
+    def test_metadata_section_checks_exclusive(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?does-not-exist]
+              [subtest]
+                expected: FAIL
+            """, 'variant.html.ini')
+        # `META-SECTION-TOO-DEEP` should not be shown, since the test type
+        # cannot be determined.
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-UNKNOWN-TEST')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            "Test ID does not exist: 'variant.html?does-not-exist'")
 
     def test_metadata_condition_checks_exclusive(self):
         always_flaky, always_ok, unreachable_value = self._check_metadata(

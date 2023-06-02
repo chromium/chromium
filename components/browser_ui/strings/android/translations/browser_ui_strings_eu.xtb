@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
 <translation id="4428065317363009941">Iragarkien pertsonalizazioa</translation>
 <translation id="4434045419905280838">Leiho gainerak. / Birbideratzeak</translation>
-<translation id="4440642537584213025">Zabaldu <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Desaktibatu webgune jakin baten audioa.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4478158430052450698">Erraztu zooma pertsonalizatzea hainbat webgunetarako</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7882806643839505685">Baimendu webgune jakin baten audioa.</translation>
 <translation id="789180354981963912">Blokeatu hirugarrenen cookieak ezkutuko moduan:</translation>
+<translation id="7895868624847501462">Gailuko datu guztiak garbituko dira, cookieak barne, eta <ph name="DOMAIN" /> domeinuko eta haren azpiko webgune guztietako baimen guztiak berrezarriko</translation>
 <translation id="7940722705963108451">Gogorarazi</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzake}other{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzakete}}</translation>
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">Azpitituluak</translation>
 <translation id="8300705686683892304">Aplikazio batek kudeatzen du</translation>
 <translation id="8324158725704657629">Ez galdetu berriro</translation>
+<translation id="8338445138528827481">Gailuko datu guztiak garbituko dira, cookieak barne, eta <ph name="ORIGIN" /> iturburuko baimen guztiak berrezarriko</translation>
 <translation id="8362795839483915693">Bisitatzen dituzun webguneak handitu edo txikitu ahal dituzu</translation>
 <translation id="8372893542064058268">Baimendu atzeko planoko sinkronizazioa webgune zehatz batean.</translation>
 <translation id="8376384591331888629">Webgune honetako hirugarrenen cookieak barne</translation>

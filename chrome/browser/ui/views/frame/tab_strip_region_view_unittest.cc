@@ -79,9 +79,10 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
   }
 
   // Owned by TabStrip.
-  raw_ptr<FakeBaseTabStripController> controller_ = nullptr;
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
-  raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
+  raw_ptr<FakeBaseTabStripController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
+  raw_ptr<TabStripRegionView, DanglingUntriaged> tab_strip_region_view_ =
+      nullptr;
   std::unique_ptr<views::Widget> widget_;
 
  private:

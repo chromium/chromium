@@ -8,7 +8,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
-#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -79,7 +78,6 @@ class ObjectGroup {
 NavigationTracker::NavigationTracker(
     DevToolsClient* client,
     WebView* web_view,
-    const BrowserInfo* browser_info,
     const JavaScriptDialogManager* dialog_manager,
     const bool is_eager)
     : client_(client),
@@ -97,7 +95,6 @@ NavigationTracker::NavigationTracker(
     DevToolsClient* client,
     LoadingState known_state,
     WebView* web_view,
-    const BrowserInfo* browser_info,
     const JavaScriptDialogManager* dialog_manager,
     const bool is_eager)
     : client_(client),
@@ -111,7 +108,7 @@ NavigationTracker::NavigationTracker(
   InitCurrentFrame(known_state);
 }
 
-NavigationTracker::~NavigationTracker() {}
+NavigationTracker::~NavigationTracker() = default;
 
 void NavigationTracker::SetFrame(const std::string& new_frame_id) {
   if (new_frame_id.empty())

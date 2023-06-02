@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англійська (США), розкладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Таблиці</translation>
-<translation id="1538729222189715449">Відкриваються файли Linux…</translation>
 <translation id="1547964879613821194">Англійська (Канада)</translation>
 <translation id="1556189134700913550">Застосувати до всіх</translation>
 <translation id="1561842594491319104">Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1853795129690976061">Linux має доступ до цієї папки</translation>
 <translation id="1864756863218646478">Файл неможливо знайти.</translation>
+<translation id="1877377730633446520">Для цього знадобиться приблизно <ph name="REQUIRED_SPACE" />. Зараз доступно <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Підключитися</translation>
 <translation id="1920670151694390848">Малаялам, транслітерація</translation>
 <translation id="1920798810075583923">Кавун</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Розгортаються панелі відгуків про файли</translation>
 <translation id="1995337122023280937">Відкрити місце розташування файлу</translation>
 <translation id="2001796770603320721">Керувати на Диску</translation>
+<translation id="2004942826429452291">Файли зберігатимуться в хмарі й на цьому пристрої Chromebook.</translation>
 <translation id="2009067268969781306">Якщо відформатувати диск, усі збережені на ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2037845485764049925">Російська</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Налаштування пристрою</translation>
 <translation id="2084809735218147718">Пісня подяки</translation>
 <translation id="2088690981887365033">Мережа VPN</translation>
+<translation id="2089751716171649322">Легко відкривайте файли із Google Диску в режимі офлайн</translation>
 <translation id="2111134541987263231">Увімкніть параметр <ph name="BEGIN_BOLD" />Дозволити в анонімному режимі<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Файли (<ph name="NUMBER_OF_ITEMS" />) буде видалено, і ви не зможете відновити їх.</translation>
 <translation id="2122305276694332719">Автоматичне підключення до прихованої мережі дозволяє іншим користувачам бачити ваш пристрій і певні мережеві налаштування. Не рекомендується.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Установити для Linux</translation>
 <translation id="2225536596944493418">Видалити елементи (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не вдається створити папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Кеш Google Диска очищено.</translation>
 <translation id="2239068707900391003">Людина з кавою</translation>
 <translation id="2251368349685848079">Відновити з кошика</translation>
 <translation id="2278133026967558505">Доступ до файлу для всіх веб-сайтів і URL-адрес</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3486821258960016770">Монгольська</translation>
 <translation id="3495304270784461826">Помилок: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Ваші файли на Google Диску доступні офлайн</translation>
 <translation id="3509680540198371098">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="3511705761158917664">Підготовка до синхронізації файлів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальська</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
 <translation id="3737576078404241332">Видалити з бічної панелі</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
-<translation id="3780536599611287598">У вас немає дозволу переміщати файли в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Ви в режимі офлайн</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3793469551756281394">Залишилося приблизно <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
 <translation id="4465725236958772856">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Мережею керує адміністратор. Підключитися</translation>
 <translation id="4470564870223067757">Клавіатура хангул із 2 наборами клавіш</translation>
+<translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4474142134969976028">Немає результатів</translation>
 <translation id="4477002475007461989">Румунська</translation>
 <translation id="4477219268485577442">Болгарська (фонетична)</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832">Відновлення об’єктів (<ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{За вимогами вашої організації, ви повинні встановити розширення, щоб використовувати анонімний режим}one{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}few{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}many{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}other{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}}</translation>
-<translation id="4823651846660089135">Пристрій лише для перегляду</translation>
 <translation id="4826849268470072925">Тамільська, ITRANS</translation>
 <translation id="482932175346970750">У веб-переглядачі введіть <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5500122897333236901">Ісландська</translation>
 <translation id="5508696409934741614">Крапки</translation>
+<translation id="5519161320735100193">Налаштування Google Диска</translation>
 <translation id="5522908512596376669">Список файлів тепер відображається у вигляді списку.</translation>
 <translation id="5524517123096967210">Файл неможливо прочитати.</translation>
 <translation id="5533102081734025921">Зображення <ph name="IMAGE_TYPE" /></translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">З вибраного видалено всі записи.</translation>
 <translation id="5838825566232597749">US Workman, міжнародна</translation>
 <translation id="5845721951356578987">Медпрацівник</translation>
+<translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Помилка пошуку DHCP</translation>
 <translation id="5896749729057314184">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Автоматичне виявлення веб-проксі</translation>
 <translation id="6337014272874260727">Відкріпити в розділі "Швидкий доступ до файлів"</translation>
 <translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
-<translation id="6346310558342052870">Доступ обмежено</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Недійсне значення збігу із суфіксом домену</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7806708061868529807">Іврит</translation>
 <translation id="78104721049218340">Тайська, розкладка Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Помилка налаштування мережі</translation>
 <translation id="7839804798877833423">Для отримання цих файлів буде використано приблизно <ph name="FILE_SIZE" /> мобільного передавання даних.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">Якщо відформатувати розділ, усі збережені в ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Файли з папки "Мій диск" синхронізуються з Chromebook автоматично, щоб ви могли відкривати їх без інтернет-з’єднання.</translation>
 <translation id="7925247922861151263">Помилка перевірки AAA</translation>
 <translation id="7925686952655276919">Не використовувати мобільне передавання даних для синхронізації</translation>
 <translation id="7928710562641958568">Витягнути пристрій</translation>
+<translation id="7933875256234974853">Підготовка до синхронізації файлів на Диску…</translation>
 <translation id="7943385054491506837">Розкладка Colemak (США)</translation>
 <translation id="7953739707111622108">Не вдається відкрити пристрій, оскільки його файлову систему не розпізнано.</translation>
 <translation id="7969525169268594403">Словенська</translation>
 <translation id="7972920761225148017">Французька (Швейцарія)</translation>
 <translation id="7973962044839454485">Помилка автентифікації PPP через неправильне ім’я користувача або пароль</translation>
 <translation id="7980421588063892270">Англійська (США), розкладка Colemak</translation>
+<translation id="7985008041109611710">Синхронізація файлів (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8000066093800657092">Немає мережі</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Розмір</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Данська</translation>
 <translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8965697826696209160">Недостатньо місця.</translation>
+<translation id="8971742885766657349">Синхронізація – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Китайська (традиційна), піньїнь</translation>
 <translation id="8998871447376656508">Не вдалося завершити завантаження. На Google Диску недостатньо вільного місця.</translation>
 <translation id="9003940392834790328">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Встановлення розпочато.</translation>
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="9219908252191632183">Місячний ландшафт</translation>
+<translation id="937795003075802289">Синхронізація 1 файлу</translation>
 <translation id="938470336146445890">Установіть сертифікат користувача.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Змінено користувачем</translation>

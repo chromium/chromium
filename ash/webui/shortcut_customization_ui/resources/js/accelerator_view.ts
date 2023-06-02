@@ -19,7 +19,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCategoryLocked, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
+import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -60,11 +60,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
       pendingAcceleratorInfo: {
         type: Object,
-      },
-
-      acceleratorOnHold: {
-        type: String,
-        value: '',
       },
 
       viewState: {
@@ -130,13 +125,20 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   source: AcceleratorSource;
   sourceIsLocked: boolean;
   showEditIcon: boolean;
+  categoryIsLocked: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   private modifiers: string[];
-  private acceleratorOnHold: string;
   private isCapturing: boolean;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.categoryIsLocked = this.lookupManager.isCategoryLocked(
+        this.lookupManager.getAcceleratorCategory(this.source, this.action));
+  }
 
   private getModifiers(): string[] {
     return getModifiersForAcceleratorInfo(this.acceleratorInfo);
@@ -220,14 +222,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     e.preventDefault();
     e.stopPropagation();
 
-    // If the inputted accelerator is not a function key, it must be accompanied
-    // with valid modifiers.
-    if (!this.hasValidModifiers(e) && !isFunctionKey(e.keyCode)) {
-      // TODO(jimmyxgong): Fire events for error handling, e.g. Shift cannot be
-      // the only modifier.
-      this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
-      return;
-    }
+    // Add the key pressed to pendingAccelerator.
     this.set(
         'pendingAcceleratorInfo.layoutProperties.standardAccelerator.accelerator',
         this.keystrokeToAccelerator(e));
@@ -241,15 +236,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       this.set(
           'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
           e.key);
-    }
-
-    // New shortcut matches the current shortcut, end capture.
-    if (areAcceleratorsEqual(
-            getAccelerator(this.pendingAcceleratorInfo),
-            this.acceleratorInfo.layoutProperties.standardAccelerator
-                .accelerator)) {
-      this.endCapture();
-      return;
     }
 
     // Only process valid accelerators.
@@ -280,8 +266,36 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.handleAcceleratorResultData(result!.result);
   }
 
+  // TODO(longbowei): Finalize and localize these messages.
   private handleAcceleratorResultData(result: AcceleratorResultData): void {
     switch (result.result) {
+      // Shift is the only modifier.
+      case AcceleratorConfigResult.kShiftOnlyNotAllowed: {
+        this.statusMessage =
+            'Shortcut is not valid. Shift can not be used as the only ' +
+            'modifier key. Press a new shortcut.';
+        this.hasError = true;
+        return;
+      }
+      // No modifiers is pressed before primary key.
+      case AcceleratorConfigResult.kMissingModifier: {
+        // This is a backup check, since only valid accelerators are processed
+        // and a valid accelerator will have modifier(s) and a key or is
+        // function key.
+        this.statusMessage =
+            'Shortcut is not valid. Must include at lease one modifier key. ' +
+            'Press a new shortcut.';
+        this.hasError = true;
+        return;
+      }
+      // Top row key used as activation keys(no search key pressed).
+      case AcceleratorConfigResult.kKeyNotAllowed: {
+        this.statusMessage =
+            'Shortcut with top row keys need to include the search key.';
+        this.hasError = true;
+        return;
+      }
+      // Conflict with a locked accelerator.
       case AcceleratorConfigResult.kConflict:
       case AcceleratorConfigResult.kActionLocked: {
         this.statusMessage = this.i18n(
@@ -290,13 +304,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.hasError = true;
         return;
       }
-      case AcceleratorConfigResult.kShiftOnlyNotAllowed:
-      case AcceleratorConfigResult.kMissingModifier: {
-        // TODO(jimmyxgong): Replace and localize this string.
-        this.statusMessage = 'Bad modifiers"';
-        this.hasError = true;
-        return;
-      }
+      // Conflict with an editable shortcut.
       case AcceleratorConfigResult.kConflictCanOverride: {
         this.statusMessage = this.i18n(
             'shortcutWithConflictStatusMessage',
@@ -304,8 +312,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.hasError = true;
         return;
       }
+      // Limit to only 5 accelerators allowed.
       case AcceleratorConfigResult.kMaximumAcceleratorsReached: {
-        // TODO(jimmyxgong): Localize this message.
         this.statusMessage = 'Maximum accelerators have reached.';
         this.hasError = true;
         return;
@@ -424,7 +432,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
   private isValidDefaultAccelerator(accelInfo: StandardAcceleratorInfo):
       boolean {
-    // A valid default accelerator is on that has modifier(s) and a key or
+    // A valid default accelerator is one that has modifier(s) and a key or
     // is function key.
     const accelerator =
         accelInfo.layoutProperties.standardAccelerator.accelerator;
@@ -451,25 +459,22 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shouldShowLockIcon(): boolean {
     // Do not show lock icon in each row if customization is disabled or its
     // category is locked.
-    if (isCustomizationDisabled() ||
-        isCategoryLocked(this.lookupManager.getAcceleratorCategory(
-            this.source, this.action))) {
+    if (isCustomizationDisabled() || this.categoryIsLocked) {
       return false;
     }
-
+    // Show lock icon if accelerator is locked.
     return (this.acceleratorInfo && this.acceleratorInfo.locked) ||
         this.sourceIsLocked;
   }
 
   private shouldShowEditIcon(): boolean {
-    // Do not show edit icon in each row if customization is disabled, category
-    // is locked, or the row is displayed in edit-dialog.
+    // Do not show edit icon in each row if customization is disabled, the row
+    // is displayed in edit-dialog(!showEditIcon) or category is locked.
     if (isCustomizationDisabled() || !this.showEditIcon ||
-        isCategoryLocked(this.lookupManager.getAcceleratorCategory(
-            this.source, this.action))) {
+        this.categoryIsLocked) {
       return false;
     }
-
+    // Show edit icon if accelerator is not locked.
     return !(this.acceleratorInfo && this.acceleratorInfo.locked) &&
         !this.sourceIsLocked;
   }

@@ -2,20 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import os
-import shutil
 
-import attr
 import pytest
 
 from chrome.test.variations import test_utils
-from contextlib import contextmanager
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
-from typing import Optional
+from chrome.test.variations.drivers import DriverFactory
 
 
 def pytest_addoption(parser):
@@ -23,8 +15,8 @@ def pytest_addoption(parser):
   parser.addoption('--target-platform',
                    default=test_utils.get_hosted_platform(),
                    dest='target_platform',
-                   choices=['linux', 'win', 'mac', 'android', 'cros',
-                            'lacros'],
+                   choices=['linux', 'win', 'mac', 'android', 'webview',
+                            'cros', 'lacros'],
                    help='If present, run for the target platform, '
                    'defaults to the host platform.')
 
@@ -37,62 +29,19 @@ def pytest_addoption(parser):
                    help='The path to the existing chromedriver. '
                    'This will ignore --channel and skip downloading.')
 
+  # Options for android emulators
+  parser.addoption(
+    '--avd-config',
+    type=os.path.realpath,
+    help=('Path to the avd config. Required for Android products. '
+          '(See //tools/android/avd/proto for message definition '
+          'and existing *.textpb files.)'))
 
-class DriverFactory:
-  """The factory to create webdriver for the pre-defined environment"""
-
-  @contextmanager
-  def create_driver(self,
-                    seed_file: Optional[str] = None,
-                    options: Optional[ChromeOptions] = None
-    ) -> webdriver.Remote:
-    """Creates a webdriver."""
-    raise NotImplemented
-
-
-@attr.attrs()
-class DesktopDriverFactory(DriverFactory):
-  """Driver factory for desktop platforms."""
-  channel: Optional[str] = attr.attrib()
-  crash_dump_dir: Optional[str] = attr.attrib()
-  chromedriver_path: str = attr.attrib()
-
-  @contextmanager
-  def create_driver(
-    self,
-    seed_file: Optional[str] = None,
-    options: Optional[ChromeOptions] = None
-    ) -> webdriver.Remote:
-    os.environ['BREAKPAD_DUMP_LOCATION'] = self.crash_dump_dir
-
-    options = options or ChromeOptions()
-    options.add_argument('disable-field-trial-config')
-
-    if seed_file:
-      assert os.path.exists(seed_file)
-      options.add_argument(f'variations-test-seed-path={seed_file}')
-      options.add_argument(
-        f'fake-variations-channel={self.channel}')
-    options.add_experimental_option('excludeSwitches',
-                                    ['disable-background-networking'])
-    driver = None
-    try:
-      logging.info('Launching Chrome w/ caps: %s',
-                   options.to_capabilities())
-      driver = webdriver.Chrome(service=Service(self.chromedriver_path),
-                                options=options)
-      yield driver
-    except WebDriverException as e:
-      # Report this to be part of test result.
-      if os.listdir(self.crash_dump_dir):
-        logging.error('Chrome crashed and exited abnormally.\n%s', e)
-      else:
-        logging.error('Uncaught WebDriver exception thrown.\n%s', e)
-      raise
-    finally:
-      if driver:
-        driver.quit()
-      shutil.rmtree(self.crash_dump_dir, ignore_errors=True)
+  parser.addoption(
+    '--emulator-window',
+    action='store_true',
+    default=False,
+    help='Enable graphical window display on the emulator.')
 
 
 # pylint: disable=redefined-outer-name
@@ -119,24 +68,60 @@ def chromedriver_path(pytestconfig) -> str:
   elif platform == "win":
     ver = test_utils.find_version('win64', channel)
     downloaded_dir = test_utils.download_chrome_win(version=str(ver))
+  elif platform in ('android', 'webview'):
+    # For Android/Webview, we will use install_webview or install_chrome to
+    # download and install APKs, however, we will still need the chromedriver
+    # binaries for the hosts. Currently we will only run on Linux, so fetching
+    # the chromedriver for Linux only.
+    ver = test_utils.find_version(platform, channel)
+    downloaded_dir = test_utils.download_chromedriver_linux_host(
+      channel=channel, version=str(ver))
   else:
     return None
 
   return str(os.path.join(downloaded_dir, 'chromedriver'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def driver_factory(
   pytestconfig,
   chromedriver_path: str,
-  tmp_path_factory: pytest.TempPathFactory
+  tmp_path_factory: pytest.TempPathFactory,
+  local_http_server: 'HTTPServer',
   ) -> DriverFactory:
   """Returns a factory that creates a webdriver."""
+  factory: Optional[DriverFactory] = None
   target_platform = pytestconfig.getoption('target_platform')
   if target_platform in ('linux', 'win', 'mac'):
-    return DesktopDriverFactory(
+    from chrome.test.variations.drivers import desktop
+    factory = desktop.DesktopDriverFactory(
       channel=pytestconfig.getoption('channel'),
       crash_dump_dir=str(tmp_path_factory.mktemp('crash')),
       chromedriver_path=chromedriver_path)
 
-  assert False, f'Not supported platform {target_platform}.'
+  elif target_platform in ('android', 'webview'):
+    assert test_utils.get_hosted_platform() == 'linux', (
+      f'Only support to run android tests on Linux, but running on '
+      f'{test_utils.get_hosted_platform()}'
+    )
+    from chrome.test.variations.drivers import android
+    factories = {
+      'android': android.AndroidDriverFactory,
+      'webview': android.WebviewDriverFactory,
+    }
+
+    factory = factories[target_platform](
+      channel=pytestconfig.getoption('channel'),
+      avd_config=pytestconfig.getoption('avd_config'),
+      enabled_emulator_window=pytestconfig.getoption('emulator_window'),
+      chromedriver_path=chromedriver_path,
+      ports=[local_http_server.server_port]
+    )
+
+  if not factory:
+    assert False, f'Not supported platform {target_platform}.'
+
+  try:
+    yield factory
+  finally:
+    factory.close()

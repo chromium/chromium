@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
   <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+  <link rel="stylesheet" href="chrome://theme/typography.css">
   <style>
     body {
       background-color: var(--cros-bg-color);
@@ -55,6 +56,14 @@
       text-decoration: underline;
     }
 
+    [theme='legacy'] iron-icon {
+      padding: 6px;
+    }
+
+    [theme='refresh23'] iron-icon {
+      padding: 10px;
+    }
+
   </style>
 
   <script type="module" src="./main.js"></script>
@@ -75,13 +84,22 @@
         <xf-tree-item label="Level 1 (2 children)" icon="my_files">
           <xf-tree-item label="Level 1.1 (2 children)" icon="downloads">
             <xf-tree-item label="Level 1.1.1 (no children)" selected icon="camera-folder"></xf-tree-item>
-            <xf-tree-item label="Level 1.1.2 (no children)" disabled icon="usb"></xf-tree-item>
+            <xf-tree-item label="Level 1.1.2 (no children)" disabled icon="invalid_type"></xf-tree-item>
           </xf-tree-item>
-          <xf-tree-item label="Level 1.2 (no children)" icon="folder"></xf-tree-item>
+          <xf-tree-item label="Level 1.2 (no children)" icon="folder" renaming>
+            <input type="text" slot="rename">
+          </xf-tree-item>
         </xf-tree-item>
         <xf-tree-item label="Level 2 (may have children)" may-have-children separator icon="smb"></xf-tree-item>
-        <xf-tree-item label="Level 3 (no children)">
-          <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
+        <xf-tree-item label="Level 3 (no children)" icon="usb">
+          <cr-button class="root-eject align-right-icon" tabindex="0" slot="trailingIcon">
+            <iron-icon icon="files20:eject"></iron-icon>
+          </cr-button>
+        </xf-tree-item>
+        <xf-tree-item label="Level 4 (no children)" icon="usb">
+          <span class="external-link-icon align-right-icon" slot="trailingIcon">
+            <iron-icon icon="files20:external-link"></iron-icon>
+          </span>
         </xf-tree-item>
       </xf-tree>
     </div>
@@ -98,13 +116,22 @@
         <xf-tree-item label="Level 1 (2 children)" icon="my_files">
           <xf-tree-item label="Level 1.1 (2 children)" icon="downloads">
             <xf-tree-item label="Level 1.1.1 (no children)" selected icon="camera-folder"></xf-tree-item>
-            <xf-tree-item label="Level 1.1.2 (no children)" disabled icon="usb"></xf-tree-item>
+            <xf-tree-item label="Level 1.1.2 (no children)" disabled icon="invalid_type"></xf-tree-item>
           </xf-tree-item>
-          <xf-tree-item label="Level 1.2 (no children)" icon="folder"></xf-tree-item>
+          <xf-tree-item label="Level 1.2 (no children)" icon="folder" renaming>
+            <input type="text" slot="rename">
+          </xf-tree-item>
         </xf-tree-item>
         <xf-tree-item label="Level 2 (may have children)" may-have-children separator icon="smb"></xf-tree-item>
-        <xf-tree-item label="Level 3 (no children)" icon="invalid_type">
-          <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
+        <xf-tree-item label="Level 3 (no children)" icon="usb">
+          <cr-button class="root-eject align-right-icon" tabindex="0" slot="trailingIcon">
+            <iron-icon icon="files20:eject"></iron-icon>
+          </cr-button>
+        </xf-tree-item>
+        <xf-tree-item label="Level 4 (no children)" icon="usb">
+          <span class="external-link-icon align-right-icon" slot="trailingIcon">
+            <iron-icon icon="files20:external-link"></iron-icon>
+          </span>
         </xf-tree-item>
       </xf-tree>
     </div>

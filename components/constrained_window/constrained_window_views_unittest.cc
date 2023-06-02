@@ -132,7 +132,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
   std::unique_ptr<views::DialogDelegate> delegate_;
   raw_ptr<views::View> contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
-  raw_ptr<Widget> dialog_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> dialog_ = nullptr;
 };
 
 }  // namespace

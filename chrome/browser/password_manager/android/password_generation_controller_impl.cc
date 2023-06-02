@@ -254,7 +254,21 @@ std::unique_ptr<TouchToFillPasswordGenerationController>
 PasswordGenerationControllerImpl::CreateTouchToFillGenerationController() {
   return std::make_unique<TouchToFillPasswordGenerationController>(
       active_frame_driver_, &GetWebContents(),
-      std::make_unique<TouchToFillPasswordGenerationBridgeImpl>());
+      std::make_unique<TouchToFillPasswordGenerationBridgeImpl>(),
+      base::BindOnce(&PasswordGenerationControllerImpl::
+                         OnTouchToFillForGenerationDismissed,
+                     base::Unretained(this)));
+}
+
+std::unique_ptr<TouchToFillPasswordGenerationController>
+PasswordGenerationControllerImpl::
+    CreateTouchToFillGenerationControllerForTesting(
+        std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) {
+  return std::make_unique<TouchToFillPasswordGenerationController>(
+      active_frame_driver_, &GetWebContents(), std::move(bridge),
+      base::BindOnce(&PasswordGenerationControllerImpl::
+                         OnTouchToFillForGenerationDismissed,
+                     base::Unretained(this)));
 }
 
 void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
@@ -299,6 +313,12 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill() {
   return true;
 }
 
+void PasswordGenerationControllerImpl::OnTouchToFillForGenerationDismissed() {
+  CHECK(touch_to_fill_generation_state_ == TouchToFillState::kIsShowing);
+  touch_to_fill_generation_state_ = TouchToFillState::kWasShown;
+  touch_to_fill_generation_controller_.reset();
+}
+
 bool PasswordGenerationControllerImpl::IsActiveFrameDriver(
     const password_manager::ContentPasswordManagerDriver* driver) const {
   if (!active_frame_driver_)
@@ -321,8 +341,6 @@ void PasswordGenerationControllerImpl::ResetFocusState() {
 void PasswordGenerationControllerImpl::HideBottomSheetIfNeeded() {
   if (touch_to_fill_generation_state_ != TouchToFillState::kNone) {
     touch_to_fill_generation_state_ = TouchToFillState::kNone;
-    // TODO (crbug.com/1421753): Destroy the
-    // touch_to_fill_generation_controller_ when the bottom sheet is dismissed.
     touch_to_fill_generation_controller_.reset();
   }
 }

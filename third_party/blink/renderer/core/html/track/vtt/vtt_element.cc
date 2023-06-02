@@ -34,16 +34,18 @@
 namespace blink {
 
 static const QualifiedName& NodeTypeToTagName(VTTNodeType node_type) {
-  DEFINE_STATIC_LOCAL(QualifiedName, c_tag, (g_null_atom, "c", g_null_atom));
-  DEFINE_STATIC_LOCAL(QualifiedName, v_tag, (g_null_atom, "v", g_null_atom));
+  // Use predefined AtomicStrings in html_names to reduce AtomicString
+  // creation cost.
+  DEFINE_STATIC_LOCAL(QualifiedName, c_tag, (AtomicString("c")));
+  DEFINE_STATIC_LOCAL(QualifiedName, v_tag, (AtomicString("v")));
   DEFINE_STATIC_LOCAL(QualifiedName, lang_tag,
-                      (g_null_atom, "lang", g_null_atom));
-  DEFINE_STATIC_LOCAL(QualifiedName, b_tag, (g_null_atom, "b", g_null_atom));
-  DEFINE_STATIC_LOCAL(QualifiedName, u_tag, (g_null_atom, "u", g_null_atom));
-  DEFINE_STATIC_LOCAL(QualifiedName, i_tag, (g_null_atom, "i", g_null_atom));
+                      (html_names::kLangAttr.LocalName()));
+  DEFINE_STATIC_LOCAL(QualifiedName, b_tag, (html_names::kBTag.LocalName()));
+  DEFINE_STATIC_LOCAL(QualifiedName, u_tag, (html_names::kUTag.LocalName()));
+  DEFINE_STATIC_LOCAL(QualifiedName, i_tag, (html_names::kITag.LocalName()));
   DEFINE_STATIC_LOCAL(QualifiedName, ruby_tag,
-                      (g_null_atom, "ruby", g_null_atom));
-  DEFINE_STATIC_LOCAL(QualifiedName, rt_tag, (g_null_atom, "rt", g_null_atom));
+                      (html_names::kRubyTag.LocalName()));
+  DEFINE_STATIC_LOCAL(QualifiedName, rt_tag, (html_names::kRtTag.LocalName()));
   switch (node_type) {
     case kVTTNodeTypeClass:
       return c_tag;

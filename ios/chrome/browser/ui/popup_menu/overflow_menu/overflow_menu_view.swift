@@ -17,24 +17,32 @@ struct OverflowMenuView: View {
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   var body: some View {
-    VStack(
-      alignment: .leading,
-      // Leave no spaces above or below Divider, the two other sections will
-      // include proper spacing.
-      spacing: 0
-    ) {
-      OverflowMenuDestinationList(
-        destinations: model.destinations, metricsHandler: metricsHandler,
-        uiConfiguration: uiConfiguration
-      ).frame(height: Dimensions.destinationListHeight)
-      Divider()
-      OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
-      // Add a spacer on iPad to make sure there's space below the list.
-      if uiConfiguration.presentingViewControllerHorizontalSizeClass == .regular
-        && uiConfiguration.presentingViewControllerVerticalSizeClass == .regular
-      {
-        Spacer()
+    GeometryReader { geometry in
+      VStack(
+        alignment: .leading,
+        // Leave no spaces above or below Divider, the two other sections will
+        // include proper spacing.
+        spacing: 0
+      ) {
+        OverflowMenuDestinationList(
+          destinations: model.destinations, metricsHandler: metricsHandler,
+          uiConfiguration: uiConfiguration
+        ).frame(height: Dimensions.destinationListHeight)
+        Divider()
+        OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
+        // Add a spacer on iPad to make sure there's space below the list.
+        if uiConfiguration.presentingViewControllerHorizontalSizeClass == .regular
+          && uiConfiguration.presentingViewControllerVerticalSizeClass == .regular
+        {
+          Spacer()
+        }
       }
-    }.background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+      .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+      .onPreferenceChange(OverflowMenuDestinationList.HighlightedDestinationBounds.self) { pref in
+        if let pref = pref {
+          uiConfiguration.highlightedDestinationFrame = geometry[pref]
+        }
+      }
+    }
   }
 }

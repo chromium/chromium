@@ -1209,8 +1209,8 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   CSSStyleDeclaration* style = nullptr;
   if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
     style = style_rule->style();
-  } else if (IsA<CSSTryRule>(rule)) {
-    style = To<CSSTryRule>(rule)->style();
+  } else if (auto* try_rule = DynamicTo<CSSTryRule>(rule)) {
+    style = try_rule->style();
   } else {
     style = To<CSSKeyframeRule>(rule)->style();
   }
@@ -1808,12 +1808,16 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
 
 std::unique_ptr<protocol::Array<protocol::CSS::Value>>
 InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
-                                         const String& sheet_text) {
+                                         const String& sheet_text,
+                                         CSSStyleRule* rule) {
   auto* comment = MakeGarbageCollected<ScriptRegexp>(
       "/\\*[^]*?\\*/", kTextCaseSensitive, MultilineMode::kMultilineEnabled);
   auto result = std::make_unique<protocol::Array<protocol::CSS::Value>>();
   const Vector<SourceRange>& ranges = source_data->selector_ranges;
-  for (wtf_size_t i = 0, size = ranges.size(); i < size; ++i) {
+  const CSSSelector* obj_selector = rule->GetStyleRule()->FirstSelector();
+
+  for (wtf_size_t i = 0, size = ranges.size(); i < size && obj_selector;
+       ++i, obj_selector = CSSSelectorList::Next(*obj_selector)) {
     const SourceRange& range = ranges.at(i);
     String selector = sheet_text.Substring(range.start, range.length());
 
@@ -1829,6 +1833,14 @@ InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
             .setText(selector.StripWhiteSpace())
             .build();
     simple_selector->setRange(BuildSourceRangeObject(range));
+
+    std::array<uint8_t, 3> specificity_tuple = obj_selector->SpecificityTuple();
+    simple_selector->setSpecificity(protocol::CSS::Specificity::create()
+                                        .setA(specificity_tuple[0])
+                                        .setB(specificity_tuple[1])
+                                        .setC(specificity_tuple[2])
+                                        .build());
+
     result->emplace_back(std::move(simple_selector));
   }
   return result;
@@ -1844,14 +1856,27 @@ InspectorStyleSheet::BuildObjectForSelectorList(CSSStyleRule* rule) {
   String selector_text = rule->selectorText();
 
   if (source_data) {
-    selectors = SelectorsFromSource(source_data, text_);
+    selectors = SelectorsFromSource(source_data, text_, rule);
   } else {
     selectors = std::make_unique<protocol::Array<protocol::CSS::Value>>();
     for (const CSSSelector* selector = rule->GetStyleRule()->FirstSelector();
          selector; selector = CSSSelectorList::Next(*selector)) {
-      selectors->emplace_back(protocol::CSS::Value::create()
-                                  .setText(selector->SelectorText())
-                                  .build());
+      std::array<uint8_t, 3> specificity_tuple = selector->SpecificityTuple();
+
+      std::unique_ptr<protocol::CSS::Specificity> reworked_specificity =
+          protocol::CSS::Specificity::create()
+              .setA(specificity_tuple[0])
+              .setB(specificity_tuple[1])
+              .setC(specificity_tuple[2])
+              .build();
+
+      std::unique_ptr<protocol::CSS::Value> simple_selector =
+          protocol::CSS::Value::create()
+              .setText(selector->SelectorText())
+              .setSpecificity(std::move(reworked_specificity))
+              .build();
+
+      selectors->emplace_back(std::move(simple_selector));
     }
   }
   return protocol::CSS::SelectorList::create()
@@ -2365,7 +2390,8 @@ bool InspectorStyleSheetForInlineStyle::SetText(
   {
     InspectorCSSAgent::InlineStyleOverrideScope override_scope(
         element_->GetExecutionContext());
-    element_->setAttribute("style", AtomicString(text), exception_state);
+    element_->setAttribute(html_names::kStyleAttr, AtomicString(text),
+                           exception_state);
   }
   if (!exception_state.HadException())
     OnStyleSheetTextChanged();
@@ -2412,7 +2438,7 @@ CSSStyleDeclaration* InspectorStyleSheetForInlineStyle::InlineStyle() {
 }
 
 const String& InspectorStyleSheetForInlineStyle::ElementStyleText() {
-  return element_->getAttribute("style").GetString();
+  return element_->getAttribute(html_names::kStyleAttr).GetString();
 }
 
 void InspectorStyleSheetForInlineStyle::Trace(Visitor* visitor) const {

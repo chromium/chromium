@@ -236,10 +236,9 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     bool should_show_iph = browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHPriceTrackingInSidePanelFeature);
     if (should_show_iph) {
-      SidePanelCoordinator* coordinator =
-          BrowserView::GetBrowserViewForBrowser(browser_)
-              ->side_panel_coordinator();
-      if (coordinator) {
+      SidePanelUI* side_panel_ui =
+          SidePanelUI::GetSidePanelUIForBrowser(browser_);
+      if (side_panel_ui) {
         SidePanelRegistry* registry =
             SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
         registry->SetActiveEntry(registry->GetEntryForKey(

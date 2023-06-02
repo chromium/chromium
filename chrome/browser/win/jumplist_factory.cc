@@ -4,6 +4,7 @@
 
 #include "chrome/browser/win/jumplist_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +19,8 @@ JumpList* JumpListFactory::GetForProfile(Profile* profile) {
 
 // static
 JumpListFactory* JumpListFactory::GetInstance() {
-  return base::Singleton<JumpListFactory>::get();
+  static base::NoDestructor<JumpListFactory> instance;
+  return instance.get();
 }
 
 JumpListFactory::JumpListFactory()

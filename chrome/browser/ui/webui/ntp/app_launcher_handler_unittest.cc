@@ -181,7 +181,7 @@ class AppLauncherHandlerTest
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-  raw_ptr<extensions::ExtensionService> extension_service_;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

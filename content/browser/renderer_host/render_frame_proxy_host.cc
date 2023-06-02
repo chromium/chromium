@@ -119,7 +119,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
     FrameTreeNode* frame_tree_node,
     const blink::RemoteFrameToken& frame_token)
     : routing_id_(site_instance->GetProcess()->GetNextRoutingID()),
-      site_instance_(site_instance),
+      site_instance_deprecated_(site_instance),
       site_instance_group_(site_instance->group()),
       process_(site_instance->GetProcess()),
       frame_tree_node_(frame_tree_node),
@@ -365,25 +365,24 @@ void RenderFrameProxyHost::VisibilityChanged(
 }
 
 void RenderFrameProxyHost::UpdateOpener() {
-  // Another frame in this proxy's SiteInstance may reach the new opener by
+  // Another frame in this proxy's SiteInstanceGroup may reach the new opener by
   // first reaching this proxy and then referencing its window.opener.  Ensure
   // the new opener's proxy exists in this case. If this is already a proxy for
   // a frame in another BrowsingInstance in the same CoopRelatedGroup, we should
   // not add extra proxies, as these are not discoverable via window.opener
   // because property access is restricted.
-  bool is_coop_rp_proxy = frame_tree_node_->current_frame_host()
-                              ->GetSiteInstance()
-                              ->IsCoopRelatedSiteInstance(GetSiteInstance()) &&
-                          !frame_tree_node_->current_frame_host()
-                               ->GetSiteInstance()
-                               ->IsRelatedSiteInstance(GetSiteInstance());
+  SiteInstanceGroup* current_group =
+      frame_tree_node_->current_frame_host()->GetSiteInstance()->group();
+  bool is_coop_rp_proxy =
+      current_group->IsCoopRelatedSiteInstanceGroup(site_instance_group()) &&
+      !current_group->IsRelatedSiteInstanceGroup(site_instance_group());
   if (is_coop_rp_proxy) {
     return;
   }
 
   if (frame_tree_node_->opener()) {
     frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
-        GetSiteInstance(), frame_tree_node_,
+        GetSiteInstanceDeprecated(), frame_tree_node_,
         frame_tree_node_->current_frame_host()->browsing_context_state());
   }
 
@@ -759,12 +758,12 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // to PAGE_TRANSITION_FORM_SUBMIT. See https://crbug.com/829827.
   // TODO(https://crbug.com/1261963): Determine which source_site_instance from
   // site_instance_group_ to use for navigations to about:blank, once
-  // RenderFrameProxyHost no longer has a site_instance_.
+  // RenderFrameProxyHost no longer has a site_instance_deprecated_.
   frame_tree_node_->navigator().NavigateFromFrameProxy(
       current_rfh, validated_url,
       base::OptionalToPtr(params->initiator_frame_token), GetProcess()->GetID(),
       params->initiator_origin, params->initiator_base_url,
-      site_instance_.get(), params->referrer.To<content::Referrer>(),
+      GetSiteInstanceDeprecated(), params->referrer.To<content::Referrer>(),
       ui::PAGE_TRANSITION_LINK, params->should_replace_current_entry,
       download_policy, params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),

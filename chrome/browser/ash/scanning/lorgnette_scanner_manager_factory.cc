@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -22,7 +22,8 @@ LorgnetteScannerManager* LorgnetteScannerManagerFactory::GetForBrowserContext(
 
 // static
 LorgnetteScannerManagerFactory* LorgnetteScannerManagerFactory::GetInstance() {
-  return base::Singleton<LorgnetteScannerManagerFactory>::get();
+  static base::NoDestructor<LorgnetteScannerManagerFactory> instance;
+  return instance.get();
 }
 
 LorgnetteScannerManagerFactory::LorgnetteScannerManagerFactory()

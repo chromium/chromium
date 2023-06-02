@@ -103,7 +103,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
     {"appsLabel", IDS_PASSWORD_MANAGER_UI_APPS_LABEL},
     {"authTimedOut", IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT},
-    {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
     {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
     {"backToCheckup", IDS_PASSWORD_MANAGER_UI_BACK_TO_CHECKUP_ARIA_DESCRIPTION},
     {"backToPasswords",
@@ -390,6 +389,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                     InsertBrandedPasswordManager(
                         IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION));
 
+  source->AddString("autosigninDescription",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC));
+
   source->AddString(
       "emptyStateImportAccountStore",
       InsertBrandedPasswordManager(
@@ -478,8 +481,14 @@ void AddPluralStrings(content::WebUI* web_ui) {
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
+                                      kSettingsMenuItemElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI, kAddShortcutElementId);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
+                                       kAddShortcutCustomEventId);
+
 PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
-    : WebUIController(web_ui) {
+    : ui::MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
   passwords_private_delegate_ =
@@ -513,4 +522,25 @@ base::RefCountedMemory* PasswordManagerUI::GetFaviconResourceBytes(
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_PASSWORD_MANAGER_FAVICON, scale_factor));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(PasswordManagerUI)
+
+void PasswordManagerUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
+    help_bubble_handler_factory_receiver_.reset();
+  }
+  help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void PasswordManagerUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client), this,
+      std::vector<ui::ElementIdentifier>{
+          PasswordManagerUI::kSettingsMenuItemElementId,
+          PasswordManagerUI::kAddShortcutElementId});
 }

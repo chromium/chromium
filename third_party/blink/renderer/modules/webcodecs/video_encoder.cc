@@ -962,6 +962,11 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
                      request->encodeOpts->keyFrameNonNull();
   switch (active_config_->codec) {
     case media::VideoCodec::kAV1: {
+      if (!active_config_->options.bitrate.has_value() ||
+          active_config_->options.bitrate->mode() !=
+              media::Bitrate::Mode::kExternal) {
+        break;
+      }
       if (!request->encodeOpts->hasAv1() ||
           !request->encodeOpts->av1()->hasQuantizer()) {
         break;
@@ -970,6 +975,11 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
       break;
     }
     case media::VideoCodec::kVP9: {
+      if (!active_config_->options.bitrate.has_value() ||
+          active_config_->options.bitrate->mode() !=
+              media::Bitrate::Mode::kExternal) {
+        break;
+      }
       if (!request->encodeOpts->hasVp9() ||
           !request->encodeOpts->vp9()->hasQuantizer()) {
         break;

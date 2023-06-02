@@ -460,7 +460,7 @@ ComponentResult IDNToUnicodeOneComponent(
   // Valid punycode must not end with a dash.
   static constexpr char16_t kIdnPrefix[] = u"xn--";
   if (!base::StartsWith(comp, kIdnPrefix) || comp.back() == '-') {
-    out->append(comp.data(), comp.size());
+    out->append(comp);
     return result;
   }
 
@@ -503,7 +503,7 @@ ComponentResult IDNToUnicodeOneComponent(
   // We get here with no IDN or on error, in which case we just revert to
   // original string and append the literal input.
   out->resize(original_length);
-  out->append(comp.data(), comp.size());
+  out->append(comp);
   return result;
 }
 

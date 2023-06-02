@@ -79,6 +79,7 @@
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/network/shared_dictionary_util.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -92,6 +93,7 @@
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
@@ -143,6 +145,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
@@ -1499,6 +1502,8 @@ void StoragePartitionImpl::Initialize(
                        : path.Append(storage::kSharedStoragePath);
     shared_storage_manager_ = std::make_unique<storage::SharedStorageManager>(
         shared_storage_path, special_storage_policy_);
+    shared_storage_header_observer_ =
+        std::make_unique<SharedStorageHeaderObserver>(this);
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi)) {
@@ -1996,6 +2001,37 @@ void StoragePartitionImpl::OnAuthRequired(
       }
     }
   }
+
+  WebContents* current_web_contents = GetWebContents(context);
+  if (current_web_contents) {
+    // Evict all the BFCache entries that
+    // 1): are stored in the same BrowserContext
+    // 2): contain CCNS header
+    // 3): match the challenger information of the page that requires HTTP
+    // authentication.
+    for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
+      if (web_contents->GetBrowserContext()->UniqueId() ==
+          current_web_contents->GetBrowserContext()->UniqueId()) {
+        for (const std::unique_ptr<BackForwardCacheImpl::Entry>& entry :
+             web_contents->GetController().GetBackForwardCache().GetEntries()) {
+          RenderFrameHostImpl* rfh = entry->render_frame_host();
+          const GURL& last_committed_url = rfh->GetLastCommittedURL();
+          if (rfh->GetBackForwardCacheDisablingFeatures().Has(
+                  blink::scheduler::WebSchedulerTrackedFeature::
+                      kMainResourceHasCacheControlNoStore) &&
+              auth_info.challenger ==
+                  url::SchemeHostPort(last_committed_url.scheme(),
+                                      last_committed_url.host(),
+                                      last_committed_url.IntPort())) {
+            rfh->EvictFromBackForwardCacheWithReason(
+                BackForwardCacheMetrics::NotRestoredReason::
+                    kCacheControlNoStore);
+          }
+        }
+      }
+    }
+  }
+
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
       auth_info, head_headers, std::move(auth_challenge_responder),
@@ -2119,6 +2155,22 @@ void StoragePartitionImpl::OnDataUseUpdate(
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
       render_frame_host_id, network_traffic_annotation_id_hash, recv_bytes,
       sent_bytes);
+}
+
+void StoragePartitionImpl::OnSharedStorageHeaderReceived(
+    const url::Origin& request_origin,
+    std::vector<network::mojom::SharedStorageOperationPtr> operations,
+    OnSharedStorageHeaderReceivedCallback callback) {
+  if (!shared_storage_header_observer_) {
+    std::move(callback).Run();
+    return;
+  }
+  auto* navigation_or_document =
+      url_loader_network_observers_.current_context().navigation_or_document();
+  DCHECK(navigation_or_document);
+  RenderFrameHost* rfh = navigation_or_document->GetDocument();
+  shared_storage_header_observer_->HeaderReceived(
+      request_origin, rfh, std::move(operations), std::move(callback));
 }
 
 void StoragePartitionImpl::Clone(
@@ -3024,6 +3076,13 @@ void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
       std::move(shared_storage_worklet_host_manager);
 }
 
+void StoragePartitionImpl::OverrideSharedStorageHeaderObserverForTesting(
+    std::unique_ptr<SharedStorageHeaderObserver>
+        shared_storage_header_observer) {
+  DCHECK(initialized_);
+  shared_storage_header_observer_ = std::move(shared_storage_header_observer);
+}
+
 void StoragePartitionImpl::OverrideAggregationServiceForTesting(
     std::unique_ptr<AggregationService> aggregation_service) {
   DCHECK(initialized_);
@@ -3096,6 +3155,14 @@ void StoragePartitionImpl::InitNetworkContext() {
   if (base::FeatureList::IsEnabled(
           blink::features::kCompressionDictionaryTransportBackend)) {
     context_params->shared_dictionary_enabled = true;
+    if (!is_in_memory()) {
+      context_params->shared_dictionary_directory =
+          partition_path_.Append(FILE_PATH_LITERAL("Shared Dictionary"));
+    }
+    if (context_params->shared_dictionary_cache_max_size == 0u) {
+      CalculateAndSetSharedDictionaryCacheMaxSize(
+          GetWeakPtr(), is_in_memory() ? base::FilePath() : partition_path_);
+    }
   }
 
   network_context_.reset();

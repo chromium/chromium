@@ -13,6 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -22,6 +25,10 @@ namespace ash {
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
 namespace {
+
+const char kBluetoothDeviceName[] = "Bluetooth Device";
+const char kBluetoothDevicePublicAddress[] = "01:23:45:67:89:AB";
+
 const ui::KeyboardDevice kSampleKeyboardInternal = {
     5, ui::INPUT_DEVICE_INTERNAL, "kSampleKeyboardInternal"};
 const ui::KeyboardDevice kSampleKeyboardBluetooth = {
@@ -92,6 +99,14 @@ class InputDeviceStateNotifierTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    bluetooth_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(bluetooth_adapter_);
+    ON_CALL(*bluetooth_adapter_, IsPowered)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*bluetooth_adapter_, IsPresent)
+        .WillByDefault(testing::Return(true));
+
     AshTestBase::SetUp();
 
     notifier_ = std::make_unique<
@@ -117,6 +132,8 @@ class InputDeviceStateNotifierTest : public AshTestBase {
   std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
       notifier_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
+      bluetooth_adapter_;
 
   std::vector<ui::KeyboardDevice> devices_to_add_;
   std::vector<DeviceId> device_ids_to_remove_;
@@ -166,6 +183,71 @@ TEST_F(InputDeviceStateNotifierTest,
   EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[0].id);
   EXPECT_EQ(imposter_keyboard.name, devices_to_add_[1].name);
   EXPECT_EQ(imposter_keyboard.id, devices_to_add_[1].id);
+}
+
+TEST_F(InputDeviceStateNotifierTest, BluetoothKeyboardTest) {
+  uint32_t test_vendor_id = 0x1111;
+  uint32_t test_product_id = 0x1112;
+
+  std::unique_ptr<device::MockBluetoothDevice> mock_device =
+      std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+          bluetooth_adapter_.get(), /*bluetooth_class=*/0, kBluetoothDeviceName,
+          kBluetoothDevicePublicAddress,
+          /*initially_paired=*/true, /*connected=*/true);
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::KEYBOARD));
+  ON_CALL(*mock_device, GetVendorID)
+      .WillByDefault(testing::Return(test_vendor_id));
+  ON_CALL(*mock_device, GetProductID)
+      .WillByDefault(testing::Return(test_product_id));
+
+  std::vector<const device::BluetoothDevice*> devices;
+  devices.push_back(mock_device.get());
+  ON_CALL(*bluetooth_adapter_, GetDevices)
+      .WillByDefault(testing::Return(devices));
+
+  ui::KeyboardDevice bluetooth_keyboard = kSampleKeyboardBluetooth;
+  bluetooth_keyboard.product_id = test_product_id;
+  bluetooth_keyboard.vendor_id = test_vendor_id;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {bluetooth_keyboard, kSampleKeyboardInternal});
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Keyboard + Mouse combo devices are included in the keyboard list.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(
+          testing::Return(device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversKeyboardDeviceConfigurationChanged();
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Mice should not be included with keyboards.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::MOUSE));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversKeyboardDeviceConfigurationChanged();
+  ASSERT_EQ(1u, devices_to_add_.size());
+
+  // Gamepads should not be included with keyboards.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::GAMEPAD));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversKeyboardDeviceConfigurationChanged();
+  ASSERT_EQ(1u, devices_to_add_.size());
+
+  // Once it is a keyboard again, it should be added back to the list.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::KEYBOARD));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversKeyboardDeviceConfigurationChanged();
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // If there are no bluetooth devices according to the bluetooth_adapter_, the
+  // notifier should just trust the device data manager.
+  devices.clear();
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversKeyboardDeviceConfigurationChanged();
+  ASSERT_EQ(2u, devices_to_add_.size());
 }
 
 class InputDeviceNotifierParamaterizedTest
@@ -333,6 +415,14 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    bluetooth_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(bluetooth_adapter_);
+    ON_CALL(*bluetooth_adapter_, IsPowered)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*bluetooth_adapter_, IsPresent)
+        .WillByDefault(testing::Return(true));
+
     AshTestBase::SetUp();
 
     notifier_ =
@@ -345,6 +435,7 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
   void TearDown() override {
     devices_to_add_.clear();
     device_ids_to_remove_.clear();
+    mice_.clear();
     AshTestBase::TearDown();
   }
 
@@ -359,6 +450,8 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
   std::unique_ptr<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>
       notifier_;
   base::flat_map<DeviceId, mojom::MousePtr> mice_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
+      bluetooth_adapter_;
 
   std::vector<ui::InputDevice> devices_to_add_;
   std::vector<DeviceId> device_ids_to_remove_;
@@ -375,6 +468,76 @@ TEST_F(InputDeviceMouseNotifierTest, InternalMiceFilteredOut) {
   EXPECT_EQ(kSampleMouseUsb.id, devices_to_add_[0].id);
   EXPECT_EQ(kSampleMouseBluetooth.name, devices_to_add_[1].name);
   EXPECT_EQ(kSampleMouseBluetooth.id, devices_to_add_[1].id);
+}
+
+TEST_F(InputDeviceMouseNotifierTest, BluetoothMouseTest) {
+  uint32_t test_vendor_id = 0x1111;
+  uint32_t test_product_id = 0x1112;
+
+  std::unique_ptr<device::MockBluetoothDevice> mock_device =
+      std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+          bluetooth_adapter_.get(), /*bluetooth_class=*/0, kBluetoothDeviceName,
+          kBluetoothDevicePublicAddress,
+          /*initially_paired=*/true, /*connected=*/true);
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::MOUSE));
+  ON_CALL(*mock_device, GetVendorID)
+      .WillByDefault(testing::Return(test_vendor_id));
+  ON_CALL(*mock_device, GetProductID)
+      .WillByDefault(testing::Return(test_product_id));
+
+  std::vector<const device::BluetoothDevice*> devices;
+  devices.push_back(mock_device.get());
+  ON_CALL(*bluetooth_adapter_, GetDevices)
+      .WillByDefault(testing::Return(devices));
+
+  ui::InputDevice bluetooth_mouse = kSampleMouseBluetooth;
+  bluetooth_mouse.product_id = test_product_id;
+  bluetooth_mouse.vendor_id = test_vendor_id;
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {bluetooth_mouse, kSampleMouseUsb});
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Keyboard + Mouse combo devices are included in the mouse list.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(
+          testing::Return(device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversMouseDeviceConfigurationChanged();
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Keyboards should not be included with mice.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::KEYBOARD));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversMouseDeviceConfigurationChanged();
+  ASSERT_EQ(1u, devices_to_add_.size());
+
+  // Gamepads should not be included with mice.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::GAMEPAD));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversMouseDeviceConfigurationChanged();
+  ASSERT_EQ(1u, devices_to_add_.size());
+
+  // Once it is a mouse again, it should be added back to the list.
+  ON_CALL(*mock_device, GetDeviceType)
+      .WillByDefault(testing::Return(device::BluetoothDeviceType::MOUSE));
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversMouseDeviceConfigurationChanged();
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // If there are no bluetooth devices according to the bluetooth_adapter_, the
+  // notifier should just trust the device data manager.
+  devices.clear();
+  ui::DeviceDataManagerTestApi()
+      .NotifyObserversMouseDeviceConfigurationChanged();
+  ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Needed to reset the `bluetooth_adapter_`.
+  ON_CALL(*bluetooth_adapter_, GetDevices)
+      .WillByDefault(
+          testing::Return(std::vector<const device::BluetoothDevice*>()));
 }
 
 }  // namespace ash

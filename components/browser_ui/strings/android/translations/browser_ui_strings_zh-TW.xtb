@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4428065317363009941">廣告個人化</translation>
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
-<translation id="4440642537584213025">展開「<ph name="TARGET_DESCRIPTION" />」</translation>
 <translation id="4468959413250150279">關閉特定網站的音訊。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 個 Cookie}other{# 個 Cookie}}</translation>
 <translation id="4478158430052450698">在不同網站上都能更輕鬆地自訂縮放比例</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">全部取消選取</translation>
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
 <translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
+<translation id="7895868624847501462">這項操作會清除包括 Cookie 在內的所有本機資料，並重設 <ph name="DOMAIN" /> 和該網域中所有網站的所有權限</translation>
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由應用程式管理</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
+<translation id="8338445138528827481">這項操作會清除包括 Cookie 在內的所有本機資料，並重設「<ph name="ORIGIN" />」的所有權限</translation>
 <translation id="8362795839483915693">你可以在瀏覽時縮放網站內容</translation>
 <translation id="8372893542064058268">允許特定網站執行背景同步處理作業。</translation>
 <translation id="8376384591331888629">包括這個網站上的第三方 Cookie</translation>

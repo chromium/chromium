@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 662 tests; 347 PASS, 315 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 673 tests; 356 PASS, 317 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -541,8 +541,17 @@ FAIL Parsing: <non-special://[1:2:0:0:0:0:0:3]/> against <about:blank> assert_eq
 FAIL Parsing: <non-special://[1:2::3]:80/> against <about:blank> assert_equals: host expected "[1:2::3]:80" but got ""
 FAIL Parsing: <non-special://[:80/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 PASS Parsing: <blob:https://example.com:443/> against <about:blank>
+PASS Parsing: <blob:http://example.org:88/> against <about:blank>
 PASS Parsing: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> against <about:blank>
 PASS Parsing: <blob:> against <about:blank>
+PASS Parsing: <blob:blob:> against <about:blank>
+PASS Parsing: <blob:blob:https://example.org/> against <about:blank>
+PASS Parsing: <blob:about:blank> against <about:blank>
+PASS Parsing: <blob:file://host/path> against <about:blank>
+PASS Parsing: <blob:ftp://host/path> against <about:blank>
+PASS Parsing: <blob:ws://example.org/> against <about:blank>
+PASS Parsing: <blob:wss://example.org/> against <about:blank>
+PASS Parsing: <blob:http%3a//example.org/> against <about:blank>
 PASS Parsing: <http://0x7f.0.0.0x7g> against <about:blank>
 PASS Parsing: <http://0X7F.0.0.0X7G> against <about:blank>
 FAIL Parsing: <http://[::127.0.0.0.1]> against <about:blank> assert_equals: failure should set href to input expected "http://[::127.0.0.0.1]" but got "http://[::127.0.0.0.1]/"
@@ -673,5 +682,7 @@ FAIL Parsing: <stun://test/a/../b> against <about:blank> assert_equals: href exp
 FAIL Parsing: <stun://:443> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <stun://test:test> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <stun://[:1]> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <w://x:0> against <about:blank> assert_equals: host expected "x:0" but got ""
+FAIL Parsing: <west://x:0> against <about:blank> assert_equals: host expected "x:0" but got ""
 Harness: the test ran to completion.
 

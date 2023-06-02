@@ -10,9 +10,9 @@
 #include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
-namespace ui {
+@class AXPlatformNodeCocoa;
 
-class AXPlatformNodeCocoa;
+namespace ui {
 
 // An AXTextMarker is used by applications like Chrome to store a position in
 // the accessibility tree's text representation. It is a data structure whose
@@ -48,7 +48,7 @@ id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange);
 
 // Returns the AXTextMarker representing the position within the given node.
 COMPONENT_EXPORT(AX_PLATFORM)
-id AXTextMarkerFrom(const AXPlatformNodeCocoa* anchor,
+id AXTextMarkerFrom(AXPlatformNodeCocoa* anchor,
                     int offset,
                     ax::mojom::TextAffinity affinity);
 

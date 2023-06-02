@@ -147,7 +147,7 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void FillOrPreviewForm(mojom::RendererFormDataAction action,
                                  const FormData& form,
                                  const FormFieldData& field,
-                                 Suggestion::FrontendId unique_id,
+                                 Suggestion::BackendId backend_id,
                                  const AutofillTriggerSource trigger_source);
   void FillCreditCardFormImpl(const FormData& form,
                               const FormFieldData& field,
@@ -190,12 +190,13 @@ class BrowserAutofillManager : public AutofillManager,
   // |title| and |body| with relevant user-facing text.
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    Suggestion::FrontendId identifier,
+                                   Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body);
 
-  // Remove the credit card or Autofill profile that matches |unique_id|
+  // Remove the credit card or Autofill profile that matches |backend_id|
   // from the database. Returns true if deletion is allowed.
-  bool RemoveAutofillProfileOrCreditCard(Suggestion::FrontendId unique_id);
+  bool RemoveAutofillProfileOrCreditCard(Suggestion::BackendId backend_id);
 
   // Remove the specified suggestion from single field filling. |frontend_id| is
   // the PopupItemId of the suggestion.
@@ -523,15 +524,14 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
 
-  // TODO(crbug.com/1249665): Change unique_id to frontend_id and move the
-  // functions to AutofillSuggestionGenerator.
+  // TODO(crbug.com/1249665): Move the functions to AutofillSuggestionGenerator.
   // Gets the card referred to by the guid |unique_id|. Returns |nullptr| if
   // card does not exist.
-  CreditCard* GetCreditCard(Suggestion::FrontendId unique_id);
+  CreditCard* GetCreditCard(Suggestion::BackendId unique_id);
 
   // Gets the profile referred to by the guid |unique_id|. Returns |nullptr| if
   // profile does not exist.
-  AutofillProfile* GetProfile(Suggestion::FrontendId unique_id);
+  AutofillProfile* GetProfile(Suggestion::BackendId unique_id);
 
   // Determines whether a fill on |form| initiated from |triggered_field| will
   // wind up filling a credit card number. This is useful to determine if we

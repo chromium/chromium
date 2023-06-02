@@ -126,7 +126,7 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
       const autofill::AutofillProfile& profile) const;
 
   mutable std::map<std::string, ProfileFields> cache_;
-  const raw_ref<const PaymentOptionsProvider> options_;
+  const raw_ref<const PaymentOptionsProvider, DanglingUntriaged> options_;
 };
 
 }  // namespace payments

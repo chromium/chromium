@@ -105,8 +105,6 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   if (!entry.profile_label().empty())
     specifics->set_profile_label(entry.profile_label());
 
-  specifics->set_disallow_settings_visible_updates(
-      entry.disallow_settings_visible_updates());
   specifics->set_use_count(entry.use_count());
   specifics->set_use_date(entry.use_date().ToTimeT());
   specifics->set_address_home_language_code(
@@ -188,6 +186,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_address_home_between_streets(TruncateUTF8(
         UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS))));
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    specifics->set_address_home_admin_level_2(
+        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2))));
+  }
   specifics->set_address_home_street_address(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
   specifics->set_address_home_line1(
@@ -240,6 +243,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS)));
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    specifics->set_address_home_admin_level_2_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2)));
+  }
   specifics->set_address_home_street_address_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS)));
@@ -290,11 +299,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // Set the profile label if it exists.
   if (specifics.has_profile_label())
     profile->set_profile_label(specifics.profile_label());
-
-  // Set the `disallow_settings_visible_updates state` if it exists.
-  if (specifics.has_disallow_settings_visible_updates())
-    profile->set_disallow_settings_visible_updates(
-        specifics.disallow_settings_visible_updates());
 
   // Set repeated fields.
   profile->SetRawInfoWithVerificationStatus(
@@ -461,6 +465,15 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
         UTF8ToUTF16(specifics.address_home_between_streets()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_ADMIN_LEVEL2,
+        UTF8ToUTF16(specifics.address_home_admin_level_2()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_admin_level_2_status()));
   }
 
   // Set either the deprecated subparts (line1 & line2) or the full address

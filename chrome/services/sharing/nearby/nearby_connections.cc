@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -289,8 +290,8 @@ void NearbyConnections::AcceptConnection(
   // Capturing Core* is safe as Core owns PayloadListener.
   PayloadListener payload_listener = {
       .payload_cb =
-          [&, remote, core = GetCore(service_id)](
-              const std::string& endpoint_id, Payload payload) {
+          [&, remote, core = GetCore(service_id)](base::StringPiece endpoint_id,
+                                                  Payload payload) {
             if (!remote)
               return;
 
@@ -299,7 +300,7 @@ void NearbyConnections::AcceptConnection(
                 mojom::BytesPayloadPtr bytes_payload = mojom::BytesPayload::New(
                     ByteArrayToMojom(payload.AsBytes()));
                 remote->OnPayloadReceived(
-                    endpoint_id,
+                    std::string(endpoint_id),
                     mojom::Payload::New(payload.GetId(),
                                         mojom::PayloadContent::NewBytes(
                                             std::move(bytes_payload))));
@@ -319,7 +320,7 @@ void NearbyConnections::AcceptConnection(
                 mojom::FilePayloadPtr file_payload =
                     mojom::FilePayload::New(std::move(file));
                 remote->OnPayloadReceived(
-                    endpoint_id,
+                    std::string(endpoint_id),
                     mojom::Payload::New(payload.GetId(),
                                         mojom::PayloadContent::NewFile(
                                             std::move(file_payload))));
@@ -334,7 +335,7 @@ void NearbyConnections::AcceptConnection(
             }
           },
       .payload_progress_cb =
-          [&, remote](const std::string& endpoint_id,
+          [&, remote](base::StringPiece endpoint_id,
                       const PayloadProgressInfo& info) {
             if (!remote)
               return;
@@ -343,7 +344,7 @@ void NearbyConnections::AcceptConnection(
             // should not be called if |info.total_bytes| is negative.
             DCHECK_GE(info.bytes_transferred, 0);
             remote->OnPayloadTransferUpdate(
-                endpoint_id,
+                std::string(endpoint_id),
                 mojom::PayloadTransferUpdate::New(
                     info.payload_id, PayloadStatusToMojom(info.status),
                     info.total_bytes, info.bytes_transferred));
@@ -372,7 +373,7 @@ void NearbyConnections::AcceptConnection(
                 // Since we have completed fetching the full payload, return the
                 // completed payload as a "bytes" payload.
                 remote->OnPayloadReceived(
-                    endpoint_id,
+                    std::string(endpoint_id),
                     mojom::Payload::New(
                         info.payload_id,
                         mojom::PayloadContent::NewBytes(

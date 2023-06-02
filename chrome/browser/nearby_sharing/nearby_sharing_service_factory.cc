@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
@@ -42,7 +42,8 @@ absl::optional<bool>& IsSupportedTesting() {
 
 // static
 NearbySharingServiceFactory* NearbySharingServiceFactory::GetInstance() {
-  return base::Singleton<NearbySharingServiceFactory>::get();
+  static base::NoDestructor<NearbySharingServiceFactory> instance;
+  return instance.get();
 }
 
 // static

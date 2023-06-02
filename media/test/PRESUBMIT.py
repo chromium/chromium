@@ -12,10 +12,6 @@ import sys
 
 PRESUBMIT_VERSION = '2.0.0'
 
-# This line is 'magic' in that git-cl looks for it to decide whether to
-# use Python3 instead of Python2 when running the code in this file.
-USE_PYTHON3 = True
-
 def _CheckTestDataReadmeUpdated(input_api, output_api):
   """
   Checks to make sure the README.md file is updated when changing test files.
@@ -59,4 +55,3 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChange(input_api, output_api):
   return _CheckFileList(input_api, output_api)
-

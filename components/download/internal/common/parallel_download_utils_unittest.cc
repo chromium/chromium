@@ -48,7 +48,7 @@ class ParallelDownloadUtilsRecoverErrorTest
 
  protected:
   // Stream for sending data into the SourceStream.
-  raw_ptr<StrictMock<MockInputStream>> input_stream_;
+  raw_ptr<StrictMock<MockInputStream>, DanglingUntriaged> input_stream_;
 };
 
 TEST_F(ParallelDownloadUtilsTest, FindSlicesToDownload) {

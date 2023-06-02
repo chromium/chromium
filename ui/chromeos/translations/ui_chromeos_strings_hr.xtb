@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google tablice</translation>
-<translation id="1538729222189715449">Otvaranje Linux datoteka...</translation>
 <translation id="1547964879613821194">kanadska (engleska)</translation>
 <translation id="1556189134700913550">Primijeni na sve</translation>
 <translation id="1561842594491319104">Uređaji sa sustavom Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google web-lokacija</translation>
 <translation id="1853795129690976061">Mapa se dijeli s Linuxom</translation>
 <translation id="1864756863218646478">Nije bilo moguće pronaći datoteku.</translation>
+<translation id="1877377730633446520">Iskoristit će se otprilike <ph name="REQUIRED_SPACE" />. Trenutačno vam je dostupno <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, povežite</translation>
 <translation id="1920670151694390848">malajalamski, transliteracija</translation>
 <translation id="1920798810075583923">Lubenica</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Proširi ploče povratnih informacija o datotekama</translation>
 <translation id="1995337122023280937">Otvorite lokaciju datoteke</translation>
 <translation id="2001796770603320721">Upravljaj na Disku</translation>
+<translation id="2004942826429452291">Datoteke će se pohraniti u oblaku i na ovom Chromebooku.</translation>
 <translation id="2009067268969781306">Formatiranjem diska izbrisat će se svi podaci koji su na njemu pohranjeni. Tu radnju nije moguće poništiti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2037845485764049925">ruski</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Postavke uređaja</translation>
 <translation id="2084809735218147718">Zahvaljuje vam pjesmom</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
+<translation id="2089751716171649322">Lako pristupajte datotekama Google diska offline</translation>
 <translation id="2111134541987263231">Uključite opciju <ph name="BEGIN_BOLD" />Dopusti u anonimnom načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Izbrisat će se više stavki (<ph name="NUMBER_OF_ITEMS" />) i nećete ih moći vratiti.</translation>
 <translation id="2122305276694332719">Automatsko povezivanje sa skrivenom mrežom omogućuje drugima da vide vaš uređaj i neke mrežne postavke i stoga se ne preporučuje.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Instaliranje uz Linux</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nije moguće izraditi mapu "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Vaša je predmemorija Google diska izbrisana.</translation>
 <translation id="2239068707900391003">Osoba drži šalicu kave</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
 <translation id="2278133026967558505">Pristup datoteci za sve web-lokacije i URL-ove</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3486821258960016770">mongolski</translation>
 <translation id="3495304270784461826">Broj pogrešaka: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Datoteke Google diska dostupne su offline</translation>
 <translation id="3509680540198371098">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
 <translation id="3511705761158917664">Priprema za sinkronizaciju sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="3522708245912499433">Portugalski</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Promjena te postavke utjecat će na sve dijeljene mreže</translation>
 <translation id="3737576078404241332">Ukloni s bočne trake</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
-<translation id="3780536599611287598">Nemate dopuštenje za premještanje datoteka u mapu "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Izvan mreže ste</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3793469551756281394">Preostalo je oko <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Prilagođeni poslužitelji naziva</translation>
 <translation id="4465725236958772856">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, upravlja administrator, povežite</translation>
 <translation id="4470564870223067757">hangul 2 set</translation>
+<translation id="4472575034687746823">Početak korištenja</translation>
 <translation id="4474142134969976028">Nema podudarnih rezultata</translation>
 <translation id="4477002475007461989">rumunjski</translation>
 <translation id="4477219268485577442">bugarska (fonetska)</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Vraćanje stavki (ukupno <ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Organizacija zahtijeva proširenje za upotrebu anonimnog načina}one{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}few{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}other{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}}</translation>
-<translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
 <translation id="482932175346970750">U preglednik unesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebaseovi</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5500122897333236901">Islandski</translation>
 <translation id="5508696409934741614">Točke</translation>
+<translation id="5519161320735100193">Postavke Google diska</translation>
 <translation id="5522908512596376669">Popis datoteka promijenio se na prikaz popisa.</translation>
 <translation id="5524517123096967210">Nije bilo moguće pročitati datoteku.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> slika</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Uklonjeni su svi unosi iz odabira.</translation>
 <translation id="5838825566232597749">Američka međunarodna Workman</translation>
 <translation id="5845721951356578987">Medicinska sestra</translation>
+<translation id="5860491529813859533">Uključi</translation>
 <translation id="5861477046012235702">Igrač</translation>
 <translation id="5864471791310927901">DHCP pretraživanje nije uspjelo</translation>
 <translation id="5896749729057314184">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Automatsko otkrivanje putem web-proxyja</translation>
 <translation id="6337014272874260727">Otkvači s brzog pristupa datotekama</translation>
 <translation id="6339145975392024142">Američki međunarodni (PC)</translation>
-<translation id="6346310558342052870">Pristup ograničen</translation>
 <translation id="6356685157277930264">Prozor povratnih informacija za datoteke</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="636254897931573416">Nevažeća vrijednost podudaranja domenskog nastavka</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">hebrejski</translation>
 <translation id="78104721049218340">tajlandski s tipkovnicom Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Pogreška prilikom konfiguriranja mreže</translation>
 <translation id="7839804798877833423">Dohvaćanje tih datoteka potrošit će približno <ph name="FILE_SIZE" /> mobilnih podataka.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">katakana</translation>
 <translation id="7908793776359722643">Formatiranjem particije izbrisat će se svi podaci koji su na njoj pohranjeni. Tu radnju nije moguće poništiti.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Vaše datoteke na stranici Moj disk automatski će se sinkronizirati s vašim Chromebookom kako biste im mogli pristupati bez internetske veze.</translation>
 <translation id="7925247922861151263">Provjera AAA nije uspjela</translation>
 <translation id="7925686952655276919">Ne upotrebljavaj mobilne podatke za sinkronizaciju</translation>
 <translation id="7928710562641958568">Izbaci uređaj</translation>
+<translation id="7933875256234974853">Priprema za sinkronizaciju datoteka Diska...</translation>
 <translation id="7943385054491506837">američka (SAD Colemak)</translation>
 <translation id="7953739707111622108">Nije moguće otvoriti ovaj uređaj jer nije prepoznat njegov datotečni sustav.</translation>
 <translation id="7969525169268594403">Slovenski</translation>
 <translation id="7972920761225148017">francuski (Švicarska)</translation>
 <translation id="7973962044839454485">PPP autentifikacija nije uspjela zbog netočnog korisničkog imena ili zaporke</translation>
 <translation id="7980421588063892270">engleski (SAD) s Colemak tipkovnicom</translation>
+<translation id="7985008041109611710">Sinkroniziranje <ph name="NUMBER_OF_FILES_SYNCING" /> datoteke/datoteka</translation>
 <translation id="8000066093800657092">Nema mreže</translation>
 <translation id="8008366997883261463">Jack Russell terijer</translation>
 <translation id="8028993641010258682">Veličina</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Danski</translation>
 <translation id="8949925099261528566">Povezano, bez interneta</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
+<translation id="8971742885766657349">Sinkronizacija – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">kineski (tradicionalni) pinyin</translation>
 <translation id="8998871447376656508">Nema dovoljno slobodnog prostora na Google disku da biste dovršili prijenos.</translation>
 <translation id="9003940392834790328">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Instalacija je uspješno pokrenuta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Površina Mjeseca</translation>
+<translation id="937795003075802289">Sinkroniziranje jedne datoteke</translation>
 <translation id="938470336146445890">Instalirajte korisnički certifikat.</translation>
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="943972244133411984">Izmijenio</translation>

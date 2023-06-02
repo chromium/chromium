@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 
+#include "base/logging.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
@@ -239,6 +240,158 @@ media::VideoColorSpace WebRtcToMediaVideoColorSpace(
   }
 
   return media::VideoColorSpace(primaries, transfer, matrix, range);
+}
+
+webrtc::ColorSpace GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space) {
+  webrtc::ColorSpace::PrimaryID primaries =
+      webrtc::ColorSpace::PrimaryID::kUnspecified;
+  switch (color_space.GetPrimaryID()) {
+    case gfx::ColorSpace::PrimaryID::BT709:
+      primaries = webrtc::ColorSpace::PrimaryID::kBT709;
+      break;
+    case gfx::ColorSpace::PrimaryID::BT470M:
+      primaries = webrtc::ColorSpace::PrimaryID::kBT470M;
+      break;
+    case gfx::ColorSpace::PrimaryID::BT470BG:
+      primaries = webrtc::ColorSpace::PrimaryID::kBT470BG;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+      primaries = webrtc::ColorSpace::PrimaryID::kSMPTE170M;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      primaries = webrtc::ColorSpace::PrimaryID::kSMPTE240M;
+      break;
+    case gfx::ColorSpace::PrimaryID::FILM:
+      primaries = webrtc::ColorSpace::PrimaryID::kFILM;
+      break;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      primaries = webrtc::ColorSpace::PrimaryID::kBT2020;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
+      primaries = webrtc::ColorSpace::PrimaryID::kSMPTEST428;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
+      primaries = webrtc::ColorSpace::PrimaryID::kSMPTEST431;
+      break;
+    case gfx::ColorSpace::PrimaryID::P3:
+      primaries = webrtc::ColorSpace::PrimaryID::kSMPTEST432;
+      break;
+    default:
+      DVLOG(1) << "Unsupported color primaries.";
+      break;
+  }
+
+  webrtc::ColorSpace::TransferID transfer =
+      webrtc::ColorSpace::TransferID::kUnspecified;
+  switch (color_space.GetTransferID()) {
+    case gfx::ColorSpace::TransferID::BT709:
+      transfer = webrtc::ColorSpace::TransferID::kBT709;
+      break;
+    case gfx::ColorSpace::TransferID::GAMMA22:
+      transfer = webrtc::ColorSpace::TransferID::kGAMMA22;
+      break;
+    case gfx::ColorSpace::TransferID::GAMMA28:
+      transfer = webrtc::ColorSpace::TransferID::kGAMMA28;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+      transfer = webrtc::ColorSpace::TransferID::kSMPTE170M;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      transfer = webrtc::ColorSpace::TransferID::kSMPTE240M;
+      break;
+    case gfx::ColorSpace::TransferID::LINEAR:
+      transfer = webrtc::ColorSpace::TransferID::kLINEAR;
+      break;
+    case gfx::ColorSpace::TransferID::LOG:
+      transfer = webrtc::ColorSpace::TransferID::kLOG;
+      break;
+    case gfx::ColorSpace::TransferID::LOG_SQRT:
+      transfer = webrtc::ColorSpace::TransferID::kLOG_SQRT;
+      break;
+    case gfx::ColorSpace::TransferID::IEC61966_2_4:
+      transfer = webrtc::ColorSpace::TransferID::kIEC61966_2_4;
+      break;
+    case gfx::ColorSpace::TransferID::BT1361_ECG:
+      transfer = webrtc::ColorSpace::TransferID::kBT1361_ECG;
+      break;
+    case gfx::ColorSpace::TransferID::SRGB:
+      transfer = webrtc::ColorSpace::TransferID::kIEC61966_2_1;
+      break;
+    case gfx::ColorSpace::TransferID::BT2020_10:
+      transfer = webrtc::ColorSpace::TransferID::kBT2020_10;
+      break;
+    case gfx::ColorSpace::TransferID::BT2020_12:
+      transfer = webrtc::ColorSpace::TransferID::kBT2020_12;
+      break;
+    case gfx::ColorSpace::TransferID::PQ:
+      transfer = webrtc::ColorSpace::TransferID::kSMPTEST2084;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTEST428_1:
+      transfer = webrtc::ColorSpace::TransferID::kSMPTEST428;
+      break;
+    case gfx::ColorSpace::TransferID::HLG:
+      transfer = webrtc::ColorSpace::TransferID::kARIB_STD_B67;
+      break;
+    default:
+      DVLOG(1) << "Unsupported transfer.";
+      break;
+  }
+
+  webrtc::ColorSpace::MatrixID matrix =
+      webrtc::ColorSpace::MatrixID::kUnspecified;
+  switch (color_space.GetMatrixID()) {
+    case gfx::ColorSpace::MatrixID::RGB:
+      matrix = webrtc::ColorSpace::MatrixID::kRGB;
+      break;
+    case gfx::ColorSpace::MatrixID::BT709:
+      matrix = webrtc::ColorSpace::MatrixID::kBT709;
+      break;
+    case gfx::ColorSpace::MatrixID::FCC:
+      matrix = webrtc::ColorSpace::MatrixID::kFCC;
+      break;
+    case gfx::ColorSpace::MatrixID::BT470BG:
+      matrix = webrtc::ColorSpace::MatrixID::kBT470BG;
+      break;
+    case gfx::ColorSpace::MatrixID::SMPTE170M:
+      matrix = webrtc::ColorSpace::MatrixID::kSMPTE170M;
+      break;
+    case gfx::ColorSpace::MatrixID::SMPTE240M:
+      matrix = webrtc::ColorSpace::MatrixID::kSMPTE240M;
+      break;
+    case gfx::ColorSpace::MatrixID::YCOCG:
+      matrix = webrtc::ColorSpace::MatrixID::kYCOCG;
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_NCL:
+      matrix = webrtc::ColorSpace::MatrixID::kBT2020_NCL;
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_CL:
+      matrix = webrtc::ColorSpace::MatrixID::kBT2020_CL;
+      break;
+    case gfx::ColorSpace::MatrixID::YDZDX:
+      matrix = webrtc::ColorSpace::MatrixID::kSMPTE2085;
+      break;
+    default:
+      DVLOG(1) << "Unsupported color matrix.";
+      break;
+  }
+
+  webrtc::ColorSpace::RangeID range = webrtc::ColorSpace::RangeID::kInvalid;
+  switch (color_space.GetRangeID()) {
+    case gfx::ColorSpace::RangeID::LIMITED:
+      range = webrtc::ColorSpace::RangeID::kLimited;
+      break;
+    case gfx::ColorSpace::RangeID::FULL:
+      range = webrtc::ColorSpace::RangeID::kFull;
+      break;
+    case gfx::ColorSpace::RangeID::DERIVED:
+      range = webrtc::ColorSpace::RangeID::kDerived;
+      break;
+    default:
+      DVLOG(1) << "Unsupported color range.";
+      break;
+  }
+
+  return webrtc::ColorSpace(primaries, transfer, matrix, range);
 }
 
 }  // namespace blink

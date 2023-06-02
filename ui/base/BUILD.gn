@@ -566,7 +566,10 @@ component("base") {
 
   if (is_mac) {
     public_deps += [ "//ui/base/cursor" ]
-    deps += [ "//ui/resources:ui_resources_grd" ]
+    deps += [
+      "//base:base_arc",
+      "//ui/resources:ui_resources_grd",
+    ]
   }
 
   if (toolkit_views) {

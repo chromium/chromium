@@ -99,7 +99,6 @@
   <template is="dom-if" route-path="/per-device-mouse">
     <os-settings-subpage page-title="$i18n{mouseTitle}">
       <settings-per-device-mouse
-          is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]"
           mice="[[mice]]"
           mouse-policies="[[mousePolicies]]">
       </settings-per-device-mouse>
@@ -109,7 +108,6 @@
     <os-settings-subpage page-title="$i18n{keyboardTitle}">
       <settings-per-device-keyboard
           prefs="{{prefs}}"
-          is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]"
           keyboards="[[keyboards]]"
           keyboard-policies="[[keyboardPolicies]]">
       </settings-per-device-keyboard>
@@ -118,7 +116,6 @@
   <template is="dom-if" route-path="/per-device-touchpad">
     <os-settings-subpage page-title="$i18n{touchpadTitle}">
       <settings-per-device-touchpad
-          is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]"
           touchpads="[[touchpads]]">
       </settings-per-device-touchpad>
     </os-settings-subpage>
@@ -126,7 +123,6 @@
   <template is="dom-if" route-path="/per-device-pointing-stick">
     <os-settings-subpage page-title="$i18n{pointingStickTitle}">
       <settings-per-device-pointing-stick
-          is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]"
           pointing-sticks="[[pointingSticks]]">
       </settings-per-device-pointing-stick>
     </os-settings-subpage>
@@ -149,7 +145,8 @@
   </template>
   <template is="dom-if" route-path="/audio">
     <os-settings-subpage page-title="$i18n{audioTitle}">
-      <settings-audio show-audio-info="[[showAudioInfo_]]"></settings-audio>
+      <settings-audio prefs="{{prefs}}" show-audio-info="[[showAudioInfo_]]">
+      </settings-audio>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/storage">

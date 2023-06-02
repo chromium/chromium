@@ -90,30 +90,27 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
      *
      * @param action Type of the action to inject.
      * @param pointerCount The number of points associated with the event.
+     * @param pointerIndex The index of the event to send. In the case of
+     *        START and END, eg, we send a separate event as each pointer starts
+     *        or ends, respectively.
      * @param timeInMs Timestamp for the event.
      */
     @Override
-    public void inject(int action, int pointerCount, long timeInMs) {
+    public void inject(int action, int pointerCount, int pointerIndex, long timeInMs) {
         switch (action) {
             case MotionEventAction.START: {
+                // We currently only handle two fingers.
+                assert pointerIndex == 0 || pointerIndex == 1;
+                assert pointerCount <= 2;
+                int action_bitfield = pointerIndex == 0 ? MotionEvent.ACTION_DOWN
+                                                        : MotionEvent.ACTION_POINTER_DOWN
+                                | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
                 mDownTimeInMs = timeInMs;
-                MotionEvent event =
-                        MotionEvent.obtain(mDownTimeInMs, timeInMs, MotionEvent.ACTION_DOWN, 1,
-                                mPointerProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, 0, 0);
+                MotionEvent event = MotionEvent.obtain(mDownTimeInMs, timeInMs, action_bitfield,
+                        pointerIndex + 1, mPointerProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, 0,
+                        0);
                 mTarget.dispatchTouchEvent(event);
                 event.recycle();
-
-                if (pointerCount > 1) {
-                    // This code currently only works for a max of 2 touch points.
-                    assert pointerCount == 2;
-
-                    int pointerIndex = 1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    event = MotionEvent.obtain(mDownTimeInMs, timeInMs,
-                            MotionEvent.ACTION_POINTER_DOWN | pointerIndex, pointerCount,
-                            mPointerProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, 0, 0);
-                    mTarget.dispatchTouchEvent(event);
-                    event.recycle();
-                }
                 break;
             }
             case MotionEventAction.MOVE: {
@@ -133,21 +130,15 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
                 break;
             }
             case MotionEventAction.END: {
-                if (pointerCount > 1) {
-                    // This code currently only works for a max of 2 touch points.
-                    assert pointerCount == 2;
-
-                    int pointerIndex = 1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    MotionEvent event = MotionEvent.obtain(mDownTimeInMs, timeInMs,
-                            MotionEvent.ACTION_POINTER_UP | pointerIndex, pointerCount,
-                            mPointerProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, 0, 0);
-                    mTarget.dispatchTouchEvent(event);
-                    event.recycle();
-                }
-
-                MotionEvent event =
-                        MotionEvent.obtain(mDownTimeInMs, timeInMs, MotionEvent.ACTION_UP, 1,
-                                mPointerProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, 0, 0);
+                // We currently only handle two fingers.
+                assert pointerIndex == 0 || pointerIndex == 1;
+                assert pointerCount <= 2;
+                int action_bitfield = pointerIndex == 0 ? MotionEvent.ACTION_UP
+                                                        : MotionEvent.ACTION_POINTER_UP
+                                | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
+                MotionEvent event = MotionEvent.obtain(mDownTimeInMs, timeInMs, action_bitfield,
+                        pointerIndex + 1, mPointerProperties, mPointerCoords, 0, 0, 1, 1, 0, 0, 0,
+                        0);
                 mTarget.dispatchTouchEvent(event);
                 event.recycle();
                 break;

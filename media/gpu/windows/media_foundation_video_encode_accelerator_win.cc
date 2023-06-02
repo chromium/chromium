@@ -361,7 +361,7 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
                bool key_frame,
                base::TimeDelta timestamp,
                int temporal_id,
-               absl::optional<gfx::ColorSpace> color_space)
+               gfx::ColorSpace color_space)
       : keyframe(key_frame),
         capture_timestamp(timestamp),
         temporal_layer_id(temporal_id),
@@ -380,7 +380,7 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
   const base::TimeDelta capture_timestamp;
   const int temporal_layer_id;
   absl::optional<int32_t> frame_qp;
-  const absl::optional<gfx::ColorSpace> color_space;
+  const gfx::ColorSpace color_space;
 
  private:
   std::vector<uint8_t> data_;
@@ -782,8 +782,8 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   if (temporal_scalable_coding()) {
     md.h264.emplace().temporal_idx = encode_output->temporal_layer_id;
   }
-  if (encode_output->color_space) {
-    md.encoded_color_space = *encode_output->color_space;
+  if (encode_output->color_space.IsValid()) {
+    md.encoded_color_space = encode_output->color_space;
   }
 
   client_->BitstreamBufferReady(buffer_ref->id, md);
@@ -1223,12 +1223,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
           << "Prepared sample timestamp doesn't match frame timestamp.";
     }
   } else {
-    const auto frame_cs = input.frame->ColorSpace();
-    if (encoder_color_space_.value_or(gfx::ColorSpace()) != frame_cs) {
-      encoder_color_space_ = frame_cs;
-      SetEncoderColorSpace();
-    }
-
     // Prepare input sample if it hasn't been done yet.
     HRESULT hr = PopulateInputSampleBuffer(input);
     RETURN_ON_HR_FAILURE(hr, "Couldn't populate input sample buffer", hr);
@@ -1249,11 +1243,15 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
     }
 
-    output_color_spaces_.push_back(encoder_color_space_);
+    // We don't actually tell the MFT about the color space since all current
+    // MFT implementations just write UNSPECIFIED in the bitstream, and setting
+    // it can actually break some encoders; see https://crbug.com/1446081.
+    output_color_spaces_.push_back(input.frame->ColorSpace());
+
     has_prepared_input_sample_ = true;
   }
 
-  HRESULT hr = 0;
+  HRESULT hr = S_OK;
   {
     TRACE_EVENT1("media", "IMFTransform::ProcessInput", "timestamp",
                  input.frame->timestamp());
@@ -1786,8 +1784,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       md.h265.emplace().temporal_idx = temporal_id;
     }
   }
-  if (output_cs) {
-    md.encoded_color_space = *output_cs;
+  if (output_cs.IsValid()) {
+    md.encoded_color_space = output_cs;
   }
 
   client_->BitstreamBufferReady(buffer_ref->id, md);
@@ -2060,53 +2058,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::QueryInterface(REFIID riid,
   static const QITAB kQI[] = {
       QITABENT(MediaFoundationVideoEncodeAccelerator, IMFAsyncCallback), {0}};
   return QISearch(this, kQI, riid, ppv);
-}
-
-void MediaFoundationVideoEncodeAccelerator::SetEncoderColorSpace() {
-  DCHECK(encoder_color_space_);
-  if (!encoder_color_space_->IsValid()) {
-    return;
-  }
-
-  MFVideoPrimaries primary;
-  MFVideoTransferFunction transfer;
-  MFVideoTransferMatrix matrix;
-  MFNominalRange range;
-  GetMediaTypeColorValues(*encoder_color_space_, &primary, &transfer, &matrix,
-                          &range);
-
-  // Set appropriate color space keys. Note: This may do nothing depending on
-  // the hardware MFT. It's expected that if the MFT does not support color
-  // space info that it either won't write any color info in the bitstream or it
-  // will write the values for UNSPECIFIED (see VideoColorSpace).
-  auto set_color_space = [&](IMFMediaType* type) {
-    auto hr = type->SetUINT32(MF_MT_VIDEO_PRIMARIES, primary);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set primaries", hr);
-    hr = type->SetUINT32(MF_MT_TRANSFER_FUNCTION, transfer);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set transfer", hr);
-    hr = type->SetUINT32(MF_MT_YUV_MATRIX, matrix);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set matrix", hr);
-    hr = type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE, range);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set range", hr);
-    return hr;
-  };
-
-  // Set input and output color spaces to the same value so we don't
-  // inadvertently enable any kind of color space conversion.
-  RETURN_ON_HR_FAILURE(set_color_space(imf_output_media_type_.Get()),
-                       "Couldn't set output color space", );
-  RETURN_ON_HR_FAILURE(encoder_->SetOutputType(output_stream_id_,
-                                               imf_output_media_type_.Get(), 0),
-                       "Couldn't change output media type", );
-
-  RETURN_ON_HR_FAILURE(set_color_space(imf_input_media_type_.Get()),
-                       "Couldn't set input color space", );
-  RETURN_ON_HR_FAILURE(
-      encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(), 0),
-      "Couldn't change input media type", );
-
-  DVLOG(1) << "Set encoder color space to: "
-           << encoder_color_space_->ToString();
 }
 
 }  // namespace media

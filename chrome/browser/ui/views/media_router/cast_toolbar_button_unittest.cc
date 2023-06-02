@@ -152,11 +152,12 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CastToolbarButton> button_ = nullptr;  // owned by |widget_|.
+  raw_ptr<CastToolbarButton, DanglingUntriaged> button_ =
+      nullptr;  // owned by |widget_|.
   MockContextMenuObserver context_menu_observer_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoggerImpl> logger_;
-  raw_ptr<MockMediaRouter> media_router_ = nullptr;
+  raw_ptr<MockMediaRouter, DanglingUntriaged> media_router_ = nullptr;
   std::unique_ptr<MirroringMediaControllerHost> mirroring_controller_host_;
 
   gfx::Image idle_icon_;

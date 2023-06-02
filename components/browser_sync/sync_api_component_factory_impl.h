@@ -95,16 +95,17 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   // Factory function for ModelTypeController instances for wallet-related
   // datatypes, which live in |db_thread_| and have a delegate accessible via
   // AutofillWebDataService.
-  std::unique_ptr<syncer::ModelTypeController> CreateWalletModelTypeController(
+  std::unique_ptr<syncer::ModelTypeController>
+  CreateWalletModelTypeControllerWithoutTransportModeSupport(
       syncer::ModelType type,
       const base::RepeatingCallback<
           base::WeakPtr<syncer::ModelTypeControllerDelegate>(
               autofill::AutofillWebDataService*)>& delegate_from_web_data,
       syncer::SyncService* sync_service);
-  // Same as above, but supporting STORAGE_IN_MEMORY implemented as an
+  // Same as above, but supporting transport mode, implemented as an
   // independent AutofillWebDataService, namely |web_data_service_in_memory_|.
   std::unique_ptr<syncer::ModelTypeController>
-  CreateWalletModelTypeControllerWithInMemorySupport(
+  CreateWalletModelTypeControllerWithTransportModeSupport(
       syncer::ModelType type,
       const base::RepeatingCallback<
           base::WeakPtr<syncer::ModelTypeControllerDelegate>(

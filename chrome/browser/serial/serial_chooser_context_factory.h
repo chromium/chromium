@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class SerialChooserContext;
@@ -22,7 +22,7 @@ class SerialChooserContextFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<SerialChooserContextFactory>;
+  friend base::NoDestructor<SerialChooserContextFactory>;
 
   SerialChooserContextFactory();
   ~SerialChooserContextFactory() override;

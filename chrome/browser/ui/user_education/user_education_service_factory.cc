@@ -10,7 +10,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 UserEducationServiceFactory* UserEducationServiceFactory::GetInstance() {
-  return base::Singleton<UserEducationServiceFactory>::get();
+  static base::NoDestructor<UserEducationServiceFactory> instance;
+  return instance.get();
 }
 
 // static

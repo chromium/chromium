@@ -34,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -47,14 +48,14 @@ namespace {
 
 class NavigationObserver : public content::WebContentsObserver {
  public:
-  enum NavigationResult {
-    NOT_FINISHED,
-    ERROR_PAGE,
-    SUCCESS,
+  enum class Result {
+    kNotFinished,
+    kErrorPage,
+    kSuccess,
   };
 
   explicit NavigationObserver(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents), navigation_result_(NOT_FINISHED) {}
+      : WebContentsObserver(web_contents) {}
 
   NavigationObserver(const NavigationObserver&) = delete;
   NavigationObserver& operator=(const NavigationObserver&) = delete;
@@ -66,8 +67,8 @@ class NavigationObserver : public content::WebContentsObserver {
     if (!navigation_handle->IsInPrimaryMainFrame()) {
       return;
     }
-    navigation_result_ =
-        navigation_handle->IsErrorPage() ? ERROR_PAGE : SUCCESS;
+    navigation_result_ = navigation_handle->IsErrorPage() ? Result::kErrorPage
+                                                          : Result::kSuccess;
     net_error_ = navigation_handle->GetNetErrorCode();
     got_navigation_ = true;
     if (navigation_handle->HasCommitted() &&
@@ -78,18 +79,18 @@ class NavigationObserver : public content::WebContentsObserver {
     }
   }
 
-  NavigationResult navigation_result() const { return navigation_result_; }
+  Result navigation_result() const { return navigation_result_; }
   net::Error net_error() const { return net_error_; }
   bool got_navigation() const { return got_navigation_; }
   int http_status_code() const { return http_status_code_; }
 
   void Reset() {
-    navigation_result_ = NOT_FINISHED;
+    navigation_result_ = Result::kNotFinished;
     net_error_ = net::OK;
   }
 
  private:
-  NavigationResult navigation_result_;
+  Result navigation_result_ = Result::kNotFinished;
   net::Error net_error_ = net::OK;
   bool got_navigation_ = false;
   int http_status_code_ = -1;
@@ -124,14 +125,15 @@ IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, UnknownResource) {
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("chrome://theme/IDR_SETTINGS_FAVICON")));
-  EXPECT_EQ(NavigationObserver::SUCCESS, observer.navigation_result());
+  EXPECT_EQ(NavigationObserver::Result::kSuccess, observer.navigation_result());
   EXPECT_EQ(net::OK, observer.net_error());
 
   // Unknown resource
   observer.Reset();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("chrome://theme/IDR_ASDFGHJKL")));
-  EXPECT_EQ(NavigationObserver::ERROR_PAGE, observer.navigation_result());
+  EXPECT_EQ(NavigationObserver::Result::kErrorPage,
+            observer.navigation_result());
   // The presence of net error means that navigation did not commit to the
   // original url.
   EXPECT_NE(net::OK, observer.net_error());
@@ -144,14 +146,15 @@ IN_PROC_BROWSER_TEST_F(ChromeURLDataManagerTest, LargeResourceScale) {
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("chrome://theme/IDR_SETTINGS_FAVICON@2x")));
-  EXPECT_EQ(NavigationObserver::SUCCESS, observer.navigation_result());
+  EXPECT_EQ(NavigationObserver::Result::kSuccess, observer.navigation_result());
   EXPECT_EQ(net::OK, observer.net_error());
 
   // Unreasonably large scale
   observer.Reset();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("chrome://theme/IDR_SETTINGS_FAVICON@99999x")));
-  EXPECT_EQ(NavigationObserver::ERROR_PAGE, observer.navigation_result());
+  EXPECT_EQ(NavigationObserver::Result::kErrorPage,
+            observer.navigation_result());
   // The presence of net error means that navigation did not commit to the
   // original url.
   EXPECT_NE(net::OK, observer.net_error());
@@ -173,8 +176,9 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(user_notes::kUserNotes);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-    if (GetParam() == std::string("chrome://welcome"))
+    if (GetParam() == base::StringPiece("chrome://welcome")) {
       enabled_features.push_back(welcome::kForceEnabled);
+    }
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     enabled_features.push_back(ash::features::kDriveFsMirroring);
@@ -187,13 +191,12 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   }
 
   void CheckNoTrustedTypesViolation(base::StringPiece url) {
-    std::string message_filter1 = "*This document requires*assignment*";
-    std::string message_filter2 = "*Refused to create a TrustedTypePolicy*";
+    const std::string kMessageFilter =
+        "*Refused to create a TrustedTypePolicy*";
     content::WebContents* content =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::WebContentsConsoleObserver console_observer(content);
-    console_observer.SetPattern(message_filter1);
-    console_observer.SetPattern(message_filter2);
+    console_observer.SetPattern(kMessageFilter);
 
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -269,7 +272,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
 // TODO(crbug.com/1446612): Re-enable this test
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     "chrome://credits",
 #endif
     "chrome://customize-chrome-side-panel.top-chrome",
@@ -316,7 +319,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://policy",
     "chrome://predictors",
     "chrome://prefs-internals",
-    "chrome://print",
     "chrome://privacy-sandbox-dialog/?debug",
     "chrome://process-internals",
     "chrome://quota-internals",
@@ -389,6 +391,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://manage-mirrorsync",
     "chrome://multidevice-internals",
     "chrome://multidevice-setup",
+    "chrome://nearby",
     "chrome://nearby-internals",
     "chrome://network",
     "chrome://office-fallback/",
@@ -400,6 +403,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://slow",
     "chrome://smb-credentials-dialog/",
     "chrome://smb-share-dialog/",
+    "chrome://sys-internals",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",
@@ -448,6 +452,9 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     "chrome://webuijserror",
+#endif
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+    "chrome://print",
 #endif
 };
 

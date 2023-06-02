@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/url_util.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -97,66 +98,119 @@ TEST(AmbientOrientationMetricsRecorderTest, RecordsEngagementTime) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
-TEST(AmbientMetricsTest, RecordAmbientModeVideoSmoothness) {
-  base::test::TaskEnvironment task_environment;
-  base::HistogramTester histogram_tester;
-  AshWebView::InitParams init_params;
-  TestAshWebView view(init_params);
-  view.Navigate(net::AppendOrReplaceRef(
-      GURL("http://test.com"), R"({"dropped_frames":1,"total_frames":5})"));
+class AmbientMetricsVideoTest : public ::testing::Test {
+ protected:
+  AmbientMetricsVideoTest() : view_(init_params_) {}
+
+  void RecordAmbientModeVideoSmoothness(const AmbientUiSettings& ui_settings) {
+    ::ash::ambient::RecordAmbientModeVideoSmoothness(&view_, ui_settings);
+    task_environment_.RunUntilIdle();
+  }
+
+  void RecordAmbientModeVideoSessionStatus(
+      const AmbientUiSettings& ui_settings) {
+    ::ash::ambient::RecordAmbientModeVideoSessionStatus(&view_, ui_settings);
+    task_environment_.RunUntilIdle();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
+  base::HistogramTester histogram_tester_;
+  const AshWebView::InitParams init_params_;
+  TestAshWebView view_;
+};
+
+TEST_F(AmbientMetricsVideoTest, RecordAmbientModeVideoSmoothness) {
+  view_.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"),
+      R"({"playback_started":true,"dropped_frames":1,"total_frames":5})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
-  histogram_tester.ExpectBucketCount(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
       "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 80, 1);
 
-  view.Navigate(net::AppendOrReplaceRef(
-      GURL("http://test.com"), R"({"dropped_frames":5,"total_frames":5})"));
+  view_.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"),
+      R"({"playback_started":true,"dropped_frames":5,"total_frames":5})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
-  histogram_tester.ExpectBucketCount(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
       "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 0, 1);
 
-  view.Navigate(net::AppendOrReplaceRef(
-      GURL("http://test.com"), R"({"dropped_frames":0,"total_frames":5})"));
+  view_.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"),
+      R"({"playback_started":true,"dropped_frames":0,"total_frames":5})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
-  histogram_tester.ExpectBucketCount(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
       "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 100, 1);
 }
 
-TEST(AmbientMetricsTest, RecordAmbientModeVideoSmoothnessInvalidInput) {
-  base::test::TaskEnvironment task_environment;
-  base::HistogramTester histogram_tester;
-  AshWebView::InitParams init_params;
-  TestAshWebView view(init_params);
-
-  view.Navigate(
+TEST_F(AmbientMetricsVideoTest, RecordAmbientModeVideoSmoothnessInvalidInput) {
+  view_.Navigate(
       net::AppendOrReplaceRef(GURL("http://test.com"), "invalid-json"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
 
-  view.Navigate(net::AppendOrReplaceRef(GURL("http://test.com"),
-                                        R"({"total_frames":5})"));
+  view_.Navigate(
+      net::AppendOrReplaceRef(GURL("http://test.com"),
+                              R"({"playback_started":true,"total_frames":5})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
 
-  view.Navigate(net::AppendOrReplaceRef(GURL("http://test.com"),
-                                        R"({"dropped_frames":5})"));
+  view_.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"),
+      R"({"playback_started":true,"dropped_frames":5})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
 
-  view.Navigate(net::AppendOrReplaceRef(
-      GURL("http://test.com"), R"({"dropped_frames":0,"total_frames":0})"));
+  view_.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"),
+      R"({"playback_started":true,"dropped_frames":0,"total_frames":0})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
 
-  view.Navigate(net::AppendOrReplaceRef(
-      GURL("http://test.com"), R"({"dropped_frames":20,"total_frames":10})"));
+  view_.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"),
+      R"({"playback_started":true,"dropped_frames":20,"total_frames":10})"));
   RecordAmbientModeVideoSmoothness(
-      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
 
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 0);
+}
+
+TEST_F(AmbientMetricsVideoTest, RecordAmbientModeVideoSessionStatus) {
+  view_.Navigate(net::AppendOrReplaceRef(GURL("http://test.com"),
+                                         R"({"playback_started":true})"));
+  RecordAmbientModeVideoSessionStatus(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
+      "Ash.AmbientMode.VideoPlaybackStatus.Video.Clouds",
+      AmbientVideoSessionStatus::kSuccess, 1);
+
+  view_.Navigate(net::AppendOrReplaceRef(GURL("http://test.com"),
+                                         R"({"playback_started":false})"));
+  RecordAmbientModeVideoSessionStatus(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
+      "Ash.AmbientMode.VideoPlaybackStatus.Video.Clouds",
+      AmbientVideoSessionStatus::kFailed, 1);
+
+  view_.Navigate(GURL("http://test.com"));
+  RecordAmbientModeVideoSessionStatus(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
+      "Ash.AmbientMode.VideoPlaybackStatus.Video.Clouds",
+      AmbientVideoSessionStatus::kLoading, 1);
+
+  view_.set_is_error_document(true);
+  view_.Navigate(GURL("http://test.com"));
+  RecordAmbientModeVideoSessionStatus(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester_.ExpectBucketCount(
+      "Ash.AmbientMode.VideoPlaybackStatus.Video.Clouds",
+      AmbientVideoSessionStatus::kFailed, 2);
 }
 
 }  // namespace metrics

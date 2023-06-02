@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
@@ -165,7 +166,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
 
   // Bridge to register for bookmark changes.
-  std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
+  std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelBridge;
+  std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
 
   // Bridge to get notified of the language detection event.
   std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>
@@ -289,7 +291,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   self.webState = nullptr;
   self.webStateList = nullptr;
 
-  self.bookmarkModel = nullptr;
+  self.localOrSyncableBookmarkModel = nullptr;
+  self.accountBookmarkModel = nullptr;
   self.browserStatePrefs = nullptr;
   self.localStatePrefs = nullptr;
 
@@ -363,14 +366,29 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 }
 
-- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
-  _bookmarkModelBridge.reset();
+- (void)setLocalOrSyncableBookmarkModel:
+    (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel {
+  _localOrSyncableBookmarkModelBridge.reset();
 
-  _bookmarkModel = bookmarkModel;
+  _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
 
-  if (bookmarkModel) {
-    _bookmarkModelBridge =
-        std::make_unique<BookmarkModelBridge>(self, bookmarkModel);
+  if (localOrSyncableBookmarkModel) {
+    _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
+        self, localOrSyncableBookmarkModel);
+  }
+
+  [self updateModel];
+}
+
+- (void)setAccountBookmarkModel:
+    (bookmarks::BookmarkModel*)accountBookmarkModel {
+  _accountBookmarkModelBridge.reset();
+
+  _accountBookmarkModel = accountBookmarkModel;
+
+  if (accountBookmarkModel) {
+    _accountBookmarkModelBridge =
+        std::make_unique<BookmarkModelBridge>(self, accountBookmarkModel);
   }
 
   [self updateModel];
@@ -936,8 +954,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   self.appActionsGroup.actions = appActions;
 
   BOOL pageIsBookmarked =
-      self.webState && self.bookmarkModel &&
-      self.bookmarkModel->IsBookmarked(self.webState->GetVisibleURL());
+      self.webState && self.localOrSyncableBookmarkModel &&
+      bookmark_utils_ios::IsBookmarked(self.webState->GetVisibleURL(),
+                                       self.localOrSyncableBookmarkModel,
+                                       self.accountBookmarkModel);
 
   NSMutableArray<OverflowMenuAction*>* pageActions =
       [[NSMutableArray alloc] init];

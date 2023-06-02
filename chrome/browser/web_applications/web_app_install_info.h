@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -369,6 +370,9 @@ struct WebAppInstallInfo {
   // Note that list is not meant to be an exhaustive enumeration of all possible
   // policy_ids but rather just a supplement for tricky cases.
   std::vector<std::string> additional_policy_ids;
+
+  // Used to specify the version of an Isolated Web App that is being installed.
+  base::Version isolated_web_app_version;
 
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.

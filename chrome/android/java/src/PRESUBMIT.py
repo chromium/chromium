@@ -14,8 +14,6 @@ This presubmit checks for the following:
     instead.
 """
 
-USE_PYTHON3 = True
-
 import re
 
 NEW_NOTIFICATION_BUILDER_RE = re.compile(

@@ -28,9 +28,6 @@
     <string name="side_sheet_position_text">Side Sheet Position</string>
     <string name="side_sheet_start_text">Start</string>
     <string name="side_sheet_end_text">Default/End</string>
-    <string name="side_sheet_animation_text">Side Sheet Animation</string>
-    <string name="side_sheet_animation_side_text">Default/Side</string>
-    <string name="side_sheet_animation_bottom_text">Bottom</string>
     <string name="show_title_text">Show Title</string>
     <string name="toolbar_corner_radius_text">PCCT corner radius</string>
     <string name="toolbar_corner_radius_slider_label_desc">Toolbar corner radius</string>

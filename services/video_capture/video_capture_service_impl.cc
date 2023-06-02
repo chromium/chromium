@@ -40,11 +40,13 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "media/capture/capture_switches.h"
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX)
 #include "media/capture/capture_switches.h"
+#include "media/capture/video/linux/video_capture_gpu_memory_buffer_manager.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -126,7 +128,10 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   VizGpuContextProvider(std::unique_ptr<viz::Gpu> viz_gpu)
       : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         viz_gpu_(std::move(viz_gpu)) {
-    StartContextProviderIfNeeded();
+    if (StartContextProviderIfNeeded()) {
+      media::VideoCaptureGpuMemoryBufferManager::GetInstance()
+          .SetGpuMemoryBufferManager(viz_gpu_->GetGpuMemoryBufferManager());
+    }
   }
   ~VizGpuContextProvider() override {
     // Ensure destroy context provider and not receive callbacks before clear up
@@ -141,16 +146,24 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     context_provider_->RemoveObserver(this);
     context_provider_.reset();
 
-    StartContextProviderIfNeeded();
+    bool success = StartContextProviderIfNeeded();
+    // Clear the GPU memory buffer manager if failed.
+    if (!success) {
+      media::VideoCaptureGpuMemoryBufferManager::GetInstance()
+          .SetGpuMemoryBufferManager(nullptr);
+    }
+
+    // Notify context lost after new context ready.
+    media::VideoCaptureGpuMemoryBufferManager::GetInstance().OnContextLost();
   }
 
  private:
-  void StartContextProviderIfNeeded() {
+  bool StartContextProviderIfNeeded() {
     DCHECK_EQ(context_provider_, nullptr);
     DCHECK(main_task_runner_->BelongsToCurrentThread());
 
     if (!viz_gpu_) {
-      return;
+      return false;
     }
 
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
@@ -160,7 +173,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     }
 
     if (!gpu_channel_host) {
-      return;
+      return false;
     }
 
     scoped_refptr<viz::ContextProvider> context_provider =
@@ -179,11 +192,12 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
         context_provider->BindToCurrentSequence();
     if (context_result != gpu::ContextResult::kSuccess) {
       LOG(ERROR) << "Bind context provider failed.";
-      return;
+      return false;
     }
 
     context_provider->AddObserver(this);
     context_provider_ = std::move(context_provider);
+    return true;
   }
 
   // Task runner for operating |viz_gpu_| and
@@ -195,6 +209,25 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   base::WeakPtrFactory<VizGpuContextProvider> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldUseVCDFromAsh() {
+  // LacrosService might be null in unit tests.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service) {
+    return false;
+  }
+  if (!lacros_service
+           ->IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>()) {
+    return false;
+  }
+  // Fake VCD on Lacros side can be used only when using shared memory. Other
+  // than this use case, try to use VCD on Ash side if possible.
+  auto useLacrosFakeVCD = media::ShouldUseFakeVideoCaptureDeviceFactory() &&
+                          !switches::IsVideoCaptureUseGpuMemoryBufferEnabled();
+  return !useLacrosFakeVCD;
+}
+#endif
 
 VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
@@ -294,25 +327,32 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
       std::make_unique<crosapi::VideoCaptureDeviceFactoryAsh>(
           device_factory_.get());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosService might be null in unit tests.
-  auto* lacros_service = chromeos::LacrosService::Get();
-
-  // For requests for fake (including file) video capture device factory, we
-  // don't need to forward the request to Ash-Chrome.
-  if (!media::ShouldUseFakeVideoCaptureDeviceFactory() && lacros_service &&
-      lacros_service
-          ->IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>()) {
+  // Even though Lacros uses GPU memory by default, the camera stack in
+  // Lacros cannot access GPU memory. Therefore, most of requests are
+  // forwarded to Ash-chrome. Requests will not be forwarded to
+  // Ash-chrome only when any of the following
+  //   1. Video capture system can not communicate with crosapi.
+  //   2. Use fake/file camera with shared memory. This is for CQ tests.
+  if (ShouldUseVCDFromAsh()) {
+    if (media::ShouldUseFakeVideoCaptureDeviceFactory()) {
+      LOG(WARNING) << "Remember to add --use-fake-device-for-media-stream to "
+                      "/etc/chrome_dev.conf to use fake/file camera.";
+    }
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
         device_factory_ash;
-    lacros_service->BindVideoCaptureDeviceFactory(
+    chromeos::LacrosService::Get()->BindVideoCaptureDeviceFactory(
         device_factory_ash.InitWithNewPipeAndPassReceiver());
     device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
         std::make_unique<DeviceFactoryAdapterLacros>(
             std::move(device_factory_ash)));
   } else {
-    LOG(WARNING)
-        << "Connected to an older version of ash. Use device factory in "
-           "Lacros-Chrome which is backed by Linux VCD instead of CrOS VCD.";
+    if (media::ShouldUseFakeVideoCaptureDeviceFactory()) {
+      VLOG(1) << "Use fake device factory with shared memory in Lacros-Chrome";
+    } else {
+      LOG(WARNING)
+          << "Connected to an older version of ash. Use device factory in "
+             "Lacros-Chrome which is backed by Linux VCD instead of CrOS VCD.";
+    }
     device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
         std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system)));
   }

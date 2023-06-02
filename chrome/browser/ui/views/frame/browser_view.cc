@@ -86,8 +86,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -155,6 +153,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
@@ -598,7 +597,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     gfx::RectF bounds_f(browser_view_->frame()->GetBoundsForTabStripRegion(
         tabstrip_minimum_size));
     views::View::ConvertRectToTarget(browser_view_->parent(), browser_view_,
-        &bounds_f);
+                                     &bounds_f);
     return gfx::ToEnclosingRect(bounds_f);
   }
 
@@ -974,8 +973,9 @@ BrowserView::~BrowserView() {
   auto* global_registry =
       extensions::ExtensionCommandsGlobalRegistry::Get(browser_->profile());
   if (global_registry->registry_for_active_window() ==
-          extension_keybinding_registry_.get())
+      extension_keybinding_registry_.get()) {
     global_registry->set_registry_for_active_window(nullptr);
+  }
 
   // The TabStrip attaches a listener to the model. Make sure we shut down the
   // TabStrip first so that it can cleanly remove the listener.
@@ -987,11 +987,6 @@ BrowserView::~BrowserView() {
   RemoveAllChildViews();
 
   SidePanelUI::RemoveSidePanelUIForBrowser(browser_.get());
-}
-
-SidePanelCoordinator* BrowserView::side_panel_coordinator() {
-  return static_cast<SidePanelCoordinator*>(
-      SidePanelUI::GetSidePanelUIForBrowser(browser_.get()));
 }
 
 // static
@@ -1017,9 +1012,9 @@ BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
 BrowserView* BrowserView::GetBrowserViewForNativeWindow(
     gfx::NativeWindow window) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-  return widget ?
-      reinterpret_cast<BrowserView*>(widget->GetNativeWindowProperty(
-          kBrowserViewKey)) : nullptr;
+  return widget ? reinterpret_cast<BrowserView*>(
+                      widget->GetNativeWindowProperty(kBrowserViewKey))
+                : nullptr;
 }
 
 // static
@@ -1459,22 +1454,22 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
 
   if (should_animate) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      loading_animation_tracker_.emplace(
+    loading_animation_tracker_.emplace(
         GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-      loading_animation_tracker_->Start(ash::metrics_util::ForSmoothness(
+    loading_animation_tracker_->Start(ash::metrics_util::ForSmoothness(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif
-      // Loads are happening, and the timer isn't running, so start it.
-      loading_animation_start_ = base::TimeTicks::Now();
-      loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
-                                     &BrowserView::LoadingAnimationCallback);
+    // Loads are happening, and the timer isn't running, so start it.
+    loading_animation_start_ = base::TimeTicks::Now();
+    loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
+                                   &BrowserView::LoadingAnimationCallback);
   } else {
     loading_animation_timer_.Stop();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      loading_animation_tracker_->Stop();
+    loading_animation_tracker_->Stop();
 #endif
-      // Loads are now complete, update the state if a task was scheduled.
-      LoadingAnimationCallback();
+    // Loads are now complete, update the state if a task was scheduled.
+    LoadingAnimationCallback();
   }
 }
 
@@ -1517,8 +1512,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // some work.  This also prevents extra events from being reported by the
   // Visibility API under Windows, as ChangeWebContents will briefly hide
   // the WebContents window.
-  bool change_tab_contents =
-      contents_web_view_->web_contents() != new_contents;
+  bool change_tab_contents = contents_web_view_->web_contents() != new_contents;
 
 #if BUILDFLAG(IS_MAC)
   // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
@@ -1556,8 +1550,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // callback to us and trigger layout.
   if (bookmark_bar_view_.get()) {
     bookmark_bar_view_->SetBookmarkBarState(
-        browser_->bookmark_bar_state(),
-        BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
+        browser_->bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
   }
 
   infobar_container_->ChangeInfoBarManager(
@@ -1656,20 +1649,12 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   UpdateDevToolsForContents(nullptr, true);
 }
 
-void BrowserView::OnTabRestored(int command_id) {
-  // Ignore if a tab other than the last closed tab was restored.
-  if (command_id != AppMenuModel::kMinRecentTabsCommandId &&
-      command_id != IDC_RESTORE_TAB)
-    return;
-  CloseFeaturePromo(feature_engagement::kIPHReopenTabFeature);
-}
-
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
   const AppMenuButton* app_menu_button =
       toolbar_button_provider()->GetAppMenuButton();
   bool app_menu_showing = app_menu_button && app_menu_button->IsMenuShowing();
-  toolbar_button_provider()
-      ->ZoomChangedForActiveTab(can_show_bubble && !app_menu_showing);
+  toolbar_button_provider()->ZoomChangedForActiveTab(can_show_bubble &&
+                                                     !app_menu_showing);
 }
 
 gfx::Rect BrowserView::GetRestoredBounds() const {
@@ -2223,10 +2208,11 @@ bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
 }
 
-void BrowserView::ShowSidePanel(
-    absl::optional<SidePanelEntry::Id> entry_id,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
-  side_panel_coordinator()->Show(entry_id, open_trigger);
+void BrowserView::ShowChromeLabs() {
+  if (toolbar()->chrome_labs_button() &&
+      toolbar()->chrome_labs_button()->GetVisible()) {
+    toolbar()->chrome_labs_button()->GetChromeLabsCoordinator()->ShowOrHide();
+  }
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {
@@ -2653,8 +2639,8 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     return ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED;
 
   PageActionIconView* translate_icon =
-      toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kTranslate);
+      toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kTranslate);
   TranslateBubbleController::GetOrCreate(web_contents)
       ->ShowTranslateBubble(toolbar_button_provider()->GetAnchorView(
                                 PageActionIconType::kTranslate),
@@ -3393,8 +3379,8 @@ bool BrowserView::GetSavedWindowPlacement(
       // its desired height, since the toolbar is considered part of the
       // window's client area as far as GetWindowBoundsForClientBounds is
       // concerned...
-      bounds->set_height(
-          bounds->height() + toolbar_->GetPreferredSize().height());
+      bounds->set_height(bounds->height() +
+                         toolbar_->GetPreferredSize().height());
     }
 
     gfx::Rect rect =
@@ -3856,7 +3842,8 @@ void BrowserView::AddedToWidget() {
       toolbar()->side_panel_container()->ObserveSidePanelView(
           unified_side_panel_);
     } else {
-      unified_side_panel_->AddObserver(side_panel_coordinator());
+      unified_side_panel_->AddObserver(
+          SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser_.get())));
     }
   }
 
@@ -4082,8 +4069,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
         std::make_unique<BookmarkBarView>(browser_.get(), this);
     bookmark_bar_view_->set_owned_by_client();
     bookmark_bar_view_->SetBookmarkBarState(
-        browser_->bookmark_bar_state(),
-        BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
+        browser_->bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
     GetBrowserViewLayout()->set_bookmark_bar(bookmark_bar_view_.get());
   }
   // Don't change the visibility of the BookmarkBarView. BrowserViewLayout
@@ -4123,11 +4109,11 @@ bool BrowserView::MaybeShowInfoBar(WebContents* contents) {
   return true;
 }
 
-void BrowserView::UpdateDevToolsForContents(
-    WebContents* web_contents, bool update_devtools_web_contents) {
+void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
+                                            bool update_devtools_web_contents) {
   DevToolsContentsResizingStrategy strategy;
-  WebContents* devtools = DevToolsWindow::GetInTabWebContents(
-      web_contents, &strategy);
+  WebContents* devtools =
+      DevToolsWindow::GetInTabWebContents(web_contents, &strategy);
 
   if (!devtools_web_view_->web_contents() && devtools &&
       !devtools_focus_tracker_.get()) {
@@ -4374,27 +4360,43 @@ int BrowserView::GetCommandIDForAppCommandID(int app_command_id) const {
   switch (app_command_id) {
     // NOTE: The order here matches the APPCOMMAND declaration order in the
     // Windows headers.
-    case APPCOMMAND_BROWSER_BACKWARD: return IDC_BACK;
-    case APPCOMMAND_BROWSER_FORWARD:  return IDC_FORWARD;
-    case APPCOMMAND_BROWSER_REFRESH:  return IDC_RELOAD;
-    case APPCOMMAND_BROWSER_HOME:     return IDC_HOME;
-    case APPCOMMAND_BROWSER_STOP:     return IDC_STOP;
-    case APPCOMMAND_BROWSER_SEARCH:   return IDC_FOCUS_SEARCH;
-    case APPCOMMAND_HELP:             return IDC_HELP_PAGE_VIA_KEYBOARD;
-    case APPCOMMAND_NEW:              return IDC_NEW_TAB;
-    case APPCOMMAND_OPEN:             return IDC_OPEN_FILE;
-    case APPCOMMAND_CLOSE:            return IDC_CLOSE_TAB;
-    case APPCOMMAND_SAVE:             return IDC_SAVE_PAGE;
-    case APPCOMMAND_PRINT:            return IDC_PRINT;
-    case APPCOMMAND_COPY:             return IDC_COPY;
-    case APPCOMMAND_CUT:              return IDC_CUT;
-    case APPCOMMAND_PASTE:            return IDC_PASTE;
+    case APPCOMMAND_BROWSER_BACKWARD:
+      return IDC_BACK;
+    case APPCOMMAND_BROWSER_FORWARD:
+      return IDC_FORWARD;
+    case APPCOMMAND_BROWSER_REFRESH:
+      return IDC_RELOAD;
+    case APPCOMMAND_BROWSER_HOME:
+      return IDC_HOME;
+    case APPCOMMAND_BROWSER_STOP:
+      return IDC_STOP;
+    case APPCOMMAND_BROWSER_SEARCH:
+      return IDC_FOCUS_SEARCH;
+    case APPCOMMAND_HELP:
+      return IDC_HELP_PAGE_VIA_KEYBOARD;
+    case APPCOMMAND_NEW:
+      return IDC_NEW_TAB;
+    case APPCOMMAND_OPEN:
+      return IDC_OPEN_FILE;
+    case APPCOMMAND_CLOSE:
+      return IDC_CLOSE_TAB;
+    case APPCOMMAND_SAVE:
+      return IDC_SAVE_PAGE;
+    case APPCOMMAND_PRINT:
+      return IDC_PRINT;
+    case APPCOMMAND_COPY:
+      return IDC_COPY;
+    case APPCOMMAND_CUT:
+      return IDC_CUT;
+    case APPCOMMAND_PASTE:
+      return IDC_PASTE;
 
       // TODO(pkasting): http://b/1113069 Handle these.
     case APPCOMMAND_UNDO:
     case APPCOMMAND_REDO:
     case APPCOMMAND_SPELL_CHECK:
-    default:                          return -1;
+    default:
+      return -1;
   }
 #else
   // App commands are Windows-specific so there's nothing to do here.
@@ -4602,9 +4604,8 @@ void BrowserView::NotifyFeatureEngagementEvent(const char* event_name) {
       event_name);
 }
 
-bool BrowserView::DoCutCopyPasteForWebContents(
-    WebContents* contents,
-    void (WebContents::*method)()) {
+bool BrowserView::DoCutCopyPasteForWebContents(WebContents* contents,
+                                               void (WebContents::*method)()) {
   // It's possible for a non-null WebContents to have a null RWHV if it's
   // crashed or otherwise been killed.
   content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();

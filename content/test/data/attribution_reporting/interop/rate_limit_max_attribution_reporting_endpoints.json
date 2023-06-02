@@ -1,7 +1,8 @@
 {
   "description": "Max attribution reporting endpoints per rate-limit window",
   "api_config": {
-    "rate_limit_max_attribution_reporting_origins": "1"
+    "rate_limit_max_attribution_reporting_origins": "1",
+    "rate_limit_max_reporting_origins_per_source_reporting_site": "2"
   },
   "input": {
     "sources": [
@@ -139,7 +140,6 @@
           }
         }]
       },
-      // Should result in an event-level report.
       {
         "timestamp": "1643235574000",
         "registration_request": {

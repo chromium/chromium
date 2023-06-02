@@ -108,6 +108,11 @@ schema:
            Defaults to the empty list.
           items:
             type: string
+        display_order:
+          type: integer
+          description: The order in which the VM configuration will be displayed in the installer.
+           When multiple VM configurations are specified, the one with the smallest display_order
+           value is displayed at the top of the list. Defaults to zero.
 
 example_value:
   vm-type:
@@ -124,6 +129,7 @@ example_value:
       policy_update_action: NONE
     oem_strings:
       - example config string
+    display_order: 5
 
 tags:
  - system-security

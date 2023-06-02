@@ -15,7 +15,6 @@ import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shor
 import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {isCategoryLocked} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -276,13 +275,14 @@ suite('acceleratorViewTest', function() {
         // replicate getCategory() logic.
         const category = manager!.getAcceleratorCategory(
             layoutInfo.source, layoutInfo.action);
+        const categoryIsLocked = manager!.isCategoryLocked(category);
         // replicate shouldShowLockIcon() logic.
         const expectLockIconVisible = scenario.customizationEnabled &&
-            !isCategoryLocked(category) &&
-            (scenario.locked || scenario.sourceIsLocked);
+            !categoryIsLocked && (scenario.locked || scenario.sourceIsLocked);
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
+          categoryIsLocked: categoryIsLocked,
           expectLockIconVisible: expectLockIconVisible,
         });
       }
@@ -294,6 +294,7 @@ suite('acceleratorViewTest', function() {
       viewElement = initAcceleratorViewElement();
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
+      viewElement.categoryIsLocked = testCase.categoryIsLocked;
       const acceleratorInfo = createStandardAcceleratorInfo(
           Modifier.CONTROL | Modifier.SHIFT,
           /*key=*/ 71,
@@ -353,13 +354,15 @@ suite('acceleratorViewTest', function() {
         // replicate getCategory() logic.
         const category = manager!.getAcceleratorCategory(
             layoutInfo.source, layoutInfo.action);
+        const categoryIsLocked = manager!.isCategoryLocked(category);
         // replicate shouldShowLockIcon() logic.
         const expectEditIconVisible = scenario.customizationEnabled &&
-            scenario.isAcceleratorRow && !isCategoryLocked(category) &&
+            scenario.isAcceleratorRow && !categoryIsLocked &&
             !scenario.locked && !scenario.sourceIsLocked;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
+          categoryIsLocked: categoryIsLocked,
           expectEditIconVisible: expectEditIconVisible,
         });
       }
@@ -370,6 +373,7 @@ suite('acceleratorViewTest', function() {
       viewElement = initAcceleratorViewElement();
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
+      viewElement.categoryIsLocked = testCase.categoryIsLocked;
       viewElement.showEditIcon = testCase.isAcceleratorRow;
       const acceleratorInfo = createStandardAcceleratorInfo(
           Modifier.CONTROL | Modifier.SHIFT,

@@ -62,7 +62,7 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
 
  private:
   mutable std::vector<std::unique_ptr<MockRenderProcessHost>> processes_;
-  mutable raw_ptr<SiteInstance> last_site_instance_used_;
+  mutable raw_ptr<SiteInstance, DanglingUntriaged> last_site_instance_used_;
 };
 
 }  // namespace

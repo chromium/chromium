@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "components/ui_devtools/views/widget_element.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -23,14 +24,15 @@ DOMAgentMac::~DOMAgentMac() {
 }
 
 protocol::Response DOMAgentMac::enable() {
-  views::NativeWidgetMac::SetInitNativeWidgetCallback(base::BindRepeating(
-      &DOMAgentMac::OnNativeWidgetAdded, base::Unretained(this)));
+  init_native_widget_subscription_ =
+      views::NativeWidgetMac::RegisterInitNativeWidgetCallback(
+          base::BindRepeating(&DOMAgentMac::OnNativeWidgetAdded,
+                              base::Unretained(this)));
   return DOMAgent::enable();
 }
 
 protocol::Response DOMAgentMac::disable() {
-  views::NativeWidgetMac::SetInitNativeWidgetCallback(
-      base::RepeatingCallback<void(views::NativeWidgetMac*)>());
+  init_native_widget_subscription_ = {};
   for (views::Widget* widget : roots_)
     widget->RemoveObserver(this);
   roots_.clear();

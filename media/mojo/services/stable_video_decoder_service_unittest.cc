@@ -530,7 +530,8 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeInitialized) {
   constexpr absl::optional<base::UnguessableToken> kCdmId = absl::nullopt;
   StrictMock<base::MockOnceCallback<void(
       const media::DecoderStatus& status, bool needs_bitstream_conversion,
-      int32_t max_decode_requests, VideoDecoderType decoder_type)>>
+      int32_t max_decode_requests, VideoDecoderType decoder_type,
+      bool needs_transcryption)>>
       initialize_cb_to_send;
   mojom::VideoDecoder::InitializeCallback received_initialize_cb;
   const DecoderStatus kDecoderStatus = DecoderStatus::Codes::kAborted;
@@ -549,7 +550,7 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeInitialized) {
       });
   EXPECT_CALL(initialize_cb_to_send,
               Run(kDecoderStatus, kNeedsBitstreamConversion, kMaxDecodeRequests,
-                  kDecoderType));
+                  kDecoderType, /*needs_transcryption=*/false));
   stable_video_decoder_remote->Initialize(
       config_to_send, kLowDelay,
       mojo::PendingRemote<stable::mojom::StableCdmContext>(),
@@ -578,13 +579,15 @@ TEST_F(StableVideoDecoderServiceTest,
   constexpr bool kLowDelay = true;
   StrictMock<base::MockOnceCallback<void(
       const media::DecoderStatus& status, bool needs_bitstream_conversion,
-      int32_t max_decode_requests, VideoDecoderType decoder_type)>>
+      int32_t max_decode_requests, VideoDecoderType decoder_type,
+      bool needs_transcryption)>>
       initialize_cb_to_send;
 
   EXPECT_CALL(initialize_cb_to_send,
               Run(DecoderStatus(DecoderStatus::Codes::kFailed),
                   /*needs_bitstream_conversion=*/false,
-                  /*max_decode_requests=*/1, VideoDecoderType::kUnknown));
+                  /*max_decode_requests=*/1, VideoDecoderType::kUnknown,
+                  /*needs_transcryption=*/false));
   stable_video_decoder_remote->Initialize(
       config_to_send, kLowDelay,
       mojo::PendingRemote<stable::mojom::StableCdmContext>(),

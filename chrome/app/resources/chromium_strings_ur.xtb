@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">‏آپ Chromium میں سائن ان ہیں!</translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
 <translation id="1553461853655228091">‏پنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chromium کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
+<translation id="1555506416658437797">ادائیگی کے طریقوں میں ترمیم کریں۔</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chromium کو بند کر کے دوبارہ چلائیں}=1{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chromium کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chromium کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="1625909126243026060">‏Chromium میں کلیدی رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
 <translation id="1632539827495546968">‏اگر آپ اس اکاؤنٹ کو صرف ایک بار استعمال کرنا چاہتے ہیں تو آپ Chromium براؤزر میں <ph name="GUEST_LINK_BEGIN" />مہمان وضع<ph name="GUEST_LINK_END" /> کا استعمال کر سکتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں تو اپنے <ph name="DEVICE_TYPE" /> میں <ph name="LINK_BEGIN" />ایک نیا شخص شامل کریں<ph name="LINK_END" />۔
@@ -134,10 +135,13 @@
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کیلئے، Chromium آپ کیلئے آپ کی ذاتی پروفائل تخلیق کر سکتا ہے۔</translation>
 <translation id="391789666908693569">‏<ph name="MANAGER_NAME" /> آپ کے اکاؤنٹ کا نظم کرتا ہے۔ آپ کا منتظم اس Chromium براؤزر کی پروفائل اور اس کا ڈیٹا جیسے بُک مارکس، سرگزشت اور پاس ورڈز دیکھ اور ان میں ترمیم کر سکتا ہے۔</translation>
 <translation id="3945058413678539331">‏Chromium پاس ورڈز کاپی کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
+<translation id="3962623956404948996">‏Chromium اس فائل کو اسکین کرنے کی تجویز کرتا ہے کیونکہ یہ خطرناک ہو سکتی ہے</translation>
 <translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
 <translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="4036079820698952681">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4050175100176540509">اہم سیکیورٹی اصلاحات اور نئی خصوصیات تازہ ترین ورژن میں دستیاب ہیں۔</translation>
+<translation id="4050599136622776556">‏Chromium ادائیگی کے طریقوں میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
+<translation id="4055805654398742145">پاس ورڈ مینیجر</translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان - Chromium</translation>
 <translation id="421369550622382712">‏Chromium کیلئے زبردست ایپس، گیمز، ایکسٹینشنز اور تھیمز دریافت کریں۔</translation>

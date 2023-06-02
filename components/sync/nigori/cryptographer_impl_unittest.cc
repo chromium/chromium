@@ -4,7 +4,10 @@
 
 #include "components/sync/nigori/cryptographer_impl.h"
 
+#include <utility>
+
 #include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -152,6 +155,31 @@ TEST(CryptographerImplTest, ShouldExportDefaultKey) {
   // resulting key name should match the original.
   EXPECT_THAT(NigoriKeyBag::CreateEmpty().AddKeyFromProto(exported_key),
               Eq(key_name));
+}
+
+TEST(CryptographerImplTest, ShouldEmplaceKeyPair) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+  PublicPrivateKeyPair key_pair = PublicPrivateKeyPair::GenerateNewKeyPair();
+  ASSERT_FALSE(cryptographer->HasKeyPair(0));
+
+  cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
+
+  EXPECT_TRUE(cryptographer->HasKeyPair(0));
+}
+
+TEST(CryptographerImplTest, ShouldEmplaceExistingKeyPair) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  ASSERT_THAT(cryptographer, NotNull());
+  ASSERT_FALSE(cryptographer->HasKeyPair(0));
+  cryptographer->EmplaceKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  ASSERT_TRUE(cryptographer->HasKeyPair(0));
+
+  cryptographer->EmplaceKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+
+  EXPECT_TRUE(cryptographer->HasKeyPair(0));
 }
 
 }  // namespace syncer

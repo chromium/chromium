@@ -45,7 +45,7 @@ template("ts_library") {
     }
 
     if (defined(in_files)) {
-      outputs += [ "$target_gen_dir/$target_name.manifest" ]
+      outputs += [ "$target_gen_dir/${target_name}_manifest.json" ]
       foreach(_source, in_files) {
         inputs += [ "$root_dir/$_source" ]
         _dirname =

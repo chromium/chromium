@@ -242,15 +242,6 @@ base::Value::Dict NetLogQuicVersionNegotiationPacketParams(
   return dict;
 }
 
-base::Value::Dict NetLogQuicPublicResetPacketParams(
-    const IPEndPoint& server_hello_address,
-    const quic::QuicSocketAddress& public_reset_address) {
-  base::Value::Dict dict;
-  dict.Set("server_hello_address", server_hello_address.ToString());
-  dict.Set("public_reset_address", public_reset_address.ToString());
-  return dict;
-}
-
 base::Value::Dict NetLogQuicPathData(const quic::QuicPathFrameBuffer& buffer) {
   base::Value::Dict dict;
   dict.Set("data", NetLogBinaryValue(buffer));
@@ -656,12 +647,6 @@ void QuicEventLogger::OnMaxStreamsFrame(
                     [&] { return NetLogQuicMaxStreamsFrameParams(frame); });
 }
 
-void QuicEventLogger::OnStopWaitingFrame(
-    const quic::QuicStopWaitingFrame& frame) {
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_STOP_WAITING_FRAME_RECEIVED,
-                    [&] { return NetLogQuicStopWaitingFrameParams(&frame); });
-}
-
 void QuicEventLogger::OnRstStreamFrame(const quic::QuicRstStreamFrame& frame) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_RST_STREAM_FRAME_RECEIVED,
                     [&] { return NetLogQuicRstStreamFrameParams(&frame); });
@@ -741,15 +726,6 @@ void QuicEventLogger::OnCoalescedPacketSent(
   net_log_.AddEventWithStringParams(
       NetLogEventType::QUIC_SESSION_COALESCED_PACKET_SENT, "info",
       coalesced_packet.ToString(length));
-}
-
-void QuicEventLogger::OnPublicResetPacket(
-    const quic::QuicPublicResetPacket& packet) {
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PUBLIC_RESET_PACKET_RECEIVED,
-                    [&] {
-                      return NetLogQuicPublicResetPacketParams(
-                          local_address_from_shlo_, packet.client_address);
-                    });
 }
 
 void QuicEventLogger::OnVersionNegotiationPacket(

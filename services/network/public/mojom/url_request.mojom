@@ -120,15 +120,6 @@ struct WebBundleTokenParams {
   int32 render_process_id;
 };
 
-// Options that may be set when URLRequests need to take over NetLog related
-// parameters. The URLRequest will use these parameters on logging.
-// Typemapped to net::NetLogSource.
-struct NetLogSource {
-  uint32 source_type;
-  uint32 source_id;
-  mojo_base.mojom.TimeTicks start_time;
-};
-
 // Typemapped to network::ResourceRequest.
 struct URLRequest {
   // The request method: GET, POST, etc.
@@ -329,6 +320,10 @@ struct URLRequest {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
   bool ad_auction_headers;
 
+  // True if the request should send the `Shared-Storage-Writable` request
+  // header.
+  bool shared_storage_writable;
+
   // True if the request was user initiated.
   bool has_user_gesture;
 
@@ -516,6 +511,12 @@ struct URLRequest {
   // TODO(https://crbug.com/1443602): Get rid of this with proper OT
   // infrastructure support in the network service.
   AttributionReportingRuntimeFeatures attribution_reporting_runtime_features;
+
+  // Indicate the state of CompressionDictionaryTransport feature. When it is
+  // true, `use-as-dictionary` response HTTP header may be processed.
+  // TODO(crbug.com/1413922): Remove this flag when we launch
+  // CompressionDictionaryTransport feature.
+  bool shared_dictionary_writer_enabled = false;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

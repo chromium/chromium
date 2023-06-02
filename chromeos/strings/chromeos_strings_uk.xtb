@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">Робочі столи</translation>
 <translation id="1018219910092211213">Не вдається перетворити DNS</translation>
 <translation id="1018656279737460067">Скасовано</translation>
-<translation id="1022433422498218992">Загальні налаштування</translation>
+<translation id="1020274983236703756">Доступні ексклюзивні об’єкти <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Опливина</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">Тип автентифікації</translation>
 <translation id="1776228893584526149">Відтінок фонового малюнка</translation>
 <translation id="1782199038061388045">переклад</translation>
-<translation id="1790209694022261219">Вікна й робочі столи</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1801418420130173017">Вимкнути темну тему</translation>
 <translation id="1807246157184219062">Світла</translation>
 <translation id="1827738518074806965">Мистецька галерея</translation>
+<translation id="1836553715834333258">Колір системи</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
+<translation id="1840474674287087346">Колір робочого столу</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
 <translation id="1852934301711881861">Установити ОС Chrome Flex</translation>
 <translation id="1856388568474281774">Стрілка вниз</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">Навігація у веб-переглядачі</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
-<translation id="2902312830803030883">Додаткові дії</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
 <translation id="2940811910881150316">Не вдалося перевірити клавіатуру. Відкрийте кришку й повторіть спробу.</translation>
-<translation id="2981143481017883351">Доступні ексклюзивні анімації для пристроїв Chromebook</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3017079585324758401">Фон</translation>
-<translation id="3020183492814296499">Ярлики</translation>
 <translation id="3027578600144895987">Закрити камеру</translation>
 <translation id="3031560714565892478">Це відеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3226657629376379887">Меню дій для макета</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
+<translation id="3248223063252096240">Ексклюзивно для <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3275729367986477355">Зображення аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редагувати файл}one{Редагувати файли}few{Редагувати файли}many{Редагувати файли}other{Редагувати файли}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">Напрямок ключа</translation>
 <translation id="3294437725009624529">Гість</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
+<translation id="3305294846493618482">більше</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">ОС Windows</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
-<translation id="3386675685417744672">Тільки на пристроях Chromebook</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3639846061339007994">верх</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
+<translation id="3663574643422533538">Вибрати ексклюзивну анімацію для пристрою <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
 <translation id="4054683689023980771">Завантаження зображення</translation>
 <translation id="4060260348856573701">Нове ім’я точки доступу (APN)</translation>
-<translation id="4079743696465895866">Вибрати ексклюзивні анімації для пристрою Chromebook</translation>
 <translation id="4093865285251893588">Зображення профілю</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорна панель USB</translation>
+<translation id="4113067922640381334">Тепер ви маєте доступ до нових <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />фонових малюнків<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темний режим</translation>
 <translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
+<translation id="4500966230243561393">Колір інтерфейсу</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4507392511610824664">збільшити яскравість</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показувати фотографії, час, прогноз погоди й медіадані на неактивному екрані.</translation>
+<translation id="5035083460461104704">Колір теми</translation>
 <translation id="5038292761217083259">кольорова клавіатура</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5049856988445523908">SIM-карту заблоковано (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Фоновий малюнок за умовчанням</translation>
 <translation id="6017514345406065928">Зелений</translation>
+<translation id="6019566113895157499">Комбінації клавіш</translation>
 <translation id="6034694447310538551">Увімкнути автоматичне скидання щомісяця</translation>
 <translation id="6037291330010597344">Автоподавач документів порожній. Покладіть документи та повторіть спробу.</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -704,7 +707,7 @@
 <translation id="6647510110698214773">Алгоритм шифрування</translation>
 <translation id="6650062777702288430">Перемикач між розкладками кана й буквено-цифровою</translation>
 <translation id="6657585470893396449">Пароль</translation>
-<translation id="6659594942844771486">Вкладка</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">збільшити яскравість клавіатури</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">Нейтральні кольори</translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>
+<translation id="7633068090678117093">Фонове зображення</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="765159867434478292">Розділити</translation>
 <translation id="7656388927906093505">Це миша.</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">Не ініціалізовано</translation>
 <translation id="8593058461203131755">призупинити відтворення медіаконтенту</translation>
 <translation id="8620617069779373398">Статус роумінгу</translation>
+<translation id="8626489604350149811">Інші дії для точки доступу <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Світло-фіолетовий</translation>
 <translation id="8651481478098336970">вимкнути звук</translation>
 <translation id="8655295600908251630">Канал</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Аналог</translation>
 <translation id="8930622219860340959">Бездротове</translation>
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
+<translation id="8944651180182756621">Колір панелі запуску</translation>
 <translation id="894617464444543719">Це телефон.</translation>
 <translation id="8957423540740801332">праворуч</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9161276708550942948">пробіл</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
+<translation id="9174334653006917325">Колір інтерфейсу</translation>
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9188992814426075118">Колір підсвічування клавіатури може автоматично підлаштовуватися до фонового малюнка</translation>
 <translation id="9189000703457422362">Не вдалося підключитися до цієї мережі через автоматично виявлені точки доступу. Щоб отримати додаткову інформацію, зверніться до свого оператора мобільного зв’язку.</translation>

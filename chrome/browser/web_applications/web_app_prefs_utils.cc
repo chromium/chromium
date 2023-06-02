@@ -78,14 +78,27 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
 //   "web_app_ids": {
 //     "<app_id_1>": {
 //       "was_external_app_uninstalled_by_user": true,
-//       A double representing the number of seconds since epoch, in local time.
-//       Convert from/to using base::Time::FromDoubleT() and
-//       base::Time::ToDoubleT().
 //       "IPH_num_of_consecutive_ignore": 2,
 //       A string-flavored base::value representing the int64_t number of
 //       microseconds since the Windows epoch, using base::TimeToValue().
 //       "IPH_last_ignore_time": "13249617864945580",
+//       A string-flavored base::value representing the int64_t number of
+//       microseconds since the Windows epoch, using base::TimeToValue().
+//       "ML_last_time_install_ignored": "13249617864945580",
+//       A string-flavored base::value representing the int64_t number of
+//       microseconds since the Windows epoch, using base::TimeToValue().
+//       "ML_last_time_install_dismissed": "13249617864945580",
+//       "ML_num_of_consecutive_not_accepted": 2,
 //     },
+//   },
+//   "app_agnostic_ml_state": {
+//       A string-flavored base::value representing the int64_t number of
+//       microseconds since the Windows epoch, using base::TimeToValue().
+//       "ML_last_time_install_ignored": "13249617864945580",
+//       A string-flavored base::value representing the int64_t number of
+//       microseconds since the Windows epoch, using base::TimeToValue().
+//       "ML_last_time_install_dismissed": "13249617864945580",
+//       "ML_num_of_consecutive_not_accepted": 2,
 //   },
 //   "app_agnostic_iph_state": {
 //     "IPH_num_of_consecutive_ignore": 3,
@@ -109,6 +122,7 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(::prefs::kWebAppsPreferences);
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticIphState);
+  registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticMlState);
 }
 
 bool GetBoolWebAppPref(const PrefService* pref_service,
@@ -286,6 +300,129 @@ bool ShouldShowIph(PrefService* pref_service, const AppId& app_id) {
     return false;
   }
   return true;
+}
+
+const char kLastTimeMlInstallIgnored[] = "ML_last_time_install_ignored";
+const char kLastTimeMlInstallDismissed[] = "ML_last_time_install_dismissed";
+const char kConsecutiveMlInstallNotAcceptedCount[] =
+    "ML_num_of_consecutive_not_accepted";
+
+void RecordMlInstallIgnored(PrefService* pref_service,
+                            const AppId& app_id,
+                            base::Time time) {
+  CHECK(pref_service);
+
+  absl::optional<int> ignored_count = GetIntWebAppPref(
+      pref_service, app_id, kConsecutiveMlInstallNotAcceptedCount);
+  int new_count = base::saturated_cast<int>(1 + ignored_count.value_or(0));
+
+  UpdateIntWebAppPref(pref_service, app_id,
+                      kConsecutiveMlInstallNotAcceptedCount, new_count);
+  UpdateTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallIgnored, time);
+
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticMlState);
+  int global_count =
+      update->FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0);
+  update->Set(kConsecutiveMlInstallNotAcceptedCount,
+              base::saturated_cast<int>(global_count + 1));
+  update->Set(kLastTimeMlInstallIgnored, base::TimeToValue(time));
+}
+void RecordMlInstallDismissed(PrefService* pref_service,
+                              const AppId& app_id,
+                              base::Time time) {
+  CHECK(pref_service);
+
+  absl::optional<int> ignored_count =
+      GetIntWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed);
+  int new_count = base::saturated_cast<int>(1 + ignored_count.value_or(0));
+
+  UpdateIntWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed,
+                      new_count);
+  UpdateTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallIgnored, time);
+
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticMlState);
+  int global_count = update->FindInt(kLastTimeMlInstallDismissed).value_or(0);
+  update->Set(kConsecutiveMlInstallNotAcceptedCount,
+              base::saturated_cast<int>(global_count + 1));
+  update->Set(kLastTimeMlInstallDismissed, base::TimeToValue(time));
+}
+
+void RecordMlInstallAccepted(PrefService* pref_service,
+                             const AppId& app_id,
+                             base::Time time) {
+  // The ignored count is meant to track consecutive occurrences of the user
+  // ignoring ML install, to help determine when ML install should be muted.
+  // Therefore resetting ignored count on successful install.
+  UpdateIntWebAppPref(pref_service, app_id,
+                      kConsecutiveMlInstallNotAcceptedCount, 0);
+
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticMlState);
+  update->Set(kConsecutiveMlInstallNotAcceptedCount, 0);
+}
+
+bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
+                                            const AppId& app_id) {
+  constexpr int kMuteMlInstallAfterConsecutiveAppSpecificIgnores = 3;
+  constexpr int kMuteMlInstallAfterIgnoreForDays = 2;
+  constexpr int kMuteMlInstallAfterDismissForDays = 14;
+
+  constexpr int kMuteMlInstallAfterConsecutiveAppAgnosticIgnores = 5;
+  constexpr int kMuteMlInstallAfterAnyIgnoreForDays = 1;
+  constexpr int kMuteMlInstallAfterAnyDismissForDays = 7;
+
+  // Do not show Ml install if the user ignored the last N+ promos for this app.
+  int app_ignored_count =
+      GetIntWebAppPref(pref_service, app_id,
+                       kConsecutiveMlInstallNotAcceptedCount)
+          .value_or(0);
+  if (app_ignored_count >= kMuteMlInstallAfterConsecutiveAppSpecificIgnores) {
+    return true;
+  }
+  // Do not show Ml install if the user ignored a promo for this app within N
+  // days.
+  auto app_last_ignore =
+      GetTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallIgnored);
+  if (TimeOccurredWithinDays(app_last_ignore,
+                             kMuteMlInstallAfterIgnoreForDays)) {
+    return true;
+  }
+  // Do not show Ml install if the user dismissed a promo for this app within N
+  // days.
+  auto app_last_dismissed =
+      GetTimeWebAppPref(pref_service, app_id, kLastTimeMlInstallDismissed);
+  if (TimeOccurredWithinDays(app_last_dismissed,
+                             kMuteMlInstallAfterDismissForDays)) {
+    return true;
+  }
+
+  const base::Value::Dict& dict =
+      pref_service->GetDict(prefs::kWebAppsAppAgnosticMlState);
+
+  // Do not show Ml install if the user ignored the last N+ promos for any app.
+  int global_ignored_count =
+      dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0);
+  if (global_ignored_count >=
+      kMuteMlInstallAfterConsecutiveAppAgnosticIgnores) {
+    return true;
+  }
+
+  // Do not show Ml install if the user ignored a promo for any app within N
+  // days.
+  auto global_last_ignore =
+      base::ValueToTime(dict.Find(kConsecutiveMlInstallNotAcceptedCount));
+  if (TimeOccurredWithinDays(global_last_ignore,
+                             kMuteMlInstallAfterAnyIgnoreForDays)) {
+    return true;
+  }
+  // Do not show Ml install if the user ignored a promo for any app within N
+  // days.
+  auto global_last_dismiss =
+      base::ValueToTime(dict.Find(kLastTimeMlInstallDismissed));
+  if (TimeOccurredWithinDays(global_last_dismiss,
+                             kMuteMlInstallAfterAnyDismissForDays)) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace web_app

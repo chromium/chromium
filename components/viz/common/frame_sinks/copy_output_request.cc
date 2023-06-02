@@ -27,6 +27,8 @@ const char* ResultFormatToShortString(
       return "I420";
     case viz::CopyOutputRequest::ResultFormat::NV12_PLANES:
       return "NV12";
+    case viz::CopyOutputRequest::ResultFormat::NV12_MULTIPLANE:
+      return "NV12_MULTIPLANE";
   }
 }
 
@@ -107,7 +109,8 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
 void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
-  DCHECK_EQ(result_format(), ResultFormat::NV12_PLANES);
+  DCHECK(result_format() == ResultFormat::NV12_PLANES ||
+         result_format() == ResultFormat::NV12_MULTIPLANE);
   DCHECK(has_result_selection());
 
   // Destination region must start at an even offset for NV12 results:
@@ -129,6 +132,10 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
         break;
       case ResultFormat::NV12_PLANES:
         DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kNV12MaxPlanes);
+        break;
+      case ResultFormat::NV12_MULTIPLANE:
+        DCHECK_EQ(num_nonzeroed_mailboxes,
+                  CopyOutputResult::kNV12MultiplaneMaxPlanes);
         break;
       case ResultFormat::I420_PLANES:
         DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kI420MaxPlanes);

@@ -48,9 +48,6 @@ BASE_DECLARE_FEATURE(kFeedHeaderSettings);
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 
-// Feature flag to enable image caching when loading the Feed.
-BASE_DECLARE_FEATURE(kEnableFeedImageCaching);
-
 // Feature flag to enable synthentic capabilities.
 BASE_DECLARE_FEATURE(kEnableFeedSyntheticCapabilities);
 
@@ -60,6 +57,9 @@ BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 // Feature flag to enable follow management page instant reload when being
 // opened.
 BASE_DECLARE_FEATURE(kEnableFollowManagementInstantReload);
+
+// Feature flag to enable signed out user view demotion.
+BASE_DECLARE_FEATURE(kEnableSignedOutViewDemotion);
 
 #pragma mark - Feature parameters
 
@@ -148,9 +148,6 @@ bool IsStickyHeaderDisabledForFollowingFeed();
 // Following feed.
 bool IsDotEnabledForNewFollowedContent();
 
-// YES if images in the Feed will be cached.
-bool IsFeedImageCachingEnabled();
-
 // YES if synthetic capabilities will be used to inform the server of client
 // capabilities.
 bool IsFeedSyntheticCapabilitiesEnabled();
@@ -164,5 +161,8 @@ bool IsWebFeedFeedbackRerouteEnabled();
 
 // Yes when enabling follow management page instant reload when being opened.
 bool IsFollowManagementInstantReloadEnabled();
+
+// Yes if the signed out user view demotion is enabled.
+bool IsSignedOutViewDemotionEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

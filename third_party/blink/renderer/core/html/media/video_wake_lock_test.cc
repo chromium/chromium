@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -151,6 +152,10 @@ class VideoWakeLockTestWebFrameClient
 
   WebMediaPlayerClient* web_media_player_client() const {
     return web_media_player_client_;
+  }
+
+  void SetWebMediaPlayer(std::unique_ptr<WebMediaPlayer> web_media_player) {
+    web_media_player_ = std::move(web_media_player);
   }
 
  private:
@@ -281,6 +286,12 @@ class VideoWakeLockTest : public testing::Test {
 
   HTMLDivElement* div() { return div_; }
   HTMLVideoElement* video() { return video_; }
+
+  void RecreateWebMediaPlayer() {
+    auto media_player = std::make_unique<VideoWakeLockMediaPlayer>();
+    media_player_ = media_player.get();
+    client_->SetWebMediaPlayer(std::move(media_player));
+  }
 
  private:
   std::unique_ptr<VideoWakeLockTestWebFrameClient> client_;
@@ -672,6 +683,45 @@ TEST_F(VideoWakeLockTest, WakeLockTracksDocumentsPage) {
   div()->AppendChild(video());
   GetVideoWakeLock()->ElementDidMoveToNewDocument();
   EXPECT_EQ(GetVideoWakeLock()->GetPage(), video()->GetDocument().GetPage());
+}
+
+TEST_F(VideoWakeLockTest, VideoOnlyMediaStreamAlwaysTakesLock) {
+  if (!GetVideoWakeLock()->HasStrictWakeLockForTests()) {
+    GTEST_SKIP();
+  }
+
+  // Default player is consumed on the first src=file load, so we must provide a
+  // new one for the MediaStream load below.
+  RecreateWebMediaPlayer();
+
+  // The "with audio" case is the same as the src=file case, so we only test the
+  // video only MediaStream case here.
+  GetMediaPlayer()->SetHasAudio(false);
+
+  MediaStreamComponentVector dummy_components;
+  auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
+      dummy_components, dummy_components);
+  Video()->SetSrcObjectVariant(descriptor);
+  test::RunPendingTasks();
+
+  ASSERT_EQ(Video()->GetLoadType(), WebMediaPlayer::kLoadTypeMediaStream);
+  EXPECT_FALSE(HasWakeLock());
+
+  GetMediaPlayer()->SetSize(kNormalVideoSize);
+  ShowVideo();
+  UpdateObservers();
+  SimulatePlaying();
+  EXPECT_TRUE(HasWakeLock());
+
+  // Set player to take less than 20% of the page and ensure wake lock is held.
+  GetMediaPlayer()->SetSize(kSmallVideoSize);
+  GetMediaPlayerClient()->SizeChanged();
+  UpdateObservers();
+  EXPECT_TRUE(HasWakeLock());
+
+  // Ensure normal wake lock release.
+  SimulatePause();
+  EXPECT_FALSE(HasWakeLock());
 }
 
 }  // namespace blink

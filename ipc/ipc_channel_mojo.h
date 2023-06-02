@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
 
   const mojo::MessagePipeHandle pipe_;
   std::unique_ptr<MojoBootstrap> bootstrap_;
-  raw_ptr<Listener> listener_;
+  raw_ptr<Listener, DanglingUntriaged> listener_;
 
   std::unique_ptr<internal::MessagePipeReader> message_reader_;
 

@@ -70,13 +70,7 @@ source_set("app_service") {
     "//components/crx_file",
     "//components/favicon/core",
     "//components/keyed_service/content",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:icon_loader",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:preferred_apps",
-    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service",
     "//extensions/browser",
     "//extensions/common",
   ]
@@ -164,6 +158,8 @@ source_set("app_service") {
       "promise_apps/promise_app.h",
       "promise_apps/promise_app_almanac_connector.cc",
       "promise_apps/promise_app_almanac_connector.h",
+      "promise_apps/promise_app_icon_cache.cc",
+      "promise_apps/promise_app_icon_cache.h",
       "promise_apps/promise_app_registry_cache.cc",
       "promise_apps/promise_app_registry_cache.h",
       "promise_apps/promise_app_service.cc",
@@ -241,16 +237,15 @@ source_set("app_service") {
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/resources",
       "//chromeos/ash/components/login/login_state",
+      "//chromeos/components/kiosk:kiosk",
       "//components/app_restore",
       "//components/arc",
       "//components/arc/common",
       "//components/arc/common:arc_intent_helper_constants",
       "//components/exo",
+      "//components/image_fetcher/core",
       "//components/metrics/structured:structured_events",
       "//components/resources:components_resources",
-      "//components/services/app_service/public/cpp:crosapi_utils",
-      "//components/services/app_service/public/cpp:instance_update",
-      "//components/services/app_service/public/cpp:macros",
       "//components/ukm",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",
@@ -286,8 +281,6 @@ source_set("app_service") {
       "app_service_proxy_desktop.cc",
       "app_service_proxy_desktop.h",
     ]
-
-    deps += [ "//components/services/app_service/public/cpp:run_on_os_login" ]
   }
 
   if (!is_chromeos_lacros) {
@@ -303,8 +296,6 @@ source_set("app_service") {
       "publishers/extension_apps_base.cc",
       "publishers/extension_apps_base.h",
     ]
-
-    deps += [ "//components/services/app_service/public/cpp:preferred_app" ]
   }
 }
 
@@ -327,6 +318,122 @@ source_set("constants") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_icon/app_icon_factory_unittest.cc",
+    "app_icon/app_icon_test_util.cc",
+    "app_icon/app_icon_test_util.h",
+    "app_icon/chrome_apps_icon_unittest.cc",
+    "app_icon/web_app_icon_unittest.cc",
+    "app_service_proxy_unittest.cc",
+    "intent_util_unittest.cc",
+    "launch_utils_unittest.cc",
+    "package_id_unittest.cc",
+    "publishers/publisher_unittest.cc",
+  ]
+
+  deps = [
+    ":app_service",
+    ":constants",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//cc:test_support",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources:component_extension_resources",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//net",
+    "//services/data_decoder/public/cpp:test_support",
+    "//skia",
+    "//storage/browser",
+    "//storage/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/display/types",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_icon/app_icon_decoder_unittest.cc",
+      "app_icon/arc_apps_icon_unittest.cc",
+      "app_icon/guest_os_apps_icon_unittest.cc",
+      "file_utils_unittest.cc",
+      "metrics/app_platform_metrics_service_unittest.cc",
+      "promise_apps/promise_app_almanac_connector_unittest.cc",
+      "promise_apps/promise_app_icon_cache_unittest.cc",
+      "promise_apps/promise_app_registry_cache_unittest.cc",
+      "promise_apps/promise_app_service_unittest.cc",
+      "promise_apps/promise_app_unittest.cc",
+      "promise_apps/promise_app_update_unittest.cc",
+      "promise_apps/promise_app_wrapper_unittest.cc",
+      "publishers/arc_apps_unittest.cc",
+      "publishers/bruschetta_apps_unittest.cc",
+      "publishers/crostini_apps_unittest.cc",
+      "publishers/guest_os_apps_unittest.cc",
+      "publishers/plugin_vm_apps_unittest.cc",
+      "webapk/webapk_install_task_unittest.cc",
+      "webapk/webapk_manager_unittest.cc",
+    ]
+
+    deps += [
+      "//ash/components/arc:arc_test_support",
+      "//ash/constants",
+      "//chrome/browser/apps/app_service/promise_apps/proto",
+      "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/crosapi:test_support",
+      "//chrome/browser/metrics/structured:features",
+      "//chromeos/ash/components/dbus/cicerone",
+      "//chromeos/ash/components/login/login_state",
+      "//chromeos/ash/components/standalone_browser",
+      "//components/arc",
+      "//components/arc:arc_test_support",
+      "//components/image_fetcher/core",
+      "//components/image_fetcher/core:test_support",
+      "//components/metrics/structured:common",
+      "//components/metrics/structured:structured_events",
+      "//components/metrics/structured:structured_metrics_features",
+      "//components/metrics/structured:test_support",
+      "//components/webapk:proto",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [ "app_service_proxy_lacros_unittest.cc" ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -340,18 +447,28 @@ source_set("test_support") {
   deps = [
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:run_on_os_login",
+    "//components/services/app_service",
     "//skia",
   ]
 
   if (is_chromeos_ash) {
     sources += [
+      "metrics/app_platform_metrics_service_test_base.cc",
+      "metrics/app_platform_metrics_service_test_base.h",
       "webapk/webapk_test_server.cc",
       "webapk/webapk_test_server.h",
     ]
 
-    deps += [ "//components/webapk:proto" ]
+    deps += [
+      "//chrome/browser/ash:test_support",
+      "//components/webapk:proto",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "mock_crosapi_app_service_proxy.cc",
+      "mock_crosapi_app_service_proxy.h",
+    ]
   }
 }

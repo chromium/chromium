@@ -398,8 +398,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
         int postHeaderTopSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
-        int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_vertical_margin);
+        int suggestionVerticalSpacing = 0;
 
         final int groupIdNoHeader = 1;
         final int groupIdWithHeader = 2;

@@ -4,14 +4,49 @@
 
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_converters.h"
 
+#include <utility>
+#include <vector>
+
+#include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "base/notreached.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 
 namespace ash::converters {
 
 namespace unchecked {
+
+crosapi::mojom::TelemetryKeyboardInfoPtr UncheckedConvertPtr(
+    diagnostics::mojom::KeyboardInfoPtr input) {
+  auto result = crosapi::mojom::TelemetryKeyboardInfo::New();
+  result->id = crosapi::mojom::UInt32Value::New(input->id);
+  result->connection_type = Convert(input->connection_type);
+  result->name = input->name;
+  result->physical_layout = Convert(input->physical_layout);
+  result->mechanical_layout = Convert(input->mechanical_layout);
+  result->region_code = input->region_code;
+  result->number_pad_present = Convert(input->number_pad_present);
+  result->top_row_keys =
+      ConvertVector<crosapi::mojom::TelemetryKeyboardTopRowKey>(
+          input->top_row_keys);
+  result->top_right_key = Convert(input->top_right_key);
+  result->has_assistant_key =
+      crosapi::mojom::BoolValue::New(input->has_assistant_key);
+  return result;
+}
+
+crosapi::mojom::TelemetryKeyboardDiagnosticEventInfoPtr UncheckedConvertPtr(
+    diagnostics::mojom::KeyboardDiagnosticEventInfoPtr input) {
+  auto result = crosapi::mojom::TelemetryKeyboardDiagnosticEventInfo::New();
+  result->keyboard_info = ConvertStructPtr(std::move(input->keyboard_info));
+  result->tested_keys = std::move(input->tested_keys);
+  result->tested_top_row_keys = std::move(input->tested_top_row_keys);
+
+  return result;
+}
 
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioJackEventInfoPtr input) {
@@ -64,6 +99,11 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
         kPowerEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewPowerEventInfo(
           ConvertStructPtr(std::move(input->get_power_event_info())));
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kKeyboardDiagnosticEventInfo:
+      return crosapi::mojom::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
+          ConvertStructPtr(
+              std::move(input->get_keyboard_diagnostic_event_info())));
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -120,6 +160,149 @@ crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
 }
 
 }  // namespace unchecked
+
+crosapi::mojom::TelemetryKeyboardConnectionType Convert(
+    diagnostics::mojom::ConnectionType input) {
+  switch (input) {
+    case diagnostics::mojom::ConnectionType::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryKeyboardConnectionType::
+          kUnmappedEnumField;
+    case diagnostics::mojom::ConnectionType::kInternal:
+      return crosapi::mojom::TelemetryKeyboardConnectionType::kInternal;
+    case diagnostics::mojom::ConnectionType::kUsb:
+      return crosapi::mojom::TelemetryKeyboardConnectionType::kUsb;
+    case diagnostics::mojom::ConnectionType::kBluetooth:
+      return crosapi::mojom::TelemetryKeyboardConnectionType::kBluetooth;
+    case diagnostics::mojom::ConnectionType::kUnknown:
+      return crosapi::mojom::TelemetryKeyboardConnectionType::kUnknown;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryKeyboardPhysicalLayout Convert(
+    diagnostics::mojom::PhysicalLayout input) {
+  switch (input) {
+    case diagnostics::mojom::PhysicalLayout::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryKeyboardPhysicalLayout::
+          kUnmappedEnumField;
+    case diagnostics::mojom::PhysicalLayout::kUnknown:
+      return crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown;
+    case diagnostics::mojom::PhysicalLayout::kChromeOS:
+      return crosapi::mojom::TelemetryKeyboardPhysicalLayout::kChromeOS;
+    case diagnostics::mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco:
+      return crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown;
+    case diagnostics::mojom::PhysicalLayout::kChromeOSDellEnterpriseDrallion:
+      return crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryKeyboardMechanicalLayout Convert(
+    diagnostics::mojom::MechanicalLayout input) {
+  switch (input) {
+    case diagnostics::mojom::MechanicalLayout::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryKeyboardMechanicalLayout::
+          kUnmappedEnumField;
+    case diagnostics::mojom::MechanicalLayout::kUnknown:
+      return crosapi::mojom::TelemetryKeyboardMechanicalLayout::kUnknown;
+    case diagnostics::mojom::MechanicalLayout::kAnsi:
+      return crosapi::mojom::TelemetryKeyboardMechanicalLayout::kAnsi;
+    case diagnostics::mojom::MechanicalLayout::kIso:
+      return crosapi::mojom::TelemetryKeyboardMechanicalLayout::kIso;
+    case diagnostics::mojom::MechanicalLayout::kJis:
+      return crosapi::mojom::TelemetryKeyboardMechanicalLayout::kJis;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryKeyboardNumberPadPresence Convert(
+    diagnostics::mojom::NumberPadPresence input) {
+  switch (input) {
+    case diagnostics::mojom::NumberPadPresence::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryKeyboardNumberPadPresence::
+          kUnmappedEnumField;
+    case diagnostics::mojom::NumberPadPresence::kUnknown:
+      return crosapi::mojom::TelemetryKeyboardNumberPadPresence::kUnknown;
+    case diagnostics::mojom::NumberPadPresence::kPresent:
+      return crosapi::mojom::TelemetryKeyboardNumberPadPresence::kPresent;
+    case diagnostics::mojom::NumberPadPresence::kNotPresent:
+      return crosapi::mojom::TelemetryKeyboardNumberPadPresence::kNotPresent;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryKeyboardTopRowKey Convert(
+    diagnostics::mojom::TopRowKey input) {
+  switch (input) {
+    case diagnostics::mojom::TopRowKey::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kUnmappedEnumField;
+    case diagnostics::mojom::TopRowKey::kNone:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kNone;
+    case diagnostics::mojom::TopRowKey::kUnknown:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kUnknown;
+    case diagnostics::mojom::TopRowKey::kBack:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kBack;
+    case diagnostics::mojom::TopRowKey::kForward:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kForward;
+    case diagnostics::mojom::TopRowKey::kRefresh:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kRefresh;
+    case diagnostics::mojom::TopRowKey::kFullscreen:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kFullscreen;
+    case diagnostics::mojom::TopRowKey::kOverview:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kOverview;
+    case diagnostics::mojom::TopRowKey::kScreenshot:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenshot;
+    case diagnostics::mojom::TopRowKey::kScreenBrightnessDown:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenBrightnessDown;
+    case diagnostics::mojom::TopRowKey::kScreenBrightnessUp:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenBrightnessUp;
+    case diagnostics::mojom::TopRowKey::kPrivacyScreenToggle:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kPrivacyScreenToggle;
+    case diagnostics::mojom::TopRowKey::kMicrophoneMute:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kMicrophoneMute;
+    case diagnostics::mojom::TopRowKey::kVolumeMute:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kVolumeMute;
+    case diagnostics::mojom::TopRowKey::kVolumeDown:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kVolumeDown;
+    case diagnostics::mojom::TopRowKey::kVolumeUp:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kVolumeUp;
+    case diagnostics::mojom::TopRowKey::kKeyboardBacklightToggle:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::
+          kKeyboardBacklightToggle;
+    case diagnostics::mojom::TopRowKey::kKeyboardBacklightDown:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kKeyboardBacklightDown;
+    case diagnostics::mojom::TopRowKey::kKeyboardBacklightUp:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kKeyboardBacklightUp;
+    case diagnostics::mojom::TopRowKey::kNextTrack:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kNextTrack;
+    case diagnostics::mojom::TopRowKey::kPreviousTrack:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kPreviousTrack;
+    case diagnostics::mojom::TopRowKey::kPlayPause:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kPlayPause;
+    case diagnostics::mojom::TopRowKey::kScreenMirror:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenMirror;
+    case diagnostics::mojom::TopRowKey::kDelete:
+      return crosapi::mojom::TelemetryKeyboardTopRowKey::kDelete;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryKeyboardTopRightKey Convert(
+    diagnostics::mojom::TopRightKey input) {
+  switch (input) {
+    case diagnostics::mojom::TopRightKey::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryKeyboardTopRightKey::kUnmappedEnumField;
+    case diagnostics::mojom::TopRightKey::kUnknown:
+      return crosapi::mojom::TelemetryKeyboardTopRightKey::kUnknown;
+    case diagnostics::mojom::TopRightKey::kPower:
+      return crosapi::mojom::TelemetryKeyboardTopRightKey::kPower;
+    case diagnostics::mojom::TopRightKey::kLock:
+      return crosapi::mojom::TelemetryKeyboardTopRightKey::kLock;
+    case diagnostics::mojom::TopRightKey::kControlPanel:
+      return crosapi::mojom::TelemetryKeyboardTopRightKey::kControlPanel;
+  }
+  NOTREACHED();
+}
 
 crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
     cros_healthd::mojom::AudioJackEventInfo::State input) {
@@ -240,6 +423,8 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kSdCard;
     case crosapi::mojom::TelemetryEventCategoryEnum::kPower:
       return cros_healthd::mojom::EventCategoryEnum::kPower;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
+      return cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic;
   }
   NOTREACHED();
 }

@@ -20,7 +20,11 @@
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/user_education_constants.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
+#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
@@ -42,6 +46,7 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -98,6 +103,13 @@ aura::client::DragDropClient* GetDragDropClientNearestPoint(
 Shelf* GetShelfNearestPoint(const gfx::Point& location_in_screen) {
   return Shelf::ForWindow(GetRootWindowForDisplayId(
       GetDisplayNearestPoint(location_in_screen).id()));
+}
+
+HoldingSpaceTray* GetHoldingSpaceTrayNearestPoint(
+    const gfx::Point& location_in_screen) {
+  return GetShelfNearestPoint(location_in_screen)
+      ->status_area_widget()
+      ->holding_space_tray();
 }
 
 WallpaperView* GetWallpaperViewNearestPoint(
@@ -267,10 +279,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // Open the holding space tray so that the user can see the newly pinned
     // files and understands the relationship between the action they took on
     // the wallpaper and its effect in holding space.
-    GetShelfNearestPoint(location_in_screen)
-        ->status_area_widget()
-        ->holding_space_tray()
-        ->ShowBubble();
+    GetHoldingSpaceTrayNearestPoint(location_in_screen)->ShowBubble();
 
     return ui::mojom::DragOperation::kCopy;
   }
@@ -333,6 +342,45 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     if (!force_holding_space_show_in_shelf_) {
       force_holding_space_show_in_shelf_ =
           std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
+    }
+
+    // Cache the `holding_space_tray` nearest the `location_in_screen` so that
+    // we can show an associated help bubble.
+    // TODO(http://b/283169466): Rate limit showing the help bubble.
+    HoldingSpaceTray* const holding_space_tray =
+        GetHoldingSpaceTrayNearestPoint(location_in_screen.value());
+
+    // Configure the help bubble.
+    // TODO(http://b/283169365): Finalize strings.
+    user_education::HelpBubbleParams help_bubble_params;
+    help_bubble_params.arrow = user_education::HelpBubbleArrow::kBottomRight;
+    help_bubble_params.body_text =
+        u"[i18n] Drop files on the desktop to add them to Tote. You can't add "
+        u"files to desktop.";
+    help_bubble_params.extended_properties =
+        user_education_util::CreateExtendedProperties(HelpBubbleStyle::kNudge);
+
+    // While the help bubble is showing, do not allow either the associated
+    // `shelf` or `holding_space_tray` to hide.
+    // TODO(http://b/283171784): Explicitly close the help bubble if the user
+    // opens holding space or successfully pins a file to holding space.
+    base::OnceClosure close_callback = base::BindOnce(
+        [](Shelf::ScopedDisableAutoHide*,
+           HoldingSpaceController::ScopedForceShowInShelf*) {},
+        base::Owned(std::make_unique<Shelf::ScopedDisableAutoHide>(shelf)),
+        base::Owned(std::make_unique<
+                    HoldingSpaceController::ScopedForceShowInShelf>()));
+
+    // Attempt to show the help bubble.
+    if (UserEducationHelpBubbleController::Get()->CreateHelpBubble(
+            HelpBubbleId::kHoldingSpaceTour, std::move(help_bubble_params),
+            kHoldingSpaceTrayElementId,
+            views::ElementTrackerViews::GetContextForView(holding_space_tray),
+            std::move(close_callback))) {
+      // If successful in showing the help bubble, ping the `holding_space_tray`
+      // to further attract the user's attention.
+      UserEducationPingController::Get()->CreatePing(PingId::kHoldingSpaceTour,
+                                                     holding_space_tray);
     }
   }
 

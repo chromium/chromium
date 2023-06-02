@@ -16,14 +16,15 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
-#include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/sync_prefs.h"
@@ -238,6 +239,7 @@ void SyncEngineImpl::StartConfiguration() {
 
 void SyncEngineImpl::StartSyncingWithServer() {
   DVLOG(1) << name_ << ": SyncEngineImpl::StartSyncingWithServer called.";
+  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
   base::Time last_poll_time = prefs_->GetLastPollTime();
   // If there's no known last poll time (e.g. on initial start-up), we treat
   // this as if a poll just happened.
@@ -546,12 +548,22 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
       (status.backed_off_types != cached_status_.backed_off_types);
   const bool invalidation_status_changed =
       (status.notifications_enabled != cached_status_.notifications_enabled);
+  const bool has_new_invalidated_data_types =
+      !cached_status_.invalidated_data_types.HasAll(
+          status.invalidated_data_types);
   cached_status_ = status;
   if (backed_off_types_changed) {
     host_->OnBackedOffTypesChanged();
   }
   if (invalidation_status_changed) {
     host_->OnInvalidationStatusChanged();
+  }
+  if (has_new_invalidated_data_types) {
+    // Notify about any new data types having pending invalidations. When there
+    // are less such data types, this basically means that sync cycle has been
+    // finished, and |host_| will be notified via OnSyncCycleCompleted(), so
+    // there is no point in duplicating it.
+    host_->OnNewInvalidatedDataTypes();
   }
 }
 
@@ -565,19 +577,38 @@ void SyncEngineImpl::OnCookieJarChanged(bool account_mismatch,
 }
 
 void SyncEngineImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sessions_invalidation_enabled_ = enabled;
   SendInterestedTopicsToInvalidator();
 }
 
+bool SyncEngineImpl::IsNextPollTimeInThePast() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
+  base::Time last_poll_time = prefs_->GetLastPollTime();
+  base::TimeDelta poll_interval = prefs_->GetPollInterval();
+  if (last_poll_time.is_null() || poll_interval.is_zero()) {
+    // It's likely the first startup so the very first poll interval is just
+    // starting.
+    return false;
+  }
+
+  base::Time now = base::Time::Now();
+  return now >= last_poll_time + poll_interval;
+}
+
 void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::GetNigoriNodeForDebugging, backend_,
-                     BindToCurrentSequence(std::move(callback))));
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void SyncEngineImpl::OnInvalidatorClientIdChange(const std::string& client_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoOnInvalidatorClientIdChange,

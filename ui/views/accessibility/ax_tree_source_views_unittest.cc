@@ -75,9 +75,12 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
   }
 
   UniqueWidgetPtr widget_;
-  raw_ptr<Label> label1_ = nullptr;         // Owned by views hierarchy.
-  raw_ptr<Label> label2_ = nullptr;         // Owned by views hierarchy.
-  raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<Label, DanglingUntriaged> label1_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<Label, DanglingUntriaged> label2_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<Textfield, DanglingUntriaged> textfield_ =
+      nullptr;  // Owned by views hierarchy.
 };
 
 TEST_F(AXTreeSourceViewsTest, Basics) {

@@ -170,7 +170,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
     }
     event.preventDefault();
     event.stopPropagation();
-    if (this.hasCheckbox) {
+    if (this.hasCheckbox && !this.checkboxDisabled) {
       // Clicking the row should trigger a checkbox click rather than a
       // standard row click.
       const checkbox =
@@ -242,8 +242,9 @@ export class PowerBookmarkRowElement extends PolymerElement {
    * Triggers an input change event on enter. Extends default input behavior
    * which only triggers a change event if the value of the input has changed.
    */
-  private onInputKeyPress_(event: KeyboardEvent) {
+  private onInputKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
+      event.stopPropagation();
       this.onInputChange_(event);
     }
   }

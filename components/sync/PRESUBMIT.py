@@ -11,8 +11,6 @@ for more details about the presubmit API built into depot_tools.
 import os
 import re
 
-USE_PYTHON3 = True
-
 # Some definitions don't follow all the conventions we want to enforce.
 # It's either difficult or impossible to fix this, so we ignore the problem(s).
 EXCEPTION_MODEL_TYPES = [

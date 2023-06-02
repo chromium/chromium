@@ -73,11 +73,11 @@ class InteractionTestUtilBrowserTest : public views::ViewsTestBase {
   std::unique_ptr<views::LayoutProvider> layout_provider_;
   InteractionTestUtilBrowser test_util_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::View> contents_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> contents_ = nullptr;
 };
 
 TEST_F(InteractionTestUtilBrowserTest, PressHoverButton) {
-  raw_ptr<HoverButton> hover_button;
+  raw_ptr<HoverButton, DanglingUntriaged> hover_button;
   auto pressed = base::BindLambdaForTesting([&]() {
     hover_button->parent()->RemoveChildViewT(hover_button);
     hover_button = nullptr;

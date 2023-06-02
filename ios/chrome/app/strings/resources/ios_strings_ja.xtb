@@ -142,7 +142,6 @@
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
-<translation id="1891796056033961979">保存したブックマーク、パスワード、設定などにこの画面からアクセスできます。</translation>
 <translation id="1894023287452300670">ここで価格をトラッキングできます</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
@@ -316,6 +315,9 @@
 <translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
 <translation id="2982481275546140226">データを削除</translation>
 <translation id="298306318844797842">お支払い方法を追加...</translation>
+<translation id="2988274366244053197">Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
+
+パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3037605927509011580">エラー</translation>
@@ -379,8 +381,10 @@
 <translation id="3464194322481586217">価格をトラッキングできませんでした。</translation>
 <translation id="3469166899695866866">ダウンロードを中止しますか？</translation>
 <translation id="3470502288861289375">コピーしています...</translation>
+<translation id="3471148582064653480">パスワードや履歴などを同期します。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 件のサイトまたはアプリ}other{{COUNT} 件のサイトとアプリ}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
+<translation id="3476450923187944815">他のアプリからパスワードにアクセスできます。</translation>
 <translation id="3478058380795961209">有効期限（月）</translation>
 <translation id="3482959374254649722">タブを同期しています...</translation>
 <translation id="3484946776651937681">ダウンロード フォルダを開く</translation>
@@ -399,6 +403,7 @@
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3565207542107370586">閲覧履歴データを削除する…</translation>
 <translation id="3575234738189584619">レンズで検索</translation>
+<translation id="3577555362230509265">Chrome を他のアプリで使用します。</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
 <translation id="3595252146048399851">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
@@ -442,7 +447,6 @@
 <translation id="3891414008432200754">価格</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
-<translation id="3899568514738536144">閲覧履歴を表示</translation>
 <translation id="3904829425754749514">同期は組織によってオフにされています。このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
 <translation id="3913386780052199712">Chrome にログイン</translation>
 <translation id="3915450441834151894">サイト情報</translation>
@@ -499,7 +503,6 @@
 <translation id="430793432425771671">すべて同期</translation>
 <translation id="4309403553630140242">詳細を確認するにはダブルタップします</translation>
 <translation id="430967081421617822">全期間</translation>
-<translation id="4324952538601951430">保存したブックマーク、パスワード、設定などにここからアクセスできるようになりました</translation>
 <translation id="4334428914252001502">1 件の未読記事があります。</translation>
 <translation id="4338650699862464074">アクセスしたページの URL を Google に送信します。</translation>
 <translation id="4342054591427973606">{count,plural, =1{この住所は、このデバイスとログインしている他のデバイスから削除されます。}other{これらの住所は、このデバイスとログインしている他のデバイスから削除されます。}}</translation>
@@ -653,6 +656,7 @@
 <translation id="5300589172476337783">表示</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
+<translation id="5325595483440111327">閲覧履歴を表示します。</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
 <translation id="536067926684072644">ブックマークを表示する</translation>
 <translation id="5360976571138293719">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
@@ -751,6 +755,7 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> で検索</translation>
 <translation id="5963939892571022323">選択箇所へのリンクを作成できません。</translation>
 <translation id="5965679971710331625">ログイン中のアカウント</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 個のブックマークが削除されました}other{{count} 個のブックマークが削除されました}}</translation>
 <translation id="5979837087407522202">パスワードを検索</translation>
 <translation id="5981230843984570095">アクティブでないタブをすべて閉じる</translation>
 <translation id="5982717868370722439">既存のデータを <ph name="USER_EMAIL" /> に追加します。</translation>
@@ -920,6 +925,7 @@
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="6822587385560699678">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="6831043979455480757">翻訳</translation>
+<translation id="6839843088069935119">{count,plural, =1{ブックマークを「{title}」に保存しました。保存されるのは、このデバイスのみです。}other{ブックマークを「{title}」に保存しました。保存されるのは、このデバイスのみです。}}</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
 <translation id="6852222216891664518">固定タブを閉じる</translation>
@@ -998,6 +1004,7 @@
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7438481509621345350">新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
 <translation id="7446583256109515732">タブの固定を解除しました</translation>
+<translation id="7451023311965289370">{count,plural, =1{ブックマークが「{title}」に保存されました}other{ブックマークが「{title}」に保存されました}}</translation>
 <translation id="7454057999980797137">州/都道府県</translation>
 <translation id="7459628154744868585">保護強化機能がオンになっています</translation>
 <translation id="746684838091935575">3.[Chrome] を選択する</translation>
@@ -1055,7 +1062,6 @@
 <translation id="7840771868269352570">選択したアイテムが削除されます。</translation>
 <translation id="7845466610722898">リーディング リストを表示</translation>
 <translation id="784551991304901159">コンテンツを表示するには、メニューから [オンにする] を選択します</translation>
-<translation id="7846158885638438868">{count,plural, =1{ブックマークを「{title}」に保存しました}other{ブックマークを「{title}」に保存しました}}</translation>
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7856733331829174190">ダウンロードできませんでした</translation>
 <translation id="785938070103630874">パスワード、お支払い方法、住所などを開きます</translation>
@@ -1135,9 +1141,6 @@
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8299613349954694191">ウェブをプライベート モードで閲覧するにはシークレット タブを開きます。</translation>
 <translation id="8316944564970119719">サイトとパスワードを入力し、保存する</translation>
-<translation id="8317835149433843300">Google Pay のお支払い方法と住所は暗号化されません。Chrome の閲覧履歴は Google アカウントに保存されません。
-
-パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="8319076807703933069">新しく検索</translation>
 <translation id="8323906514956095947">長押しすると、タブのオプションがさらに表示されます</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>

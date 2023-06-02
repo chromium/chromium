@@ -34,6 +34,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_manager_factory.h"
@@ -50,6 +51,7 @@ using testing::_;
 using testing::ByMove;
 using testing::NiceMock;
 using testing::Return;
+using testing::Sequence;
 
 namespace syncer {
 
@@ -58,6 +60,8 @@ namespace {
 static const base::FilePath::CharType kTestSyncDir[] =
     FILE_PATH_LITERAL("sync-test");
 constexpr char kTestGaiaId[] = "test_gaia_id";
+constexpr char kTestCacheGuid[] = "test_cache_guid";
+constexpr char kTestBirthday[] = "test_birthday";
 
 class MockSyncEngineHost : public SyncEngineHost {
  public:
@@ -84,6 +88,7 @@ class MockSyncEngineHost : public SyncEngineHost {
               (override));
   MOCK_METHOD(void, OnBackedOffTypesChanged, (), (override));
   MOCK_METHOD(void, OnInvalidationStatusChanged, (), (override));
+  MOCK_METHOD(void, OnNewInvalidatedDataTypes, (), (override));
 };
 
 class FakeSyncManagerFactory : public SyncManagerFactory {
@@ -820,9 +825,6 @@ TEST_F(SyncEngineImplTest, GenerateCacheGUID) {
 }
 
 TEST_F(SyncEngineImplTest, ShouldPopulateAccountIdCachedInPrefs) {
-  const std::string kTestCacheGuid = "test_cache_guid";
-  const std::string kTestBirthday = "test_birthday";
-
   SyncTransportDataPrefs transport_data_prefs(&pref_service_);
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
@@ -835,9 +837,6 @@ TEST_F(SyncEngineImplTest, ShouldPopulateAccountIdCachedInPrefs) {
 
 TEST_F(SyncEngineImplTest,
        ShouldNotPopulateAccountIdCachedInPrefsWithLocalSync) {
-  const std::string kTestCacheGuid = "test_cache_guid";
-  const std::string kTestBirthday = "test_birthday";
-
   SyncTransportDataPrefs transport_data_prefs(&pref_service_);
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
@@ -849,9 +848,6 @@ TEST_F(SyncEngineImplTest,
 }
 
 TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
-  const std::string kTestCacheGuid = "test_cache_guid";
-  const std::string kTestBirthday = "test_birthday";
-
   SyncTransportDataPrefs transport_data_prefs(&pref_service_);
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
@@ -869,9 +865,6 @@ TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
 // between the account ID cached in SyncPrefs and the actual one.
 TEST_F(SyncEngineImplTest,
        ShouldClearLocalSyncTransportDataDueToAccountIdMismatch) {
-  const std::string kTestCacheGuid = "test_cache_guid";
-  const std::string kTestBirthday = "test_birthday";
-
   SyncTransportDataPrefs transport_data_prefs(&pref_service_);
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
@@ -883,6 +876,65 @@ TEST_F(SyncEngineImplTest,
   EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());
   EXPECT_NE(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
   EXPECT_NE(kTestBirthday, transport_data_prefs.GetBirthday());
+}
+
+TEST_F(SyncEngineImplTest, ShouldNotifyOnNewInvalidatedDataTypes) {
+  InitializeBackend();
+  ConfigureDataTypes();
+
+  // Use OnInvalidationStatusChanged() to verify that
+  // OnNewInvalidatedDataTypes() is caled only once in the beginning, and all
+  // the next invalidated data types updates should not notify.
+  Sequence seq;
+  EXPECT_CALL(mock_host_, OnNewInvalidatedDataTypes).InSequence(seq);
+  EXPECT_CALL(mock_host_, OnInvalidationStatusChanged).InSequence(seq);
+
+  SyncStatus sync_status;
+  sync_status.invalidated_data_types.Put(BOOKMARKS);
+  fake_manager_->NotifySyncStatusChanged(sync_status);
+  fake_manager_->WaitForSyncThread();
+
+  // Turn on notifications to trigger OnInvalidationStatusChanged().
+  sync_status.notifications_enabled = true;
+  fake_manager_->NotifySyncStatusChanged(sync_status);
+  fake_manager_->WaitForSyncThread();
+
+  // Removing an invalidated data type shouldn't invoke
+  // OnNewInvalidatedDataTypes().
+  sync_status.invalidated_data_types.Remove(BOOKMARKS);
+  fake_manager_->NotifySyncStatusChanged(sync_status);
+  fake_manager_->WaitForSyncThread();
+}
+
+TEST_F(SyncEngineImplTest, ShouldReturnWhetherNextPollTimePassed) {
+  SyncTransportDataPrefs transport_data_prefs(&pref_service_);
+  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
+  transport_data_prefs.SetBirthday(kTestBirthday);
+
+  transport_data_prefs.SetLastPollTime(base::Time::Now() - base::Hours(5));
+  transport_data_prefs.SetPollInterval(base::Hours(4));
+
+  InitializeBackend();
+  ConfigureDataTypes();
+
+  EXPECT_TRUE(backend_->IsNextPollTimeInThePast());
+
+  // Mimic a finished PERIODIC sync cycle.
+  SyncCycleSnapshot snapshot(
+      /*birthday=*/std::string(),
+      /*bag_of_chips=*/std::string(), ModelNeutralState(), ProgressMarkerMap(),
+      /*is_silenced=*/false,
+      /*num_server_conflicts=*/0,
+      /*notifications_enabled=*/true,
+      /*sync_start_time=*/base::Time::Now(),
+      /*poll_finish_time=*/base::Time::Now(),
+      /*get_updates_origin=*/sync_pb::SyncEnums::PERIODIC,
+      /*poll_interval=*/base::Hours(4),
+      /*has_remaining_local_changes=*/false);
+  fake_manager_->NotifySyncCycleCompleted(snapshot);
+  fake_manager_->WaitForSyncThread();
+
+  EXPECT_FALSE(backend_->IsNextPollTimeInThePast());
 }
 
 }  // namespace

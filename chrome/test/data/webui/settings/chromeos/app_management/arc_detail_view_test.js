@@ -77,57 +77,6 @@ suite('<app-management-arc-detail-view>', () => {
         isHidden(getPermissionItemByType(arcPermissionView, 'kCamera')));
   });
 
-  test('Toggle works correctly', async () => {
-    const checkPermissionToggle = async (permissionType) => {
-      assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue(getPermissionCrToggleByType(arcPermissionView, permissionType)
-                     .checked);
-
-      // Toggle Off.
-      await clickPermissionToggle(permissionType);
-      assertFalse(getPermissionBoolByType(permissionType));
-      assertFalse(getPermissionCrToggleByType(arcPermissionView, permissionType)
-                      .checked);
-
-      // Toggle On.
-      await clickPermissionToggle(permissionType);
-      assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue(getPermissionCrToggleByType(arcPermissionView, permissionType)
-                     .checked);
-    };
-
-    await checkPermissionToggle('kLocation');
-    await checkPermissionToggle('kCamera');
-    await checkPermissionToggle('kNotifications');
-  });
-
-
-  test('OnClick handler for permission item works correctly', async () => {
-    const checkPermissionItemOnClick = async (permissionType) => {
-      assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue(getPermissionCrToggleByType(arcPermissionView, permissionType)
-                     .checked);
-
-      // Toggle Off.
-      await clickPermissionItem(permissionType);
-      assertFalse(getPermissionBoolByType(permissionType));
-      assertFalse(getPermissionCrToggleByType(arcPermissionView, permissionType)
-                      .checked);
-
-      // Toggle On.
-      await clickPermissionItem(permissionType);
-      assertTrue(getPermissionBoolByType(permissionType));
-      assertTrue(getPermissionCrToggleByType(arcPermissionView, permissionType)
-                     .checked);
-    };
-
-    await checkPermissionItemOnClick('kLocation');
-    await checkPermissionItemOnClick('kCamera');
-    await checkPermissionItemOnClick('kNotifications');
-    await checkPermissionItemOnClick('kContacts');
-    await checkPermissionItemOnClick('kStorage');
-  });
-
   test('No permissions requested label', async () => {
     assertTrue(isHiddenByDomIf(
         arcPermissionView.shadowRoot.querySelector('#noPermissions')));
@@ -145,6 +94,75 @@ suite('<app-management-arc-detail-view>', () => {
 
     assertFalse(isHiddenByDomIf(
         arcPermissionView.shadowRoot.querySelector('#noPermissions')));
+  });
+
+  suite('Read-write permissions', () => {
+    setup(async () => {
+      loadTimeData.overrideValues(
+          {'appManagementArcReadOnlyPermissions': false});
+
+      // Re-render with the new loadTimeData.
+      arcPermissionView =
+          document.createElement('app-management-arc-detail-view');
+      replaceBody(arcPermissionView);
+      await flushTasks();
+    });
+
+    test('Toggle works correctly', async () => {
+      const checkPermissionToggle = async (permissionType) => {
+        assertTrue(getPermissionBoolByType(permissionType));
+        assertTrue(
+            getPermissionCrToggleByType(arcPermissionView, permissionType)
+                .checked);
+
+        // Toggle Off.
+        await clickPermissionToggle(permissionType);
+        assertFalse(getPermissionBoolByType(permissionType));
+        assertFalse(
+            getPermissionCrToggleByType(arcPermissionView, permissionType)
+                .checked);
+
+        // Toggle On.
+        await clickPermissionToggle(permissionType);
+        assertTrue(getPermissionBoolByType(permissionType));
+        assertTrue(
+            getPermissionCrToggleByType(arcPermissionView, permissionType)
+                .checked);
+      };
+
+      await checkPermissionToggle('kLocation');
+      await checkPermissionToggle('kCamera');
+      await checkPermissionToggle('kNotifications');
+    });
+
+    test('OnClick handler for permission item works correctly', async () => {
+      const checkPermissionItemOnClick = async (permissionType) => {
+        assertTrue(getPermissionBoolByType(permissionType));
+        assertTrue(
+            getPermissionCrToggleByType(arcPermissionView, permissionType)
+                .checked);
+
+        // Toggle Off.
+        await clickPermissionItem(permissionType);
+        assertFalse(getPermissionBoolByType(permissionType));
+        assertFalse(
+            getPermissionCrToggleByType(arcPermissionView, permissionType)
+                .checked);
+
+        // Toggle On.
+        await clickPermissionItem(permissionType);
+        assertTrue(getPermissionBoolByType(permissionType));
+        assertTrue(
+            getPermissionCrToggleByType(arcPermissionView, permissionType)
+                .checked);
+      };
+
+      await checkPermissionItemOnClick('kLocation');
+      await checkPermissionItemOnClick('kCamera');
+      await checkPermissionItemOnClick('kNotifications');
+      await checkPermissionItemOnClick('kContacts');
+      await checkPermissionItemOnClick('kStorage');
+    });
   });
 
   suite('Read-only permissions', () => {
@@ -255,6 +273,34 @@ suite('<app-management-arc-detail-view>', () => {
 
       assertFalse(locationItem.shadowRoot.querySelector('#description')
                       .textContent.includes('While in use'));
+    });
+
+    test('Managed permission has policy indicator', async () => {
+      const permission = createBoolPermission(
+          PermissionType.kLocation, /*value=*/ true,
+          /*is_managed=*/ true);
+
+      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      await flushTasks();
+
+      const locationItem =
+          getPermissionItemByType(arcPermissionView, 'kLocation');
+      assertTrue(
+          !!locationItem.shadowRoot.querySelector('cr-policy-indicator'));
+    });
+
+    test('Unmanaged permission has no policy indicator', async () => {
+      const permission = createBoolPermission(
+          PermissionType.kLocation, /*value=*/ true,
+          /*is_managed=*/ false);
+
+      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      await flushTasks();
+
+      const locationItem =
+          getPermissionItemByType(arcPermissionView, 'kLocation');
+      assertFalse(
+          !!locationItem.shadowRoot.querySelector('cr-policy-indicator'));
     });
   });
 

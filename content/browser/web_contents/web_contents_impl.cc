@@ -1392,8 +1392,13 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
 }
 
-RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() {
+const RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() const {
   return primary_frame_tree_.root()->current_frame_host();
+}
+
+RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() {
+  return const_cast<RenderFrameHostImpl*>(
+      std::as_const(*this).GetPrimaryMainFrame());
 }
 
 PageImpl& WebContentsImpl::GetPrimaryPage() {
@@ -7583,14 +7588,10 @@ void WebContentsImpl::UpdateWindowPreferredSize(const gfx::Size& pref_size) {
   OnPreferredSizeChanged(old_size);
 }
 
-// TODO(https://crbug.com/1424417): This function is used exclusively for COOP
-// reporting, to determine what other pages might try to access this page, for
-// the purpose of installing and removing access reporters. Update it to handle
-// CoopRelatedGroups instead of BrowsingContextGroups as a part of COOP:
-// restrict-properties reporting implementation.
 std::vector<RenderFrameHostImpl*>
-WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
-    RenderFrameHostImpl* render_frame_host) {
+WebContentsImpl::GetActiveTopLevelDocumentsInGroup(
+    RenderFrameHostImpl* render_frame_host,
+    GroupType group_type) {
   std::vector<RenderFrameHostImpl*> out;
   for (WebContentsImpl* web_contents : GetAllWebContents()) {
     RenderFrameHostImpl* other_render_frame_host =
@@ -7602,8 +7603,18 @@ WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
       continue;
     }
 
-    // Filters out documents from a different browsing context group.
-    if (!render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
+    // If we're looking for frames in the same browsing context group, filter
+    // frames in different browsing context groups.
+    if (group_type == GroupType::kBrowsingContextGroup &&
+        !render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
+            other_render_frame_host->GetSiteInstance())) {
+      continue;
+    }
+
+    // If we're looking for frames in the same CoopRelatedGroup, filter frames
+    // in different CoopRelatedGroups.
+    if (group_type == GroupType::kCoopRelatedGroup &&
+        !render_frame_host->GetSiteInstance()->IsCoopRelatedSiteInstance(
             other_render_frame_host->GetSiteInstance())) {
       continue;
     }
@@ -7611,6 +7622,20 @@ WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
     out.push_back(other_render_frame_host);
   }
   return out;
+}
+
+std::vector<RenderFrameHostImpl*>
+WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
+    RenderFrameHostImpl* render_frame_host) {
+  return GetActiveTopLevelDocumentsInGroup(render_frame_host,
+                                           GroupType::kBrowsingContextGroup);
+}
+
+std::vector<RenderFrameHostImpl*>
+WebContentsImpl::GetActiveTopLevelDocumentsInCoopRelatedGroup(
+    RenderFrameHostImpl* render_frame_host) {
+  return GetActiveTopLevelDocumentsInGroup(render_frame_host,
+                                           GroupType::kCoopRelatedGroup);
 }
 
 PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {

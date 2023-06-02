@@ -42,7 +42,7 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
 
   PromoCardInterface* GetPromoToShowAndUpdatePref();
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   std::vector<std::unique_ptr<PromoCardInterface>> promo_cards_;
 };

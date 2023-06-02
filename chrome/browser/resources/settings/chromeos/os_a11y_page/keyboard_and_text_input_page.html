@@ -30,6 +30,14 @@
     max-width: 450px;
     overflow-wrap: break-word;
   }
+
+  #stickyKeysDisabledTooltip,
+  #focusHighlightDisabledTooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-border-radius: 4px;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+    --paper-tooltip-padding: 8px;
+  }
 </style>
 
 <settings-toggle-button
@@ -97,18 +105,38 @@
 <settings-toggle-button
     id="stickyKeysToggle"
     class="hr"
-    pref="{{prefs.settings.a11y.sticky_keys_enabled}}"
+    pref="[[stickyKeysEnabledVirtualPref_]]"
+    no-set-pref
+    on-settings-boolean-control-change="updateStickyKeysEnabledVirtualPref_"
     label="$i18n{stickyKeysLabel}"
     sub-label="$i18n{stickyKeysDescription}"
+    disabled="[[prefs.settings.accessibility.value]]"
     deep-link-focus-id$="[[Setting.kStickyKeys]]">
+  <cr-tooltip-icon
+      id="stickyKeysDisabledTooltip"
+      hidden$="[[!prefs.settings.accessibility.value]]"
+      tooltip-text="$i18n{stickyKeysDisabledByChromevoxTooltip}"
+      icon-class="cr:info-outline"
+      slot="more-actions">
+  </cr-tooltip-icon>
 </settings-toggle-button>
 <settings-toggle-button
     id="focusHighlightToggle"
     class="hr"
-    pref="{{prefs.settings.a11y.focus_highlight}}"
+    pref="[[focusHighlightEnabledVirtualPref_]]"
+    no-set-pref
+    on-settings-boolean-control-change="updateFocusHighlightEnabledVirtualPref_"
     label="$i18n{focusHighlightLabel}"
     sub-label="$i18n{focusHighlightLabelSubtext}"
+    disabled="[[prefs.settings.accessibility.value]]"
     deep-link-focus-id$="[[Setting.kHighlightKeyboardFocus]]">
+  <cr-tooltip-icon
+      id="focusHighlightDisabledTooltip"
+      hidden$="[[!prefs.settings.accessibility.value]]"
+      tooltip-text="$i18n{focusHighlightDisabledByChromevoxTooltip}"
+      icon-class="cr:info-outline"
+      slot="more-actions">
+  </cr-tooltip-icon>
 </settings-toggle-button>
 <settings-toggle-button
     id="caretHighlightToggle"

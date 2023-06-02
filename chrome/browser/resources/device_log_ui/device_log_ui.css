@@ -27,16 +27,14 @@ button {
   margin-inline-end: 8px;
 }
 
-#log-checkbox-container label {
-  vertical-align: middle;
-}
-
-#log-checkbox-container input {
-  margin-bottom: 1px;
-  vertical-align: middle;
+#log-checkbox-container,
+label {
+  align-items: center;
+  display: inline-flex;
 }
 
 #log-level-select {
+  margin: 0 3px;
   padding: 0 5px;
 }
 

@@ -113,21 +113,6 @@ class TemplateURLService : public WebDataServiceConsumer,
     std::u16string search_terms;
   };
 
-  // Values for an enumerated histogram used to track TemplateURL edge cases.
-  // These are persisted. Do not re-number.
-  enum SearchTemplateURLEvent {
-    SYNC_DELETE_SUCCESS = 0,
-    SYNC_DELETE_FAIL_NONEXISTENT_ENGINE = 1,
-    SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER = 2,
-    SYNC_ADD_SUCCESS = 3,
-    SYNC_ADD_CONVERTED_TO_UPDATE = 4,
-    SYNC_ADD_FAIL_OTHER_ERROR = 5,
-    SYNC_UPDATE_SUCCESS = 6,
-    SYNC_UPDATE_CONVERTED_TO_ADD = 7,
-    MIGRATE_SAFE_FOR_AUTOREPLACE_PLAY_API_ENGINE = 8,
-    SEARCH_TEMPLATE_URL_EVENT_MAX,
-  };
-
   TemplateURLService(
       PrefService* prefs,
       std::unique_ptr<SearchTermsData> search_terms_data,
@@ -141,9 +126,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   TemplateURLService& operator=(const TemplateURLService&) = delete;
 
   ~TemplateURLService() override;
-
-  // Log a SearchTemplateURLEvent.
-  static void LogSearchTemplateURLEvent(SearchTemplateURLEvent event);
 
   // Register Profile preferences in |registry|.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

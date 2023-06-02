@@ -11,6 +11,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/engine/nigori/public_key.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
@@ -103,6 +104,22 @@ void UpdateSpecificsFromKeyDerivationParams(
   }
 }
 
+absl::optional<PublicKey> PublicKeyFromProto(
+    const sync_pb::PublicKey& public_key) {
+  std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
+                           public_key.x25519_public_key().end());
+  return PublicKey::CreateByImport(key);
+}
+
+sync_pb::PublicKey PublicKeyToProto(const PublicKey& public_key,
+                                    uint32_t key_pair_version) {
+  sync_pb::PublicKey output;
+  const auto key = public_key.GetRawPublicKey();
+  output.set_x25519_public_key(std::string(key.begin(), key.end()));
+  output.set_version(key_pair_version);
+  return output;
+}
+
 }  // namespace
 
 // static
@@ -154,6 +171,10 @@ NigoriState NigoriState::CreateFromLocalProto(
 
   state.trusted_vault_debug_info = proto.trusted_vault_debug_info();
 
+  if (proto.has_public_key()) {
+    state.public_key = PublicKeyFromProto(proto.public_key());
+    state.key_pair_version = proto.public_key().version();
+  }
   return state;
 }
 
@@ -217,6 +238,10 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
         *last_default_trusted_vault_key_name);
   }
   *proto.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
+  if (public_key.has_value() && key_pair_version.has_value()) {
+    *proto.mutable_public_key() =
+        PublicKeyToProto(public_key.value(), key_pair_version.value());
+  }
   return proto;
 }
 
@@ -266,6 +291,12 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
         TimeToProtoTime(custom_passphrase_time));
   }
   *specifics.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
+
+  if (public_key.has_value() && key_pair_version.has_value()) {
+    *specifics.mutable_public_key() =
+        PublicKeyToProto(public_key.value(), key_pair_version.value());
+  }
+
   return specifics;
 }
 
@@ -284,6 +315,10 @@ NigoriState NigoriState::Clone() const {
   result.last_default_trusted_vault_key_name =
       last_default_trusted_vault_key_name;
   result.trusted_vault_debug_info = trusted_vault_debug_info;
+  if (public_key.has_value()) {
+    result.public_key = public_key->Clone();
+  }
+  result.key_pair_version = key_pair_version;
   return result;
 }
 

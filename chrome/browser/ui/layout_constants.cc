@@ -14,21 +14,27 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // IS_CHROMEOS
-
 int GetLayoutConstant(LayoutConstant constant) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (constant) {
-    case BOOKMARK_BAR_HEIGHT:
+    case APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE:
+      return 24;
+    case BOOKMARK_BAR_HEIGHT: {
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.
-      static constexpr int kBookmarkBarAttachedVerticalMargin = 4;
+      const int bookmark_bar_attached_vertical_margin =
+          features::IsChromeRefresh2023() ? 6 : 4;
       return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) +
-             kBookmarkBarAttachedVerticalMargin;
+             bookmark_bar_attached_vertical_margin;
+    }
     case BOOKMARK_BAR_BUTTON_HEIGHT:
       return touch_ui ? 36 : 28;
+    case BOOKMARK_BAR_BUTTON_PADDING:
+      return features::IsChromeRefresh2023()
+                 ? (touch_ui ? 0 : 8)
+                 : GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+    case BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING:
+      return features::IsChromeRefresh2023() ? 6 : 8;
     case WEB_APP_MENU_BUTTON_SIZE:
       return 24;
     case WEB_APP_PAGE_ACTION_ICON_SIZE:
@@ -77,11 +83,6 @@ int GetLayoutConstant(LayoutConstant constant) {
     case TAB_ALERT_INDICATOR_ICON_WIDTH:
       return touch_ui ? 12 : 16;
     case TAB_HEIGHT:
-#if BUILDFLAG(IS_CHROMEOS)
-      if (chromeos::features::IsJellyrollEnabled()) {
-        return 34 + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-      }
-#endif  // IS_CHROMEOS
       return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
     case TAB_PRE_TITLE_PADDING:
       return 8;
@@ -119,7 +120,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return base::FeatureList::IsEnabled(features::kChromeRefresh2023) ? 20
                                                                         : 16;
     case DOWNLOAD_ICON_SIZE:
-      return 16;
+      return features::IsChromeRefresh2023() ? 20 : 16;
     case TOOLBAR_CORNER_RADIUS:
       return 8;
     default:
@@ -136,8 +137,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       return gfx::Insets(4);
 
     case DOWNLOAD_ROW:
-      return gfx::Insets::VH(8, 16);
-
+      return gfx::Insets::VH(8, features::IsChromeRefresh2023() ? 20 : 16);
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
 
@@ -154,7 +154,11 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     }
 
     case TOOLBAR_BUTTON:
-      return gfx::Insets(touch_ui ? 12 : 6);
+      return gfx::Insets(
+          touch_ui ? 12
+                   : (base::FeatureList::IsEnabled(features::kChromeRefresh2023)
+                          ? 7
+                          : 6));
 
     case TOOLBAR_INTERIOR_MARGIN:
       if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {

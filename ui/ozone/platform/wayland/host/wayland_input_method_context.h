@@ -96,6 +96,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnSetAutocorrectRange(const gfx::Range& range) override;
   void OnSetVirtualKeyboardOccludedBounds(
       const gfx::Rect& screen_bounds) override;
+  void OnConfirmPreedit(bool keep_selection) override;
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
 

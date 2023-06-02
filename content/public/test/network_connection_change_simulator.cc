@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/network_service_util.h"
+#include "content/public/browser/network_service_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/mojom/network_service.mojom.h"

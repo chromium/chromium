@@ -5,6 +5,7 @@
 source_set("session") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":hash_util",
     "//base",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
@@ -18,10 +19,22 @@ source_set("session") {
     "crw_session_certificate_policy_cache_storage.mm",
     "crw_session_storage.mm",
     "crw_session_user_data.mm",
+    "session_certificate.cc",
+    "session_certificate.h",
     "session_certificate_policy_cache_impl.h",
     "session_certificate_policy_cache_impl.mm",
     "session_certificate_policy_cache_storage_builder.h",
     "session_certificate_policy_cache_storage_builder.mm",
+  ]
+}
+
+source_set("hash_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  visibility = [ ":session" ]
+  sources = [ "hash_util.h" ]
+  deps = [
+    "//base",
+    "//net",
   ]
 }
 
@@ -32,6 +45,7 @@ source_set("unittests") {
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//ios/web/session",

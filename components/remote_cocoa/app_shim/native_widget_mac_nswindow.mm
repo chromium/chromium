@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
@@ -166,7 +167,8 @@ void OrderChildWindow(NSWindow* child_window,
   base::scoped_nsprotocol<id<UserInterfaceItemCommandHandler>> _commandHandler;
   id<WindowTouchBarDelegate> _touchBarDelegate;  // Weak.
   uint64_t _bridgedNativeWidgetId;
-  remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
+  // This field is not a raw_ptr<> because it requires @property rewrite.
+  RAW_PTR_EXCLUSION remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
   BOOL _willUpdateRestorableState;
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _preventKeyWindow;

@@ -123,7 +123,7 @@ FilePath FilePath::Append(const StringType& component) const {
     }
   }
 
-  new_path.path_.append(appended.data(), appended.size());
+  new_path.path_.append(appended);
   return new_path;
 }
 

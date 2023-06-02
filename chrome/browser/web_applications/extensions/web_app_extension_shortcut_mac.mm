@@ -31,6 +31,10 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using content::BrowserThread;
 
 namespace {
@@ -44,6 +48,9 @@ class Latch : public base::RefCountedThreadSafe<
  public:
   explicit Latch(base::OnceClosure callback) : callback_(std::move(callback)) {}
 
+  Latch(const Latch&) = delete;
+  Latch& operator=(const Latch&) = delete;
+
   // Wraps a reference to |this| in a Closure and returns it. Running the
   // Closure does nothing. The Closure just serves to keep a reference alive
   // until |this| is ready to be destroyed; invoking the |callback|.
@@ -56,9 +63,6 @@ class Latch : public base::RefCountedThreadSafe<
   friend class base::DeleteHelper<Latch>;
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
-
-  Latch(const Latch&) = delete;
-  Latch& operator=(const Latch&) = delete;
 
   ~Latch() { std::move(callback_).Run(); }
 

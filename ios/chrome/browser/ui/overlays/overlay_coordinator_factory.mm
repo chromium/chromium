@@ -8,55 +8,38 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_supported_overlay_coordinator_classes.h"
-#import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_supported_overlay_coordinator_classes.h"
-#import "ios/chrome/browser/ui/overlays/overlay_coordinator_factory+initialization.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/permissions/permissions_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator.h"
-#import "ios/chrome/browser/ui/overlays/web_content_area/web_content_area_supported_overlay_coordinator_classes.h"
+#import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface OverlayRequestCoordinatorFactory ()
-// The Browser passed on initialization.
-@property(nonatomic, readonly) Browser* browser;
-// The OverlayRequestCoordinator subclasses that are supported at the modality
-// associated with this coordinator factory.
-@property(nonatomic, readonly)
-    NSArray<Class>* supportedOverlayRequestCoordinatorClasses;
-@end
+@implementation OverlayRequestCoordinatorFactory {
+  Browser* _browser;
+  OverlayModality _modality;
+}
 
-@implementation OverlayRequestCoordinatorFactory
+- (instancetype)initWithBrowser:(Browser*)browser
+                       modality:(OverlayModality)modality {
+  if (self = [super init]) {
+    _browser = browser;
+    DCHECK(_browser);
 
-+ (instancetype)factoryForBrowser:(Browser*)browser
-                         modality:(OverlayModality)modality {
-  DCHECK(browser);
-  NSArray<Class>* supportedCoordinatorClasses = @[];
-  switch (modality) {
-    case OverlayModality::kTesting:
-      // Use TestOverlayRequestCoordinatorFactory to create factories for
-      // OverlayModality::kTesting.
-      // TODO(crbug.com/1056837): Remove requirement once modalities are
-      // converted to no longer use enums.
-      NOTREACHED();
-      break;
-    case OverlayModality::kWebContentArea:
-      supportedCoordinatorClasses =
-          web_content_area::GetSupportedOverlayCoordinatorClasses();
-      break;
-    case OverlayModality::kInfobarBanner:
-      supportedCoordinatorClasses =
-          infobar_banner::GetSupportedOverlayCoordinatorClasses();
-      break;
-    case OverlayModality::kInfobarModal:
-      supportedCoordinatorClasses =
-          infobar_modal::GetSupportedOverlayCoordinatorClasses();
-      break;
+    _modality = modality;
   }
-  return [[self alloc] initWithBrowser:browser
-      supportedOverlayRequestCoordinatorClasses:supportedCoordinatorClasses];
+  return self;
 }
 
 - (BOOL)coordinatorForRequestUsesChildViewController:(OverlayRequest*)request {
@@ -70,7 +53,7 @@
           baseViewController:(UIViewController*)baseViewController {
   return [[[self coordinatorClassForRequest:request] alloc]
       initWithBaseViewController:baseViewController
-                         browser:self.browser
+                         browser:_browser
                          request:request
                         delegate:delegate];
 }
@@ -79,31 +62,74 @@
 
 // Returns the OverlayRequestCoordinator subclass responsible for showing
 // `request`'s overlay UI.
+// TODO(crbug.com/1447483): Clean the switch when the default flow is added.
 - (Class)coordinatorClassForRequest:(OverlayRequest*)request {
-  NSArray<Class>* supportedClasses =
-      self.supportedOverlayRequestCoordinatorClasses;
-  for (Class coordinatorClass in supportedClasses) {
-    if ([coordinatorClass requestSupport]->IsRequestSupported(request))
-      return coordinatorClass;
+  if (DefaultInfobarOverlayRequestConfig::RequestSupport()->IsRequestSupported(
+          request)) {
+    DefaultInfobarOverlayRequestConfig* config =
+        request->GetConfig<DefaultInfobarOverlayRequestConfig>();
+    return [self coordinatorClassForInfobarType:config->infobar_type()];
   }
-  NOTREACHED() << "Received unsupported request type.";
-  return nil;
+
+  switch (_modality) {
+    case OverlayModality::kTesting:
+      // Use TestOverlayRequestCoordinatorFactory to create factories for
+      // OverlayModality::kTesting.
+      // TODO(crbug.com/1056837): Remove requirement once modalities are
+      // converted to no longer use enums.
+      NOTREACHED_NORETURN() << "Received unsupported modality.";
+    case OverlayModality::kWebContentArea:
+      return [AlertOverlayCoordinator class];
+    case OverlayModality::kInfobarBanner:
+      if ([TranslateInfobarPlaceholderOverlayCoordinator requestSupport]
+              ->IsRequestSupported(request)) {
+        return [TranslateInfobarPlaceholderOverlayCoordinator class];
+      }
+      return [InfobarBannerOverlayCoordinator class];
+    case OverlayModality::kInfobarModal:
+      if ([SaveCardInfobarModalOverlayCoordinator requestSupport]
+              ->IsRequestSupported(request)) {
+        return [SaveCardInfobarModalOverlayCoordinator class];
+      }
+      if ([SaveAddressProfileInfobarModalOverlayCoordinator requestSupport]
+              ->IsRequestSupported(request)) {
+        return [SaveAddressProfileInfobarModalOverlayCoordinator class];
+      }
+      if ([TranslateInfobarModalOverlayCoordinator requestSupport]
+              ->IsRequestSupported(request)) {
+        return [TranslateInfobarModalOverlayCoordinator class];
+      }
+      break;
+  }
+  NOTREACHED_NORETURN() << "Received unsupported request type.";
 }
 
-@end
-
-@implementation OverlayRequestCoordinatorFactory (Initialization)
-
-- (instancetype)initWithBrowser:(Browser*)browser
-    supportedOverlayRequestCoordinatorClasses:
-        (NSArray<Class>*)supportedOverlayClasses {
-  if (self = [super init]) {
-    _browser = browser;
-    DCHECK(_browser);
-    _supportedOverlayRequestCoordinatorClasses = supportedOverlayClasses;
-    DCHECK(_supportedOverlayRequestCoordinatorClasses.count);
+// Returns the coordinator class corresponding to the given `infobarType`.
+- (Class)coordinatorClassForInfobarType:(InfobarType)infobarType {
+  switch (_modality) {
+    case OverlayModality::kTesting:
+      // Use TestOverlayRequestCoordinatorFactory to create factories for
+      // OverlayModality::kTesting.
+      // TODO(crbug.com/1056837): Remove requirement once modalities are
+      // converted to no longer use enums.
+      NOTREACHED_NORETURN() << "Received unsupported modality.";
+    case OverlayModality::kWebContentArea:
+      NOTREACHED_NORETURN()
+          << "None implemented yet. Received unsupported modality.";
+    case OverlayModality::kInfobarBanner:
+      return [InfobarBannerOverlayCoordinator class];
+    case OverlayModality::kInfobarModal:
+      switch (infobarType) {
+        case InfobarType::kInfobarTypePasswordSave:
+        case InfobarType::kInfobarTypePasswordUpdate:
+          return [PasswordInfobarModalOverlayCoordinator class];
+        case InfobarType::kInfobarTypePermissions:
+          return [PermissionsInfobarModalOverlayCoordinator class];
+        default:
+          break;
+      }
   }
-  return self;
+  NOTREACHED_NORETURN() << "Received unsupported infobar type.";
 }
 
 @end

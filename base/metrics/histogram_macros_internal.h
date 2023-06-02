@@ -171,8 +171,9 @@ struct EnumSizeTraits<
                                   scale,                                       \
                                   flag) {}                                     \
     };                                                                         \
-    static base::LazyInstance<ScaledLinearHistogramInstance>::Leaky scaled;    \
-    scaled.Get().AddScaledCount(sample, count);                                \
+    static base::LazyInstance<ScaledLinearHistogramInstance>::Leaky            \
+        scaled_leaky;                                                          \
+    scaled_leaky.Get().AddScaledCount(sample, count);                          \
   } while (0)
 
 // Helper for 'overloading' UMA_HISTOGRAM_ENUMERATION with a variable number of

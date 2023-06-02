@@ -849,20 +849,14 @@ group("all_rust") {
   deps = [ ":rust_build_tests" ]
 
   if (toolchain_has_rust) {
+    # There is rust stuff behind flags in here.
+    deps += [ "//base:base_unittests" ]
+
     if (enable_rust_mojo) {
       deps += [
         "//mojo/public/rust",
         "//mojo/public/rust:mojo_rust_integration_unittests",
         "//mojo/public/rust:mojo_rust_unittests",
-      ]
-    }
-
-    # gnrt is a developer tool run on developer machines. It is not needed when
-    # cross-compiling.
-    if (enable_rust_gnrt && host_os == target_os && host_cpu == target_cpu) {
-      deps += [
-        "//tools/crates/gnrt($host_toolchain)",
-        "//tools/crates/gnrt/lib:gnrt_unittests",
       ]
     }
   }
@@ -1131,6 +1125,7 @@ if (!is_ios && !is_cronet_build) {
       args = [
         "--product=chrome",
         "--no-show-results",
+        "--zero-tests-executed-ok",
       ]
       data_deps = [
         "//chrome:chrome",
@@ -1140,7 +1135,10 @@ if (!is_ios && !is_cronet_build) {
     }
     script_test("wpt_tests_isolate_content_shell") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = [ "--no-show-results" ]
+      args = [
+        "--no-show-results",
+        "--zero-tests-executed-ok",
+      ]
       data_deps = [
         ":blink_web_tests_support_data",
         "//third_party/blink/tools:wpt_tests_isolate",
@@ -1232,6 +1230,7 @@ if (!is_ios && !is_cronet_build) {
     if (is_win) {
       data += [
         "//third_party/apache-win32/",
+        "//third_party/apache-windows-arm64/",
         "//third_party/perl/perl/",
       ]
       data_deps += [ "//build/win:copy_cdb_to_output" ]
@@ -1467,6 +1466,7 @@ if (!is_ios && !is_cronet_build) {
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/SmokeTests/Default.txt",
+      "//third_party/blink/web_tests/SmokeTests/rel-ready.blink_wpt_tests.filter",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
       # List all test expectations here

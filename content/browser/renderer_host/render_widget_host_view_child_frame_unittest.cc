@@ -186,8 +186,8 @@ class RenderWidgetHostViewChildFrameTest
   // Tests should set these to NULL if they've already triggered their
   // destruction.
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
-  raw_ptr<RenderWidgetHostViewChildFrame> view_;
-  raw_ptr<MockFrameConnector> test_frame_connector_;
+  raw_ptr<RenderWidgetHostViewChildFrame, DanglingUntriaged> view_;
+  raw_ptr<MockFrameConnector, DanglingUntriaged> test_frame_connector_;
 };
 
 TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {

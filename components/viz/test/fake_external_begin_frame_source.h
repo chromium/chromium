@@ -65,7 +65,7 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   const bool tick_automatically_;
   const double milliseconds_per_frame_;
-  raw_ptr<Client> client_ = nullptr;
+  raw_ptr<Client, DanglingUntriaged> client_ = nullptr;
   bool paused_ = false;
   BeginFrameArgs current_args_;
   uint64_t next_begin_frame_number_ = BeginFrameArgs::kStartingFrameNumber;

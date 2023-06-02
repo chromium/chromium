@@ -1,0 +1,99 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../shared_style.css.js';
+import './credential_details_card.css.js';
+
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
+
+import {CredentialFieldElement} from './credential_field.js';
+import {CredentialNoteElement} from './credential_note.js';
+import {getTemplate} from './passkey_details_card.html.js';
+
+export interface PasskeyDetailsCardElement {
+  $: {
+    deleteButton: CrButtonElement,
+    domainLabel: HTMLElement,
+    editButton: CrButtonElement,
+    noteValue: CredentialNoteElement,
+    showMore: HTMLAnchorElement,
+    usernameValue: CredentialFieldElement,
+    displayNameValue: CredentialFieldElement,
+  };
+}
+
+const PasskeyDetailsCardElementBase = I18nMixin(PolymerElement);
+
+export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
+  static get is() {
+    return 'passkey-details-card';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      passkey: Object,
+      interactions_: {
+        type: Object,
+        value: PasswordViewPageInteractions,
+      },
+    };
+  }
+
+  passkey: chrome.passwordsPrivate.PasswordUiEntry;
+
+  private getPasskeyUsageInfoString_(): string {
+    const website = this.passkey.affiliatedDomains?.[0]?.name;
+    if (website) {
+      // TODO(crbug.com/1432717): i18n. This should be an informative text
+      // telling the user that they'll need their phone to sign in using this
+      // passkey.
+      return '';
+    }
+    return '';
+  }
+
+  private getUsernameValue_(): string {
+    return !this.passkey.username || this.passkey.username === '' ?
+        // TODO(crbug.com/1432717): i18n. This should say "no username saved".
+        '' :
+        this.passkey.username!;
+  }
+
+  private getDisplayNameValue_(): string {
+    return !this.passkey.displayName || this.passkey.displayName === '' ?
+        // TODO(crbug.com/1432717): i18n. This should say "no display name
+        // saved".
+        '' :
+        this.passkey.displayName!;
+  }
+
+  private onDeleteClick_() {
+    // TODO(crbug.com/1432717): fill this in.
+  }
+
+  private onEditClicked_() {
+    // TODO(crbug.com/1432717): fill this in.
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'passkey-details-card': PasskeyDetailsCardElement;
+  }
+}
+
+customElements.define(PasskeyDetailsCardElement.is, PasskeyDetailsCardElement);

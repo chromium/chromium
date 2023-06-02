@@ -126,7 +126,7 @@ class ImportantSitesUtilTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  raw_ptr<BookmarkModel> model_ = nullptr;
+  raw_ptr<BookmarkModel, DanglingUntriaged> model_ = nullptr;
 };
 
 TEST_F(ImportantSitesUtilTest, TestNoImportantSites) {

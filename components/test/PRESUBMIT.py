@@ -10,9 +10,6 @@ import sys
 
 PRESUBMIT_VERSION = '2.0.0'
 
-USE_PYTHON3 = True
-
-
 def CheckChange(input_api, output_api):
     old_sys_path = sys.path[:]
     results = []
@@ -20,10 +17,28 @@ def CheckChange(input_api, output_api):
         sys.path.append(input_api.change.RepositoryRoot())
         from build.ios import presubmit_support
         results += presubmit_support.CheckBundleData(
-                input_api, output_api, 'data/history/unit_tests_bundle_data')
+                input_api, output_api,
+                'data/custom_handlers/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/dom_distiller/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/fenced_frames/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
                 'data/password_manager/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/performance_manager/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api, 'data/history/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/service_worker/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
+                'data/url_rewrite/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
                 'data/viz/unit_tests_bundle_data')

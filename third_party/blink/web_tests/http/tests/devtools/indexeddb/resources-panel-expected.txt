@@ -8,7 +8,7 @@ Created database.
 Refreshing.
 Refreshed.
 Dumping IndexedDB tree:
-    database: testDatabase - http://127.0.0.1:8000/
+    database: testDatabase
         Object store: testObjectStore
             Index: testIndexName
 Navigating to another security origin.
@@ -20,7 +20,7 @@ Navigated back.
 Refreshing.
 Refreshed.
 Dumping IndexedDB tree:
-    database: testDatabase - http://127.0.0.1:8000/
+    database: testDatabase
         Object store: testObjectStore
             Index: testIndexName
 Deleting database.

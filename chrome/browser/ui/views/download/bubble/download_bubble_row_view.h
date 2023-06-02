@@ -92,10 +92,11 @@ class DownloadBubbleRowView : public views::View,
 
   DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
   void SetUIInfoForTesting(DownloadUIModel::BubbleUIInfo ui_info) {
-    ui_info_ = ui_info;
+    ui_info_ = std::move(ui_info);
   }
 
   void SimulateMainButtonClickForTesting(const ui::Event& event);
+  bool IsQuickActionButtonVisibleForTesting(DownloadCommands::Command command);
 
  protected:
   // Overrides ui::LayerDelegate:
@@ -132,10 +133,8 @@ class DownloadBubbleRowView : public views::View,
   // Returns whether we were able to synchronously set |icon_| to an appropriate
   // icon for the file path.
   bool StartLoadFileIcon();
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Callback invoked when the IconManager's asynchronous lookup returns.
+  // Callback invoked when the IconManager's lookup returns.
   void OnFileIconLoaded(gfx::Image icon);
-#endif
   // Sets |icon_| to the image in |file_icon_|.
   void SetFileIconAsIcon(bool is_default_icon);
 

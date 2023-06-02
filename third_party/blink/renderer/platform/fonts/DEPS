@@ -12,6 +12,7 @@ include_rules = [
     "+cc",
     "+third_party/blink/renderer/platform/font_family_names.h",
     "+third_party/blink/renderer/platform/geometry",
+    "+third_party/blink/renderer/platform/graphics/color.h",
     "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/instrumentation/histogram.h",
     "+third_party/blink/renderer/platform/instrumentation",

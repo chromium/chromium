@@ -107,7 +107,7 @@ class MEDIA_EXPORT AudioFileReader {
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
 
   int stream_index_;
-  raw_ptr<FFmpegURLProtocol> protocol_;
+  raw_ptr<FFmpegURLProtocol, DanglingUntriaged> protocol_;
   AudioCodec audio_codec_;
   int channels_;
   int sample_rate_;

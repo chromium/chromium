@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace signin {
@@ -33,7 +33,7 @@ class AccountReconcilorFactory : public ProfileKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 
  private:
-  friend struct base::DefaultSingletonTraits<AccountReconcilorFactory>;
+  friend base::NoDestructor<AccountReconcilorFactory>;
   friend class DummyAccountReconcilorWithDelegate;  // For testing.
 
   AccountReconcilorFactory();

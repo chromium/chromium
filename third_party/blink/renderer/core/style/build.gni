@@ -107,6 +107,8 @@ blink_core_sources_style = [
   "style_ray.cc",
   "style_ray.h",
   "style_reflection.h",
+  "style_scrollbar_color.cc",
+  "style_scrollbar_color.h",
   "style_self_alignment_data.h",
   "style_svg_resource.cc",
   "style_svg_resource.h",

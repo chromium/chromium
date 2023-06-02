@@ -16,7 +16,8 @@ NTPResourceCache* AppResourceCacheFactory::GetForProfile(Profile* profile) {
 
 // static
 AppResourceCacheFactory* AppResourceCacheFactory::GetInstance() {
-  return base::Singleton<AppResourceCacheFactory>::get();
+  static base::NoDestructor<AppResourceCacheFactory> instance;
+  return instance.get();
 }
 
 AppResourceCacheFactory::AppResourceCacheFactory()
@@ -31,7 +32,7 @@ AppResourceCacheFactory::AppResourceCacheFactory()
   DependsOn(ThemeServiceFactory::GetInstance());
 }
 
-AppResourceCacheFactory::~AppResourceCacheFactory() {}
+AppResourceCacheFactory::~AppResourceCacheFactory() = default;
 
 KeyedService* AppResourceCacheFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

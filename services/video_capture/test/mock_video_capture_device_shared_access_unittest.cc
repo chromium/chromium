@@ -74,8 +74,12 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
     // We must wait for the response to GetDeviceInfos before calling
     // CreateDevice.
     wait_loop.Run();
-    source_provider_->GetVideoSource(mock_descriptor.device_id,
-                                     source_.BindNewPipeAndPassReceiver());
+    source_provider_->GetVideoSource(
+        mock_descriptor.device_id,
+        source_remote_1_.BindNewPipeAndPassReceiver());
+    source_provider_->GetVideoSource(
+        mock_descriptor.device_id,
+        source_remote_2_.BindNewPipeAndPassReceiver());
 
     requestable_settings_.requested_format.frame_size = gfx::Size(800, 600);
     requestable_settings_.requested_format.frame_rate = 15;
@@ -89,7 +93,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
 
   void LetClient1ConnectWithRequestableSettingsAndExpectToGetThem() {
     base::RunLoop run_loop;
-    source_->CreatePushSubscription(
+    source_remote_1_->CreatePushSubscription(
         std::move(video_frame_handler_1_), requestable_settings_,
         false /*force_reopen_with_new_settings*/,
         subscription_1_.BindNewPipeAndPassReceiver(),
@@ -121,7 +125,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
       bool force_reopen_with_new_settings,
       mojom::CreatePushSubscriptionResultCodePtr expected_result_code) {
     base::RunLoop run_loop;
-    source_->CreatePushSubscription(
+    source_remote_2_->CreatePushSubscription(
         std::move(video_frame_handler_2_), requestable_settings_,
         force_reopen_with_new_settings,
         subscription_2_.BindNewPipeAndPassReceiver(),
@@ -162,7 +166,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
   void LetTwoClientsConnectWithDifferentSettings() {
     base::RunLoop run_loop_1;
     base::RunLoop run_loop_2;
-    source_->CreatePushSubscription(
+    source_remote_1_->CreatePushSubscription(
         std::move(video_frame_handler_1_), requestable_settings_,
         false /*force_reopen_with_new_settings*/,
         subscription_1_.BindNewPipeAndPassReceiver(),
@@ -185,7 +189,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
     different_settings.requested_format.frame_size = gfx::Size(124, 456);
     ASSERT_FALSE(requestable_settings_ == different_settings);
 
-    source_->CreatePushSubscription(
+    source_remote_2_->CreatePushSubscription(
         std::move(video_frame_handler_2_), different_settings,
         false /*force_reopen_with_new_settings*/,
         subscription_2_.BindNewPipeAndPassReceiver(),
@@ -266,10 +270,11 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   media::MockDevice mock_device_;
-  raw_ptr<media::MockDeviceFactory> mock_device_factory_;
+  raw_ptr<media::MockDeviceFactory, DanglingUntriaged> mock_device_factory_;
   std::unique_ptr<DeviceFactoryImpl> service_device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> source_provider_;
-  mojo::Remote<mojom::VideoSource> source_;
+  mojo::Remote<mojom::VideoSource> source_remote_1_;
+  mojo::Remote<mojom::VideoSource> source_remote_2_;
   media::VideoCaptureParams requestable_settings_;
 
   mojo::Remote<mojom::PushVideoStreamSubscription> subscription_1_;
@@ -408,21 +413,30 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 }
 
 TEST_F(MockVideoCaptureDeviceSharedAccessTest,
-       DiscardingVideoSourceWithActiveSubscriptionsStopsTheDevice) {
+       DiscardingLastVideoSourceRemoteStopsTheDevice) {
   LetTwoClientsConnectWithDifferentSettings();
   subscription_1_->Activate();
   subscription_2_->Activate();
 
+  testing::MockFunction<void()> source_remote_1_reset_marker;
+  testing::Expectation source_remote_1_reset_expectation =
+      EXPECT_CALL(source_remote_1_reset_marker, Call).Times(1);
+  source_remote_1_.reset();
+  // Spin to allow mojo calls to be serviced.
+  base::RunLoop().RunUntilIdle();
+  source_remote_1_reset_marker.Call();
+
   base::RunLoop wait_loop;
   EXPECT_CALL(mock_device_, DoStopAndDeAllocate())
+      .After(source_remote_1_reset_expectation)
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-  source_.reset();
+  source_remote_2_.reset();
   wait_loop.Run();
 
   // DeviceMediaToMojoAdapter::Stop() issues a DeleteSoon for its
   // |video_frame_handler_| on the current sequence. Wait for this before
-  // exiting the test in order to avoid leaked object failing ASAN tests. See
-  // also  https://crbug.com/961066.
+  // exiting the test in order to avoid leaked object failing ASAN tests.
+  // See also  https://crbug.com/961066.
   base::RunLoop().RunUntilIdle();
 }
 

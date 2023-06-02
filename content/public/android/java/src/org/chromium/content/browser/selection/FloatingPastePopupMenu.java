@@ -11,7 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.content.R;
+import org.chromium.content.browser.selection.SelectActionMenuHelper.SelectActionMenuDelegate;
+import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -24,14 +28,14 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
 
     private ActionMode mActionMode;
     private Rect mSelectionRect;
-    private ActionMode.Callback mExternalCallback;
+    private final @Nullable AdditionalSelectionMenuItemProvider mAdditionalItemProvider;
 
     public FloatingPastePopupMenu(Context context, View parent, PastePopupMenuDelegate delegate,
-            ActionMode.Callback externalCallback) {
+            @Nullable AdditionalSelectionMenuItemProvider additionalItemProvider) {
         mParent = parent;
         mDelegate = delegate;
         mContext = context;
-        mExternalCallback = externalCallback;
+        mAdditionalItemProvider = additionalItemProvider;
     }
 
     @Override
@@ -71,7 +75,6 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             createPasteMenu(mode, menu);
-            if (mExternalCallback != null) mExternalCallback.onCreateActionMode(mode, menu);
             return true;
         }
 
@@ -80,28 +83,49 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
                             ? mContext.getString(R.string.actionbar_textselection_title)
                             : null);
             mode.setSubtitle(null);
-            SelectionPopupControllerImpl.initializeMenu(mContext, mode, menu);
-            if (!mDelegate.canPaste()) menu.removeItem(R.id.select_action_menu_paste);
-            if (!mDelegate.canSelectAll()) menu.removeItem(R.id.select_action_menu_select_all);
-            if (!mDelegate.canPasteAsPlainText()) {
-                menu.removeItem(R.id.select_action_menu_paste_as_plain_text);
-            }
+            SelectActionMenuDelegate actionMenuDelegate = new SelectActionMenuDelegate() {
+                @Override
+                public boolean canCut() {
+                    return false;
+                }
 
-            SelectionPopupControllerImpl.setPasteAsPlainTextMenuItemTitle(menu);
+                @Override
+                public boolean canCopy() {
+                    return false;
+                }
 
-            menu.removeItem(R.id.select_action_menu_cut);
-            menu.removeItem(R.id.select_action_menu_copy);
-            menu.removeItem(R.id.select_action_menu_share);
-            menu.removeItem(R.id.select_action_menu_web_search);
+                @Override
+                public boolean canPaste() {
+                    return mDelegate.canPaste();
+                }
+
+                @Override
+                public boolean canShare() {
+                    return false;
+                }
+
+                @Override
+                public boolean canSelectAll() {
+                    return mDelegate.canSelectAll();
+                }
+
+                @Override
+                public boolean canWebSearch() {
+                    return false;
+                }
+
+                @Override
+                public boolean canPasteAsPlainText() {
+                    return mDelegate.canPasteAsPlainText();
+                }
+            };
+            SelectionPopupControllerImpl.initializeNonSelectionMenu(
+                    actionMenuDelegate, mContext, mAdditionalItemProvider, mode, menu);
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            boolean ret = false;
-            if (mExternalCallback != null) {
-                ret = mExternalCallback.onPrepareActionMode(mode, menu);
-            }
-            return ret;
+            return false;
         }
 
         @Override
@@ -117,15 +141,15 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
             } else if (id == R.id.select_action_menu_select_all) {
                 mDelegate.selectAll();
                 mode.finish();
-            } else if (mExternalCallback != null) {
-                ret = mExternalCallback.onActionItemClicked(mode, item);
             }
             return ret;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            if (mExternalCallback != null) mExternalCallback.onDestroyActionMode(mode);
+            if (mAdditionalItemProvider != null) {
+                mAdditionalItemProvider.onMenuDestroyed();
+            }
             mActionMode = null;
         }
 

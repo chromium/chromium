@@ -146,7 +146,7 @@ namespace smartCardProviderPrivate {
 
     // Browser requested a SCardCancel call.
     // Extension must report the result to the browser by calling
-    // reportCancelResult.
+    // reportPlainResult.
     [maxListeners=1] static void onCancelRequested(long requestId,
         long scardContext);
 
@@ -161,7 +161,7 @@ namespace smartCardProviderPrivate {
 
     // Browser requested a SCardDisconnect call.
     // Extension must report the result to the browser by calling
-    // reportDisconnectResult.
+    // reportPlainResult.
     [maxListeners=1] static void onDisconnectRequested(long requestId,
         long scardHandle, Disposition disposition);
 
@@ -176,6 +176,18 @@ namespace smartCardProviderPrivate {
     // reportDataResult.
     [maxListeners=1] static void onControlRequested(long requestId,
         long scardHandle, long controlCode, ArrayBuffer data);
+
+    // Browser requested a SCardGetAttrib call.
+    // Extension must report the result to the browser by calling
+    // reportDataResult.
+    [maxListeners=1] static void onGetAttribRequested(long requestId,
+        long scardHandle, long attribId);
+
+    // Browser requested a SCardSetAttrib call.
+    // Extension must report the result to the browser by calling
+    // reportPlainResult.
+    [maxListeners=1] static void onSetAttribRequested(long requestId,
+        long scardHandle, long attribId, ArrayBuffer data);
   };
 
   interface Functions {
@@ -195,16 +207,14 @@ namespace smartCardProviderPrivate {
       static void reportGetStatusChangeResult(long requestId,
           ReaderStateOut[] readerStates, ResultCode resultCode);
 
-      // Reports the result of a SCardCancel call.
-      static void reportCancelResult(long requestId,
+      // Reports the result of a call which doesn't send back any other
+      // information.
+      static void reportPlainResult(long requestId,
           ResultCode resultCode);
 
       // Reports the result of a SCardConnect call.
       static void reportConnectResult(long requestId, long scardHandle,
           Protocol activeProtocol, ResultCode resultCode);
-
-      // Reports the result of a SCardDisconnect call.
-      static void reportDisconnectResult(long requestId, ResultCode resultCode);
 
       // Reports the result of a call that sends back data on success.
       static void reportDataResult(long requestId, ArrayBuffer data,

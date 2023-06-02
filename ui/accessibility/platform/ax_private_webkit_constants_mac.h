@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_WEBKIT_CONSTANTS_MAC_H_
 
 #import <Cocoa/Cocoa.h>
+
 #include "base/component_export.h"
 
 namespace ui {

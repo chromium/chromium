@@ -53,6 +53,10 @@ class WrappedRateLimiter {
       base::RepeatingCallback<void(size_t /*event_size*/,
                                    base::OnceCallback<void(bool)> /*cb*/)>;
 
+  // Events rate limiting UMA metric name.
+  static constexpr char kRateLimitedEventsUma[] =
+      "Browser.ERP.RateLimitedEvents";
+
   // Creates wrapped rate limiter that ensures sequenced access to `Acquire`.
   static SmartPtr Create(std::unique_ptr<RateLimiterInterface> rate_limiter);
 

@@ -15,6 +15,7 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
@@ -128,6 +129,7 @@ const char kChromeUIInvalidationsUrl[] = "chrome://invalidations";
 const char kChromeUIKillHost[] = "kill";
 const char kChromeUILauncherInternalsHost[] = "launcher-internals";
 const char kChromeUILocalStateHost[] = "local-state";
+const char kChromeUILocationInternalsHost[] = "location-internals";
 const char kChromeUIManagementHost[] = "management";
 const char kChromeUIManagementURL[] = "chrome://management";
 const char kChromeUIMediaEngagementHost[] = "media-engagement";
@@ -292,6 +294,7 @@ const char kCfmNetworkSettingsURL[] = "chrome://cfm-network-settings";
 #if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIGpuURL[] = "chrome://gpu";
 const char kChromeUIHistogramsURL[] = "chrome://histograms";
+const char kChromeUILocationInternalsURL[] = "chrome://location-internals";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -654,6 +657,10 @@ const char kCleanupSubPage[] = "cleanup";
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kChromeUICastFeedbackHost[] = "cast-feedback";
+#endif
+
+#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
+const char kChromeUIWaffleHost[] = "waffle";
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

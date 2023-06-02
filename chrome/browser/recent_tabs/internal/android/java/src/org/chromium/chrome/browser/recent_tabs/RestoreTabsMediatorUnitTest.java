@@ -234,12 +234,14 @@ public class RestoreTabsMediatorUnitTest {
 
         ForeignSession session =
                 new ForeignSession("tag", "John's iPhone 6", 32L, windows, FormFactor.PHONE);
+        mModel.set(NUM_TABS_DESELECTED, 1);
         mMediator.setSelectedDeviceItem(session);
 
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), session);
         Assert.assertEquals(tabItems.size(), 2);
         Assert.assertEquals(tabItems.get(0).model.get(TabItemProperties.FOREIGN_SESSION_TAB), tab2);
         Assert.assertEquals(tabItems.get(1).model.get(TabItemProperties.FOREIGN_SESSION_TAB), tab3);
+        Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), 0);
     }
 
     @Test
@@ -260,6 +262,8 @@ public class RestoreTabsMediatorUnitTest {
         Assert.assertEquals(
                 mModel.get(DETAIL_SCREEN_MODEL_LIST), mModel.get(REVIEW_TABS_MODEL_LIST));
         Assert.assertNotNull(mModel.get(REVIEW_TABS_SCREEN_DELEGATE));
+        Assert.assertEquals(mModel.get(DETAIL_SCREEN_TITLE),
+                R.string.restore_tabs_review_tabs_screen_sheet_title);
         assertThat(mModel.get(REVIEW_TABS_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsDetailScreenCoordinator.Delegate.class));
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), REVIEW_TABS_SCREEN);

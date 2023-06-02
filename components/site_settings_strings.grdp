@@ -220,11 +220,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE" desc="The label used for the window management site settings controls when used mid-sentence.">
     window management
   </message>
+  <!-- TODO(https://crbug.com/1433644): Replace with the final SAA strings.  -->
   <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS" translateable="false" desc="The label used for the storage access site settings controls.">
-    Storage Access
+    Embedded content
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE" translateable="false" desc="The label used for the storage access site settings controls when used mid-sentence.">
-    storage access
+    embedded content
   </message>
   </if>
 </grit-part>

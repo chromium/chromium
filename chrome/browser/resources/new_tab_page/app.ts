@@ -314,6 +314,11 @@ export class AppElement extends AppElementBase {
        * to show up immediately on load.
        */
       lazyRender_: Boolean,
+
+      scrolledToTop_: {
+        type: Boolean,
+        value: document.documentElement.scrollTop <= 0,
+      },
     };
   }
 
@@ -354,6 +359,7 @@ export class AppElement extends AppElementBase {
   private promoAndModulesLoaded_: boolean;
   private removeScrim_: boolean;
   private lazyRender_: boolean;
+  private scrolledToTop_: boolean;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -436,6 +442,9 @@ export class AppElement extends AppElementBase {
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
     this.eventTracker_.add(
         window, 'click', this.onWindowClick_.bind(this), /*capture=*/ true);
+    this.eventTracker_.add(document, 'scroll', () => {
+      this.scrolledToTop_ = document.documentElement.scrollTop <= 0;
+    });
     if (this.shouldPrintPerformance_) {
       // It is possible that the background image has already loaded by now.
       // If it has, we request it to re-send the load time so that we can

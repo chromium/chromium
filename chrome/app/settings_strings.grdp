@@ -390,14 +390,20 @@
   <message name="IDS_SETTINGS_AUTOFILL_DETAIL" desc="Description of what toggling the 'Autofill' setting does. Immediately underneath IDS_SETTINGS_AUTOFILL">
     Enable Autofill to fill out forms in a single click
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_CARD_DESCRIPTION" desc="The (accessibility) credit card description from the network of the card and last 4 digits of the card number.">
+    <ph name="NETWORK_NAME">$1<ex>Visa</ex></ph> ending in <ph name="LAST_FOUR_DIGITS">$2<ex>1234</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_CARD_A11Y_LABELED" desc="The credit/debit card summary labeled for a11y">
+    Card: <ph name="CARD">$1<ex>Visa ending in 1111</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_CARD_EXP_DATE_A11Y_LABELED" desc="The credit/debit card expiration data labeled for a11y">
+    Expiration date: <ph name="CARD">$1<ex>11/2028</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_ADDRESS" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored autofill address. The address is described by the name of the recipient and usually the beginning of the address (i.e. street name and building number). The name and the address are separated by comma.">
     More actions for <ph name="ADDRESS_SUMMARY">$1<ex>John Doe, 123 Main Street</ex></ph>
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_CREDIT_CARD" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored credit card. The credit card is described by the credit card nickname or the credit card network and last 4 digits of the card number.">
     More actions for <ph name="CARD_DESCRIPTION">$1<ex>My main card</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_CARD_DESCRIPTION" desc="The (accessibility) credit card description from the network of the card and last 4 digits of the card number.">
-    <ph name="NETWORK_NAME">$1<ex>Visa</ex></ph> ending in <ph name="LAST_FOUR_DIGITS">$2<ex>1234</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_ADD_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to enroll a card in the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
     Turn on virtual card
@@ -578,6 +584,12 @@
       =0 {No weak passwords}
       =1 {1 weak password}
       other {{NUM_WEAK} weak passwords}}
+  </message>
+  <message name="IDS_SETTINGS_REUSED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of reused passwords that the Chrome password check found.">
+    {NUM_REUSED, plural,
+      =0 {No reused passwords}
+      =1 {1 reused password}
+      other {{NUM_REUSED} reused passwords}}
   </message>
   <message name="IDS_SETTINGS_INSECURE_PASSWORDS_COUNT" desc="Number of insecure passwords present in the database">
     {COUNT, plural,
@@ -1548,6 +1560,15 @@
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES" desc="Label for button that expands the tab discarding exceptions list to show all entries. Sites added to the list will not be discarded by memory saver.">
     Additional sites
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_CURRENT_TABS" desc="Label for the first tab of the tab discarding exception list add dialog, that allows users to pick sites from currently opened tabs to add to the list." translateable="false">
+    Add open tabs
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL" desc="Label for the second tab of the tab discarding exception list add dialog, where users can manually input a site to be added to the list." translateable="false">
+    Add sites manually
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP" desc="Label for button that expands the tab discarding exceptions list to show all entries. Sites added to the list will not be discarded by memory saver." translateable="false">
+    Sites you add remain active and won't be used to give active tabs and other apps more resources. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about site exclusion<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_BATTERY_PAGE_TITLE" desc="Title of the power section of the performance settings page">
     Power
@@ -3961,6 +3982,24 @@
   </message>
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON" desc="A button label on the 'Sites you visit may stop working as designed' dialog.">
     Cancel
+  </message>
+
+  <!-- Site Settings - Storage Access Page -->
+  <!-- TODO(https://crbug.com/1433644): Replace with the final SAA strings.  -->
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_DESCRIPTION" translateable="false" desc="It explains that an embedded site can request access to its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab).">
+    Lets you choose whether an embedded site can access info they have saved about you
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_ALLOWED" translateable="false" desc="It explains that an embedded site can request access to its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab).">
+    Embedded sites can ask to access info they've saved about you
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_BLOCKED" translateable="false" desc="It explains that an embedded site is blocked from accessing its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab) ">
+    Don't allow embedded sites to access info they've saved about you
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_EXCEPTIONS" translateable="false" desc="It explains that an embedded site is allowed to access its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab) ">
+    Allowed to access info they've about you while embeded in another site
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_EXCEPTIONS" translateable="false" desc="It explains that an embedded site is blocked from accessing its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab) ">
+    Not allowed to access info they've about you while embeded in another site
   </message>
 
   <message name="IDS_SETTINGS_NO_BLUETOOTH_DEVICES_FOUND" desc="Explanation for not showing Bluetooth devices in site settings.">

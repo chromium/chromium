@@ -153,8 +153,8 @@ class GoogleURLLoaderThrottleTest
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCrendentials};
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<FakeBoundSessionRequestThrottledListener> bound_session_listener_ =
-      nullptr;
+  raw_ptr<FakeBoundSessionRequestThrottledListener, DanglingUntriaged>
+      bound_session_listener_ = nullptr;
   std::unique_ptr<GoogleURLLoaderThrottle> throttle_;
   std::unique_ptr<MockThrottleDelegate> delegate_;
   chrome::mojom::BoundSessionParamsPtr bound_session_params_;

@@ -28,6 +28,7 @@
 /androidx_javascriptengine/src/
 /angle
 /angle_dx11
+/anonymous_tokens/src/
 /aosp_dalvik/lib/*
 /apache-linux/LICENSE
 /apache-linux/bin/*
@@ -66,18 +67,19 @@
 /cast_web_runtime
 /catapult
 /ced/src
-/centipede/src
 /checkstyle/*.jar
 /chromeos_login_manager
 /chromeos_text_input
 /chromevox/third_party/sre/src
 /chromite
 /crossbench
+/clang-format/script
 /cld_2/src
 /cld_3/src
 /colorama/src
 /content_analysis_sdk/src
 /cpuinfo/src
+/cpu_features/src
 /crc32c/src
 /cros
 /cros-components/src
@@ -109,6 +111,7 @@
 /fuchsia-sdk/images
 /fuchsia-sdk/images-internal
 /fuchsia-sdk/sdk
+/fuzztest/src
 /fxdiv/src
 /gemmlowp/src
 /gles2_conform

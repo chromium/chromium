@@ -56,6 +56,19 @@ def _ParseDepGraph(jar_path: str, output_dir: str):
   return dep_graph
 
 
+def _GnTargetToBuildFilePath(gn_target: str):
+  """Returns the relative BUILD.gn file path for this target from src root."""
+  assert gn_target.startswith('//'), f'Relative {gn_target} name not supported.'
+  ninja_target_name = gn_target[2:]
+
+  # Remove the colon at the end
+  colon_index = ninja_target_name.find(':')
+  if colon_index != -1:
+    ninja_target_name = ninja_target_name[:colon_index]
+
+  return os.path.join(ninja_target_name, 'BUILD.gn')
+
+
 def _EnsureDirectClasspathIsComplete(*, input_jar: str, gn_target: str,
                                      output_dir: str,
                                      direct_classpath_jars: List[str],
@@ -81,7 +94,7 @@ def _EnsureDirectClasspathIsComplete(*, input_jar: str, gn_target: str,
 
   transitive_deps = full_classpath_deps - direct_classpath_deps
 
-  missing_targets: Dict[str, Dict[str, str]] = collections.defaultdict(dict)
+  missing_targets: Dict[tuple, Dict[str, str]] = collections.defaultdict(dict)
   dep_graph = _ParseDepGraph(input_jar, output_dir)
   logging.info('Finding missing deps from %d classes', len(dep_graph))
   # dep_graph.keys() is a list of all the classes in the current input_jar. Skip
@@ -94,21 +107,29 @@ def _EnsureDirectClasspathIsComplete(*, input_jar: str, gn_target: str,
         continue
       seen_deps.add(dep_to)
       if dep_to in transitive_deps:
-        missing_target_names = sorted(dep_to_target[dep_to])
-        if len(missing_target_names) == 1:
-          missing_target_key = tuple(missing_target_names)[0]
-        else:
-          missing_target_key = f'One of {", ".join(missing_target_names)}'
-        missing_targets[missing_target_key][dep_to] = dep_from
+        missing_target_names = tuple(sorted(dep_to_target[dep_to]))
+        missing_targets[missing_target_names][dep_to] = dep_from
 
   if missing_targets:
     print('=' * 30 + ' Dependency Checks Failed ' + '=' * 30)
     print(f'Target: {gn_target}')
     print('Direct classpath is incomplete. To fix, add deps on:')
-    for missing_target_key, data in missing_targets.items():
-      print(f' * {missing_target_key}')
+    for missing_target_names, data in missing_targets.items():
+      if len(missing_target_names) > 1:
+        print(f' * One of {", ".join(missing_target_names)}')
+      else:
+        print(f' * {missing_target_names[0]}')
       for missing_class, used_by in data.items():
         print(f'     ** {missing_class} (needed by {used_by})')
+    if os.environ.get('AUTO_ADD_MISSING_DEPS') == '1':
+      cmd = [
+          'tools/android/modularization/gn/dep_operations.py', 'add', '--quiet',
+          '--file',
+          _GnTargetToBuildFilePath(gn_target), '--target', gn_target, '--deps'
+      ]
+      # For simplicity, always pick the first suggested target.
+      cmd += [names[0] for names in missing_targets.keys()]
+      build_utils.CheckOutput(cmd, cwd=build_utils.DIR_SOURCE_ROOT)
     if warnings_as_errors:
       sys.exit(1)
 
@@ -119,6 +140,7 @@ def _AddSwitch(parser, val):
 
 
 def main(argv):
+  build_utils.InitLogging('BYTECODE_PROCESSOR_DEBUG')
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
   parser.add_argument('--target-name', help='Fully qualified GN target name.')

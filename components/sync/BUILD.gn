@@ -217,6 +217,8 @@ source_set("unit_tests") {
     "engine/net/http_bridge_unittest.cc",
     "engine/net/sync_server_connection_manager_unittest.cc",
     "engine/nigori/nigori_unittest.cc",
+    "engine/nigori/public_key_unittest.cc",
+    "engine/nigori/public_private_key_pair_unittest.cc",
     "engine/sync_manager_impl_unittest.cc",
     "engine/sync_scheduler_impl_unittest.cc",
     "engine/syncer_proto_util_unittest.cc",

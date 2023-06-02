@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SUPERVISED_USER_PARENT_PERMISSION_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SUPERVISED_USER_PARENT_PERMISSION_DIALOG_VIEW_H_
 
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -82,8 +83,6 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   bool GetRepromptAfterIncorrectCredential() const;
 
  private:
-  std::u16string GetActiveUserFirstName() const;
-
   // views::View:
   void AddedToWidget() override;
   void OnThemeChanged() override;

@@ -249,6 +249,12 @@ void BruschettaPolicyHandler::ApplyPolicySettings(
       pref_config.Set(prefs::kPolicyOEMStringsKey, std::move(pref_oem_strings));
     }
 
+    {
+      pref_config.Set(
+          prefs::kPolicyDisplayOrderKey,
+          config.FindInt(prefs::kPolicyDisplayOrderKey).value_or(0));
+    }
+
     pref.Set(id, std::move(pref_config));
   }
 

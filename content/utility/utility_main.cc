@@ -163,6 +163,9 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
       }
     }
   }
+  if (sandbox_config->pin_user32) {
+    base::win::PinUser32();
+  }
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -366,13 +369,6 @@ int UtilityMain(MainFunctionParams parameters) {
     // queried for hardware capabilities & any settings are applied to the
     // correct monitor.
     base::win::EnableHighDPISupport();
-  }
-
-  // The FileUtilService supports archive inspection, which uses unrar for
-  // inspecting rar archives. Unrar depends on user32.dll for handling
-  // upper/lowercase.
-  if (sandbox_type == sandbox::mojom::Sandbox::kFileUtil) {
-    base::win::PinUser32();
   }
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&

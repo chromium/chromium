@@ -139,14 +139,11 @@ struct CONTENT_EXPORT UrlInfo {
   bool is_coop_isolation_requested = false;
 
   // This allows overriding the origin of |url| for process assignment purposes
-  // in certain very special cases. Namely, if |url| represents a resource
-  // inside another resource (e.g. a resource with a urn: URL in WebBundle),
-  // this will be the origin of the original resource. If the navigation to
-  // |url| is performed via the loadDataWithBaseURL API (e.g., in a <webview>
-  // tag or on Android Webview), this will be the base origin provided via that
-  // API. For renderer-initiated about:blank navigations, this will be the
-  // initiator's origin that about:blank should inherit. Otherwise, this will be
-  // nullopt.
+  // in certain very special cases. If the navigation to |url| is performed via
+  // the loadDataWithBaseURL API (e.g., in a <webview> tag or on Android
+  // Webview), this will be the base origin provided via that API. For renderer-
+  // initiated about:blank navigations, this will be the initiator's origin that
+  // about:blank should inherit. Otherwise, this will be nullopt.
   //
   // TODO(alexmos): Currently, this is also used to hold the origin committed
   // by the renderer at DidCommitNavigation() time, for use in commit-time URL

@@ -1123,6 +1123,7 @@
     {
       name: "font-palette",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      interpolable: true,
       inherited: true,
       font: true,
       converter: "ConvertFontPalette",
@@ -3255,9 +3256,10 @@
       inherited: true,
       field_group: "*",
       field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/style/list_style_type_data.h"],
+      include_paths: ["third_party/blink/renderer/core/keywords.h",
+                      "third_party/blink/renderer/core/style/list_style_type_data.h"],
       wrapper_pointer_name: "Persistent",
-      default_value: "ListStyleTypeData::CreateCounterStyle(AtomicString(\"disc\"), nullptr)",
+      default_value: "ListStyleTypeData::CreateCounterStyle(keywords::kDisc, nullptr)",
       type_name: "ListStyleTypeData",
       keywords: [
         "disc", "circle", "square", "disclosure-open", "disclosure-closed",
@@ -3601,8 +3603,8 @@
       include_paths: ["third_party/blink/renderer/platform/geometry/length_point.h"],
       default_value: "LengthPoint(Length::Auto(), Length::Auto())",
       type_name: "LengthPoint",
-      converter: "ConvertPositionOrAuto",
-      keywords: ["auto"],
+      converter: "ConvertOffsetPosition",
+      keywords: ["auto", "normal"],
       typedom_types: ["Keyword", "Position"],
     },
     {
@@ -4138,6 +4140,21 @@
       supports_incremental_style: true,
     },
     {
+      // TODO: This should be interpolable: true
+      name: "scrollbar-color",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      name_for_methods: "ScrollbarColor",
+      type_name: "absl::optional<StyleScrollbarColor>",
+      converter: "ConvertScrollbarColor",
+      keywords: ["auto"],
+      field_group: "*",
+      field_template: "external",
+      default_value: "absl::optional<StyleScrollbarColor>()",
+      include_paths: ["third_party/blink/renderer/core/style/style_scrollbar_color.h"],
+      runtime_flag: "ScrollbarColor",
+    },
+    {
       name: "scrollbar-gutter",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: false,
@@ -4561,7 +4578,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
+      runtime_flag: "ScrollTimelineAttachment",
     },
     {
       name: "scroll-timeline-axis",
@@ -5345,7 +5362,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
+      runtime_flag: "ScrollTimelineAttachment",
     },
     {
       name: "view-timeline-axis",
@@ -7881,24 +7898,6 @@
       default_value: "false",
       name_for_methods: "HasLineIfEmpty",
       converter: "ConvertInternalEmptyLineHeight",
-    },
-
-    // Name: -internal-align-self-block:
-    // Value: normal | center
-    // Applies to: A block child in a normal blow flow context
-    //    If 'center' is specified and the container's block size is not auto,
-    //    it works like "align-self: center" for grid/flex items.
-    //    The block child should create new block formatting context.
-    {
-      name: "-internal-align-self-block",
-      property_methods: ["ParseSingleValue"],
-      inherited: false,
-      field_group: "*",
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "false",
-      name_for_methods: "AlignSelfBlockCenter",
-      converter: "ConvertInternalAlignSelfBlock",
     },
     {
       name: "-internal-align-content-block",

@@ -190,7 +190,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 
   absl::optional<DisplayFeature> display_feature_;
 
-  raw_ptr<ui::Compositor> compositor_ = nullptr;
+  raw_ptr<ui::Compositor, DanglingUntriaged> compositor_ = nullptr;
 
   CursorManager cursor_manager_;
 };

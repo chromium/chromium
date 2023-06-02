@@ -19,29 +19,18 @@
   "     to expire. Tests will not be run starting from the expiration date.   ",
 
   {
-    "prefix": "anonymous-iframe-origin-trial",
-    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
-    "bases": ["wpt_internal/origin_trials/anonymous-iframe"],
-    "args": [
-      "--disable-blink-features=AnonymousIframe",
-      "--disable-features=PartitionedCookies,ThirdPartyStoragePartitioning",
-      "--enable-features=AnonymousIframeOriginTrial"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "lna-permission",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/local-network-access"],
     "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "lna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/local-network-access"],
     "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "lna-workers-enabled",
@@ -51,7 +40,7 @@
       "--enable-features=PrivateNetworkAccessForWorkers",
       "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "reduce-accept-language",
@@ -320,7 +309,7 @@
               "fast/workers/chromium/worker-sharedarraybuffer-transfer-two-workers.html",
               "http/tests/inspector-protocol/issues"],
     "args": ["--enable-features=SharedArrayBuffer"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "mse-1mb-buffers",
@@ -582,7 +571,7 @@
               "inspector-protocol/worker"
             ],
     "args": ["--enable-features=PlzDedicatedWorker"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "service-worker-storage-control-on-thread-pool",
@@ -625,7 +614,7 @@
     "bases": ["http/tests/wasm/caching"],
     "exclusive_tests": "ALL",
     "args": ["--js-flags=--allow-natives-syntax"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   "==== Tests incompatible with the default WPT Origin Isolation start here ==VV",
@@ -722,7 +711,7 @@
     "args": ["--disable-auto-wpt-origin-isolation",
              "--reset-browsing-instance-between-tests",
              "--disable-features=OriginAgentClusterDefaultEnable"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "focusless-spat-nav",
@@ -754,14 +743,14 @@
     "bases": ["fast/forms/color-scheme"],
     "args": ["--enable-features=ForcedColors",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "use-common-select-popup",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/select"],
     "args": ["--enable-features=UseCommonSelectPopup"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 31, 2024"
   },
   {
     "prefix": "forced-high-contrast-colors",
@@ -772,7 +761,7 @@
     "exclusive_tests": ["external/wpt/forced-colors-mode"],
     "args": ["--force-high-contrast",
              "--enable-blink-features=ForcedColors,ForcedColorsPreserveParentColor"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "dark-color-scheme",
@@ -794,13 +783,6 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"],
     "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "payment-request-csp-violation",
-    "platforms": ["Linux"],
-    "bases": ["http/tests/inspector-protocol/issues/payment-request-csp-violation-issue.js"],
-    "args": ["--enable-blink-features=IgnoreCSPInWebPaymentAPI"],
-    "expires": "May 30, 2023"
   },
   {
     "prefix": "payment-request-mandatory-total",
@@ -914,7 +896,7 @@
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-dark-mode",
@@ -965,7 +947,7 @@
     "bases": ["external/wpt/fetch/http-cache"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=SplitCacheByIncludeCredentials"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "split-http-cache",
@@ -996,7 +978,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
     "args": ["--enable-features=WebBluetoothNewPermissionsBackend"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "trust-tokens",
@@ -1033,7 +1015,7 @@
       "external/wpt/shadow-dom/declarative"
     ],
     "args": ["--disable-features=StreamingDeclarativeShadowDOM"],
-    "expires": "Jul 1, 2023"
+    "expires": "Feb 1, 2024"
   },
   {
     "prefix": "backface-visibility-interop",
@@ -1108,7 +1090,7 @@
       "http/tests/storage/partitioned-storage"
     ],
     "args": [ "--disable-features=ThirdPartyStoragePartitioning" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "post-message-first-party-to-third-party-different-bucket-same-origin-blocked",
@@ -1205,7 +1187,7 @@
     "args": [
       "--enable-features=SameSiteCrossOriginForSpeculationRulesPrerender,Prerender2ContentSecurityPolicyExtensions"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "no-different-origin-dialogs",
@@ -1301,6 +1283,13 @@
     "expires": "Feb 1, 2024"
   },
   {
+    "prefix": "mutation-events-disabled",
+    "platforms": ["Linux"],
+    "bases": [],
+    "args": ["--disable-blink-features=MutationEvents"],
+    "expires": "Sep 1, 2024"
+  },
+  {
     "prefix": "popover-hint-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
@@ -1370,7 +1359,7 @@
       "http/tests/inspector-protocol/storage/interest-groups.js"
     ],
     "args": [
-      "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge,FledgeBiddingAndAuctionServer,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges"
+      "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge,FledgeBiddingAndAuctionServer,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode"
     ],
     "expires": "Dec 1, 2023"
   },
@@ -1506,7 +1495,7 @@
       "wpt_internal/shared_storage",
       "external/wpt/shared-storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges"],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1518,7 +1507,7 @@
     "exclusive_tests": [
       "wpt_internal/shared_storage_selecturl_limit/"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit"],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1546,7 +1535,7 @@
       "http/tests/inspector-protocol/fenced-frame"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies,Fledge,InterestGroupStorage,AdInterestGroupAPI,AllowURNsInIframes,BiddingAndScoringDebugReportingAPI,ComputePressure",
-             "--enable-blink-features=FencedFramesAPIChanges"],
+             "--enable-blink-features=FencedFramesAPIChanges,FencedFramesDefaultMode"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1650,7 +1639,7 @@
       "--disable-features=OriginAgentClusterDefaultEnable",
       "--disable-auto-wpt-origin-isolation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   {
@@ -1718,14 +1707,14 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/infrastructure/urls/terminology-0/" ],
     "args": [ "--enable-features=IsolateSandboxedIframes" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "coop-restrict-properties",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
     "args": [ "--enable-features=CoopRestrictProperties" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   "These tests require the experimental speculative prefetch feature, and",
@@ -1741,10 +1730,10 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
-      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor:block_until_head_eager_prefetch/true",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "prefetch-no-vary-search",
@@ -1755,9 +1744,9 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint",
-      "--enable-features=PrefetchUseContentRefactor"
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "preload-devtools",
@@ -1771,7 +1760,7 @@
     "args": [
       "--enable-blink-features=SpeculationRulesDocumentRules,SpeculationRulesDocumentRulesSelectorMatches"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "cookie-reject-domain-non-ascii",
@@ -1820,7 +1809,7 @@
       "external/wpt/fetch/nosniff"
     ],
     "args": ["--enable-features=OpaqueResponseBlockingV01"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "orb-v02",
@@ -1829,7 +1818,7 @@
     "bases": [
       "external/wpt/fetch/corb"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "js-shared-memory",
@@ -1937,7 +1926,7 @@
       "fast/forms/week/week-appearance-pseudo-elements.html"
     ],
     "args": ["--disable-blink-features=DateInputInlineBlock"],
-    "expires": "Jun 1, 2023"
+    "expires": "Jun 8, 2023"
   },
   {
     "prefix": "allow-rtc-encoded-video-frame-set-metadata-all-fields",
@@ -2054,10 +2043,46 @@
     "expires": "Dec 1, 2023"
   },
   {
+    "prefix": "environment-integrity",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/environment-integrity"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=WebEnvironmentIntegrity"],
+    "expires": "Dec 1, 2023"
+  },
+  {
     "prefix": "longtask-from-loaf",
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],
     "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
     "expires": "Aug 1, 2023"
+  },
+  {
+    "prefix": "netinfo-constant-type",
+    "platforms": ["Linux"],
+    "bases": ["netinfo/"],
+    "args": [
+      "--enable-blink-features=NetInfoConstantType"
+    ],
+    "expires": "Dec 1, 2023"
+  },
+  {
+    "prefix": "font-palette-animation",
+    "platforms": ["Linux"],
+    "bases": ["wpt_internal/css/css-fonts/animations"],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=FontPaletteAnimation"
+    ],
+    "expires": "Dec 1, 2023"
+  },
+  {
+    "prefix": "csp-wildcards-in-permissions-policies",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/permissions-policy"],
+    "args": [
+      "--enable-features=CSPWildcardsInPermissionsPolicies"
+    ],
+    "expires": "Dec 1, 2023"
   }
 ]

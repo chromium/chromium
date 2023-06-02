@@ -39,7 +39,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                      attributes=None,
                      constants=None,
                      constructors=None,
-                     named_constructors=None,
+                     legacy_factory_functions=None,
                      operations=None,
                      iterable=None,
                      maplike=None,
@@ -54,8 +54,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             assert constants is None or isinstance(constants, (list, tuple))
             assert constructors is None or isinstance(constructors,
                                                       (list, tuple))
-            assert named_constructors is None or isinstance(
-                named_constructors, (list, tuple))
+            assert legacy_factory_functions is None or isinstance(
+                legacy_factory_functions, (list, tuple))
             assert operations is None or isinstance(operations, (list, tuple))
             assert iterable is None or isinstance(iterable, Iterable.IR)
             assert maplike is None or isinstance(maplike, Maplike.IR)
@@ -64,7 +64,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             attributes = attributes or []
             constants = constants or []
             constructors = constructors or []
-            named_constructors = named_constructors or []
+            legacy_factory_functions = legacy_factory_functions or []
             operations = operations or []
             assert all(
                 isinstance(attribute, Attribute.IR)
@@ -75,8 +75,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 isinstance(constructor, Constructor.IR)
                 for constructor in constructors)
             assert all(
-                isinstance(named_constructor, Constructor.IR)
-                for named_constructor in named_constructors)
+                isinstance(legacy_factory_function, Constructor.IR)
+                for legacy_factory_function in legacy_factory_functions)
             assert all(
                 isinstance(operation, Operation.IR)
                 for operation in operations)
@@ -107,8 +107,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             self.constants = list(constants)
             self.constructors = list(constructors)
             self.constructor_groups = []
-            self.named_constructors = list(named_constructors)
-            self.named_constructor_groups = []
+            self.legacy_factory_functions = list(legacy_factory_functions)
+            self.legacy_factory_function_groups = []
             self.operations = list(operations)
             self.operation_groups = []
             self.exposed_constructs = []
@@ -123,7 +123,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 self.attributes,
                 self.constants,
                 self.constructors,
-                self.named_constructors,
+                self.legacy_factory_functions,
                 self.operations,
             ]
             if self.iterable:
@@ -143,7 +143,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             # of this interface or not.
             list_of_groups = [
                 self.constructor_groups,
-                self.named_constructor_groups,
+                self.legacy_factory_function_groups,
                 self.operation_groups,
             ]
             if self.iterable:
@@ -206,17 +206,17 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 owner=self) for group_ir in ir.constructor_groups
         ])
         assert len(self._constructor_groups) <= 1
-        self._named_constructors = tuple([
-            Constructor(named_constructor_ir, owner=self)
-            for named_constructor_ir in ir.named_constructors
+        self._legacy_factory_functions = tuple([
+            Constructor(legacy_factory_function_ir, owner=self)
+            for legacy_factory_function_ir in ir.legacy_factory_functions
         ])
-        self._named_constructor_groups = tuple([
+        self._legacy_factory_function_groups = tuple([
             ConstructorGroup(
                 group_ir,
                 list(
                     filter(lambda x: x.identifier == group_ir.identifier,
-                           self._named_constructors)),
-                owner=self) for group_ir in ir.named_constructor_groups
+                           self._legacy_factory_functions)),
+                owner=self) for group_ir in ir.legacy_factory_function_groups
         ])
         self._operations = tuple([
             Operation(operation_ir, owner=self)
@@ -336,14 +336,14 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         return self._constructor_groups
 
     @property
-    def named_constructors(self):
-        """Returns named constructors."""
-        return self._named_constructors
+    def legacy_factory_functions(self):
+        """Returns legacy factory functions."""
+        return self._legacy_factory_functions
 
     @property
-    def named_constructor_groups(self):
-        """Returns groups of overloaded named constructors."""
-        return self._named_constructor_groups
+    def legacy_factory_function_groups(self):
+        """Returns groups of overloaded legacy factory functions."""
+        return self._legacy_factory_function_groups
 
     @property
     def operations(self):
@@ -948,13 +948,13 @@ class SyncIterator(UserDefinedType, WithExtendedAttributes,
         return ()
 
     @property
-    def named_constructors(self):
-        """Returns named constructors."""
+    def legacy_factory_functions(self):
+        """Returns legacy factory functions."""
         return ()
 
     @property
-    def named_constructor_groups(self):
-        """Returns groups of overloaded named constructors."""
+    def legacy_factory_function_groups(self):
+        """Returns groups of overloaded legacy factory functions."""
         return ()
 
     @property

@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -329,10 +330,23 @@ void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
     return;
   }
 
-  content::StoragePartitionConfig partition_config =
-      ExtensionsBrowserClient::Get()->GetWebViewStoragePartitionConfig(
-          browser_context(), owner_render_frame_host->GetSiteInstance(),
-          storage_partition_id, /*in_memory=*/!persist_storage);
+  ExtensionsBrowserClient::Get()->GetWebViewStoragePartitionConfig(
+      browser_context(), owner_render_frame_host->GetSiteInstance(),
+      storage_partition_id, /*in_memory=*/!persist_storage,
+      base::BindOnce(&WebViewGuest::CreateWebContentsWithStoragePartition,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(owned_this),
+                     create_params.Clone(), std::move(callback)));
+}
+
+void WebViewGuest::CreateWebContentsWithStoragePartition(
+    std::unique_ptr<GuestViewBase> owned_this,
+    const base::Value::Dict& create_params,
+    WebContentsCreatedCallback callback,
+    absl::optional<content::StoragePartitionConfig> partition_config) {
+  if (!partition_config.has_value()) {
+    std::move(callback).Run(std::move(owned_this), nullptr);
+    return;
+  }
 
   // If we already have a webview tag in the same app using the same storage
   // partition, we should use the same SiteInstance so the existing tag and
@@ -340,13 +354,13 @@ void WebViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
   auto* guest_view_manager =
       GuestViewManager::FromBrowserContext(browser_context());
   scoped_refptr<content::SiteInstance> guest_site_instance =
-      guest_view_manager->GetGuestSiteInstance(partition_config);
+      guest_view_manager->GetGuestSiteInstance(*partition_config);
   if (!guest_site_instance) {
     // Create the SiteInstance in a new BrowsingInstance, which will ensure
     // that webview tags are also not allowed to send messages across
     // different partitions.
     guest_site_instance = content::SiteInstance::CreateForGuest(
-        browser_context(), partition_config);
+        browser_context(), *partition_config);
   }
   WebContents::CreateParams params(browser_context(),
                                    std::move(guest_site_instance));
@@ -1098,7 +1112,8 @@ void WebViewGuest::WillAttachToEmbedder() {
 }
 
 bool WebViewGuest::RequiresSslInterstitials() const {
-  return !AreWebviewMPArchBehaviorsEnabled(browser_context());
+  // Some enterprise workflows rely on clicking through self-signed cert errors.
+  return true;
 }
 
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(

@@ -305,7 +305,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             'result']
         self.assertEqual(result.name, 'test.html')
         self.assertEqual(result.actual, 'PASS')
-        self.assertEqual(result.expected, {'PASS'})
+        self.assertEqual(result.expected, {'FAIL'})
         self.assertTrue(result.unexpected)
 
     def test_report_unexpected_subtest_fail(self):
@@ -328,7 +328,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     subtest='unexpected pass after',
                     status='PASS',
                     expected='FAIL')
-        self._event(action='test_end', test='/test.html', status='OK')
+        self._event(action='test_end', test='/test.html', status='ERROR')
 
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
@@ -351,7 +351,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             'result']
         self.assertEqual(result.name, 'test.html')
         self.assertEqual(result.actual, 'PASS')
-        self.assertEqual(result.expected, {'PASS'})
+        self.assertEqual(result.expected, {'FAIL'})
         self.assertTrue(result.unexpected)
 
     def test_report_unexpected_fail_for_notrun(self):
@@ -361,17 +361,30 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     test='/test.html',
                     subtest='notrun',
                     status='NOTRUN',
-                    expected='FAIL')
-        self._event(action='test_end',
-                    test='/test.html',
-                    status='ERROR',
-                    expected='OK')
+                    expected='PASS')
+        self._event(action='test_end', test='/test.html', status='OK')
 
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
         self.assertEqual(result.name, 'test.html')
         self.assertEqual(result.actual, 'FAIL')
         self.assertEqual(result.expected, {'PASS'})
+        self.assertTrue(result.unexpected)
+
+    def test_report_unexpected_fail_for_different_types(self):
+        self._event(action='test_start', test='/reftest.html')
+        self._event(action='test_end',
+                    test='/reftest.html',
+                    status='ERROR',
+                    expected='FAIL')
+
+        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
+            'result']
+        self.assertEqual(result.name, 'reftest.html')
+        # The unexpected flag is still set because the failures are of different
+        # types.
+        self.assertEqual(result.actual, 'FAIL')
+        self.assertEqual(result.expected, set())
         self.assertTrue(result.unexpected)
 
     def test_report_unexpected_timeout(self):

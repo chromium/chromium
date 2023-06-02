@@ -306,6 +306,36 @@ TEST_F(SuggestionsServiceClientTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(SuggestionsServiceClientTest,
+       RecordsEmptyCandidateTextWhenCandidateTextMissing) {
+  SetTextSuggesterResult(SingleCandidate("hi there completion", 0.5f));
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.EmptyCandidate", 0);
+
+  client()->RequestSuggestions(
+      /*preceding_text=*/"hel",
+      /*suggestion_mode=*/AssistiveSuggestionMode::kCompletion,
+      /*completion_candidates=*/
+      std::vector<DecoderCompletionCandidate>{
+          DecoderCompletionCandidate{"hello", 0.1f},
+          DecoderCompletionCandidate{"", 0.01f},
+          DecoderCompletionCandidate{"", 0.001f},
+      },
+      /*callback=*/
+      base::BindLambdaForTesting(
+          [&](const std::vector<AssistiveSuggestion>& results) {}));
+  WaitForResults();
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.EmptyCandidate", 2);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.EmptyCandidate",
+      /*sample=*/MultiWordSuggestionType::kCompletion,
+      /*expected_bucket_count=*/2);
+}
+
 }  // namespace
 }  // namespace input_method
 }  // namespace ash

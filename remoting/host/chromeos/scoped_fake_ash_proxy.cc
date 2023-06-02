@@ -7,19 +7,10 @@
 #include "base/check.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/display/manager/managed_display_info.h"
 
 namespace remoting::test {
-
-ScreenshotRequest::ScreenshotRequest(DisplayId display,
-                                     AshProxy::ScreenshotCallback callback)
-    : display(display), callback(std::move(callback)) {}
-
-ScreenshotRequest::ScreenshotRequest(ScreenshotRequest&&) = default;
-ScreenshotRequest& ScreenshotRequest::operator=(ScreenshotRequest&&) = default;
-ScreenshotRequest::~ScreenshotRequest() = default;
 
 ScopedFakeAshProxy::ScopedFakeAshProxy() : ScopedFakeAshProxy(nullptr) {}
 
@@ -81,16 +72,6 @@ void ScopedFakeAshProxy::RemoveDisplay(DisplayId id) {
   NOTREACHED();
 }
 
-ScreenshotRequest ScopedFakeAshProxy::WaitForScreenshotRequest() {
-  return screenshot_request_.Take();
-}
-
-void ScopedFakeAshProxy::ReplyWithScreenshot(
-    const absl::optional<SkBitmap>& screenshot) {
-  ScreenshotRequest request = WaitForScreenshotRequest();
-  std::move(request.callback).Run(screenshot);
-}
-
 DisplayId ScopedFakeAshProxy::GetPrimaryDisplayId() const {
   return primary_display_id_;
 }
@@ -108,12 +89,6 @@ const display::Display* ScopedFakeAshProxy::GetDisplayForId(
     }
   }
   return nullptr;
-}
-
-void ScopedFakeAshProxy::TakeScreenshotOfDisplay(DisplayId display_id,
-                                                 ScreenshotCallback callback) {
-  screenshot_request_.SetValue(
-      ScreenshotRequest{display_id, std::move(callback)});
 }
 
 void ScopedFakeAshProxy::CreateVideoCapturer(

@@ -13,8 +13,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
-class Profile;
-
 namespace borealis {
 
 // This is used by the Borealis installer app.
@@ -46,16 +44,15 @@ extern const char kCompatToolVersionGameMismatch[];
 // form.
 extern const char kDeviceInformationKey[];
 
-// TODO(b/218403711): remove these when insert_coin is deprecated. We only have
-// insert_coin in the short-term until installer UX is finalized.
-extern const char kInsertCoinSuccessMessage[];
-extern const char kInsertCoinRejectMessage[];
-
 struct CompatToolInfo {
   absl::optional<int> game_id;
   std::string proton = "None";
   std::string slr = "None";
 };
+
+// Returns true if it's a non game borealis app (e.g. Steam client).
+// Note that this does not check if the app is from the Borealis VM.
+bool IsNonGameBorealisApp(const std::string& app_id);
 
 // Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
 // TODO(b/173547790): This should probably be moved when we've decided
@@ -64,14 +61,6 @@ absl::optional<int> GetBorealisAppId(std::string exec);
 
 // Returns the Borealis app ID of the |window|, or nullopt on failure.
 absl::optional<int> GetBorealisAppId(const aura::Window* window);
-
-// Creates a URL for a feedback form with prefilled app/device info, or an
-// invalid URL if we don't want to collect feedback for the given |app_id|. Will
-// invoke |url_callback| when the url is ready.
-void FeedbackFormUrl(Profile* const profile,
-                     const std::string& app_id,
-                     const std::string& window_title,
-                     base::OnceCallback<void(GURL)> url_callback);
 
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.

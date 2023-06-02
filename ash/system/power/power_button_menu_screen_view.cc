@@ -264,7 +264,7 @@ void PowerButtonMenuScreenView::LayoutWithoutTransform() {
   if (IsCurtainModeEnabled()) {
     GetOrCreateCurtainView()->SetBoundsRect(GetMenuBounds());
   } else {
-    power_button_menu_view_->layer()->SetTransform(gfx::Transform());
+    power_button_menu_view_->SetTransform(gfx::Transform());
     power_button_menu_view_->SetBoundsRect(GetMenuBounds());
   }
 }

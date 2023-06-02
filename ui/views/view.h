@@ -115,7 +115,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
 
   bool is_add = false;
   // New parent if |is_add| is true, old parent if |is_add| is false.
-  raw_ptr<View> parent = nullptr;
+  raw_ptr<View, DanglingUntriaged> parent = nullptr;
   // The view being added or removed.
   raw_ptr<View> child = nullptr;
   // If this is a move (reparent), meaning AddChildViewAt() is invoked with an
@@ -126,7 +126,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   // being removed.
   // For the add part of move, |move_view| is the old parent of the View being
   // added.
-  raw_ptr<View> move_view = nullptr;
+  raw_ptr<View, DanglingUntriaged> move_view = nullptr;
 };
 
 using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
@@ -449,6 +449,17 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return view;
   }
 
+  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+  T* AddChildView(raw_ptr<T, Traits> view) {
+    AddChildViewAtImpl(view.get(), children_.size());
+    return view;
+  }
+  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+  T* AddChildViewAt(raw_ptr<T, Traits> view, size_t index) {
+    AddChildViewAtImpl(view.get(), index);
+    return view;
+  }
+
   // Moves |view| to the specified |index|. An |index| at least as large as that
   // of the last child moves the view to the end.
   void ReorderChildView(View* view, size_t index);
@@ -471,8 +482,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   }
 
   // Partially specialized version to directly take a raw_ptr<T>.
-  template <typename T>
-  std::unique_ptr<T> RemoveChildViewT(raw_ptr<T> view) {
+  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+  std::unique_ptr<T> RemoveChildViewT(raw_ptr<T, Traits> view) {
     return RemoveChildViewT(view.get());
   }
 

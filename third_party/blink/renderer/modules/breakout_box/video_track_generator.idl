@@ -6,7 +6,12 @@
 // https://w3c.github.io/mediacapture-transform/
 
 [
-   Exposed(Window VideoTrackGeneratorInWindow, Worker VideoTrackGeneratorInWorker),
+    Exposed(Window VideoTrackGeneratorInWindow),
+    // Don't expose in worker even under a flag until the implementation
+    // is far enough along to be considered secure.
+    // TODO(https://crbug.com/1300528): Implement for worker.
+    // The syntax for separate flags for window and worker is:
+    //   Exposed(Window VideoTrackGeneratorInWindow, Worker VideoTrackGeneratorInWorker),
    RuntimeEnabled=VideoTrackGenerator
 ]
 interface VideoTrackGenerator {

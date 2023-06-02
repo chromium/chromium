@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ड्वोझॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux फाइल सुरू करत आहे...</translation>
 <translation id="1547964879613821194">कॅनेडियन इंग्रजी</translation>
 <translation id="1556189134700913550">सर्वांवर लागू करा</translation>
 <translation id="1561842594491319104">Chrome डिव्हाइस</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google साइट</translation>
 <translation id="1853795129690976061">हे नेटवर्क Linux सोबत शेअर केलेले आहे</translation>
 <translation id="1864756863218646478">फाइल आढळू शकली नाही.</translation>
+<translation id="1877377730633446520">हे सुमारे <ph name="REQUIRED_SPACE" /> वापरेल. तुमच्याकडे सध्या <ph name="FREE_SPACE" /> उपलब्ध आहे.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, कनेक्ट करा</translation>
 <translation id="1920670151694390848">मल्याळम लिप्यंतरण</translation>
 <translation id="1920798810075583923">कलिंगड</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
+<translation id="2004942826429452291">फाइल क्लाउडमध्ये आणि या Chromebook वर स्टोअर केल्या जातील.</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
 <translation id="2037845485764049925">रशियन</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">डिव्हाइस सेटिंग्ज</translation>
 <translation id="2084809735218147718">सांकेतिक भाषेत धन्यवाद म्हणणारी व्यक्ती</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
+<translation id="2089751716171649322">तुम्ही ऑफलाइन असताना तुमच्या Google Drive फाइल सहजपणे अ‍ॅक्सेस करा</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोडमध्ये अनुमती द्या<ph name="END_BOLD" /> सुरू करा</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले जातील आणि तुम्ही ते रिस्टोअर करू शकणार नाही.</translation>
 <translation id="2122305276694332719">लपलेल्या नेटवर्कवर आपोआप कनेक्ट केल्याने इतरांना तुमचे डिव्हाइस आणि काही नेटवर्क सेटिंग्ज पाहण्याची अनुमती मिळते आणि याची शिफारस केली जात नाही.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux सह इंस्टॉल करा</translation>
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
 <translation id="2230062665678605299">फोल्डर "<ph name="FOLDER_NAME" />" तयार करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">तुमची Google Drive कॅशे साफ केली आहे.</translation>
 <translation id="2239068707900391003">कॉफी पीत असलेली व्यक्ती</translation>
 <translation id="2251368349685848079">ट्रॅशमधून रिस्टोअर करा</translation>
 <translation id="2278133026967558505">सर्व वेबसाइट आणि URLs ना फाइलचा अ‍ॅक्सेस आहे</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> एरर.</translation>
+<translation id="3501954296166022751">तुमच्या Google Drive फाइल या ऑफलाइन उपलब्ध आहेत</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> आयटम सिंक करण्‍याची तयारी करत आहे...</translation>
 <translation id="3522708245912499433">पोर्तुगीज</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">हे सेटिंग बदलल्याने सर्व शेअर केलेले नेटवर्क प्रभावित होतील</translation>
 <translation id="3737576078404241332">साइडबारमधून काढून टाका</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
-<translation id="3780536599611287598">तुम्हाला '<ph name="FOLDER_NAME" />' या फोल्डरमध्ये फाइल हलवण्यास परवानगी नाही.</translation>
 <translation id="3786301125658655746">तुम्ही ऑफलाइन आहात</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="3793469551756281394">सुमारे <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> शिल्लक आहेत</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, कनेक्ट करा</translation>
 <translation id="4470564870223067757">हँगल 2 संच</translation>
+<translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4474142134969976028">जुळणारे परिणाम नाहीत</translation>
 <translation id="4477002475007461989">रोमानियन</translation>
 <translation id="4477219268485577442">बल्गेरियन ध्वन्यात्मक</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">ॲव्होकॅडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> आयटम रिस्टोअर करत आहे</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड वापरण्यासाठी, तुमच्या संस्थेला एक्स्टेंशनची आवश्यकता आहे}other{गुप्त मोड वापरण्यासाठी, तुमच्या संस्थेला काही एक्स्टेंशनची आवश्यकता आहे}}</translation>
-<translation id="4823651846660089135">डिव्हाइस केवळ वाचनीय आहे</translation>
 <translation id="4826849268470072925">तमिळ ITRANS</translation>
 <translation id="482932175346970750">तुमच्या ब्राउझरमध्ये <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करा</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -573,6 +574,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5500122897333236901">आइसलँडिक</translation>
 <translation id="5508696409934741614">बिंदू</translation>
+<translation id="5519161320735100193">Google Drive सेटिंग्ज</translation>
 <translation id="5522908512596376669">फाइल सूची सूची दृश्यमध्ये बदलली गेली आहे.</translation>
 <translation id="5524517123096967210">फाइल वाचली जाऊ शकली नाही.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> इमेज</translation>
@@ -619,6 +621,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5838451609423551646">निवडीमधून सर्व नोंदी काढून टाकल्या आहेत.</translation>
 <translation id="5838825566232597749">यूएस कामगार आंतरराष्ट्रीय</translation>
 <translation id="5845721951356578987">परिचारिका</translation>
+<translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप अयशस्वी</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
@@ -676,7 +679,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6327785803543103246">वेब प्रॉक्सी स्वयं शोध</translation>
 <translation id="6337014272874260727">झटपट फाइल वरून अनपिन करा</translation>
 <translation id="6339145975392024142">युएस इंटरनॅशनल (PC)</translation>
-<translation id="6346310558342052870">ॲक्सेस प्रतिबंधित केला</translation>
 <translation id="6356685157277930264">फाइल फीडबॅक विंडो</translation>
 <translation id="6358884629796491903">ड्रॅगन</translation>
 <translation id="636254897931573416">डोमेन सफिक्स जुळणीचे मूल्य चुकीचे आहे</translation>
@@ -864,6 +866,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7806708061868529807">हिब्रू</translation>
 <translation id="78104721049218340">किडमनी कीबोर्डसह थाई</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">नेटवर्क कॉंफिगर करताना एरर आली</translation>
 <translation id="7839804798877833423">या फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
@@ -876,15 +879,18 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7903984238293908205">कॅटाकाना</translation>
 <translation id="7908793776359722643">पार्टिशन फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">तुमच्या माझे ड्राइव्ह मधील फाइल या तुमच्या Chromebook मध्ये आपोआप सिंक होतील, जेणेकरून तुम्ही इंटरनेट कनेक्शनशिवाय त्या अ‍ॅक्सेस करू शकता.</translation>
 <translation id="7925247922861151263">AAA तपास अयशस्वी</translation>
 <translation id="7925686952655276919">समक्रमणासाठी मोबाइल डेटा वापरु नका</translation>
 <translation id="7928710562641958568">डिव्हाइस काढून टाका</translation>
+<translation id="7933875256234974853">Drive मधील फाइल सिंक करण्याची तयारी करत आहे...</translation>
 <translation id="7943385054491506837">यूएस कोलमॅक</translation>
 <translation id="7953739707111622108">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम ओळखीचे नाही.</translation>
 <translation id="7969525169268594403">स्लोव्हेनियन</translation>
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
 <translation id="7973962044839454485">अयोग्य वापरकर्तानावामुळे किंवा पासवर्डमुळे PPP ऑथेंटिकेशन अयशस्वी झाले</translation>
 <translation id="7980421588063892270">कोलमॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> फाइल सिंक करत आहे</translation>
 <translation id="8000066093800657092">कोणतेही नेटवर्क नाही</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
 <translation id="8028993641010258682">आकार</translation>
@@ -1006,6 +1012,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8919081441417203123">डॅनिश</translation>
 <translation id="8949925099261528566">कनेक्‍ट केले, इंटरनेट नाही</translation>
 <translation id="8965697826696209160">पुरेशी जागा नाही.</translation>
+<translation id="8971742885766657349">सिंक करत आहे - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">चीनी (पारंपरिक) पिनयिन</translation>
 <translation id="8998871447376656508">अपलोड पूर्ण करण्यासाठी तुमच्या Google Drive मध्ये पुरेशी मोकळी जागा नाही.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
@@ -1039,6 +1046,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9213073329713032541">इंस्टॉलेशनला यशस्वीरीत्या सुरुवात झाली.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लुनार</translation>
+<translation id="937795003075802289">१ फाइल सिंक करत आहे</translation>
 <translation id="938470336146445890">कृपया वापरकर्ता सर्टिफिकेट इंस्टॉल करा.</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
 <translation id="943972244133411984">ने सुधारित केली</translation>

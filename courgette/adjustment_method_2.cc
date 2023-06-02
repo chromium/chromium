@@ -190,13 +190,13 @@ class LabelInfo {
 
   int refs_;                 // Number of times this Label is referenced.
 
-  raw_ptr<LabelInfo>
+  raw_ptr<LabelInfo, DanglingUntriaged>
       assignment_;  // Label from other program corresponding to this.
 
   std::vector<uint32_t> positions_;  // Offsets into the trace of references.
 
  private:
-  raw_ptr<AssignmentCandidates> candidates_;
+  raw_ptr<AssignmentCandidates, DanglingUntriaged> candidates_;
 
   void operator=(const LabelInfo*);  // Disallow assignment only.
   // Public compiler generated copy constructor is needed to constuct
@@ -427,7 +427,7 @@ class Shingle {
   size_t exemplar_position_;       // At this position (and other positions).
   std::vector<uint32_t> positions_;  // Includes exemplar_position_.
 
-  raw_ptr<ShinglePattern>
+  raw_ptr<ShinglePattern, DanglingUntriaged>
       pattern_;  // Pattern changes as LabelInfos are assigned.
 
   friend std::string ToString(const Shingle* instance);

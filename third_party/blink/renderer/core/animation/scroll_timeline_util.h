@@ -7,7 +7,7 @@
 
 #include "cc/animation/scroll_timeline.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 
@@ -39,8 +39,6 @@ GetCompositorScrollElementId(const Node*);
 // https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical
 CompositorScrollTimeline::ScrollDirection CORE_EXPORT
 ConvertOrientation(ScrollAxis, const ComputedStyle*);
-
-absl::optional<ScrollOffsets> CreateScrollOffsets(ScrollTimeline* timeline);
 
 }  // namespace scroll_timeline_util
 

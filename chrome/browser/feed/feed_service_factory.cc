@@ -162,7 +162,8 @@ FeedService* FeedServiceFactory::GetForBrowserContext(
 
 // static
 FeedServiceFactory* FeedServiceFactory::GetInstance() {
-  return base::Singleton<FeedServiceFactory>::get();
+  static base::NoDestructor<FeedServiceFactory> instance;
+  return instance.get();
 }
 
 FeedServiceFactory::FeedServiceFactory()

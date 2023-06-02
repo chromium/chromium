@@ -47,7 +47,7 @@ class MockXdgActivationV1 : public GlobalObject {
                void(struct wl_client* client, struct wl_resource* resource));
 
  private:
-  raw_ptr<MockXdgActivationTokenV1> token_ = nullptr;
+  raw_ptr<MockXdgActivationTokenV1, DanglingUntriaged> token_ = nullptr;
 };
 
 class MockXdgActivationTokenV1 : public ServerObject {

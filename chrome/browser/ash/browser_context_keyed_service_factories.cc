@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
@@ -193,6 +194,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   file_manager::EventRouterFactory::GetInstance();
   file_manager::VolumeManagerFactory::GetInstance();
   file_system_provider::ServiceFactory::GetInstance();
+  FloatingWorkspaceServiceFactory::GetInstance();
   full_restore::FullRestoreServiceFactory::GetInstance();
   GlanceablesKeyedServiceFactory::GetInstance();
   guest_os::GuestOsMimeTypesServiceFactory::GetInstance();

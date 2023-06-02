@@ -11,6 +11,7 @@ ts_library("build_ts") {
   tsconfig_base = "../../tsconfig_base.json"
   in_files = [
     "cloud_upload_dialog_test.ts",
+    "connect_onedrive_test.ts",
     "file_handler_page_test.ts",
     "move_confirmation_page_test.ts",
     "cloud_upload_test_browser_proxy.ts",
@@ -38,6 +39,6 @@ generate_grd("build_grdp") {
 
   deps = [ ":build_ts" ]
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   resource_path_prefix = "chromeos/cloud_upload"
 }

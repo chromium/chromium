@@ -122,7 +122,8 @@ cc_test(
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
+        "//absl/log:check",
         "//absl/memory",
         "//absl/strings",
         "@com_google_googletest//:gtest",
@@ -180,6 +181,7 @@ cc_test(
         ":stacktrace",
         ":symbolize",
         "//absl/base:raw_logging_internal",
+        "//absl/log:check",
         "//absl/strings",
         "@com_google_googletest//:gtest",
     ],
@@ -233,7 +235,7 @@ cc_test(
         ":stack_consumption",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
         "//absl/memory",
         "@com_google_googletest//:gtest_main",
     ],
@@ -260,7 +262,7 @@ cc_test(
     deps = [
         ":leak_check",
         "//absl/base:config",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -277,7 +279,7 @@ cc_binary(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":leak_check",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -306,7 +308,7 @@ cc_test(
     deps = [
         ":stack_consumption",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
+        "//absl/log",
         "@com_google_googletest//:gtest_main",
     ],
 )

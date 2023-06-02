@@ -284,6 +284,26 @@ public class CookieManagerTest {
         }
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void setPartitionedCookieWithCookieManager() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            final String url = "https://www.example.com";
+            mCookieManager.setCookie(
+                    url, "partitioned=foo;Path=/;Secure;Partitioned;SameSite=None");
+
+            final String expected = "partitioned=foo; domain=www.example.com; path=/; "
+                    + "secure; partitioned; samesite=none";
+            List<String> cookieInfo = mCookieManager.getCookieInfo(url);
+            Assert.assertNotNull(cookieInfo);
+            Assert.assertEquals(expected, cookieInfo.get(0));
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
     private void setCookieWithDocumentCookieAPI(final String name, final String value)
             throws Throwable {
         JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),

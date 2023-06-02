@@ -101,14 +101,19 @@ AXPlatformNodeTextRangeProviderWin::~AXPlatformNodeTextRangeProviderWin() {}
 
 ITextRangeProvider* AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
     AXPositionInstance start,
-    AXPositionInstance end) {
+    AXPositionInstance end,
+    bool add_ref) {
   CComObject<AXPlatformNodeTextRangeProviderWin>* text_range_provider = nullptr;
   if (SUCCEEDED(CComObject<AXPlatformNodeTextRangeProviderWin>::CreateInstance(
           &text_range_provider))) {
     DCHECK(text_range_provider);
     text_range_provider->SetStart(std::move(start));
     text_range_provider->SetEnd(std::move(end));
-    text_range_provider->AddRef();
+    if (add_ref) {
+      // Some callers will be in situations where they pass the `ITextRangeProvider` into a
+      // method that automatically calls `AddRef`. Adding another here would lead to a leak.
+      text_range_provider->AddRef();
+    }
     return text_range_provider;
   }
 

@@ -11,13 +11,11 @@
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/native_theme/native_theme.h"
 
-namespace {
 // Allows the titlebar to be drawn by the system using the Mica material
 // on Windows 11, version 22H2 and above.
 BASE_FEATURE(kWindows11MicaTitlebar,
              "Windows11MicaTitlebar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view) {
   return !ShouldDefaultThemeUseMicaTitlebar() ||

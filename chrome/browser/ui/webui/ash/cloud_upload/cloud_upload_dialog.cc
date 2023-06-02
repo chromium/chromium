@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -43,6 +44,7 @@
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/common/constants.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -64,10 +66,18 @@ const char kAndroidOneDriveAuthority[] =
     "com.microsoft.skydrive.content.StorageAccessProvider";
 constexpr char kNotificationId[] = "cloud_upload_open_failure";
 
+constexpr char kDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
+constexpr char kOneDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
+
 constexpr char kDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
 constexpr char kOneDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
+
+constexpr char kFileHandlerSelectionMetricName[] =
+    "FileBrowser.OfficeFiles.Setup.FileHandlerSelection";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -76,6 +86,31 @@ enum class OfficeFilesTransferRequired {
   kMove = 1,
   kCopy = 2,
   kMaxValue = kCopy,
+};
+
+// Records the file handler selected on the first page of Office setup.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeSetupFileHandler {
+  kGoogleDocs = 0,
+  kGoogleSheets = 1,
+  kGoogleSlides = 2,
+  kMicrosoft365 = 3,
+  kOtherLocalHandler = 4,
+  kQuickOffice = 5,
+  kMaxValue = kQuickOffice,
+};
+
+// Records the source volume that an office file is opened from. These values
+// represent the source volume types that are only relevant to office file
+// handling code - the rest are obtained from file_manager::VolumeType.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesSourceVolume {
+  kUnknown = 100,
+  kMicrosoftOneDrive = 101,
 };
 
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
@@ -361,6 +396,26 @@ bool CloudOpenTask::ExecuteInternal() {
 // Opens office files if they are in the correct cloud already. Otherwise moves
 // the files before opening.
 void CloudOpenTask::OpenOrMoveFiles() {
+  // Record the source volume type of the opened file.
+  int source_type;
+  if (UrlIsOnODFS(profile_, file_urls_.front())) {
+    source_type = static_cast<int>(OfficeFilesSourceVolume::kMicrosoftOneDrive);
+  } else {
+    auto* volume_manager = file_manager::VolumeManager::Get(profile_);
+    base::WeakPtr<file_manager::Volume> source =
+        volume_manager->FindVolumeFromPath(file_urls_.front().path());
+    if (source) {
+      source_type = source->type();
+    } else {
+      source_type = static_cast<int>(OfficeFilesSourceVolume::kUnknown);
+    }
+  }
+  if (cloud_provider_ == CloudProvider::kGoogleDrive) {
+    UMA_HISTOGRAM_SPARSE(kDriveOpenSourceVolumeMetric, source_type);
+  } else if (cloud_provider_ == CloudProvider::kOneDrive) {
+    UMA_HISTOGRAM_SPARSE(kOneDriveOpenSourceVolumeMetric, source_type);
+  }
+
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {
     // The files are on Drive already.
@@ -878,14 +933,20 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     // We don't currently check MIME types, which could mean we get into edge
     // cases if the MIME type doesn't match the file extension.
     if (HasWordFile(file_urls_)) {
+      UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                                OfficeSetupFileHandler::kGoogleDocs);
       SetWordFileHandlerToFilesSWA(
           profile_, file_manager::file_tasks::kActionIdWebDriveOfficeWord);
     }
     if (HasExcelFile(file_urls_)) {
+      UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                                OfficeSetupFileHandler::kGoogleSheets);
       SetExcelFileHandlerToFilesSWA(
           profile_, file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
     }
     if (HasPowerPointFile(file_urls_)) {
+      UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                                OfficeSetupFileHandler::kGoogleSlides);
       SetPowerPointFileHandlerToFilesSWA(
           profile_,
           file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
@@ -927,6 +988,8 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     }
     StartUpload();
   } else if (user_response == kUserActionSetUpOneDrive) {
+    UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                              OfficeSetupFileHandler::kMicrosoft365);
     cloud_provider_ = CloudProvider::kOneDrive;
     InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
   } else if (user_response == kUserActionCancel) {
@@ -956,6 +1019,10 @@ void CloudOpenTask::LaunchLocalFileTask(
   }
   // Launch the task.
   file_manager::file_tasks::TaskDescriptor& task = local_tasks_[task_position];
+  UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                            extension_misc::IsQuickOfficeExtension(task.app_id)
+                                ? OfficeSetupFileHandler::kQuickOffice
+                                : OfficeSetupFileHandler::kOtherLocalHandler);
   file_manager::file_tasks::ExecuteFileTask(
       profile_, task, file_urls_, nullptr,
       base::BindOnce(&CloudOpenTask::LocalTaskExecuted, this, task));
@@ -1120,6 +1187,9 @@ const int kDialogWidthForMoveConfirmation = 512;
 const int kDialogHeightForMoveConfirmationWithCheckbox = 500;
 
 const int kDialogHeightForMoveConfirmationWithoutCheckbox = 448;
+
+const int kDialogWidthForConnectToOneDrive = 512;
+const int kDialogHeightForConnectToOneDrive = 556;
 }  // namespace
 
 void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
@@ -1146,7 +1216,36 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
       }
       return;
     }
+    case mojom::DialogPage::kConnectToOneDrive: {
+      size->set_width(kDialogWidthForConnectToOneDrive);
+      size->set_height(kDialogHeightForConnectToOneDrive);
+    }
   }
+}
+
+bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
+  DCHECK(modal_parent);
+
+  // Allow no more than one upload dialog at a time. Only one of either this
+  // dialog, or CloudOpenTask can be shown at a time because they use the same
+  // WebUI for dialogs.
+  if (SystemWebDialogDelegate::HasInstance(
+          GURL(chrome::kChromeUICloudUploadURL))) {
+    return false;
+  }
+
+  mojom::DialogArgsPtr args = mojom::DialogArgs::New();
+  args->dialog_page = mojom::DialogPage::kConnectToOneDrive;
+
+  // This CloudUploadDialog pointer is managed by an instance of
+  // `views::WebDialogView` and deleted in
+  // `SystemWebDialogDelegate::OnDialogClosed`.
+  CloudUploadDialog* dialog = new CloudUploadDialog(
+      std::move(args), base::DoNothing(), mojom::DialogPage::kConnectToOneDrive,
+      /*office_move_confirmation_shown=*/false);
+
+  dialog->ShowSystemDialog(modal_parent);
+  return true;
 }
 
 }  // namespace ash::cloud_upload

@@ -216,12 +216,13 @@ std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
 
 }  // namespace
 
-absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
-  WebAppProvider* provider = WebAppProvider::GetForWebApps(browser->profile());
+absl::optional<AppId> GetWebAppForActiveTab(const Browser* browser) {
+  const WebAppProvider* const provider =
+      WebAppProvider::GetForWebApps(browser->profile());
   if (!provider)
     return absl::nullopt;
 
-  content::WebContents* web_contents =
+  const content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return absl::nullopt;

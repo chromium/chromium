@@ -220,9 +220,7 @@ base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
 
   GetWebAppBasicInfo(app_id, registrar, &dict);
 
-  dict.Set(
-      "mayDisable",
-      web_app_provider_->install_finalizer().CanUserUninstallWebApp(app_id));
+  dict.Set("mayDisable", registrar.CanUserUninstallWebApp(app_id));
   bool is_locally_installed = registrar.IsLocallyInstalled(app_id);
   dict.Set("mayChangeLaunchType", is_locally_installed);
 
@@ -991,7 +989,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::Value::List& args) {
       !IsYoutubeExtension(extension_id)) {
     if (!extension_id_prompting_.empty())
       return;  // Only one prompt at a time.
-    if (!web_app_provider_->install_finalizer().CanUserUninstallWebApp(
+    if (!web_app_provider_->registrar_unsafe().CanUserUninstallWebApp(
             extension_id)) {
       LOG(ERROR) << "Attempt to uninstall a webapp that is non-usermanagable "
                  << "was made. App id : " << extension_id;

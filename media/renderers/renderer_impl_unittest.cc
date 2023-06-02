@@ -363,8 +363,8 @@ class RendererImplTest : public ::testing::Test {
   base::SimpleTestTickClock test_tick_clock_;
 
   std::unique_ptr<StrictMock<MockDemuxer>> demuxer_;
-  raw_ptr<StrictMock<MockVideoRenderer>> video_renderer_;
-  raw_ptr<StrictMock<MockAudioRenderer>> audio_renderer_;
+  raw_ptr<StrictMock<MockVideoRenderer>, DanglingUntriaged> video_renderer_;
+  raw_ptr<StrictMock<MockAudioRenderer>, DanglingUntriaged> audio_renderer_;
   std::unique_ptr<RendererImpl> renderer_impl_;
   std::unique_ptr<StrictMock<MockCdmContext>> cdm_context_;
 

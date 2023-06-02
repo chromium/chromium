@@ -22,14 +22,6 @@ WebAppDialogManager::WebAppDialogManager(Profile* profile)
 
 WebAppDialogManager::~WebAppDialogManager() = default;
 
-bool WebAppDialogManager::CanUserUninstallWebApp(const AppId& app_id) const {
-  auto* provider = WebAppProvider::GetForWebApps(profile_);
-  if (!provider)
-    return false;
-
-  return provider->install_finalizer().CanUserUninstallWebApp(app_id);
-}
-
 void WebAppDialogManager::UninstallWebApp(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,

@@ -43,6 +43,7 @@ namespace printing {
 
 class PrintPreviewHandler;
 
+// PrintPreviewUI lives on the UI thread.
 class PrintPreviewUI : public ConstrainedWebDialogUI,
                        public mojom::PrintPreviewUI {
  public:
@@ -77,7 +78,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                               int32_t request_id) override;
   void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
                                const gfx::Rect& printable_area_in_points,
-                               bool has_custom_page_size_style,
+                               bool all_pages_have_custom_size,
+                               bool all_pages_have_custom_orientation,
                                int32_t request_id) override;
   void DidStartPreview(mojom::DidStartPreviewParamsPtr params,
                        int32_t request_id) override;
@@ -126,7 +128,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Determines whether to cancel a print preview request based on the request
   // id.
-  // Can be called from any thread.
   static bool ShouldCancelRequest(const absl::optional<int32_t>& preview_ui_id,
                                   int request_id);
 
@@ -205,8 +206,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Clears the UI ID. Called by PrintPreviewHandler in
   // OnJavascriptDisallowed().
   void ClearPreviewUIId();
-
-  base::WeakPtr<PrintPreviewUI> GetWeakPointer();
 
  protected:
   // Alternate constructor for tests

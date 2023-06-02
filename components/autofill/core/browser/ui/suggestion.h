@@ -27,27 +27,16 @@ struct Suggestion {
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = absl::variant<BackendId, GURL, ValueToFill>;
 
-  // A frontend ID is either a PopupItemId or a raw, non-negative integer ID.
-  //
-  // The non-negative integers represents an AutofillProfile or a CreditCard,
-  // which can be obtained by first converting the frontend ID to a BackendId
-  // using AutofillSuggestionGenerator::GetBackendIdFromFrontendId(), which can
-  // then be passed to the PersonalDataManager.
-  //
+  // A frontend ID is just a PopupItemId.
   // Frontend IDs are deprecated and will be eliminated: crbug.com/1394920.
   //
-  // TODO(crbug.com/1394920): Remove `FrontendId(int)` and `as_int()`.
+  // TODO(crbug.com/1394920): Convert frontend id into a PopupItemId.
   class FrontendId {
    public:
-    constexpr FrontendId() : value_(0) {}
+    constexpr FrontendId() : value_(kAutocompleteEntry) {}
     constexpr FrontendId(  // NOLINT(google-explicit-constructor)
         PopupItemId popup_item_id)
-        : value_(base::to_underlying(popup_item_id)) {}
-    constexpr explicit FrontendId(int int_id) : value_(int_id) {}
-
-    // Returns the content of the variant as `int`, even if it holds a
-    // PopupItemId.
-    int as_int() const { return value_; }
+        : value_(popup_item_id) {}
 
     // Returns the content of the variant as `PopupItemId`, even if it holds a
     // raw integer.
@@ -55,9 +44,12 @@ struct Suggestion {
       return static_cast<PopupItemId>(value_);
     }
 
+    bool is_an_address_or_card_popup_item_id() const {
+      return value_ == kAddressEntry || value_ == kCreditCardEntry;
+    }
+
    private:
-    static_assert(std::is_same_v<std::underlying_type_t<PopupItemId>, int>);
-    int value_;
+    PopupItemId value_;
   };
 
   enum MatchMode {

@@ -260,7 +260,7 @@ class CreditCardFidoAuthenticator
   std::string card_authorization_token_;
 
   // The associated autofill driver. Weak reference.
-  const raw_ptr<AutofillDriver> autofill_driver_;
+  const raw_ptr<AutofillDriver, DanglingUntriaged> autofill_driver_;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> autofill_client_;

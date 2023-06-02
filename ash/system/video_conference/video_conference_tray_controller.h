@@ -11,6 +11,7 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -20,6 +21,8 @@ class UnguessableToken;
 }  // namespace base
 
 namespace ash {
+
+class VideoConferenceTray;
 
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
@@ -83,6 +86,18 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Whether the tray should be shown.
   bool ShouldShowTray() const;
+
+  // Attempts showing the speak-on-mute opt-in nudge.
+  void MaybeShowSpeakOnMuteOptInNudge(
+      VideoConferenceTray* video_conference_tray);
+
+  // Callbacks to update prefs whenever a user opts in or out of the
+  // speak-on-mute feature.
+  void OnSpeakOnMuteNudgeOptIn();
+  void OnSpeakOnMuteNudgeOptOut();
+
+  // Closes all nudges that are shown anchored to the VC tray, if any.
+  void CloseAllVcNudges();
 
   // Returns whether `state_` indicates permissions are granted for different
   // mediums.
@@ -167,6 +182,9 @@ class ASH_EXPORT VideoConferenceTrayController
   // of active `MediaApp`'s to force the shelf to show or hide.
   void UpdateShelfAutoHide(MediaApps apps);
 
+  // Records repeated shows metric when the timer is stop.
+  void RecordRepeatedShows();
+
   // The number of capturing apps, fetched from `VideoConferenceManagerAsh`.
   int capturing_apps_ = 0;
 
@@ -209,6 +227,10 @@ class ASH_EXPORT VideoConferenceTrayController
   // which is after VideoConferenceTrayController.
   raw_ptr<VideoConferenceManagerBase> video_conference_manager_ = nullptr;
   bool initialized_ = false;
+
+  // Used to record metrics of repeated shows per 100 ms.
+  int count_repeated_shows_ = 0;
+  base::DelayTimer repeated_shows_timer_;
 
   base::WeakPtrFactory<VideoConferenceTrayController> weak_ptr_factory_{this};
 };

@@ -20,6 +20,7 @@ class CookieControlsView : public base::CheckedObserver {
                                int blocked_cookies) = 0;
   virtual void OnCookiesCountChanged(int allowed_cookies,
                                      int blocked_cookies) = 0;
+  virtual void OnStatefulBounceCountChanged(int bounce_count) = 0;
 };
 
 }  // namespace content_settings

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-USE_PYTHON3 = True
 
 
 _IGNORE_FREEZE_FOOTER = 'Ignore-Freeze'
@@ -39,12 +38,8 @@ def CheckFreeze(input_api, output_api):
 
 def CheckTests(input_api, output_api):
   glob = input_api.os_path.join(input_api.PresubmitLocalPath(), '*_test.py')
-  tests = input_api.canned_checks.GetUnitTests(input_api,
-                                               output_api,
-                                               input_api.glob(glob),
-                                               run_on_python2=False,
-                                               run_on_python3=True,
-                                               skip_shebang_check=True)
+  tests = input_api.canned_checks.GetUnitTests(input_api, output_api,
+                                               input_api.glob(glob))
   return input_api.RunTests(tests)
 
 
@@ -69,13 +64,9 @@ def _CommonChecks(input_api, output_api):
 
   # Run the MB unittests.
   tests.extend(
-      input_api.canned_checks.GetUnitTestsInDirectory(input_api,
-                                                      output_api,
+      input_api.canned_checks.GetUnitTestsInDirectory(input_api, output_api,
                                                       '.',
-                                                      [r'^.+_unittest\.py$'],
-                                                      run_on_python2=False,
-                                                      run_on_python3=True,
-                                                      skip_shebang_check=True))
+                                                      [r'^.+_unittest\.py$']))
 
   # Validate the format of the mb_config.pyl file.
   cmd = [input_api.python3_executable, 'mb.py', 'validate']

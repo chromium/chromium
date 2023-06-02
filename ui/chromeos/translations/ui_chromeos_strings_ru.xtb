@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Английский (США), раскладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Таблицы</translation>
-<translation id="1538729222189715449">Файлы Linux открываются…</translation>
 <translation id="1547964879613821194">Канадская (английская)</translation>
 <translation id="1556189134700913550">Применить ко всем</translation>
 <translation id="1561842594491319104">Устройства Chrome</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1853795129690976061">Доступ к этой папке предоставлен Linux.</translation>
 <translation id="1864756863218646478">Не удалось найти файл.</translation>
+<translation id="1877377730633446520">Для этого потребуется <ph name="REQUIRED_SPACE" /> свободного места. Сейчас на вашем диске доступно <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", подключение</translation>
 <translation id="1920670151694390848">Малаялам, транслитерация</translation>
 <translation id="1920798810075583923">Арбуз</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
 <translation id="1995337122023280937">Перейти к местоположению файла</translation>
 <translation id="2001796770603320721">Открыть на Google Диске</translation>
+<translation id="2004942826429452291">Файлы будут храниться в облаке и на этом устройстве Chromebook.</translation>
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2037845485764049925">Русский</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Настройки устройства</translation>
 <translation id="2084809735218147718">Человек пишет благодарственное письмо</translation>
 <translation id="2088690981887365033">Сеть VPN</translation>
+<translation id="2089751716171649322">Работайте с файлами Google Диска даже без подключения к интернету</translation>
 <translation id="2111134541987263231">Включите параметр <ph name="BEGIN_BOLD" />Разрешить использование в режиме инкогнито<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некоторые объекты (<ph name="NUMBER_OF_ITEMS" />) будут удалены, и вы не сможете их восстановить.</translation>
 <translation id="2122305276694332719">Включать этот параметр не рекомендуется, так как при автоматическом подключении к скрытой сети другие пользователи могут увидеть ваше устройство и некоторые сетевые настройки.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Установить с помощью Linux</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Кеш Google Диска очищен.</translation>
 <translation id="2239068707900391003">Человек с чашкой кофе</translation>
 <translation id="2251368349685848079">Восстановить из корзины</translation>
 <translation id="2278133026967558505">Доступ к файлу через все сайты и URL.</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3486821258960016770">Монгольский</translation>
 <translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Файлы на Google Диске доступны без подключения к интернету.</translation>
 <translation id="3509680540198371098">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="3511705761158917664">Подготовка к синхронизации файлов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальский</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Изменение этого параметра повлияет на все общие сети</translation>
 <translation id="3737576078404241332">Удалить с боковой панели</translation>
 <translation id="3749289110408117711">Название файла</translation>
-<translation id="3780536599611287598">У вас недостаточно прав для перемещения файлов в папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3786301125658655746">Вы работаете в автономном режиме.</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="3793469551756281394">Осталось около <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Другие серверы имен</translation>
 <translation id="4465725236958772856">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", под управлением администратора, подключение</translation>
 <translation id="4470564870223067757">Корейская раскладка (Dubeolsik)</translation>
+<translation id="4472575034687746823">Начать</translation>
 <translation id="4474142134969976028">Ничего не найдено</translation>
 <translation id="4477002475007461989">Румынский</translation>
 <translation id="4477219268485577442">Болгарская (фонетическая)</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832">Восстановление объектов (<ph name="COUNT" />)…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{В вашей организации для работы в режиме инкогнито требуется расширение}one{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}few{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}many{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}other{В вашей организации для работы в режиме инкогнито требуются некоторые расширения}}</translation>
-<translation id="4823651846660089135">Устройство доступно только для чтения</translation>
 <translation id="4826849268470072925">Тамильский, раскладка ITRANS</translation>
 <translation id="482932175346970750">Введите <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в адресной строке браузера.</translation>
 <translation id="4843566743023903107">Устройства Chromebase</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Выделить все</translation>
 <translation id="5500122897333236901">Исландский</translation>
 <translation id="5508696409934741614">Точки</translation>
+<translation id="5519161320735100193">Настройки Google Диска</translation>
 <translation id="5522908512596376669">Файлы отображаются в виде списка.</translation>
 <translation id="5524517123096967210">Не удалось прочитать файл.</translation>
 <translation id="5533102081734025921">Изображение <ph name="IMAGE_TYPE" /></translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Выбор отменен.</translation>
 <translation id="5838825566232597749">США (Workman, международная)</translation>
 <translation id="5845721951356578987">Медсестра</translation>
+<translation id="5860491529813859533">Включить</translation>
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Поиск DHCP завершен со сбоем</translation>
 <translation id="5896749729057314184">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Автоматическое определение настроек прокси-сервера</translation>
 <translation id="6337014272874260727">Удалить из Быстрого доступа к файлам</translation>
 <translation id="6339145975392024142">Американская международная (ПК)</translation>
-<translation id="6346310558342052870">Доступ ограничен</translation>
 <translation id="6356685157277930264">Окно с информацией о файлах</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Недопустимое значение совпадения с доменным суффиксом</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7806708061868529807">Иврит</translation>
 <translation id="78104721049218340">Тайский, раскладка Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
 <translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">При форматировании раздела все хранящиеся в нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним без подключения к интернету.</translation>
 <translation id="7925247922861151263">Сбой при проверке AAA</translation>
 <translation id="7925686952655276919">Не используйте синхронизацию данных с мобильных устройств</translation>
 <translation id="7928710562641958568">Извлечь устройство</translation>
+<translation id="7933875256234974853">Подготовка к синхронизации файлов Google Диска…</translation>
 <translation id="7943385054491506837">США (Colemak)</translation>
 <translation id="7953739707111622108">Невозможно получить доступ к устройству, так как его файловая система не опознана.</translation>
 <translation id="7969525169268594403">Словенский</translation>
 <translation id="7972920761225148017">Французский (Швейцария)</translation>
 <translation id="7973962044839454485">Не удалось выполнить аутентификацию PPP: неверное имя пользователя или пароль</translation>
 <translation id="7980421588063892270">Английский (США), раскладка Colemak</translation>
+<translation id="7985008041109611710">Синхронизация файлов (<ph name="NUMBER_OF_FILES_SYNCING" />)…</translation>
 <translation id="8000066093800657092">Нет сети</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Датский</translation>
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8965697826696209160">Недостаточно свободного места.</translation>
+<translation id="8971742885766657349">Синхронизация: <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Китайский (традиционный), пиньинь</translation>
 <translation id="8998871447376656508">Не удалось завершить загрузку. На Google Диске недостаточно свободного места.</translation>
 <translation id="9003940392834790328">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Установка началась.</translation>
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="9219908252191632183">Луна</translation>
+<translation id="937795003075802289">Синхронизация одного файла…</translation>
 <translation id="938470336146445890">Установите сертификат пользователя.</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="943972244133411984">Кем изменено</translation>

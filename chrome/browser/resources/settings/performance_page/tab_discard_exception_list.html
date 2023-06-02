@@ -17,7 +17,7 @@
     --cr-icon-button-margin-end: 0;
   }
 </style>
-<div class="cr-row first">
+<div class="cr-row">
   <div class="cr-padded-text">$i18n{tabDiscardingExceptionsHeader}</div>
   <cr-button id="addButton" on-click="onAddClick_"
       aria-label="$i18n{tabDiscardingExceptionsAddButtonAriaLabel}">
@@ -73,8 +73,13 @@
 </cr-lazy-render>
 <template is="dom-if" if="[[showAddDialog_]]" restamp>
   <tab-discard-exception-add-dialog prefs="{{prefs}}"
-      on-close="onAddDialogClose_" on-add-exception="onAddException_">
+      on-close="onAddDialogClose_">
   </tab-discard-exception-add-dialog>
+</template>
+<template is="dom-if" if="[[showTabbedAddDialog_]]" restamp>
+  <tab-discard-exception-tabbed-add-dialog prefs="{{prefs}}"
+      on-close="onTabbedAddDialogClose_">
+  </tab-discard-exception-tabbed-add-dialog>
 </template>
 <template is="dom-if" if="[[showEditDialog_]]" restamp>
   <tab-discard-exception-edit-dialog prefs="{{prefs}}"

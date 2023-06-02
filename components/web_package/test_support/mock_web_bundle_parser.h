@@ -43,7 +43,7 @@ class MockWebBundleParser final : public mojom::WebBundleParser {
 
   void WaitUntilParseIntegrityBlockCalled(base::OnceClosure closure);
   void WaitUntilParseMetadataCalled(
-      base::OnceCallback<void(int64_t offset)> callback);
+      base::OnceCallback<void(absl::optional<uint64_t> offset)> callback);
   void WaitUntilParseResponseCalled(
       base::OnceCallback<void(mojom::BundleResponseLocationPtr)> callback);
 
@@ -62,7 +62,8 @@ class MockWebBundleParser final : public mojom::WebBundleParser {
  private:
   // mojom::WebBundleParser implementation.
   void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override;
-  void ParseMetadata(int64_t offset, ParseMetadataCallback callback) override;
+  void ParseMetadata(absl::optional<uint64_t> offset,
+                     ParseMetadataCallback callback) override;
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
@@ -77,10 +78,11 @@ class MockWebBundleParser final : public mojom::WebBundleParser {
   ParseMetadataCallback metadata_callback_;
   ParseResponseCallback response_callback_;
 
-  int64_t parse_metadata_args_;
+  absl::optional<uint64_t> parse_metadata_args_;
   mojom::BundleResponseLocationPtr parse_response_args_;
   base::OnceClosure wait_parse_integrity_block_callback_;
-  base::OnceCallback<void(int64_t offset)> wait_parse_metadata_callback_;
+  base::OnceCallback<void(absl::optional<uint64_t> offset)>
+      wait_parse_metadata_callback_;
   base::OnceCallback<void(mojom::BundleResponseLocationPtr)>
       wait_parse_response_callback_;
 

@@ -52,7 +52,8 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
           task_runner_provider->HasImplThread()
               ? task_runner_provider->ImplThreadTaskRunner()
               : task_runner_provider->MainThreadTaskRunner(),
-          gpu_memory_buffer_manager),
+          gpu_memory_buffer_manager,
+          /*shared_image_interface=*/nullptr),
       synchronous_composite_(synchronous_composite),
       disable_display_vsync_(disable_display_vsync),
       renderer_settings_(renderer_settings),

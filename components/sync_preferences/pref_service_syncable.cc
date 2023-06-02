@@ -253,15 +253,10 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) {
     os_pref_sync_associator_.RegisterPref(path);
-    // Also register under the old ModelType::PREFERENCES. This ensures that
-    // local changes to OS prefs are also synced to old clients that have the
-    // pref registered as a browser SYNCABLE_PREF.
-    pref_sync_associator_.RegisterPrefWithLegacyModelType(path);
     return;
   }
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF) {
     os_priority_pref_sync_associator_.RegisterPref(path);
-    priority_pref_sync_associator_.RegisterPrefWithLegacyModelType(path);
     return;
   }
 #endif

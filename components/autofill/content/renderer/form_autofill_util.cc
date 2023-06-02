@@ -1608,13 +1608,10 @@ bool OwnedOrUnownedFormToFormData(
   //   `form->child_frames[i].predecessor` is set to the correct value, but
   //   `form->child_frames[i].token` is not initialized yet.
   form->fields.reserve(control_elements.size());
-  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    form->child_frames.resize(iframe_elements.size());
-  }
+  form->child_frames.resize(iframe_elements.size());
+
   std::vector<bool> fields_extracted(control_elements.size(), false);
-
   std::vector<ShadowFieldData> shadow_fields;
-
   for (size_t i = 0, next_iframe = 0; i < control_elements.size(); ++i) {
     const WebFormControlElement& control_element = control_elements[i];
 
@@ -1634,23 +1631,22 @@ bool OwnedOrUnownedFormToFormData(
           control_element);
     }
 
-    if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-      // Finds the last frame that precedes |control_element|.
-      while (next_iframe < iframe_elements.size() &&
-             !IsDOMPredecessor(control_element, iframe_elements[next_iframe],
-                               form_element)) {
-        ++next_iframe;
-      }
-      // The |next_frame|th frame precedes `control_element` and thus the last
-      // added FormFieldData. The |k|th frames for |k| > |next_frame| may also
-      // precede that FormFieldData. If they do not,
-      // `form->child_frames[i].predecessor` will be updated in a later
-      // iteration.
-      for (size_t k = next_iframe; k < iframe_elements.size(); ++k)
-        form->child_frames[k].predecessor = form->fields.size() - 1;
+    // Finds the last frame that precedes |control_element|.
+    while (next_iframe < iframe_elements.size() &&
+           !IsDOMPredecessor(control_element, iframe_elements[next_iframe],
+                             form_element)) {
+      ++next_iframe;
+    }
+    // The |next_frame|th frame precedes `control_element` and thus the last
+    // added FormFieldData. The |k|th frames for |k| > |next_frame| may also
+    // precede that FormFieldData. If they do not,
+    // `form->child_frames[i].predecessor` will be updated in a later
+    // iteration.
+    for (size_t k = next_iframe; k < iframe_elements.size(); ++k) {
+      form->child_frames[k].predecessor = form->fields.size() - 1;
     }
 
-    if (form->fields.size() > kMaxParseableFields) {
+    if (form->fields.size() > kMaxExtractableFields) {
       form->child_frames.clear();
       form->fields.clear();
       return false;
@@ -1717,29 +1713,28 @@ bool OwnedOrUnownedFormToFormData(
   }
 
   // Extracts the frame tokens of |iframe_elements|.
-  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    DCHECK_EQ(form->child_frames.size(), iframe_elements.size());
-    for (size_t i = 0; i < iframe_elements.size(); ++i) {
-      WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_elements[i]);
-      if (iframe && iframe->IsWebLocalFrame()) {
-        form->child_frames[i].token = LocalFrameToken(
-            iframe->ToWebLocalFrame()->GetLocalFrameToken().value());
-      } else if (iframe && iframe->IsWebRemoteFrame()) {
-        form->child_frames[i].token = RemoteFrameToken(
-            iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
-      }
+  DCHECK_EQ(form->child_frames.size(), iframe_elements.size());
+  for (size_t i = 0; i < iframe_elements.size(); ++i) {
+    WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_elements[i]);
+    if (iframe && iframe->IsWebLocalFrame()) {
+      form->child_frames[i].token = LocalFrameToken(
+          iframe->ToWebLocalFrame()->GetLocalFrameToken().value());
+    } else if (iframe && iframe->IsWebRemoteFrame()) {
+      form->child_frames[i].token = RemoteFrameToken(
+          iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
     }
-    base::EraseIf(form->child_frames, [](const auto& child_frame) {
-      return absl::visit([](const auto& token) { return token.is_empty(); },
-                         child_frame.token);
-    });
+  }
+  base::EraseIf(form->child_frames, [](const auto& child_frame) {
+    return absl::visit([](const auto& token) { return token.is_empty(); },
+                       child_frame.token);
+  });
+
+  if (form->child_frames.size() > kMaxExtractableChildFrames) {
+    form->child_frames.clear();
   }
 
-  if (form->child_frames.size() > kMaxParseableChildFrames)
-    form->child_frames.clear();
-
   const bool success = (!form->fields.empty() || !form->child_frames.empty()) &&
-                       form->fields.size() < kMaxParseableFields;
+                       form->fields.size() < kMaxExtractableFields;
   if (!success) {
     form->fields.clear();
     form->child_frames.clear();
@@ -2056,6 +2051,12 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
           base::FeatureList::IsEnabled(features::kAutofillEnableSelectMenu));
 }
 
+bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
+  const absl::optional<AutocompleteParsingResult> parsing_result =
+      ParseAutocompleteAttribute(GetAutocompleteAttribute(element));
+  return parsing_result.has_value() && parsing_result->webauthn;
+}
+
 bool IsElementEditable(const WebInputElement& element) {
   return element.IsEnabled() && !element.IsReadOnly();
 }
@@ -2341,15 +2342,13 @@ bool WebFormElementToFormData(
     form->action = blink::WebStringToGURL(form_element.Action());
 
   std::vector<WebElement> owned_iframes;
-  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    WebElementCollection iframes =
-        form_element.GetElementsByHTMLTagName("iframe");
-    for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
-         iframe = iframes.NextItem()) {
-      if (GetClosestAncestorFormElement(iframe) == form_element &&
-          IsRelevantChildFrame(iframe)) {
-        owned_iframes.push_back(iframe);
-      }
+  WebElementCollection iframes =
+      form_element.GetElementsByHTMLTagName("iframe");
+  for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
+       iframe = iframes.NextItem()) {
+    if (GetClosestAncestorFormElement(iframe) == form_element &&
+        IsRelevantChildFrame(iframe)) {
+      owned_iframes.push_back(iframe);
     }
   }
 
@@ -2396,9 +2395,6 @@ std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
 }
 
 std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes))
-    return {};
-
   std::vector<WebElement> unowned_iframes;
   WebElementCollection iframes = document.GetElementsByHTMLTagName("iframe");
   for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
@@ -2548,8 +2544,6 @@ void ClearPreviewedElements(
 }
 
 bool IsOwnedByFrame(const WebNode& node, content::RenderFrame* frame) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes))
-    return true;
   if (node.IsNull() || !frame)
     return false;
   const blink::WebDocument& doc = node.GetDocument();
@@ -2854,7 +2848,7 @@ void TraverseDomForFourDigitCombinations(
         potential_matches) {
   re2::RE2 kFourDigitRegex("(?:\\D|^)(\\d{4})(?:\\D|$)");
   base::flat_set<std::string> matches;
-  // Iterate through each form control element in the DOM and parse the
+  // Iterate through each form control element in the DOM and extract the
   // elements nearby in search of four digit combinations.
   std::vector<WebFormControlElement> form_control_elements;
 
@@ -2913,9 +2907,9 @@ void TraverseDomForFourDigitCombinations(
     }
   }
 
-  // Check for consecutive numbers as a potential indicator that we've
-  // parsed a year <select> element of a credit card form. This indicates that
-  // a CVC field is not a standalone CVC element.
+  // Check for consecutive numbers as a potential indicator that we've parsed
+  // a year <select> element of a credit card form. This indicates that a CVC
+  // field is not a standalone CVC element.
   if (matches.size() > 2) {
     auto iter = matches.begin();
     int consecutive_numbers = 0;

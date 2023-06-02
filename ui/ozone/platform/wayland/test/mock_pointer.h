@@ -39,7 +39,7 @@ class MockPointer : public ServerObject {
   TestZcrPointerStylus* pointer_stylus() const { return pointer_stylus_; }
 
  private:
-  raw_ptr<TestZcrPointerStylus> pointer_stylus_ = nullptr;
+  raw_ptr<TestZcrPointerStylus, DanglingUntriaged> pointer_stylus_ = nullptr;
 };
 
 }  // namespace wl

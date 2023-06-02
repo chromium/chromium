@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "chromeos/components/kcer/kcer.h"
+#include "chromeos/components/kcer/kcer_notifier_net.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "net/cert/x509_certificate.h"
 
@@ -114,6 +115,10 @@ class KcerImpl : public Kcer {
           callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
 
+  void RemoveKeyAndCertsWithToken(
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
   void DoesPrivateKeyExistWithToken(
       DoesKeyExistCallback callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
@@ -122,6 +127,11 @@ class KcerImpl : public Kcer {
                      DataToSign data,
                      SignCallback callback,
                      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void SignRsaPkcs1RawWithToken(
+      DigestWithPrefix digest_with_prefix,
+      SignCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
 
   void GetKeyInfoWithToken(
       GetKeyInfoCallback callback,
@@ -152,8 +162,7 @@ class KcerImpl : public Kcer {
   // very limited way (consult documentation for WeakPtr for details).
   base::WeakPtr<KcerToken> user_token_;
   base::WeakPtr<KcerToken> device_token_;
-
-  base::RepeatingCallbackList<void()> observers_;
+  KcerNotifierNet notifier_;
 
   base::WeakPtrFactory<KcerImpl> weak_factory_{this};
 };

@@ -4,9 +4,9 @@
 
 import("//build/config/features.gni")
 import("//build/util/branding.gni")
-import("//chrome/installer/mac/mac_signing_sources.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/mac/signing/signing_sources.gni")
 import("//chrome/version.gni")
 
 group("signing") {
@@ -51,23 +51,7 @@ copy("copy_signing") {
 
   public_deps = [ ":sign_config" ]
 
-  adjusted_mac_signing_sources = mac_signing_sources - [
-                                   "signing/chromium_config.py",
-                                   "signing/config_factory.py",
-                                   "signing/parts.py",
-                                   "signing/pipeline.py",
-                                 ]
-
-  sources =
-      rebase_path(adjusted_mac_signing_sources, ".", "//chrome/installer/mac/")
-
-  sources += [
-    "//chrome/installer/mac/pkg-dmg",
-    "config_factory.py",
-    "parts.py",
-    "pipeline.py",
-    "unbranded_config.py",
-  ]
+  sources = updater_signing_sources + [ "//chrome/installer/mac/pkg-dmg" ]
 
   outputs = [ "$_packaging_dir/signing/{{source_file_part}}" ]
 }

@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/chromeos/features.h"
@@ -24,16 +23,6 @@
 namespace remoting {
 
 namespace {
-
-absl::optional<SkBitmap> ToSkBitmap(
-    std::unique_ptr<viz::CopyOutputResult> result) {
-  if (result->IsEmpty()) {
-    return absl::nullopt;
-  }
-
-  auto scoped_bitmap = result->ScopedAccessSkBitmap();
-  return scoped_bitmap.GetOutScopedBitmap();
-}
 
 class DefaultAshProxy : public AshProxy {
  public:
@@ -61,23 +50,6 @@ class DefaultAshProxy : public AshProxy {
     }
 
     return &display_manager().GetDisplayForId(display_id);
-  }
-
-  void TakeScreenshotOfDisplay(DisplayId display_id,
-                               ScreenshotCallback callback) override {
-    aura::Window* root_window = GetWindowToCaptureForId(display_id);
-    if (!root_window) {
-      std::move(callback).Run(absl::nullopt);
-      return;
-    }
-
-    auto request = std::make_unique<viz::CopyOutputRequest>(
-        viz::CopyOutputRequest::ResultFormat::RGBA,
-        viz::CopyOutputRequest::ResultDestination::kSystemMemory,
-        base::BindOnce(&ToSkBitmap).Then(std::move(callback)));
-
-    request->set_area(gfx::Rect(root_window->bounds().size()));
-    root_window->layer()->RequestCopyOfOutput(std::move(request));
   }
 
   void CreateVideoCapturer(
@@ -178,11 +150,6 @@ void AshProxy::SetInstanceForTesting(AshProxy* instance) {
 // static
 int AshProxy::ScaleFactorToDpi(float scale_factor) {
   return static_cast<int>(scale_factor * kDefaultDpi);
-}
-
-// static
-int AshProxy::GetDpi(const display::Display& display) {
-  return ScaleFactorToDpi(display.device_scale_factor());
 }
 
 AshProxy::~AshProxy() = default;

@@ -739,9 +739,6 @@
   <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION" desc="File Manager status message shown when the drive sync is failed because the user's organization runs out the space in Google Drive server.">
     Your organization requires more storage to complete the upload.
   </message>
-  <message name="IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING" desc="Don't translate yet; this message is not final. System notification displayed when the Google Drive cache file were removed while the user was logged out.">
-    Your Google Drive cache was cleared.
-  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_STORAGE_FULL" desc="File Manager menu storage meter message indicating the user's organization has run out of quota.">
     Org storage full
   </message>
@@ -829,6 +826,9 @@
   <message name="IDS_FILE_BROWSER_IN_PROGRESS_LABEL" desc="Syncing in progress label.">
     Syncing
   </message>
+  <message name="IDS_FILE_BROWSER_IN_PROGRESS_PERCENTAGE_LABEL" desc="Syncing in progress accessibility label, also indicating the syncing progress percentage.">
+    Syncing - <ph name="PERCENT">$1<ex>10</ex></ph>%
+  </message>
   <message name="IDS_FILE_BROWSER_DISMISS_LABEL" desc="Dismiss label.">
     Dismiss
   </message>
@@ -840,6 +840,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_SEARCH_TEXT_LABEL" desc="Search text field label.">
     Search
+  </message>
+  <message name="IDS_FILE_BROWSER_SETTINGS_LABEL" translateable="false" desc="Settings label">
+    Settings
   </message>
   <message name="IDS_FILE_BROWSER_SEARCH_CLEAR_LABEL" desc="Label to clear search text field">
     Clear
@@ -1068,18 +1071,6 @@
   </message>
   <message name="IDS_FILE_BROWSER_SUGGEST_DIALOG_INSTALLATION_FAILED" desc="Error message when the installation of the app from WebStore is failed.">
     Installation failed.
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_DEVICE_WRITE_PROTECTED" desc="Tooltip label displayed besides mouse pointer while dragging files or folders over a write-protected folder or disk.">
-    Device is read-only
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_ACCESS_RESTRICTED" desc="Tooltip label displayed besides mouse pointer when dragging files or folders over a removable device whose write access is restricted by administration policy.">
-    Access restricted
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_FOLDER_NO_MOVE_PERMISSION" desc="Tooltip label displayed besides mouse pointer while dragging files or folders over a Team Drive or folder in Drive that does not have write access.">
-    You don't have permission to move files into '<ph name="FOLDER_NAME">$1<ex>Trip Photos</ex></ph>'.
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_OPENING_LINUX_FILES" desc="Tooltip label displayed besides mouse pointer when dragging files or folders over Linux files root before the container has been started and mounted.">
-    Opening Linux files...
   </message>
 
   <message name="IDS_FILE_BROWSER_SELECT_FOLDER_TITLE" desc="Select folder title.">
@@ -1743,6 +1734,9 @@
   <message name="IDS_FILE_BROWSER_DLP_COMPONENT_VM" desc="PluginVM component label.">
     virtual machine
   </message>
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE" desc="Microsoft OneDrive component label.">
+    Microsoft OneDrive
+  </message>
   <message name="IDS_FILE_BROWSER_ONE_DRIVE_MOVED_FILE_NUDGE" desc="Educational text that appears in the navigation tree when a file is automatically moved to OneDrive by the Office Cloud Upload feature/dialog.">
     Recently opened Microsoft files have moved to OneDrive
   </message>
@@ -1752,33 +1746,42 @@
   <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES" desc="The source of a system-generated notification from the Files app, as displayed to the user.">
   Files
   </message>
-  <!-- TODO(b/276126188): Remove the translateable="false" when the copy has been landed on. -->
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SETTINGS_LINK_LABEL" translateable="false" desc="The text of the button in the Bulk pinning dialog that takes the user to the chromeOS settings page for Google Drive.">
-    Google Drive settings
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_GET_STARTED" desc="Text in the Get started button of the banner offering the Google Drive bulk pinning feature">
+    Get started
   </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_MULTIPLE_FILES_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
-    Syncing <ph name="NUMBER_OF_FILES_SYNCING">$1<ex>1,687</ex></ph> files
-  </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL" translateable="false" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
-    Syncing 1 file
-  </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" translateable="false" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
-    Your files are synced
-  </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
-    You are currently offline. Sync will resume when the connection is back on.
-  </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_TITLE" translateable="false" desc="The title of the dialog offering the Google Drive bulk pinning feature">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_TITLE" desc="The title of the dialog offering the Google Drive bulk pinning feature">
     Easily access your Google Drive files when you’re offline
   </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_EXPLANATION" translateable="false" desc="The main text of the dialog offering the Google Drive bulk pinning feature">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_EXPLANATION" desc="The main text of the dialog offering the Google Drive bulk pinning feature">
     Your files in My Drive will sync to your Chromebook automatically so you can access them without an internet connection.
   </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_POINT_1" translateable="false" desc="First bullet point of the dialog offering the Google Drive bulk pinning feature">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_POINT_1" desc="First bullet point of the dialog offering the Google Drive bulk pinning feature">
     Files will be stored in the cloud and on this Chromebook.
   </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_SPACE" translateable="false" desc="Text in the dialog offering the Google Drive bulk pinning feature">
-    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available.
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_MULTIPLE_FILES_SYNCING_LABEL" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
+    Syncing <ph name="NUMBER_OF_FILES_SYNCING">$1<ex>1,687</ex></ph> files
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SETTINGS_LINK_LABEL" desc="The text of the button in the Bulk pinning dialog that takes the user to the chromeOS settings page for Google Drive.">
+    Google Drive settings
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
+    Syncing 1 file
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_SPACE" desc="Text in the dialog offering the Google Drive bulk pinning feature">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph>. You currently have <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available.
+  </message>
+  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
+    Your Google Drive files are available offline
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_TURN_ON" desc="Text in the Continue button of the dialog offering the Google Drive bulk pinning feature">
+    Turn on
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_PREPARING_TO_SYNC" desc="Text in the progress panel indicating the bulk pinning operations is preparing files to sync">
+    Preparing to sync Drive files...
+  </message>
+  <!-- TODO(b/276126188): Remove the translateable="false" when the copy has been landed on. -->
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
+    You are currently offline. Sync will resume when the connection is back on.
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_LISTING" translateable="false" desc="Information message displayed when the Google Drive bulk pinning feature is computing the space requirements">
     Calculating storage requirements…
@@ -1795,13 +1798,22 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE" translateable="false" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because of lack of internet connection">
     You are currently offline. Try again when you are connected to the internet.
   </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_CONTINUE" translateable="false" desc="Text in the Continue button of the dialog offering the Google Drive bulk pinning feature">
-    Continue
-  </message>
-  <message name="IDS_FILE_BROWSER_BULK_PINNING_GET_STARTED" translateable="false" desc="Text in the Get started button of the banner offering the Google Drive bulk pinning feature">
-    Get started
-  </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL" translateable="false" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL" translateable="false" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
     You don't have enough local storage to keep all your files available offline.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION" translateable="false" desc="The text displayed by the system notification when the bulk pinning of Google Drive items stopped due to insufficient space">
+    We couldn't sync all of your My Drive files because you don't have enough storage available. Files that were already synced will stay available offline, but automatic syncing has been turned off.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING" translateable="false" desc="System notification displayed when the Google Drive cache file were removed while the user was logged out">
+    Your offline files had to be cleared from your Chromebook to keep things running. Automatic syncing has also been turned off. Your files are still available in your My Drive online.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE" translateable="false" desc="Title of system notification displayed when an error occurred while syncing Google Drive files">
+    Sync error
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_ITEM_UNAVAILABLE_OFFLINE" translateable="false" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
+    Item unavailable offline
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_FOLDER_INDICATOR_TOOLTIP" translateable="false" desc="The text used when hovering over the offline folder indicator beside the breadcrumbs">
+    Your files are being automatically synced for offline availability.
   </message>
 </grit-part>

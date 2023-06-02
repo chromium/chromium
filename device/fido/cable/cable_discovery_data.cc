@@ -153,6 +153,13 @@ absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
     return absl::nullopt;
   }
 
+  const auto play_services_tag_it = map.find(cbor::Value(999));
+  if (play_services_tag_it != map.end() &&
+      play_services_tag_it->second.is_bool() &&
+      play_services_tag_it->second.GetBool()) {
+    pairing->from_new_implementation = true;
+  }
+
   return pairing;
 }
 

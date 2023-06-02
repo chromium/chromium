@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "shortcut_info_unittest.cc",
     "webapk/webapk_icon_hasher_unittest.cc",
     "webapk/webapk_proto_builder_unittest.cc",
+    "webapp_icon_unittest.cc",
     "webapps_utils_unittest.cc",
   ]
   deps = [

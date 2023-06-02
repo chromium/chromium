@@ -112,8 +112,8 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
 
  protected:
   std::unique_ptr<Widget> anchor_widget_;
-  raw_ptr<BubbleDialogDelegateView> bubble_ = nullptr;
-  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<BubbleDialogDelegateView, DanglingUntriaged> bubble_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
   raw_ptr<View> view1_;
   raw_ptr<View> view2_;
   raw_ptr<View> view3_;

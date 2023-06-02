@@ -88,11 +88,11 @@ export class CertificateDeleteConfirmationDialogElement extends
     }
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onOkTap_() {
+  private onOkClick_() {
     CertificatesBrowserProxyImpl.getInstance()
         .deleteCertificate(this.model.id)
         .then(

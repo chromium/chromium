@@ -66,15 +66,7 @@ SVGFECompositeElement::SVGFECompositeElement(Document& document)
           MakeGarbageCollected<SVGAnimatedEnumeration<CompositeOperationType>>(
               this,
               svg_names::kOperatorAttr,
-              FECOMPOSITE_OPERATOR_OVER)) {
-  AddToPropertyMap(k1_);
-  AddToPropertyMap(k2_);
-  AddToPropertyMap(k3_);
-  AddToPropertyMap(k4_);
-  AddToPropertyMap(in1_);
-  AddToPropertyMap(in2_);
-  AddToPropertyMap(svg_operator_);
-}
+              FECOMPOSITE_OPERATOR_OVER)) {}
 
 void SVGFECompositeElement::Trace(Visitor* visitor) const {
   visitor->Trace(k1_);
@@ -144,6 +136,39 @@ FilterEffect* SVGFECompositeElement::Build(SVGFilterBuilder* filter_builder,
   input_effects.push_back(input1);
   input_effects.push_back(input2);
   return effect;
+}
+
+SVGAnimatedPropertyBase* SVGFECompositeElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kK1Attr) {
+    return k1_.Get();
+  } else if (attribute_name == svg_names::kK2Attr) {
+    return k2_.Get();
+  } else if (attribute_name == svg_names::kK3Attr) {
+    return k3_.Get();
+  } else if (attribute_name == svg_names::kK4Attr) {
+    return k4_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else if (attribute_name == svg_names::kIn2Attr) {
+    return in2_.Get();
+  } else if (attribute_name == svg_names::kOperatorAttr) {
+    return svg_operator_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFECompositeElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{k1_.Get(),          k2_.Get(),  k3_.Get(),
+                                     k4_.Get(),          in1_.Get(), in2_.Get(),
+                                     svg_operator_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

@@ -396,12 +396,12 @@ class NearbyConnectionsTest : public testing::Test {
     EXPECT_CALL(*service_controller_router_ptr_, AcceptConnection)
         .WillOnce([&client_proxy, &remote_endpoint_id](
                       ClientProxy* client, absl::string_view endpoint_id,
-                      const PayloadListener& listener,
+                      PayloadListener listener,
                       const ResultCallback& callback) {
           client_proxy = client;
           EXPECT_EQ(remote_endpoint_id, endpoint_id);
           client_proxy->LocalEndpointAcceptedConnection(
-              std::string{endpoint_id}, listener);
+              std::string{endpoint_id}, std::move(listener));
           client_proxy->OnConnectionAccepted(std::string(endpoint_id));
           callback.result_cb({Status::kSuccess});
         });

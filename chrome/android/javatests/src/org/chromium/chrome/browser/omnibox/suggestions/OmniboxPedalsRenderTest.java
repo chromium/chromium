@@ -35,7 +35,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
@@ -106,10 +106,10 @@ public class OmniboxPedalsRenderTest {
      *
      * @return a dummy pedal suggestion.
      */
-    private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
+    private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalId int id) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(List.of(new OmniboxPedal("hint", id)))
+                .setActions(List.of(new OmniboxPedal(0, "hint", "accessibility", id)))
                 .build();
     }
 
@@ -119,7 +119,7 @@ public class OmniboxPedalsRenderTest {
     public void testRunChromeSafetyCheckPedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
-                createDummyPedalSuggestion("pedal", OmniboxPedalType.RUN_CHROME_SAFETY_CHECK));
+                createDummyPedalSuggestion("pedal", OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(suggestionsList, null), "Run safety check");
         mOmniboxUtils.checkSuggestionsShown();
@@ -134,7 +134,7 @@ public class OmniboxPedalsRenderTest {
     public void testPlayChromeDinoGamePedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
-                createDummyPedalSuggestion("pedal", OmniboxPedalType.PLAY_CHROME_DINO_GAME));
+                createDummyPedalSuggestion("pedal", OmniboxPedalId.PLAY_CHROME_DINO_GAME));
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(suggestionsList, null), "Dino game");
         mOmniboxUtils.checkSuggestionsShown();

@@ -9,7 +9,6 @@
   .body {
     display: flex;
     flex-direction: column;
-    gap: 8px;
   }
 
   .button-row {
@@ -55,6 +54,7 @@
     border: 1px solid var(--scrollable-border-color);
     border-radius: 2px;
     height: 160px;
+    margin-top: 8px;
     overflow: auto;
   }
 
@@ -80,6 +80,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+
+  :host-context([chrome-refresh-2023]) .input-section {
+    margin-bottom: 16px;
   }
 
   .name-input {

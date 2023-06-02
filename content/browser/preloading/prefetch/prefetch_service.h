@@ -236,9 +236,8 @@ class CONTENT_EXPORT PrefetchService {
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      const GURL& url);
+  network::mojom::URLLoaderFactory* GetURLLoaderFactoryForCurrentPrefetch(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called when the request for |prefetch_container| is redirected.
   void OnPrefetchRedirect(base::WeakPtr<PrefetchContainer> prefetch_container,
@@ -273,8 +272,7 @@ class CONTENT_EXPORT PrefetchService {
   // prefetch if needed, and updates its state.
   void ReturnPrefetchToServe(
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnPrefetchToServeReady on_prefetch_to_serve_ready,
-      const GURL& nav_url);
+      OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Helper function for |GetPrefetchToServe| to wait for head of a
   // potentially matching CL in order to decide if we can use it or not for
@@ -300,7 +298,7 @@ class CONTENT_EXPORT PrefetchService {
 
   void DumpPrefetchesForDebug() const;
 
-  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
 
   // Delegate provided by embedder that controls specific behavior of |this|.
   // May be nullptr if embedder doesn't provide a delegate.

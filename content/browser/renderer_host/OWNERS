@@ -4,6 +4,7 @@ kenrb@chromium.org
 
 # Touch input and gesture relatated code.
 rjkroege@chromium.org
+jonross@chromium.org
 
 # Surface ID propagation and synchronization, and compositing embedding
 # via DelegatedFrame*.
@@ -19,6 +20,7 @@ rakina@chromium.org
 
 # Aura platform code.
 per-file *aura*=rjkroege@chromium.org
+per-file *aura*=jonross@chromium.org
 
 # Mac platform GPU-related code.
 per-file *mac*=kbr@chromium.org

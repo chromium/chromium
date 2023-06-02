@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
@@ -37,7 +37,8 @@ bool IsFeatureAllowed(content::BrowserContext* context) {
 
 // static
 TetherServiceFactory* TetherServiceFactory::GetInstance() {
-  return base::Singleton<TetherServiceFactory>::get();
+  static base::NoDestructor<TetherServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -61,7 +62,7 @@ TetherServiceFactory::TetherServiceFactory()
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 }
 
-TetherServiceFactory::~TetherServiceFactory() {}
+TetherServiceFactory::~TetherServiceFactory() = default;
 
 KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

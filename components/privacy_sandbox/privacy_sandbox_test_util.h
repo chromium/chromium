@@ -61,6 +61,12 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
+  void SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(bool unrestricted) {
+    ON_CALL(*this, IsPrivacySandboxCurrentlyUnrestricted).WillByDefault([=]() {
+      return unrestricted;
+    });
+  }
+
   void SetUpIsIncognitoProfileResponse(bool incognito) {
     ON_CALL(*this, IsIncognitoProfile).WillByDefault([=]() {
       return incognito;
@@ -81,6 +87,11 @@ class MockPrivacySandboxSettingsDelegate
   }
 
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
+  MOCK_METHOD(bool,
+              IsPrivacySandboxCurrentlyUnrestricted,
+              (),
+              (const, override));
+
   MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
   MOCK_METHOD(bool, HasAppropriateTopicsConsent, (), (const, override));
   MOCK_METHOD(bool, IsSubjectToM1NoticeRestricted, (), (const, override));
@@ -116,6 +127,7 @@ enum class StateKey {
   kM1AdMesaurementDisabledByPolicy = 23,
   kHasAppropriateTopicsConsent = 24,
   kM1RestrictedNoticeAcknowledged = 25,
+  kAttestationsMap = 26,
 };
 
 // Defines the input to the functions under test.
@@ -201,7 +213,8 @@ using TestCaseItemValue =
                   base::Time,
                   base::TimeDelta,
                   privacy_sandbox::TopicsConsentUpdateSource,
-                  std::vector<int>>;
+                  std::vector<int>,
+                  privacy_sandbox::PrivacySandboxAttestationsMap>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;
@@ -256,6 +269,7 @@ void ApplyTestState(
     MockPrivacySandboxSettingsDelegate* mock_delegate,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider);
 

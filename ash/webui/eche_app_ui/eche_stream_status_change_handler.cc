@@ -57,6 +57,26 @@ void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
     } else {
       base::UmaHistogramEnumeration("Eche.StreamEvent",
                                     mojom::StreamStatus::kStreamStatusStarted);
+      switch (apps_launch_info_provider_->entry_point()) {
+        case eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST:
+          base::UmaHistogramEnumeration(
+              "Eche.StreamEvent.FromLauncher",
+              eche_app::mojom::StreamStatus::kStreamStatusStarted);
+          break;
+        case eche_app::mojom::AppStreamLaunchEntryPoint::NOTIFICATION:
+          base::UmaHistogramEnumeration(
+              "Eche.StreamEvent.FromNotification",
+              eche_app::mojom::StreamStatus::kStreamStatusStarted);
+          break;
+        case eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS:
+          base::UmaHistogramEnumeration(
+              "Eche.StreamEvent.FromRecentApps",
+              eche_app::mojom::StreamStatus::kStreamStatusStarted);
+          break;
+        case eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN:
+          NOTREACHED();
+          break;
+      }
     }
   }
 }

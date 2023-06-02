@@ -133,7 +133,7 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
   base::flat_map<std::string, ukm::SourceId> ukm_source_ids_;
 
   PageLoadMetricsObserverEvents events_;
-  raw_ptr<TestPageLoadMetricsObserver> observer_;
+  raw_ptr<TestPageLoadMetricsObserver, DanglingUntriaged> observer_;
   bool is_observer_passed_ = false;
 
   GURL target_url_;
@@ -494,9 +494,29 @@ TEST_F(PageLoadTrackerTest, LargestImageIncorrectLoadTimings) {
       /*load_timing_info=*/
       std::make_unique<net::LoadTimingInfo>(load_timing_info));
 
-  // Set document receive_headers_start.
+  // Set main frame document receive_headers_start. This field should be set
+  // only once.
   const auto request_id = navigation_simulator->GetGlobalRequestID();
   tester()->SimulateLoadedResource(request_info, request_id);
+
+  // Simulate the invocation of PageLoadTracker::OnLoadedResource() again with
+  // a ttfb earlier than the image load start and a request destination that is
+  // not of type Document. This should not overwrite the
+  // receive_headers_start that is already set.
+  load_timing_info.receive_headers_start =
+      reference_time + base::Milliseconds(29);
+
+  ExtraRequestCompleteInfo request_info1(
+      /*final_url=*/url::SchemeHostPort(GURL(kTestUrl)),
+      /*remote_endpoint=*/net::IPEndPoint(),
+      /*frame_tree_node_id=*/-1, /*was_cached=*/false, /*raw_body_bytes=*/0,
+      /*original_network_content_length=*/0,
+      /*request_destination=*/network::mojom::RequestDestination::kFrame,
+      /*net_error=*/0,
+      /*load_timing_info=*/
+      std::make_unique<net::LoadTimingInfo>(load_timing_info));
+
+  tester()->SimulateLoadedResource(request_info1, request_id);
 
   // Set largest contentful paint timings.
   tester()->SimulateTimingUpdate(timing);

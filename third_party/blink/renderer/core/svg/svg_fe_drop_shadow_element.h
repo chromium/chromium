@@ -51,6 +51,10 @@ class SVGFEDropShadowElement final
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedNumber> dx_;
   Member<SVGAnimatedNumber> dy_;
   Member<SVGAnimatedNumberOptionalNumber> std_deviation_;

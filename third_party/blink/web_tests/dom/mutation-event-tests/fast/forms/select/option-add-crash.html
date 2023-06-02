@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<script src="../../../../../resources/js-test.js"></script>
+<script>
+function crash()
+{
+    try {
+    document.getElementsByTagName('option')[0].parentNode.removeChild(document.getElementsByTagName('option')[0]);
+    } catch (Exception) {}
+
+    gc();
+}
+document.write("PASS. WebKit didn't crash.<select></select>");
+var select1 = document.getElementsByTagName('select')[0];
+select1.appendChild(document.createElement('option'));
+select1.appendChild(document.createElement('option'));
+document.addEventListener("DOMSubtreeModified", crash, false);
+try {
+  select1.options[0] = new Option("", "");
+} catch (Exception) { }
+</script>
+</html>

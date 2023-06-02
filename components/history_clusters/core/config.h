@@ -82,9 +82,8 @@ struct Config {
 
   // The `kJourneysImages` feature and child params.
 
-  // Whether to attempt to provide images for eligible Journeys (so far just
-  // a proof of concept implementation for Entities only).
-  bool images = false;
+  // Whether to attempt to provide images for eligible Journeys.
+  bool images = true;
 
   // Whether the image covers the whole icon container.
   bool images_cover = true;
@@ -175,37 +174,6 @@ struct Config {
   // aren't too many strong navigation matches.
   int omnibox_history_cluster_provider_score = 900;
 
-  // If enabled, will inherit the score from the matched search suggestion. This
-  // tries to emulate the ranking of chips, though remains slightly more
-  // conservative in that chips will be shown if the match query is at least the
-  // 8th top scored suggestion, while rows will be shown if the matched query is
-  // at least the 7th top scored suggestion. If enabled,
-  // `omnibox_history_cluster_provider_score` becomes a no-op.
-  bool omnibox_history_cluster_provider_inherit_search_match_score = false;
-
-  // If enabled, ranks the suggestion row below the default suggestion, but
-  // above the searches. Though whether it appears or not will depend on scores.
-  // Otherwise, ranks the suggestion among the search group; the exact position
-  // will depend on scores.
-  bool omnibox_history_cluster_provider_rank_above_searches = false;
-
-  // Whether Journey suggestions from the `HistoryClusterProvider` can be
-  // surfaced from the shortcuts' provider. They will be scored according to the
-  // shortcuts' provider's scoring, which is more aggressive than the default
-  // 900 score the `HistoryClusterProvider` assigns. Journey suggestions will
-  // still be limited to 1, and will still be locked to the last suggestion
-  // slot. More aggressive scoring won't affect ranking, but visibility. If
-  // disabled, journey suggestions will still be added to the table, but
-  // filtered out when retrieving suggesting; this is so that users in an
-  // experiment group with `omnibox_history_cluster_provider_shortcuts` enabled
-  // don't have lingering effects when they leave the group. Meaningless if
-  // `omnibox_history_cluster_provider` is disabled.
-  bool omnibox_history_cluster_provider_shortcuts = true;
-
-  // Whether journey suggestions from the `ShortcutsProvider` can be default.
-  // Journey suggestions from the `HistoryClusterProvider` can never be default.
-  bool omnibox_history_cluster_provider_allow_default = false;
-
   // If `omnibox_history_cluster_provider_on_navigation_intents` is false, this
   // threshold helps determine when the user is intending to perform a
   // navigation. Meaningless if either `omnibox_history_cluster_provider` is
@@ -294,7 +262,8 @@ struct Config {
   // The set of collections to block from being content clustered.
   base::flat_set<std::string> collections_to_block_from_content_clustering = {
       "/collection/it_glossary", "/collection/periodicals",
-      "/collection/software", "/collection/websites"};
+      "/collection/software", "/collection/tv_networks",
+      "/collection/websites"};
 
   // Whether to merge similar clusters using pairwise merge.
   bool use_pairwise_merge = false;
@@ -344,13 +313,6 @@ struct Config {
   base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);
 
   // WebUI features and params.
-
-  // Whether show either the hide visits thumbs-down or menu item on individual
-  // visits of persisted clusters. Which is shown depends on `hide_visits_icon`.
-  bool hide_visits = false;
-
-  // Whether to the icon or menu item.
-  bool hide_visits_icon = true;
 
   // Whether new tab groups created by "Open all in new tab group" should be
   // named after the cluster title. If false, the new tab group is anonymous,

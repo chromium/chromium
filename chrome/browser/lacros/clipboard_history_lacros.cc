@@ -4,6 +4,9 @@
 
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"

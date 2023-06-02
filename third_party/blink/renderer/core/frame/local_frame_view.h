@@ -394,6 +394,7 @@ class CORE_EXPORT LocalFrameView final
   void RunPostLifecycleSteps();
   bool InPostLifecycleSteps() const;
 
+  void ScheduleVisualUpdateForVisualOverflowIfNeeded();
   void ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
   // Perform a hit test on the frame with throttling allowed. Normally, a hit

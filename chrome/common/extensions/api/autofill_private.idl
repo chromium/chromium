@@ -248,6 +248,7 @@ namespace autofillPrivate {
   callback GetIbanListCallback = void(IbanEntry[] entries);
   callback GetUpiIdListCallback = void(DOMString[] entries);
   callback IsValidIbanCallback = void(boolean isValid);
+  callback CheckForUserAuthCallback = void(boolean isUserAuthSuccessful);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -352,6 +353,11 @@ namespace autofillPrivate {
     // Authenticates the user via device authentication and if successful, it
     // will then flip the mandatory auth toggle.
     static void authenticateUserAndFlipMandatoryAuthToggle();
+
+    // Authenticates the user via device authentication and it would return
+    // the result of user auth. If the auth was successful, we will show
+    // the edit card dialog for the Local card.
+    [supportsPromises] static void authenticateUserToEditLocalCard(CheckForUserAuthCallback callback);
   };
 
   interface Events {

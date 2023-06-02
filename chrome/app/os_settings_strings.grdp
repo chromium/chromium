@@ -1009,11 +1009,32 @@
     Share mounted successfully.
   </message>
   <!-- TODO(b/254586358): Finalise Office files strings -->
-  <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Office files settings.">
-    Office
+  <message name="IDS_SETTINGS_ONE_DRIVE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the OneDrive account settings.">
+    OneDrive
   </message>
-  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" translateable="false" desc="Title of the Office subpage.">
-    Office files
+  <message name="IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS" translateable="false" desc="Label indicating, in the Files Settings subpage, the email address with which the user is currently signed in in OneDrive">
+    Signed in as <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" translateable="false" desc="Label indicating, in the Files Settings subpage, that the user is currently not signed in in OneDrive">
+    Disconnected
+  </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" translateable="false" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
+    Connect account
+  </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECT" translateable="false" desc="Action to disconnect from OneDrive in Settings: Files: OneDrive.">
+    Disconnect
+  </message>
+  <message name="IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER" translateable="false" desc="Label for the Settings link in the OneDrive subpage to open the OneDrive folder">
+    Open OneDrive folder
+  </message>
+  <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
+    Microsoft 365
+  </message>
+  <message name="IDS_SETTINGS_OFFICE_SUBLABEL" translateable="false" desc="Sub-label that describes that users can open Microsoft 365 files.">
+    Open Word, Excel, and PowerPoint files
+  </message>
+  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" translateable="false" desc="Title of the Microsoft 365 subpage.">
+    Microsoft 365 files
   </message>
   <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" translateable="false" desc="Label for the preference that allows users to always move files to Drive without asking for confirmation.">
     Ask before moving Microsoft files to Google Drive
@@ -1126,6 +1147,9 @@
   </message>
   <message name="IDS_SETTINGS_STICKY_KEYS_DESCRIPTION" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
     Press one key at a time for keyboard shortcuts instead of holding keys down at the same time
+  </message>
+  <message name="IDS_SETTINGS_STICKY_KEYS_DISABLED_BY_CHROMEVOX_TOOLTIP" desc="Tooltip text which explains that the Sticky keys feature cannot be enabled when ChromeVox is on. Shown next to the disabled Sticky keys toggle when ChromeVox has been enabled.">
+    Sticky keys is not available when ChromeVox is on
   </message>
   <message name="IDS_SETTINGS_CHROMEVOX_LABEL" desc="Label for checkbox which enables ChromeVox, with a description of what ChromeVox is.">
     ChromeVox
@@ -1527,6 +1551,9 @@ Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION_SUBTEXT" desc="In the settings tab, the subtext next to the checkbox to highlight the focused object to make it easier to see.">
     Item is highlighted when you move focus. Press tab or select an item to change focus.
+  </message>
+    <message name="IDS_SETTINGS_FOCUS_HIGHLIGHT_DISABLED_BY_CHROMEVOX_TOOLTIP" desc="Tooltip text which explains that the 'Highlight the item with keyboard focus' feature cannot be enabled when ChromeVox is on. Shown next to the disabled 'Highlight the item with keyboard focus' toggle when ChromeVox has been enabled.">
+    Highlight the item with keyboard focus is not available when ChromeVox is on
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE" desc="In the settings tab, the text next to the checkbox to enable an option to hold a key and click to speak any on-screen text out loud.">
     Select-to-speak
@@ -2835,6 +2862,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the output mute button muted.">
     Volume is off. Turn on volume.
+  </message>
+    <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL" desc="Label for checkbox which enables charging sounds.">
+    Charging sounds
   </message>
 
   <!-- Device pointer page (OS settings) -->

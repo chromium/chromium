@@ -35,8 +35,7 @@ void ScrollHelperJavaScriptFeature::SetWebViewScrollViewIsDragging(
   WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
   if (!main_frame)
     return;
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(dragging));
+  auto parameters = base::Value::List().Append(dragging);
   CallJavaScriptFunction(main_frame, "setWebViewScrollViewIsDragging",
                          parameters);
 }

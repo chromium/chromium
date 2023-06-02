@@ -138,15 +138,16 @@ class WebAppIconFactoryTest : public testing::Test {
     EXPECT_TRUE(success);
   }
 
-  void GenerateWebAppIcon(const std::string& app_id,
-                          IconPurpose purpose,
-                          const std::vector<int>& sizes_px,
-                          apps::ScaleToSize scale_to_size_in_px,
-                          gfx::ImageSkia& output_image_skia,
-                          bool skip_icon_effects = false) {
+  gfx::ImageSkia GenerateWebAppIcon(const std::string& app_id,
+                                    IconPurpose purpose,
+                                    const std::vector<int>& sizes_px,
+                                    apps::ScaleToSize scale_to_size_in_px,
+                                    bool skip_icon_effects = false) {
     base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
     icon_manager().ReadIcons(app_id, purpose, sizes_px, future.GetCallback());
     auto icon_bitmaps = future.Take();
+
+    gfx::ImageSkia output_image_skia;
 
     for (auto [scale, size_in_px] : scale_to_size_in_px) {
       int icon_size_in_px =
@@ -178,38 +179,41 @@ class WebAppIconFactoryTest : public testing::Test {
     }
 
     EnsureRepresentationsLoaded(output_image_skia);
+
+    return output_image_skia;
   }
 
-  void GenerateWebAppCompressedIcon(const std::string& app_id,
-                                    IconPurpose purpose,
-                                    const std::vector<int>& sizes_px,
-                                    apps::ScaleToSize scale_to_size_in_px,
-                                    std::vector<uint8_t>& result) {
-    gfx::ImageSkia image_skia;
-    GenerateWebAppIcon(app_id, purpose, sizes_px, scale_to_size_in_px,
-                       image_skia);
+  std::vector<uint8_t> GenerateWebAppCompressedIcon(
+      const std::string& app_id,
+      IconPurpose purpose,
+      const std::vector<int>& sizes_px,
+      apps::ScaleToSize scale_to_size_in_px) {
+    gfx::ImageSkia image_skia =
+        GenerateWebAppIcon(app_id, purpose, sizes_px, scale_to_size_in_px);
 
     const float scale = 1.0;
     const gfx::ImageSkiaRep& image_skia_rep =
         image_skia.GetRepresentation(scale);
-    ASSERT_EQ(image_skia_rep.scale(), scale);
+    CHECK_EQ(image_skia_rep.scale(), scale);
 
     const SkBitmap& bitmap = image_skia_rep.GetBitmap();
     const bool discard_transparency = false;
-    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                  &result));
+    std::vector<uint8_t> result;
+    CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
+                                            &result));
+    return result;
   }
 
-  void GenerateWebAppCompressedIcon(const std::string& app_id,
-                                    IconPurpose purpose,
-                                    IconEffects icon_effects,
-                                    const std::vector<int>& sizes_px,
-                                    apps::ScaleToSize scale_to_size_in_px,
-                                    float scale,
-                                    std::vector<uint8_t>& result) {
-    gfx::ImageSkia image_skia;
-    GenerateWebAppIcon(app_id, purpose, sizes_px, scale_to_size_in_px,
-                       image_skia, /*skip_icon_effects=*/true);
+  std::vector<uint8_t> GenerateWebAppCompressedIcon(
+      const std::string& app_id,
+      IconPurpose purpose,
+      IconEffects icon_effects,
+      const std::vector<int>& sizes_px,
+      apps::ScaleToSize scale_to_size_in_px,
+      float scale) {
+    gfx::ImageSkia image_skia =
+        GenerateWebAppIcon(app_id, purpose, sizes_px, scale_to_size_in_px,
+                           /*skip_icon_effects=*/true);
 
     if (icon_effects != apps::IconEffects::kNone) {
       base::test::TestFuture<apps::IconValuePtr> iv_with_icon_effects;
@@ -223,23 +227,24 @@ class WebAppIconFactoryTest : public testing::Test {
 
     const gfx::ImageSkiaRep& image_skia_rep =
         image_skia.GetRepresentation(scale);
-    ASSERT_EQ(image_skia_rep.scale(), scale);
+    CHECK_EQ(image_skia_rep.scale(), scale);
 
     const SkBitmap& bitmap = image_skia_rep.GetBitmap();
     const bool discard_transparency = false;
-    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                  &result));
+    std::vector<uint8_t> result;
+    CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
+                                            &result));
+    return result;
   }
 
-  void LoadIconFromWebApp(const std::string& app_id,
-                          apps::IconEffects icon_effects,
-                          gfx::ImageSkia& output_image_skia) {
+  gfx::ImageSkia LoadIconFromWebApp(const std::string& app_id,
+                                    apps::IconEffects icon_effects) {
     base::test::TestFuture<apps::IconValuePtr> future;
     apps::LoadIconFromWebApp(profile(), apps::IconType::kStandard, kSizeInDip,
                              app_id, icon_effects, future.GetCallback());
     auto icon = future.Take();
-    output_image_skia = icon->uncompressed;
-    EnsureRepresentationsLoaded(output_image_skia);
+    EnsureRepresentationsLoaded(icon->uncompressed);
+    return icon->uncompressed;
   }
 
   apps::IconValuePtr LoadCompressedIconBlockingFromWebApp(
@@ -295,18 +300,17 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px,
-                     {{1.0, kIconSize1}, {2.0, kIconSize2}}, src_image_skia);
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px,
+                         {{1.0, kIconSize1}, {2.0, kIconSize2}});
 
-  gfx::ImageSkia dst_image_skia;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
 
-  LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
+  gfx::ImageSkia dst = LoadIconFromWebApp(app_id, icon_effect);
 
-  VerifyIcon(src_image_skia, dst_image_skia);
+  VerifyIcon(src_image_skia, dst);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadNonMaskableNonEffectCompressedIcon) {
@@ -324,10 +328,9 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableNonEffectCompressedIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data;
-  GenerateWebAppCompressedIcon(
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
       app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
-      {{1.0, kIconSize1}, {2.0, kIconSize2}}, /*scale=*/1.0, src_data);
+      {{1.0, kIconSize1}, {2.0, kIconSize2}}, /*scale=*/1.0);
 
   auto icon =
       LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kNone);
@@ -351,10 +354,9 @@ TEST_F(WebAppIconFactoryTest,
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data;
-  GenerateWebAppCompressedIcon(
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
       app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
-      {{1.0, kIconSize1}, {2.0, kIconSize2}}, /*scale=*/1.0, src_data);
+      {{1.0, kIconSize1}, {2.0, kIconSize2}}, /*scale=*/1.0);
 
   auto icon =
       LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kNone);
@@ -377,10 +379,9 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableCompressedIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data;
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY, sizes_px,
-                               {{1.0, kIconSize1}, {2.0, kIconSize2}},
-                               src_data);
+  std::vector<uint8_t> src_data =
+      GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY, sizes_px,
+                                   {{1.0, kIconSize1}, {2.0, kIconSize2}});
 
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
@@ -406,21 +407,18 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
 
   RegisterApp(std::move(web_app));
 
-  gfx::ImageSkia src_image_skia;
-  gfx::ImageSkia dst_image_skia;
-
   ASSERT_TRUE(
       icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
 
-  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
-                     {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
+                         {{1.0, kIconSize2}, {2.0, kIconSize2}});
 
-  LoadIconFromWebApp(app_id,
-                     apps::IconEffects::kRoundCorners |
-                         apps::IconEffects::kCrOsStandardBackground |
-                         apps::IconEffects::kCrOsStandardMask,
-                     dst_image_skia);
-  VerifyIcon(src_image_skia, dst_image_skia);
+  gfx::ImageSkia dst = LoadIconFromWebApp(
+      app_id, apps::IconEffects::kRoundCorners |
+                  apps::IconEffects::kCrOsStandardBackground |
+                  apps::IconEffects::kCrOsStandardMask);
+  VerifyIcon(src_image_skia, dst);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
@@ -439,7 +437,6 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
 
   RegisterApp(std::move(web_app));
 
-  std::vector<uint8_t> src_data;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
   apps::IconValuePtr icon;
 
@@ -448,9 +445,9 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
   ASSERT_TRUE(
       icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
 
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
-                               {{1.0, kIconSize2}, {2.0, kIconSize2}},
-                               src_data);
+  std::vector<uint8_t> src_data =
+      GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
+                                   {{1.0, kIconSize2}, {2.0, kIconSize2}});
 
   icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
 
@@ -475,18 +472,17 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIconWithMaskableIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize2}));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, {kIconSize2},
-                     {{1.0, kIconSize2}, {2.0, kIconSize2}}, src_image_skia);
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(app_id, IconPurpose::ANY, {kIconSize2},
+                         {{1.0, kIconSize2}, {2.0, kIconSize2}});
 
-  gfx::ImageSkia dst_image_skia;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
 
-  LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
+  gfx::ImageSkia dst = LoadIconFromWebApp(app_id, icon_effect);
 
-  VerifyIcon(src_image_skia, dst_image_skia);
+  VerifyIcon(src_image_skia, dst);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadSmallMaskableIcon) {
@@ -507,18 +503,16 @@ TEST_F(WebAppIconFactoryTest, LoadSmallMaskableIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, sizes_px));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, sizes_px,
-                     {{1.0, kIconSize1}, {2.0, kIconSize1}}, src_image_skia);
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, sizes_px,
+                         {{1.0, kIconSize1}, {2.0, kIconSize1}});
 
-  gfx::ImageSkia dst_image_skia;
-  LoadIconFromWebApp(app_id,
-                     apps::IconEffects::kRoundCorners |
-                         apps::IconEffects::kCrOsStandardBackground |
-                         apps::IconEffects::kCrOsStandardMask,
-                     dst_image_skia);
+  gfx::ImageSkia dst = LoadIconFromWebApp(
+      app_id, apps::IconEffects::kRoundCorners |
+                  apps::IconEffects::kCrOsStandardBackground |
+                  apps::IconEffects::kCrOsStandardMask);
 
-  VerifyIcon(src_image_skia, dst_image_skia);
+  VerifyIcon(src_image_skia, dst);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadExactSizeIcon) {
@@ -541,18 +535,17 @@ TEST_F(WebAppIconFactoryTest, LoadExactSizeIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px,
-                     {{1.0, kIconSize2}, {2.0, kIconSize4}}, src_image_skia);
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px,
+                         {{1.0, kIconSize2}, {2.0, kIconSize4}});
 
-  gfx::ImageSkia dst_image_skia;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
 
-  LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
+  gfx::ImageSkia dst = LoadIconFromWebApp(app_id, icon_effect);
 
-  VerifyIcon(src_image_skia, dst_image_skia);
+  VerifyIcon(src_image_skia, dst);
 }
 
 TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
@@ -575,13 +568,11 @@ TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
   gfx::ImageSkia src_image_skia;
   LoadDefaultIcon(src_image_skia);
 
-  gfx::ImageSkia dst_image_skia;
-  LoadIconFromWebApp(
-      app_id,
-      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon,
-      dst_image_skia);
+  gfx::ImageSkia dst =
+      LoadIconFromWebApp(app_id, apps::IconEffects::kRoundCorners |
+                                     apps::IconEffects::kCrOsStandardIcon);
 
-  VerifyIcon(src_image_skia, dst_image_skia);
+  VerifyIcon(src_image_skia, dst);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -722,16 +713,14 @@ TEST_F(WebAppIconFactoryTest, GetNonMaskableCompressedIconData) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data1;
-  std::vector<uint8_t> src_data2;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data1);
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale2, src_data2);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale2);
 
   // Verify getting the compressed icon data for the compressed icon with icon
   // effects.
@@ -764,16 +753,14 @@ TEST_F(WebAppIconFactoryTest,
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data1;
-  std::vector<uint8_t> src_data2;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data1);
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale2, src_data2);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale2);
 
   // Verify getting the compressed icon data for the compressed icon with icon
   // effects.
@@ -805,16 +792,14 @@ TEST_F(WebAppIconFactoryTest, GetNonMaskableNonEffectCompressedIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data1;
-  std::vector<uint8_t> src_data2;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data1);
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale2, src_data2);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale2);
 
   auto icon1 =
       GetWebAppCompressedIconData(app_id, ui::ResourceScaleFactor::k100Percent);
@@ -845,16 +830,14 @@ TEST_F(WebAppIconFactoryTest,
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data1;
-  std::vector<uint8_t> src_data2;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data1);
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale2, src_data2);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale2);
 
   // Verify getting the compressed icon data for the compressed icon.
   auto icon1 =
@@ -886,16 +869,14 @@ TEST_F(WebAppIconFactoryTest, GetMaskableCompressedIcon) {
 
   RegisterApp(std::move(web_app));
 
-  std::vector<uint8_t> src_data1;
-  std::vector<uint8_t> src_data2;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize2},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE,
-                               apps::IconEffects::kNone, {kIconSize2},
-                               scale_to_size_in_px, scale1, src_data1);
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE,
-                               apps::IconEffects::kNone, {kIconSize2},
-                               scale_to_size_in_px, scale2, src_data2);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::MASKABLE, apps::IconEffects::kNone, {kIconSize2},
+      scale_to_size_in_px, scale1);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::MASKABLE, apps::IconEffects::kNone, {kIconSize2},
+      scale_to_size_in_px, scale2);
 
   apps::IconValuePtr icon;
 
@@ -1051,10 +1032,9 @@ TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconData) {
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
 
-  std::vector<uint8_t> src_data;
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kRoundCorners, sizes_px,
-                               scale_to_size_in_px, scale1, src_data);
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kRoundCorners, sizes_px,
+      scale_to_size_in_px, scale1);
 
   // Verify the icon reading and writing function in AppService for the
   // compressed icon with icon effects.
@@ -1086,15 +1066,13 @@ TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconDatasSeparately) {
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
 
-  std::vector<uint8_t> src_data1;
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data1);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
 
-  std::vector<uint8_t> src_data2;
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kRoundCorners, sizes_px,
-                               scale_to_size_in_px, scale1, src_data2);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kRoundCorners, sizes_px,
+      scale_to_size_in_px, scale1);
 
   // Verify the icon reading and writing function in AppService for the
   // compressed icon without icon effects.
@@ -1131,15 +1109,13 @@ TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconDatas) {
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
 
-  std::vector<uint8_t> src_data1;
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data1);
+  std::vector<uint8_t> src_data1 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
 
-  std::vector<uint8_t> src_data2;
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kRoundCorners, sizes_px,
-                               scale_to_size_in_px, scale1, src_data2);
+  std::vector<uint8_t> src_data2 = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kRoundCorners, sizes_px,
+      scale_to_size_in_px, scale1);
 
   // Verify the icon reading and writing function in AppService at the same time
   // for the compressed icons with and without icon effects.
@@ -1172,9 +1148,8 @@ TEST_F(AppServiceWebAppIconTest, GetNonMaskableStandardIconData) {
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia);
+  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
+      app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
   // Verify the icon reading and writing function in AppService for the
   // kStandard icon.
@@ -1214,12 +1189,11 @@ TEST_F(AppServiceWebAppIconTest,
   // The generated ImageSkia will be applied with the icon effect kRoundCorners.
   // Then the ImageSkiaRep(scale=1.0) is encoded to generate the compressed icon
   // data `src_data`.
-  std::vector<uint8_t> src_data;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kRoundCorners, sizes_px,
-                               scale_to_size_in_px, scale, src_data);
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kRoundCorners, sizes_px,
+      scale_to_size_in_px, scale);
 
   // Verify the icon reading and writing function in AppService for the
   // compressed icon with icon effects. LoadIconFromIconKey can generate the
@@ -1231,9 +1205,9 @@ TEST_F(AppServiceWebAppIconTest,
   VerifyCompressedIcon(
       src_data, *LoadIconFromIconKey(app_id, icon_key, IconType::kCompressed));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia, /*skip_icon_effects=*/true);
+  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
+      app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   // Verify the icon reading and writing function in AppService for the
   // kUncompressed icon.
@@ -1266,9 +1240,8 @@ TEST_F(AppServiceWebAppIconTest,
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia);
+  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
+      app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
   // Verify the icon reading and writing function in AppService for the
   // kStandard icon.
@@ -1301,12 +1274,11 @@ TEST_F(AppServiceWebAppIconTest, GetNonMaskableNonEffectCompressedIcon) {
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale1, src_data);
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale1);
 
   VerifyCompressedIcon(src_data, *LoadIcon(app_id, IconType::kCompressed));
 }
@@ -1328,18 +1300,17 @@ TEST_F(AppServiceWebAppIconTest,
 
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
-  std::vector<uint8_t> src_data;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY,
-                               apps::IconEffects::kNone, sizes_px,
-                               scale_to_size_in_px, scale, src_data);
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      scale_to_size_in_px, scale);
 
   VerifyCompressedIcon(src_data, *LoadIcon(app_id, IconType::kCompressed));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia, /*skip_icon_effects=*/true);
+  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
+      app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   // Verify the icon reading and writing function in AppService for the
   // kUncompressed icon.
@@ -1370,19 +1341,17 @@ TEST_F(AppServiceWebAppIconTest, GetMaskableCompressedIcon) {
 
   RegisterApp(std::move(web_app));
 
-  std::vector<uint8_t> src_data;
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize2},
                                            {2.0, kIconSize2}};
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE,
-                               apps::IconEffects::kNone, {kIconSize2},
-                               scale_to_size_in_px, scale, src_data);
+  std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::MASKABLE, apps::IconEffects::kNone, {kIconSize2},
+      scale_to_size_in_px, scale);
 
   VerifyCompressedIcon(src_data, *LoadIcon(app_id, IconType::kCompressed));
 
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
-                     scale_to_size_in_px, src_image_skia,
-                     /*skip_icon_effects=*/true);
+  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
+      app_id, IconPurpose::MASKABLE, {kIconSize2}, scale_to_size_in_px,
+      /*skip_icon_effects=*/true);
 
   // Verify the icon reading and writing function in AppService for the
   // kUncompressed icon.
@@ -1415,9 +1384,8 @@ TEST_F(AppServiceWebAppIconTest, GetMaskableStandardIcon) {
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize2},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia;
-  GenerateWebAppIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
-                     scale_to_size_in_px, src_image_skia);
+  gfx::ImageSkia src_image_skia = GenerateWebAppIcon(
+      app_id, IconPurpose::MASKABLE, {kIconSize2}, scale_to_size_in_px);
 
   // Verify the icon reading and writing function in AppService for the
   // kStandard icon.
@@ -1456,9 +1424,8 @@ TEST_F(AppServiceWebAppIconTest, IconUpdate) {
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia1;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia1);
+  gfx::ImageSkia src_image_skia1 = GenerateWebAppIcon(
+      app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
   // Load the kStandard icon to generate the icon file in the AppService
   // directory.
@@ -1474,9 +1441,8 @@ TEST_F(AppServiceWebAppIconTest, IconUpdate) {
   // Update the icon
   const std::vector<SkColor> colors2{SK_ColorRED, SK_ColorBLUE};
   WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors2);
-  gfx::ImageSkia src_image_skia2;
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia2);
+  gfx::ImageSkia src_image_skia2 = GenerateWebAppIcon(
+      app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
   UpdateIcon(app_id, icon_key);
 
@@ -1519,12 +1485,10 @@ TEST_F(AppServiceWebAppIconTest, IconLoadingForReinstallApps) {
 
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
                                            {2.0, kIconSize2}};
-  gfx::ImageSkia src_image_skia1;
-  GenerateWebAppIcon(app_id1, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia1);
-  gfx::ImageSkia src_image_skia2;
-  GenerateWebAppIcon(app_id2, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia2);
+  gfx::ImageSkia src_image_skia1 = GenerateWebAppIcon(
+      app_id1, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
+  gfx::ImageSkia src_image_skia2 = GenerateWebAppIcon(
+      app_id2, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
   // Load the kStandard icon to generate the icon files in the AppService
   // directory.
@@ -1546,12 +1510,10 @@ TEST_F(AppServiceWebAppIconTest, IconLoadingForReinstallApps) {
   WriteIcons(app_id1, {IconPurpose::ANY}, sizes_px, colors3);
   WriteIcons(app_id2, {IconPurpose::ANY}, sizes_px, colors4);
 
-  gfx::ImageSkia src_image_skia3;
-  GenerateWebAppIcon(app_id1, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia3);
-  gfx::ImageSkia src_image_skia4;
-  GenerateWebAppIcon(app_id2, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
-                     src_image_skia4);
+  gfx::ImageSkia src_image_skia3 = GenerateWebAppIcon(
+      app_id1, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
+  gfx::ImageSkia src_image_skia4 = GenerateWebAppIcon(
+      app_id2, IconPurpose::ANY, sizes_px, scale_to_size_in_px);
 
   // Uninstall and reinstall apps
   ReinstallApps({app_id1, app_id2});

@@ -76,7 +76,8 @@ class InterpolatingLayoutManagerTest : public testing::Test {
   views::View* host_view() { return host_view_.get(); }
 
  private:
-  raw_ptr<InterpolatingLayoutManager> layout_manager_ = nullptr;
+  raw_ptr<InterpolatingLayoutManager, DanglingUntriaged> layout_manager_ =
+      nullptr;
   std::unique_ptr<views::View> host_view_;
 };
 

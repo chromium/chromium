@@ -175,12 +175,12 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
   // We don't know at this point if the test being run needs the FLEDGE or
   // Shared Storage permissions set. To be safe, we set both here.
-  config.required_permissions_to_load.insert(
-      config.required_permissions_to_load.end(),
+  config.effective_enabled_permissions.insert(
+      config.effective_enabled_permissions.end(),
       std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
       std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
-  config.required_permissions_to_load.insert(
-      config.required_permissions_to_load.end(),
+  config.effective_enabled_permissions.insert(
+      config.effective_enabled_permissions.end(),
       std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
       std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
   return urn;
@@ -254,7 +254,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
                                   VisibilityToContent::kOpaque);
   config.on_navigate_callback_ = std::move(on_navigate_callback);
 
-  config.required_permissions_to_load =
+  config.effective_enabled_permissions =
       std::vector<blink::mojom::PermissionsPolicyFeature>(
           std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
           std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
@@ -364,7 +364,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
                                mapping_result.budget_metadata,
                                std::move(mapping_result.fenced_frame_reporter));
     config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
-    config->required_permissions_to_load = {
+    config->effective_enabled_permissions = {
         std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
         std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures)};
 

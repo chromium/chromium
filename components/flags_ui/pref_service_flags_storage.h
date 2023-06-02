@@ -45,7 +45,7 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
 };
 
 }  // namespace flags_ui

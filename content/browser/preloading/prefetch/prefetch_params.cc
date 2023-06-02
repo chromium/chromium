@@ -228,7 +228,7 @@ bool PrefetchShouldBlockUntilHead(
     case blink::mojom::SpeculationEagerness::kEager:
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,
-          "block_until_head_eager_prefetch", true);
+          "block_until_head_eager_prefetch", false);
     case blink::mojom::SpeculationEagerness::kModerate:
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,
@@ -237,6 +237,18 @@ bool PrefetchShouldBlockUntilHead(
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,
           "block_until_head_conservative_prefetch", true);
+  }
+}
+
+std::string GetPrefetchEagernessHistogramSuffix(
+    const blink::mojom::SpeculationEagerness& eagerness) {
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kEager:
+      return "Eager";
+    case blink::mojom::SpeculationEagerness::kModerate:
+      return "Moderate";
+    case blink::mojom::SpeculationEagerness::kConservative:
+      return "Conservative";
   }
 }
 

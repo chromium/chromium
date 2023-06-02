@@ -1,0 +1,7 @@
+{
+  "name": "todomvc",
+  "dependencies": {
+    "ember": "2.14.1",
+    "ember-cli-shims": "0.1.3"
+  }
+}

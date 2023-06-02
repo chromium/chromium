@@ -34,6 +34,7 @@ class PrintingMetricsForProfileAsh
   ~PrintingMetricsForProfileAsh() override;
 
   // crosapi::mojom::PrintingMetricsForProfile:
+  void DeprecatedGetPrintJobs(DeprecatedGetPrintJobsCallback) override;
   void GetPrintJobs(GetPrintJobsCallback) override;
 
   // ash::PrintJobHistoryService::Observer:

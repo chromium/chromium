@@ -38,6 +38,7 @@ extra_gn_deps = [
 ]
 
 [crate.compiler_builtins]
+features = ['weak-intrinsics']
 # Dependencies of profiler_builtins must have instrumentation disabled
 remove_library_configs = ['//build/config/coverage:default_coverage']
 extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
@@ -49,14 +50,6 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 add_library_configs = ['//build/rust:panic_immediate_abort']
 
 [crate.libc]
-# Many flags are set by libc's build.rs based on new enough rustc but we don't
-# run build scripts for std crates.
-# See https://github.com/rust-lang/libc/blob/master/build.rs
-cfg = ['libc_priv_mod_use', 'libc_union', 'libc_const_size_of', 'libc_align',
-'libc_int128', 'libc_core_cvoid', 'libc_packedN', 'libc_cfg_target_vendor',
-'libc_non_exhaustive', 'libc_long_array', 'libc_ptr_addr_of',
-'libc_underscore_const_names', 'libc_const_extern_fn'
-]
 # The libc crate tries to link in the Windows CRT, but we specify the CRT
 # library ourselves in //build/config/win:dynamic_crt and
 # //build/config/win:static_crt because Rustc does not allow us to specify
@@ -69,6 +62,9 @@ remove_library_configs = ['//build/config/coverage:default_coverage']
 extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 
 [crate.profiler_builtins]
+# The build script is used to compile a profiler-rt library, but we get
+# the profiler rt library from clang, so we skip this.
+skip_build_rs = true
 # profiler_builtins cannot depend on itself, which it would if build with
 # instrumentation.
 remove_library_configs = ['//build/config/coverage:default_coverage']
@@ -86,14 +82,14 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 
 [crate.std]
 # Requires:
-# * cfg(backtrace_in_libstd) because it directly includes .rs files from the
-#   backtrace code rather than including it as a dependency. backtrace's
-#   implementation has special-purpose code to handle this.
 # * STD_ENV_ARCH is referenced in architecture-dependent code. Note this is the
 #   target arch, and as such `$rust_target_arch` is passed literally to GN. This
 #   variable is set at build time in build/config/rust.gni
 #
 # See https://github.com/rust-lang/rust/blob/master/library/std/build.rs
+#
+# TODO(crbug.com/1448880): Our cargo emulation should use `cargo:rustc-env`
+# to set the environment for the crate, then this goes away.
 cfg = ['backtrace_in_libstd']
 env = ['STD_ENV_ARCH=$rust_target_arch']
 add_library_configs = ['//build/rust:panic_immediate_abort']
@@ -113,6 +109,10 @@ env = ['CFG_DISABLE_UNSTABLE_FEATURES=0']
 exclude_deps_in_gn = ['proc_macro']
 
 [crate.unwind]
+# The build script is used to set up the link directives which we skip below.
+# It uses `cc` to run a compiler to do so, which we don't support in build
+# scripts.
+skip_build_rs = true
 # The unwind crate has #[link] directives to the native unwind library, but we
 # either get that automatically by linking with clang++, or build and link the
 # lib from //buildtools/third_party/libunsind explicitly. Disable -lfoo linker

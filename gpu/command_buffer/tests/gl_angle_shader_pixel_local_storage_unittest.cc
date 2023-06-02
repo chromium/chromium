@@ -275,6 +275,8 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
     return;
   }
 
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
   GLuint tex;
   glGenTextures(1, &tex);
   glBindTexture(GL_TEXTURE_2D, tex);

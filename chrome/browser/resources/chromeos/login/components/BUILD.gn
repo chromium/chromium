@@ -45,8 +45,10 @@ group("closure_compile") {
     ":oobe_apps_list",
     ":oobe_carousel",
     ":oobe_cr_lottie",
+    ":oobe_display_size_selector",
     ":oobe_i18n_dropdown",
     ":oobe_icons.html",
+    ":oobe_illo_icons.html",
     ":oobe_network_icons.html",
     ":oobe_screens_list",
     ":oobe_select",
@@ -176,6 +178,12 @@ js_library("oobe_icons.html") {
   extra_deps = [ ":html_wrapper_files" ]
 }
 
+js_library("oobe_illo_icons.html") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.html.js" ]
+  deps = []
+  extra_deps = [ ":html_wrapper_files" ]
+}
+
 js_library("oobe_i18n_dropdown") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.js" ]
   deps = [
@@ -202,6 +210,15 @@ js_library("oobe_cr_lottie") {
   ]
   externs_list = [
     "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("oobe_display_size_selector") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_display_size_selector.js" ]
+  deps = [
+    "./behaviors:oobe_i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -301,6 +318,7 @@ copy("copy_js") {
 html_to_wrapper("html_wrapper_files") {
   in_files = [
     "oobe_icons.html",
+    "oobe_illo_icons.html",
     "oobe_network_icons.html",
   ]
   use_js = true
@@ -320,6 +338,7 @@ html_to_js("web_components_local") {
     "oobe_apps_list.js",
     "oobe_carousel.js",
     "oobe_cr_lottie.js",
+    "oobe_display_size_selector.js",
     "oobe_i18n_dropdown.js",
     "oobe_screens_list.js",
     "oobe_slide.js",

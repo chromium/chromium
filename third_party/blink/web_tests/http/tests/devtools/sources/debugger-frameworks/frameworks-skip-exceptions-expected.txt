@@ -2,5 +2,5 @@ Tests that framework black-boxing skips exceptions, including those that happene
 
 Set timer for test function.
 Call stack:
-    0) testFunction (frameworks-skip-exceptions.js:21)
+    0) testFunction (frameworks-skip-exceptions.js:24)
 

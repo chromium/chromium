@@ -30,6 +30,9 @@
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_UNMUTE" desc="The button to trigger media playback to unmute.">
     Unmute
   </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING" desc="The button to trigger media start casting to another device.">
+    Start casting
+  </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME" desc="The accessible name for the media notification to control playback.">
     Media Controls
   </message>

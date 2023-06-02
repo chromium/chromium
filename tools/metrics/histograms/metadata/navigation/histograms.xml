@@ -35,16 +35,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="PrerenderTriggerType">
-<!--
-Also used in tools/metrics/histograms/metadata/page/histograms.xml.
+<!-- Should be kept in sync with variants PagePrerenderTriggerType in
+  tools/metrics/histograms/metadata/page/histograms.xml.
 -->
 
-  <variant name="">
-    <obsolete>
-      Base histogram. Use suffixes of this histogram instead. Non-suffix name
-      was removed in Feb 2022.
-    </obsolete>
-  </variant>
   <variant name=".Embedder_BookmarkBar"/>
   <variant name=".Embedder_DefaultSearchEngine"/>
   <variant name=".Embedder_DirectURLInput"/>
@@ -105,8 +99,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
     When navigating back to a page in the session history and the
-    BackForwardCache wasn't used because of the related browsing instances, this
-    records the reason why the browsing instance wasn't swapped.
+    BackForwardCache wasn't used because of the other active WebContents objects
+    in the BrowsingInstance, this records the reason why the browsing instance
+    wasn't swapped.
 
     This is recorded for all websites regardless whether back-forward cache is
     enabled or not.
@@ -145,8 +140,41 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     the first place based on the features used, or it might have been evicted
     while being in the cache.
 
-    This is recorded for all websites regardless whether back-forward cache is
-    enabled or not.
+    This is recorded for all websites regardless of whether back-forward cache
+    is enabled or not.
+  </summary>
+</histogram>
+
+<histogram
+    name="BackForwardCache.AllSites.HistoryNavigationOutcome.RelatedActiveContents.Count"
+    units="count" expires_after="2023-10-21">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    When navigating back to a page in the session history and the
+    BackForwardCache wasn't used because of other active WebContents objects in
+    the BrowsingInstance, this records the number of other active pages/related
+    active contents using the same BrowsingInstance.
+
+    This is recorded for all websites regardless of whether back-forward cache
+    is enabled or not.
+  </summary>
+</histogram>
+
+<histogram
+    name="BackForwardCache.AllSites.HistoryNavigationOutcome.RelatedActiveContents.IsPotentiallySyncAccessible"
+    enum="RelatedActiveContentsSyncAccessInfo" expires_after="2023-10-21">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    When navigating back to a page in the session history and the
+    BackForwardCache wasn't used because of other active WebContents objects in
+    the BrowsingInstance, this Records whether the page was potentially
+    synchronously accessible by other pages/related active contents using the
+    same BrowsingInstance, at the time the page was navigated away from.
+
+    This is recorded for all websites regardless of whether back-forward cache
+    is enabled or not.
   </summary>
 </histogram>
 
@@ -271,8 +299,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
     When navigating back to a page in the session history and the
-    BackForwardCache wasn't used because of the related browsing instances, this
-    records the reason why the browsing instance wasn't swapped.
+    BackForwardCache wasn't used because of the other active WebContents objects
+    in the BrowsingInstance, this records the reason why the browsing instance
+    wasn't swapped.
 
     This is recorded when back-forward cache is enabled for this navigation
     (back-forward cache feature is enabled and the domain is in the scope of the
@@ -355,6 +384,41 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram
+    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count"
+    units="count" expires_after="2023-10-21">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    When navigating back to a page in the session history and the
+    BackForwardCache wasn't used because of other active WebContents objects in
+    the BrowsingInstance, this records the number of other active pages/related
+    active contents using the same BrowsingInstance.
+
+    This is recorded when back-forward cache is enabled for this navigation
+    (back-forward cache feature is enabled and the domain is in the scope of the
+    experiment).
+  </summary>
+</histogram>
+
+<histogram
+    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.IsPotentiallySyncAccessible"
+    enum="RelatedActiveContentsSyncAccessInfo" expires_after="2023-10-21">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    When navigating back to a page in the session history and the
+    BackForwardCache wasn't used because of other active WebContents objects in
+    the BrowsingInstance, this Records whether the page was potentially
+    synchronously accessible by other pages/related active contents using the
+    same BrowsingInstance, at the time the page was navigated away from.
+
+    This is recorded when back-forward cache is enabled for this navigation
+    (back-forward cache feature is enabled and the domain is in the scope of the
+    experiment).
+  </summary>
+</histogram>
+
 <histogram name="BackForwardCache.MainFrameHasPageshowListenersOnRestore"
     enum="BooleanPresent" expires_after="M82">
   <owner>altimin@chromium.org</owner>
@@ -368,7 +432,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="BackForwardCache.PageWithForm.RestoreResult"
-    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2023-09-17">
+    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2023-11-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -385,7 +449,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="BackForwardCache.PageWithForm.Storable"
-    enum="BackForwardCachePageWithFormStorable" expires_after="2023-09-17">
+    enum="BackForwardCachePageWithFormStorable" expires_after="2023-11-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -668,7 +732,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Guest.IsHTTPOrHTTPS"
-    enum="BooleanHttpBasedOrOtherScheme" expires_after="2023-09-17">
+    enum="BooleanHttpBasedOrOtherScheme" expires_after="2023-11-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -681,7 +745,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Guest.IsMainFrame" enum="BooleanMainFrame"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -727,7 +791,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -824,7 +888,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -1004,7 +1068,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadBrowserToRendererIpcTime" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1014,7 +1078,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadLegacyPostTaskTime" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1167,15 +1231,22 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Prerender.ActivationCommitDeferTime" units="ms"
-    expires_after="2023-06-04">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
+<histogram
+    name="Navigation.Prerender.ActivationCommitDeferTime{PrerenderTriggerType}"
+    units="ms" expires_after="2023-11-23">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@chromium.org</owner>
   <summary>
     Measures time a PrerenderCommitDeferringCondition defers activation waiting
     to commit an ongoing mainframe prerender navigation. Logged every time a
     PrerenderCommitDeferringCondition defers navigation.
+
+    After 2023/05, this metric is used with PrerenderTriggerType key and records
+    even when PrerenderCommitDeferringCondition doesn't delay navigation as zero
+    delay. Previously the metric was only used without the key and recorded only
+    when PrerenderCommitDeferringCondition deferred navigation.
   </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram name="Navigation.QueueTime.{Method}.{FrameType}" units="ms"

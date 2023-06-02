@@ -23,6 +23,9 @@ class ExpectationUnittest(unittest.TestCase):
     e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
     r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id')
     self.assertTrue(e.AppliesToResult(r))
+    # With status
+    r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', 'FAIL')
+    self.assertTrue(e.AppliesToResult(r))
     # Tag subset
     r = data_types.Result('suite', 'test', ('win', 'nvidia', 'release'), 'id')
     self.assertTrue(e.AppliesToResult(r))
@@ -35,6 +38,9 @@ class ExpectationUnittest(unittest.TestCase):
     # Name mismatch
     e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
     r = data_types.Result('suite', 'notatest', ('win', 'nvidia'), 'id')
+    self.assertFalse(e.AppliesToResult(r))
+    # With status
+    r = data_types.Result('suite', 'notatest', ('win', 'nvidia'), 'id', 'FAIL')
     self.assertFalse(e.AppliesToResult(r))
     # Tag superset
     r = data_types.Result('suite', 'test', tuple(['win']), 'id')
@@ -76,6 +82,12 @@ class ResultUnittest(unittest.TestCase):
     self.assertNotEqual(r, other)
 
     other = None
+    self.assertNotEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', '')
+    self.assertEqual(r, other)
+
+    other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id', 'FAIL')
     self.assertNotEqual(r, other)
 
 

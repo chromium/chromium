@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/ash/login/users/fake_supervised_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -69,11 +68,8 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
 namespace ash {
 
-class FakeSupervisedUserManager;
-
 FakeChromeUserManager::FakeChromeUserManager()
-    : ChromeUserManager(new FakeTaskRunner()),
-      supervised_user_manager_(new FakeSupervisedUserManager) {
+    : ChromeUserManager(new FakeTaskRunner()) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
 }
 
@@ -220,10 +216,6 @@ FakeChromeUserManager::GetMultiProfileUserController() {
   return multi_profile_user_controller_;
 }
 
-SupervisedUserManager* FakeChromeUserManager::GetSupervisedUserManager() {
-  return supervised_user_manager_.get();
-}
-
 UserImageManager* FakeChromeUserManager::GetUserImageManager(
     const AccountId& account_id) {
   UserImageManagerMap::iterator user_image_manager_it =
@@ -316,11 +308,6 @@ const AccountId& FakeChromeUserManager::GetGuestAccountId() const {
   return user_manager::GuestAccountId();
 }
 
-bool FakeChromeUserManager::IsFirstExecAfterBoot() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kFirstExecAfterBoot);
-}
-
 void FakeChromeUserManager::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   NOTIMPLEMENTED();
@@ -339,12 +326,6 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
-}
-
-bool FakeChromeUserManager::HasBrowserRestarted() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return base::SysInfo::IsRunningOnChromeOS() &&
-         command_line->HasSwitch(switches::kLoginUser);
 }
 
 const gfx::ImageSkia& FakeChromeUserManager::GetResourceImagekiaNamed(
@@ -522,10 +503,6 @@ bool FakeChromeUserManager::IsCurrentUserOwner() const {
   return active_user_ && GetOwnerAccountId() == active_user_->GetAccountId();
 }
 
-bool FakeChromeUserManager::IsCurrentUserNew() const {
-  return current_user_new_;
-}
-
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
   return current_user_ephemeral_;
 }
@@ -633,10 +610,6 @@ void FakeChromeUserManager::SimulateUserProfileLoad(
       break;
     }
   }
-}
-
-void FakeChromeUserManager::SetIsCurrentUserNew(bool is_new) {
-  NOTREACHED();
 }
 
 const std::string& FakeChromeUserManager::GetApplicationLocale() const {

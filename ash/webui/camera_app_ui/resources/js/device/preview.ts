@@ -342,7 +342,8 @@ export class Preview {
         this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
 
-      assert(this.onPreviewExpired === null);
+      assert(
+          this.onPreviewExpired === null || this.onPreviewExpired.isSignaled());
       this.onPreviewExpired = new WaitableEvent();
       state.set(state.State.STREAMING, true);
     } catch (e) {
@@ -374,7 +375,6 @@ export class Preview {
 
     if (this.onPreviewExpired !== null) {
       this.onPreviewExpired.signal();
-      this.onPreviewExpired = null;
     }
     state.set(state.State.STREAMING, false);
   }

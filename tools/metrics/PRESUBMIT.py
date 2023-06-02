@@ -7,7 +7,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
 
-USE_PYTHON3 = True
 
 UKM_XML = 'ukm.xml'
 ENUMS_XML = 'enums.xml'

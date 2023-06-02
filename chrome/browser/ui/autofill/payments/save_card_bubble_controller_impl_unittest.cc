@@ -168,7 +168,8 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   TestAutofillClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService, DanglingUntriaged>
+      mock_sentiment_service_;
 
  private:
   static void UploadSaveCardCallback(

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +24,8 @@
 
 // static
 ConsentAuditorFactory* ConsentAuditorFactory::GetInstance() {
-  return base::Singleton<ConsentAuditorFactory>::get();
+  static base::NoDestructor<ConsentAuditorFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -50,7 +52,7 @@ ConsentAuditorFactory::ConsentAuditorFactory()
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
-ConsentAuditorFactory::~ConsentAuditorFactory() {}
+ConsentAuditorFactory::~ConsentAuditorFactory() = default;
 
 KeyedService* ConsentAuditorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -41,6 +41,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -77,12 +78,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Unit tests for WebApkUpdateManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE,
+        shadows = {ShadowUrlUtilities.class, BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
     @Rule
@@ -280,6 +281,16 @@ public class WebApkUpdateManagerUnitTest {
         }
 
         @Override
+        protected void encodeIconsInBackground(String updateRequestPath, WebappInfo info,
+                String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
+                boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
+                Callback<Boolean> callback) {
+            storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, "",
+                    splashIconUrl, "", isManifestStale, isAppIdentityUpdateSupported, updateReasons,
+                    callback);
+        }
+
+        @Override
         protected WebApkUpdateDataFetcher buildFetcher() {
             mFetcher = new TestWebApkUpdateDataFetcher();
             return mFetcher;
@@ -348,26 +359,21 @@ public class WebApkUpdateManagerUnitTest {
         }
     }
 
-    private void registerStorageForWebApkPackage(String webApkPackageName) {
+    private void registerStorageForWebApkPackage(String webApkPackageName) throws Exception {
         try {
-            // AtomicBoolean because Java requires |registered| to be final.
-            final AtomicBoolean registered = new AtomicBoolean();
             CallbackHelper helper = new CallbackHelper();
             WebappRegistry.getInstance().register(
                     WebappIntentUtils.getIdForWebApkPackage(webApkPackageName),
                     new WebappRegistry.FetchWebappDataStorageCallback() {
                         @Override
                         public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
-                            registered.set(true);
                             helper.notifyCalled();
                         }
                     });
-            boolean registeredOnTime = registered.get();
+            BackgroundShadowAsyncTask.runBackgroundTasks();
+            ShadowLooper.runUiThreadTasks();
+
             helper.waitForFirst();
-            // Assert here instead of in WebappRegistry callback because asserting in the callback
-            // does not fail the test. Wait till the callback is called to fail the test in order
-            // to get the stacktrace.
-            assertTrue("WebappRegistry should be synchronous", registeredOnTime);
         } catch (TimeoutException e) {
             fail();
         }
@@ -622,7 +628,7 @@ public class WebApkUpdateManagerUnitTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         UmaRecorderHolder.resetForTesting();
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
@@ -1350,7 +1356,7 @@ public class WebApkUpdateManagerUnitTest {
      * Test that WebappDataStorage#setShouldForceUpdate() is a no-op for unbound WebAPKs.
      */
     @Test
-    public void testForceUpdateUnboundWebApk() {
+    public void testForceUpdateUnboundWebApk() throws Exception {
         registerWebApk(UNBOUND_WEBAPK_PACKAGE_NAME, defaultManifestData(),
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         registerStorageForWebApkPackage(UNBOUND_WEBAPK_PACKAGE_NAME);

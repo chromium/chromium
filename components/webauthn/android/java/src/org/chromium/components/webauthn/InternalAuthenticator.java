@@ -32,8 +32,7 @@ public class InternalAuthenticator {
     private InternalAuthenticator(long nativeInternalAuthenticatorAndroid,
             WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
-        mAuthenticator = new AuthenticatorImpl(
-                intentSender, renderFrameHost, WebAuthenticationDelegate.Support.BROWSER);
+        mAuthenticator = new AuthenticatorImpl(intentSender, renderFrameHost);
     }
 
     @VisibleForTesting

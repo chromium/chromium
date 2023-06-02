@@ -68,9 +68,7 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
                Element* reference_element,
                ScrollAxis) const;
 
-  cc::AnimationTimeline* EnsureCompositorTimeline() override;
-  void UpdateCompositorTimeline() override;
-  ScrollAxis GetAxis() const;
+  ScrollAxis GetAxis() const override;
 
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;

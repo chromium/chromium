@@ -218,7 +218,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void ResetSlideAnimation(bool show);
 
   // Spacing between the image and the label.
-  virtual int GetInternalSpacing() const;
+  int GetInternalSpacing() const;
 
   // Subclasses that want extra spacing added to the internal spacing can
   // override this method. This may be used when we want to align the label text

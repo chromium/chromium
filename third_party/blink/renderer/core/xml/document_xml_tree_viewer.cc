@@ -28,7 +28,7 @@ void TransformDocumentToXMLTreeView(Document& document) {
       ->RunScriptInIsolatedWorldAndReturnValue(
           document.domWindow(), IsolatedWorldId::kDocumentXMLTreeViewerWorldId);
 
-  Element* element = document.getElementById("xml-viewer-style");
+  Element* element = document.getElementById(AtomicString("xml-viewer-style"));
   if (element) {
     element->setTextContent(css_string);
   }

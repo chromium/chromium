@@ -123,6 +123,12 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         expected_file_name = 'colors_tokens_test_expected.css'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
+    def testLegacyColors(self):
+        self.generator = CSSStyleGenerator()
+        self.AddJSONFilesToModel(['legacy_mappings_test.json5'])
+        expected_file_name = 'legacy_mappings_test_expected.css'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
 
 class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):

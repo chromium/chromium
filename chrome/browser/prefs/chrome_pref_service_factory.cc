@@ -56,6 +56,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync_preferences/pref_model_associator.h"
@@ -426,6 +427,20 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
                  supervised_user_settings, std::move(user_pref_store),
                  std::move(extension_prefs),
                  std::move(standalone_browser_prefs), async, connector);
+
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
+      base::FeatureList::IsEnabled(
+          syncer::kSyncEnablePersistentStorageForAccountPreferences)) {
+    // Note: Only mobile platforms are targeted as part of the experiment,
+    // which do not require preference protection. Hence pref filters and
+    // ProfilePrefStoreManager::CreateProfilePrefStore() can be avoided.
+    factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
+        /*pref_filename=*/profile_path.Append(
+            chrome::kAccountPreferencesFilename),
+        /*pref_filter=*/nullptr,
+        /*file_task_runner=*/io_task_runner));
+  }
+
   return factory.CreateSyncable(std::move(pref_registry));
 }
 

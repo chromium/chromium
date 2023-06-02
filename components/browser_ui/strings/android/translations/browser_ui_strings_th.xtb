@@ -189,7 +189,6 @@
 <translation id="4412992751769744546">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="4428065317363009941">การปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="4434045419905280838">ป๊อปอัปและการเปลี่ยนเส้นทาง</translation>
-<translation id="4440642537584213025">ขยาย<ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">ปิดเสียงไซต์ที่ต้องการ</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{คุกกี้ # รายการ}other{คุกกี้ # รายการ}}</translation>
 <translation id="4478158430052450698">ปรับแต่งการซูมของเว็บไซต์ต่างๆ ได้ง่ายขึ้น</translation>
@@ -372,6 +371,7 @@
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
 <translation id="7882806643839505685">อนุญาตให้เว็บไซต์ที่ต้องการเล่นเสียงได้</translation>
 <translation id="789180354981963912">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน:</translation>
+<translation id="7895868624847501462">การดําเนินการนี้จะล้างข้อมูลในเครื่องและคุกกี้ทั้งหมด รวมถึงรีเซ็ตสิทธิ์ทั้งหมดสําหรับ <ph name="DOMAIN" /> และเว็บไซต์ทั้งหมดที่อยู่ภายใต้โดเมนนี้</translation>
 <translation id="7940722705963108451">เตือนฉัน</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}other{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}}</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
@@ -397,6 +397,7 @@
 <translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
 <translation id="8300705686683892304">จัดการโดยแอป</translation>
 <translation id="8324158725704657629">ไม่ต้องถามอีก</translation>
+<translation id="8338445138528827481">การดําเนินการนี้จะล้างข้อมูลในเครื่องและคุกกี้ทั้งหมด รวมถึงรีเซ็ตสิทธิ์ทั้งหมดสําหรับ <ph name="ORIGIN" /></translation>
 <translation id="8362795839483915693">คุณซูมเข้าหรือออกในเว็บไซต์ที่เข้าชมได้</translation>
 <translation id="8372893542064058268">อนุญาตให้ใช้การซิงค์ในแบ็กกราวด์สำหรับเว็บไซต์ที่เจาะจง</translation>
 <translation id="8376384591331888629">รวมคุกกี้ของบุคคลที่สามในเว็บไซต์นี้</translation>

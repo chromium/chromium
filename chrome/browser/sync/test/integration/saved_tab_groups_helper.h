@@ -135,7 +135,7 @@ class GroupOrderChecker : public StatusChangeChecker,
   // The caller must ensure that `service` is not null and will outlive this
   // object.
   GroupOrderChecker(SavedTabGroupKeyedService* service,
-                    std::vector<base::GUID> group_ids);
+                    std::vector<base::Uuid> group_ids);
   GroupOrderChecker(const GroupOrderChecker&) = delete;
   GroupOrderChecker& operator=(const GroupOrderChecker&) = delete;
   ~GroupOrderChecker() override;
@@ -152,7 +152,7 @@ class GroupOrderChecker : public StatusChangeChecker,
       const absl::optional<base::Uuid>& tab_uuid = absl::nullopt) override;
 
  private:
-  const std::vector<base::GUID> group_ids_;
+  const std::vector<base::Uuid> group_ids_;
   raw_ptr<SavedTabGroupKeyedService> const service_;
 };
 
@@ -163,8 +163,8 @@ class TabOrderChecker : public StatusChangeChecker,
   // The caller must ensure that `service` is not null and will outlive this
   // object.
   TabOrderChecker(SavedTabGroupKeyedService* service,
-                  base::GUID group_id,
-                  std::vector<base::GUID> tab_ids);
+                  base::Uuid group_id,
+                  std::vector<base::Uuid> tab_ids);
   TabOrderChecker(const TabOrderChecker&) = delete;
   TabOrderChecker& operator=(const TabOrderChecker&) = delete;
   ~TabOrderChecker() override;
@@ -179,8 +179,8 @@ class TabOrderChecker : public StatusChangeChecker,
       const absl::optional<base::Uuid>& tab_uuid = absl::nullopt) override;
 
  private:
-  const base::GUID group_id_;
-  const std::vector<base::GUID> tab_ids_;
+  const base::Uuid group_id_;
+  const std::vector<base::Uuid> tab_ids_;
 
   raw_ptr<SavedTabGroupKeyedService> const service_;
 };

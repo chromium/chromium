@@ -73,6 +73,7 @@
     "Save-Data",
     "Sec-Purpose",
     "Server-Timing",
+    "Shared-Storage-Writable",
     "Speculation-Rules",
     "SourceMap",
     "Timing-Allow-Origin",

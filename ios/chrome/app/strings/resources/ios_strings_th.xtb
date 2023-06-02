@@ -142,7 +142,6 @@
 <translation id="1870148520156231997">แสดงรหัสผ่าน</translation>
 <translation id="1872096359983322073">แฟลช</translation>
 <translation id="1883255238294161206">ยุบรายการ</translation>
-<translation id="1891796056033961979">บุ๊กมาร์ก รหัสผ่าน การตั้งค่า และข้อมูลอื่นๆ ที่บันทึกไว้จะพร้อมให้ใช้งานจากหน้าจอนี้</translation>
 <translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
 <translation id="1910975740091000991">Chrome สำหรับ iOS</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
@@ -316,6 +315,9 @@
 <translation id="2975121486251958312">ใช้ได้เฉพาะโหมดไม่ระบุตัวตน</translation>
 <translation id="2982481275546140226">ล้างข้อมูล</translation>
 <translation id="298306318844797842">เพิ่มวิธีการชำระเงิน...</translation>
+<translation id="2988274366244053197">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
+
+เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="2989805286512600854">เปิดในแท็บใหม่</translation>
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3037605927509011580">แย่จัง!</translation>
@@ -382,6 +384,7 @@
 <translation id="3471148582064653480">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{สำหรับเว็บไซต์หรือแอป {COUNT} รายการ}other{สําหรับเว็บไซต์และแอป {COUNT} รายการ}}</translation>
 <translation id="3474624961160222204">ดำเนินการต่อในชื่อ <ph name="NAME" /></translation>
+<translation id="3476450923187944815">เข้าถึงรหัสผ่านของคุณในแอปอื่นๆ</translation>
 <translation id="3478058380795961209">เดือนที่หมดอายุ</translation>
 <translation id="3482959374254649722">กำลังซิงค์แท็บ...</translation>
 <translation id="3484946776651937681">เปิดใน "ดาวน์โหลด"</translation>
@@ -444,7 +447,6 @@
 <translation id="3891414008432200754">ราคา</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
 <translation id="3897092660631435901">เมนู</translation>
-<translation id="3899568514738536144">ดูประวัติการท่องเว็บ</translation>
 <translation id="3904829425754749514">องค์กรของคุณปิดการซิงค์ คุณจะยังคงเห็นบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์นี้ หากทำการเปลี่ยนแปลง ระบบจะไม่ซิงค์การเปลี่ยนแปลงนั้นกับบัญชี</translation>
 <translation id="3913386780052199712">ลงชื่อเข้าใช้ Chrome แล้ว</translation>
 <translation id="3915450441834151894">ข้อมูลเว็บไซต์</translation>
@@ -501,7 +503,6 @@
 <translation id="430793432425771671">ซิงค์ทุกอย่าง</translation>
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="430967081421617822">ตั้งแต่ต้น</translation>
-<translation id="4324952538601951430">บุ๊กมาร์ก รหัสผ่าน การตั้งค่า และอื่นๆ ที่บันทึกไว้อยู่ที่นี่แล้ว</translation>
 <translation id="4334428914252001502">บทความที่ยังไม่ได้อ่าน 1 รายการ</translation>
 <translation id="4338650699862464074">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
 <translation id="4342054591427973606">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากอุปกรณ์เครื่องนี้และเครื่องอื่นๆ ที่ลงชื่อเข้าใช้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากอุปกรณ์เครื่องนี้และเครื่องอื่นๆ ที่ลงชื่อเข้าใช้}}</translation>
@@ -655,6 +656,7 @@
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318298563956633672">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
+<translation id="5325595483440111327">ดูประวัติการท่องเว็บ</translation>
 <translation id="5339316356165661760">เปิดการซิงค์</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
 <translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
@@ -753,6 +755,7 @@
 <translation id="595769230373966252">ค้นหาด้วย <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">สร้างลิงก์ไปยังไฮไลต์ไม่ได้</translation>
 <translation id="5965679971710331625">คุณลงชื่อเข้าใช้แล้ว</translation>
+<translation id="5971872012779224351">{count,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก {count} รายการแล้ว}}</translation>
 <translation id="5979837087407522202">ค้นหารหัสผ่าน</translation>
 <translation id="5981230843984570095">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>
 <translation id="5982717868370722439">เพิ่มข้อมูลที่มีอยู่ลงใน <ph name="USER_EMAIL" /></translation>
@@ -922,6 +925,7 @@
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
 <translation id="6822587385560699678">เมื่อเปิด ระบบจะบันทึกรหัสผ่านใน <ph name="ACCOUNT" /> เมื่อปิด ระบบจะบันทึกรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
+<translation id="6839843088069935119">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว ระบบจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว ระบบจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
 <translation id="6851516051005285358">ขอเว็บไซต์สำหรับเดสก์ท็อป</translation>
 <translation id="6852222216891664518">ปิดแท็บที่ปักหมุด</translation>
@@ -1000,6 +1004,7 @@
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7438481509621345350">ตอนนี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="7446583256109515732">เลิกปักหมุดแท็บแล้ว</translation>
+<translation id="7451023311965289370">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
 <translation id="7454057999980797137">เขต/แขวง</translation>
 <translation id="7459628154744868585">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="746684838091935575">3. เลือก Chrome</translation>
@@ -1057,7 +1062,6 @@
 <translation id="7840771868269352570">ระบบจะนำรายการที่คุณเลือกออก</translation>
 <translation id="7845466610722898">แสดงเรื่องรออ่าน</translation>
 <translation id="784551991304901159">หากต้องการดูเนื้อหา ให้เลือก "เปิด" จากเมนู</translation>
-<translation id="7846158885638438868">{count,plural, =1{บุ๊กมาร์กไปยัง "{title}" แล้ว}other{บุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="785938070103630874">เปิดรหัสผ่าน วิธีการชําระเงิน หรือที่อยู่ และอื่นๆ</translation>
@@ -1137,9 +1141,6 @@
 <translation id="8299417921174340354">หากต้องการใช้รหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8299613349954694191">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บในแบบส่วนตัว</translation>
 <translation id="8316944564970119719">ป้อนเว็บไซต์และรหัสผ่าน แล้วบันทึก</translation>
-<translation id="8317835149433843300">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ระบบจะไม่บันทึกประวัติการท่องเว็บจาก Chrome ไว้ในบัญชี Google
-
-เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="8319076807703933069">ค้นหาใหม่</translation>
 <translation id="8323906514956095947">แตะค้างไว้เพื่อดูตัวเลือกแท็บเพิ่มเติม</translation>
 <translation id="8328777765163860529">ปิดทั้งหมด</translation>

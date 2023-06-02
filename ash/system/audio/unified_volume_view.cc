@@ -232,6 +232,13 @@ void UnifiedVolumeView::Update(bool by_user) {
       default:
         NOTREACHED();
     }
+
+    // Updates the tooltip for `slider_button()` based on the mute state.
+    std::u16string state_tooltip_text = l10n_util::GetStringUTF16(
+        is_muted ? IDS_ASH_STATUS_TRAY_VOLUME_STATE_MUTED
+                 : IDS_ASH_STATUS_TRAY_VOLUME_STATE_ON);
+    slider_button()->SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
   }
 
   // Slider's value is in finer granularity than audio volume level(0.01),

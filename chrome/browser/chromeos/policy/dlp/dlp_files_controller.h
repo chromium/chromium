@@ -5,8 +5,15 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILES_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_FILES_CONTROLLER_H_
 
+#include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/file_access/scoped_file_access.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace policy {
 
@@ -15,23 +22,40 @@ namespace policy {
 // of the Data leak prevention policy set by the admin.
 class DlpFilesController {
  public:
-  // Types of file actions. These actions are used when warning dialogs are
-  // shown because of files restrictions. This is used in UMA histograms, should
-  // not change order.
-  enum class FileAction {
-    kUnknown = 0,
-    kDownload = 1,
-    kTransfer = 2,
-    kUpload = 3,
-    kCopy = 4,
-    kMove = 5,
-    kOpen = 6,
-    kShare = 7,
-    kMaxValue = kShare
+  // FileDaemonInfo represents file info used for communication with the DLP
+  // daemon.
+  struct FileDaemonInfo {
+    FileDaemonInfo() = delete;
+    FileDaemonInfo(ino64_t inode,
+                   const base::FilePath& path,
+                   const std::string& source_url);
+
+    friend bool operator==(const FileDaemonInfo& a, const FileDaemonInfo& b) {
+      return a.inode == b.inode && a.path == b.path &&
+             a.source_url == b.source_url;
+    }
+    friend bool operator!=(const FileDaemonInfo& a, const FileDaemonInfo& b) {
+      return !(a == b);
+    }
+
+    // File inode.
+    ino64_t inode;
+    // File path.
+    base::FilePath path;
+    // Source URL from which the file was downloaded.
+    GURL source_url;
   };
 
   DlpFilesController(const DlpFilesController& other) = delete;
   DlpFilesController& operator=(const DlpFilesController& other) = delete;
+
+  // Requests ScopedFileAccess for |source| for the operation to copy from
+  // |source| to |destination|.
+  virtual void RequestCopyAccess(
+      const storage::FileSystemURL& source,
+      const storage::FileSystemURL& destination,
+      base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
+          result_callback);
 
   virtual ~DlpFilesController();
 
@@ -39,6 +63,13 @@ class DlpFilesController {
 
  protected:
   explicit DlpFilesController(const DlpRulesManager& rules_manager);
+
+  virtual absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
+      Profile* profile,
+      const base::FilePath& file_path) = 0;
+
+  // TODO(b/284122497): Remove testing friend.
+  FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerComponentsTest, TestConvert);
 
   const raw_ref<const DlpRulesManager, ExperimentalAsh> rules_manager_;
 };

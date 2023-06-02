@@ -118,17 +118,12 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
  protected:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    appController_.reset([[AppController alloc] init]);
-    [appController_ setLastProfileForTesting:profile()];
-    previousApplicationDelegate_ = [NSApp delegate];
-    [NSApp setDelegate:appController_];
+    [AppController.sharedController setLastProfileForTesting:profile()];
 
     bridge_ = std::make_unique<MockBridge>(profile());
   }
 
   void TearDown() override {
-    [NSApp setDelegate:previousApplicationDelegate_];
-    appController_.reset();
     bridge_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
@@ -193,10 +188,6 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<MockBridge> bridge_;
-
- private:
-  base::scoped_nsobject<AppController> appController_;
-  id<NSApplicationDelegate> previousApplicationDelegate_;
 };
 
 class HistoryMenuBridgeLifetimeTest : public testing::Test {
@@ -619,9 +610,8 @@ TEST_F(HistoryMenuBridgeLifetimeTest, StillValidAfterProfileShutdown) {
                                     HistoryServiceFactory::GetDefaultFactory());
   std::unique_ptr<TestingProfile> profile = profile_builder.Build();
   base::FilePath profile_dir = profile->GetPath();
-  base::scoped_nsobject<AppController> appController(
-      [[AppController alloc] init]);
-  [NSApp setDelegate:appController];
+  // Ensure the AppController is the NSApp delegate.
+  std::ignore = AppController.sharedController;
 
   auto bridge = std::make_unique<MockBridge>(profile.get());
   std::unique_ptr<MockTRS> trs(new MockTRS(profile.get()));
@@ -676,7 +666,6 @@ TEST_F(HistoryMenuBridgeLifetimeTest, StillValidAfterProfileShutdown) {
   EXPECT_EQ(4u, menu_item_map(bridge.get()).size());
 
   bridge.reset();
-  [NSApp setDelegate:nil];
 }
 
 TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {

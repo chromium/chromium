@@ -38,6 +38,7 @@ struct AddressLineParsingTestCase {
   std::string apartment;
   std::string landmark;
   std::string between_streets;
+  std::string admin_level_2;
 };
 
 std::ostream& operator<<(std::ostream& out,
@@ -50,6 +51,7 @@ std::ostream& operator<<(std::ostream& out,
   out << "Apartment: " << test_case.apartment << std::endl;
   out << "Landmark: " << test_case.landmark << std::endl;
   out << "Between streets: " << test_case.between_streets << std::endl;
+  out << "Admin level 2: " << test_case.admin_level_2 << std::endl;
   return out;
 }
 
@@ -109,6 +111,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_BETWEEN_STREETS,
        .value = test_case.between_streets,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_ADMIN_LEVEL2,
+       .value = test_case.admin_level_2,
        .status = VerificationStatus::kObserved}};
 
   SetTestValues(&address, test_value);
@@ -139,6 +144,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_BETWEEN_STREETS,
        .value = test_case.between_streets,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_ADMIN_LEVEL2,
+       .value = test_case.admin_level_2,
        .status = VerificationStatus::kObserved}};
   VerifyTestValues(&address, expectation);
 }
@@ -291,7 +299,8 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .floor = "13",
        .apartment = "14",
        .landmark = "Red tree",
-       .between_streets = "Via Blanca y Rotaria"},
+       .between_streets = "Via Blanca y Rotaria",
+       .admin_level_2 = "Guanajuato"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - 14",
        .street_name = "StreetName",
@@ -299,7 +308,8 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .floor = "",
        .apartment = "14",
        .landmark = "Old house",
-       .between_streets = "Marcos y Oliva"},
+       .between_streets = "Marcos y Oliva",
+       .admin_level_2 = "Oaxaca"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - Piso 13",
        .street_name = "StreetName",
@@ -307,7 +317,8 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .floor = "13",
        .apartment = "",
        .landmark = "Pine in the corner",
-       .between_streets = "Rosario y Alfonso"},
+       .between_streets = "Rosario y Alfonso",
+       .admin_level_2 = "Puebla"},
       // Examples for Spain.
       {.country_code = "ES",
        .street_address = "Street Name 1, 3ª",

@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
@@ -701,7 +702,10 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   const int recheck_delay_ms = 10;
   const Connection* conn = nullptr;
   const Connection* conn_two = nullptr;
-  const std::vector<const Connection*> empty_conns_to_forget{};
+  // This field is not vector<raw_ptr<...>> due to interaction with third_party
+  // api.
+  RAW_PTR_EXCLUSION const std::vector<const Connection*>
+      empty_conns_to_forget{};
   const IceSwitchReason reason = IceSwitchReason::DATA_RECEIVED;
   const IceRecheckEvent recheck_event;
 

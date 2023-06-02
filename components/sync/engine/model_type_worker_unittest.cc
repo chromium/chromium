@@ -466,7 +466,10 @@ class ModelTypeWorkerTest : public ::testing::Test {
     return MockInvalidation::BuildUnknownVersion();
   }
 
-  void ResetWorker() { worker_.reset(); }
+  void ResetWorker() {
+    mock_type_processor_ = nullptr;
+    worker_.reset();
+  }
 
   MockModelTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
@@ -503,7 +506,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   // Non-owned, possibly null pointer. This object belongs to the
   // ModelTypeWorker under test.
-  raw_ptr<MockModelTypeProcessor> mock_type_processor_ = nullptr;
+  raw_ptr<MockModelTypeProcessor, DanglingUntriaged> mock_type_processor_ =
+      nullptr;
 
   // A mock that emulates enough of the sync server that it can be used
   // a single UpdateHandler and CommitContributor pair. In this test

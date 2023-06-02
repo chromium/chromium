@@ -506,7 +506,6 @@ void CrxUpdateService::OnEvent(Events event, const std::string& id) {
 
 // The component update factory. Using the component updater as a singleton
 // is the job of the browser process.
-// TODO(sorin): consider making this a singleton.
 std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
     scoped_refptr<Configurator> config,
     std::unique_ptr<UpdateScheduler> scheduler,

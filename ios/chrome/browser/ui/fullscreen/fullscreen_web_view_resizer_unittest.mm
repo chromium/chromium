@@ -18,9 +18,10 @@
 #endif
 
 namespace {
-const CGFloat kTopToolbarExpandedHeight = 50;
-const CGFloat kTopToolbarCollapsedHeight = 20;
-const CGFloat kBottomToolbarHeight = 40;
+const CGFloat kExpandedTopToolbarHeight = 50;
+const CGFloat kCollapsedTopToolbarHeight = 20;
+const CGFloat kExpandedBottomToolbarHeight = 40;
+const CGFloat kCollapsedBottomToolbarHeight = 10;
 const CGFloat kViewWidth = 300;
 const CGFloat kViewHeight = 700;
 }  // namespace
@@ -29,9 +30,10 @@ class FullscreenWebViewResizerTest : public PlatformTest {
  public:
   FullscreenWebViewResizerTest() {
     // FullscreenModel setup.
-    _model.SetExpandedToolbarHeight(kTopToolbarExpandedHeight);
-    _model.SetCollapsedToolbarHeight(kTopToolbarCollapsedHeight);
-    _model.SetBottomToolbarHeight(kBottomToolbarHeight);
+    _model.SetExpandedTopToolbarHeight(kExpandedTopToolbarHeight);
+    _model.SetCollapsedTopToolbarHeight(kCollapsedTopToolbarHeight);
+    _model.SetExpandedBottomToolbarHeight(kExpandedBottomToolbarHeight);
+    _model.SetCollapsedBottomToolbarHeight(kCollapsedBottomToolbarHeight);
     _model.SetContentHeight(1000);
     _model.SetScrollViewHeight(700);
     _model.SetScrollViewIsScrolling(true);
@@ -65,16 +67,17 @@ TEST_F(FullscreenWebViewResizerTest, UpdateWebState) {
 
   // The frame should be updated when setting the WebState.
   CGRect fullInsetFrame = CGRectMake(
-      0, kTopToolbarExpandedHeight, kViewWidth,
-      kViewHeight - kTopToolbarExpandedHeight - kBottomToolbarHeight);
+      0, kExpandedTopToolbarHeight, kViewWidth,
+      kViewHeight - kExpandedTopToolbarHeight - kExpandedBottomToolbarHeight);
   EXPECT_TRUE(CGRectEqualToRect(fullInsetFrame, _webStateView.frame));
 
   // Scroll the view then update the resizer.
   SimulateFullscreenUserScrollForProgress(&_model, 0.0);
   ASSERT_EQ(0, _model.progress());
   [resizer updateForCurrentState];
-  CGRect smallInsetFrame = CGRectMake(0, kTopToolbarCollapsedHeight, kViewWidth,
-                                      kViewHeight - kTopToolbarCollapsedHeight);
+  CGRect smallInsetFrame = CGRectMake(
+      0, kCollapsedTopToolbarHeight, kViewWidth,
+      kViewHeight - kCollapsedTopToolbarHeight - kCollapsedBottomToolbarHeight);
   EXPECT_TRUE(CGRectEqualToRect(smallInsetFrame, _webStateView.frame));
 }
 
@@ -88,8 +91,9 @@ TEST_F(FullscreenWebViewResizerTest, ForceUpdateWebState) {
   ASSERT_EQ(1, _model.progress());
 
   // The frame should be updated when setting the WebState.
-  CGRect smallInsetFrame = CGRectMake(0, kTopToolbarCollapsedHeight, kViewWidth,
-                                      kViewHeight - kTopToolbarCollapsedHeight);
+  CGRect smallInsetFrame = CGRectMake(
+      0, kCollapsedTopToolbarHeight, kViewWidth,
+      kViewHeight - kCollapsedTopToolbarHeight - kCollapsedBottomToolbarHeight);
   [resizer forceToUpdateToProgress:0];
   EXPECT_TRUE(CGRectEqualToRect(smallInsetFrame, _webStateView.frame));
 }

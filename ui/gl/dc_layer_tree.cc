@@ -45,10 +45,13 @@ VideoProcessorWrapper& VideoProcessorWrapper::operator=(
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_scaling,
                          bool disable_vp_super_resolution,
+                         bool force_dcomp_triple_buffer_video_swap_chain,
                          bool no_downscaled_overlay_promotion)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_vp_scaling_(disable_vp_scaling),
       disable_vp_super_resolution_(disable_vp_super_resolution),
+      force_dcomp_triple_buffer_video_swap_chain_(
+          force_dcomp_triple_buffer_video_swap_chain),
       no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),
       ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 
@@ -451,8 +454,10 @@ bool DCLayerTree::VisualTree::UpdateTree(
           visual_subtrees_[i]->container_visual(), FALSE, nullptr);
     }
 
-    dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
-        root_surface_visual.Get());
+    if (root_surface_visual) {
+      dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
+          root_surface_visual.Get());
+    }
 
     needs_commit = true;
   }

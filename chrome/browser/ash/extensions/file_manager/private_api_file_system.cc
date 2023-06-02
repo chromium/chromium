@@ -104,6 +104,7 @@
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -270,6 +271,8 @@ DlpRulesManagerComponentToApiEnum(data_controls::Component component) {
       return VolumeType::VOLUME_TYPE_REMOVABLE;
     case Component::kDrive:
       return VolumeType::VOLUME_TYPE_DRIVE;
+    case Component::kOneDrive:
+      return VolumeType::VOLUME_TYPE_PROVIDED;
     case Component::kUnknownComponent:
       NOTREACHED() << "DLP component not set.";
       return {};
@@ -292,19 +295,20 @@ policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
   return policy::FilesDialogType::kUnknown;
 }
 
-file_manager::io_task::PolicyErrorType ApiPolicyErrorTypeToChromeEnum(
+absl::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     api::file_manager_private::PolicyErrorType type) {
   switch (type) {
     case api::file_manager_private::POLICY_ERROR_TYPE_DLP:
-      return file_manager::io_task::PolicyErrorType::kDlp;
+      return policy::Policy::kDlp;
     case api::file_manager_private::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS:
-      return file_manager::io_task::PolicyErrorType::kEnterpriseConnectors;
-    case api::file_manager_private::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT:
-      return file_manager::io_task::PolicyErrorType::kDlpWarningTimeout;
+      return policy::Policy::kEnterpriseConnectors;
     case api::file_manager_private::POLICY_ERROR_TYPE_NONE:
-      NOTREACHED_NORETURN() << "POLICY_ERROR_TYPE_NONE passed";
+      return absl::nullopt;
+    case api::file_manager_private::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT:
+      NOTREACHED() << "Unexpected policy type " << type;
   }
-  NOTREACHED_NORETURN() << "Unknown policy error type " << type;
+  NOTREACHED() << "Unknown policy error type " << type;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -1713,8 +1717,11 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
       params->params.conflict_params->conflict_resolve.value_or("");
   io_task_resume_params.conflict_params->conflict_apply_to_all =
       params->params.conflict_params->conflict_apply_to_all.value_or(false);
-  io_task_resume_params.policy_params->type =
+  absl::optional<policy::Policy> policy =
       ApiPolicyErrorTypeToChromeEnum(params->params.policy_params->type);
+  if (policy.has_value()) {
+    io_task_resume_params.policy_params->type = policy.value();
+  }
 
   volume_manager->io_task_controller()->Resume(
       params->task_id, std::move(io_task_resume_params));

@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.PermissionRequested" enum="PermissionType"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -788,7 +788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.CanBeShown" enum="BooleanAllowed"
-    expires_after="2023-08-01">
+    expires_after="2023-11-19">
   <owner>harringtond@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -925,7 +925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent"
-    enum="Boolean" expires_after="2023-09-17">
+    enum="Boolean" expires_after="2023-11-19">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -937,7 +937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAge" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -948,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent"
-    enum="Boolean" expires_after="2023-09-17">
+    enum="Boolean" expires_after="2023-11-19">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1078,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ManualRefreshInterval" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1520,7 +1520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UploadActionsBatchStatus"
-    enum="FeedUploadActionsBatchStatus" expires_after="2023-07-23">
+    enum="FeedUploadActionsBatchStatus" expires_after="2023-11-19">
   <owner>iwells@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1739,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.Engaged"
-    units="follows" expires_after="2023-11-12">
+    units="follows" expires_after="2023-11-19">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1992,6 +1992,24 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: reports the entry point used to launch the single web feed view.
   </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.Activity"
+    enum="FeedActivityBucket" expires_after="2023-11-24">
+  <owner>guiperez@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks user activity buckets with {FeedType}. Each bucket composed of the
+    user's activity level. Logs the for the first time 1 day after the metric is
+    active (only on first time use), then logs an activity bucket after at least
+    24hrs from the last log have elapsed. When the &quot;Engaged&quot; metric is
+    triggered we log one more day of activity during the past 28 days.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="the For-You feed"/>
+    <variant name="Feed.AllFeeds" summary="All Feeds combined"/>
+    <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.CardIndexOnSwitch" units="index"

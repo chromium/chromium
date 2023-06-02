@@ -26,6 +26,8 @@ template("remoting_apk_tmpl") {
     android_manifest_dep = "//remoting/android:remoting_apk_manifest"
     target_sdk_version = 28
     shared_libraries = [ "//remoting/client/jni:remoting_client_jni" ]
+    srcjar_deps =
+        [ "//remoting/client/jni:remoting_client_jni__jni_registration" ]
     version_name = chrome_version_name
     version_code = chrome_version_code
   }

@@ -144,7 +144,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   scoped_refptr<ExternalLoader> loader_;
 
   // The profile that will be used to install external extensions.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Creation flags to use for the extension.  These flags will be used
   // when calling Extension::Create() by the crx installer.

@@ -17,10 +17,9 @@ namespace blink {
 class FenceTest : private ScopedFencedFramesForTest, public SimTest {
  public:
   FenceTest() : ScopedFencedFramesForTest(true) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames, {}},
-         {blink::features::kPrivateAggregationApi,
-          {{"fledge_extensions_enabled", "true"}}}},
+    scoped_feature_list_.InitWithFeatures(
+        {{blink::features::kFencedFrames},
+         {blink::features::kPrivateAggregationApi}},
         /*disabled_features=*/{});
   }
 

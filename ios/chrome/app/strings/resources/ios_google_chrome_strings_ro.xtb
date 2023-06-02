@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="2736805085127235148">Notificările din Chrome sunt momentan dezactivate în setările dispozitivului.</translation>
 <translation id="2767464022270041271">Nu există parole salvate. Managerul de parole Google îți poate verifica parolele atunci când le salvezi.</translation>
+<translation id="2840432500933227975">Deschide Setările Chrome în iOS, apoi atinge Aplicația browser prestabilită și selectează Chrome.</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
 <translation id="2957447865124070833">Selectează <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chrome de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Aceasta înseamnă că Chrome va solicita de fiecare dată site-ul mobil.</translation>
 <translation id="3706101708757577809">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="3720541637541300822">Blochează filele incognito când închizi Chrome</translation>
+<translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="384394811301901750">Momentan, Google Chrome nu poate folosi camera foto</translation>
 <translation id="3980220367029651214">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chrome existente sunt gestionate de <ph name="DOMAIN" />. Astfel, se vor șterge datele de pe acest dispozitiv, dar datele vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizația îți solicită să nu te conectezi la Chrome.</translation>
@@ -150,7 +152,6 @@ De reținut
   • Dacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
 
   • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Beneficiezi de protecție de securitate standard pentru acest profil Chrome</translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 <translation id="9122931302567044771">Aceasta înseamnă că Chrome va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
 </translationbundle>

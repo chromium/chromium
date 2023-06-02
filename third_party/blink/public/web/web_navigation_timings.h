@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/system_entropy.mojom-shared.h"
 
 namespace blink {
 
@@ -19,7 +20,7 @@ struct WebNavigationTimings {
   blink::mojom::ParentResourceTimingAccess parent_resource_timing_access =
       blink::mojom::ParentResourceTimingAccess::kDoNotReport;
   blink::mojom::SystemEntropy system_entropy_at_navigation_start =
-      blink::mojom::SystemEntropy::kNormal;
+      blink::mojom::SystemEntropy::kEmpty;
   base::TimeTicks critical_ch_restart;
 };
 

@@ -32,7 +32,9 @@
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -97,6 +99,7 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       keepalive_(false),
       browsing_topics_(false),
       ad_auction_headers_(false),
+      shared_storage_writable_(false),
       allow_stale_response_(false),
       cache_mode_(mojom::blink::FetchCacheMode::kDefault),
       skip_service_worker_(false),
@@ -207,6 +210,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetKeepalive(GetKeepalive());
   request->SetBrowsingTopics(GetBrowsingTopics());
   request->SetAdAuctionHeaders(GetAdAuctionHeaders());
+  request->SetSharedStorageWritable(GetSharedStorageWritable());
   request->SetPriority(Priority());
   request->SetPriorityIncremental(PriorityIncremental());
 
@@ -472,6 +476,31 @@ bool ResourceRequestHead::NeedsHTTPOrigin() const {
   // For non-GET and non-HEAD methods, always send an Origin header so the
   // server knows we support this feature.
   return true;
+}
+
+bool ResourceRequest::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+    const PermissionsPolicy* policy,
+    mojom::blink::PermissionsPolicyFeature feature,
+    const url::Origin& origin) {
+  if (!policy) {
+    return false;
+  }
+
+  bool browsing_topics_opted_in =
+      (feature == mojom::blink::PermissionsPolicyFeature::kBrowsingTopics ||
+       feature == mojom::blink::PermissionsPolicyFeature::
+                      kBrowsingTopicsBackwardCompatible) &&
+      GetBrowsingTopics();
+  bool shared_storage_opted_in =
+      feature == mojom::blink::PermissionsPolicyFeature::kSharedStorage &&
+      GetSharedStorageWritable();
+
+  if (!browsing_topics_opted_in && !shared_storage_opted_in) {
+    return false;
+  }
+
+  return policy->IsFeatureEnabledForSubresourceRequestAssumingOptIn(feature,
+                                                                    origin);
 }
 
 }  // namespace blink

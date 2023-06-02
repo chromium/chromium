@@ -4,6 +4,8 @@
 
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -77,12 +79,12 @@ scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory(
 }  // namespace
 
 // static
-ScreensaverImagesPolicyHandler ScreensaverImagesPolicyHandler::Create(
-    PrefService* pref_service) {
+std::unique_ptr<ScreensaverImagesPolicyHandler>
+ScreensaverImagesPolicyHandler::Create(PrefService* pref_service) {
   // TODO(b/282134276): Move to a separate factory class to move creation
   // complexity out of this class and  isolate it,
   HandlerType state = GetHandlerState(pref_service);
-  return ScreensaverImagesPolicyHandler(pref_service, state);
+  return std::make_unique<ScreensaverImagesPolicyHandler>(pref_service, state);
 }
 
 // static

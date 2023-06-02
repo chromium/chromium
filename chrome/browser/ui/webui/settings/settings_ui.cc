@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/protocol_handlers_handler.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
+#include "chrome/browser/ui/webui/settings/safety_check_extensions_handler.h"
 #include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
@@ -79,6 +80,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -209,6 +211,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       std::make_unique<ClearBrowsingDataHandler>(web_ui, profile));
   AddSettingsPageUIHandler(std::make_unique<SafetyCheckHandler>());
   AddSettingsPageUIHandler(std::make_unique<SafetyHubHandler>(profile));
+  AddSettingsPageUIHandler(std::make_unique<SafetyCheckExtensionsHandler>());
   AddSettingsPageUIHandler(std::make_unique<DownloadsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ExtensionControlHandler>());
   AddSettingsPageUIHandler(std::make_unique<FontHandler>(profile));
@@ -496,12 +499,25 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           content_settings::features::kSafetyCheckUnusedSitePermissions));
 
+  html_source->AddBoolean(
+      "safetyCheckExtensionsReviewEnabled",
+      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
+
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
       "isHighEfficiencyMultistateModeEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyMultistateMode));
+  html_source->AddBoolean(
+      "isDiscardExceptionsImprovementsEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardExceptionsImprovements));
+
+  html_source->AddBoolean(
+      "enablePermissionStorageAccessApi",
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionStorageAccessAPI));
 
   TryShowHatsSurveyWithTimeout();
 }

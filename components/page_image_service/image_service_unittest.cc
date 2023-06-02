@@ -13,6 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
+#include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_new_optimization_guide_decider.h"
@@ -23,7 +25,11 @@
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,11 +78,16 @@ class ImageServiceTest : public testing::Test {
          kImageServiceOptimizationGuideSalientImages},
         {});
 
+    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
+    remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     image_service_ = std::make_unique<ImageService>(
-        nullptr, test_opt_guide_.get(), test_sync_service_.get());
+        template_url_service_.get(), remote_suggestions_service_.get(),
+        test_opt_guide_.get(), test_sync_service_.get(),
+        std::make_unique<TestSchemeClassifier>());
   }
 
   bool GetConsentToFetchImageAwaitResult(mojom::ClientId client_id) {
@@ -98,7 +109,13 @@ class ImageServiceTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+  std::unique_ptr<TemplateURLService> template_url_service_;
+  std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
   std::unique_ptr<optimization_guide::ImageServiceTestOptGuide> test_opt_guide_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<ImageService> image_service_;
@@ -110,6 +127,15 @@ class ImageServiceTest : public testing::Test {
 void StoreImageUrlResponse(GURL* out_image_url, const GURL& image_url) {
   DCHECK(out_image_url);
   *out_image_url = image_url;
+}
+
+// Stores an image response and exits out of `loop` if it is defined.
+void QuitLoopAndStoreImageUrlResponse(base::RunLoop* loop,
+                                      GURL* out_image_url,
+                                      const GURL& image_url) {
+  DCHECK(out_image_url);
+  *out_image_url = image_url;
+  loop->Quit();
 }
 
 void AppendResponse(std::vector<GURL>* responses, const GURL& image_url) {
@@ -198,6 +224,87 @@ TEST_F(ImageServiceTest, SyncInitialization) {
   // OptimizationGuideSalientImagesEndToEnd.
 }
 
+TEST_F(ImageServiceTest, SuggestBackendEndToEnd) {
+  mojom::Options options;
+  options.suggest_images = true;
+  options.optimization_guide_images = true;
+
+  base::RunLoop loop;
+
+  GURL response;
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys,
+      GURL("https://www.google.com/search?q=santa+monica"), options,
+      base::BindOnce(&QuitLoopAndStoreImageUrlResponse, &loop, &response));
+
+  // Test histograms with literal names to validate client-sliced names.
+  // This also validates that the correct backend was selected.
+  EXPECT_EQ(histogram_tester_.GetBucketCount("PageImageService.Backend",
+                                             PageImageServiceBackend::kSuggest),
+            1);
+  EXPECT_EQ(
+      histogram_tester_.GetBucketCount("PageImageService.Backend.Journeys",
+                                       PageImageServiceBackend::kSuggest),
+      1);
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  GURL request_url = test_url_loader_factory_.GetPendingRequest(0)->request.url;
+  EXPECT_EQ(request_url.host(), "www.google.com");
+
+  test_url_loader_factory_.AddResponse(request_url.spec(), R"([
+  "santa monica",
+  [
+    "santa monica"
+  ],
+  [
+    ""
+  ],
+  [],
+  {
+    "google:clientdata": {
+      "bpc": false,
+      "tlw": false
+    },
+    "google:suggestdetail": [
+      {
+        "google:entityinfo": "CggvbS8wNl9raBISQ2l0eSBpbiBDYWxpZm9ybmlhMnRodHRwczovL2VuY3J5cHRlZC10Ym4wLmdzdGF0aWMuY29tL2ltYWdlcz9xPXRibjpBTmQ5R2NTd3ZOaHc3cktRV2dqRG9vUC1zY1ptRHlTSlNJWWpCT1gwVkVDRDU1czM4dHA0eEZORWcwTTdQdUEmcz0xMDoMU2FudGEgTW9uaWNhSgcjNDI0MjQyUjVnc19zc3A9ZUp6ajR0RFAxVGN3aThfT01HRDA0aWxPekN0SlZNak56OHRNVGdRQVdDY0hxd3AMcBo="
+      }
+    ],
+    "google:suggestrelevance": [
+      1300
+    ],
+    "google:suggestsubtypes": [
+      [
+        131,
+        433,
+        512
+      ]
+    ],
+    "google:suggesttype": [
+      "ENTITY"
+    ],
+    "google:verbatimrelevance": 1300
+  }
+])");
+
+  // Successfully fetching the image quits this loop.
+  loop.Run();
+  // This expected value matches the hardcoded proto above.
+  EXPECT_EQ(response, GURL("https://encrypted-tbn0.gstatic.com/"
+                           "images?q=tbn:ANd9GcSwvNhw7rKQWgjDooP-"
+                           "scZmDySJSIYjBOX0VECD55s38tp4xFNEg0M7PuA&s=10"));
+
+  // Test histograms with literal names to validate client-sliced names.
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend.Suggest.Result",
+                PageImageServiceResult::kSuccess),
+            1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend.Suggest.Result.Journeys",
+                PageImageServiceResult::kSuccess),
+            1);
+}
+
 // This also tests batching, because it's an integral part of how Optimization
 // Guide backend works.
 TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
@@ -272,11 +379,11 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   // Test histograms with literal names to validate client-sliced names.
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.OptimizationGuide.Result",
-                PageImageServiceOptimizationGuideResult::kSuccess),
+                PageImageServiceResult::kSuccess),
             2);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.OptimizationGuide.Result.Journeys",
-                PageImageServiceOptimizationGuideResult::kSuccess),
+                PageImageServiceResult::kSuccess),
             2);
 }
 
@@ -323,11 +430,16 @@ class DisabledOptGuideImageServiceTest : public ImageServiceTest {
         /*enabled_features=*/{kImageService, kImageServiceSuggestPoweredImages},
         /*disabled_features=*/{kImageServiceOptimizationGuideSalientImages});
 
+    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
+    remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     image_service_ = std::make_unique<ImageService>(
-        nullptr, test_opt_guide_.get(), test_sync_service_.get());
+        template_url_service_.get(), remote_suggestions_service_.get(),
+        test_opt_guide_.get(), test_sync_service_.get(),
+        std::make_unique<TestSchemeClassifier>());
   }
 };
 

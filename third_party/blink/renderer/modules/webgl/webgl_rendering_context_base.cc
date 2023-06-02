@@ -667,18 +667,41 @@ void WebGLRenderingContextBase::drawingBufferStorage(GLenum sizedformat,
       }
       break;
     case GL_RGBA16F:
-      if (IsWebGL2()) {
-        if (!ExtensionEnabled(kEXTColorBufferFloatName) &&
-            !ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
-          SynthesizeGLError(
-              GL_INVALID_ENUM, function_name,
-              "EXT_color_buffer_float/EXT_color_buffer_half_float not enabled");
-          return;
+      if (base::FeatureList::IsEnabled(
+              blink::features::kCorrectFloatExtensionTestForWebGL)) {
+        // Correct float extension testing for WebGL1/2.
+        // See: https://github.com/KhronosGroup/WebGL/pull/3222
+        if (IsWebGL2()) {
+          if (!ExtensionEnabled(kEXTColorBufferFloatName) &&
+              !ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+            SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                              "EXT_color_buffer_float/"
+                              "EXT_color_buffer_half_float not enabled");
+            return;
+          }
         } else {
           if (!ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
             SynthesizeGLError(GL_INVALID_ENUM, function_name,
                               "EXT_color_buffer_half_float not enabled");
             return;
+          }
+        }
+      } else {
+        // This is the original incorrect extension testing. Remove this code
+        // once this correction safely launches.
+        if (IsWebGL2()) {
+          if (!ExtensionEnabled(kEXTColorBufferFloatName) &&
+              !ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+            SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                              "EXT_color_buffer_float/"
+                              "EXT_color_buffer_half_float not enabled");
+            return;
+          } else {
+            if (!ExtensionEnabled(kEXTColorBufferHalfFloatName)) {
+              SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                                "EXT_color_buffer_half_float not enabled");
+              return;
+            }
           }
         }
       }

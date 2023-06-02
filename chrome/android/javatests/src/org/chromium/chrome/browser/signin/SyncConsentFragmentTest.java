@@ -986,7 +986,6 @@ public class SyncConsentFragmentTest {
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully()
             throws IOException {
-        mAutoTestRule.setIsAutomotive(true);
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
@@ -995,6 +994,7 @@ public class SyncConsentFragmentTest {
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
+        mAutoTestRule.setIsAutomotive(true);
 
         // Should display the sync page.
         onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
@@ -1029,7 +1029,6 @@ public class SyncConsentFragmentTest {
     @LargeTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
-        mAutoTestRule.setIsAutomotive(true);
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
@@ -1038,6 +1037,7 @@ public class SyncConsentFragmentTest {
                             mChromeActivityTestRule.getActivity(),
                             SigninAccessPoint.BOOKMARK_MANAGER, accountInfo.getEmail());
                 });
+        mAutoTestRule.setIsAutomotive(true);
 
         // Should display the sync page.
         onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));

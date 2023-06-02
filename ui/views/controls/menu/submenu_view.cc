@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -29,6 +28,7 @@
 #include "ui/views/controls/menu/menu_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,21 +65,20 @@ SubmenuView::~SubmenuView() {
 }
 
 bool SubmenuView::HasEmptyMenuItemView() const {
-  return base::Contains(children(), MenuItemView::kEmptyMenuItemViewID,
-                        &View::GetID);
+  return base::ranges::any_of(children(), IsViewClass<EmptyMenuMenuItem>);
 }
 
 bool SubmenuView::HasVisibleChildren() const {
-  return base::ranges::any_of(GetMenuItems(), [](const MenuItemView* item) {
-    return item->GetVisible();
-  });
+  return base::ranges::any_of(GetMenuItems(), &MenuItemView::GetVisible);
 }
 
 SubmenuView::MenuItems SubmenuView::GetMenuItems() const {
   MenuItems menu_items;
   for (View* child : children()) {
-    if (child->GetID() == MenuItemView::kMenuItemViewID)
-      menu_items.push_back(static_cast<MenuItemView*>(child));
+    if (auto* menu_item = AsViewClass<MenuItemView>(child);
+        menu_item && !IsViewClass<EmptyMenuMenuItem>(child)) {
+      menu_items.push_back(menu_item);
+    }
   }
   return menu_items;
 }
@@ -156,8 +155,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
   for (const View* child : children()) {
     if (!child->GetVisible())
       continue;
-    if (child->GetID() == MenuItemView::kMenuItemViewID) {
-      const MenuItemView* menu = static_cast<const MenuItemView*>(child);
+    if (auto* menu = AsViewClass<const MenuItemView>(child)) {
       const MenuItemView::MenuItemDimensions& dimensions =
           menu->GetDimensions();
       max_simple_width = std::max(max_simple_width, dimensions.standard_width);
@@ -461,7 +459,7 @@ bool SubmenuView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
   return views::FocusManager::IsTabTraversalKeyEvent(e);
 }
 
-MenuItemView* SubmenuView::GetMenuItem() {
+const MenuItemView* SubmenuView::GetMenuItem() const {
   return parent_menu_item_;
 }
 
@@ -479,12 +477,9 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
     // drop item. Find the selected item and have it updates its paint as
     // selected state.
     for (View* child : children()) {
-      if (!child->GetVisible() ||
-          child->GetID() != MenuItemView::kMenuItemViewID) {
-        continue;
-      }
-      MenuItemView* child_menu_item = static_cast<MenuItemView*>(child);
-      if (child_menu_item->IsSelected()) {
+      if (auto* child_menu_item = AsViewClass<MenuItemView>(child);
+          child_menu_item && child_menu_item->GetVisible() &&
+          child_menu_item->IsSelected()) {
         child_menu_item->OnDropOrSelectionStatusMayHaveChanged();
         // Only one menu item is selected, so no need to continue iterating once
         // the selected item is found.

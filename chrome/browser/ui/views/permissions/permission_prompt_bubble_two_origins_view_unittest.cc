@@ -57,6 +57,7 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   void Deny() override {}
   void Dismiss() override {}
   void Ignore() override {}
+  void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override {}
   void SetManageClicked() override {}
   void SetLearnMoreClicked() override {}
@@ -128,17 +129,16 @@ class PermissionPromptBubbleTwoOriginsViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
-       TitleMentionsTwoOriginsAndPermission) {
+       TitleMentionsRequestingOriginAndPermission) {
   TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
                                   GURL("https://test.embedding.origin"),
                                   {permissions::RequestType::kStorageAccess});
   auto bubble = CreateBubble(&delegate);
 
   const auto title = base::UTF16ToUTF8(bubble->GetWindowTitle());
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "displaying content", title);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "display content", title);
   // The scheme is not included.
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.requesting.origin", title);
-  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.embedding.origin", title);
 }
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest, DiesIfPermissionNotAllowed) {
@@ -146,6 +146,26 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest, DiesIfPermissionNotAllowed) {
                                   GURL("https://test.embedding.origin"),
                                   {permissions::RequestType::kCameraStream});
   EXPECT_DEATH_IF_SUPPORTED(CreateBubble(&delegate), "");
+}
+
+TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
+       DescriptionMentionsTwoOriginsAndPermission) {
+  TestDelegateTwoOrigins delegate(GURL("https://test.requesting.origin"),
+                                  GURL("https://test.embedding.origin"),
+                                  {permissions::RequestType::kStorageAccess});
+  auto bubble = CreateBubble(&delegate);
+
+  auto* label_with_link = static_cast<views::StyledLabel*>(
+      bubble->GetViewByID(permissions::PermissionPromptViewID::
+                              VIEW_ID_PERMISSION_PROMPT_DESCRIPTION_WITH_LINK));
+  EXPECT_TRUE(label_with_link);
+
+  const auto description = base::UTF16ToUTF8(label_with_link->GetText());
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.requesting.origin",
+                      description);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.embedding.origin",
+                      description);
+  EXPECT_PRED_FORMAT2(::testing::IsSubstring, "embedded content", description);
 }
 
 // TODO(b/276716358): Add behavior tests to ensure the prompt works and updates

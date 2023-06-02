@@ -65,6 +65,7 @@ class NATIVE_THEME_EXPORT NativeThemeFluent : public NativeThemeBase {
   void PaintButton(cc::PaintCanvas* canvas,
                    const ColorProvider* color_provider,
                    const gfx::Rect& rect,
+                   Part direction,
                    ColorScheme color_scheme) const;
   void PaintArrow(cc::PaintCanvas* canvas,
                   const ColorProvider* color_provider,

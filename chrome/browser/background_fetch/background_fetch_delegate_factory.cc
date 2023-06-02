@@ -22,7 +22,8 @@ BackgroundFetchDelegateImpl* BackgroundFetchDelegateFactory::GetForProfile(
 
 // static
 BackgroundFetchDelegateFactory* BackgroundFetchDelegateFactory::GetInstance() {
-  return base::Singleton<BackgroundFetchDelegateFactory>::get();
+  static base::NoDestructor<BackgroundFetchDelegateFactory> instance;
+  return instance.get();
 }
 
 BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
@@ -40,7 +41,7 @@ BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
 }
 
-BackgroundFetchDelegateFactory::~BackgroundFetchDelegateFactory() {}
+BackgroundFetchDelegateFactory::~BackgroundFetchDelegateFactory() = default;
 
 KeyedService* BackgroundFetchDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

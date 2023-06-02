@@ -133,6 +133,10 @@ class TabStyle {
   // Opacity of the active tab background painted over inactive selected tabs.
   virtual float GetSelectedTabOpacity() const = 0;
 
+  // Returns how far from the leading and trailing edges of a tab the contents
+  // should actually be laid out.
+  virtual int GetContentsHorizontalInsetSize() const;
+
   // The largest valid value of TabStyle::GetZValue(). Currently,
   // GM2TabStyle::GetZValue is the only implementation, and it can't return
   // values larger than 7.
@@ -141,10 +145,6 @@ class TabStyle {
   static constexpr float kDefaultSelectedTabOpacity = 0.75f;
 
   static const TabStyle* Get();
-
-  // Returns how far from the leading and trailing edges of a tab the contents
-  // should actually be laid out.
-  int GetContentsHorizontalInsetSize() const;
 
  protected:
   // Avoid implicitly-deleted constructor.

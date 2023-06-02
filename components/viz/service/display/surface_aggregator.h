@@ -164,7 +164,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   void EmitSurfaceContent(
-      const ResolvedFrameData& resolved_frame,
+      ResolvedFrameData& resolved_frame,
       float parent_device_scale_factor,
       const SurfaceDrawQuad* surface_quad,
       uint32_t embedder_client_namespace_id,
@@ -197,8 +197,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   void CopyQuadsToPass(
-      const ResolvedFrameData& resolved_frame,
-      const ResolvedPassData& resolved_pass,
+      ResolvedFrameData& resolved_frame,
+      ResolvedPassData& resolved_pass,
       AggregatedRenderPass* dest_pass,
       float parent_device_scale_factor,
       const gfx::Transform& target_transform,
@@ -254,7 +254,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   void ProcessResolvedFrame(ResolvedFrameData& resolved_frame);
 
   void CopyUndrawnSurfaces(PrewalkResult* prewalk);
-  void CopyPasses(const ResolvedFrameData& resolved_frame);
+  void CopyPasses(ResolvedFrameData& resolved_frame);
   void AddColorConversionPass();
   void AddRootReadbackPass();
   void AddDisplayTransformPass();
@@ -295,7 +295,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const gfx::Transform& parent_target_transform,
       const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
       const gfx::Transform& dest_transform_to_root_target,
-      const ResolvedFrameData* resolved_frame);
+      ResolvedFrameData* resolved_frame);
 
   void AddRenderPassFilterDamageToDamageList(
       const ResolvedFrameData& resolved_frame,
@@ -335,6 +335,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   // Resets member variables that were used during Aggregate().
   void ResetAfterAggregate();
+
+  void SetRenderPassDamageRect(AggregatedRenderPass* copy_pass,
+                               ResolvedPassData& resolved_pass);
 
   const raw_ptr<SurfaceManager> manager_;
   const raw_ptr<DisplayResourceProvider> provider_;

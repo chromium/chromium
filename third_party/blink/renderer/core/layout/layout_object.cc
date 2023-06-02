@@ -821,7 +821,8 @@ bool LayoutObject::IsListMarkerForSummary() const {
       return false;
     const AtomicString& name =
         StyleRef().ListStyleType()->GetCounterStyleName();
-    return name == "disclosure-open" || name == "disclosure-closed";
+    return name == keywords::kDisclosureOpen ||
+           name == keywords::kDisclosureClosed;
   }
   return false;
 }
@@ -1287,25 +1288,30 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       return false;
     }
 
-    if (const NGLayoutResult* layout_result =
-            layout_box->GetCachedLayoutResult(nullptr)) {
-      const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+    const NGLayoutResult* layout_result =
+        layout_box->GetCachedLayoutResult(nullptr);
 
-      // Fragmented nodes cannot be relayout roots.
-      if (fragment.BreakToken())
-        return false;
+    // We need a previous layout result to begin layout at a subtree root.
+    if (!layout_result) {
+      return false;
+    }
 
-      // In LayoutNG, if box has any OOF descendants, they are propagated to
-      // parent. Therefore, we must mark parent chain for layout.
-      if (fragment.HasOutOfFlowPositionedDescendants())
-        return false;
+    const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
 
-      // Anchor queries should be propagated across the layout boundaries, even
-      // when `contain: strict` is explicitly set.
-      if (fragment.HasAnchorQuery())
-        return false;
-    } else if (RuntimeEnabledFeatures::LayoutNewSubtreeRootEnabled()) {
-      // We need a previous layout result to begin layout at a subtree root.
+    // Fragmented nodes cannot be relayout roots.
+    if (fragment.BreakToken()) {
+      return false;
+    }
+
+    // If a box has any OOF descendants, they are propagated up the tree to
+    // accumulate their static-position.
+    if (fragment.HasOutOfFlowPositionedDescendants()) {
+      return false;
+    }
+
+    // Anchor queries should be propagated across the layout boundaries, even
+    // when `contain: strict` is explicitly set.
+    if (fragment.HasAnchorQuery()) {
       return false;
     }
 
@@ -1801,6 +1807,25 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
          // anonymous content box should be an absolute container.
          (IsAnonymous() && Parent() && Parent()->IsFieldset() &&
           Parent()->StyleRef().CanContainAbsolutePositionObjects());
+}
+
+const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(
+    LayoutBox* below) const {
+  const LayoutObject* maybe_sticky_ancestor = this;
+  while (maybe_sticky_ancestor && maybe_sticky_ancestor != below) {
+    if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {
+      return To<LayoutBoxModelObject>(maybe_sticky_ancestor);
+    }
+
+    // We use LocationContainer here to find the nearest sticky ancestor which
+    // shifts the given element's position so that the sticky positioning code
+    // is aware ancestor sticky position shifts.
+    maybe_sticky_ancestor =
+        maybe_sticky_ancestor->IsLayoutInline()
+            ? maybe_sticky_ancestor->Container()
+            : To<LayoutBox>(maybe_sticky_ancestor)->LocationContainer();
+  }
+  return nullptr;
 }
 
 gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(
@@ -2780,16 +2805,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
           *this);
     }
 
-    if (IsFloating() &&
-        (style_->UnresolvedFloating() != new_style.UnresolvedFloating())) {
-      // For changes in float styles, we need to conceivably remove ourselves
-      // from the floating objects list.
-      if (!RuntimeEnabledFeatures::
-              LayoutDisableBrokenFloatInvalidationEnabled()) {
-        To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
-      }
-    } else if (IsOutOfFlowPositioned() &&
-               (style_->GetPosition() != new_style.GetPosition())) {
+    if (IsOutOfFlowPositioned() &&
+        (style_->GetPosition() != new_style.GetPosition())) {
       // For changes in positioning styles, we need to conceivably remove
       // ourselves from the positioned objects list.
       LayoutBlock::RemovePositionedObject(To<LayoutBox>(this));
@@ -3532,7 +3549,7 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
 
   // ScrollOrigin accounts for other writing modes whose content's origin is not
   // at the top-left.
-  return PhysicalOffset(box->GetScrollableArea()->ScrollOrigin());
+  return PhysicalOffset(box->GetScrollableArea()->ScrollOriginInt());
 }
 
 PhysicalOffset LayoutObject::OffsetFromAncestor(
@@ -4044,12 +4061,6 @@ void LayoutObject::ScheduleRelayout() {
   }
 }
 
-void LayoutObject::ForceLayout() {
-  NOT_DESTROYED();
-  SetSelfNeedsLayoutForAvailableSpace(true);
-  UpdateLayout();
-}
-
 const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
   NOT_DESTROYED();
   DCHECK(GetDocument().GetStyleEngine().UsesFirstLineRules());
@@ -4220,9 +4231,7 @@ bool LayoutObject::WillRenderImage() {
   // If paint invalidation of this object is delayed, animations can be
   // suspended. When the object is painted the next time, the animations will
   // be started again.
-  if (ShouldDelayFullPaintInvalidation() &&
-      base::FeatureList::IsEnabled(
-          features::kThrottleOffscreenAnimatingSvgImages)) {
+  if (ShouldDelayFullPaintInvalidation()) {
     return false;
   }
   return true;

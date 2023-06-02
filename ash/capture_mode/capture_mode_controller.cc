@@ -50,7 +50,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -132,7 +131,8 @@ enum ScreenshotNotificationButtonIndex {
 
 // The video notification button index.
 enum VideoNotificationButtonIndex {
-  BUTTON_DELETE_VIDEO = 0,
+  BUTTON_SHARE_TO_YOUTUBE = 0,
+  BUTTON_DELETE_VIDEO,
 };
 
 // Returns the file extension for the given `recording_type` and the current
@@ -605,6 +605,22 @@ void CaptureModeController::SetRecordingType(RecordingType recording_type) {
   }
 }
 
+void CaptureModeController::SetAudioRecordingMode(AudioRecordingMode mode) {
+  audio_recording_mode_ = mode;
+
+  if (IsActive()) {
+    capture_mode_session_->OnAudioRecordingModeChanged();
+  }
+}
+
+void CaptureModeController::EnableDemoTools(bool enable) {
+  enable_demo_tools_ = enable;
+
+  if (IsActive()) {
+    capture_mode_session_->OnDemoToolsSettingsChanged();
+  }
+}
+
 void CaptureModeController::Start(CaptureModeEntryType entry_type,
                                   OnSessionStartAttemptCallback callback) {
   // To be invoked at the exit of this function or
@@ -632,7 +648,7 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type,
 }
 
 void CaptureModeController::StartForGameDashboard(aura::Window* game_window) {
-  CHECK(chromeos::wm::IsGameWindow(game_window));
+  CHECK(GameDashboardController::IsGameWindow(game_window));
   CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kGameDashboard);
   behavior->SetPreSelectedWindow(game_window);
   Start(CaptureModeEntryType::kGameDashboard);
@@ -1399,9 +1415,15 @@ void CaptureModeController::OnImageFileSaved(
   DCHECK(png_bytes && png_bytes->size());
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
-  ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage);
-  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
-    RecordSaveToLocation(GetSaveToOption(file_saved_path));
+  // TODO(michelefan): Do not hard-code `BehaviorType::kDefault`. Screenshot
+  // notification should be separated among different behaviors.
+  CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kDefault);
+  ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage,
+                          behavior);
+  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    RecordSaveToLocation(GetSaveToOption(file_saved_path), behavior);
+  }
+
   // NOTE: Holding space `client` may be `nullptr` in tests.
   if (auto* client = HoldingSpaceController::Get()->client()) {
     client->AddItemOfType(HoldingSpaceItem::Type::kScreenshot, file_saved_path);
@@ -1422,7 +1444,7 @@ void CaptureModeController::OnVideoFileSaved(
     if (behavior->ShouldShowPreviewNotification()) {
       ShowPreviewNotification(saved_video_file_path,
                               gfx::Image(video_thumbnail),
-                              CaptureModeType::kVideo);
+                              CaptureModeType::kVideo, behavior);
       // NOTE: Holding space `client` may be `nullptr` in tests.
       if (auto* client = HoldingSpaceController::Get()->client()) {
         client->AddItemOfType(is_gif
@@ -1435,14 +1457,15 @@ void CaptureModeController::OnVideoFileSaved(
       // DriveFs.
       blocking_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&GetFileSizeInKB, saved_video_file_path),
-          base::BindOnce(&RecordVideoFileSizeKB, is_gif));
+          base::BindOnce(&RecordVideoFileSizeKB, is_gif, behavior));
     }
     CHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordingDuration(
         (base::TimeTicks::Now() - recording_start_time_), behavior, is_gif);
   }
-  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
-    RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
+  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    RecordSaveToLocation(GetSaveToOption(saved_video_file_path), behavior);
+  }
 
   if (on_file_saved_callback_for_test_)
     std::move(on_file_saved_callback_for_test_).Run(saved_video_file_path);
@@ -1451,7 +1474,8 @@ void CaptureModeController::OnVideoFileSaved(
 void CaptureModeController::ShowPreviewNotification(
     const base::FilePath& screen_capture_path,
     const gfx::Image& preview_image,
-    const CaptureModeType type) {
+    const CaptureModeType type,
+    const CaptureModeBehavior* behavior) {
   const bool for_video = type == CaptureModeType::kVideo;
   const int title_id = GetNotificationTitleIdForFile(screen_capture_path);
   const int message_id = for_video && low_disk_space_threshold_reached_
@@ -1459,13 +1483,7 @@ void CaptureModeController::ShowPreviewNotification(
                              : IDS_ASH_SCREEN_CAPTURE_MESSAGE;
 
   message_center::RichNotificationData optional_fields;
-  message_center::ButtonInfo edit_button(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-  if (!for_video && !Shell::Get()->session_controller()->IsUserSessionBlocked())
-    optional_fields.buttons.push_back(edit_button);
-  message_center::ButtonInfo delete_button(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
-  optional_fields.buttons.push_back(delete_button);
+  optional_fields.buttons = behavior->GetNotificationButtonsInfo(for_video);
 
   optional_fields.image = preview_image;
   optional_fields.image_path = screen_capture_path;
@@ -1491,12 +1509,20 @@ void CaptureModeController::HandleNotificationClicked(
   } else {
     const int button_index_value = button_index.value();
     if (type == CaptureModeType::kVideo) {
-      DCHECK_EQ(button_index_value,
-                VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
-      DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                      std::move(on_file_deleted_callback_for_test_));
+      switch (button_index_value) {
+        case VideoNotificationButtonIndex::BUTTON_SHARE_TO_YOUTUBE:
+          OnShareToYouTubeButtonPressed();
+          break;
+        case VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO:
+          DeleteFileAsync(blocking_task_runner_, screen_capture_path,
+                          std::move(on_file_deleted_callback_for_test_));
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
     } else {
-      DCHECK_EQ(type, CaptureModeType::kImage);
+      CHECK_EQ(type, CaptureModeType::kImage);
       switch (button_index_value) {
         case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
           delegate_->OpenScreenshotInImageEditor(screen_capture_path);

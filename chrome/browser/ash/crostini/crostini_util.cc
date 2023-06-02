@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
@@ -104,26 +105,39 @@ void OnLaunchFailed(const std::string& app_id,
 
 void OnSharePathForLaunchApplication(
     Profile* profile,
-    const std::string& desktop_file_id,
+    const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
+    const guest_os::GuestId& container_id,
     int64_t display_id,
     const std::vector<std::string>& args,
     crostini::CrostiniSuccessCallback callback,
     bool success,
     const std::string& failure_reason) {
   if (!success) {
-    return OnLaunchFailed(desktop_file_id, std::move(callback),
-                          "Failed to share paths to launch " + desktop_file_id +
-                              ": " + failure_reason,
-                          CrostiniResult::SHARE_PATHS_FAILED);
+    return OnLaunchFailed(
+        app_id, std::move(callback),
+        "Failed to share paths to launch " + app_id + ": " + failure_reason,
+        CrostiniResult::SHARE_PATHS_FAILED);
   }
-  const guest_os::GuestId guest_id(registration.VmType(), registration.VmName(),
-                                   registration.ContainerName());
+
+  if (registration.Terminal()) {
+    // TODO(crbug.com/853560): This could be improved by using garcon
+    // DesktopFile::GenerateArgvWithFiles().
+    std::vector<std::string> terminal_args = {
+        registration.ExecutableFileName()};
+    terminal_args.insert(terminal_args.end(), args.begin(), args.end());
+    guest_os::LaunchTerminal(profile, display_id, container_id,
+                             /*cwd=*/std::string(), terminal_args);
+    OnApplicationLaunched(app_id, std::move(callback),
+                          crostini::CrostiniResult::SUCCESS, true,
+                          std::string());
+    return;
+  }
+
   guest_os::launcher::LaunchApplication(
-      profile, guest_id, registration.DesktopFileId(), args,
+      profile, container_id, registration.DesktopFileId(), args,
       registration.IsScaled(),
-      base::BindOnce(OnApplicationLaunched, desktop_file_id,
-                     std::move(callback),
+      base::BindOnce(OnApplicationLaunched, app_id, std::move(callback),
                      crostini::CrostiniResult::UNKNOWN_ERROR));
 }
 
@@ -131,6 +145,7 @@ void LaunchApplication(
     Profile* profile,
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
+    const guest_os::GuestId& container_id,
     int64_t display_id,
     const std::vector<LaunchArg>& args,
     crostini::CrostiniSuccessCallback callback) {
@@ -189,7 +204,7 @@ void LaunchApplication(
       vm_name, vm_info->info.seneschal_server_handle(),
       std::move(paths_to_share),
       base::BindOnce(OnSharePathForLaunchApplication, profile, app_id,
-                     std::move(registration), display_id,
+                     std::move(registration), container_id, display_id,
                      std::move(launch_args), std::move(callback)));
 }
 
@@ -245,7 +260,7 @@ void LaunchCrostiniAppImpl(
     Profile* profile,
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
-    const guest_os::GuestId container_id,
+    const guest_os::GuestId& container_id,
     int64_t display_id,
     const std::vector<LaunchArg>& args,
     CrostiniSuccessCallback callback) {
@@ -258,12 +273,15 @@ void LaunchCrostiniAppImpl(
   registry_service->AppLaunched(app_id);
   crostini_manager->UpdateLaunchMetricsForEnterpriseReporting();
 
+  auto spinner_app_id =
+      registration.Terminal() ? guest_os::kTerminalSystemAppId : app_id;
   auto restart_id = crostini_manager->RestartCrostini(
       container_id,
       base::BindOnce(
           [](Profile* profile, const std::string& app_id,
              guest_os::GuestOsRegistryService::Registration registration,
-             int64_t display_id, const std::vector<LaunchArg> args,
+             const guest_os::GuestId& container_id, int64_t display_id,
+             const std::vector<LaunchArg> args,
              crostini::CrostiniSuccessCallback callback,
              crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
@@ -276,13 +294,15 @@ void LaunchCrostiniAppImpl(
             }
 
             LaunchApplication(profile, app_id, std::move(registration),
-                              display_id, args, std::move(callback));
+                              container_id, display_id, args,
+                              std::move(callback));
           },
-          profile, app_id, std::move(registration), display_id, args,
-          std::move(callback)));
+          profile, app_id, std::move(registration), container_id, display_id,
+          args, std::move(callback)));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&AddSpinner, restart_id, app_id, profile),
+      FROM_HERE,
+      base::BindOnce(&AddSpinner, restart_id, spinner_app_id, profile),
       base::Milliseconds(kDelayBeforeSpinnerMs));
 }
 
@@ -351,6 +371,10 @@ std::vector<vm_tools::cicerone::ContainerFeature> GetContainerFeatures() {
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
     result.push_back(
         vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
+    if (base::FeatureList::IsEnabled(ash::features::kCrostiniQtImeSupport)) {
+      result.push_back(
+          vm_tools::cicerone::ContainerFeature::ENABLE_QT_IME_SUPPORT);
+    }
     if (base::FeatureList::IsEnabled(
             ash::features::kCrostiniVirtualKeyboardSupport)) {
       result.push_back(vm_tools::cicerone::ContainerFeature::

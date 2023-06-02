@@ -21,7 +21,8 @@ OobeCompletionTracker* OobeCompletionTrackerFactory::GetForProfile(
 
 // static
 OobeCompletionTrackerFactory* OobeCompletionTrackerFactory::GetInstance() {
-  return base::Singleton<OobeCompletionTrackerFactory>::get();
+  static base::NoDestructor<OobeCompletionTrackerFactory> instance;
+  return instance.get();
 }
 
 OobeCompletionTrackerFactory::OobeCompletionTrackerFactory()

@@ -9,13 +9,13 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
   const container = readAnythingApp.getElementById('container');
 
-  chrome.readAnything.setThemeForTesting(
+  chrome.readingMode.setThemeForTesting(
       'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1, 0);
   const expected = 'rgb(253, 226, 147)';  // #FDE293
   const actual = getComputedStyle(container).backgroundColor;

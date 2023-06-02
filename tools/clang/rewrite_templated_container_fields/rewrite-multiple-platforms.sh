@@ -30,7 +30,7 @@ mv third_party/llvm-build third_party/llvm-build-upstream
 # Build and test the rewriter.
 echo "*** Building the rewriter ***"
 time tools/clang/scripts/build.py \
-    --without-android \
+    --with-android \
     --without-fuchsia \
     --extra-tools rewrite_templated_container_fields
 tools/clang/rewrite_templated_container_fields/tests/run_all_tests.py

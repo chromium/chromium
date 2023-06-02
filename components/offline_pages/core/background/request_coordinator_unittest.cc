@@ -390,7 +390,7 @@ class RequestCoordinatorTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<ActiveTabInfoStub> active_tab_info_ = nullptr;
+  raw_ptr<ActiveTabInfoStub, DanglingUntriaged> active_tab_info_ = nullptr;
 
  private:
   GetRequestsResult last_get_requests_result_;
@@ -399,9 +399,10 @@ class RequestCoordinatorTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_;
-  raw_ptr<network::NetworkQualityTracker> network_quality_tracker_;
+  raw_ptr<network::NetworkQualityTracker, DanglingUntriaged>
+      network_quality_tracker_;
   std::unique_ptr<RequestCoordinatorStubTaco> coordinator_taco_;
-  raw_ptr<OfflinerStub> offliner_;
+  raw_ptr<OfflinerStub, DanglingUntriaged> offliner_;
   base::WaitableEvent waiter_;
   ObserverStub observer_;
   AddRequestResult expected_add_request_result_;

@@ -804,15 +804,11 @@ void Scheduler::FinishImplFrameSynchronous() {
 void Scheduler::DrawIfPossible() {
   DCHECK(!inside_scheduled_action_);
   base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
-  bool drawing_with_new_active_tree =
-      state_machine_.active_tree_needs_first_draw() &&
-      !state_machine_.previous_pending_tree_was_impl_side();
   compositor_timing_history_->WillDraw();
   state_machine_.WillDraw();
   DrawResult result = client_->ScheduledActionDrawIfPossible();
   state_machine_.DidDraw(result);
-  compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
-                                      client_->HasInvalidationAnimation());
+  compositor_timing_history_->DidDraw();
 }
 
 void Scheduler::DrawForced() {
@@ -832,8 +828,7 @@ void Scheduler::DrawForced() {
   state_machine_.WillDraw();
   DrawResult result = client_->ScheduledActionDrawForced();
   state_machine_.DidDraw(result);
-  compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
-                                      client_->HasInvalidationAnimation());
+  compositor_timing_history_->DidDraw();
 }
 
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {

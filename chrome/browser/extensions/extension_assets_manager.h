@@ -41,10 +41,14 @@ class ExtensionAssetsManager {
       bool updates_from_webstore_or_empty_update_url) = 0;
 
   // Remove extension assets if it is not used by anyone else.
+  // `extensions_install_dir` is the path to where extensions of this type are
+  // being installed. E.g. "/path/to/Profile/Extensions".
+  // `extension_dir_to_delete` is the directory that should be deleted to
+  // uninstall the extension.
   virtual void UninstallExtension(const std::string& id,
                                   const std::string& profile_user_name,
-                                  const base::FilePath& local_install_dir,
-                                  const base::FilePath& extension_root,
+                                  const base::FilePath& extensions_install_dir,
+                                  const base::FilePath& extension_dir_to_delete,
                                   const base::FilePath& profile_dir) = 0;
 
  protected:

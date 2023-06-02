@@ -26,6 +26,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/primes:chromium_primes",
     "//ios/chrome/browser/providers/push_notification:chromium_push_notification",
     "//ios/chrome/browser/providers/risk_data:chromium_risk_data",
+    "//ios/chrome/browser/providers/signin:chromium_choice",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
     "//ios/chrome/browser/providers/signin:chromium_signin_identity",
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",

@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CapturerType">
+  <variant name="Screen" summary="Screen capture type"/>
+  <variant name="Window" summary="Window capture type"/>
+</variants>
+
 <variants name="IPProtocolType">
   <variant name="_TCP" summary=""/>
   <variant name="_UDP" summary=""/>
@@ -971,26 +976,20 @@ chromium-metrics-reviews@google.com.
     frame is newly captured frame not explicitly requested by the client/sink.
     Very few frames are expected to be marked as refresh frames.
   </summary>
-  <token key="CapturerType">
-    <variant name="Screen" summary="Screen capture type"/>
-    <variant name="Window" summary="Window capture type"/>
-  </token>
+  <token key="CapturerType" variants="CapturerType"/>
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.FrameRate.{CapturerType}" units="fps"
-    expires_after="2024-04-25">
+    expires_after="2024-05-30">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     An integer value is recorded to this histogram for each captured video frame
-    where the desktop media source is given by {CapturerType}. The value is an
+    where the desktop media source is of type {CapturerType}. The value is an
     estimation of the current frame capture rate and the unit is in frames per
     second.
   </summary>
-  <token key="CapturerType">
-    <variant name="Screen" summary="Screen capture type"/>
-    <variant name="Window" summary="Window capture type"/>
-  </token>
+  <token key="CapturerType" variants="CapturerType"/>
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.IsZeroHzActive.{CapturerType}"
@@ -1005,10 +1004,20 @@ chromium-metrics-reviews@google.com.
     regions have been updated since the last frame. Windows WGC is an example of
     a capturer which does not support this.
   </summary>
-  <token key="CapturerType">
-    <variant name="Screen" summary="Screen capture type"/>
-    <variant name="Window" summary="Window capture type"/>
-  </token>
+  <token key="CapturerType" variants="CapturerType"/>
+</histogram>
+
+<histogram name="WebRTC.DesktopCapture.RefreshRate.{CapturerType}" units="fps"
+    expires_after="2024-05-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    An integer value is recorded to this histogram each time a client requests a
+    refresh frame using the RequestRefrestFrame() API where the desktop media
+    source is of type {CapturerType}. The value is an estimation of the current
+    refresh-frame rate and the unit is in frames per second.
+  </summary>
+  <token key="CapturerType" variants="CapturerType"/>
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
@@ -1059,7 +1068,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionGetFrameResult"
-    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2023-09-03">
+    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2023-11-19">
   <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1099,18 +1108,6 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counters on creation of DesktopCaptureDevice and the first capture call.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.EnumerateDevices.Latency" units="ms"
-    expires_after="2023-10-11">
-  <owner>toprice@chromium.org</owner>
-  <owner>agpalak@chromium.org</owner>
-  <summary>
-    Measures the time between a page calling enumerateDevices() and the returned
-    promise resolving (either successfully or with an error), intended for
-    monitoring for latency regressions in the wild. Note a call which never
-    resolves won't be counted in this metric.
   </summary>
 </histogram>
 
@@ -1765,7 +1762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidBundledExtensionIds"
-    units="boolean" expires_after="2023-07-01">
+    units="boolean" expires_after="2024-01-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>

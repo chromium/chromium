@@ -24,6 +24,9 @@ namespace {
 // surface can have for UMA/UKM collection.
 const int kMaxNumChildElements = 10;
 
+// The max count of text queries to report up to for UKM.
+const int kMaxNumTextSearches = 10;
+
 // Helper method to determine whether a UI surface is a list surface. List
 // surfaces are surfaces that take the form of a list with one or more items
 // inside it, e.g page entities.
@@ -122,6 +125,10 @@ CompanionMetricsLogger::~CompanionMetricsLogger() {
 void CompanionMetricsLogger::RecordOpenTrigger(
     absl::optional<SidePanelOpenTrigger> open_trigger) {
   open_trigger_ = open_trigger;
+  if (open_trigger.has_value()) {
+    base::UmaHistogramEnumeration("Companion.SidePanel.OpenTrigger",
+                                  open_trigger.value());
+  }
 }
 
 void CompanionMetricsLogger::RecordUiSurfaceShown(
@@ -175,6 +182,11 @@ void CompanionMetricsLogger::OnPhFeedback(PhFeedback ph_feedback) {
   last_ph_feedback_ = ph_feedback;
 }
 
+void CompanionMetricsLogger::OnExpsOptInStatusAvailable(
+    bool is_exps_opted_in) const {
+  base::UmaHistogramBoolean("Companion.IsUserOptedInToExps", is_exps_opted_in);
+}
+
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
 
@@ -186,7 +198,9 @@ void CompanionMetricsLogger::FlushStats() {
   // Text search.
   auto iter = ui_surface_metrics_.find(UiSurface::kSearchBox);
   if (iter != ui_surface_metrics_.end()) {
-    ukm_builder.SetTextSearchCount(iter->second.click_count);
+    ukm_builder.SetTextSearchCount(
+        std::clamp(iter->second.click_count, 0u,
+                   static_cast<unsigned int>(kMaxNumTextSearches)));
   }
 
   // Region search.

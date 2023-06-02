@@ -130,7 +130,8 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
 
   inline const CSSSelector* GetCurrentRelationAndNextCompound(
       const CSSSelector* compound_selector,
-      CSSSelector::RelationType& relation);
+      CSSSelector::RelationType& relation,
+      bool& contains_child_indexed);
 
   // Indicate the :has argument relative type and subtree traversal scope.
   // If 'adjacent_distance_limit' is integer max, it means that all the

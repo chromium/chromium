@@ -14,7 +14,6 @@
 <translation id="1617663976202781617">Chromiumin synkronointidata</translation>
 <translation id="1722370509450468186">Salasana tallennetaan tilillesi (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium-tiedot tyhjennettiin</translation>
-<translation id="177102542580335555">Tällä Chromium-profiililla on perustason suojaus</translation>
 <translation id="1838412507805038478">Chromium vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
 <translation id="1843424232666537147">Chromium sisältää ominaisuuksia, joiden avulla voit hallita datankäyttöäsi ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
@@ -47,8 +46,10 @@
 <translation id="3567399274263440288">Kirjaudu sisään Chromiumiin Google-tililläsi, jotta saat parhaan hyödyn Chromiumista.</translation>
 <translation id="3639997914391704523">Chromium voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> käytti Chromiumia, ja hänen käyttämiä kirjanmerkkejä, salasanoja ja muita asetuksia jäi laitteelle.</translation>
+<translation id="3661862315467204831">Avaa Chromiumin asetukset iOS:lla, napauta sitten Oletusselainsovellus ja valitse Chromium.</translation>
 <translation id="372658070733623520">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi.</translation>
 <translation id="3805899903892079518">Chromium ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
+<translation id="3827545470516145620">Tällä laitteella on perustason suojaus</translation>
 <translation id="3955621079070267756">Avaa Chromium mistä tahansa sovelluksesta</translation>
 <translation id="4043291146360695975">Salasanat tallennetaan Salasanojen ylläpitoon vain tällä laitteella.</translation>
 <translation id="4099085513035183040">Ei tueta Chromium Betassa</translation>

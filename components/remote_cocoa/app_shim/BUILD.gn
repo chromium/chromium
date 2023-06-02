@@ -64,6 +64,7 @@ component("app_shim") {
   defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]
   deps = [
     "//base",
+    "//base:base_arc",
     "//base:i18n",
     "//components/crash/core/common",
     "//components/remote_cocoa/common:mojo",

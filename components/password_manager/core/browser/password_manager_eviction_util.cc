@@ -11,28 +11,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
+#include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-
-namespace {
-
-base::flat_set<int> ParseErrorList(const std::string& serialised_list) {
-  base::flat_set<int> error_list;
-
-  for (base::StringPiece error_str :
-       base::SplitStringPiece(serialised_list, ",", base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
-    int error_code;
-    bool is_converted = base::StringToInt(error_str, &error_code);
-    DCHECK(is_converted);
-    error_list.emplace(error_code);
-  }
-
-  return error_list;
-}
-
-}  // namespace
 
 namespace password_manager_upm_eviction {
 
@@ -85,15 +67,23 @@ void ReenrollCurrentUser(PrefService* prefs) {
 }
 
 bool ShouldIgnoreOnApiError(int api_error_code) {
-  base::flat_set<int> ignored_errors =
-      ParseErrorList(password_manager::features::kIgnoredGmsApiErrors.Get());
-  return ignored_errors.contains(api_error_code);
+  return api_error_code ==
+             static_cast<int>(
+                 AndroidBackendAPIErrorCode::kAuthErrorResolvable) ||
+         api_error_code ==
+             static_cast<int>(
+                 AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
 }
 
 bool ShouldRetryOnApiError(int api_error_code) {
-  base::flat_set<int> ignored_errors =
-      ParseErrorList(password_manager::features::kRetriableGmsApiErrors.Get());
-  return ignored_errors.contains(api_error_code);
+  const base::flat_set<int> kRetriableErrors = {
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError),
+      static_cast<int>(AndroidBackendAPIErrorCode::kApiNotConnected),
+      static_cast<int>(
+          AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall),
+      static_cast<int>(AndroidBackendAPIErrorCode::kReconnectionTimedOut),
+      static_cast<int>(AndroidBackendAPIErrorCode::kBackendGeneric)};
+  return kRetriableErrors.contains(api_error_code);
 }
 
 }  // namespace password_manager_upm_eviction

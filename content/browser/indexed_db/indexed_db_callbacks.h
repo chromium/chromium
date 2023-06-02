@@ -34,7 +34,6 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 class IndexedDBConnection;
-class IndexedDBCursor;
 class IndexedDBDatabase;
 struct IndexedDBDataLossInfo;
 
@@ -68,9 +67,6 @@ class CONTENT_EXPORT IndexedDBCallbacks
   // IndexedDBDatabase::DeleteRange
   // IndexedDBDatabase::GetKeyGeneratorCurrentNumber
   virtual void OnSuccess(int64_t value);
-
-  // IndexedDBCursor::Continue / Advance (when complete)
-  virtual void OnSuccess();
 
   void OnConnectionError();
 

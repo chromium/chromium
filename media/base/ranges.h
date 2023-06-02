@@ -37,6 +37,15 @@ class Ranges {
   T start(size_t i) const;
   T end(size_t i) const;
 
+  // Return the last range.
+  const std::pair<T, T>& back() const;
+
+  // check to see that `entry` is within [start, end) for the given range.
+  bool contains(size_t i, const T& entry) const;
+
+  // Shorthand for size() == 0.
+  bool empty() const;
+
   // Clear all ranges.
   void clear();
 
@@ -128,6 +137,21 @@ T Ranges<T>::start(size_t i) const {
 template<class T>
 T Ranges<T>::end(size_t i) const {
   return ranges_[i].second;
+}
+
+template <class T>
+const std::pair<T, T>& Ranges<T>::back() const {
+  return ranges_[size() - 1];
+}
+
+template <class T>
+bool Ranges<T>::contains(size_t i, const T& entry) const {
+  return start(i) <= entry && end(i) > entry;
+}
+
+template <class T>
+bool Ranges<T>::empty() const {
+  return size() == 0;
 }
 
 template<class T>

@@ -53,7 +53,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
   }
 
  protected:
-  raw_ptr<media::MockDevice> mock_device_ptr_;
+  raw_ptr<media::MockDevice, DanglingUntriaged> mock_device_ptr_;
   std::unique_ptr<DeviceMediaToMojoAdapter> adapter_;
   std::unique_ptr<MockVideoFrameHandler> mock_video_frame_handler_;
   mojo::PendingRemote<mojom::VideoFrameHandler> video_frame_handler_;

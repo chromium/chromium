@@ -125,15 +125,17 @@ quic::WriteResult QuicChromiumPacketWriter::WritePacket(
     size_t buf_len,
     const quic::QuicIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
-    quic::PerPacketOptions* /*options*/) {
-  DCHECK(!IsWriteBlocked());
+    quic::PerPacketOptions* /*options*/,
+    const quic::QuicPacketWriterParams& /*params*/) {
+  CHECK(!IsWriteBlocked());
   SetPacket(buffer, buf_len);
   return WritePacketToSocketImpl();
 }
 
 void QuicChromiumPacketWriter::WritePacketToSocket(
     scoped_refptr<ReusableIOBuffer> packet) {
-  DCHECK(!force_write_blocked_);
+  CHECK(!force_write_blocked_);
+  CHECK(!IsWriteBlocked());
   packet_ = std::move(packet);
   quic::WriteResult result = WritePacketToSocketImpl();
   if (result.error_code != ERR_IO_PENDING)
@@ -143,6 +145,9 @@ void QuicChromiumPacketWriter::WritePacketToSocket(
 quic::WriteResult QuicChromiumPacketWriter::WritePacketToSocketImpl() {
   base::TimeTicks now = base::TimeTicks::Now();
 
+  // When the connection is closed, the socket is cleaned up. If socket is
+  // invalidated, packets should not be written to the socket.
+  CHECK(socket_);
   int rv = socket_->Write(packet_.get(), packet_->size(), write_callback_,
                           kTrafficAnnotation);
 
@@ -180,9 +185,12 @@ quic::WriteResult QuicChromiumPacketWriter::WritePacketToSocketImpl() {
 
 void QuicChromiumPacketWriter::RetryPacketAfterNoBuffers() {
   DCHECK_GT(retry_count_, 0);
-  quic::WriteResult result = WritePacketToSocketImpl();
-  if (result.error_code != ERR_IO_PENDING)
-    OnWriteComplete(result.error_code);
+  if (socket_) {
+    quic::WriteResult result = WritePacketToSocketImpl();
+    if (result.error_code != ERR_IO_PENDING) {
+      OnWriteComplete(result.error_code);
+    }
+  }
 }
 
 bool QuicChromiumPacketWriter::IsWriteBlocked() const {
@@ -262,6 +270,10 @@ bool QuicChromiumPacketWriter::IsBatchMode() const {
   return false;
 }
 
+bool QuicChromiumPacketWriter::SupportsEcn() const {
+  return false;
+}
+
 quic::QuicPacketBuffer QuicChromiumPacketWriter::GetNextWriteLocation(
     const quic::QuicIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address) {
@@ -270,6 +282,15 @@ quic::QuicPacketBuffer QuicChromiumPacketWriter::GetNextWriteLocation(
 
 quic::WriteResult QuicChromiumPacketWriter::Flush() {
   return quic::WriteResult(quic::WRITE_STATUS_OK, 0);
+}
+
+bool QuicChromiumPacketWriter::OnSocketClosed(
+    std::unique_ptr<DatagramClientSocket> socket) {
+  if (socket_.get() == socket.get()) {
+    socket_ = nullptr;
+    return true;
+  }
+  return false;
 }
 
 }  // namespace net

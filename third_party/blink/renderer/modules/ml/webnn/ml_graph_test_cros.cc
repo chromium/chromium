@@ -104,6 +104,28 @@ class TfLiteRuntime {
     return kTfLiteOk;
   }
 
+  TfLiteStatus Compute(
+      const WTF::HashMap<WTF::String, WTF::Vector<uint8_t>>& named_input,
+      WTF::HashMap<WTF::String, WTF::Vector<uint8_t>>& named_output) {
+    for (auto index : interpreter_->inputs()) {
+      auto* tensor = interpreter_->tensor(index);
+      Vector<uint8_t> input_data = named_input.at(WTF::String(tensor->name));
+      memcpy(tensor->data.raw, input_data.data(), tensor->bytes);
+    }
+
+    // Compute the graph.
+    EXPECT_EQ(interpreter_->Invoke(), kTfLiteOk);
+
+    for (auto index : interpreter_->outputs()) {
+      auto* tensor = interpreter_->tensor(index);
+      WTF::Vector<uint8_t> output_data(
+          base::checked_cast<wtf_size_t>(tensor->bytes));
+      memcpy(output_data.data(), tensor->data.raw, tensor->bytes);
+      named_output.insert(WTF::String(tensor->name), std::move(output_data));
+    }
+    return kTfLiteOk;
+  }
+
  private:
   std::unique_ptr<tflite::Interpreter> interpreter_;
 };
@@ -127,6 +149,9 @@ class FakeWebNNModel : public blink_mojom::Model {
     blink_mojom::ModelInfoPtr info = blink_mojom::ModelInfo::New();
     EXPECT_EQ(runtime_->Load(buffer, info), kTfLiteOk);
 
+    // Hold the flatbuffer for computing with tflite runtime.
+    buffer_ = std::move(buffer);
+
     receiver_.reset();
     std::move(callback).Run(blink_mojom::LoadModelResult::kOk,
                             receiver_.BindNewPipeAndPassRemote(),
@@ -136,11 +161,15 @@ class FakeWebNNModel : public blink_mojom::Model {
   // Override methods from blink_mojom::Model.
   void Compute(const WTF::HashMap<WTF::String, WTF::Vector<uint8_t>>& input,
                blink_mojom::Model::ComputeCallback callback) override {
-    NOTIMPLEMENTED();
+    WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> named_output;
+    EXPECT_EQ(runtime_->Compute(input, named_output), kTfLiteOk);
+    std::move(callback).Run(blink_mojom::ComputeResult::kOk, named_output);
   }
 
   mojo::Receiver<blink_mojom::Model> receiver_{this};
   std::unique_ptr<TfLiteRuntime> runtime_;
+  // The buffer of tflite model must be alive for computing.
+  mojo_base::BigBuffer buffer_;
 };
 
 class MLGraphTestCrOS : public MLGraphTestBase {
@@ -191,18 +220,23 @@ struct ElementWiseAddTester {
         helper.BuildGraph(scope, builder, {{"output", output}});
     EXPECT_NE(graph, nullptr);
     MLGraphCrOS* cros_graph = static_cast<MLGraphCrOS*>(graph.Get());
-    const auto& input_tensor_info =
-        cros_graph->GetInputTensorInfoMapForTesting();
+    const auto& input_tensor_info = cros_graph->GetInputResourcesInfo();
     EXPECT_EQ(input_tensor_info.size(), 1u);
     EXPECT_EQ(input_tensor_info.Contains("input"), true);
-    EXPECT_EQ(input_tensor_info.find("input")->value->dimensions,
-              lhs.dimensions);
-    const auto& output_tensor_info =
-        cros_graph->GetOutputTensorInfoMapForTesting();
+    const auto& output_tensor_info = cros_graph->GetOutputResourcesInfo();
     EXPECT_EQ(output_tensor_info.size(), 1u);
     EXPECT_EQ(output_tensor_info.Contains("output"), true);
-    EXPECT_EQ(output_tensor_info.find("output")->value->dimensions,
-              expected.dimensions);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input", CreateArrayBufferViewForOperand(input, lhs.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected.values);
   }
 
  private:
@@ -296,7 +330,8 @@ TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
                 .dimensions = {2},
                 .values = {3.0, 4.0}},
         .expected = {.type = V8MLOperandType::Enum::kFloat32,
-                     .dimensions = {2}}}
+                     .dimensions = {2},
+                     .values = {4.0, 6.0}}}
         .Test(*this, scope);
   }
   {
@@ -310,7 +345,8 @@ TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
                 .dimensions = {2},
                 .values = {5.0, 6.0}},
         .expected = {.type = V8MLOperandType::Enum::kFloat32,
-                     .dimensions = {2, 2}}}
+                     .dimensions = {2, 2},
+                     .values = {6.0, 8.0, 8.0, 10.0}}}
         .Test(*this, scope);
   }
 }

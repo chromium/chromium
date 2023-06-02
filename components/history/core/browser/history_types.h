@@ -174,6 +174,20 @@ typedef std::vector<VisitRow> VisitVector;
 // used by HistoryBackend::AddVisits() to create new visits for a URL.
 typedef std::pair<base::Time, ui::PageTransition> VisitInfo;
 
+// Specifies the possible reasons a visit (or its annotations) can get updated.
+// Used by HistoryBackendNotifier::NotifyVisitUpdated() and
+// HistoryBackendObserver::OnVisitUpdated().
+// Only used internally and in memory (not persisted), so can be freely changed.
+enum class VisitUpdateReason {
+  kSetPageLanguage,
+  kSetPasswordState,
+  kUpdateVisitDuration,
+  kUpdateTransition,
+  kUpdateSyncedVisit,
+  kAddContextAnnotations,
+  kSetOnCloseContextAnnotations
+};
+
 // QueryResults ----------------------------------------------------------------
 
 // Encapsulates the results of a history query. It supports an ordered list of
@@ -871,6 +885,9 @@ struct ClusterVisit {
     // zero-state but still searchable.
     kDone = 2,
   };
+
+  // Used for both persistence and debug logging.
+  static int InteractionStateToInt(InteractionState state);
 
   ClusterVisit();
   ~ClusterVisit();

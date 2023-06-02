@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
@@ -25,7 +25,8 @@ ScanService* ScanServiceFactory::GetForBrowserContext(
 
 // static
 ScanServiceFactory* ScanServiceFactory::GetInstance() {
-  return base::Singleton<ScanServiceFactory>::get();
+  static base::NoDestructor<ScanServiceFactory> instance;
+  return instance.get();
 }
 
 // static

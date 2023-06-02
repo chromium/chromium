@@ -37,9 +37,13 @@ VideoCaptureBufferTrackerFactoryWin::CreateTracker(
 
 std::unique_ptr<VideoCaptureBufferTracker>
 VideoCaptureBufferTrackerFactoryWin::CreateTrackerForExternalGpuMemoryBuffer(
-    const gfx::GpuMemoryBufferHandle& handle) {
-  // Not supported
-  return nullptr;
+    gfx::GpuMemoryBufferHandle handle) {
+  if (handle.type != gfx::DXGI_SHARED_HANDLE) {
+    return nullptr;
+  }
+
+  return std::make_unique<GpuMemoryBufferTracker>(std::move(handle),
+                                                  dxgi_device_manager_);
 }
 
 }  // namespace media

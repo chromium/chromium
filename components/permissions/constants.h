@@ -16,6 +16,11 @@ namespace permissions {
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kChooserBluetoothOverviewURL[];
 
+// The URL for the Embedded Content help center article in the SAA permission
+// prompt.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kEmbeddedContentHelpCenterURL[];
+
 #if !BUILDFLAG(IS_ANDROID)
 // The key in `Product Specific String Data` under which the disposition of the
 // permission prompt is recorded in the prompt HaTS survey.

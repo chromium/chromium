@@ -90,7 +90,7 @@ class SendTabToSelfDevicePickerBubbleViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<SendTabToSelfDevicePickerBubbleView> bubble_;
+  raw_ptr<SendTabToSelfDevicePickerBubbleView, DanglingUntriaged> bubble_;
   // Owned by WebContents.
   raw_ptr<SendTabToSelfBubbleControllerMock> controller_;
 };

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -31,7 +31,8 @@ namespace ash::nearby::presence {
 
 // static
 NearbyPresenceServiceFactory* NearbyPresenceServiceFactory::GetInstance() {
-  return base::Singleton<NearbyPresenceServiceFactory>::get();
+  static base::NoDestructor<NearbyPresenceServiceFactory> instance;
+  return instance.get();
 }
 
 // static

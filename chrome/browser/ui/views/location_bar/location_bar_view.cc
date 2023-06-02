@@ -103,6 +103,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/feature_switch.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -193,7 +194,7 @@ LocationBarView::LocationBarView(Browser* browser,
 
 #if BUILDFLAG(IS_MAC)
     geolocation_permission_observation_.Observe(
-        g_browser_process->geolocation_manager());
+        device::GeolocationManager::GetInstance());
 #endif
   }
 }
@@ -1160,6 +1161,10 @@ GURL LocationBarView::GetDestinationURL() const {
 
 bool LocationBarView::IsInputTypedUrlWithoutScheme() const {
   return destination_url_entered_without_scheme();
+}
+
+bool LocationBarView::IsInputTypedUrlWithHttpScheme() const {
+  return destination_url_entered_with_http_scheme();
 }
 
 WindowOpenDisposition LocationBarView::GetWindowOpenDisposition() const {

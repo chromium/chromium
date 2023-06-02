@@ -163,6 +163,11 @@ public class X509Util {
     private static boolean sLoadedSystemKeyStore;
 
     /**
+     * A root that will be installed as a user-trusted root for testing purposes.
+     */
+    private static X509Certificate sTestRoot;
+
+    /**
      * Lock object used to synchronize all calls that modify or depend on the trust managers.
      */
     private static final Object sLock = new Object();
@@ -319,17 +324,24 @@ public class X509Util {
                 new ByteArrayInputStream(derBytes));
     }
 
+    /**
+     * Add a test root certificate for use by the Android Platform verifier.
+     */
     public static void addTestRootCertificate(byte[] rootCertBytes)
             throws CertificateException, KeyStoreException, NoSuchAlgorithmException {
         X509Certificate rootCert = createCertificateFromBytes(rootCertBytes);
         synchronized (sLock) {
             ensureTestInitializedLocked();
+            // Add the cert to be used by the Android Platform Verifier.
             sTestKeyStore.setCertificateEntry(
                     "root_cert_" + Integer.toString(sTestKeyStore.size()), rootCert);
             reloadTestTrustManager();
         }
     }
 
+    /**
+     * Clear test root certificates in use by the Android Platform verifier.
+     */
     public static void clearTestRootCertificates()
             throws NoSuchAlgorithmException, CertificateException, KeyStoreException {
         synchronized (sLock) {
@@ -340,6 +352,22 @@ public class X509Util {
             } catch (IOException e) {
                 // No IO operation is attempted.
             }
+        }
+    }
+
+    /**
+     * Set a test root certificate for use by CertVerifierBuiltin.
+     */
+    public static void setTestRootCertificateForBuiltin(byte[] rootCertBytes)
+            throws NoSuchAlgorithmException, CertificateException, KeyStoreException {
+        X509Certificate rootCert = createCertificateFromBytes(rootCertBytes);
+        synchronized (sLock) {
+            // Add the cert to be used by CertVerifierBuiltin.
+            //
+            // This saves the root so it is returned from getUserAddedRoots, for TrustStoreAndroid.
+            // This is done for the Java EmbeddedTestServer implementation and must run before
+            // native code is loaded, when getUserAddedRoots is first run.
+            sTestRoot = rootCert;
         }
     }
 
@@ -502,6 +530,14 @@ public class X509Util {
             } catch (KeyStoreException e) {
                 Log.e(TAG, "Error reading cert aliases: %s", e);
                 return new byte[0][];
+            }
+
+            if (sTestRoot != null) {
+                try {
+                    userRootBytes.add(sTestRoot.getEncoded());
+                } catch (CertificateEncodingException e) {
+                    Log.e(TAG, "Error encoding test root cert, error %s", e);
+                }
             }
         }
 

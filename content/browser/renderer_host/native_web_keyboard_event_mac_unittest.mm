@@ -31,8 +31,8 @@ TEST(NativeWebKeyboardEventMac, CtrlCmdSpaceKeyDownRoundTrip) {
       content::WebKeyboardEventBuilder::Build(ns_event);
   content::NativeWebKeyboardEvent native_event(web_event, gfx::NativeView());
 
-  NSEvent* round_trip_ns_event = native_event.os_event;
-  EXPECT_EQ([round_trip_ns_event type], [ns_event type]);
-  EXPECT_EQ([round_trip_ns_event modifierFlags], [ns_event modifierFlags]);
-  EXPECT_EQ([round_trip_ns_event keyCode], [ns_event keyCode]);
+  NSEvent* round_trip_ns_event = native_event.os_event.Get();
+  EXPECT_EQ(round_trip_ns_event.type, ns_event.type);
+  EXPECT_EQ(round_trip_ns_event.modifierFlags, ns_event.modifierFlags);
+  EXPECT_EQ(round_trip_ns_event.keyCode, ns_event.keyCode);
 }

@@ -125,7 +125,7 @@ class PrefetchManager {
   void TryToLaunchPrefetchJobs();
 
   base::WeakPtr<Delegate> delegate_;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // All the jobs that haven't yet started. A job is removed once it starts.
   // Inflight jobs destruct once finished.

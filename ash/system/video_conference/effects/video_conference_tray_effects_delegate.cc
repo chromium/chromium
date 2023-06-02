@@ -5,6 +5,8 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_utils.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 
@@ -79,6 +81,31 @@ std::vector<VcHostedEffect*> VcEffectsDelegate::GetEffects(VcEffectType type) {
   }
 
   return effects_of_type;
+}
+
+void VcEffectsDelegate::RecordInitialStates() {
+  for (auto& [effect_id, effect] : effects_) {
+    // Only record supported effects, because if an effect does not apply to the
+    // current session the current state is not relevant.
+    if (!DependenciesSatisfied(effect.get())) {
+      continue;
+    }
+
+    auto current_state = effect->get_state_callback().Run();
+    if (!current_state.has_value()) {
+      return;
+    }
+
+    if (effect->type() == VcEffectType::kToggle) {
+      CHECK_EQ(effect->GetNumStates(), 1);
+      base::UmaHistogramBoolean(
+          video_conference_utils::GetEffectHistogramNameForInitialState(
+              effect_id),
+          current_state.value());
+    } else {
+      RecordMetricsForSetValueEffectOnStartup(effect_id, current_state.value());
+    }
+  }
 }
 
 }  // namespace ash

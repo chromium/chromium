@@ -15,4 +15,11 @@ BASE_FEATURE(kEnableBookmarksAccountStorage,
              "EnableBookmarksAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature flags enables the logic that wipes the account storage after
+// EnableBookmarksAccountStorage rollback. This logic is not enabled by default
+// to minimize the performance impact.
+BASE_FEATURE(kRollbackBookmarksAccountStorage,
+             "RollbackBookmarksAccountStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace bookmarks

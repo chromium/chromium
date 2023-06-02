@@ -39,6 +39,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -1239,6 +1240,35 @@ void InvokeBadMojoMessageCallbackForTesting(int render_process_id,
     callback.Run(render_process_id, error);
 }
 
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB&
+GetStableVideoDecoderFactoryCreationCB() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<
+      RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB>
+      s_callback;
+  return *s_callback;
+}
+
+RenderProcessHostImpl::StableVideoDecoderEventCB&
+GetStableVideoDecoderEventCB() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<RenderProcessHostImpl::StableVideoDecoderEventCB>
+      s_callback;
+  return *s_callback;
+}
+
+void InvokeStableVideoDecoderEventCB(
+    RenderProcessHostImpl::StableVideoDecoderEvent event) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderProcessHostImpl::StableVideoDecoderEventCB& callback =
+      GetStableVideoDecoderEventCB();
+  if (!callback.is_null()) {
+    callback.Run(event);
+  }
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
 // Kill-switch for the new CHECKs from https://crrev.com/c/4134809.
 BASE_FEATURE(kCheckNoNewRefCountsWhenRphDeletingSoon,
              "CheckNoNewRefCountsWhenRphDeletingSoon",
@@ -2192,9 +2222,18 @@ void RenderProcessHostImpl::CreateStableVideoDecoder(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!stable_video_decoder_factory_remote_.is_bound()) {
-    LaunchStableVideoDecoderFactory(
-        stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
-    stable_video_decoder_factory_remote_.reset_on_disconnect();
+    auto creation_cb = GetStableVideoDecoderFactoryCreationCB();
+    if (creation_cb.is_null()) {
+      LaunchStableVideoDecoderFactory(
+          stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
+    } else {
+      creation_cb.Run(
+          stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
+    }
+
+    stable_video_decoder_factory_remote_.set_disconnect_handler(
+        base::BindOnce(&RenderProcessHostImpl::ResetStableVideoDecoderFactory,
+                       instance_weak_factory_.GetWeakPtr()));
 
     // Version 1 introduced the ability to pass a
     // mojo::PendingRemote<StableVideoDecoderTracker> to
@@ -2210,6 +2249,16 @@ void RenderProcessHostImpl::CreateStableVideoDecoder(
       this, tracker_remote.InitWithNewPipeAndPassReceiver());
   stable_video_decoder_factory_remote_->CreateStableVideoDecoder(
       std::move(receiver), std::move(tracker_remote));
+  if (stable_video_decoder_factory_reset_timer_.IsRunning()) {
+    // |stable_video_decoder_factory_reset_timer_| has been started to
+    // eventually reset() the |stable_video_decoder_factory_remote_|. Now that
+    // we got a request to create a StableVideoDecoder before the timer
+    // triggered, we can stop it so that the utility process associated with the
+    // |stable_video_decoder_factory_remote_| doesn't die.
+    stable_video_decoder_factory_reset_timer_.Stop();
+    InvokeStableVideoDecoderEventCB(
+        StableVideoDecoderEvent::kFactoryResetTimerStopped);
+  }
 }
 
 void RenderProcessHostImpl::OnStableVideoDecoderDisconnected() {
@@ -2218,19 +2267,54 @@ void RenderProcessHostImpl::OnStableVideoDecoderDisconnected() {
   if (stable_video_decoder_trackers_.empty()) {
     // All StableVideoDecoders have disconnected. Let's reset() the
     // |stable_video_decoder_factory_remote_| so that the corresponding utility
-    // process gets terminated.
-    //
-    // TODO(b/195769334): maybe we shouldn't reset()
-    // |stable_video_decoder_factory_remote_| immediately because it's possible
-    // that the renderer process is about to create another decoder (e.g., the
-    // user manually changing the resolution of a YouTube video). In that case,
-    // we'll terminate the current video decoder process and start another one
-    // almost immediately. This is not incorrect, but it's unnecessary overhead.
-    // Maybe we should wait a few seconds before terminating the process: if no
-    // request to create a video decoder comes in during that time, then it's
-    // fine to terminate it.
-    stable_video_decoder_factory_remote_.reset();
+    // process gets terminated. Note that we don't reset() immediately. Instead,
+    // we wait a little bit in case a request to create another
+    // StableVideoDecoder comes in. That way, we don't unnecessarily tear down
+    // the video decoder process just to create another one almost immediately.
+    // We chose 3 seconds because it seemed "reasonable."
+    constexpr base::TimeDelta kTimeToResetStableVideoDecoderFactory =
+        base::Seconds(3);
+    stable_video_decoder_factory_reset_timer_.Start(
+        FROM_HERE, kTimeToResetStableVideoDecoderFactory,
+        base::BindOnce(&RenderProcessHostImpl::ResetStableVideoDecoderFactory,
+                       instance_weak_factory_.GetWeakPtr()));
+    InvokeStableVideoDecoderEventCB(
+        StableVideoDecoderEvent::kAllDecodersDisconnected);
   }
+}
+
+void RenderProcessHostImpl::ResetStableVideoDecoderFactory() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  stable_video_decoder_factory_remote_.reset();
+
+  // Note that |stable_video_decoder_trackers_| should be empty if
+  // ResetStableVideoDecoderFactory() was called because
+  // |stable_video_decoder_factory_reset_timer_| fired. Otherwise, there's no
+  // guarantee about its contents. For example, maybe
+  // ResetStableVideoDecoderFactory() got called because the video decoder
+  // process crashed and we got the disconnection notification for
+  // |stable_video_decoder_factory_remote_| before the disconnection
+  // notification for any of the elements in |stable_video_decoder_trackers_|.
+  stable_video_decoder_trackers_.Clear();
+
+  if (stable_video_decoder_factory_reset_timer_.IsRunning()) {
+    stable_video_decoder_factory_reset_timer_.Stop();
+    InvokeStableVideoDecoderEventCB(
+        StableVideoDecoderEvent::kFactoryResetTimerStopped);
+  }
+}
+
+void RenderProcessHostImpl::SetStableVideoDecoderFactoryCreationCBForTesting(
+    StableVideoDecoderFactoryCreationCB callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetStableVideoDecoderFactoryCreationCB() = callback;
+}
+
+void RenderProcessHostImpl::SetStableVideoDecoderEventCBForTesting(
+    StableVideoDecoderEventCB callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetStableVideoDecoderEventCB() = callback;
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
@@ -3419,7 +3503,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisableBackgroundMediaSuspend,
     switches::kDisableNotifications,
     switches::kDisableOriginTrialControlledBlinkFeatures,
-    switches::kDisablePepper3DImageChromium,
     switches::kDisablePermissionsAPI,
     switches::kDisablePresentationAPI,
     switches::kDisableRTCSmoothnessAlgorithm,
@@ -3698,6 +3781,8 @@ bool RenderProcessHostImpl::ShutdownRequested() {
 
 bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
                                                    bool skip_unload_handlers) {
+  base::UmaHistogramBoolean(
+      "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
   // Do not shut down the process if there are active or pending views other
   // than the ones we're shutting down.
   if (page_count && page_count != (GetActiveViewCount() + pending_views_))
@@ -3721,6 +3806,9 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   if (keep_alive_ref_count_ != 0) {
     CHECK(!base::FeatureList::IsEnabled(
         blink::features::kKeepAliveInBrowserMigration));
+    base::UmaHistogramBoolean(
+        "BrowserRenderProcessHost.FastShutdownIfPossible.FetchKeepAliveExist",
+        true);
     return false;
   }
 
@@ -3956,6 +4044,7 @@ void RenderProcessHostImpl::Cleanup() {
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup",
               ChromeTrackEvent::kRenderProcessHost, *this);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::UmaHistogramBoolean("BrowserRenderProcessHost.Cleanup.Total", true);
   // Keep the one renderer thread around forever in single process mode.
   if (run_renderer_in_process())
     return;
@@ -4010,6 +4099,8 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_keep_alive_ref_count(keep_alive_ref_count_);
         });
+    base::UmaHistogramBoolean(
+        "BrowserRenderProcessHost.Cleanup.FetchKeepAliveExist", true);
     return;
   } else if (shutdown_delay_ref_count_ != 0) {
     TRACE_EVENT(
@@ -4944,8 +5035,7 @@ void RenderProcessHostImpl::ResetIPC() {
   tracing_registration_.reset();
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  stable_video_decoder_factory_remote_.reset();
-  stable_video_decoder_trackers_.Clear();
+  ResetStableVideoDecoderFactory();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Destroy all embedded CompositorFrameSinks.

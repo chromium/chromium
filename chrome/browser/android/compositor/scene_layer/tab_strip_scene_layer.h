@@ -31,7 +31,8 @@ class TabStripSceneLayer : public SceneLayer {
  public:
   TabStripSceneLayer(JNIEnv* env,
                      const base::android::JavaRef<jobject>& jobj,
-                     jboolean is_tab_strip_redesign_enabled);
+                     jboolean is_tab_strip_redesign_enabled,
+                     jboolean is_tsr_btn_style_disabled);
 
   TabStripSceneLayer(const TabStripSceneLayer&) = delete;
   TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;
@@ -138,7 +139,8 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat content_offset_x,
       jfloat content_offset_y,
       jfloat divider_offset_x,
-      jfloat bottom_offset_y,
+      jfloat bottom_margin,
+      jfloat top_margin,
       jfloat close_button_padding,
       jfloat close_button_alpha,
       jboolean is_start_divider_visible,
@@ -169,6 +171,7 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_background_;
 
   const bool is_tab_strip_redesign_enabled_ = false;
+  const bool is_tsr_btn_style_disabled_ = false;
 
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;

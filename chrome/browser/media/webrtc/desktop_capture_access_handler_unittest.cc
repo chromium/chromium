@@ -174,7 +174,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
-  raw_ptr<FakeDesktopMediaPickerFactory> picker_factory_;
+  raw_ptr<FakeDesktopMediaPickerFactory, DanglingUntriaged> picker_factory_;
   std::unique_ptr<DesktopCaptureAccessHandler> access_handler_;
 };
 

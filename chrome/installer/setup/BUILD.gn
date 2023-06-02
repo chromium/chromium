@@ -37,7 +37,7 @@ if (is_win) {
       "//base",
       "//build:branding_buildflags",
       "//build/win:default_exe_manifest",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:win_key_network_delegate",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:rotate_util",
       "//chrome/chrome_elf:constants",

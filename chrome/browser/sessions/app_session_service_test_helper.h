@@ -25,7 +25,7 @@ class AppSessionServiceTestHelper : public SessionServiceBaseTestHelper {
   AppSessionService* service() { return app_session_service_; }
 
  private:
-  raw_ptr<AppSessionService> app_session_service_;
+  raw_ptr<AppSessionService, DanglingUntriaged> app_session_service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_APP_SESSION_SERVICE_TEST_HELPER_H_

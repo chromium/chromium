@@ -1,0 +1,77 @@
+<!--
+  Copyright (C) 2015-2017 Apple Inc. All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../resources/stage.css">
+    <style type="text/css">
+
+    #stage {
+        background-color: #000;
+    }
+
+    #stage div {
+        position: absolute;
+    }
+
+    #stage .div-0 {
+        border-top-right-radius: 100%;
+    }
+
+    #stage .div-1 {
+        border-top-left-radius: 100%;
+    }
+
+    #stage .div-2 {
+        border-bottom-left-radius: 100%;
+    }
+
+    #stage .div-3 {
+        border-bottom-right-radius: 100%;
+    }
+
+    #stage .div-4 {
+        border-bottom-left-radius: 100%;
+        border-top-right-radius: 100%;
+    }
+
+    #stage .div-5 {
+        border-bottom-right-radius: 100%;
+        border-top-left-radius: 100%;
+    }
+    </style>
+</head>
+<body>
+    <div id="stage">
+    </div>
+    <script src="../../resources/strings.js"></script>
+    <script src="../../resources/extensions.js"></script>
+    <script src="../../resources/statistics.js"></script>
+    <script src="../resources/math.js"></script>
+    <script src="../resources/main.js"></script>
+    <script src="resources/multiply.js"></script>
+</body>
+</html>

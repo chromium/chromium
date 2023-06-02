@@ -70,7 +70,8 @@ void FloatingWorkspaceService::Init() {
 }
 
 void FloatingWorkspaceService::InitForTest(
-    TestFloatingWorkspaceVersion version) {
+    TestFloatingWorkspaceVersion version,
+    raw_ptr<desks_storage::DeskSyncService> fake_desk_sync_service) {
   CHECK_IS_TEST();
   is_testing_ = true;
   switch (version) {
@@ -83,6 +84,7 @@ void FloatingWorkspaceService::InitForTest(
       // For testings we don't need to add itself to observer list of
       // DeskSyncBridge, tests can be done by calling
       // EntriesAddedOrUpdatedRemotely directly so InitForV2 can be skipped.
+      desk_sync_service_ = fake_desk_sync_service;
       StartCaptureAndUploadActiveDesk();
       break;
   }
@@ -424,9 +426,9 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // information from the sync bridge and the info may be outdated for the sync
   // bridge. However, the sync bridge does not need to know the new uuid since
   // the current service will handle it. Ignore for testing.
-  if (!floating_workspace_uuid_.has_value() && !is_testing_) {
+  if (!floating_workspace_uuid_.has_value()) {
     absl::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
-        desk_sync_service_->GetDeskSyncBridge()->GetFloatingWorkspaceUuid();
+        GetFloatingWorkspaceUuidForCurrentDevice();
     if (floating_workspace_uuid_from_desk_model.has_value()) {
       floating_workspace_uuid_ =
           floating_workspace_uuid_from_desk_model.value();
@@ -444,6 +446,7 @@ void FloatingWorkspaceService::OnTemplateCaptured(
     UploadFloatingWorkspaceTemplateToDeskModel(std::move(desk_template));
   }
 }
+
 void FloatingWorkspaceService::UploadFloatingWorkspaceTemplateToDeskModel(
     std::unique_ptr<DeskTemplate> desk_template) {
   // Upload and save the template.
@@ -459,6 +462,20 @@ void FloatingWorkspaceService::OnTemplateUploaded(
   previously_captured_desk_template_ = std::move(new_entry);
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(status);
+}
+
+absl::optional<base::Uuid>
+FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
+  std::string cache_guid = desk_sync_service_->GetDeskModel()->GetCacheGuid();
+  std::vector<const DeskTemplate*> entries =
+      desk_sync_service_->GetDeskModel()->GetAllEntries().entries;
+  auto iter = base::ranges::find_if(entries, [cache_guid](const auto& entry) {
+    return entry->client_cache_guid() == cache_guid;
+  });
+  if (iter == entries.end()) {
+    return absl::nullopt;
+  }
+  return (*iter)->uuid();
 }
 
 }  // namespace ash

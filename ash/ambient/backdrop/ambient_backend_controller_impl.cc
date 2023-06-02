@@ -501,6 +501,10 @@ const char* AmbientBackendControllerImpl::GetPromoBannerUrl() const {
   return chromeos::ambient::kTimeOfDayBannerImageUrl;
 }
 
+const char* AmbientBackendControllerImpl::GetTimeOfDayProductName() const {
+  return chromeos::ambient::kTimeOfDayProductName;
+}
+
 void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     int num_topics,
     bool show_pair_personal_portraits,

@@ -376,6 +376,10 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
 
   // Add annotation fields. The last visit in the chain is the one that has
   // annotations attached (if any).
+  // NOTE: Currently only the "on_visit" fields of the context annotation are
+  // supported. When adding any non-"on_visit" field to sync, reconsider how
+  // VisitUpdateReason::kSetOnCloseContextAnnotations is handled (but mind
+  // additional traffic to the server!)
   const VisitContextAnnotations& context_annotations =
       redirect_visits.back().context_annotations;
   sync_pb::SyncEnums::BrowserType browser_type =
@@ -389,6 +393,7 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   history->set_root_task_id(context_annotations.on_visit.root_task_id);
   history->set_parent_task_id(context_annotations.on_visit.parent_task_id);
   history->set_http_response_code(context_annotations.on_visit.response_code);
+  // NOTE: Only "on_visit" fields are supported, see above.
 
   const VisitContentAnnotations& content_annotations =
       redirect_visits.back().content_annotations;
@@ -792,8 +797,25 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
   UntrackAndClearMetadataForAllEntities();
 }
 
-void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
+void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row,
+                                       VisitUpdateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (reason) {
+    case VisitUpdateReason::kSetPageLanguage:
+    case VisitUpdateReason::kSetPasswordState:
+    case VisitUpdateReason::kUpdateVisitDuration:
+    case VisitUpdateReason::kUpdateTransition:
+    case VisitUpdateReason::kAddContextAnnotations:
+      // Standard case: These are all interesting, process this update.
+      break;
+    case VisitUpdateReason::kUpdateSyncedVisit:
+      CHECK(processing_syncer_changes_);
+      return;
+    case VisitUpdateReason::kSetOnCloseContextAnnotations:
+      // None of the on-close context annotations are synced, so ignore this.
+      return;
+  }
 
   MaybeCommit(visit_row);
 }

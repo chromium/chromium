@@ -131,11 +131,11 @@ export class SettingsPerDeviceKeyboardElement extends
     this.attemptDeepLink();
   }
 
-  private onShowKeyboardShortcutViewerTap(): void {
+  private onShowKeyboardShortcutViewerClick(): void {
     this.browserProxy.showKeyboardShortcutViewer();
   }
 
-  private onShowInputSettingsTap(): void {
+  private onShowInputSettingsClick(): void {
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);

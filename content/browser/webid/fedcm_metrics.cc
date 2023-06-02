@@ -224,13 +224,14 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
     bool auto_reauthn_success,
     bool is_auto_reauthn_setting_blocked,
     bool is_auto_reauthn_embargoed,
-    absl::optional<base::TimeDelta> time_from_embargo) {
-  NumReturningAccounts num_returning_accounts = NumReturningAccounts::kZero;
+    absl::optional<base::TimeDelta> time_from_embargo,
+    bool requires_user_mediation) {
+  NumAccounts num_returning_accounts = NumAccounts::kZero;
   if (has_single_returning_account.has_value()) {
     if (*has_single_returning_account) {
-      num_returning_accounts = NumReturningAccounts::kOne;
+      num_returning_accounts = NumAccounts::kOne;
     } else if (auto_signin_account) {
-      num_returning_accounts = NumReturningAccounts::kMultiple;
+      num_returning_accounts = NumAccounts::kMultiple;
     }
 
     base::UmaHistogramEnumeration("Blink.FedCm.AutoReauthn.ReturningAccounts",
@@ -242,6 +243,9 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
                             is_auto_reauthn_setting_blocked);
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByEmbargo",
                             is_auto_reauthn_embargoed);
+  base::UmaHistogramBoolean(
+      "Blink.FedCm.AutoReauthn.BlockedByPreventSilentAccess",
+      requires_user_mediation);
   ukm::builders::Blink_FedCm ukm_builder(page_source_id_);
   if (time_from_embargo) {
     // Use a custom histogram with the default number of buckets so that we set
@@ -264,6 +268,8 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
   ukm_builder.SetAutoReauthn_BlockedByContentSettings(
       is_auto_reauthn_setting_blocked);
   ukm_builder.SetAutoReauthn_BlockedByEmbargo(is_auto_reauthn_embargoed);
+  ukm_builder.SetAutoReauthn_BlockedByPreventSilentAccess(
+      requires_user_mediation);
   ukm_builder.SetFedCmSessionID(session_id_);
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }

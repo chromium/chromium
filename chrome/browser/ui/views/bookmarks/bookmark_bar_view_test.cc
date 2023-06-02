@@ -54,7 +54,9 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/display_switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -65,6 +67,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/widget.h"
 
@@ -401,8 +404,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     return size;
   }
 
-  views::LabelButton* GetBookmarkButton(size_t view_index) {
+  const views::LabelButton* GetBookmarkButton(size_t view_index) const {
     return bb_view_->bookmark_buttons_[view_index];
+  }
+  views::LabelButton* GetBookmarkButton(size_t view_index) {
+    return const_cast<views::LabelButton*>(
+        std::as_const(*this).GetBookmarkButton(view_index));
   }
 
   // See comment above class description for what this does.
@@ -469,11 +476,13 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
   }
 
   void OnWidgetDragComplete(views::Widget* widget) override {
+    absl::Cleanup done = [&] { Done(); };
+
     // All drag tests drag node f1a, so at the end of the test, if the node was
     // dropped where it was expected, the dropped node should have f1a's URL.
-    EXPECT_EQ(f1a_url_, GetDroppedNode()->url());
-
-    Done();
+    const BookmarkNode* dropped_node = GetDroppedNode();
+    ASSERT_TRUE(dropped_node);
+    EXPECT_EQ(f1a_url_, dropped_node->url());
   }
 
   void OnWidgetDestroying(views::Widget* widget) override {
@@ -774,9 +783,8 @@ class BookmarkContextMenuNotificationObserver {
   base::OnceClosure task_;
 };
 
-// Tests context menus by way of opening a context menu for a bookmark,
-// then right clicking to get context menu and selecting the first menu item
-// (open).
+// Opens a bookmark folder, right clicks on the first bookmark to get a context
+// menu, and selects the first menu item (open).
 class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest4()
@@ -919,8 +927,10 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
     const views::View* target_view = drop_submenu->GetMenuItemAt(0);
     SetStopDraggingView(target_view);
 
-    // Drag to the top of the target view.
-    gfx::Point target(target_view->width() / 2, 0);
+    // Drag to the top of the target view. Use 2 instead of 0 for target.y
+    // so that the mouse event will be in the target view for device scale
+    // factors other than 1.0.
+    gfx::Point target(target_view->width() / 2, 2);
     views::View::ConvertPointToScreen(target_view, &target);
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
@@ -1401,10 +1411,8 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
 
     // Find the first separator.
     views::SubmenuView* submenu = menu->GetSubmenu();
-    const auto i =
-        base::ranges::find_if_not(submenu->children(), [](const auto* child) {
-          return child->GetID() == views::MenuItemView::kMenuItemViewID;
-        });
+    const auto i = base::ranges::find_if_not(
+        submenu->children(), views::IsViewClass<views::MenuItemView>);
     ASSERT_FALSE(i == submenu->children().end());
 
     // Click on the separator. Clicking on the separator shouldn't visually
@@ -1925,13 +1933,13 @@ class BookmarkBarViewTest21 : public BookmarkBarViewEventTestBase {
     ASSERT_TRUE(submenu->IsShowing());
     ASSERT_EQ(1u, submenu->children().size());
 
-    views::View* view = submenu->children().front();
-    ASSERT_NE(nullptr, view);
-    EXPECT_EQ(views::MenuItemView::kEmptyMenuItemViewID, view->GetID());
+    auto* empty_item =
+        AsViewClass<views::EmptyMenuMenuItem>(submenu->children().front());
+    ASSERT_NE(nullptr, empty_item);
 
     // Right click on the first child to get its context menu.
     ui_test_utils::MoveMouseToCenterAndPress(
-        view, ui_controls::RIGHT, ui_controls::DOWN | ui_controls::UP,
+        empty_item, ui_controls::RIGHT, ui_controls::DOWN | ui_controls::UP,
         base::OnceClosure());
     // Step3 will be invoked by BookmarkContextMenuNotificationObserver.
   }
@@ -2312,3 +2320,58 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
 #endif
 VIEW_TEST(BookmarkBarViewTest28,
           MAYBE_ClickWithModifierOnFolderOpensAllBookmarks)
+
+// Tests drag and drop to an empty menu.
+class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
+ public:
+  // BookmarkBarViewDragTestBase:
+  void OnDropMenuShown() override {
+    // The folder's menu should be open, showing an "(empty)" placeholder.
+    views::MenuItemView* drop_menu = bb_view_->GetDropMenu();
+    ASSERT_NE(nullptr, drop_menu);
+    views::SubmenuView* drop_submenu = drop_menu->GetSubmenu();
+    ASSERT_TRUE(drop_submenu->IsShowing());
+    ASSERT_FALSE(drop_submenu->children().empty());
+    const views::View* target_view = drop_submenu->children().front();
+    EXPECT_TRUE(views::IsViewClass<views::EmptyMenuMenuItem>(target_view));
+
+    // Drag to the "(empty)" placeholder item, then release.
+    const gfx::Point target =
+        ui_test_utils::GetCenterInScreenCoordinates(target_view);
+    GetDragTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
+                       target.x(), target.y(), ui_controls::kNoWindowHint));
+    // The placeholder item is not an event target, so we can't automatically
+    // stop the drag when over it. Just post the mouse release after the move.
+    OnDragEntered();
+  }
+
+ protected:
+  // BookmarkBarViewDragTestBase:
+  const BookmarkNode* GetDroppedNode() const override {
+    // Should be the first (and only) child of folder F2.
+    if (model_->bookmark_bar_node()->children().size() < 6) {
+      return nullptr;
+    }
+    const auto* f2 = model_->bookmark_bar_node()->children()[5].get();
+    return f2->children().empty() ? nullptr : f2->children().front().get();
+  }
+
+  gfx::Point GetDragTargetInScreen() const override {
+    // Drag over folder F2.
+    return ui_test_utils::GetCenterInScreenCoordinates(GetBookmarkButton(5));
+  }
+};
+
+// TODO(https://crbug.com/1448943): Fails on Linux/CrOS, perhaps because
+// OnDropMenuShown() tries to call OnDragEntered() before waiting for
+// verification that we're actually over the target.
+//
+// Flaky on Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#define MAYBE_DNDToEmptyMenu DISABLED_DNDToEmptyMenu
+#else
+#define MAYBE_DNDToEmptyMenu DNDToEmptyMenu
+#endif
+VIEW_TEST(BookmarkBarViewTest29, MAYBE_DNDToEmptyMenu)

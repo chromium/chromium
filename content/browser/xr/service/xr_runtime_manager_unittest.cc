@@ -85,7 +85,7 @@ class XRRuntimeManagerTest : public testing::Test {
   void DropRuntimeManagerRef() { xr_runtime_manager_ = nullptr; }
 
  private:
-  raw_ptr<device::FakeVRDeviceProvider> provider_ = nullptr;
+  raw_ptr<device::FakeVRDeviceProvider, DanglingUntriaged> provider_ = nullptr;
   scoped_refptr<XRRuntimeManagerImpl> xr_runtime_manager_;
 };
 

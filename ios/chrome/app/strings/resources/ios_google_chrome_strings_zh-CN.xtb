@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
 <translation id="2736805085127235148">目前，在您的设备设置中，Chrome 通知功能处于关闭状态。</translation>
 <translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
+<translation id="2840432500933227975">在 iOS 中打开 Chrome 设置，然后点按“浏览器默认应用”并选择“Chrome”。</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">这意味着 Chrome 每次都会对移动网站发出请求。</translation>
 <translation id="3706101708757577809">当您点按消息、文档和其他应用中的链接时，可以使用 Chrome 打开链接啦。</translation>
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
+<translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
 <translation id="3980220367029651214">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">贵组织要求您保持已退出 Chrome 的状态。</translation>
@@ -150,7 +152,6 @@
   • 如果 Chrome 崩溃了，崩溃事件的相关详情可能会包含一些个人信息。
 
   • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">您的这份 Chrome 个人资料正在享受标准安全保护</translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 </translationbundle>

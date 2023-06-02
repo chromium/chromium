@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "url/gurl.h"
 
@@ -27,7 +29,7 @@ class CredentialLeakControllerAndroid {
       const GURL& origin,
       const std::u16string& username,
       ui::WindowAndroid* window_android,
-      // Metrics recorder for leak dialog related UMA and UKM logging.
+      std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher,
       std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>
           metrics_recorder);
 
@@ -82,6 +84,10 @@ class CredentialLeakControllerAndroid {
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
 
   std::unique_ptr<password_manager::LeakDialogTraits> leak_dialog_traits_;
+
+  // Helper through which the dialog can invoke Java code to launch
+  // the password checkup.
+  std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher_;
 
   // Metrics recorder for leak dialog related UMA and UKM logging.
   std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>

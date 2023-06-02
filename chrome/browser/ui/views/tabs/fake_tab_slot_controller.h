@@ -111,9 +111,9 @@ class FakeTabSlotController : public TabSlotController {
 
  private:
   raw_ptr<TabStripController> tab_strip_controller_;
-  raw_ptr<TabContainer> tab_container_;
+  raw_ptr<TabContainer, DanglingUntriaged> tab_container_;
   ui::ListSelectionModel selection_model_;
-  raw_ptr<Tab> active_tab_ = nullptr;
+  raw_ptr<Tab, DanglingUntriaged> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;
 
   SkColor tab_bg_color_active_ = gfx::kPlaceholderColor;

@@ -13,6 +13,7 @@
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/platform_handle_utils.h"
 #include "mojo/core/scoped_ipcz_handle.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -223,16 +224,24 @@ MojoResult Invitation::Send(
     }
   }
 
+  const bool share_broker =
+      options && (options->flags & MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
   const bool is_isolated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ISOLATED) != 0;
   const IpczNodeOptions& config = GetIpczNodeOptions();
+  if (share_broker && (is_isolated || config.is_broker)) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
   IpczConnectNodeFlags flags = 0;
   if (!config.is_broker) {
-    // TODO: Support non-broker to non-broker connection. Requires new flags for
-    // MojoSendInvitation and MojoAcceptInvitation, because ipcz requires
-    // explicit opt-in from both sides of the connection in order for broker
-    // inheritance to be allowed.
-    flags |= IPCZ_CONNECT_NODE_TO_BROKER;
+    if (share_broker) {
+      flags |= IPCZ_CONNECT_NODE_SHARE_BROKER;
+    } else {
+      // If we're a non-broker not sharing our broker, we have to assume the
+      // target is itself a broker.
+      flags |= IPCZ_CONNECT_NODE_TO_BROKER;
+    }
     if (!config.use_local_shared_memory_allocation) {
       flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
     }
@@ -326,6 +335,7 @@ MojoHandle Invitation::Accept(
   // normal process termination.
   bool leak_transport = false;
   bool is_isolated = false;
+  bool inherit_broker = false;
   if (options) {
     if (options->struct_size < sizeof(*options)) {
       return MOJO_RESULT_INVALID_ARGUMENT;
@@ -333,6 +343,8 @@ MojoHandle Invitation::Accept(
     leak_transport =
         (options->flags & MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT);
     is_isolated = (options->flags & MOJO_ACCEPT_INVITATION_FLAG_ISOLATED);
+    inherit_broker =
+        (options->flags & MOJO_ACCEPT_INVITATION_FLAG_INHERIT_BROKER);
   }
 
   auto invitation = base::MakeRefCounted<Invitation>();
@@ -341,14 +353,20 @@ MojoHandle Invitation::Accept(
   if (is_isolated) {
     // Nodes using isolated invitations are required by MojoIpcz to both be
     // brokers.
-    CHECK(config.is_broker);
+    CHECK(config.is_broker && !inherit_broker);
   } else {
     CHECK(!config.is_broker);
   }
 
-  IpczConnectNodeFlags flags = IPCZ_CONNECT_NODE_TO_BROKER;
+  IpczConnectNodeFlags flags = IPCZ_NO_FLAGS;
   if (!config.use_local_shared_memory_allocation) {
     flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
+  }
+
+  if (inherit_broker) {
+    flags |= IPCZ_CONNECT_NODE_INHERIT_BROKER;
+  } else {
+    flags |= IPCZ_CONNECT_NODE_TO_BROKER;
   }
 
   const bool is_elevated =

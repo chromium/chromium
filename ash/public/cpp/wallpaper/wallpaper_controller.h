@@ -153,6 +153,13 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       const AccountId& account_id,
       DailyGooglePhotosIdCache& ids_out) const = 0;
 
+  // Downloads and sets a time of day wallpaper to be the active wallpaper.
+  // |acount_id|: The user's account id.
+  // |callback|: Called with a boolean to indicate success when the wallpaper is
+  // fetched and decoded.
+  virtual void SetTimeOfDayWallpaper(const AccountId& account_id,
+                                     SetWallpaperCallback callback) = 0;
+
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
   // types may have different default wallpapers.
   // |account_id|: The user's account id.

@@ -9,7 +9,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -19,10 +18,12 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {
 
@@ -128,12 +129,15 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
 StatefulLacrosLoader::StatefulLacrosLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
     : StatefulLacrosLoader(manager,
+                           g_browser_process->component_updater(),
                            browser_util::GetLacrosComponentInfo().name) {}
 
 StatefulLacrosLoader::StatefulLacrosLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager,
+    component_updater::ComponentUpdateService* updater,
     const std::string& lacros_component_name)
     : component_manager_(manager),
+      component_update_service_(updater),
       lacros_component_name_(lacros_component_name) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -146,16 +150,18 @@ StatefulLacrosLoader::~StatefulLacrosLoader() = default;
 
 void StatefulLacrosLoader::Load(LoadCompletionCallback callback) {
   LOG(WARNING) << "Loading stateful lacros.";
-  component_manager_->Load(
-      lacros_component_name_,
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      // If a compatible installation exists, use that and download any updates
-      // in the background.
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
-      // If `callback` is null, means stateful lacros-chrome should be
-      // installed/updated but rootfs lacros-chrome will be used.
-      base::BindOnce(&StatefulLacrosLoader::OnLoad, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+
+  // If stateful lacros-chrome is already loaded once, run `callback`
+  // immediately with cached version and path values.
+  // This code path is used in most cases as they are already calculated on
+  // getting version except for the case where BrowserLoader is forced to select
+  // stateful lacros-chrome by lacros selection policy.
+  if (IsReady()) {
+    std::move(callback).Run(version_.value(), path_.value());
+    return;
+  }
+
+  LoadInternal(std::move(callback));
 }
 
 void StatefulLacrosLoader::Unload() {
@@ -171,6 +177,7 @@ void StatefulLacrosLoader::Reset() {
   // TODO(crbug.com/1432069): Reset call while loading breaks the behavior. Need
   // to handle such edge cases.
   version_ = absl::nullopt;
+  path_ = absl::nullopt;
 }
 
 void StatefulLacrosLoader::GetVersion(
@@ -178,7 +185,7 @@ void StatefulLacrosLoader::GetVersion(
   // If version is already calculated, immediately return the cached value.
   // Calculate if not.
   // Note that version value is reset on reloading.
-  if (version_.has_value()) {
+  if (IsReady()) {
     std::move(callback).Run(version_.value());
     return;
   }
@@ -193,6 +200,23 @@ void StatefulLacrosLoader::GetVersion(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void StatefulLacrosLoader::LoadInternal(LoadCompletionCallback callback) {
+  component_manager_->Load(
+      lacros_component_name_,
+      component_updater::CrOSComponentManager::MountPolicy::kMount,
+      // If a compatible installation exists, use that and download any updates
+      // in the background.
+      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      // If `callback` is null, means stateful lacros-chrome should be
+      // installed/updated but rootfs lacros-chrome will be used.
+      base::BindOnce(&StatefulLacrosLoader::OnLoad, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+bool StatefulLacrosLoader::IsReady() {
+  return version_.has_value() && path_.has_value();
+}
+
 void StatefulLacrosLoader::OnLoad(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
@@ -203,33 +227,25 @@ void StatefulLacrosLoader::OnLoad(
       error == component_updater::CrOSComponentManager::Error::NONE &&
       !path.empty();
   LOG_IF(WARNING, !is_stateful_lacros_available)
-      << "Error loading lacros component image: " << static_cast<int>(error)
-      << ", " << path;
+      << "Error loading lacros component image in the "
+      << (callback ? "foreground" : "background") << ": "
+      << static_cast<int>(error) << ", " << path;
 
-  // If `version_` is already set, run `callback` immediately with the
-  // `version_` value. This code path is used in most cases except for the case
-  // where lacros selection is based on selection policy so that it skips the
-  // version comparison.
-  if (version_.has_value()) {
-    if (callback) {
-      std::move(callback).Run(version_.value(), path);
+  version_ = is_stateful_lacros_available
+                 ? browser_util::GetInstalledLacrosComponentVersion(
+                       component_update_service_)
+                 : base::Version();
+  path_ = path;
+
+  if (callback) {
+    std::move(callback).Run(version_.value(), path_.value());
+  } else {
+    if (is_stateful_lacros_available) {
+      LOG(WARNING) << "stateful lacros-chrome installation completed in the "
+                   << "background in " << path << ", version is "
+                   << version_.value();
     }
-    return;
   }
-
-  component_manager_->GetVersion(
-      lacros_component_name_,
-      base::BindOnce(
-          &StatefulLacrosLoader::OnGetVersionFromComponentManager,
-          weak_factory_.GetWeakPtr(),
-          base::BindOnce(
-              [](LoadCompletionCallback callback, const base::FilePath& path,
-                 const base::Version& version) {
-                if (callback) {
-                  std::move(callback).Run(std::move(version), path);
-                }
-              },
-              std::move(callback), path)));
 }
 
 void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
@@ -238,29 +254,20 @@ void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_installed) {
-    version_ = base::Version();
-    std::move(callback).Run(version_.value());
+    // Run `callback` immediately with empty version and start loading stateful
+    // lacros-chrome in the background.
+    // TODO(crbug.com/1432069): Reconsider `version_` and `path_` values
+    // semantics.
+    LoadInternal({});
+    std::move(callback).Run(base::Version());
     return;
   }
 
-  component_manager_->GetVersion(
-      lacros_component_name_,
-      base::BindOnce(&StatefulLacrosLoader::OnGetVersionFromComponentManager,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void StatefulLacrosLoader::OnGetVersionFromComponentManager(
-    base::OnceCallback<void(const base::Version&)> callback,
-    const base::Version& version) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  LOG_IF(WARNING, version.IsValid())
-      << "Error getting version of lacros component image";
-
-  version_ = version;
-  if (callback) {
-    std::move(callback).Run(version_.value());
-  }
+  LoadInternal(base::BindOnce(
+      [](base::OnceCallback<void(const base::Version&)> callback,
+         base::Version version,
+         const base::FilePath&) { std::move(callback).Run(version); },
+      std::move(callback)));
 }
 
 void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {

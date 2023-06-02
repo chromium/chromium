@@ -1,0 +1,46 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "webpack-dev-server",
+    "start": "http-server build -p ${PORT:-8080}",
+    "prestart": "npm run build",
+    "build": "npm run -s build:rollup",
+    "build:webpack": "mkdirp dist && ncp src/index.html dist/index.html && webpack -p",
+    "build:rollup": "rm -rf dist && mkdirp dist/todomvc-common && ncp src/index.html dist/index.html && rollup -c rollup.config.js && cp node_modules/todomvc-common/base.{js,css} dist/todomvc-common/ && cp node_modules/todomvc-app-css/index.css dist/todomvc.css && npm run postbuild",
+    "postbuild": "uglifyjs dist/app.js --pure-funcs classCallCheck Object.defineProperty Object.freeze invariant warning -c unsafe,collapse_vars,evaluate,screw_ie8,loops,keep_fargs=false,pure_getters,unused,dead_code -m -o dist/app.js -p relative --in-source-map dist/app.js.map --source-map dist/app.js.map"
+  },
+  "author": "The TodoMVC authors",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.3",
+    "babel-plugin-transform-class-properties": "^6.5.2",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-react-jsx": "^6.5.2",
+    "babel-preset-babili": "0.0.9",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-es2015-loose": "^8.0.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "css-loader": "^0.26.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "http-server": "^0.9.0",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "replace-bundle-webpack-plugin": "^1.0.0",
+    "rollup": "^0.36.4",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "style-loader": "^0.13.0",
+    "webpack": "^1.12.14",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "linkstate": "^1.0.1",
+    "preact": "^8.2.1",
+    "preact-router": "^2.5.5",
+    "todomvc-app-css": "^2.0.3",
+    "todomvc-common": "^1.0.2"
+  }
+}

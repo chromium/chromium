@@ -17,14 +17,16 @@ class KerberosInBrowserDialog : public SystemWebDialogDelegate {
   KerberosInBrowserDialog(const KerberosInBrowserDialog&) = delete;
   KerberosInBrowserDialog& operator=(const KerberosInBrowserDialog&) = delete;
 
-  static bool IsShown();
+  // ui::SystemWebDialogDelegate overrides.
+  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
   // Displays the dialog.
   // |close_dialog_closure| will be called when the dialog is closed.
   static void Show(base::OnceClosure close_dialog_closure = base::DoNothing());
 
-  // ui::SystemWebDialogDelegate overrides.
-  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
+  static bool IsShown();
+
+  static KerberosInBrowserDialog* GetDialogForTesting();
 
  protected:
   explicit KerberosInBrowserDialog(

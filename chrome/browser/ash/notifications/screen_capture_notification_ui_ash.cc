@@ -30,7 +30,7 @@ gfx::NativeViewId ScreenCaptureNotificationUIAsh::OnStarted(
   ash::Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::BindRepeating(
           &ScreenCaptureNotificationUIAsh::ProcessStopRequestFromUI,
-          base::Unretained(this)),
+          weak_ptr_factory_.GetWeakPtr()),
       source_callback ? base::BindRepeating(std::move(source_callback),
                                             content::DesktopMediaID())
                       : base::RepeatingClosure(),

@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_view_controller.h"
@@ -17,6 +18,8 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/about_flags.h"
@@ -41,7 +44,6 @@ bool ChromeLabsCoordinator::BubbleExists() {
 
 void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile = browser_->profile()->GetOriginalProfile();
   if (user_type == ShowUserType::kChromeOsOwnerUserType) {
@@ -92,6 +94,50 @@ void ChromeLabsCoordinator::Hide() {
     // chrome_labs_bubble_ anymore.
     chrome_labs_bubble_view_ = nullptr;
   }
+}
+
+void ChromeLabsCoordinator::ShowOrHide() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_waiting_to_show_) {
+    return;
+  }
+#endif
+  if (BubbleExists()) {
+    Hide();
+  }
+  // Ash-chrome uses a different FlagsStorage if the user is the owner. On
+  // ChromeOS verifying if the owner is signed in is async operation.
+  // Asynchronously check if the user is the owner and show the Chrome Labs
+  // bubble only after we have this information.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Bypass possible incognito profile same as chrome://flags does.
+  Profile* original_profile = browser_->profile()->GetOriginalProfile();
+  if ((base::SysInfo::IsRunningOnChromeOS() ||
+       should_circumvent_device_check_for_testing_) &&
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
+          original_profile)) {
+    ash::OwnerSettingsServiceAsh* service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
+            original_profile);
+    is_waiting_to_show_ = true;
+    service->IsOwnerAsync(base::BindOnce(
+        [](base::WeakPtr<BrowserView> browser_view,
+           ChromeLabsCoordinator* coordinator, bool is_owner) {
+          // BrowserView may have been destroyed before async function returns
+          if (!browser_view) {
+            return;
+          }
+          is_owner
+              ? coordinator->Show(
+                    ChromeLabsCoordinator::ShowUserType::kChromeOsOwnerUserType)
+              : coordinator->Show();
+          coordinator->is_waiting_to_show_ = false;
+        },
+        BrowserView::GetBrowserViewForBrowser(browser_)->GetAsWeakPtr(), this));
+    return;
+  }
+#endif
+  Show();
 }
 
 void ChromeLabsCoordinator::OnViewIsDeleting(views::View* observed_view) {

@@ -28,5 +28,6 @@ aaudio_result_t AAudioStream_requestStop(AAudioStream* stream);
 aaudio_result_t AAudioStream_getTimestamp(AAudioStream* stream, clockid_t clockid, int64_t *framePosition, int64_t *timeNanoseconds);
 aaudio_result_t AAudioStream_setBufferSizeInFrames(AAudioStream* stream, int32_t numFrames);
 int32_t AAudioStream_getFramesPerBurst(AAudioStream* stream);
+int64_t AAudioStream_getFramesRead(AAudioStream* stream);
 int64_t AAudioStream_getFramesWritten(AAudioStream* stream);
 aaudio_result_t AAudioStream_waitForStateChange(AAudioStream* stream, aaudio_stream_state_t inputState, aaudio_stream_state_t *nextState, int64_t timeoutNanoseconds);

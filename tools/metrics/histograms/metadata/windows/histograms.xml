@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2023-06-01">
+    expires_after="2024-06-01">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2023-10-08">
+    expires_after="2024-06-01">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
@@ -250,13 +250,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2023-06-01">
+    enum="BooleanEnabled" expires_after="2024-06-01">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether virtualization has been enabled in the system firmware. Logged
     shortly after startup. This metric will only be logged on Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.RendererCodeIntegrityEnabled" enum="BooleanEnabled"
+    expires_after="M118">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not Renderer code integrity is enabled. This is enabled
+    by default but can be overridden by policy. This is recorded each time a new
+    renderer process starts.
   </summary>
 </histogram>
 

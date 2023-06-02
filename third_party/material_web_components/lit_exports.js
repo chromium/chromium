@@ -23,3 +23,4 @@ export * from "./components-chromium/node_modules/lit/directives/unsafe-html.js"
 export * from "./components-chromium/node_modules/lit/directives/unsafe-svg.js";
 export * from "./components-chromium/node_modules/lit/directives/until.js";
 export * from "./components-chromium/node_modules/lit/directives/when.js";
+export {literal} from "./components-chromium/node_modules/lit/static-html.js";

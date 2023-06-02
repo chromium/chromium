@@ -59,11 +59,8 @@
   // Check which mode to open a new window.
   NSScriptCommand* command = [NSScriptCommand currentCommand];
   NSString* mode = command.evaluatedArguments[@"KeyDictionary"][@"mode"];
-  AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
 
-  Profile* lastProfile = appDelegate.lastProfile;
-
+  Profile* lastProfile = AppController.sharedController.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;

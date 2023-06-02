@@ -115,12 +115,6 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
   scoped_refptr<GLImage> large_image =
       this->delegate_.CreateSolidColorImage(large_image_size, image_color);
   ASSERT_TRUE(large_image);
-
-  // Verify that image size is correct.
-  EXPECT_EQ(small_image->GetSizeForTesting().ToString(),
-            small_image_size.ToString());
-  EXPECT_EQ(large_image->GetSizeForTesting().ToString(),
-            large_image_size.ToString());
 }
 
 // The GLImageTest test case verifies the behaviour that is expected from a
@@ -145,10 +139,6 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create) {
   scoped_refptr<GLImage> odd_image =
       this->delegate_.CreateSolidColorImage(odd_image_size, image_color);
   ASSERT_TRUE(odd_image);
-
-  // Verify that image size is correct.
-  EXPECT_EQ(odd_image->GetSizeForTesting().ToString(),
-            odd_image_size.ToString());
 }
 
 // The GLImageTest test case verifies the behaviour that is expected from a

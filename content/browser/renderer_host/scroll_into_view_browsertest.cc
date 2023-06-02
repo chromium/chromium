@@ -881,7 +881,8 @@ class ScrollIntoViewFencedFrameBrowserTest
         {{blink::features::kFencedFrames,
           {{"implementation_type", impl_param}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
-         {blink::features::kFencedFramesAPIChanges, {}}},
+         {blink::features::kFencedFramesAPIChanges, {}},
+         {blink::features::kFencedFramesDefaultMode, {}}},
         {/* disabled_features */});
   }
   bool IsForceLocalFrames() const override { return false; }

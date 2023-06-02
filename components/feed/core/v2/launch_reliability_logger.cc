@@ -166,7 +166,7 @@ void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type,
       logging_bridge.LogLoadingIndicatorShown(base::TimeTicks::Now());
       break;
     case StreamUpdateType::kLoadingMoreSpinner:
-      logging_bridge.LogLoadMoreIndicatorShown();
+      // Nothing to log. We will log only when the indicator is actuallly shown.
       break;
     case StreamUpdateType::kZeroState:
       logging_bridge.LogAboveTheFoldRender(

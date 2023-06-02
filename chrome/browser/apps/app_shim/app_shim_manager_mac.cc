@@ -276,6 +276,10 @@ void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback) {
   GetShimStartupDoneCallback() = std::move(callback);
 }
 
+base::OnceClosure TakeShimStartupDoneCallbackForTesting() {
+  return std::move(GetShimStartupDoneCallback());
+}
+
 // The state for an individual (app, Profile) pair. This includes the
 // AppShimHost.
 struct AppShimManager::ProfileState {

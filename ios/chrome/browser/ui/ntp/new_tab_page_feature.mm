@@ -55,10 +55,6 @@ BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedImageCaching,
-             "EnableFeedImageCaching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFeedSyntheticCapabilities,
              "EnableFeedSyntheticCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -70,6 +66,10 @@ BASE_FEATURE(kWebFeedFeedbackReroute,
 BASE_FEATURE(kEnableFollowManagementInstantReload,
              "EnableFollowManagementInstantReload",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableSignedOutViewDemotion,
+             "EnableSignedOutViewDemotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
 
@@ -178,10 +178,6 @@ bool IsDotEnabledForNewFollowedContent() {
       kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
 }
 
-bool IsFeedImageCachingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedImageCaching);
-}
-
 bool IsFeedSyntheticCapabilitiesEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedSyntheticCapabilities);
 }
@@ -199,4 +195,8 @@ bool IsWebFeedFeedbackRerouteEnabled() {
 
 bool IsFollowManagementInstantReloadEnabled() {
   return base::FeatureList::IsEnabled(kEnableFollowManagementInstantReload);
+}
+
+bool IsSignedOutViewDemotionEnabled() {
+  return base::FeatureList::IsEnabled(kEnableSignedOutViewDemotion);
 }

@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="2023-07-30">
+    expires_after="2023-11-19">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
-    enum="LaunchErrorCodes" expires_after="2023-06-30">
+    enum="LaunchErrorCodes" expires_after="2023-12-31">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.WinLastError"
-    enum="WinGetLastError" expires_after="2023-06-30">
+    enum="WinGetLastError" expires_after="2023-12-31">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn" units="%"
-    expires_after="2023-06-04">
+    expires_after="2024-05-30">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeOut" units="%"
-    expires_after="2023-06-18">
+    expires_after="2024-05-30">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>

@@ -281,4 +281,39 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
   text_provider_ranges.Reset();
 }
 
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest, GetVisibleRangesRefCount) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+            hello
+        </body>
+      </html>
+  )HTML"));
+
+  auto* text_node = FindNode(ax::mojom::Role::kStaticText, "hello");
+  ASSERT_NE(nullptr, text_node);
+
+  ComPtr<ITextProvider> text_provider;
+  GetTextProviderFromTextNode(text_provider, text_node);
+
+  base::win::ScopedSafearray visible_ranges;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->GetVisibleRanges(visible_ranges.Receive()));
+  ASSERT_UIA_SAFEARRAY_OF_TEXTRANGEPROVIDER(visible_ranges.Get(), 1U);
+
+  LONG index = 0;
+  ComPtr<ITextRangeProvider> text_range_provider;
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      visible_ranges.Get(), &index, static_cast<void**>(&text_range_provider)));
+
+  // Validate that there was only one reference to the `text_range_provider`.
+  ASSERT_EQ(1U, text_range_provider->Release());
+
+  // This is needed to avoid calling SafeArrayDestroy from SafeArray's dtor when
+  // exiting the scope, which would crash trying to release the already
+  // destroyed `text_range_provider`.
+  visible_ranges.Release();
+}
+
 }  // namespace content

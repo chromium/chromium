@@ -10,24 +10,46 @@ package content.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-// Represents the budget used by an origin in a particular hour-long window.
-// This window must begin and end 'on the hour' in UTC.
-message PrivateAggregationBudgetPerHour {
-  // The time that the hour began in microseconds since the Windows epoch
-  // (1601-01-01 00:00:00 UTC). It must be a multiple of kMicrosecondsPerHour
-  // (i.e. 3.6 billion).
-  int64 hour_start_timestamp = 1;
+// Represents the budget used by a site in a particular minute-long window. This
+// window must begin and end 'on the minute' in UTC.
+message PrivateAggregationBudgetEntry {
+  // The time that the entry began in microseconds since the Windows epoch
+  // (1601-01-01 00:00:00 UTC). It must be a multiple of kMicrosecondsPerMinute
+  // (i.e. 60 million).
+  int64 entry_start_timestamp = 1;
 
   // Should always be positive.
   int32 budget_used = 2;
 }
 
+// Represents a reporting origin that has affected the budgeting data stored for
+// this site.
+message ReportingOrigin {
+  // The serialized reporting origin
+  string origin = 1;
+
+  // The start time of the earliest window that this reporting origin was last
+  // used in. Stored as microseconds since the Windows epoch (1601-01-01
+  // 00:00:00 UTC). It must be a multiple of kMicrosecondsPerMinute
+  // (i.e. 60 million). This will allow for old origins to be deleted when no
+  // longer relevant for data deletion (i.e. after 24 hours).
+  int64 last_used_timestamp = 2;
+}
+
 message PrivateAggregationBudgets {
-  // The budgets for the 24 latest windows (including the current one) are
-  // maintained. Older budgets should be cleared before adding new elements. If
-  // a window is not present, the budget used is inferred to be zero. For each
-  // API (separately), the sum of budget_used should never be greater than
-  // PrivateAggregationBudgeter::kMaxDailyBudget.
-  repeated PrivateAggregationBudgetPerHour fledge_budgets = 1;
-  repeated PrivateAggregationBudgetPerHour shared_storage_budgets = 2;
+  // The budgets for the 1440 latest windows (including the current one) are
+  // maintained (totalling a duration of 24 hours). Older budgets should be
+  // cleared before adding new elements. If a window is not present, the budget
+  // used is inferred to be zero. For each API (separately), the sum of
+  // budget_used should never be greater than
+  // `PrivateAggregationBudgeter::kLargerScopeValues.max_budget_per_scope`.
+  // Further, the sum of budget_used in the 10 latest windows (including the
+  // current one) should never be greater than
+  // `PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope`.
+  repeated PrivateAggregationBudgetEntry protected_audience_budgets = 1;
+  repeated PrivateAggregationBudgetEntry shared_storage_budgets = 2;
+
+  // All reporting origins that have affected the budget data stored. This is
+  // used solely for data deletion.
+  repeated ReportingOrigin reporting_origins_for_deletion = 3;
 }

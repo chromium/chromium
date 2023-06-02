@@ -339,8 +339,8 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  AutofillTable::FromWebDatabase(db)->GetAutofillProfiles(&profiles,
-                                                          profile_source);
+  AutofillTable::FromWebDatabase(db)->GetAutofillProfiles(profile_source,
+                                                          &profiles);
   return std::unique_ptr<WDTypedResult>(
       new WDResult<std::vector<std::unique_ptr<AutofillProfile>>>(
           AUTOFILL_PROFILES_RESULT, std::move(profiles)));
@@ -732,15 +732,6 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
   // Note: It is the caller's responsibility to post notifications for any
   // changes, e.g. by calling the Refresh() method of PersonalDataManager.
   return WebDatabase::COMMIT_NEEDED;
-}
-
-WebDatabase::State AutofillWebDataBackendImpl::RemoveOrphanAutofillTableRows(
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->RemoveOrphanAutofillTableRows()) {
-    return WebDatabase::COMMIT_NEEDED;
-  }
-  return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 }  // namespace autofill

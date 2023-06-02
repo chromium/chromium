@@ -44,8 +44,8 @@ class MediaRouterUiForTestBase {
 
   // These methods require that the dialog is shown and the specified sink is
   // shown in the dialog.
-  void StartCasting(const std::string& sink_name);
-  void StopCasting(const std::string& sink_name);
+  virtual void StartCasting(const std::string& sink_name) = 0;
+  virtual void StopCasting(const std::string& sink_name) = 0;
 
   // Waits until a condition is met. Requires that the dialog is shown.
   virtual void WaitForSink(const std::string& sink_name) = 0;
@@ -85,12 +85,7 @@ class MediaRouterUiForTestBase {
   explicit MediaRouterUiForTestBase(content::WebContents* web_contents);
   void WaitForAnyDialogShown();
 
-  void StartCasting(views::View* sink_button);
-  void StopCasting(views::View* sink_button);
-
-  static CastDialogSinkButton* GetSinkButtonWithName(
-      const std::vector<raw_ptr<CastDialogSinkView>>& sink_buttons,
-      const std::string& sink_name);
+  static void ClickOnView(views::View* view);
 
   virtual views::View* GetSinkButton(const std::string& sink_name) const = 0;
 

@@ -216,11 +216,6 @@ void FeedReliabilityLoggingBridge::LogLoadMoreStarted() {
       base::android::AttachCurrentThread(), java_ref_);
 }
 
-void FeedReliabilityLoggingBridge::LogLoadMoreIndicatorShown() {
-  Java_FeedReliabilityLoggingBridge_logLoadMoreIndicatorShown(
-      base::android::AttachCurrentThread(), java_ref_);
-}
-
 void FeedReliabilityLoggingBridge::LogLoadMoreActionUploadRequestStarted() {
   Java_FeedReliabilityLoggingBridge_logLoadMoreActionUploadRequestStarted(
       base::android::AttachCurrentThread(), java_ref_);

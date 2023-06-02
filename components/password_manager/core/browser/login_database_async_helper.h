@@ -19,6 +19,8 @@ class ModelTypeControllerDelegate;
 namespace password_manager {
 
 class LoginDatabase;
+class IncomingPasswordSharingInvitationSyncBridge;
+class OutgoingPasswordSharingInvitationSyncBridge;
 class PasswordSyncBridge;
 class UnsyncedCredentialsDeletionNotifier;
 
@@ -36,7 +38,7 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
 
   ~LoginDatabaseAsyncHelper() override;
 
-  // Opens |login_db_| and creates |sync_bridge_|.
+  // Opens |login_db_| and creates sync bridges.
   bool Initialize(
       PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb);
@@ -125,12 +127,16 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   std::unique_ptr<LoginDatabase> login_db_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<PasswordSyncBridge> sync_bridge_
+  std::unique_ptr<PasswordSyncBridge> password_sync_bridge_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge>
+      incoming_sharing_invitation_sync_bridge_;
+  std::unique_ptr<OutgoingPasswordSharingInvitationSyncBridge>
+      outgoing_sharing_invitation_sync_bridge_;
 
-  // Whenever 'sync_bridge_'receive remote changes this callback is used to
-  // notify PasswordStore observers about them. Called on a main sequence from
-  // the 'NotifyLoginsChanged'.
+  // Whenever 'password_sync_bridge_' receive remote changes this callback is
+  // used to notify PasswordStore observers about them. Called on a main
+  // sequence from the 'NotifyLoginsChanged'.
   PasswordStoreBackend::RemoteChangesReceived
       remote_forms_changes_received_callback_
           GUARDED_BY_CONTEXT(sequence_checker_);

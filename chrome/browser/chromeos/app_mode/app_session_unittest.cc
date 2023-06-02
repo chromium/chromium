@@ -41,6 +41,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -192,7 +193,6 @@ class AppSessionBaseTest
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -945,14 +945,23 @@ class FakeNewWindowDelegate : public ash::TestNewWindowDelegate {
 
   void ShowTaskManager() override { task_manager_called_ = true; }
 
+  void OpenFeedbackPage(FeedbackSource source,
+                        const std::string& description_template) override {
+    open_feedback_page_called_ = true;
+  }
+
   bool is_new_window_called() const { return new_window_called_; }
   bool is_new_tab_called() const { return new_tab_called_; }
   bool is_task_manager_called() const { return task_manager_called_; }
+  bool is_open_feedback_page_called() const {
+    return open_feedback_page_called_;
+  }
 
  private:
   bool new_window_called_ = false;
   bool new_tab_called_ = false;
   bool task_manager_called_ = false;
+  bool open_feedback_page_called_ = false;
 };
 
 // Tests actions after pressing troubleshooting shortcuts. Runs all tests for
@@ -979,16 +988,26 @@ class AppSessionTroubleshootingShortcutsTest
     ash::Shell::Get()->session_controller()->SetSessionInfo(info);
   }
 
-  bool is_new_window_called() const {
+  bool IsOverviewToggled() const {
+    ash::OverviewController* overview_controller =
+        ash::Shell::Get()->overview_controller();
+    return overview_controller->InOverviewSession();
+  }
+
+  bool IsNewWindowCalled() const {
     return fake_new_window_delegate_->is_new_window_called();
   }
 
-  bool is_new_tab_called() const {
+  bool IsNewTabCalled() const {
     return fake_new_window_delegate_->is_new_tab_called();
   }
 
-  bool is_task_manager_called() const {
+  bool IsTaskManagerCalled() const {
     return fake_new_window_delegate_->is_task_manager_called();
+  }
+
+  bool IsOpenFeedbackPageCalled() const {
+    return fake_new_window_delegate_->is_open_feedback_page_called();
   }
 
  protected:
@@ -996,6 +1015,10 @@ class AppSessionTroubleshootingShortcutsTest
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN);
   ui::Accelerator task_manager_accelerator =
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN);
+  ui::Accelerator open_feedback_page_accelerator =
+      ui::Accelerator(ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ui::Accelerator toggle_overview_accelerator =
+      ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
 
  private:
   raw_ptr<FakeNewWindowDelegate> fake_new_window_delegate_;
@@ -1008,7 +1031,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, NewWindowShortcutEnabled) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   ProcessInController(new_window_accelerator);
-  EXPECT_TRUE(is_new_window_called());
+  EXPECT_TRUE(IsNewWindowCalled());
 }
 
 // Just confirm that other shortcuts (e.g. new tab) do not work.
@@ -1017,8 +1040,8 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, NewTabShortcutIsNoAction) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   ProcessInController(ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN));
-  EXPECT_FALSE(is_new_tab_called());
-  EXPECT_FALSE(is_new_window_called());
+  EXPECT_FALSE(IsNewTabCalled());
+  EXPECT_FALSE(IsNewWindowCalled());
 }
 
 TEST_P(AppSessionTroubleshootingShortcutsTest,
@@ -1026,7 +1049,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   SetUpKioskSession();
 
   ProcessInController(new_window_accelerator);
-  EXPECT_FALSE(is_new_window_called());
+  EXPECT_FALSE(IsNewWindowCalled());
 }
 
 TEST_P(AppSessionTroubleshootingShortcutsTest,
@@ -1035,7 +1058,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
 
   ProcessInController(new_window_accelerator);
-  EXPECT_FALSE(is_new_window_called());
+  EXPECT_FALSE(IsNewWindowCalled());
 }
 
 TEST_P(AppSessionTroubleshootingShortcutsTest, TaskManagerShortcutEnabled) {
@@ -1043,7 +1066,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, TaskManagerShortcutEnabled) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   ProcessInController(task_manager_accelerator);
-  EXPECT_TRUE(is_task_manager_called());
+  EXPECT_TRUE(IsTaskManagerCalled());
 }
 
 TEST_P(AppSessionTroubleshootingShortcutsTest,
@@ -1051,7 +1074,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   SetUpKioskSession();
 
   ProcessInController(task_manager_accelerator);
-  EXPECT_FALSE(is_task_manager_called());
+  EXPECT_FALSE(IsTaskManagerCalled());
 }
 
 TEST_P(AppSessionTroubleshootingShortcutsTest,
@@ -1060,7 +1083,58 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
 
   ProcessInController(task_manager_accelerator);
-  EXPECT_FALSE(is_task_manager_called());
+  EXPECT_FALSE(IsTaskManagerCalled());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       OpenFeedbackPageShortcutEnabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(open_feedback_page_accelerator);
+  EXPECT_TRUE(IsOpenFeedbackPageCalled());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       OpenFeedbackPageShortcutNoActionByDefault) {
+  SetUpKioskSession();
+
+  ProcessInController(open_feedback_page_accelerator);
+  EXPECT_FALSE(IsOpenFeedbackPageCalled());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       OpenFeedbackPageShortcutNoActionIfPolicyDisabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+
+  ProcessInController(open_feedback_page_accelerator);
+  EXPECT_FALSE(IsOpenFeedbackPageCalled());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest, ToggleOverviewShortcutEnabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(toggle_overview_accelerator);
+  EXPECT_TRUE(IsOverviewToggled());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       ToggleOverviewShortcutNoActionByDefault) {
+  SetUpKioskSession();
+
+  ProcessInController(toggle_overview_accelerator);
+  EXPECT_FALSE(IsOverviewToggled());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       ToggleOverviewShortcutNoActionIfPolicyDisabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+
+  ProcessInController(toggle_overview_accelerator);
+  EXPECT_FALSE(IsOverviewToggled());
 }
 
 INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingShortcuts,

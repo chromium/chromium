@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 /**
  * Common logic for improved bookmark and folder rows.
  */
+// TODO(crbug.com/1448907): Create coordinator for this view.
 public class ImprovedBookmarkFolderView extends FrameLayout {
     private final RoundedCornerOutlineProvider mPrimaryImageOutline;
     private final RoundedCornerOutlineProvider mSecondaryImageOutline;

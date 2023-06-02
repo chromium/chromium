@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -23,6 +24,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
@@ -672,18 +674,6 @@ bool UserManagerBase::IsEphemeralUser(const User* user) const {
     return false;
   }
 
-  // Owner user is always persistent.
-  if (IsOwnerUser(user)) {
-    return false;
-  }
-
-  // Guest and public account is ephemeral.
-  if (auto user_type = user->GetType();
-      user_type == USER_TYPE_GUEST || user_type == USER_TYPE_PUBLIC_ACCOUNT) {
-    return true;
-  }
-
-  // Otherwise, check ephemeral policies.
   return IsEphemeralAccountId(user->GetAccountId());
 }
 
@@ -695,6 +685,11 @@ bool UserManagerBase::IsCurrentUserOwner() const {
 
 bool UserManagerBase::IsCurrentUserNew() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceFirstRunUI)) {
+    return true;
+  }
+
   return is_current_user_new_;
 }
 
@@ -776,6 +771,16 @@ bool UserManagerBase::IsUserNonCryptohomeDataEphemeral(
   // device local accounts whose data has not been removed yet is not ephemeral.
   if (account_id == GetOwnerAccountId() || UserExistsInList(account_id) ||
       IsDeviceLocalAccountMarkedForRemoval(account_id)) {
+    return false;
+  }
+
+  // Even though kiosk accounts might be ephemeral, non-cryptohome data
+  // of kiosk accounts should be non-ephemeral.
+  if (const User* user = FindUser(account_id);
+      user && (user->GetType() == USER_TYPE_PUBLIC_ACCOUNT ||
+               user->GetType() == USER_TYPE_KIOSK_APP ||
+               user->GetType() == USER_TYPE_ARC_KIOSK_APP ||
+               user->GetType() == USER_TYPE_WEB_KIOSK_APP)) {
     return false;
   }
 
@@ -1239,6 +1244,17 @@ void UserManagerBase::NotifyUserAddedToSession(const User* added_user,
 
 PrefService* UserManagerBase::GetLocalState() const {
   return local_state_.get();
+}
+
+bool UserManagerBase::IsFirstExecAfterBoot() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kFirstExecAfterBoot);
+}
+
+bool UserManagerBase::HasBrowserRestarted() const {
+  return base::SysInfo::IsRunningOnChromeOS() &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ash::switches::kLoginUser);
 }
 
 void UserManagerBase::Initialize() {

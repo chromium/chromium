@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -28,8 +27,11 @@ class PopupFullscreenTestBase : public PopupTestBase {
     content::SetupCrossSiteRedirector(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/empty.html")));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(web_contents,
+                              embedded_test_server()->GetURL("/simple.html")));
+    EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
   }
 
  private:
@@ -56,8 +58,8 @@ class PopupFullscreenTest : public PopupFullscreenTestBase,
 INSTANTIATE_TEST_SUITE_P(, PopupFullscreenTest, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, BasicFullscreen) {
-  Browser* popup =
-      OpenPopup(browser(), "open('/empty.html', '_blank', 'popup,fullscreen')");
+  Browser* popup = OpenPopup(
+      browser(), "open('/simple.html', '_blank', 'popup,fullscreen')");
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
   if (ShouldTestWindowManagement()) {
@@ -126,7 +128,7 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, AboutBlankFullscreen) {
 IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenWithBounds) {
   Browser* popup =
       OpenPopup(browser(),
-                "open('/empty.html', '_blank', "
+                "open('/simple.html', '_blank', "
                 "'height=200,width=200,top=100,left=100,fullscreen')");
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
@@ -152,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresPopupFeature) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(
-      EvalJs(web_contents, "open('/empty.html', '_blank', 'fullscreen')")
+      EvalJs(web_contents, "open('/simple.html', '_blank', 'fullscreen')")
           .error.empty());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
   EXPECT_FALSE(
@@ -166,15 +168,16 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresPopupFeature) {
 // Tests that the fullscreen flag is ignored if the window.open() does not
 // result in a new window.
 IN_PROC_BROWSER_TEST_P(PopupFullscreenTest, FullscreenRequiresNewWindow) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            embedded_test_server()->GetURL("/iframe.html")));
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
   // OpenPopup() cannot be used here since it waits for a new browser which
   // would not open in this case. open() targeting a frame named "test" in
   // "iframe.html" will not create a new window.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(
-      EvalJs(web_contents, "open('/empty.html', 'test', 'popup,fullscreen')")
+      EvalJs(web_contents, "open('/simple.html', 'test', 'popup,fullscreen')")
           .error.empty());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_FALSE(
@@ -192,8 +195,8 @@ struct PopupFullscreenPermissionPolicyTestParams {
   bool fullscreen_expected;
 };
 
-constexpr char kOpenerPath[] = "/empty.html";
-constexpr char kOpenedPath[] = "/simple.html";
+constexpr char kOpenerPath[] = "/simple.html";
+constexpr char kOpenedPath[] = "/title1.html";
 
 std::unique_ptr<net::test_server::HttpResponse> SetPermissionsPolicyHeader(
     std::string opener_header,

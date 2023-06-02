@@ -548,8 +548,8 @@ class PasswordProtectionServiceBaseTest
   base::HistogramTester histograms_;
   content::TestBrowserContext browser_context_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
-      nullptr;
+  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>, DanglingUntriaged>
+      raw_token_fetcher_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
 };

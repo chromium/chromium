@@ -158,6 +158,11 @@ void PipelineIntegrationTestBase::OnSeeked(base::TimeDelta seek_time,
     EXPECT_EQ(seek_time, pipeline_->GetMediaTime());
 
   pipeline_status_ = status;
+
+  // If the seek failed, then stop immediately.
+  if (!pipeline_status_.is_ok() && on_error_closure_) {
+    std::move(on_error_closure_).Run();
+  }
 }
 
 void PipelineIntegrationTestBase::OnStatusCallback(
@@ -347,6 +352,23 @@ void PipelineIntegrationTestBase::Pause() {
   pipeline_->SetPlaybackRate(0);
 }
 
+void PipelineIntegrationTestBase::OnBufferingStateChangeForSeek(
+    BufferingState state,
+    BufferingStateChangeReason reason) {
+  // Record the first buffering state we get.
+  if (!buffering_state_) {
+    buffering_state_ = state;
+
+    // The first call must be HAVE_ENOUGH.
+    EXPECT_EQ(state, BUFFERING_HAVE_ENOUGH);
+  }
+
+  // Once we have HAVE_ENOUGH, we've had enough.
+  if (on_ended_closure_) {
+    std::move(on_ended_closure_).Run();
+  }
+}
+
 bool PipelineIntegrationTestBase::Seek(base::TimeDelta seek_time) {
   // Enforce that BUFFERING_HAVE_ENOUGH is the first call below.
   ::testing::InSequence dummy;
@@ -354,18 +376,37 @@ bool PipelineIntegrationTestBase::Seek(base::TimeDelta seek_time) {
   ended_ = false;
   base::RunLoop run_loop;
 
-  // Should always transition to HAVE_ENOUGH once the seek completes.
-  EXPECT_CALL(*this, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
-      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  pipeline_status_ = PIPELINE_OK;
+  buffering_state_.reset();
 
+  // Should always transition to HAVE_ENOUGH once the seek completes
+  // successfully.  On error, it shouldn't be called at all.
   // After initial HAVE_ENOUGH, any buffering state change is allowed as
   // playback may cause any number of underflow/preroll events.
-  EXPECT_CALL(*this, OnBufferingStateChange(_, _)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnBufferingStateChange(_, _))
+      .Times(AnyNumber())
+      .WillRepeatedly(Invoke(
+          this, &PipelineIntegrationTestBase::OnBufferingStateChangeForSeek));
 
+  bool did_call_on_seeked = false;
   pipeline_->Seek(seek_time,
-                  base::BindOnce(&PipelineIntegrationTestBase::OnSeeked,
-                                 base::Unretained(this), seek_time));
-  RunUntilQuitOrError(&run_loop);
+                  base::BindOnce(
+                      [](PipelineIntegrationTestBase* thiz, bool* flag,
+                         base::TimeDelta seek_time, PipelineStatus status) {
+                        *flag = true;
+                        thiz->OnSeeked(seek_time, status);
+                      },
+                      base::Unretained(this), &did_call_on_seeked, seek_time));
+  RunUntilQuitOrEndedOrError(&run_loop);
+
+  // We must get at least one `OnSeeked()` status call.
+  EXPECT_TRUE(did_call_on_seeked);
+  // If the seek succeeded, then we must get to HAVE_ENOUGH
+  if (pipeline_status_ == PIPELINE_OK) {
+    EXPECT_TRUE(buffering_state_);
+    EXPECT_EQ(*buffering_state_, BUFFERING_HAVE_ENOUGH);
+  }  // else we don't care about buffering state.
+
   return (pipeline_status_ == PIPELINE_OK);
 }
 

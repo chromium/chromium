@@ -382,9 +382,15 @@ double PowerStatus::GetPreferredMinimumPower() const {
   return proto_.preferred_minimum_external_power();
 }
 
+bool PowerStatus::IsBatterySaverActive() const {
+  return battery_saver_active_;
+}
+
 PowerStatus::PowerStatus() {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
+  chromeos::PowerManagerClient::Get()->GetBatterySaverModeState(base::BindOnce(
+      &PowerStatus::OnGotBatterySaverState, weak_ptr_factory_.GetWeakPtr()));
 }
 
 PowerStatus::~PowerStatus() {
@@ -394,13 +400,42 @@ PowerStatus::~PowerStatus() {
 void PowerStatus::SetProtoForTesting(
     const power_manager::PowerSupplyProperties& proto) {
   proto_ = proto;
+  proto_initialized_ = true;
+}
+
+void PowerStatus::SetBatterySaverStateForTesting(bool active) {
+  battery_saver_active_ = active;
 }
 
 void PowerStatus::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   proto_ = proto;
+  proto_initialized_ = true;
   for (auto& observer : observers_)
     observer.OnPowerStatusChanged();
+}
+
+void PowerStatus::BatterySaverModeStateChanged(
+    const power_manager::BatterySaverModeState& state) {
+  const bool prev_active = battery_saver_active_;
+  battery_saver_active_ = state.enabled();
+  if (prev_active == battery_saver_active_) {
+    return;
+  }
+  if (!proto_initialized_) {
+    // Don't update clients
+    return;
+  }
+  for (auto& observer : observers_) {
+    observer.OnPowerStatusChanged();
+  }
+}
+
+void PowerStatus::OnGotBatterySaverState(
+    absl::optional<power_manager::BatterySaverModeState> state) {
+  if (state) {
+    BatterySaverModeStateChanged(*state);
+  }
 }
 
 }  // namespace ash

@@ -13,8 +13,11 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 
 namespace apps {
 
@@ -34,12 +37,30 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
     STACK_ALLOCATED();
   };
 
+  class COMPONENT_EXPORT(SHORTCUT) Observer : public base::CheckedObserver {
+   public:
+    // Called when a shortcut been updated (including added). `update` contains
+    // the shortcut updating information to let the clients know which shortcut
+    // has been updated and what changes have been made.
+    virtual void OnShortcutUpdated(const ShortcutUpdate& update) {}
+
+    // Called when the ShortcutRegistryCache object (the thing that this
+    // observer observes) will be destroyed. In response, the observer, |this|,
+    // should call "cache->RemoveObserver(this)", whether directly or indirectly
+    // (e.g. via base::ScopedObservation::Reset).
+    virtual void OnShortcutRegistryCacheWillBeDestroyed(
+        ShortcutRegistryCache* cache) = 0;
+  };
+
   ShortcutRegistryCache();
 
   ShortcutRegistryCache(const ShortcutRegistryCache&) = delete;
   ShortcutRegistryCache& operator=(const ShortcutRegistryCache&) = delete;
 
   ~ShortcutRegistryCache();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Apply the shortcut update `delta` to an existing shortcut, or create a new
   // shortcut if it doesn't exists.
@@ -66,6 +87,8 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
   // update the shortcut cache again.
   // TODO(crbug.com/1412708): Handle observer updates if proved to be necessary.
   bool is_updating_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

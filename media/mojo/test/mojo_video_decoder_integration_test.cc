@@ -351,7 +351,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
 
   // MediaLog that the service has provided to |decoder_|. This should be
   // proxied to |client_media_log_|.
-  raw_ptr<MediaLog> decoder_media_log_ = nullptr;
+  raw_ptr<MediaLog, DanglingUntriaged> decoder_media_log_ = nullptr;
 
  private:
   // Passes |decoder_| to the service.

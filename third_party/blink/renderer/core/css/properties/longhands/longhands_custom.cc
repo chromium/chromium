@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/counter_node.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -2332,13 +2333,14 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
     // allow it for backward compatibility.
     // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
     if (args.Peek().Id() == CSSValueID::kNone) {
-      list_style = MakeGarbageCollected<CSSCustomIdentValue>("none");
+      list_style =
+          MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("none"));
       args.ConsumeIncludingWhitespace();
     } else {
       list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);
     }
   } else {
-    list_style = MakeGarbageCollected<CSSCustomIdentValue>("decimal");
+    list_style = MakeGarbageCollected<CSSCustomIdentValue>(keywords::kDecimal);
   }
 
   if (!list_style || !args.AtEnd()) {
@@ -2484,9 +2486,7 @@ void Content::ApplyValue(StyleResolverState& state,
         builder.SetHasAttrContent();
         // TODO: Can a namespace be specified for an attr(foo)?
         QualifiedName attr(
-            g_null_atom,
-            To<CSSCustomIdentValue>(function_value->Item(0)).Value(),
-            g_null_atom);
+            To<CSSCustomIdentValue>(function_value->Item(0)).Value());
         const AtomicString& attr_value = state.GetElement().getAttribute(attr);
         string = attr_value.IsNull() ? g_empty_string : attr_value.GetString();
       } else {
@@ -3372,26 +3372,7 @@ const CSSValue* FontPalette::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  blink::FontPalette* palette = style.GetFontDescription().GetFontPalette();
-
-  if (!palette) {
-    return CSSIdentifierValue::Create(CSSValueID::kNormal);
-  }
-
-  switch (palette->GetPaletteNameKind()) {
-    case blink::FontPalette::kNormalPalette:
-      return CSSIdentifierValue::Create(CSSValueID::kNormal);
-    case blink::FontPalette::kLightPalette:
-      return CSSIdentifierValue::Create(CSSValueID::kLight);
-    case blink::FontPalette::kDarkPalette:
-      return CSSIdentifierValue::Create(CSSValueID::kDark);
-    case blink::FontPalette::kCustomPalette:
-      return MakeGarbageCollected<CSSCustomIdentValue>(
-          palette->GetPaletteValuesName());
-    default:
-      NOTREACHED();
-  }
-  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  return ComputedStyleUtils::ValueForFontPalette(style);
 }
 
 const CSSValue* FontPalette::ParseSingleValue(
@@ -5701,6 +5682,9 @@ const CSSValue* OffsetPosition::ParseSingleValue(
   if (id == CSSValueID::kAuto) {
     return css_parsing_utils::ConsumeIdent(range);
   }
+  if (id == CSSValueID::kNormal) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
   CSSValue* value = css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       absl::optional<WebFeature>());
@@ -6805,6 +6789,53 @@ const CSSValue* Scale::CSSValueFromComputedStyleInternal(
     list->Append(*CSSNumericLiteralValue::Create(
         scale->Z(), CSSNumericLiteralValue::UnitType::kNumber));
   }
+  return list;
+}
+
+// https://www.w3.org/TR/css-scrollbars/
+// auto | <color>{2}
+const CSSValue* ScrollbarColor::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::ScrollbarColorEnabled());
+
+  CSSValueID id = range.Peek().Id();
+  if (id == CSSValueID::kAuto) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+
+  CSSValue* thumb_color = css_parsing_utils::ConsumeColor(range, context);
+  if (!thumb_color) {
+    return nullptr;
+  }
+
+  CSSValue* track_color = css_parsing_utils::ConsumeColor(range, context);
+  if (!track_color) {
+    return nullptr;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*thumb_color);
+  list->Append(*track_color);
+  return list;
+}
+
+const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  absl::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
+  if (scrollbar_color == absl::nullopt) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
+      style, scrollbar_color.value().GetThumbColor(),
+      CSSValuePhase::kComputedValue));
+  list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
+      style, scrollbar_color.value().GetTrackColor(),
+      CSSValuePhase::kComputedValue));
   return list;
 }
 
@@ -10458,14 +10489,6 @@ void Zoom::ApplyValue(StyleResolverState& state,
                       const CSSValue& value,
                       ValueMode) const {
   state.SetZoom(StyleBuilderConverter::ConvertZoom(state, value));
-}
-
-const CSSValue* InternalAlignSelfBlock::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext&,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeIdent<CSSValueID::kCenter,
-                                         CSSValueID::kNormal>(range);
 }
 
 const CSSValue* InternalAlignContentBlock::ParseSingleValue(

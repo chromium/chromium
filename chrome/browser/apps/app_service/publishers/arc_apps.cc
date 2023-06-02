@@ -992,8 +992,15 @@ void ArcApps::OpenNativeSettings(const std::string& app_id) {
                << ". App is not found.";
     return;
   }
-  arc::ShowPackageInfo(app_info->package_name,
-                       arc::mojom::ShowPackageInfoPage::MAIN,
+  if (app_info->package_name.empty()) {
+    LOG(ERROR) << "Cannot open native settings for " << app_id
+               << ". Package name is empty.";
+    return;
+  }
+  const auto page = arc::IsReadOnlyPermissionsEnabled()
+                        ? arc::mojom::ShowPackageInfoPage::MANAGE_PERMISSIONS
+                        : arc::mojom::ShowPackageInfoPage::MAIN;
+  arc::ShowPackageInfo(app_info->package_name, page,
                        display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 

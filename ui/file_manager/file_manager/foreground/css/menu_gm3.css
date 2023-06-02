@@ -155,11 +155,11 @@ html.focus-outline-visible
 html.focus-outline-visible
     cr-menu.files-menu > cr-menu-item:not([disabled])[selected]::before {
   border: 2px solid var(--cros-sys-focus_ring);
-  border-radius: 4px;
+  border-radius: 8px;
   content: '';
-  height: calc(100% - 2 * 2px); /* menu item height - 2 x border width */
+  height: 100%;
   left: 0;
   position: absolute;
-  top: 0;
+  top: -2px; /* border-width offset */
   width: calc(100% - 4px); /* 2 x border width */
 }

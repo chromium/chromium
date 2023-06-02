@@ -191,7 +191,7 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
   const AppId& app_id() const { return app_id_; }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
   std::unique_ptr<FakeWebAppFileHandlerManager> file_handler_manager_;
 
   AppId app_id_;

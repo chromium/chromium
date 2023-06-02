@@ -186,7 +186,8 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   std::unique_ptr<SubresourceFilterComponentInstallerPolicy> policy_;
   TestingPrefServiceSimple pref_service_;
 
-  raw_ptr<TestRulesetService> test_ruleset_service_ = nullptr;
+  raw_ptr<TestRulesetService, DanglingUntriaged> test_ruleset_service_ =
+      nullptr;
 };
 
 TEST_F(SubresourceFilterComponentInstallerTest,

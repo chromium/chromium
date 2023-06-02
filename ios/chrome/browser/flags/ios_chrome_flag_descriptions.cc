@@ -33,8 +33,9 @@ const char kAutofillAccountProfilesUnionViewDescription[] =
 
 const char kAutofillBrandingIOSName[] = "Autofill Branding on iOS";
 const char kAutofillBrandingIOSDescription[] =
-    "Adds the Chrome logo in the form input suggestions bar. Full color by "
-    "default.";
+    "Adds the Chrome logo in the form input suggestions bar. If select "
+    "\"Enabled\", the branding logo shows twice, and would not be "
+    "dismissed with any animation.";
 
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
@@ -156,6 +157,12 @@ const char kAutofillUseRendererIDsName[] =
 const char kAutofillUseRendererIDsDescription[] =
     "When enabled, Autofill logic uses unique numeric renderer IDs instead "
     "of string form and field identifiers in form filling logic.";
+
+const char kAutofillUseTwoDotsForLastFourDigitsName[] =
+    "Autofill uses two '•' instead of four";
+const char kAutofillUseTwoDotsForLastFourDigitsDescription[] =
+    "When enabled, Autofill surfaces will show two '•' characters instead of "
+    "four when displaying the last four digits of a card number";
 
 const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
 const char kBottomOmniboxSteadyStateDescription[] =
@@ -338,11 +345,6 @@ const char kEnableFeedCardMenuSignInPromoDescription[] =
     "Display a sign-in promotion UI when signed out users click on "
     "personalization options within the feed card menu.";
 
-const char kEnableFeedImageCachingName[] = "Enable Feed image caching";
-const char kEnableFeedImageCachingDescription[] =
-    "If enabled images in the Feed will be cached for the next time the feed "
-    "is loaded.";
-
 const char kEnableFeedSyntheticCapabilitiesName[] =
     "Enable Feed synthetic capabilities.";
 const char kEnableFeedSyntheticCapabilitiesDescription[] =
@@ -362,6 +364,10 @@ const char kEnableFollowManagementInstantReloadName[] =
     "Enable Follow Management Instant Reload";
 const char kEnableFollowManagementInstantReloadDescription[] =
     "Enable follow management page instant reloading when being opened.";
+
+const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
+const char kEnableFollowUIUpdateDescription[] =
+    "Enable Follow UI Update for the Feed.";
 
 const char kPasswordsGroupingName[] =
     "Enable password grouping for the Password Manager";
@@ -399,6 +405,12 @@ const char kEnableRefineDataSourceReloadReportingName[] =
 const char kEnableRefineDataSourceReloadReportingDescription[] =
     "Enable refining data source reload reporting when having a very short "
     "attention log";
+
+const char kEnableSignedOutViewDemotionName[] =
+    "Enable signed out user view demotion";
+const char kEnableSignedOutViewDemotionDescription[] =
+    "Enable signed out user view demotion to avoid repeated content for signed "
+    "out users.";
 
 const char kEnableSuggestionsScrollingOnIPadName[] =
     "Enable omnibox suggestions scrolling on iPad";
@@ -486,9 +498,10 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
-extern const char kHistorySyncOptInName[] = "History Sync Opt-In";
-extern const char kHistorySyncOptInDescription[] =
-    "Enables history sync opt-in";
+extern const char kHideContentSuggestionTilesName[] =
+    "Hide content suggestions tiles";
+extern const char kHideContentSuggestionTilesDescription[] =
+    "Hides content suggestions tiles from the new tab page.";
 
 const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
 const char kHttpsOnlyModeDescription[] = "Enables the HTTPS-Only Mode setting";
@@ -567,9 +580,13 @@ const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";
 
-const char kNewTabPageRetentionName[] =
+const char kIOSPaymentsBottomSheetName[] = "IOS Payments Manager Bottom Sheet";
+const char kIOSPaymentsBottomSheetDescription[] =
+    "Enables the display of the payments bottom sheet on IOS.";
+
+const char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
-const char kNewTabPageRetentionDescription[] =
+const char kNewTabPageFieldTrialDescription[] =
     "Enables new tab page features that are available on first run for new "
     "Chrome iOS users.";
 
@@ -797,6 +814,12 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
+const char kOptimizationGuideInstallWideModelStoreName[] =
+    "Enables the new optimization guide install-wide model store";
+const char kOptimizationGuideInstallWideModelStoreDescription[] =
+    "Enables the new model store that is per Chrome installation and can "
+    "share models across user profiles.";
+
 const char kOptimizationGuidePushNotificationClientName[] =
     "Enable optimization guide push notification client";
 const char kOptimizationGuidePushNotificationClientDescription[] =
@@ -847,6 +870,11 @@ const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
 const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
+
+const char kReplaceSyncPromosWithSignInPromosName[] =
+    "Replace all sync-related UI with sign-in ones";
+const char kReplaceSyncPromosWithSignInPromosDescription[] =
+    "When enabled, all sync-related promos will be replaced by sign-in ones.";
 
 const char kRestoreSessionFromCacheName[] =
     "Use native WKWebView sesion restoration (iOS15 only).";
@@ -927,19 +955,6 @@ const char kSynthesizedRestoreSessionDescription[] =
 const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
 const char kSyncEnableHistoryDataTypeDescription[] =
     "Enables the History sync data type instead of TypedURLs";
-
-const char kSyncInvalidationsName[] = "Use Sync standalone invalidations";
-const char kSyncInvalidationsDescription[] =
-    "If enabled, Sync will use standalone invalidations instead of topic based "
-    "invalidations (Wallet and Offer data types are enabled by a dedicated "
-    "flag).";
-
-const char kSyncInvalidationsWalletAndOfferName[] =
-    "Use Sync standalone invalidations for Wallet and Offer";
-const char kSyncInvalidationsWalletAndOfferDescription[] =
-    "If enabled, Sync will use standalone invalidations for Wallet and Offer "
-    "data types. Takes effect only when Sync standalone invalidations are "
-    "enabled.";
 
 const char kStartSurfaceName[] = "Start Surface";
 const char kStartSurfaceDescription[] =

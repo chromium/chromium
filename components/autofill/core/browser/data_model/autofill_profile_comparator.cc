@@ -183,6 +183,8 @@ int32_t NormalizingIterator::GetNextChar() {
 }  // namespace
 
 // The values corresponding to those types are visible in the settings.
+// TODO(crbug.com/1441904): Landmark, between-street and admin-level2 are in
+// progress to be included in the settings.
 ServerFieldTypeSet GetUserVisibleTypes() {
   static const ServerFieldTypeSet user_visibe_type = {
       NAME_FULL,
@@ -195,6 +197,7 @@ ServerFieldTypeSet GetUserVisibleTypes() {
       ADDRESS_HOME_COUNTRY,
       ADDRESS_HOME_LANDMARK,
       ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_ADMIN_LEVEL2,
       EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER,
       COMPANY_NAME};

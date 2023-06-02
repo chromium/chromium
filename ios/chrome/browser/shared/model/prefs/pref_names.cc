@@ -250,6 +250,11 @@ const char kOverflowMenuDestinationUsageHistory[] =
 // carousel.
 const char kOverflowMenuNewDestinations[] = "overflow_menu.new_destinations";
 
+// List preference which tracks the current order of the overflow menu's
+// destinations.
+const char kOverflowMenuDestinationsOrder[] =
+    "overflow_menu.destinations_order";
+
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

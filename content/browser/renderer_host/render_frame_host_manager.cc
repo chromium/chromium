@@ -96,9 +96,8 @@ namespace {
 const char kBackForwardCachePageWithFormStorableHistogramName[] =
     "BackForwardCache.PageWithForm.Storable";
 
-bool IsDataOrAbout(const GURL& url) {
-  return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
-         url.scheme() == url::kDataScheme;
+bool IsAbout(const GURL& url) {
+  return url.IsAboutSrcdoc() || url.IsAboutBlank();
 }
 
 // Helper function to determine whether a navigation from `current_rfh` to
@@ -1125,7 +1124,8 @@ void RenderFrameHostManager::ActivatePrerender(
   BackForwardCacheMetrics* back_forward_cache_metrics =
       render_frame_host_->GetBackForwardCacheMetrics();
   if (back_forward_cache_metrics)
-    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(absl::nullopt);
+    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(absl::nullopt,
+                                                              nullptr);
 
   RestorePage(std::move(stored_page));
 }
@@ -2395,7 +2395,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     if (BackForwardCacheMetrics* back_forward_cache_metrics =
             render_frame_host_->GetBackForwardCacheMetrics()) {
       back_forward_cache_metrics->SetBrowsingInstanceSwapResult(
-          should_swap_result->reason());
+          should_swap_result->reason(), render_frame_host_.get());
     }
   }
 
@@ -3001,7 +3001,9 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
   // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
   // have a sandboxed parent but unsandboxed child.
   bool is_data_or_about_and_not_sandboxed =
-      IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
+      (dest_url_info.url.SchemeIs(url::kDataScheme) ||
+       IsAbout(dest_url_info.url)) &&
+      !dest_url_info.is_sandboxed;
   if (is_data_or_about_and_not_sandboxed)
     return true;
 
@@ -3121,8 +3123,10 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // We use the source SiteInstance in case of data URLs, about:srcdoc pages and
   // about:blank pages because the content is then controlled and/or scriptable
   // by the initiator and therefore needs to stay in the `source_instance`.
-  if (!IsDataOrAbout(dest_url_info.url))
+  if (!dest_url_info.url.SchemeIs(url::kDataScheme) &&
+      !IsAbout(dest_url_info.url)) {
     return false;
+  }
 
   // If `dest_url_info` is sandboxed, then we can't assign it to a SiteInstance
   // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
@@ -3756,7 +3760,7 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
     }
 
     child->render_manager()->CreateRenderFrameProxy(
-        pair.second->GetSiteInstance(),
+        pair.second->GetSiteInstanceDeprecated(),
         child->current_frame_host()->browsing_context_state());
   }
 }
@@ -4600,16 +4604,18 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     old_render_frame_host->SetHasPendingLifecycleStateUpdate();
   }
 
-  if (frame_tree_node_->IsMainFrame()) {
-    // Update the count of top-level frames using this SiteInstance.  All
-    // subframes are in the same BrowsingInstance as the main frame, so we only
-    // count top-level ones.  This makes the value easier for consumers to
-    // interpret.
-    if (render_frame_host_) {
+  // Update the count of active documents using this SiteInstance, both for
+  // active document tracking and related active contents tracking.
+  if (render_frame_host_) {
+    render_frame_host_->GetSiteInstance()->increment_active_document_count();
+    if (frame_tree_node_->IsMainFrame()) {
       render_frame_host_->GetSiteInstance()
           ->IncrementRelatedActiveContentsCount();
     }
-    if (old_render_frame_host) {
+  }
+  if (old_render_frame_host) {
+    old_render_frame_host->GetSiteInstance()->decrement_active_document_count();
+    if (frame_tree_node_->IsMainFrame()) {
       old_render_frame_host->GetSiteInstance()
           ->DecrementRelatedActiveContentsCount();
     }
@@ -4784,7 +4790,7 @@ absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
 
 void RenderFrameHostManager::ExecutePageBroadcastMethod(
     PageBroadcastMethodCallback callback,
-    SiteInstanceImpl* instance_to_skip) {
+    SiteInstanceGroup* group_to_skip) {
   DCHECK(!frame_tree_node_->parent());
 
   // When calling a PageBroadcast Mojo method for an inner WebContents, we don't
@@ -4795,17 +4801,19 @@ void RenderFrameHostManager::ExecutePageBroadcastMethod(
        render_frame_host_->browsing_context_state()->proxy_hosts()) {
     if (outer_delegate_proxy == pair.second.get())
       continue;
-    if (pair.second->GetSiteInstance() == instance_to_skip)
+    if (pair.second->site_instance_group() == group_to_skip) {
       continue;
+    }
     callback.Run(pair.second->GetRenderViewHost());
   }
 
   if (speculative_render_frame_host_ &&
-      speculative_render_frame_host_->GetSiteInstance() != instance_to_skip) {
+      speculative_render_frame_host_->GetSiteInstance()->group() !=
+          group_to_skip) {
     callback.Run(speculative_render_frame_host_->render_view_host());
   }
 
-  if (render_frame_host_->GetSiteInstance() != instance_to_skip) {
+  if (render_frame_host_->GetSiteInstance()->group() != group_to_skip) {
     callback.Run(render_frame_host_->render_view_host());
   }
 }

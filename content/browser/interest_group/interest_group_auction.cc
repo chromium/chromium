@@ -20,6 +20,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -2019,17 +2020,16 @@ InterestGroupAuction::CreateReporter(
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
+  base::Value::Dict ad_metadata;
+  ad_metadata.Set("renderURL", winner->bid->ad_descriptor.url.spec());
   if (winner->bid->bid_ad->metadata) {
-    // `metadata` is already in JSON so no quotes are needed.
-    winning_bid_info.ad_metadata =
-        base::StringPrintf(R"({"render_url":"%s","metadata":%s})",
-                           winner->bid->ad_descriptor.url.spec().c_str(),
-                           winner->bid->bid_ad->metadata.value().c_str());
-  } else {
-    winning_bid_info.ad_metadata =
-        base::StringPrintf(R"({"render_url":"%s"})",
-                           winner->bid->ad_descriptor.url.spec().c_str());
+    ad_metadata.Set("metadata", winner->bid->bid_ad->metadata.value());
   }
+  if (winner->bid->bid_ad->ad_render_id) {
+    ad_metadata.Set("adRenderId", winner->bid->bid_ad->ad_render_id.value());
+  }
+  JSONStringValueSerializer serializer(&winning_bid_info.ad_metadata);
+  serializer.Serialize(base::Value(std::move(ad_metadata)));
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;
@@ -2038,6 +2038,23 @@ InterestGroupAuction::CreateReporter(
   top_level_seller_winning_bid_info.subresource_url_builder =
       std::move(subresource_url_builder_);
   top_level_seller_winning_bid_info.bid = winner->bid->bid;
+
+  if (winner->bid->auction == this) {
+    // Bid came directly from bidder, not a component auction.
+    top_level_seller_winning_bid_info.bid_currency =
+        winning_bid_info.bid_currency;
+  } else {
+    // Bid comes from component auction, so we redact the config expectation of
+    // the bid of component auction in top-level auction.
+    InterestGroupAuction* component_auction = winner->bid->auction;
+    top_level_seller_winning_bid_info.bid_currency =
+        component_auction->config_->non_shared_params.seller_currency;
+    if (!top_level_seller_winning_bid_info.bid_currency) {
+      top_level_seller_winning_bid_info.bid_currency =
+          PerBuyerCurrency(component_auction->config_->seller, *config_);
+    }
+  }
+
   top_level_seller_winning_bid_info.bid_in_seller_currency =
       winner->bid_in_seller_currency.value_or(0.0);
   top_level_seller_winning_bid_info.score = winner->score;
@@ -2074,6 +2091,10 @@ InterestGroupAuction::CreateReporter(
         std::move(component_auction->subresource_url_builder_);
     const LeaderInfo& component_leader = component_auction->leader_info();
     component_seller_winning_bid_info->bid = component_leader.top_bid->bid->bid;
+    // The bidder in this auction was the actual bidder, so the currency comes
+    // from it, too.
+    component_seller_winning_bid_info->bid_currency =
+        winning_bid_info.bid_currency;
     component_seller_winning_bid_info->bid_in_seller_currency =
         component_leader.top_bid->bid_in_seller_currency.value_or(0.0);
     component_seller_winning_bid_info->score = component_leader.top_bid->score;
@@ -2103,7 +2124,8 @@ InterestGroupAuction::CreateReporter(
       maybe_log_private_aggregation_web_features_callback_,
       std::move(auction_config), main_frame_origin, frame_origin,
       std::move(client_security_state), std::move(url_loader_factory),
-      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
+      kanon_mode_, std::move(winning_bid_info),
+      std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
@@ -3195,6 +3217,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta scoring_latency,
+    base::TimeDelta trusted_signals_fetch_latency,
     const std::vector<std::string>& errors) {
   DCHECK_GT(bids_being_scored_, 0);
 
@@ -3216,6 +3240,9 @@ void InterestGroupAuction::OnScoreAdComplete(
   } else {
     bid->bid_state->EndTracing();
   }
+  bid->bid_state->pa_timings(seller_phase()).script_run_time = scoring_latency;
+  bid->bid_state->pa_timings(seller_phase()).signals_fetch_time =
+      trusted_signals_fetch_latency;
 
   --bids_being_scored_;
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/md_select.css.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -35,5 +36,7 @@ class MdSelectDemoElement extends PolymerElement {
     this.selectedOption_ = this.$.select.value;
   }
 }
+
+export const tagName = MdSelectDemoElement.is;
 
 customElements.define(MdSelectDemoElement.is, MdSelectDemoElement);

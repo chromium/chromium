@@ -129,11 +129,18 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Get the size of the monitor on which the window handle is displayed.
   gfx::Size GetMonitorSize() const;
 
+  // Update the |visual_transform| and |visual_clip_rect| accordingly after
+  // succeeded presentation with letterboxing for overaly scenario. This will
+  // make sure the video full screen letterboxing take the whole monitor area,
+  // and DWM will take care of the letterboxing info setup automatically.
+  void SetTargetToFullScreen(gfx::Transform* visual_transform,
+                             gfx::Rect* visual_clip_rect) const;
+
   // Takes in input DC layer params and the video overlay quad. The swap chain
   // backbuffer size will be rounded to the monitor size if it is within a close
-  // margin. The visual_transform will be calculated by what scaling factor is
+  // margin. The |visual_transform| will be calculated by what scaling factor is
   // needed to scale the swap chain backbuffer to the monitor size.
-  // The visual_clip_rect will be adjusted to the monitor size for full screen
+  // The |visual_clip_rect| will be adjusted to the monitor size for full screen
   // mode, and to the video overlay quad for letterboxing mode.
   // The returned optional |dest_size| and |target_rect| have the same meaning
   // as in AdjustTargetForFullScreenLetterboxing.
@@ -185,7 +192,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
-  // Returns true on success.  See PresentToDecodeSwapChain() for more info.
+  // Returns true on success. See PresentToDecodeSwapChain() for more info.
   bool TryPresentToDecodeSwapChain(
       Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
       unsigned array_slice,
@@ -193,28 +200,22 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const gfx::Rect& content_rect,
       const gfx::Size& swap_chain_size,
       DXGI_FORMAT swap_chain_format,
-      const gfx::Transform& transform_to_root);
-
-  // Try disabling the topmost desktop plane for a swap chain in the case of
-  // full screen. In DWM, the desktop plane can be turned off if the
-  // letterboxing info is set up properly for YUV swapchains, meaning that when
-  // the size of the window and the size of the monitor are the same and there
-  // is no other UI component overtop of the video.
-  // Otherwise, set the letterboxing info with swap chain size in order to
-  // restore the topmost desktop plane, which happens in scenarios like
-  // switching to underlay.
-  // Returns true on successful settings.
-  bool TryDisableDesktopPlane(const gfx::Size& dest_size,
-                              const gfx::Rect& target_rect);
+      const gfx::Transform& transform_to_root,
+      const absl::optional<gfx::Size> dest_size,
+      const absl::optional<gfx::Rect> target_rect);
 
   // Present to a decode swap chain created from compatible video decoder
-  // buffers using given |nv12_image| with destination size |swap_chain_size|.
+  // buffers using given |nv12_image|.
+  // Use |dest_size| for destination size and |target_rect| for target rectangle
+  // if valid. Otherwise, |swap_chain_size| would be used instead.
   // Returns true on success.
   bool PresentToDecodeSwapChain(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
                                 unsigned array_slice,
                                 const gfx::ColorSpace& color_space,
                                 const gfx::Rect& content_rect,
-                                const gfx::Size& swap_chain_size);
+                                const gfx::Size& swap_chain_size,
+                                const absl::optional<gfx::Size> dest_size,
+                                const absl::optional<gfx::Rect> target_rect);
 
   // Records presentation statistics in UMA and traces (for pixel tests) for the
   // current swap chain which could either be a regular flip swap chain or a

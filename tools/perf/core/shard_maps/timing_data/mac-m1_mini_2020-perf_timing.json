@@ -1768,6 +1768,10 @@
         "name": "jetstream2/JetStream2"
     },
     {
+        "duration": "75.0",
+        "name": "jetstream2-minormc/JetStream2"
+    },
+    {
         "duration": "12.0",
         "name": "loading.desktop/24h_cold"
     },

@@ -10,14 +10,14 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_util.h"
@@ -29,8 +29,7 @@
 
 namespace {
 constexpr char kTestProfileName[] = "child@gmail.com";
-constexpr char16_t kTestProfileName16[] = u"child@gmail.com";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr char kTestGivenName[] = "Tester";
 constexpr char16_t kTestGivenName16[] = u"Tester";
 constexpr char kTestExtensionName[] = "extension";
 constexpr char16_t kTestExtensionName16[] = u"extension";
@@ -72,6 +71,7 @@ class ParentAccessExtensionApprovalsManagerTest : public ::testing::Test {
 
   void SetUp() override {
     CreateSupervisedUser();
+
     approvals_manager_ =
         std::make_unique<extensions::ParentAccessExtensionApprovalsManager>();
     dialog_provider_ = static_cast<FakeParentAccessDialogProvider*>(
@@ -80,43 +80,41 @@ class ParentAccessExtensionApprovalsManagerTest : public ::testing::Test {
   }
 
  protected:
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   void CreateSupervisedUser() {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile(
-        kTestProfileName, {}, kTestProfileName16, 0,
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactories(),
-        /*is_supervised_profile=*/true);
-    supervised_user_test_util::AddCustodians(profile_);
-    AddUserToUserManager();
+    TestingProfile::Builder builder;
+    builder.SetIsSupervisedProfile();
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(builder);
+
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+
+    AccountInfo account_info =
+        GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+            kTestProfileName, signin::ConsentLevel::kSignin);
+    supervised_user_test_util::PopulateAccountInfoWithName(account_info,
+                                                           kTestGivenName);
+    GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
+
+    supervised_user_test_util::AddCustodians(profile());
   }
 
-  void AddUserToUserManager() {
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
-    GetFakeUserManager()->AddUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
-    GetFakeUserManager()->SwitchActiveUser(account_id);
-    GetFakeUserManager()->UpdateUserAccountData(
-        account_id, user_manager::UserManager::UserAccountData(
-                        /*display_name=*/std::u16string(),
-                        /*given_name=*/kTestGivenName16,
-                        /*locale=*/std::string()));
+  signin::IdentityTestEnvironment* GetIdentityTestEnv() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
   }
+
+  Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
+
   std::unique_ptr<extensions::ParentAccessExtensionApprovalsManager>
       approvals_manager_;
-  raw_ptr<TestingProfile> profile_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
+  std::unique_ptr<TestingProfile> profile_;
+
   raw_ptr<FakeParentAccessDialogProvider> dialog_provider_ = nullptr;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -124,7 +122,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest, GetExtensionApprovalParams) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::DoNothing());
@@ -160,7 +158,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationDenied,
       base::DoNothing());
@@ -181,7 +179,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::BindOnce(
@@ -206,7 +204,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::BindOnce(
@@ -231,7 +229,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::BindOnce(
@@ -256,7 +254,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::BindOnce(
@@ -281,7 +279,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::BindOnce(
@@ -308,7 +306,7 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
-      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      *extension, profile(), extensions::util::GetDefaultExtensionIcon(),
       extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
           kInstallationPermitted,
       base::BindOnce(

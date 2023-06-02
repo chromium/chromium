@@ -8,16 +8,15 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -74,8 +73,11 @@ const CGFloat kBubblePresentationDelay = 1;
     priceNotificationsWhileBrowsingBubbleTipPresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* tabPinnedBubbleTipPresenter;
-@property(nonatomic, assign) ChromeBrowserState* browserState;
 @property(nonatomic, assign) WebStateList* webStateList;
+@property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
+@property(nonatomic, assign) HostContentSettingsMap* settingsMap;
+// Whether the presenter is started.
+@property(nonatomic, assign, getter=isStarted) BOOL started;
 
 @end
 
@@ -83,28 +85,33 @@ const CGFloat kBubblePresentationDelay = 1;
 
 #pragma mark - Public
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                        webStateList:(WebStateList*)webStateList {
+- (instancetype)initWithTracker:(feature_engagement::Tracker*)engagementTracker
+         hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
+                   webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
-    _browserState = browserState;
     _webStateList = webStateList;
+    _engagementTracker = engagementTracker;
+    _settingsMap = settingsMap;
+    self.started = YES;
   }
   return self;
 }
 
 - (void)stop {
-  _browserState = nil;
+  self.started = NO;
+  self.webStateList = nullptr;
+  self.engagementTracker = nullptr;
+  self.settingsMap = nullptr;
 }
 
 - (void)showHelpBubbleIfEligible {
-  if (!self.browserState) {
+  if (!self.engagementTracker) {
     return;
   }
   // Waits to present the bubbles until the feature engagement tracker database
-  // is fully initialized. This method requires that `self.browserState` is not
-  // NULL.
+  // is fully initialized.
   __weak BubblePresenter* weakSelf = self;
   void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
     if (!successfullyLoaded)
@@ -121,17 +128,16 @@ const CGFloat kBubblePresentationDelay = 1;
   // tracker's database is not guaranteed to be loaded by this time. For the
   // bubble to appear properly, a callback is used to guarantee the event data
   // is loaded before the check to see if the promotion should be displayed.
-  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-      ->AddOnInitializedCallback(base::BindRepeating(onInitializedBlock));
+  self.engagementTracker->AddOnInitializedCallback(
+      base::BindRepeating(onInitializedBlock));
 }
 
 - (void)showLongPressHelpBubbleIfEligible {
-  if (!self.browserState) {
+  if (!self.engagementTracker) {
     return;
   }
   // Waits to present the bubble until the feature engagement tracker database
-  // is fully initialized. This method requires that `self.browserState` is not
-  // NULL.
+  // is fully initialized.
   __weak BubblePresenter* weakSelf = self;
   void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
     if (!successfullyLoaded)
@@ -143,8 +149,8 @@ const CGFloat kBubblePresentationDelay = 1;
   // tracker's database is not guaranteed to be loaded by this time. For the
   // bubble to appear properly, a callback is used to guarantee the event data
   // is loaded before the check to see if the promotion should be displayed.
-  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-      ->AddOnInitializedCallback(base::BindRepeating(onInitializedBlock));
+  self.engagementTracker->AddOnInitializedCallback(
+      base::BindRepeating(onInitializedBlock));
 }
 
 - (void)hideAllHelpBubbles {
@@ -244,7 +250,7 @@ const CGFloat kBubblePresentationDelay = 1;
   web::WebState* currentWebState = self.webStateList->GetActiveWebState();
   if (!currentWebState ||
       ShouldLoadUrlInDesktopMode(currentWebState->GetVisibleURL(),
-                                 self.browserState)) {
+                                 self.settingsMap)) {
     return;
   }
 
@@ -415,13 +421,13 @@ const CGFloat kBubblePresentationDelay = 1;
 // Presents and returns a bubble view controller for the `feature` with an arrow
 // `direction`, an arrow `alignment` and a `text` on an `anchorPoint`.
 - (BubbleViewControllerPresenter*)
-presentBubbleForFeature:(const base::Feature&)feature
-              direction:(BubbleArrowDirection)direction
-              alignment:(BubbleAlignment)alignment
-                   text:(NSString*)text
-  voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
-            anchorPoint:(CGPoint)anchorPoint {
-  DCHECK(self.browserState);
+    presentBubbleForFeature:(const base::Feature&)feature
+                  direction:(BubbleArrowDirection)direction
+                  alignment:(BubbleAlignment)alignment
+                       text:(NSString*)text
+      voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
+                anchorPoint:(CGPoint)anchorPoint {
+  DCHECK(self.engagementTracker);
   BubbleViewControllerPresenter* presenter =
       [self bubblePresenterForFeature:feature
                             direction:direction
@@ -433,8 +439,7 @@ presentBubbleForFeature:(const base::Feature&)feature
   if ([presenter canPresentInView:self.rootViewController.view
                       anchorPoint:anchorPoint] &&
       ([self shouldForcePresentBubbleForFeature:feature] ||
-       feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-           ->ShouldTriggerHelpUI(feature))) {
+       self.engagementTracker->ShouldTriggerHelpUI(feature))) {
     [presenter presentInViewController:self.rootViewController
                                   view:self.rootViewController.view
                            anchorPoint:anchorPoint];
@@ -443,7 +448,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 }
 
 // Presents a bubble associated with the bottom toolbar tip in-product help
-// promotion. This method requires that `self.browserState` is not NULL.
+// promotion.
 - (void)presentBottomToolbarTipBubble {
   if (!IsSplitToolbarMode(self.rootViewController))
     return;
@@ -473,16 +478,15 @@ presentBubbleForFeature:(const base::Feature&)feature
     return;
 
   self.bottomToolbarTipBubblePresenter = presenter;
-  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-      ->NotifyEvent(feature_engagement::events::kBottomToolbarOpened);
+  self.engagementTracker->NotifyEvent(
+      feature_engagement::events::kBottomToolbarOpened);
 }
 
 // Optionally presents a bubble associated with the new tab tip in-product help
 // promotion. If the feature engagement tracker determines it is valid to show
 // the new tab tip, then it initializes `tabTipBubblePresenter` and presents
 // the bubble. If it is not valid to show the new tab tip,
-// `tabTipBubblePresenter` is set to `nil` and no bubble is shown. This method
-// requires that `self.browserState` is not NULL.
+// `tabTipBubblePresenter` is set to `nil` and no bubble is shown.
 - (void)presentNewTabTipBubble {
   if (![self canPresentBubble])
     return;
@@ -519,7 +523,7 @@ presentBubbleForFeature:(const base::Feature&)feature
 }
 
 // Presents a bubble associated with the new incognito tab tip in-product help
-// promotion. This method requires that `self.browserState` is not NULL.
+// promotion.
 - (void)presentNewIncognitoTabTipBubble {
   if (![self canPresentBubble])
     return;
@@ -571,20 +575,21 @@ presentBubbleForFeature:(const base::Feature&)feature
 // Returns whether the tab can present a bubble tip.
 - (BOOL)canPresentBubble {
   // If BubblePresenter has been stopped, do not present the bubble.
-  if (!self.browserState)
+  if (!self.started) {
     return NO;
+  }
   // If the BVC is not visible, do not present the bubble.
-  if (![self.delegate rootViewVisibleForBubblePresenter:self])
+  if (![self.delegate rootViewVisibleForBubblePresenter:self]) {
     return NO;
+  }
   // Do not present the bubble if there is no current tab.
   if (!self.webStateList->GetActiveWebState()) {
     return NO;
   }
-
   // Do not present the bubble if the tab is not scrolled to the top.
-  if (![self.delegate isTabScrolledToTopForBubblePresenter:self])
+  if (![self.delegate isTabScrolledToTopForBubblePresenter:self]) {
     return NO;
-
+  }
   return YES;
 }
 
@@ -592,17 +597,15 @@ presentBubbleForFeature:(const base::Feature&)feature
 // it is valid to show the promotion and `nil` otherwise. `feature` is the
 // base::Feature object associated with the given promotion. `direction` is the
 // direction the bubble's arrow is pointing. `alignment` is the alignment of the
-// arrow on the button. `text` is the text displayed by the bubble. This method
-// requires that `self.browserState` is not NULL.
+// arrow on the button. `text` is the text displayed by the bubble.
 - (BubbleViewControllerPresenter*)
-bubblePresenterForFeature:(const base::Feature&)feature
-                direction:(BubbleArrowDirection)direction
-                alignment:(BubbleAlignment)alignment
-                     text:(NSString*)text {
-  DCHECK(self.browserState);
+    bubblePresenterForFeature:(const base::Feature&)feature
+                    direction:(BubbleArrowDirection)direction
+                    alignment:(BubbleAlignment)alignment
+                         text:(NSString*)text {
+  DCHECK(self.engagementTracker);
   if ([self shouldForcePresentBubbleForFeature:feature] ||
-      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-          ->WouldTriggerHelpUI(feature)) {
+      self.engagementTracker->WouldTriggerHelpUI(feature)) {
     // Capture `weakSelf` instead of the feature engagement tracker object
     // because `weakSelf` will safely become `nil` if it is deallocated, whereas
     // the feature engagement tracker will remain pointing to invalid memory if
@@ -629,10 +632,10 @@ bubblePresenterForFeature:(const base::Feature&)feature
 - (void)featureDismissed:(const base::Feature&)feature
               withSnooze:
                   (feature_engagement::Tracker::SnoozeAction)snoozeAction {
-  if (!self.browserState)
+  if (!self.engagementTracker) {
     return;
-  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-      ->DismissedWithSnooze(feature, snoozeAction);
+  }
+  self.engagementTracker->DismissedWithSnooze(feature, snoozeAction);
 }
 
 // Returns YES if the bubble for `feature` has a long duration.

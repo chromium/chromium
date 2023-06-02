@@ -106,7 +106,7 @@ class MediaHistoryKeyedService : public KeyedService,
 
   std::unique_ptr<StoreHolder> store_;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -237,27 +237,7 @@ TEST_F(PasswordGenerationManagerTest,
   ui_form->OnNoInteraction(true);
 }
 
-TEST_F(PasswordGenerationManagerTest,
-       GeneratedPasswordAccepted_UpdateUINope_SuggestionPreviewDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kPasswordGenerationPreviewOnHover);
-
-  MockPasswordManagerDriver driver;
-  EXPECT_CALL(driver, GeneratedPasswordAccepted).Times(0);
-  std::unique_ptr<PasswordFormManagerForUI> ui_form =
-      SetUpOverwritingUI(driver.AsWeakPtr());
-  ASSERT_TRUE(ui_form);
-  EXPECT_CALL(driver, ClearPreviewedForm).Times(0);
-  ui_form->OnNopeUpdateClicked();
-}
-
-TEST_F(PasswordGenerationManagerTest,
-       GeneratedPasswordAccepted_UpdateUINope_SuggestionPreviewEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordGenerationPreviewOnHover);
-
+TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_UpdateUINope) {
   MockPasswordManagerDriver driver;
   EXPECT_CALL(driver, GeneratedPasswordAccepted).Times(0);
   std::unique_ptr<PasswordFormManagerForUI> ui_form =

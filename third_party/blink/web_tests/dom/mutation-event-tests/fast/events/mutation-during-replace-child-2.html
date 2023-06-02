@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<div>
+  <div id="target">
+    <b></b><b id="oldChild"></b><b></b>
+  </div>
+  <div id="newChild"></div>
+</div>
+
+<script>
+description("Ensures that replaceChild() throws an exception if mutation even handler does something wrong");
+var target = document.getElementById('target');
+var oldChild = document.getElementById('oldChild');
+var newChild = document.getElementById('newChild');
+
+var numCalled = 0;
+
+function handler(){
+    numCalled++;
+    if (numCalled < 2)
+        return;
+    document.removeEventListener("DOMNodeRemoved", handler, false);
+    target.parentNode.removeChild(target);
+    newChild.appendChild(target);
+}
+document.addEventListener("DOMNodeRemoved", handler, false);
+shouldThrow("target.replaceChild(newChild, oldChild);", '"HierarchyRequestError: Failed to execute \'replaceChild\' on \'Node\': The new child element contains the parent."');
+</script>
+</body>
+</html>
+

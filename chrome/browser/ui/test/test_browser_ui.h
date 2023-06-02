@@ -11,17 +11,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/test/skia_gold_matching_algorithm.h"
 
 namespace views {
 class Widget;
 class View;
 }  // namespace views
-
-namespace ui {
-namespace test {
-class SkiaGoldMatchingAlgorithm;
-}  // namespace test
-}  // namespace ui
 
 // TestBrowserUi provides a way to register an InProcessBrowserTest testing
 // harness with a framework that invokes Chrome browser UI in a consistent way.
@@ -97,18 +93,17 @@ class TestBrowserUi {
   // successfully shown.
   virtual bool VerifyUi() = 0;
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  // Can be called by VerifyUi() to ensure pixel correctness.
-  bool VerifyPixelUi(views::Widget* widget,
-                     const std::string& screenshot_prefix,
-                     const std::string& screenshot_name);
+  // Returns ActionResult::Succeeded if the screenshot matches the golden image.
+  // Returns ActionResult::kFailed if the matching fails.
+  // Returns ActionResult::kKnownIncompatible if pixel tests are unsupported.
+  ui::test::ActionResult VerifyPixelUi(views::Widget* widget,
+                                       const std::string& screenshot_prefix,
+                                       const std::string& screenshot_name);
 
   // Can be called by VerifyUi() to ensure pixel correctness.
-  bool VerifyPixelUi(views::View* view,
-                     const std::string& screenshot_prefix,
-                     const std::string& screenshot_name);
+  ui::test::ActionResult VerifyPixelUi(views::View* view,
+                                       const std::string& screenshot_prefix,
+                                       const std::string& screenshot_name);
 
   // Own |algorithm|.
   void SetPixelMatchAlgorithm(
@@ -116,7 +111,6 @@ class TestBrowserUi {
   ui::test::SkiaGoldMatchingAlgorithm* GetPixelMatchAlgorithm() {
     return algorithm_.get();
   }
-#endif
 
   // Called by ShowAndVerifyUi() after VerifyUi(), in the case where the test is
   // interactive.  This should block until the UI has been dismissed.
@@ -137,12 +131,7 @@ class TestBrowserUi {
   bool IsInteractiveUi() const;
 
  private:
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm_;
-#endif
 };
 
 // Helper to mix in a TestBrowserUi to an existing test harness. |Base| must be

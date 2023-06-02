@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/sync_preferences:test_support",
+    "//components/user_manager:test_support",
     "//net",
     "//testing/gtest",
     "//third_party/re2",

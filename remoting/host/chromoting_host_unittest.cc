@@ -264,25 +264,26 @@ class ChromotingHostTest : public testing::Test {
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
   MockHostStatusObserver host_status_observer_;
   std::unique_ptr<ChromotingHost> host_;
-  raw_ptr<protocol::MockSessionManager> session_manager_;
+  raw_ptr<protocol::MockSessionManager, DanglingUntriaged> session_manager_;
   std::string owner_email_;
-  raw_ptr<protocol::FakeConnectionToClient> connection1_;
+  raw_ptr<protocol::FakeConnectionToClient, DanglingUntriaged> connection1_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection1_;
   // This field is not a raw_ptr<> to avoid returning a reference to a temporary
   // T* (result of implicitly casting raw_ptr<T> to T*).
   RAW_PTR_EXCLUSION ClientSession* client1_;
   std::string session_jid1_;
-  raw_ptr<MockSession> session1_;  // Owned by |connection_|.
+  raw_ptr<MockSession, DanglingUntriaged> session1_;  // Owned by |connection_|.
   std::unique_ptr<SessionConfig> session_config1_;
   MockClientStub client_stub1_;
   MockHostStub host_stub1_;
-  raw_ptr<protocol::FakeConnectionToClient> connection2_;
+  raw_ptr<protocol::FakeConnectionToClient, DanglingUntriaged> connection2_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection2_;
   // This field is not a raw_ptr<> to avoid returning a reference to a temporary
   // T* (result of implicitly casting raw_ptr<T> to T*).
   RAW_PTR_EXCLUSION ClientSession* client2_;
   std::string session_jid2_;
-  raw_ptr<MockSession> session2_;  // Owned by |connection2_|.
+  raw_ptr<MockSession, DanglingUntriaged>
+      session2_;  // Owned by |connection2_|.
   std::unique_ptr<SessionConfig> session_config2_;
   MockClientStub client_stub2_;
   MockHostStub host_stub2_;

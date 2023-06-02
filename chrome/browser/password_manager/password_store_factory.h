@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_FACTORY_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -27,7 +27,7 @@ class PasswordStoreFactory : public RefcountedProfileKeyedServiceFactory {
   PasswordStoreFactory& operator=(const PasswordStoreFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PasswordStoreFactory>;
+  friend base::NoDestructor<PasswordStoreFactory>;
 
   PasswordStoreFactory();
   ~PasswordStoreFactory() override;

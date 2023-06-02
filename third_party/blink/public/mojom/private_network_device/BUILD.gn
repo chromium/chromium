@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("private_network_device") {
+  generate_java = true
+
+  sources = [ "private_network_device.mojom" ]
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_ip_address",
+  ]
+
+  scramble_message_ids = false
+
+  export_class_attribute = "BLINK_COMMON_EXPORT"
+  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
+  export_header = "third_party/blink/public/common/common_export.h"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+}

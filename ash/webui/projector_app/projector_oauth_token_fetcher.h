@@ -63,6 +63,9 @@ class ProjectorOAuthTokenFetcher {
   void GetAccessTokenFor(const std::string& email,
                          AccessTokenRequestCallback callback);
 
+  // Remove the given token in cache.
+  void InvalidateToken(const std::string& token);
+
   // Returns true if there exists a cached token for account with `email`.
   bool HasCachedTokenForTest(const std::string& email);
   bool HasPendingRequestForTest(const std::string& email);

@@ -82,6 +82,11 @@ BASE_FEATURE(kEncryptedClientHelloQuic,
              "EncryptedClientHelloQuic",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/795089): Enable this feature.
+BASE_FEATURE(kRSAKeyUsageForLocalAnchors,
+             "RSAKeyUsageForLocalAnchors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNetworkQualityEstimator,
              "NetworkQualityEstimator",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -313,7 +318,7 @@ BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kKerberosInBrowserRedirect,
              "KerberosInBrowserRedirect",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // A flag to use asynchronous session creation for new QUIC sessions.
@@ -363,6 +368,11 @@ BASE_FEATURE(kEnablePortBoundCookies,
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 BASE_FEATURE(kEnableSchemeBoundCookies,
              "EnableSchemeBoundCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable third-party cookie blocking from the command line.
+BASE_FEATURE(kForceThirdPartyCookieBlocking,
+             "ForceThirdPartyCookieBlockingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace net::features

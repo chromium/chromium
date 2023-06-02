@@ -117,8 +117,8 @@ void RunUnderscoreDirectoriesTest(
 
 struct UninstallTestData {
   absl::optional<const base::FilePath> profile_dir;
-  absl::optional<const base::FilePath> extensions_dir;
-  const std::string id;
+  absl::optional<const base::FilePath> extensions_install_dir;
+  absl::optional<const base::FilePath> extension_dir_to_delete;
   bool extension_directory_deleted;
 };
 
@@ -128,52 +128,83 @@ const std::vector<UninstallTestData>& GetTestData() {
   static const auto* test_data = new std::vector<UninstallTestData>{
       // Valid directory.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/absl::nullopt, kExtensionId,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/true},
+
       // Empty profile directory.
       {/*profile_dir=*/base::FilePath(),
-       /*extensions_dir=*/absl::nullopt, kExtensionId,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
       // Empty extensions directory.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/base::FilePath(), kExtensionId,
+       /*extensions_install_dir=*/base::FilePath(),
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
-      // Empty id.
+      // Empty extensions directory to delete.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/absl::nullopt, "",
+       /*extensions_install_dir=*/absl::nullopt, base::FilePath(),
        /*extension_directory_deleted=*/false},
+
       // Nonabsolute profile directory.
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
-       /*extensions_dir=*/absl::nullopt, kExtensionId,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
       // Nonabsolute extensions directory.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
-       kExtensionId,
+       /*extensions_install_dir=*/
+       base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
+      // Nonabsolute extensions directory to delete.
+      {/*profile_dir=*/absl::nullopt,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/
+       base::FilePath(FILE_PATH_LITERAL("not/absolutepath")),
+       /*extension_directory_deleted=*/false},
+
+      // Dangerous extensions directory to delete values.
+      {/*profile_dir=*/absl::nullopt,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/base::FilePath(FILE_PATH_LITERAL(".")),
+       /*extension_directory_deleted=*/false},
+      {/*profile_dir=*/absl::nullopt,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/base::FilePath(FILE_PATH_LITERAL("..")),
+       /*extension_directory_deleted=*/false},
+      {/*profile_dir=*/absl::nullopt,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/base::FilePath(FILE_PATH_LITERAL("/")),
+       /*extension_directory_deleted=*/false},
+
       // Dangerous profile directory values.
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL(".")),
-       /*extensions_dir=*/absl::nullopt, kExtensionId,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
-      // Dangerous profile directory values.
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL("..")),
-       /*extensions_dir=*/absl::nullopt, kExtensionId,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
-      // Dangerous profile directory values.
       {/*profile_dir=*/base::FilePath(FILE_PATH_LITERAL("/")),
-       /*extensions_dir=*/absl::nullopt, kExtensionId,
+       /*extensions_install_dir=*/absl::nullopt,
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
+
       // Dangerous extensions directory values.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/base::FilePath(FILE_PATH_LITERAL(".")), kExtensionId,
+       /*extensions_install_dir=*/base::FilePath(FILE_PATH_LITERAL(".")),
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
-      // Dangerous extensions directory values.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/base::FilePath(FILE_PATH_LITERAL("..")), kExtensionId,
+       /*extensions_install_dir=*/base::FilePath(FILE_PATH_LITERAL("..")),
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false},
-      // Dangerous extensions directory values.
       {/*profile_dir=*/absl::nullopt,
-       /*extensions_dir=*/base::FilePath(FILE_PATH_LITERAL("/")), kExtensionId,
+       /*extensions_install_dir=*/base::FilePath(FILE_PATH_LITERAL("/")),
+       /*extension_dir_to_delete=*/absl::nullopt,
        /*extension_directory_deleted=*/false}};
 
   return *test_data;
@@ -183,7 +214,9 @@ const std::vector<UninstallTestData>& GetTestData() {
 
 typedef testing::Test FileUtilTest;
 
-TEST_F(FileUtilTest, InstallUninstallGarbageCollect) {
+// Tests that packed extensions have all their versions deleted when the
+// extension is uninstalled.
+TEST_F(FileUtilTest, UninstallRemovesAllPackedExtensionVersions) {
   base::ScopedTempDir temp;
   ASSERT_TRUE(temp.CreateUniqueTempDir());
 
@@ -201,12 +234,14 @@ TEST_F(FileUtilTest, InstallUninstallGarbageCollect) {
   base::FilePath extensions_dir = profile_dir.AppendASCII("TestExtensions");
   ASSERT_TRUE(base::CreateDirectory(extensions_dir));
 
+  base::FilePath extensions_dir_to_delete =
+      extensions_dir.AppendASCII(kExtensionId);
+
   // Install in empty directory. Should create parent directories as needed.
   base::FilePath version_1 =
       file_util::InstallExtension(src, kExtensionId, version, extensions_dir);
-  ASSERT_EQ(
-      version_1.value(),
-      extensions_dir.AppendASCII(kExtensionId).AppendASCII("1.0_0").value());
+  EXPECT_EQ(version_1.value(),
+            extensions_dir_to_delete.AppendASCII("1.0_0").value());
   ASSERT_TRUE(base::DirectoryExists(version_1));
   ASSERT_TRUE(base::PathExists(version_1.Append(extension_content.BaseName())));
 
@@ -217,9 +252,8 @@ TEST_F(FileUtilTest, InstallUninstallGarbageCollect) {
   ASSERT_TRUE(base::CreateDirectory(src));
   base::FilePath version_2 =
       file_util::InstallExtension(src, kExtensionId, version, extensions_dir);
-  ASSERT_EQ(
-      version_2.value(),
-      extensions_dir.AppendASCII(kExtensionId).AppendASCII("1.0_1").value());
+  EXPECT_EQ(version_2.value(),
+            extensions_dir_to_delete.AppendASCII("1.0_1").value());
   ASSERT_TRUE(base::DirectoryExists(version_2));
 
   // Should have moved the source.
@@ -229,17 +263,17 @@ TEST_F(FileUtilTest, InstallUninstallGarbageCollect) {
   ASSERT_TRUE(base::CreateDirectory(src));
   base::FilePath version_3 =
       file_util::InstallExtension(src, kExtensionId, version, extensions_dir);
-  ASSERT_EQ(
-      version_3.value(),
-      extensions_dir.AppendASCII(kExtensionId).AppendASCII("1.0_2").value());
+  EXPECT_EQ(version_3.value(),
+            extensions_dir_to_delete.AppendASCII("1.0_2").value());
   ASSERT_TRUE(base::DirectoryExists(version_3));
 
   // Uninstall. Should remove entire extension subtree.
-  file_util::UninstallExtension(profile_dir, extensions_dir, kExtensionId);
-  ASSERT_FALSE(base::DirectoryExists(version_1.DirName()));
-  ASSERT_FALSE(base::DirectoryExists(version_2.DirName()));
-  ASSERT_FALSE(base::DirectoryExists(version_3.DirName()));
-  ASSERT_TRUE(base::DirectoryExists(extensions_dir));
+  file_util::UninstallExtension(profile_dir, extensions_dir,
+                                extensions_dir_to_delete);
+  EXPECT_FALSE(base::DirectoryExists(version_1.DirName()));
+  EXPECT_FALSE(base::DirectoryExists(version_2.DirName()));
+  EXPECT_FALSE(base::DirectoryExists(version_3.DirName()));
+  EXPECT_TRUE(base::DirectoryExists(extensions_dir));
 }
 
 TEST_F(FileUtilTest, LoadExtensionWithMetadataFolder) {
@@ -719,10 +753,10 @@ class UninstallTest : public testing::Test {
   bool ExtensionDirectoryNotDeleted();
 
   base::FilePath profile_dir_;
-  base::FilePath extensions_dir_;
+  base::FilePath extensions_install_dir_;
+  base::FilePath extension_dir_to_delete_;
   base::FilePath extension_id_dir_;
   base::FilePath extension_version_dir_;
-  ExtensionId extension_id_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -730,19 +764,19 @@ class UninstallTest : public testing::Test {
 
 bool UninstallTest::SetupExtensionsDirForUninstall() {
   profile_dir_ = temp_dir_.GetPath().AppendASCII("Default");
-  extensions_dir_ = profile_dir_.AppendASCII("TestExtensions");
-  extension_id_dir_ = extensions_dir_.AppendASCII(kExtensionId);
+  extensions_install_dir_ = profile_dir_.AppendASCII("TestExtensions");
+  extension_id_dir_ = extensions_install_dir_.AppendASCII(kExtensionId);
   std::string version("1.0_0");
   extension_version_dir_ = extension_id_dir_.AppendASCII(version);
   base::CreateDirectory(profile_dir_);
-  base::CreateDirectory(extensions_dir_);
+  base::CreateDirectory(extensions_install_dir_);
   base::CreateDirectory(extension_id_dir_);
   base::CreateDirectory(extension_version_dir_);
   return base::DirectoryExists(extension_version_dir_);
 }
 
 bool UninstallTest::ExtensionDirectoryDeleted() {
-  return base::DirectoryExists(extensions_dir_) &&
+  return base::DirectoryExists(extensions_install_dir_) &&
          !base::DirectoryExists(extension_id_dir_);
 }
 
@@ -760,13 +794,15 @@ class UninstallTestParameterized
     UninstallTest::SetUp();
 
     // Overrides with parameterized values.
-    if (GetParam().extensions_dir.has_value()) {
-      extensions_dir_ = GetParam().extensions_dir.value();
-    }
     if (GetParam().profile_dir.has_value()) {
       profile_dir_ = GetParam().profile_dir.value();
     }
-    extension_id_ = GetParam().id;
+    if (GetParam().extensions_install_dir.has_value()) {
+      extensions_install_dir_ = GetParam().extensions_install_dir.value();
+    }
+    if (GetParam().extension_dir_to_delete.has_value()) {
+      extension_id_dir_ = GetParam().extension_dir_to_delete.value();
+    }
   }
 };
 
@@ -778,7 +814,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetTestData()));
 
 TEST_P(UninstallTestParameterized, UninstallDirectory) {
-  file_util::UninstallExtension(profile_dir_, extensions_dir_, extension_id_);
+  file_util::UninstallExtension(profile_dir_, extensions_install_dir_,
+                                /*extension_dir_to_delete=*/extension_id_dir_);
   if (GetParam().extension_directory_deleted) {
     EXPECT_TRUE(ExtensionDirectoryDeleted());
   } else {
@@ -786,13 +823,26 @@ TEST_P(UninstallTestParameterized, UninstallDirectory) {
   }
 }
 
-// Tests when the extension directory we are attempting to delete is outside of
-// the extension's subdirectory of the profile directory.
-TEST_F(UninstallTest, UninstallDirectory_OutsideExtensionsDirectoryFails) {
+// Tests when the extensions install directory is outside of the profile
+// directory.
+TEST_F(UninstallTest,
+       UninstallDirectory_ExtensionsInstallDirNotSubdirOfProfileDir) {
+  file_util::UninstallExtension(profile_dir_,
+                                /*extensions_install_dir=*/
+                                profile_dir_.AppendASCII("OutsideProfileDir"),
+                                /*extension_dir_to_delete=*/extension_id_dir_);
+  EXPECT_TRUE(ExtensionDirectoryNotDeleted());
+}
+
+// Tests when the extension directory to delete is outside of the extensions
+// install directory.
+TEST_F(
+    UninstallTest,
+    UninstallDirectory_ExtensionsDirToDeleteNotSubdirOfExtensionsInstallDir) {
   file_util::UninstallExtension(
-      profile_dir_,
-      /*extensions_dir=*/profile_dir_.AppendASCII("OutsideExtensionsDir"),
-      kExtensionId);
+      profile_dir_, extensions_install_dir_,
+      /*extension_dir_to_delete=*/
+      extensions_install_dir_.AppendASCII("OutsideExtensionsInstallDir"));
   EXPECT_TRUE(ExtensionDirectoryNotDeleted());
 }
 

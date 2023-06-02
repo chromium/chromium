@@ -10,6 +10,7 @@
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
@@ -91,41 +92,8 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // not useful, this function can be removed.
   uint64_t FirstMeaningfulPaintCandidate() const;
 
-  // Largest Image Paint is the first paint after the largest image within
-  // viewport being fully loaded. LargestImagePaint and LargestImagePaintSize
-  // are the time and size of it.
-  uint64_t LargestImagePaintForMetrics() const;
-  uint64_t LargestImagePaintSizeForMetrics() const;
-  blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
-      const;
-  absl::optional<WebURLRequest::Priority>
-  LargestContentfulPaintImageRequestPriorityForMetrics() const;
-
-  // The timestamp when the LCP starts loading. This method is called only when
-  // the LCP corresponds to media elements (image or video). For videos, the
-  // values are 0 and won't be reported to UKM. Effectively, only LCP
-  // corresponding to images have the load start/end reported to UKM.
-  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadStart() const;
-
-  // The timestamp when the LCP element completes loading. This method works in
-  // the same way as the above LargestContentfulPaintImageLoadStart.
-  absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadEnd() const;
-
-  bool LargestContentfulPaintImageIsLoadedFromMemoryCache() const;
-
-  bool LargestContentfulPaintImageIsPreloadedWithEarlyHints() const;
-
-  // The time of the first paint of the largest text within viewport.
-  // Largest Text Paint is the first paint after the largest text within
-  // viewport being painted. LargestTextPaint and LargestTextPaintSize
-  // are the time and size of it.
-  double LargestContentfulPaintImageBPPForMetrics() const;
-  uint64_t LargestTextPaintForMetrics() const;
-  uint64_t LargestTextPaintSizeForMetrics() const;
-
-  // Largest Contentful Paint is the either the largest text paint time or the
-  // largest image paint time, whichever has the larger size.
-  base::TimeTicks LargestContentfulPaintAsMonotonicTimeForMetrics() const;
+  LargestContentfulPaintDetailsForReporting
+  LargestContentfulPaintDetailsForMetrics() const;
 
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.

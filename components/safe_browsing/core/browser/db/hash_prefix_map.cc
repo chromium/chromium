@@ -133,7 +133,7 @@ HashPrefixMapView InMemoryHashPrefixMap::view() const {
 }
 
 void InMemoryHashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
-  map_[size].append(prefix.data(), prefix.size());
+  map_[size].append(prefix);
 }
 
 void InMemoryHashPrefixMap::Reserve(PrefixSize size, size_t capacity) {
@@ -293,7 +293,7 @@ class MmapHashPrefixMap::BufferedFileWriter {
     if (data.size() > buffer_size_)
       WriteToFile(data);
     else
-      buffer_.append(data.data(), data.size());
+      buffer_.append(data);
   }
 
   bool Finish() {

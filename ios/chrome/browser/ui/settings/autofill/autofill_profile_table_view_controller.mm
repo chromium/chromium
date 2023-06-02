@@ -102,6 +102,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Default NO. YES, when the autofill syncing is enabled.
 @property(nonatomic, assign, getter=isSyncEnabled) BOOL syncEnabled;
 
+// Default NO. YES, if the user is signed in.
+@property(nonatomic, assign) BOOL signedIn;
+
 // Coordinator that managers a UIAlertController to delete addresses.
 @property(nonatomic, strong) ActionSheetCoordinator* deletionSheetCoordinator;
 
@@ -263,7 +266,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else {
     item.autofillProfileSource = AutofillLocalProfile;
     if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillAccountProfileStorage)) {
+            autofill::features::kAutofillAccountProfileStorage) &&
+        self.signedIn) {
       item.image = CustomSymbolTemplateWithPointSize(
           kCloudSlashSymbol, kCloudSlashSymbolPointSize);
     }
@@ -544,6 +548,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setSyncingUserEmail {
   self.syncEnabled = NO;
+  self.signedIn = NO;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           _browser->GetBrowserState());
@@ -554,6 +559,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             _browser->GetBrowserState());
+    self.signedIn = YES;
     if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
       self.syncingUserEmail = identity.userEmail;
       self.syncEnabled = YES;

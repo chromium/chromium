@@ -103,6 +103,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   void HandleLongPressEvent(base::TimeTicks event_time,
                                 const gfx::PointF& location);
 
+  // To be called before forwarding a double press event.
+  void HandleDoublePressEvent(base::TimeTicks event_time,
+                              const gfx::PointF& location);
+
   // To be called before forwarding a gesture scroll begin event to prevent
   // long-press drag.
   void OnScrollBeginEvent();

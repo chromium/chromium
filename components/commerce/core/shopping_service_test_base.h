@@ -157,6 +157,8 @@ class ShoppingServiceTestBase : public testing::Test {
   ShoppingServiceTestBase operator=(const ShoppingServiceTestBase&) = delete;
   ~ShoppingServiceTestBase() override;
 
+  void SetUp() override;
+
   void TestBody() override;
 
   void TearDown() override;

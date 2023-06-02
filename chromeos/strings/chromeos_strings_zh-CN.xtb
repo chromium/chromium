@@ -4,7 +4,7 @@
 <translation id="1014750484722996375">桌面</translation>
 <translation id="1018219910092211213">无法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
-<translation id="1022433422498218992">一般控制</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
@@ -113,12 +113,13 @@
 <translation id="1768959921651994223">身份验证类型</translation>
 <translation id="1776228893584526149">壁纸色调</translation>
 <translation id="1782199038061388045">翻译</translation>
-<translation id="1790209694022261219">窗口和桌面</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1827738518074806965">画廊</translation>
+<translation id="1836553715834333258">系统颜色</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
+<translation id="1840474674287087346">桌面颜色</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1852934301711881861">安装 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下</translation>
@@ -237,14 +238,11 @@
 <translation id="2873483161362553159">浏览器导航</translation>
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
-<translation id="2902312830803030883">更多操作</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="2940811910881150316">无法测试设备。重新打开设备的盖子即可进行测试。</translation>
-<translation id="2981143481017883351">Chromebook 专有资源现已推出</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
-<translation id="3020183492814296499">快捷方式</translation>
 <translation id="3027578600144895987">关闭摄像头</translation>
 <translation id="3031560714565892478">设备类型是摄像机。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -271,6 +269,7 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
 <translation id="3275729367986477355">头像图片</translation>
 <translation id="3283504360622356314">{0,plural, =1{修改文件}other{修改文件}}</translation>
@@ -278,6 +277,7 @@
 <translation id="3291996639387199448">密钥方向</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
+<translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
@@ -286,7 +286,6 @@
 <translation id="3360306038446926262">窗口</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
-<translation id="3386675685417744672">Chromebook 专有</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -323,6 +322,7 @@
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3639846061339007994">顶部</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
+<translation id="3663574643422533538">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
@@ -367,12 +367,12 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">正在下载图片</translation>
 <translation id="4060260348856573701">新建 APN</translation>
-<translation id="4079743696465895866">选择 Chromebook 专有艺术作品</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 触控板</translation>
+<translation id="4113067922640381334">现在，您可以使用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />了</translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4131410914670010031">黑白色</translation>
@@ -421,6 +421,7 @@
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4500966230243561393">界面颜色</translation>
 <translation id="4503223151711056411">向左</translation>
 <translation id="4507392511610824664">调高亮度</translation>
 <translation id="4511264077854731334">门户网站</translation>
@@ -499,6 +500,7 @@
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">当您的屏幕处于空闲状态时，显示照片、时间、天气和媒体信息。</translation>
+<translation id="5035083460461104704">主题颜色</translation>
 <translation id="5038292761217083259">键盘多色</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5049856988445523908">SIM 卡已锁定 (<ph name="LOCK_TYPE" />)</translation>
@@ -610,6 +612,7 @@
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5984145644188835034">默认壁纸</translation>
 <translation id="6017514345406065928">绿色</translation>
+<translation id="6019566113895157499">键盘快捷键</translation>
 <translation id="6034694447310538551">启用每月自动重置</translation>
 <translation id="6037291330010597344">扫描仪的文件馈送器是空的。请添加文件，然后重试。</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -814,6 +817,7 @@
 <translation id="7618774594543487847">中性</translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>
+<translation id="7633068090678117093">背景图片</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="765159867434478292">拆分</translation>
 <translation id="7656388927906093505">设备类型是鼠标。</translation>
@@ -932,6 +936,7 @@
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8593058461203131755">暂停媒体内容</translation>
 <translation id="8620617069779373398">漫游状态</translation>
+<translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>
 <translation id="8651481478098336970">静音</translation>
 <translation id="8655295600908251630">版本</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>
 <translation id="8936793075252196307">客户端 IP 地址</translation>
+<translation id="8944651180182756621">启动器颜色</translation>
 <translation id="894617464444543719">设备类型是手机。</translation>
 <translation id="8957423540740801332">向右</translation>
 <translation id="8968751544471797276">充电速率</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">运行内存测试</translation>
 <translation id="9161276708550942948">空格键</translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>
+<translation id="9174334653006917325">界面颜色</translation>
 <translation id="917720651393141712">测试</translation>
 <translation id="9188992814426075118">键盘可自动与您的壁纸匹配</translation>
 <translation id="9189000703457422362">无法使用自动检测到的 APN 连接到此网络。如需了解详情，请与您的移动运营商联系。</translation>

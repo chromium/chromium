@@ -4,8 +4,7 @@
 
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,10 +52,6 @@
 
 - (BOOL)isPasswordSuggestion {
   return _isPasswordSuggestion;
-}
-
-- (NSInteger)uniqueIdentifier {
-  return _formSuggestion.identifier;
 }
 
 #pragma mark - NSObject

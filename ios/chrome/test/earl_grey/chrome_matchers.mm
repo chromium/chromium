@@ -145,6 +145,10 @@ id<GREYMatcher> OmniboxPopupRow() {
   return [ChromeMatchersAppInterface omniboxPopupRow];
 }
 
+id<GREYMatcher> OmniboxPopupRowWithString(NSString* string) {
+  return [ChromeMatchersAppInterface omniboxPopupRowWithString:string];
+}
+
 id<GREYMatcher> OmniboxPopupList() {
   return [ChromeMatchersAppInterface omniboxPopupList];
 }
@@ -715,6 +719,16 @@ id<GREYMatcher> PasswordsTableViewMatcher() {
 
 id<GREYMatcher> DefaultBrowserSettingsTableViewMatcher() {
   return [ChromeMatchersAppInterface defaultBrowserSettingsTableViewMatcher];
+}
+
+id<GREYMatcher> SafetyCheckTableViewMatcher() {
+  return [ChromeMatchersAppInterface safetyCheckTableViewMatcher];
+}
+
+id<GREYMatcher> AlertAction(NSString* title) {
+  return grey_allOf(
+      grey_accessibilityID([title stringByAppendingString:@"AlertAction"]),
+      grey_interactable(), nil);
 }
 
 #pragma mark - Overflow Menu Destinations

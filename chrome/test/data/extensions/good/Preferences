@@ -76,7 +76,39 @@
                 "page": "background.html"
               }
             }
-         }
+         },
+         "lckcjklfapeiadkadngidmocpbkemckm": {
+          "active_permissions": {
+            "api": [],
+            "explicit_host": [],
+            "manifest_permissions": [],
+            "scriptable_host": []
+          },
+          "commands": {},
+          "content_settings": [],
+          "creation_flags": 38,
+          "events": [],
+          "first_install_time": "13322357429642204",
+          "from_webstore": false,
+          "granted_permissions": {
+            "api": [],
+            "explicit_host": [],
+            "manifest_permissions": [],
+            "scriptable_host": []
+          },
+          "incognito_content_settings": [],
+          "incognito_preferences": {},
+          "last_update_time": "13322357429642204",
+          "location": 4,
+          "newAllowFileAccess": true,
+          "path": "good_juKvIh",
+          "preferences": {},
+          "regular_only_preferences": {},
+          "state": 1,
+          "was_installed_by_default": false,
+          "was_installed_by_oem": false,
+          "withholding_permissions": false
+        }
       }
    }
 }

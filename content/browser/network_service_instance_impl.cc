@@ -44,10 +44,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/network_service_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -61,6 +61,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/thread_delegate.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -136,6 +137,13 @@ std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
       service;
   return service.GetOrCreateValue();
 }
+
+// If this is enabled, RestrictedCookieManagers in the network service will
+// receive messages on a high priority task queue to improve performance of sync
+// cookie calls from the renderer.
+BASE_FEATURE(kNetworkServiceCookiesHighPriorityTaskRunner,
+             "NetworkServiceCookiesHighPriorityTaskRunner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If this feature is enabled, the Network Service will run on its own thread
 // when running in-process; otherwise it will run on the IO thread.
@@ -312,6 +320,9 @@ void CreateNetworkContextInternal(
     if (params->http_cache_directory) {
       params->http_cache_directory->OpenForTransfer();
     }
+    if (params->shared_dictionary_directory) {
+      params->shared_dictionary_directory->OpenForTransfer();
+    }
   }
 
   // This might recreate g_client if the network service needed to be restarted.
@@ -362,6 +373,11 @@ void CreateInProcessNetworkService(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread)) {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
+    if (base::FeatureList::IsEnabled(
+            kNetworkServiceCookiesHighPriorityTaskRunner)) {
+      options.delegate =
+          std::make_unique<network::ThreadDelegate>(options.message_pump_type);
+    }
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
   } else {
@@ -579,10 +595,14 @@ network::mojom::NetworkService* GetNetworkService() {
         } else {
           if (service_was_bound)
             LOG(ERROR) << "Network service crashed, restarting service.";
-          ServiceProcessHost::Launch(std::move(receiver),
-                                     ServiceProcessHost::Options()
-                                         .WithDisplayName(u"Network Service")
-                                         .Pass());
+          ServiceProcessHost::Options options;
+          options.WithDisplayName(u"Network Service");
+          if (base::FeatureList::IsEnabled(
+                  kNetworkServiceCookiesHighPriorityTaskRunner)) {
+            options.WithExtraCommandLineSwitches(
+                {network::switches::kNetworkServiceScheduler});
+          }
+          ServiceProcessHost::Launch(std::move(receiver), std::move(options));
         }
       } else {
         DCHECK(IsInProcessNetworkService())
@@ -763,7 +783,7 @@ const scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunner() {
 }
 
 void ForceCreateNetworkServiceDirectlyForTesting() {
-  ForceInProcessNetworkService(true);
+  ForceInProcessNetworkService();
   g_force_create_network_service_directly = true;
 }
 

@@ -3,12 +3,12 @@ Tests "step out" functionality in debugger.
 Set timer for test function.
 Script execution paused.
 Call stack:
-    0) d (debugger-step-out.js:12)
-    1) testFunction (debugger-step-out.js:17)
+    0) d (debugger-step-out.js:15)
+    1) testFunction (debugger-step-out.js:20)
 Stepping out...
 Script execution resumed.
 Script execution paused.
 Call stack:
-    0) testFunction (debugger-step-out.js:18)
+    0) testFunction (debugger-step-out.js:21)
 Script execution resumed.
 

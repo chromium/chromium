@@ -8,8 +8,7 @@ The driver module provides the command line interface to the signing module.
 import argparse
 import os
 
-
-from . import config_factory, commands, logger, model, pipeline
+from signing import config_factory, commands, invoker, logger, model, pipeline
 
 
 def _create_config(config_args, development):
@@ -83,30 +82,6 @@ def main(args):
     parser.add_argument(
         '--installer-identity', help='The identity to sign PKGs with.')
     parser.add_argument(
-        '--notary-user',
-        help='The username used to authenticate to the Apple notary service.')
-    parser.add_argument(
-        '--notary-password',
-        help='The password or password reference (e.g. @keychain, see '
-        '`xcrun altool -h`) used to authenticate to the Apple notary service.')
-    parser.add_argument(
-        '--notary-asc-provider',
-        help='The ASC provider string to be used as the `--asc-provider` '
-        'argument to `xcrun altool`, to be used when --notary-user is '
-        'associated with multiple Apple developer teams. See `xcrun altool -h. '
-        'Run `iTMSTransporter -m provider -account_type itunes_connect -v off '
-        '-u USERNAME -p PASSWORD` to list valid providers.')
-    parser.add_argument(
-        '--notary-team-id',
-        help='The Apple Developer Team ID used to authenticate to the Apple '
-        'notary service.')
-    parser.add_argument(
-        '--notarization-tool',
-        choices=list(model.NotarizationTool),
-        type=model.NotarizationTool,
-        default=None,
-        help='The tool to use to communicate with the Apple notary service.')
-    parser.add_argument(
         '--development',
         action='store_true',
         help='The specified identity is for development. Certain codesign '
@@ -163,32 +138,25 @@ def main(args):
         'has no option specified, that is the equivalent of `--notarize '
         'staple`.')
 
+    invoker_cls = config_factory.get_invoker_class()
+    invoker_cls.register_arguments(parser)
+
     args = parser.parse_args(args)
 
-    config = _create_config(
-        model.pick(args, (
-            'identity',
-            'installer_identity',
-            'notary_user',
-            'notary_password',
-            'notary_asc_provider',
-            'notary_team_id',
-            'notarization_tool',
-            'notarize',
-        )), args.development)
+    config_args = model.pick(args, (
+        'identity',
+        'installer_identity',
+        'notarize',
+    ))
 
-    if config.notarize.should_notarize():
-        if not args.notary_user or not args.notary_password:
-            parser.error('The `--notary-user` and `--notary-password` '
-                         'arguments are required if notarizing.')
+    def _create_invoker(config):
+        try:
+            return invoker_cls(args, config)
+        except invoker.InvokerConfigError as e:
+            parser.error(str(e))
 
-    if config.notarization_tool == model.NotarizationTool.NOTARYTOOL:
-        # Let the config override notary_team_id, including a potentially
-        # unspecified argument.
-        if not config.notary_team_id:
-            parser.error('The `--notarization-tool=notarytool` option requires '
-                         'a --notary-team-id.')
-
+    config_args['invoker'] = _create_invoker
+    config = _create_config(config_args, args.development)
     paths = model.Paths(args.input, args.output, None)
 
     if not commands.file_exists(paths.output):

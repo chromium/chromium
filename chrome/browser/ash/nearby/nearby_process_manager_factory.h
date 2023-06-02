@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -32,7 +32,7 @@ class NearbyProcessManagerFactory : public ProfileKeyedServiceFactory {
       bool bypass_primary_user_check_for_testing);
 
  private:
-  friend struct base::DefaultSingletonTraits<NearbyProcessManagerFactory>;
+  friend base::NoDestructor<NearbyProcessManagerFactory>;
 
   NearbyProcessManagerFactory();
   NearbyProcessManagerFactory(const NearbyProcessManagerFactory&) = delete;

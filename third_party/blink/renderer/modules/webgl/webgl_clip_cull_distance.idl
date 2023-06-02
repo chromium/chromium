@@ -5,8 +5,7 @@
 // https://www.khronos.org/registry/webgl/extensions/WEBGL_clip_cull_distance/
 
 [
-    LegacyNoInterfaceObject,
-    DoNotCheckConstants
+    LegacyNoInterfaceObject
 ] interface WebGLClipCullDistance {
     const unsigned long MAX_CLIP_DISTANCES_WEBGL = 0x0D32;
     const unsigned long MAX_CULL_DISTANCES_WEBGL = 0x82F9;

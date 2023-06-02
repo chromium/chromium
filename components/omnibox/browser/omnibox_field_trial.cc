@@ -165,6 +165,10 @@ OmniboxFieldTrial::MLConfig& GetMLConfigInternal() {
   return s_config;
 }
 
+bool IsKoreanLocale(const std::string& locale) {
+  return locale == "ko" || locale == "ko-KR";
+}
+
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
@@ -633,6 +637,15 @@ bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
                                                  /*default_value=*/false);
 }
 
+bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
+    const std::string& locale) {
+  if (IsKoreanLocale(locale) &&
+      !base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderKorean)) {
+    return false;
+  }
+  return IsOnDeviceHeadSuggestEnabledForAnyMode();
+}
+
 std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
     bool is_incognito) {
   const base::Feature* feature =
@@ -646,10 +659,6 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return constraint;
-}
-
-bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
-  return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
 
 bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
@@ -699,9 +708,7 @@ bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
 }
 
 // In order to control the value of this "font size" param via Finch, the
@@ -1016,9 +1023,15 @@ const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
 
 // If true, enables scoring signal annotators for logging Omnibox scoring
 // signals to OmniboxEventProto.
-const base::FeatureParam<bool> kEnableScoringSignalsAnnotators(
+const base::FeatureParam<bool> kEnableScoringSignalsAnnotatorsForLogging(
     &omnibox::kLogUrlScoringSignals,
     "enable_scoring_signals_annotators",
+    false);
+
+// If true, enables scoring signal annotators for ML scoring.
+const base::FeatureParam<bool> kEnableScoringSignalsAnnotatorsForMlScoring(
+    &omnibox::kMlUrlScoring,
+    "enable_scoring_signals_annotators_for_ml_scoring",
     false);
 
 // If true, runs the ML scoring model but does not assign new relevance scores
@@ -1056,12 +1069,14 @@ const base::FeatureParam<bool> kMlUrlScoringPreserveDefault(
 // If true, the ML model scores a batch of urls.
 const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
                                                   "MlBatchUrlScoring",
-                                                  false);
+                                                  true);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
-  enable_scoring_signals_annotators = kEnableScoringSignalsAnnotators.Get();
+  enable_scoring_signals_annotators =
+      kEnableScoringSignalsAnnotatorsForLogging.Get() ||
+      kEnableScoringSignalsAnnotatorsForMlScoring.Get();
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
   ml_batch_url_scoring = kMlBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
@@ -1088,9 +1103,14 @@ const MLConfig& GetMLConfig() {
   return GetMLConfigInternal();
 }
 
-bool IsLogUrlScoringSignalsEnabled() {
+bool IsReportingUrlScoringSignalsEnabled() {
   return GetMLConfig().log_url_scoring_signals;
 }
+
+bool IsPopulatingUrlScoringSignalsEnabled() {
+  return IsReportingUrlScoringSignalsEnabled() || IsMlUrlScoringEnabled();
+}
+
 bool AreScoringSignalsAnnotatorsEnabled() {
   return GetMLConfig().enable_scoring_signals_annotators;
 }

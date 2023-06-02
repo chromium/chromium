@@ -12,8 +12,6 @@ import sys
 
 PRESUBMIT_VERSION = '2.0.0'
 
-USE_PYTHON3 = True
-
 def CheckChange(input_api, output_api):
     old_sys_path = sys.path[:]
     results = []

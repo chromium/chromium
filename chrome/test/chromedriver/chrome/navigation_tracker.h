@@ -15,7 +15,6 @@
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
-struct BrowserInfo;
 class DevToolsClient;
 class JavaScriptDialogManager;
 class Status;
@@ -27,14 +26,12 @@ class NavigationTracker : public DevToolsEventListener,
  public:
   NavigationTracker(DevToolsClient* client,
                     WebView* web_view,
-                    const BrowserInfo* browser_info,
                     const JavaScriptDialogManager* dialog_manager,
                     const bool is_eager = false);
 
   NavigationTracker(DevToolsClient* client,
                     LoadingState known_state,
                     WebView* web_view,
-                    const BrowserInfo* browser_info,
                     const JavaScriptDialogManager* dialog_manager,
                     const bool is_eager = false);
 

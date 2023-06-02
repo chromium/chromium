@@ -9,6 +9,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -67,9 +68,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // with a text header on top of the first password issue in the group. All
   // other types of issues are displayed in the same group without header.
   NSArray<PasswordIssueGroup*>* _passwordGroups;
-  // Text displayed in the button for presenting dismissed compromised
-  // credential warnings. When nil, no button is displayed.
-  NSString* _dismissedWarningsButtonText;
+  // Number in the button for presenting dismissed compromised
+  // credential warnings. When zero, no button is displayed.
+  NSInteger _dismissedWarningsCount;
   // Type of insecure credentials displayed in the page.
   WarningType _warningType;
 }
@@ -156,7 +157,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         }];
   }
 
-  TableViewTextItem* dismissedWarningsItem = [self dismissedWarningsItem];
+  TableViewMultiDetailTextItem* dismissedWarningsItem =
+      [self dismissedWarningsItem];
   if (dismissedWarningsItem) {
     [model
         addSectionWithIdentifier:SectionIdentifierDismissedCredentialsButton];
@@ -233,18 +235,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Creates the item acting as a button for presenting dismissed compromised
-// credential warnings. Returns nil when `_dismissedWarningsButtonText` is nil.
-- (TableViewTextItem*)dismissedWarningsItem {
+// credential warnings. Returns nil when `_dismissedWarningsCount` is zero.
+- (TableViewMultiDetailTextItem*)dismissedWarningsItem {
   // The button is not visible either because there aren't dismissed compromised
   // credentials or because the view controller is not showing compromised
   // credentials.
-  if (!_dismissedWarningsButtonText) {
+  if (_dismissedWarningsCount == 0) {
     return nil;
   }
 
-  TableViewTextItem* dismissedWarningsItem = [[TableViewTextItem alloc]
-      initWithType:ItemTypeDismissedCredentialsButton];
-  dismissedWarningsItem.text = _dismissedWarningsButtonText;
+  TableViewMultiDetailTextItem* dismissedWarningsItem =
+      [[TableViewMultiDetailTextItem alloc]
+          initWithType:ItemTypeDismissedCredentialsButton];
+  dismissedWarningsItem.text = l10n_util::GetNSString(
+      IDS_IOS_COMPROMISED_PASSWORD_ISSUES_DISMISSED_WARNINGS_BUTTON_TITLE);
+  dismissedWarningsItem.trailingDetailText =
+      [@(_dismissedWarningsCount) stringValue];
   dismissedWarningsItem.accessibilityTraits = UIAccessibilityTraitButton;
   dismissedWarningsItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
@@ -429,15 +435,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - PasswordIssuesConsumer
 
 - (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups
-    dismissedWarningsButtonText:(NSString*)buttonText {
+    dismissedWarningsCount:(NSInteger)dismissedWarnings {
   _passwordGroups = passwordGroups;
-  _dismissedWarningsButtonText = buttonText;
+  _dismissedWarningsCount = dismissedWarnings;
   [self reloadData];
 
   // User removed/resolved all issues, dismiss the vc and go back to the
   // previous screen.
   if (IsPasswordCheckupEnabled() && passwordGroups.count == 0 &&
-      buttonText == nullptr) {
+      dismissedWarnings == 0) {
     [self.presenter dismissAfterAllIssuesGone];
   }
 }

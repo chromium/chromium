@@ -120,10 +120,6 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         case DonatedItemsRow:
           content.text = @"Donated items";
-          content.secondaryText =
-              [NSString stringWithFormat:@"Total count: %ld",
-                                         [SpotlightLogger sharedLogger]
-                                             .knownIndexedItems.count];
           content.image = DefaultSymbolWithPointSize(
               @"square.stack.3d.down.right", kSymbolAccessoryPointSize);
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -235,62 +231,13 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 }
 
 - (void)clearAndReindexBookmarks {
-  base::Time startTime = base::Time::Now();
-
-  [self.bookmarksManager
-      clearAndReindexModelWithCompletionBlock:^(NSError* error) {
-        base::Time endTime = base::Time::Now();
-        base::TimeDelta duration = endTime - startTime;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-          UIAlertController* controller = [UIAlertController
-              alertControllerWithTitle:
-                  [NSString stringWithFormat:
-                                @"Clearing and Reindexing complete in %lld ms",
-                                duration.InMilliseconds()]
-                               message:error ? error.localizedDescription
-                                             : @"Success"
-                        preferredStyle:UIAlertControllerStyleAlert];
-          [controller
-              addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                 style:UIAlertActionStyleDefault
-                                               handler:nil]];
-          [self presentViewController:controller animated:YES completion:nil];
-
-          [self removeSpinner];
-          [self.tableView reloadData];
-        });
-      }];
+  [self.bookmarksManager clearAndReindexModel];
+  [self.tableView reloadData];
 }
 
 - (void)clearAndReindexReadingList {
-  base::Time startTime = base::Time::Now();
-  [self showSpinner];
-
-  [self.readingListSpotlightManager
-      clearAndReindexReadingListWithCompletionBlock:^(NSError* error) {
-        base::Time endTime = base::Time::Now();
-        base::TimeDelta duration = endTime - startTime;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-          UIAlertController* controller = [UIAlertController
-              alertControllerWithTitle:
-                  [NSString stringWithFormat:@"Clearing and Reindexing reading "
-                                             @"list complete in %lld ms",
-                                             duration.InMilliseconds()]
-                               message:error ? error.localizedDescription
-                                             : @"Success"
-                        preferredStyle:UIAlertControllerStyleAlert];
-          [controller
-              addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                 style:UIAlertActionStyleDefault
-                                               handler:nil]];
-          [self presentViewController:controller animated:YES completion:nil];
-
-          [self removeSpinner];
-          [self.tableView reloadData];
-        });
-      }];
+  [self.readingListSpotlightManager clearAndReindexReadingList];
+  [self.tableView reloadData];
 }
 
 #pragma mark - private

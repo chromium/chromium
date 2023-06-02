@@ -128,6 +128,13 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         }
     }
 
+    /** Call this when the loading indicator for load-more is shown. */
+    public void onPaginationIndicatorShown() {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationIndicatorShown();
+        }
+    }
+
     // UrlFocusChangeListener
 
     @Override

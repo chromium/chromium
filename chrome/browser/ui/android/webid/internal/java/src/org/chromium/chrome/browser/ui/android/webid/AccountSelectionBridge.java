@@ -119,7 +119,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
             AccountSelectionBridgeJni.get().onAccountSelected(mNativeView, idpConfigUrl,
-                    account.getStringFields(), account.getPictureUrl(), account.getHints(),
+                    account.getStringFields(), account.getPictureUrl(), account.getLoginHints(),
                     account.isSignIn());
         }
     }

@@ -7,12 +7,15 @@
 #include <map>
 #include <memory>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 
 namespace apps {
 
 struct PromiseApp;
+class PromiseAppUpdate;
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 using PromiseAppCacheMap = std::map<PackageId, PromiseAppPtr>;
 
@@ -20,6 +23,22 @@ using PromiseAppCacheMap = std::map<PackageId, PromiseAppPtr>;
 // system.
 class PromiseAppRegistryCache {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Triggered when a new promise app is registered or an existing promise app
+    // is updated in the observed Promise App Registry Cache. `Update` contains
+    // information on which promise app has been updated and what changes have
+    // been made.
+    virtual void OnPromiseAppUpdate(const PromiseAppUpdate& update) {}
+
+    // Called when the PromiseAppRegistryCache object (the thing that this
+    // observer observes) will be destroyed. In response, the observer, |this|,
+    // should call "cache->RemoveObserver(this)", whether directly or indirectly
+    // (e.g. via base::ScopedObservation::Reset)
+    virtual void OnPromiseAppRegistryCacheWillBeDestroyed(
+        PromiseAppRegistryCache* cache) = 0;
+  };
+
   PromiseAppRegistryCache();
 
   PromiseAppRegistryCache(const PromiseAppRegistryCache&) = delete;
@@ -47,12 +66,17 @@ class PromiseAppRegistryCache {
   // not store the pointer as the promise app may be destroyed at any time.
   const PromiseApp* GetPromiseAppForTesting(const PackageId& package_id) const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   // Retrieve the registered promise app with the specified package_id. Returns
   // nullptr if the promise app does not exist.
   PromiseApp* FindPromiseApp(const PackageId& package_id) const;
 
   apps::PromiseAppCacheMap promise_app_map_;
+
+  base::ObserverList<Observer> observers_;
 
   // Flag to check whether an update to a promise app is already in progress. We
   // shouldn't have more than one concurrent update to a package_id, e.g. if

@@ -29,7 +29,7 @@ static bool AppendHex(const std::vector<uint8_t> bytes,
       rough_max_output_bytes) {
     return false;
   }
-  s->append(base::HexEncode(bytes.data(), bytes.size()));
+  s->append(base::HexEncode(bytes));
 
   s->push_back('\'');
   return true;

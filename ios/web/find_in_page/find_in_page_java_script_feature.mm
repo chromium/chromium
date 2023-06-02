@@ -63,9 +63,9 @@ bool FindInPageJavaScriptFeature::Search(
     WebFrame* frame,
     const std::string& query,
     base::OnceCallback<void(absl::optional<int>)> callback) {
-  std::vector<base::Value> params;
-  params.push_back(base::Value(query));
-  params.push_back(base::Value(kFindInPageFindTimeout));
+  base::Value::List params;
+  params.Append(query);
+  params.Append(kFindInPageFindTimeout);
   return CallJavaScriptFunction(
       frame, kFindInPageSearch, params,
       base::BindOnce(&FindInPageJavaScriptFeature::ProcessSearchResult,
@@ -76,8 +76,8 @@ bool FindInPageJavaScriptFeature::Search(
 void FindInPageJavaScriptFeature::Pump(
     WebFrame* frame,
     base::OnceCallback<void(absl::optional<int>)> callback) {
-  std::vector<base::Value> params;
-  params.push_back(base::Value(kFindInPageFindTimeout));
+  base::Value::List params;
+  params.Append(kFindInPageFindTimeout);
   CallJavaScriptFunction(
       frame, kFindInPagePump, params,
       base::BindOnce(&FindInPageJavaScriptFeature::ProcessSearchResult,
@@ -89,16 +89,15 @@ void FindInPageJavaScriptFeature::SelectMatch(
     WebFrame* frame,
     int index,
     base::OnceCallback<void(const base::Value*)> callback) {
-  std::vector<base::Value> params;
-  params.push_back(base::Value(index));
+  base::Value::List params;
+  params.Append(index);
   CallJavaScriptFunction(frame, kFindInPageSelectAndScrollToMatch, params,
                          std::move(callback),
                          base::Milliseconds(kJavaScriptFunctionCallTimeout));
 }
 
 void FindInPageJavaScriptFeature::Stop(WebFrame* frame) {
-  std::vector<base::Value> params;
-  CallJavaScriptFunction(frame, kFindInPageStop, params);
+  CallJavaScriptFunction(frame, kFindInPageStop, base::Value::List());
 }
 
 void FindInPageJavaScriptFeature::ProcessSearchResult(

@@ -164,9 +164,6 @@ public final class ProductionSupportedFlagList {
                             + "hierarchy level."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_SPLIT_CREDIT_CARD_NUMBERS_CAUTIOUSLY,
                     "Split credit card numbers over multiple fields more cautiously."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
-                    "Enable Autofill for frame-transcending forms (forms whose fields live in "
-                            + "different frames)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,
@@ -255,7 +252,6 @@ public final class ProductionSupportedFlagList {
                             + "thread."),
             Flag.baseFeature(BaseFeatures.OPTIMIZE_DATA_URLS,
                     "Optimizes parsing and loading of data: URLs."),
-            Flag.baseFeature(BlinkFeatures.EVENT_PATH, "Enables the deprecated Event.path API."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,
                     "If enabled, font lookup tables will be prefetched on renderer startup."),
             Flag.baseFeature(BlinkFeatures.PRECOMPILE_INLINE_SCRIPTS,
@@ -327,10 +323,6 @@ public final class ProductionSupportedFlagList {
                             + "using the property tree builder."),
             Flag.baseFeature(BlinkFeatures.THREADED_BODY_LOADER,
                     "If enabled, reads and decodes navigation body data off the main thread."),
-            Flag.baseFeature(BlinkFeatures.THROTTLE_OFFSCREEN_ANIMATING_SVG_IMAGES,
-                    "If enabled, SVG images will suspend animations when all "
-                            + "instances of the image are outside of the "
-                            + "viewport."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
             Flag.baseFeature(BlinkFeatures.COMPOSITE_BACKGROUND_ATTACHMENT_FIXED),
             Flag.baseFeature(BlinkFeatures.COMPOSITE_SCROLL_AFTER_PAINT),
@@ -347,6 +339,10 @@ public final class ProductionSupportedFlagList {
                     "If enabled, images can be dragged out from Webview"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
                     "Combines WebRTC's worker thread and network thread onto a single thread."),
+            Flag.baseFeature(BlinkFeatures.V_SYNC_DECODING,
+                    "Runs the WebRTC metronome off the VSync signal."),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_SEND_PACKET_BATCH,
+                    "Sends outgoing WebRTC Video RTP packets in batches."),
             Flag.baseFeature(ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                     "Disable the per-domain blocking for 3D APIs after GPU reset. "
                             + "This switch is intended only for tests."),
@@ -388,8 +384,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
                     "When enabled, the following ads APIs will be available: Attribution Reporting,"
                             + "FLEDGE, Topics."),
-            Flag.baseFeature(BlinkFeatures.WEB_RTC_STATS_REPORT_IDL,
-                    "Backs the WebRTC stats report object with generated objects defined in IDL"),
             Flag.baseFeature(BlinkFeatures.RENDER_BLOCKING_FONTS,
                     "When enabled, blocks rendering on font preloads to reduce CLS. "
                             + "See go/critical-font-analysis"),
@@ -412,6 +406,8 @@ public final class ProductionSupportedFlagList {
                             + "Note: this is under active development and may result in unexpected "
                             + "behavior. Please file bugs at https://bugs.chromium.org/p/chromium/issues/"
                             + "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage."),
+            Flag.baseFeature(
+                    NetFeatures.ASYNC_QUIC_SESSION, "Enables asynchronous QUIC session creation"),
             Flag.baseFeature(BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED,
                     "Causes the browser process to crash if child processes are failing to launch"
                             + " due to a browser version change."),
@@ -437,6 +433,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.BEFOREUNLOAD_EVENT_CANCEL_BY_PREVENT_DEFAULT,
                     "Enables showing the cancel dialog by calling preventDefault() "
                             + "on beforeunload event."),
+            Flag.baseFeature(ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
+                    "If enabled, allows navigations to be queued when there is "
+                            + "an existing pending commit navigation in progress."),
+            Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

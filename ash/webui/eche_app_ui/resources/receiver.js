@@ -70,9 +70,15 @@ parentMessagePipe.registerHandler(
     });
 
 // Handle accessibility perform action.
+let performActionCallback = null;
 parentMessagePipe.registerHandler(
-    Message.ACCESSIBILITY_PERFORM_ACTION, async (action) => {
-      console.log('Performed accessibility action: ' + action);
+    Message.ACCESSIBILITY_PERFORM_ACTION,
+    async (action) => {
+      if (!performActionCallback) {
+        return;
+      }
+
+      performActionCallback(/** @type {Uint8Array} */ (action));
     });
 
 // The implementation of echeapi.d.ts
@@ -187,6 +193,11 @@ const EcheApiBindingImpl = new (class {
     androidNetworkInfoCallback = callback;
   }
 
+  // TODO: rename this and similar methods to set'Xxx'Callback
+  onPerformAction(callback) {
+    console.log('echeapi receiver.js onPerformAction');
+    performActionCallback = callback;
+  }
 })();
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -195,7 +206,7 @@ const echeapi = {};
 // webrtc
 echeapi.webrtc = {};
 echeapi.webrtc.sendSignal =
-    EcheApiBindingImpl.sendWebRtcSignal.bind(EcheApiBindingImpl);
+  EcheApiBindingImpl.sendWebRtcSignal.bind(EcheApiBindingImpl);
 echeapi.webrtc.tearDownSignal =
     EcheApiBindingImpl.tearDownSignal.bind(EcheApiBindingImpl);
 echeapi.webrtc.registerSignalReceiver =
@@ -205,7 +216,9 @@ echeapi.webrtc.closeWindow =
 // accessibility
 echeapi.accessibility = {};
 echeapi.accessibility.sendAccessibilityEventData =
-    EcheApiBindingImpl.sendAccessibilityEventData.bind(EcheApiBindingImpl);
+  EcheApiBindingImpl.sendAccessibilityEventData.bind(EcheApiBindingImpl);
+echeapi.accessibility.registerPerformActionReceiver =
+  EcheApiBindingImpl.onPerformAction.bind(EcheApiBindingImpl);
 // system
 echeapi.system = {};
 echeapi.system.getLocalUid =

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) na may Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Binubuksan ang mga Linux file...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
 <translation id="1561842594491319104">Mga Chrome device</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Site ng Google</translation>
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
 <translation id="1864756863218646478">Hindi mahanap ang file.</translation>
+<translation id="1877377730633446520">Gagamit ito ng humigit-kumulang <ph name="REQUIRED_SPACE" />. May available kang <ph name="FREE_SPACE" /> sa kasalukuyan.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kumonekta</translation>
 <translation id="1920670151694390848">Malayalam Transliteration</translation>
 <translation id="1920798810075583923">Pakwan</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">I-expand ang mga panel ng feedback ng mga file</translation>
 <translation id="1995337122023280937">Pumunta sa lokasyon ng file</translation>
 <translation id="2001796770603320721">Pamahalaan sa Drive</translation>
+<translation id="2004942826429452291">Iso-store ang mga file sa cloud at sa Chromebook na ito.</translation>
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russian</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">Mga setting ng device</translation>
 <translation id="2084809735218147718">Sumesenyas ng salamat</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="2089751716171649322">Madaling ma-access ang iyong mga file sa Google Drive kapag offline ka</translation>
 <translation id="2111134541987263231">I-on ang <ph name="BEGIN_BOLD" />Payagan sa Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> (na) item ang ide-delete at hindi mo mare-restore ang mga ito.</translation>
 <translation id="2122305276694332719">Ang awtomatikong pagkonekta sa nakatagong network ay nagbibigay-daan sa ibang tao na makita ang iyong device at ibang setting ng network, at hindi ito inirerekomenda.</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">I-install gamit ang Linux</translation>
 <translation id="2225536596944493418">Sigurado ka bang gusto mong i-delete ang <ph name="NUMBER_OF_ITEMS" /> (na) item?</translation>
 <translation id="2230062665678605299">Hindi malikha ang folder na "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">Taong may kape</translation>
 <translation id="2251368349685848079">I-restore mula sa trash</translation>
 <translation id="2278133026967558505">Access sa file ng lahat ng website at URL</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
+<translation id="3501954296166022751">Available offline ang iyong mga file sa Google Drive</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3511705761158917664">Inihahandang i-sync ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">Maaapektuhan ang lahat ng nakabahaging network kung babaguhin ang setting na ito</translation>
 <translation id="3737576078404241332">Alisin sa sidebar</translation>
 <translation id="3749289110408117711">File name</translation>
-<translation id="3780536599611287598">Wala kang pahintulot na maglipat ng mga file sa '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">Naka-offline ka</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3793469551756281394">Humigit-kumulang <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ang natitira</translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">Custom na mga server ng pangalan</translation>
 <translation id="4465725236958772856">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4472575034687746823">Magsimula</translation>
 <translation id="4474142134969976028">Walang tumutugmang resulta</translation>
 <translation id="4477002475007461989">Romanian</translation>
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">Abukado</translation>
 <translation id="4805966553127040832">Nire-restore ang <ph name="COUNT" /> (na) item</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Para magamit ang Incognito, may nire-require na extension ang iyong organisasyon}one{Para magamit ang Incognito, may nire-require na ilang extension ang iyong organisasyon}other{Para magamit ang Incognito, may nire-require na ilang extension ang iyong organisasyon}}</translation>
-<translation id="4823651846660089135">Read-only ang device</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">I-type ang <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> sa iyong browser</translation>
 <translation id="4843566743023903107">Mga Chromebase</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>
+<translation id="5519161320735100193">Mga setting ng Google Drive</translation>
 <translation id="5522908512596376669">Naging list view ang listahan ng file.</translation>
 <translation id="5524517123096967210">Hindi mabasa ang file.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> na larawan</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">Inalis ang lahat ng entry sa pagpipilian.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
 <translation id="5845721951356578987">Nurse</translation>
+<translation id="5860491529813859533">I-on</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Nabigo ang paghanap ng DHCP</translation>
 <translation id="5896749729057314184">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Hindi Naka-activate, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">Web proxy autodiscovery</translation>
 <translation id="6337014272874260727">I-unpin sa mga mabilisang file</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
-<translation id="6346310558342052870">Pinaghihigpitan ang access</translation>
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="636254897931573416">Invalid na value ng pagtugma ng domain suffix</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7806708061868529807">Hebrew</translation>
 <translation id="78104721049218340">Thai na may Kedmanee keyboard</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Nagkaroon ng error sa pag-configure sa network</translation>
 <translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Kapag nag-format ng partition, mabubura ang lahat ng data na naka-store dito. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Awtomatikong masi-sync sa iyong Chromebook ang mga file mo sa Aking Drive para ma-access mo ang mga ito nang walang koneksyon sa internet.</translation>
 <translation id="7925247922861151263">Nabigo ang pagsusuri sa AAA</translation>
 <translation id="7925686952655276919">Huwag gumamit ng data sa mobile para sa pag-sync</translation>
 <translation id="7928710562641958568">I-eject ang device</translation>
+<translation id="7933875256234974853">Naghahandang mag-sync ng mga file sa Drive...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Hindi mabuksan ang device na ito dahil hindi nakilala ang filesystem nito.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7980421588063892270">English (US) na may Colemak keyboard</translation>
+<translation id="7985008041109611710">Nagsi-sync ng <ph name="NUMBER_OF_FILES_SYNCING" /> (na) file</translation>
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8008366997883261463">Aso</translation>
 <translation id="8028993641010258682">Laki</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8949925099261528566">Nakakonekta, walang internet</translation>
 <translation id="8965697826696209160">Walang sapat na espasyo.</translation>
+<translation id="8971742885766657349">Nagsi-sync - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="8998871447376656508">Walang sapat na bakanteng espasyo sa iyong Google Drive para makumpleto ang pag-upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">Matagumpay na nasimulan ang pag-install.</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">Nagsi-sync ng 1 file</translation>
 <translation id="938470336146445890">Mangyaring mag-install ng certificate ng user.</translation>
 <translation id="939736085109172342">Bagong folder</translation>
 <translation id="943972244133411984">Binago ni</translation>

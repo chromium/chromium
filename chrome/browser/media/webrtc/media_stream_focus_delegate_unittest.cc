@@ -121,7 +121,8 @@ TEST_F(MediaStreamFocusDelegateTest, ChangeOfTabClosesFocusWindow) {
 
 TEST_F(MediaStreamFocusDelegateTest, SelectedSourceFocusesWindow) {
   // Setup.
-  raw_ptr<MockWindowCapturer> window_capturer = new MockWindowCapturer();
+  raw_ptr<MockWindowCapturer, DanglingUntriaged> window_capturer =
+      new MockWindowCapturer();
   SetWindowCapturer(window_capturer);
 
   ON_CALL(*window_capturer, SelectSource(_)).WillByDefault(Return(true));
@@ -132,7 +133,8 @@ TEST_F(MediaStreamFocusDelegateTest, SelectedSourceFocusesWindow) {
 
 TEST_F(MediaStreamFocusDelegateTest, NotSelectedSourceDoesNotFocusWindow) {
   // Setup.
-  raw_ptr<MockWindowCapturer> window_capturer = new MockWindowCapturer();
+  raw_ptr<MockWindowCapturer, DanglingUntriaged> window_capturer =
+      new MockWindowCapturer();
   SetWindowCapturer(window_capturer);
 
   ON_CALL(*window_capturer, SelectSource(_)).WillByDefault(Return(false));

@@ -34,11 +34,13 @@ class TwoClientWebAuthnCredentialsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
                        E2E_ENABLED(AddAndDelete)) {
+  ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   PasskeyModel& model0 = GetModel(0);
   EXPECT_EQ(model0.GetAllSyncIds().size(), 0u);
-  const std::string sync_id0 = model0.AddNewPasskeyForTesting(NewPasskey());
+  sync_pb::WebauthnCredentialSpecifics passkey0 = NewPasskey();
+  const std::string sync_id0 = model0.AddNewPasskeyForTesting(passkey0);
   EXPECT_EQ(model0.GetAllSyncIds().size(), 1u);
 
   PasskeyModel& model1 = GetModel(1);
@@ -49,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(AwaitAllModelsMatch());
   EXPECT_EQ(model1.GetAllSyncIds().size(), 2u);
 
-  ASSERT_TRUE(model1.DeletePasskeyForTesting(sync_id0));
+  ASSERT_TRUE(model1.DeletePasskey(passkey0.credential_id()));
   ASSERT_TRUE(AwaitAllModelsMatch());
   EXPECT_EQ(model1.GetAllSyncIds().size(), 1u);
 }

@@ -493,7 +493,7 @@ class UpdateServiceTest : public ExtensionsTest {
   }
 
  private:
-  raw_ptr<UpdateService> update_service_ = nullptr;
+  raw_ptr<UpdateService, DanglingUntriaged> update_service_ = nullptr;
   scoped_refptr<FakeUpdateClient> update_client_;
   MockExtensionSystemFactory<FakeExtensionSystem>
       fake_extension_system_factory_;

@@ -139,7 +139,7 @@ class BluetoothSocketFlossTest : public testing::Test {
     run_loop.Run();
   }
 
-  raw_ptr<FakeFlossSocketManager> GetFakeFlossSocketManager() {
+  FakeFlossSocketManager* GetFakeFlossSocketManager() {
     return static_cast<FakeFlossSocketManager*>(
         FlossDBusManager::Get()->GetSocketManager());
   }

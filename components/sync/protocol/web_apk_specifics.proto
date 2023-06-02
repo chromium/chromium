@@ -43,4 +43,8 @@ message WebApkSpecifics {
   optional uint32 theme_color = 4;
   optional string scope = 5;
   repeated WebApkIconInfo icon_infos = 6;
+
+  // Time when this WebApk was last used or installed.
+  // Number of microseconds since 1601, aka Windows epoch.
+  optional int64 last_used_time_windows_epoch_micros = 7;
 }

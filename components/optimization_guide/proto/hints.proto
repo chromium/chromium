@@ -183,6 +183,9 @@ enum OptimizationType {
   // This optimization provides information about whether a merchant is
   // opted-out of Visa virtual cards for a URL.
   VCN_MERCHANT_OPT_OUT_VISA = 28;
+  // Provides price insights data including the typical price range and the
+  // price history.
+  PRICE_INSIGHTS = 30;
 }
 
 // Presents semantics for how page load URLs should be matched.

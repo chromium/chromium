@@ -15,6 +15,7 @@
 #include "base/apple/bridging.h"
 #include "base/containers/span.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
@@ -78,7 +79,7 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
     key_ = provider.GenerateSigningKeySlowly(acceptable_algorithms);
   }
 
-  MockSecureEnclaveClient* mock_secure_enclave_client_ = nullptr;
+  raw_ptr<MockSecureEnclaveClient> mock_secure_enclave_client_ = nullptr;
   std::unique_ptr<crypto::UnexportableSigningKey> key_;
   base::ScopedCFTypeRef<SecKeyRef> test_key_;
 };

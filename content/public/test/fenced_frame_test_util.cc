@@ -44,7 +44,11 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{blink::features::kFencedFrames, {}},
        {features::kPrivacySandboxAdsAPIsOverride, {}},
-       {blink::features::kFencedFramesAPIChanges, {}}},
+       {blink::features::kInterestGroupStorage, {}},
+       {blink::features::kAdInterestGroupAPI, {}},
+       {blink::features::kFledge, {}},
+       {blink::features::kFencedFramesAPIChanges, {}},
+       {blink::features::kFencedFramesDefaultMode, {}}},
       {/* disabled_features */});
 }
 

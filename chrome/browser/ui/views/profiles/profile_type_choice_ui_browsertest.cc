@@ -115,7 +115,7 @@ class ProfileTypeChoiceUIPixelTest
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
 
     return VerifyPixelUi(widget, "ProfileTypeChoiceUIPixelTest",
-                         screenshot_name);
+                         screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {

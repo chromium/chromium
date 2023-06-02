@@ -19,9 +19,6 @@ interface BookmarkUiObserver {
     /** @see BookmarkDelegate#openFolder(BookmarkId) */
     default void onFolderStateSet(BookmarkId folder) {}
 
-    /** Called when the UI state is set to {@link BookmarkUiMode.SEARCHING}. */
-    default void onSearchStateSet() {}
-
     /** Called when a bookmark menu item is opened. */
     default void onBookmarkItemMenuOpened() {}
 

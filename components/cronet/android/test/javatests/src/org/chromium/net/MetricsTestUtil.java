@@ -5,9 +5,8 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -59,15 +58,15 @@ public class MetricsTestUtil {
      */
     public static void checkTimingMetrics(
             RequestFinishedInfo.Metrics metrics, Date startTime, Date endTime) {
-        assertNotNull(metrics.getRequestStart());
+        assertThat(metrics.getRequestStart()).isNotNull();
         assertAfter(metrics.getRequestStart(), startTime);
-        assertNotNull(metrics.getSendingStart());
+        assertThat(metrics.getSendingStart()).isNotNull();
         assertAfter(metrics.getSendingStart(), startTime);
-        assertNotNull(metrics.getSendingEnd());
+        assertThat(metrics.getSendingEnd()).isNotNull();
         assertAfter(endTime, metrics.getSendingEnd());
-        assertNotNull(metrics.getResponseStart());
+        assertThat(metrics.getResponseStart()).isNotNull();
         assertAfter(metrics.getResponseStart(), startTime);
-        assertNotNull(metrics.getRequestEnd());
+        assertThat(metrics.getRequestEnd()).isNotNull();
         assertAfter(endTime, metrics.getRequestEnd());
         assertAfter(metrics.getRequestEnd(), metrics.getRequestStart());
     }
@@ -78,22 +77,22 @@ public class MetricsTestUtil {
      */
     public static void checkHasConnectTiming(
             RequestFinishedInfo.Metrics metrics, Date startTime, Date endTime, boolean isSsl) {
-        assertNotNull(metrics.getDnsStart());
+        assertThat(metrics.getDnsStart()).isNotNull();
         assertAfter(metrics.getDnsStart(), startTime);
-        assertNotNull(metrics.getDnsEnd());
+        assertThat(metrics.getDnsEnd()).isNotNull();
         assertAfter(endTime, metrics.getDnsEnd());
-        assertNotNull(metrics.getConnectStart());
+        assertThat(metrics.getConnectStart()).isNotNull();
         assertAfter(metrics.getConnectStart(), startTime);
-        assertNotNull(metrics.getConnectEnd());
+        assertThat(metrics.getConnectEnd()).isNotNull();
         assertAfter(endTime, metrics.getConnectEnd());
         if (isSsl) {
-            assertNotNull(metrics.getSslStart());
+            assertThat(metrics.getSslStart()).isNotNull();
             assertAfter(metrics.getSslStart(), startTime);
-            assertNotNull(metrics.getSslEnd());
+            assertThat(metrics.getSslEnd()).isNotNull();
             assertAfter(endTime, metrics.getSslEnd());
         } else {
-            assertNull(metrics.getSslStart());
-            assertNull(metrics.getSslEnd());
+            assertThat(metrics.getSslStart()).isNull();
+            assertThat(metrics.getSslEnd()).isNull();
         }
     }
 
@@ -101,12 +100,12 @@ public class MetricsTestUtil {
      * Check that the timing metrics from net::LoadTimingInfo::ConnectTiming don't exist.
      */
     public static void checkNoConnectTiming(RequestFinishedInfo.Metrics metrics) {
-        assertNull(metrics.getDnsStart());
-        assertNull(metrics.getDnsEnd());
-        assertNull(metrics.getSslStart());
-        assertNull(metrics.getSslEnd());
-        assertNull(metrics.getConnectStart());
-        assertNull(metrics.getConnectEnd());
+        assertThat(metrics.getDnsStart()).isNull();
+        assertThat(metrics.getDnsEnd()).isNull();
+        assertThat(metrics.getSslStart()).isNull();
+        assertThat(metrics.getSslEnd()).isNull();
+        assertThat(metrics.getConnectStart()).isNull();
+        assertThat(metrics.getConnectEnd()).isNull();
     }
 
     /**
@@ -114,19 +113,21 @@ public class MetricsTestUtil {
      */
     public static void checkRequestFinishedInfo(
             RequestFinishedInfo info, String url, Date startTime, Date endTime) {
-        assertNotNull("RequestFinishedInfo.Listener must be called", info);
+        assertWithMessage("RequestFinishedInfo.Listener must be called").that(info).isNotNull();
         assertThat(info.getUrl()).isEqualTo(url);
-        assertNotNull(info.getResponseInfo());
-        assertNull(info.getException());
+        assertThat(info.getResponseInfo()).isNotNull();
+        assertThat(info.getException()).isNull();
         RequestFinishedInfo.Metrics metrics = info.getMetrics();
-        assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
+        assertWithMessage("RequestFinishedInfo.getMetrics() must not be null")
+                .that(metrics)
+                .isNotNull();
         // Check old (deprecated) timing metrics
         assertThat(metrics.getTotalTimeMs()).isAtLeast(0L);
         assertThat(metrics.getTotalTimeMs()).isAtLeast(metrics.getTtfbMs());
         // Check new timing metrics
         checkTimingMetrics(metrics, startTime, endTime);
-        assertNull(metrics.getPushStart());
-        assertNull(metrics.getPushEnd());
+        assertThat(metrics.getPushStart()).isNull();
+        assertThat(metrics.getPushEnd()).isNull();
         // Check data use metrics
         assertThat(metrics.getSentByteCount()).isGreaterThan(0L);
         assertThat(metrics.getReceivedByteCount()).isGreaterThan(0L);

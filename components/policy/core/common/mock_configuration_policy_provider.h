@@ -7,6 +7,7 @@
 
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -14,10 +15,8 @@ namespace policy {
 
 // Mock ConfigurationPolicyProvider implementation that supplies canned
 // values for polices.
-// TODO(joaodasilva, mnissler): introduce an implementation that non-policy
-// code can use that doesn't require the usual boilerplate.
-// http://crbug.com/242087
-class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
+class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider,
+                                        public policy::PolicyService::Observer {
  public:
   MockConfigurationPolicyProvider();
   MockConfigurationPolicyProvider(const MockConfigurationPolicyProvider&) =
@@ -29,6 +28,12 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
   MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
   MOCK_METHOD0(RefreshPolicies, void());
+
+  // Use this for a more accurate policy update events. Not using this may
+  // may result in flaky tests where we expect an event to be propagated and
+  // it is not.
+  void SetupPolicyServiceForPolicyUpdates(
+      policy::PolicyService* policy_service);
 
   // Make public for tests.
   using ConfigurationPolicyProvider::UpdatePolicy;
@@ -68,8 +73,18 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
 
   void RefreshWithSamePolicies();
 
+  // policy::PolicyService::Observer
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
+
  private:
+  void WaitForPoliciesUpdated(policy::PolicyDomain domain);
+
   SchemaRegistry registry_;
+  raw_ptr<policy::PolicyService> policy_service_ = nullptr;
+  base::OnceCallback<void()> extension_policies_updated_callback_;
+  base::OnceCallback<void()> chrome_policies_updated_callback_;
 };
 
 class MockConfigurationPolicyObserver

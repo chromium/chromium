@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>justincohen@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad"
-    enum="CartDiscountConsentStatus" expires_after="2023-09-17">
+    enum="CartDiscountConsentStatus" expires_after="2023-11-19">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -698,6 +698,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.FailToShowHomeSurfaceUI"
+    enum="FailToShowHomeSurfaceReason" expires_after="2023-10-22">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the reason of why failed to show a home surface UI on the chosen
+    NTP. Logged in cold or warm startup when failed to show the home surface UI.
+    This histogram is recorded on tablets only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.FeedPositionSegmentationResult"
     enum="FeedPositionSegmentationResult" expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>
@@ -952,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Lens.UploadDialog.DialogError"
-    enum="NewTabPageLensUploadDialogErrors" expires_after="2023-09-17">
+    enum="NewTabPageLensUploadDialogErrors" expires_after="2023-11-19">
   <owner>nguyenbryan@google.com</owner>
   <owner>yowakita@google.com</owner>
   <owner>bbonnet@google.com</owner>
@@ -1130,9 +1141,13 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logged when a module was disabled by {Interaction}. Only logged on the 1P
-    NTP. Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
+    NTP.
+
+    Note: If the user has Google as their default search engine, Incognito and
+    Guest mode NTPs are not considered 1P and don't log this histogram.
+
+    Note: NewTabPage.Modules.Disabled.Customize is not recorded for pre-M116
+    users of Panorama.
   </summary>
   <token key="Interaction">
     <variant name="" summary="any interaction"/>
@@ -1175,9 +1190,13 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logged when a module was enabled by {Interaction}. Only logged on the 1P
-    NTP. Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
+    NTP.
+
+    Note: If the user has Google as their default search engine, Incognito and
+    Guest mode NTPs are not considered 1P and don't log this histogram.
+
+    Note: NewTabPage.Modules.Enabled.Customize is not recorded for pre-M116
+    users of Panorama.
   </summary>
   <token key="Interaction">
     <variant name="" summary="any interaction"/>
@@ -1747,7 +1766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SearchResumptionModule.Show"
-    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2023-09-10">
+    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2023-11-19">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -1954,7 +1973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TimeSinceLastNTP" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-19">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

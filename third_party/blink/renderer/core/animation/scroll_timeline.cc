@@ -256,22 +256,4 @@ void ScrollTimeline::RemoveAttachment(ScrollTimelineAttachment* attachment) {
   }
 }
 
-cc::AnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {
-  if (compositor_timeline_)
-    return compositor_timeline_.get();
-
-  compositor_timeline_ = scroll_timeline_util::ToCompositorScrollTimeline(this);
-  return compositor_timeline_.get();
-}
-
-void ScrollTimeline::UpdateCompositorTimeline() {
-  if (!compositor_timeline_)
-    return;
-
-  ToScrollTimeline(compositor_timeline_.get())
-      ->UpdateScrollerIdAndScrollOffsets(
-          scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
-          GetResolvedScrollOffsets());
-}
-
 }  // namespace blink

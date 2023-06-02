@@ -1141,7 +1141,7 @@ String HTMLInputElement::Value() const {
       return FastGetAttribute(html_names::kValueAttr);
     case ValueMode::kDefaultOn: {
       AtomicString value_string = FastGetAttribute(html_names::kValueAttr);
-      return value_string.IsNull() ? "on" : value_string;
+      return value_string.IsNull() ? AtomicString("on") : value_string;
     }
     case ValueMode::kValue:
       return non_attribute_value_;

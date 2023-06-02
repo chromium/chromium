@@ -74,6 +74,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/display_util.h"
@@ -585,6 +586,10 @@ bool CanShowStylusTools() {
   return GetPaletteTray()->ShouldShowPalette();
 }
 
+bool CanStopScreenRecording() {
+  return CaptureModeController::Get()->is_recording_in_progress();
+}
+
 bool CanSwapPrimaryDisplay() {
   return display::Screen::GetScreen()->GetNumDisplays() > 1;
 }
@@ -605,7 +610,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = GetTargetWindow();
-  return window && chromeos::wm::IsGameWindow(window);
+  return window && GameDashboardController::IsGameWindow(window);
 }
 
 bool CanToggleMultitaskMenu() {
@@ -1140,6 +1145,12 @@ void ShowTaskManager() {
   NewWindowDelegate::GetInstance()->ShowTaskManager();
 }
 
+void StopScreenRecording() {
+  CaptureModeController* controller = CaptureModeController::Get();
+  CHECK(controller->is_recording_in_progress());
+  controller->EndVideoRecording(EndRecordingReason::kKeyboardShortcut);
+}
+
 void Suspend() {
   chromeos::PowerManagerClient::Get()->RequestSuspend();
 }
@@ -1418,7 +1429,10 @@ void ToggleGameDashboard() {
   DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
-  // TODO(phshah): Connect to Game Dashboard.
+  if (auto* context =
+          GameDashboardController::Get()->GetGameDashboardContext(window)) {
+    context->ToggleMainMenu();
+  }
 }
 
 void ToggleHighContrast() {
@@ -1748,6 +1762,19 @@ bool ZoomDisplay(bool up) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(point);
   return display_manager->ZoomDisplay(display.id(), up);
+}
+
+void TouchFingerprintSensor(int finger_id) {
+  // This function only called with [1,3]. If the range is changed in
+  // the caller AcceleratorControllerImpl::PerformAction function then
+  // this should be changed accordingly.
+  DCHECK(1 <= finger_id && finger_id <= 3);
+  FakeBiodClient* client = FakeBiodClient::Get();
+  if (!client) {
+    LOG(ERROR) << "FakeBiod is not initialized.";
+    return;
+  }
+  client->TouchFingerprintSensor(finger_id);
 }
 
 }  // namespace accelerators

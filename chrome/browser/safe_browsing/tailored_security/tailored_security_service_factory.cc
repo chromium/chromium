@@ -22,7 +22,8 @@ TailoredSecurityService* TailoredSecurityServiceFactory::GetForProfile(
 
 // static
 TailoredSecurityServiceFactory* TailoredSecurityServiceFactory::GetInstance() {
-  return base::Singleton<TailoredSecurityServiceFactory>::get();
+  static base::NoDestructor<TailoredSecurityServiceFactory> instance;
+  return instance.get();
 }
 
 TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()

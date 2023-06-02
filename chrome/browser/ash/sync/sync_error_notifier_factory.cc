@@ -33,7 +33,8 @@ SyncErrorNotifier* SyncErrorNotifierFactory::GetForProfile(Profile* profile) {
 
 // static
 SyncErrorNotifierFactory* SyncErrorNotifierFactory::GetInstance() {
-  return base::Singleton<SyncErrorNotifierFactory>::get();
+  static base::NoDestructor<SyncErrorNotifierFactory> instance;
+  return instance.get();
 }
 
 KeyedService* SyncErrorNotifierFactory::BuildServiceInstanceFor(

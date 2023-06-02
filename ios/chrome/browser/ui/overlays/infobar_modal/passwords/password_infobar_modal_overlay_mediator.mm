@@ -4,65 +4,92 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
 
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_responses.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using password_infobar_modal_responses::UpdateCredentialsInfo;
-using password_infobar_modal_responses::NeverSaveCredentials;
-using password_infobar_modal_responses::PresentPasswordSettings;
-
 @interface PasswordInfobarModalOverlayMediator ()
 // The save password modal config from the request.
-@property(nonatomic, readonly) PasswordInfobarModalOverlayRequestConfig* config;
+@property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
 @end
 
-@implementation PasswordInfobarModalOverlayMediator
+@implementation PasswordInfobarModalOverlayMediator {
+  IOSChromeSavePasswordInfoBarDelegate* delegate_;
+  InfobarType infobarType_;
+}
 
 #pragma mark - Accessors
 
-- (PasswordInfobarModalOverlayRequestConfig*)config {
+- (DefaultInfobarOverlayRequestConfig*)config {
   return self.request
-             ? self.request
-                   ->GetConfig<PasswordInfobarModalOverlayRequestConfig>()
+             ? self.request->GetConfig<DefaultInfobarOverlayRequestConfig>()
              : nullptr;
 }
 
 - (void)setConsumer:(id<InfobarPasswordModalConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
-
+  }
   _consumer = consumer;
 
-  PasswordInfobarModalOverlayRequestConfig* config = self.config;
-  if (!_consumer || !config)
+  if (!_consumer || !self.config) {
     return;
+  }
 
-  [_consumer setUsername:config->username()];
-  NSString* password = config->password();
+  delegate_ = static_cast<IOSChromeSavePasswordInfoBarDelegate*>(
+      self.config->delegate());
+  infobarType_ = self.config->infobar_type();
+
+  [_consumer setUsername:delegate_->GetUserNameText()];
+  NSString* password = delegate_->GetPasswordText();
   [_consumer setMaskedPassword:[@"" stringByPaddingToLength:password.length
                                                  withString:@"•"
                                             startingAtIndex:0]];
   [_consumer setUnmaskedPassword:password];
-  [_consumer setDetailsTextMessage:config->details_text()];
-  [_consumer setSaveButtonText:config->save_button_text()];
-  [_consumer setCancelButtonText:config->cancel_button_text()];
-  [_consumer setURL:config->url()];
-  [_consumer setCurrentCredentialsSaved:config->is_current_password_saved()];
+  absl::optional<std::string> account_string =
+      delegate_->GetAccountToStorePassword();
+  NSString* details_text =
+      account_string
+          ? l10n_util::GetNSStringF(
+                IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL,
+                base::UTF8ToUTF16(*account_string))
+          : l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
+  [_consumer setDetailsTextMessage:details_text];
+
+  NSString* save_button_text = base::SysUTF16ToNSString(
+      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+  [_consumer setSaveButtonText:save_button_text];
+
+  NSString* cancel_button_text = base::SysUTF16ToNSString(
+      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+  [_consumer setCancelButtonText:cancel_button_text];
+
+  [_consumer setURL:delegate_->GetURLHostText()];
+  [_consumer setCurrentCredentialsSaved:delegate_->IsCurrentPasswordSaved()];
 }
 
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
-  return PasswordInfobarModalOverlayRequestConfig::RequestSupport();
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
 #pragma mark - InfobarPasswordModalDelegate
@@ -72,23 +99,25 @@ using password_infobar_modal_responses::PresentPasswordSettings;
   // Receiving this delegate callback when the request is null means that the
   // update credentials button was tapped after the request was cancelled, but
   // before the modal UI has finished being dismissed.
-  if (!self.request)
+  if (!self.request) {
     return;
+  }
 
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<UpdateCredentialsInfo>(
-                             username, password)];
-  [self modalInfobarButtonWasAccepted:nil];
+  delegate_->UpdateCredentials(username, password);
+  delegate_->Accept();
+
+  [self dismissInfobarModal:nil];
 }
 
 - (void)neverSaveCredentialsForCurrentSite {
   // Receiving this delegate callback when the request is null means that the
   // never save credentials button was tapped after the request was cancelled,
   // but before the modal UI has finished being dismissed.
-  if (!self.request)
+  if (!self.request) {
     return;
+  }
 
-  [self
-      dispatchResponse:OverlayResponse::CreateWithInfo<NeverSaveCredentials>()];
+  delegate_->Cancel();
   [self dismissInfobarModal:nil];
 }
 
@@ -96,12 +125,21 @@ using password_infobar_modal_responses::PresentPasswordSettings;
   // Receiving this delegate callback when the request is null means that the
   // present passwords settings button was tapped after the request was
   // cancelled, but before the modal UI has finished being dismissed.
-  if (!self.request)
+  if (!self.request) {
     return;
+  }
 
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<
-                             PresentPasswordSettings>()];
   [self dismissInfobarModal:nil];
+
+  id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
+      delegate_->GetDispatcher(), ApplicationSettingsCommands);
+  [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
+                                                        showCancelButton:YES
+                                                      startPasswordCheck:NO];
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
 }
 
 @end

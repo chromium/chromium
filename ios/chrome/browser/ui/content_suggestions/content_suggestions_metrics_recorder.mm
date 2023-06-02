@@ -12,6 +12,8 @@
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/ntp_tile_impression.h"
 #import "components/ntp_tiles/tile_visual_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -90,6 +92,18 @@
 
 - (void)recordMostVisitedTileRemoved {
   base::RecordAction(base::UserMetricsAction(kMostVisitedUrlBlacklistedAction));
+}
+
+- (void)recordSetUpListShown {
+  set_up_list_metrics::RecordDisplayed();
+}
+
+- (void)recordSetUpListItemShown:(SetUpListItemType)type {
+  set_up_list_metrics::RecordItemDisplayed(type);
+}
+
+- (void)recordSetUpListItemSelected:(SetUpListItemType)type {
+  set_up_list_metrics::RecordItemSelected(type);
 }
 
 #pragma mark - Private

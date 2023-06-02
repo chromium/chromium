@@ -7,6 +7,7 @@
 // those app bundles.
 
 #import <Cocoa/Cocoa.h>
+
 #include <utility>
 #include <vector>
 
@@ -42,6 +43,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // The NSApplication for app shims is a vanilla NSApplication, but sub-class it
 // so that we can DCHECK that we know precisely when it is initialized.
@@ -100,10 +105,11 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     // localizations from the bundle of the running app (i.e. it is equivalent
     // to [[NSBundle mainBundle] preferredLocalizations]) instead of the target
     // bundle.
-    NSArray* preferred_languages = [NSLocale preferredLanguages];
-    NSArray* supported_languages = [base::apple::OuterBundle() localizations];
+    NSArray<NSString*>* preferred_languages = NSLocale.preferredLanguages;
+    NSArray<NSString*>* supported_languages =
+        base::apple::OuterBundle().localizations;
     std::string preferred_localization;
-    for (NSString* language in preferred_languages) {
+    for (NSString* __strong language in preferred_languages) {
       // We must convert the "-" separator to "_" to be compatible with
       // NSBundle::localizations() e.g. "en-GB" becomes "en_GB".
       // See https://crbug.com/913345.
@@ -125,7 +131,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
 
     // Load localized strings and mouse cursor images.
     ui::ResourceBundle::InitSharedInstanceWithLocale(
-        locale, NULL, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+        locale, nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
 
     ChromeContentClient chrome_content_client;
     content::SetContentClient(&chrome_content_client);

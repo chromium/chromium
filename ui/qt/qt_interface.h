@@ -118,6 +118,7 @@ class QtInterface {
 
     virtual void FontChanged() = 0;
     virtual void ThemeChanged() = 0;
+    virtual void ScaleFactorMaybeChanged() = 0;
   };
 
   QtInterface() = default;

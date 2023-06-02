@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +22,8 @@ TriggeredProfileResetter* TriggeredProfileResetterFactory::GetForBrowserContext(
 // static
 TriggeredProfileResetterFactory*
 TriggeredProfileResetterFactory::GetInstance() {
-  return base::Singleton<TriggeredProfileResetterFactory>::get();
+  static base::NoDestructor<TriggeredProfileResetterFactory> instance;
+  return instance.get();
 }
 
 TriggeredProfileResetterFactory::TriggeredProfileResetterFactory()
@@ -35,7 +36,7 @@ TriggeredProfileResetterFactory::TriggeredProfileResetterFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-TriggeredProfileResetterFactory::~TriggeredProfileResetterFactory() {}
+TriggeredProfileResetterFactory::~TriggeredProfileResetterFactory() = default;
 
 KeyedService* TriggeredProfileResetterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

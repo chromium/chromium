@@ -485,7 +485,8 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
   void OnOwnerUnregistered();
 
 #if DCHECK_IS_ON()
-  raw_ptr<const ProcessNode> process_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<const ProcessNode, DanglingUntriaged> process_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 #endif
 
   MeasurementCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);

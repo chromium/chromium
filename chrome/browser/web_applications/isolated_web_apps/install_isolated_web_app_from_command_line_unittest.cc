@@ -49,8 +49,8 @@ void DescribeOptionalLocation(::testing::MatchResultListener* result_listener,
                               MaybeIwaLocation arg) {
   if (arg.has_value()) {
     if (arg.value().has_value()) {
-      *result_listener
-          << WebApp::IsolationData(arg.value().value()).AsDebugValue();
+      *result_listener << IsolatedWebAppLocationAsDebugValue(
+          arg.value().value());
     } else {
       *result_listener << "nullopt";
     }
@@ -118,6 +118,7 @@ class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
   void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
+      const absl::optional<base::Version>& expected_version,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,

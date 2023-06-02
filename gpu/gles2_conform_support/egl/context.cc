@@ -277,11 +277,16 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
 
   gl_context->MakeCurrent(gl_surface);
 
-  gpu::ContextCreationAttribs helper;
-  config_->GetAttrib(EGL_ALPHA_SIZE, &helper.alpha_size);
-  config_->GetAttrib(EGL_DEPTH_SIZE, &helper.depth_size);
-  config_->GetAttrib(EGL_STENCIL_SIZE, &helper.stencil_size);
+  EGLint alpha_size, depth_size, stencil_size;
+  config_->GetAttrib(EGL_ALPHA_SIZE, &alpha_size);
+  config_->GetAttrib(EGL_DEPTH_SIZE, &depth_size);
+  config_->GetAttrib(EGL_STENCIL_SIZE, &stencil_size);
 
+  CHECK_EQ(alpha_size, 0);
+  CHECK_EQ(depth_size, 0);
+  CHECK_EQ(stencil_size, 0);
+
+  gpu::ContextCreationAttribs helper;
   helper.buffer_preserved = false;
   helper.bind_generates_resource = kBindGeneratesResources;
   helper.fail_if_major_perf_caveat = false;

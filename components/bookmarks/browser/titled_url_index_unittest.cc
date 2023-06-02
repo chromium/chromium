@@ -620,6 +620,8 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
   ASSERT_EQ(2U, matches.size());
   EXPECT_EQ(data[0].url, matches[0].node->GetTitledUrlNodeUrl());
   EXPECT_EQ(data[3].url, matches[1].node->GetTitledUrlNodeUrl());
+
+  index()->SetNodeSorter(nullptr);
 }
 
 TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery) {

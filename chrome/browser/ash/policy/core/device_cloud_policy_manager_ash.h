@@ -198,7 +198,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   void OnStateKeysUpdated();
 
   void NotifyConnected();
-  void NotifyDisconnected();
   void NotifyGotRegistry();
 
   // Factory function to create the StatusUploader.

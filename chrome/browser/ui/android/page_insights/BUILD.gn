@@ -1,0 +1,72 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.page_insights"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/page_insights_icon.xml",
+    "java/res/layout/page_insights_sheet_toolbar.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.page_insights"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContentTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/browser_ui/widget/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+  ]
+}

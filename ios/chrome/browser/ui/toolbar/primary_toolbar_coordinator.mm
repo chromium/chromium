@@ -138,10 +138,6 @@
   return self.viewController;
 }
 
-- (void)showPrerenderingAnimation {
-  [self.viewController showPrerenderingAnimation];
-}
-
 - (void)transitionToLocationBarFocusedState:(BOOL)focused {
   if (self.viewController.traitCollection.verticalSizeClass ==
       UIUserInterfaceSizeClassUnspecified) {
@@ -178,7 +174,7 @@
       !webState->GetLastCommittedURL().SchemeIs(kChromeUIScheme);
 
   if (self.isLoadingPrerenderer && isToolbarLoading) {
-    [self showPrerenderingAnimation];
+    [self.viewController showPrerenderingAnimation];
   }
 
   id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(
@@ -225,10 +221,6 @@
                                       !IsRegularXRegularSizeClass(
                                           self.viewController)
                              animated:NO];
-}
-
-- (void)exitFullscreen {
-    FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
 }
 
 - (void)close {

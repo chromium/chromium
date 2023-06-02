@@ -140,7 +140,7 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
   scoped_refptr<IOBuffer> output_buffer_;
   const int output_buffer_size_;
 
-  raw_ptr<MockSourceStream> source_;
+  raw_ptr<MockSourceStream, DanglingUntriaged> source_;
   std::unique_ptr<GzipSourceStream> stream_;
 };
 

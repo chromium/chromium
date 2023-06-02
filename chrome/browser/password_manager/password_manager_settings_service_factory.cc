@@ -26,7 +26,8 @@ PasswordManagerSettingsServiceFactory::GetForProfile(Profile* profile) {
 // static
 PasswordManagerSettingsServiceFactory*
 PasswordManagerSettingsServiceFactory::GetInstance() {
-  return base::Singleton<PasswordManagerSettingsServiceFactory>::get();
+  static base::NoDestructor<PasswordManagerSettingsServiceFactory> instance;
+  return instance.get();
 }
 
 PasswordManagerSettingsServiceFactory::PasswordManagerSettingsServiceFactory()

@@ -51,17 +51,13 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   };
 
   // Constructs a new node of the given `type`, using `driver` to support IPC.
-  // Note that `driver` must outlive the Node. `driver_node` is an arbitrary
-  // driver-specific handle that may be used for additional context when
-  // interfacing with the driver regarding this node.
+  // Note that `driver` must outlive the Node.
   Node(Type type,
        const IpczDriver& driver,
-       IpczDriverHandle driver_node,
        const IpczCreateNodeOptions* options = nullptr);
 
   Type type() const { return type_; }
   const IpczDriver& driver() const { return driver_; }
-  IpczDriverHandle driver_node() const { return driver_node_; }
   const IpczCreateNodeOptions& options() const { return options_; }
 
   // APIObject:
@@ -196,7 +192,6 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
 
   const Type type_;
   const IpczDriver& driver_;
-  const IpczDriverHandle driver_node_;
   const IpczCreateNodeOptions options_;
 
   absl::Mutex mutex_;

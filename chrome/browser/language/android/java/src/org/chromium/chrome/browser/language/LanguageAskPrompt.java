@@ -20,12 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.components.language.GeoLanguageProviderBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -51,11 +49,6 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     private static final int PROMPT_EVENT_SAVED = 1;
     private static final int PROMPT_EVENT_CANCELLED = 2;
     private static final int PROMPT_EVENT_MAX = PROMPT_EVENT_CANCELLED;
-
-    private void recordPromptEvent(int event) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Translate.ExplicitLanguageAsk.Event", event, PROMPT_EVENT_MAX);
-    }
 
     private class SeparatorViewHolder extends ViewHolder {
         SeparatorViewHolder(View view) {
@@ -276,7 +269,6 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
 
         for (String language : languagesToAdd) {
             TranslateBridge.updateUserAcceptLanguages(language, true);
-            AndroidLanguageMetricsBridge.reportExplicitLanguageAskStateChanged(language, true);
         }
 
         HashSet<String> languagesToRemove = new HashSet<String>(mInitialLanguages);
@@ -284,7 +276,6 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
 
         for (String language : languagesToRemove) {
             TranslateBridge.updateUserAcceptLanguages(language, false);
-            AndroidLanguageMetricsBridge.reportExplicitLanguageAskStateChanged(language, false);
         }
     }
 
@@ -296,8 +287,6 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     public void show(
             Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (activity == null) return;
-
-        recordPromptEvent(PROMPT_EVENT_SHOWN);
 
         List<String> userAcceptLanguagesList = TranslateBridge.getUserLanguageCodes();
         mInitialLanguages = new HashSet<String>();
@@ -377,11 +366,5 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     }
 
     @Override
-    public void onDismiss(PropertyModel model, int dismissalCause) {
-        if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-            recordPromptEvent(PROMPT_EVENT_SAVED);
-        } else {
-            recordPromptEvent(PROMPT_EVENT_CANCELLED);
-        }
-    }
+    public void onDismiss(PropertyModel model, int dismissalCause) {}
 }

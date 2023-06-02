@@ -911,18 +911,20 @@ TEST_F(RecentAppsInteractionHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(handler().connection_status_for_testing(),
             ConnectionStatus::kConnectionStatusDisconnected);
 
+  // Any transition to "connected" should update ConnUX to connected.
   NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
             ConnectionStatus::kConnectionStatusConnected);
 
+  // Only background failures update the ConnUX state, app stream failures
+  // should not.
   NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusFailed);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusFailed);
-
+            ConnectionStatus::kConnectionStatusConnected);
   NotifyConnectionStatusChanged(
       ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusFailed);
+            ConnectionStatus::kConnectionStatusConnected);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,

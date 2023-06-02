@@ -192,9 +192,10 @@
     background-color: var(--cros-sys-on_primary_container);
   }
 
-  :host-context(body.jelly-enabled) #enterpriseIconContainer svg {
-    fill: var(--cros-sys-on_primary);
-    margin-top: 10px;
+  :host-context(body.jelly-enabled) #enterpriseIconContainer iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-on_primary);
+    --iron-icon-height: 12px;
+    --iron-icon-width: 13.33px;
     text-align: center;
   }
 
@@ -216,10 +217,9 @@
             </iron-icon>
           </template>
           <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
-            <svg width="13.33" height="12" viewBox="0 0 13.33 12" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7.00004 2.66667V0H0.333374V12H13.6667V2.66667H7.00004ZM5.66671 10.6667H1.66671V9.33333H5.66671V10.6667ZM5.66671 8H1.66671V6.66667H5.66671V8ZM5.66671 5.33333H1.66671V4H5.66671V5.33333ZM5.66671 2.66667H1.66671V1.33333H5.66671V2.66667ZM12.3334 10.6667H7.00004V4H12.3334V10.6667ZM11 5.33333H8.33337V6.66667H11V5.33333ZM11 8H8.33337V9.33333H11V8Z">
-              </path>
-            </svg>
+            <iron-icon icon="personalization:managed2"
+                title$="$i18n{managedSetting}">
+            </iron-icon>
           </template>
         </div>
       </template>

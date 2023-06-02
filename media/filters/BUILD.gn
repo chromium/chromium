@@ -200,7 +200,7 @@ source_set("filters") {
     deps += [ "//media/base/android" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "mac/audio_toolbox_audio_decoder.cc",
       "mac/audio_toolbox_audio_decoder.h",
@@ -255,6 +255,8 @@ source_set("filters") {
       "hls_manifest_demuxer_engine.h",
       "hls_rendition.cc",
       "hls_rendition.h",
+      "hls_vod_rendition.cc",
+      "hls_vod_rendition.h",
       "manifest_demuxer.cc",
       "manifest_demuxer.h",
     ]

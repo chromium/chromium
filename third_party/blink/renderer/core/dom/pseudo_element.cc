@@ -74,64 +74,58 @@ PseudoElement* PseudoElement::Create(Element* parent,
 const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdAfter: {
-      DEFINE_STATIC_LOCAL(QualifiedName, after,
-                          (g_null_atom, "::after", g_null_atom));
+      DEFINE_STATIC_LOCAL(QualifiedName, after, (AtomicString("::after")));
       return after;
     }
     case kPseudoIdBefore: {
-      DEFINE_STATIC_LOCAL(QualifiedName, before,
-                          (g_null_atom, "::before", g_null_atom));
+      DEFINE_STATIC_LOCAL(QualifiedName, before, (AtomicString("::before")));
       return before;
     }
     case kPseudoIdBackdrop: {
       DEFINE_STATIC_LOCAL(QualifiedName, backdrop,
-                          (g_null_atom, "::backdrop", g_null_atom));
+                          (AtomicString("::backdrop")));
       return backdrop;
     }
     case kPseudoIdFirstLetter: {
       DEFINE_STATIC_LOCAL(QualifiedName, first_letter,
-                          (g_null_atom, "::first-letter", g_null_atom));
+                          (AtomicString("::first-letter")));
       return first_letter;
     }
     case kPseudoIdMarker: {
-      DEFINE_STATIC_LOCAL(QualifiedName, marker,
-                          (g_null_atom, "::marker", g_null_atom));
+      DEFINE_STATIC_LOCAL(QualifiedName, marker, (AtomicString("::marker")));
       return marker;
     }
     case kPseudoIdViewTransition: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition,
-                          (g_null_atom, "::view-transition", g_null_atom));
+                          (AtomicString("::view-transition")));
       return transition;
     }
     case kPseudoIdViewTransitionGroup: {
       // TODO(khushalsagar) : Update these tag names to include the additional
       // ID.
-      DEFINE_STATIC_LOCAL(
-          QualifiedName, transition_container,
-          (g_null_atom, "::view-transition-group", g_null_atom));
+      DEFINE_STATIC_LOCAL(QualifiedName, transition_container,
+                          (AtomicString("::view-transition-group")));
       return transition_container;
     }
     case kPseudoIdViewTransitionImagePair: {
-      DEFINE_STATIC_LOCAL(
-          QualifiedName, transition_image_wrapper,
-          (g_null_atom, "::view-transition-image-pair", g_null_atom));
+      DEFINE_STATIC_LOCAL(QualifiedName, transition_image_wrapper,
+                          (AtomicString("::view-transition-image-pair")));
       return transition_image_wrapper;
     }
     case kPseudoIdViewTransitionNew: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition_incoming_image,
-                          (g_null_atom, "::view-transition-new", g_null_atom));
+                          (AtomicString("::view-transition-new")));
       return transition_incoming_image;
     }
     case kPseudoIdViewTransitionOld: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition_outgoing_image,
-                          (g_null_atom, "::view-transition-old", g_null_atom));
+                          (AtomicString("::view-transition-old")));
       return transition_outgoing_image;
     }
     default:
       NOTREACHED();
   }
-  DEFINE_STATIC_LOCAL(QualifiedName, name,
-                      (g_null_atom, "::unknown", g_null_atom));
+  DEFINE_STATIC_LOCAL(QualifiedName, name, (AtomicString("::unknown")));
   return name;
 }
 

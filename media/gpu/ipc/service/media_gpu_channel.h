@@ -8,13 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "media/base/android_overlay_mojo_factory.h"
-#include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
-#include "media/video/video_decode_accelerator.h"
-#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 
 namespace gpu {
-class CommandBufferStub;
 class GpuChannel;
 }
 
@@ -29,14 +24,8 @@ class MediaGpuChannel {
   ~MediaGpuChannel();
 
  private:
-  void BindCommandBufferMediaReceiver(
-      gpu::CommandBufferStub* stub,
-      mojo::GenericPendingAssociatedReceiver receiver);
-
   const raw_ptr<gpu::GpuChannel> channel_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
-  mojo::UniqueAssociatedReceiverSet<mojom::GpuAcceleratedVideoDecoderProvider>
-      accelerated_video_decoder_providers_;
 };
 
 }  // namespace media

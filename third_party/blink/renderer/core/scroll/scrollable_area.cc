@@ -882,9 +882,9 @@ Node* ScrollableArea::EventTargetNode() const {
   if (!node && box->Parent() && box->Parent()->IsFieldset()) {
     node = box->Parent()->GetNode();
   }
-  if (node && IsA<Element>(node)) {
+  if (auto* element = DynamicTo<Element>(node)) {
     const LayoutBox* layout_box_for_scrolling =
-        To<Element>(node)->GetLayoutBoxForScrolling();
+        element->GetLayoutBoxForScrolling();
     if (layout_box_for_scrolling)
       DCHECK_EQ(box, layout_box_for_scrolling);
     else

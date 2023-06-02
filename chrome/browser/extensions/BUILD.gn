@@ -1066,6 +1066,7 @@ static_library("extensions") {
 
       # TODO(crbug.com/1340540): Find an appropriate spot for vpn_provider.
       "//chrome/browser/chromeos/extensions/vpn_provider",
+      "//chrome/browser/chromeos/extensions/wm",
       "//chromeos/components/disks:prefs",
       "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/components/security_token_pin",
@@ -1187,8 +1188,8 @@ static_library("extensions") {
       "//chromeos/ash/components/dbus/update_engine",
       "//chromeos/ash/components/disks",
       "//chromeos/ash/components/enhanced_network_tts/mojom",
-      "//chromeos/ash/components/language/language_packs",
-      "//chromeos/ash/components/language/public/mojom",
+      "//chromeos/ash/components/language_packs",
+      "//chromeos/ash/components/language_packs/public/mojom",
       "//chromeos/ash/components/login/auth",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
@@ -1277,14 +1278,15 @@ static_library("extensions") {
 
   if (is_mac) {
     sources += [
+      "api/enterprise_reporting_private/keychain_data_helper_mac.cc",
       "api/enterprise_reporting_private/keychain_data_helper_mac.h",
-      "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
       "api/image_writer_private/removable_storage_provider_mac.cc",
       "global_shortcut_listener_mac.h",
       "global_shortcut_listener_mac.mm",
       "system_display/display_info_provider_mac.cc",
       "system_display/display_info_provider_mac.h",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux || is_chromeos_lacros) {

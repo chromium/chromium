@@ -113,6 +113,7 @@ void CameraAppWindowStateController::OnWidgetActivationChanged(
     std::move(focus_callbacks_.front()).Run();
     focus_callbacks_.pop();
   }
+  OnWindowFocusChanged(active);
 }
 
 void CameraAppWindowStateController::OnWidgetBoundsChanged(
@@ -148,6 +149,12 @@ void CameraAppWindowStateController::OnWindowStateChanged() {
     for (const auto& monitor : monitors_) {
       monitor->OnWindowStateChanged(ToVector(window_states_));
     }
+  }
+}
+
+void CameraAppWindowStateController::OnWindowFocusChanged(bool is_focus) {
+  for (const auto& monitor : monitors_) {
+    monitor->OnWindowFocusChanged(is_focus);
   }
 }
 

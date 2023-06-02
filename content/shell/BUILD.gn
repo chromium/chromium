@@ -332,10 +332,7 @@ static_library("content_shell_lib") {
       "browser/fuchsia_view_presenter.cc",
       "browser/fuchsia_view_presenter.h",
     ]
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp",
-    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp" ]
   } else {
     deps += [
       "//components/crash/content/browser",
@@ -367,7 +364,10 @@ static_library("content_shell_lib") {
   }
 
   if (is_mac) {
-    deps += [ "//ui/display:test_support" ]
+    deps += [
+      "//base:base_arc",
+      "//ui/display:test_support",
+    ]
   }
 
   if (is_ios) {
@@ -673,6 +673,10 @@ if (is_android) {
         configs -= [ "//build/config/win:console" ]
         configs += [ "//build/config/win:windowed" ]
       }
+
+      # Increase the initial stack size. The default is 1MB, this is 8MB.
+      # This matches the chrome.exe.
+      ldflags = [ "/STACK:0x800000" ]
     }
 
     if (is_win) {

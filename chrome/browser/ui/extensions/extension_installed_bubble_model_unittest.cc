@@ -71,7 +71,8 @@ class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
   const SkBitmap empty_icon_;
 
  private:
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
 };
 
 TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller+private.h"
 
 #import <memory>
 
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
 
@@ -111,10 +111,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 
 // Browser passed on the initializer.
 @property(nonatomic, assign) Browser* browser;
-// Whether to allow navigating from the leading edge.
-@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
-// Whether to allow navigating from the trailing edge.
-@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
 // The browser state owning the current browser.
@@ -261,80 +257,6 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 
 - (BOOL)shouldAutorotate {
   return !([_tabSideSwipeView window] || _inSwipe);
-}
-
-// Always return yes, as this swipe should work with various recognizers,
-// including UITextTapRecognizer, UILongPressGestureRecognizer,
-// UIScrollViewPanGestureRecognizer and others.
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-    shouldRecognizeSimultaneouslyWithGestureRecognizer:
-        (UIGestureRecognizer*)otherGestureRecognizer {
-  return YES;
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-    shouldBeRequiredToFailByGestureRecognizer:
-        (UIGestureRecognizer*)otherGestureRecognizer {
-  // Take precedence over a pan gesture recognizer so that moving up and
-  // down while swiping doesn't trigger overscroll actions.
-  if ([otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-    return YES;
-  }
-  // Take precedence over a WKWebView side swipe gesture.
-  if ([otherGestureRecognizer
-          isKindOfClass:[UIScreenEdgePanGestureRecognizer class]]) {
-    return YES;
-  }
-
-  return NO;
-}
-
-// Gestures should only be recognized within `contentArea_` or the toolbar.
-- (BOOL)gestureRecognizerShouldBegin:(SideSwipeGestureRecognizer*)gesture {
-  if (_inSwipe) {
-    return NO;
-  }
-
-  if ([_swipeDelegate preventSideSwipe])
-    return NO;
-
-  CGPoint location = [gesture locationInView:gesture.view];
-
-  // Since the toolbar and the contentView can overlap, check the toolbar frame
-  // first, and confirm the right gesture recognizer is firing.
-  if ([self.toolbarInteractionHandler
-          isInsideToolbar:[gesture.view convertPoint:location toView:nil]]) {
-    if (![gesture isEqual:_panGestureRecognizer]) {
-      return NO;
-    }
-
-    return [_swipeDelegate canBeginToolbarSwipe];
-  }
-
-  // Otherwise, only allow contentView touches with `swipeGestureRecognizer_`.
-  // The content view frame is inset by -1 because CGRectContainsPoint does
-  // include points on the max X and Y edges, which will happen frequently with
-  // edge swipes from the right side.
-  CGRect contentViewFrame =
-      CGRectInset([[_swipeDelegate sideSwipeContentView] frame], -1, -1);
-  if (CGRectContainsPoint(contentViewFrame, location)) {
-    if (![gesture isEqual:_swipeGestureRecognizer]) {
-      return NO;
-    }
-
-    if (gesture.direction == UISwipeGestureRecognizerDirectionRight &&
-        !self.leadingEdgeNavigationEnabled) {
-      return NO;
-    }
-
-    if (gesture.direction == UISwipeGestureRecognizerDirectionLeft &&
-        !self.trailingEdgeNavigationEnabled) {
-      return NO;
-    }
-    _swipeType = SwipeType::CHANGE_PAGE;
-    return YES;
-  }
-  return NO;
 }
 
 - (void)createGreyCache:(UISwipeGestureRecognizerDirection)direction {
@@ -709,6 +631,82 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
   [self updateNavigationEdgeSwipeForWebState:webState];
+}
+
+#pragma mark - UIGestureRecognizerDelegate Methods
+
+// Gestures should only be recognized within `contentArea_` or the toolbar.
+- (BOOL)gestureRecognizerShouldBegin:(SideSwipeGestureRecognizer*)gesture {
+  if (_inSwipe) {
+    return NO;
+  }
+
+  if ([_swipeDelegate preventSideSwipe]) {
+    return NO;
+  }
+
+  CGPoint location = [gesture locationInView:gesture.view];
+
+  // Since the toolbar and the contentView can overlap, check the toolbar frame
+  // first, and confirm the right gesture recognizer is firing.
+  if ([self.toolbarInteractionHandler
+          isInsideToolbar:[gesture.view convertPoint:location toView:nil]]) {
+    if (![gesture isEqual:_panGestureRecognizer]) {
+      return NO;
+    }
+
+    return [_swipeDelegate canBeginToolbarSwipe];
+  }
+
+  // Otherwise, only allow contentView touches with `swipeGestureRecognizer_`.
+  // The content view frame is inset by -1 because CGRectContainsPoint does
+  // include points on the max X and Y edges, which will happen frequently with
+  // edge swipes from the right side.
+  CGRect contentViewFrame =
+      CGRectInset([[_swipeDelegate sideSwipeContentView] frame], -1, -1);
+  if (CGRectContainsPoint(contentViewFrame, location)) {
+    if (![gesture isEqual:_swipeGestureRecognizer]) {
+      return NO;
+    }
+
+    if (gesture.direction == UISwipeGestureRecognizerDirectionRight &&
+        !self.leadingEdgeNavigationEnabled) {
+      return NO;
+    }
+
+    if (gesture.direction == UISwipeGestureRecognizerDirectionLeft &&
+        !self.trailingEdgeNavigationEnabled) {
+      return NO;
+    }
+    _swipeType = SwipeType::CHANGE_PAGE;
+    return YES;
+  }
+  return NO;
+}
+
+// Always return yes, as this swipe should work with various recognizers,
+// including UITextTapRecognizer, UILongPressGestureRecognizer,
+// UIScrollViewPanGestureRecognizer and others.
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldBeRequiredToFailByGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  // Take precedence over a pan gesture recognizer so that moving up and
+  // down while swiping doesn't trigger overscroll actions.
+  if ([otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+    return YES;
+  }
+  // Take precedence over a WKWebView side swipe gesture.
+  if ([otherGestureRecognizer
+          isKindOfClass:[UIScreenEdgePanGestureRecognizer class]]) {
+    return YES;
+  }
+  return NO;
 }
 
 #pragma mark - WebStateListObserving Methods

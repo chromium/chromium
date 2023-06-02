@@ -40,6 +40,7 @@ constexpr char kWildCardMatching[] = "*";
 constexpr char kGmailUrl[] = "https://www.gmail.com";
 constexpr char kCompanyUrl[] = "https://company.com";
 constexpr char kDriveUrl[] = "https://drive.google.com";
+constexpr char kOneDriveUrl[] = "https://onedrive.live.com";
 
 constexpr char kHttpsPrefix[] = "https://www.";
 
@@ -50,6 +51,7 @@ constexpr char kDrivePattern[] = "drive.google.com";
 constexpr char kCompanyPattern[] = ".company.com";
 constexpr char kGooglePattern[] = "google.com";
 constexpr char kMailPattern[] = "mail.google.com";
+constexpr char kOneDrivePattern[] = "onedrive.live.com";
 
 constexpr char kWrongRestriction[] = "WrongRestriction";
 constexpr char kWrongComponent[] = "WrongComponent";
@@ -343,6 +345,7 @@ TEST_F(DlpRulesManagerImplTest,
   dlp_test_util::DlpRule rule(kRuleName1, "Block", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstComponent(dlp::kDrive)
+      .AddDstComponent(dlp::kOneDrive)
       .AddRestriction(dlp::kFilesRestriction, dlp::kBlockLevel);
 
   UpdatePolicyPref({rule});
@@ -352,11 +355,21 @@ TEST_F(DlpRulesManagerImplTest,
       DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock,
       kExampleUrl, DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
 
+  CheckIsRestrictedComponent(
+      kExampleUrl, data_controls::Component::kOneDrive,
+      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock,
+      kExampleUrl, DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
+
   // Make sure that blocking the components also blocks their associated
   // website.
   CheckIsRestrictedDestination(
       kExampleUrl, kDriveUrl, DlpRulesManager::Restriction::kFiles,
       DlpRulesManager::Level::kBlock, kExampleUrl, kDrivePattern,
+      DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
+
+  CheckIsRestrictedDestination(
+      kExampleUrl, kOneDriveUrl, DlpRulesManager::Restriction::kFiles,
+      DlpRulesManager::Level::kBlock, kExampleUrl, kOneDrivePattern,
       DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -877,7 +890,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedComponents_NoMatch) {
   auto result = dlp_rules_manager_.GetAggregatedComponents(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
   std::map<DlpRulesManager::Level, std::set<data_controls::Component>> expected;
-  for (auto component : DlpRulesManager::components) {
+  for (auto component : data_controls::kAllComponents) {
     expected[DlpRulesManager::Level::kAllow].insert(component);
   }
 
@@ -918,6 +931,8 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
       data_controls::Component::kUsb);
   expected[DlpRulesManager::Level::kAllow].insert(
       data_controls::Component::kDrive);
+  expected[DlpRulesManager::Level::kAllow].insert(
+      data_controls::Component::kOneDrive);
 
   EXPECT_EQ(result, expected);
 

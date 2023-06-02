@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_tick_clock.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
@@ -54,7 +55,8 @@ NonMainThreadImpl::NonMainThreadImpl(const ThreadCreationParams& params)
 
   base::MessagePumpType message_pump_type = base::MessagePumpType::DEFAULT;
   if (params.thread_type == ThreadType::kCompositorThread &&
-      base::FeatureList::IsEnabled(features::kInputIpcDirect)) {
+      base::FeatureList::IsEnabled(features::kDirectCompositorThreadIpc) &&
+      mojo::IsDirectReceiverSupported()) {
     message_pump_type = base::MessagePumpType::IO;
   }
   thread_ = std::make_unique<SimpleThreadImpl>(

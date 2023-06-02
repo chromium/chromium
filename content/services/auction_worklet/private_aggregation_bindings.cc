@@ -262,7 +262,7 @@ ParseForEventContribution(v8::Isolate* isolate,
   if (!dict.Get("bucket", &js_bucket) || js_bucket.IsEmpty() ||
       js_bucket->IsNullOrUndefined()) {
     *error =
-        "Invalid or missing bucket in reportContributionForEvent's argument";
+        "Invalid or missing bucket in contributeToHistogramOnEvent's argument";
     return nullptr;
   }
 
@@ -270,7 +270,7 @@ ParseForEventContribution(v8::Isolate* isolate,
   if (!dict.Get("value", &js_value) || js_value.IsEmpty() ||
       js_value->IsNullOrUndefined()) {
     *error =
-        "Invalid or missing value in reportContributionForEvent's argument";
+        "Invalid or missing value in contributeToHistogramOnEvent's argument";
     return nullptr;
   }
 
@@ -319,26 +319,25 @@ void PrivateAggregationBindings::AttachToContext(
 
   v8::Local<v8::Function> send_histogram_report_function =
       v8::Function::New(
-          context, &PrivateAggregationBindings::SendHistogramReport, v8_this)
+          context, &PrivateAggregationBindings::ContributeToHistogram, v8_this)
           .ToLocalChecked();
   private_aggregation
-      ->Set(context, v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
+      ->Set(context,
+            v8_helper_->CreateStringFromLiteral("contributeToHistogram"),
             send_histogram_report_function)
       .Check();
 
-  if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get() ||
-      base::FeatureList::IsEnabled(
-          blink::features::
-              kPrivateAggregationApiFledgeExtensionsLocalTestingOverride)) {
+  if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
     v8::Local<v8::Function> report_contribution_for_event_function =
         v8::Function::New(
-            context, &PrivateAggregationBindings::ReportContributionForEvent,
+            context, &PrivateAggregationBindings::ContributeToHistogramOnEvent,
             v8_this)
             .ToLocalChecked();
     private_aggregation
-        ->Set(context,
-              v8_helper_->CreateStringFromLiteral("reportContributionForEvent"),
-              report_contribution_for_event_function)
+        ->Set(
+            context,
+            v8_helper_->CreateStringFromLiteral("contributeToHistogramOnEvent"),
+            report_contribution_for_event_function)
         .Check();
   }
 
@@ -383,14 +382,14 @@ PrivateAggregationBindings::TakePrivateAggregationRequests() {
   return requests;
 }
 
-void PrivateAggregationBindings::SendHistogramReport(
+void PrivateAggregationBindings::ContributeToHistogram(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   PrivateAggregationBindings* bindings =
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
   blink::mojom::AggregatableReportHistogramContributionPtr contribution =
-      worklet_utils::ParseSendHistogramReportArguments(
+      worklet_utils::ParseContributeToHistogramArguments(
           gin::Arguments(args),
           bindings->private_aggregation_permissions_policy_allowed_);
   if (contribution.is_null()) {
@@ -403,7 +402,7 @@ void PrivateAggregationBindings::SendHistogramReport(
           NewHistogramContribution(std::move(contribution)));
 }
 
-void PrivateAggregationBindings::ReportContributionForEvent(
+void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   PrivateAggregationBindings* bindings =
       static_cast<PrivateAggregationBindings*>(
@@ -418,7 +417,7 @@ void PrivateAggregationBindings::ReportContributionForEvent(
       !args[1]->IsObject()) {
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "reportContributionForEvent requires 2 parameters, with first "
+            "contributeToHistogramOnEvent requires 2 parameters, with first "
             "parameter being a string and second parameter being an object")));
     return;
   }

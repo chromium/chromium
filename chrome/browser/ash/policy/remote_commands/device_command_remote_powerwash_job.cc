@@ -29,11 +29,8 @@ constexpr base::TimeDelta kRemotePowerwashCommandExpirationTime =
 // immediately start the powerwash process.
 constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(10);
 
-void StartPowerwash(
-    enterprise_management::SignedData signed_command,
-    enterprise_management::PolicyFetchRequest::SignatureType signature_type) {
-  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command,
-                                                          signature_type);
+void StartPowerwash(enterprise_management::SignedData signed_command) {
+  ash::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);
 }
 
 }  // namespace
@@ -59,15 +56,12 @@ void DeviceCommandRemotePowerwashJob::RunImpl(
   // to start the powerwash process only after the server got the ACK, otherwise
   // we could reboot before ACKing and then the server would never get the ACK.
   service_->SetOnCommandAckedCallback(
-      base::BindOnce(&StartPowerwash, signed_command(),
-                     RemoteCommandsService::GetSignatureType()));
+      base::BindOnce(&StartPowerwash, signed_command()));
 
   // Also set a failsafe timer that starts the powerwash so a faulty network
   // connection doesn't prevent the powerwash from happening.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&StartPowerwash, signed_command(),
-                     RemoteCommandsService::GetSignatureType()),
+      FROM_HERE, base::BindOnce(&StartPowerwash, signed_command()),
       kFailsafeTimerTimeout);
 
   // Ack the command.

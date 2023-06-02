@@ -704,22 +704,6 @@ inline LayoutUnit IntMod(const LayoutUnit& a, const LayoutUnit& b) {
   return return_val;
 }
 
-// Returns the remainder after a division with LayoutUnit results.
-// This calculates the modulo so that: a = (a / b) * b + LayoutMod(a, b).
-inline LayoutUnit LayoutMod(const LayoutUnit& a, const LayoutUnit& b) {
-  LayoutUnit return_val;
-  int64_t raw_val =
-      (static_cast<int64_t>(kFixedPointDenominator) * a.RawValue()) %
-      b.RawValue();
-  return_val.SetRawValue(raw_val / kFixedPointDenominator);
-  return return_val;
-}
-
-template <typename IntegerType>
-inline LayoutUnit LayoutMod(const LayoutUnit& a, IntegerType b) {
-  return LayoutMod(a, LayoutUnit(b));
-}
-
 inline LayoutUnit& operator+=(LayoutUnit& a, const LayoutUnit& b) {
   a.SetRawValue(base::ClampAdd(a.RawValue(), b.RawValue()).RawValue());
   return a;

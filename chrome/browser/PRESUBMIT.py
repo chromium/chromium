@@ -4,7 +4,6 @@
 
 """Presubmit script for Chromium browser code."""
 
-USE_PYTHON3 = True
 
 import re
 

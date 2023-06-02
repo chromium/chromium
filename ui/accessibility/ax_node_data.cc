@@ -1857,7 +1857,7 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::BoolAttribute::kHasAriaAttribute:
         result += " has_aria_attribute=" + value;
         break;
-      case ax::mojom::BoolAttribute::kTouchPassthrough:
+      case ax::mojom::BoolAttribute::OBSOLETE_kTouchPassthrough:
         result += " touch_passthrough=" + value;
         break;
       case ax::mojom::BoolAttribute::kLongClickable:

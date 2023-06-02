@@ -21,11 +21,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -770,6 +770,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, Basic) {
   url::Origin top_origin = url::Origin::Create(top_url);
 
   NavigateToURLBlockUntilNavigationsComplete(shell(), top_url, 1);
+  WaitForRequests(8u);
 
   auto requests = data();
   EXPECT_EQ(8u, requests.size());
@@ -877,6 +878,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, SameOriginNested) {
   url::Origin top_origin = url::Origin::Create(top_url);
 
   NavigateToURLBlockUntilNavigationsComplete(shell(), top_url, 1);
+  WaitForRequests(3u);
 
   auto requests = data();
   EXPECT_EQ(3u, requests.size());
@@ -916,6 +918,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, SameOriginAuxiliary) {
   EXPECT_EQ(true, EvalJs(shell(), "clickSameSiteNewWindowLink();"));
   Shell* new_shell = new_shell_observer.GetShell();
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
+  WaitForRequests(2u);
 
   auto requests = data();
   EXPECT_EQ(2u, requests.size());
@@ -1005,6 +1008,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, CrossOriginNested) {
   url::Origin nested_origin = url::Origin::Create(nested_url);
 
   NavigateToURLBlockUntilNavigationsComplete(shell(), top_url, 1);
+  WaitForRequests(4u);
 
   auto requests = data();
   EXPECT_EQ(4u, requests.size());

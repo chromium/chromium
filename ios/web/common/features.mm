@@ -97,7 +97,7 @@ bool IsLoadSimulatedRequestAPIEnabled() {
 }
 
 bool IsFullscreenAPIEnabled() {
-  if (@available(iOS 16.0, *)) {
+  if (@available(iOS 16.4, *)) {
     return base::FeatureList::IsEnabled(kEnableFullscreenAPI);
   }
   return false;

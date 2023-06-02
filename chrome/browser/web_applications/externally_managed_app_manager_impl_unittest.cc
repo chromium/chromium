@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include <map>
@@ -211,7 +212,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
         std::move(install_options));
   }
 
-  std::unique_ptr<ExternallyManagedAppRegistrationTaskBase> StartRegistration(
+  std::unique_ptr<ExternallyManagedAppRegistrationTaskBase> CreateRegistration(
       GURL install_url) override {
     ++registration_run_count_;
     last_registered_install_url_ = install_url;
@@ -285,6 +286,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
               externally_managed_app_manager_impl->command_scheduler(),
+              /*data_retriever_factory=*/base::NullCallback(),
               std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),
@@ -372,6 +374,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
     TestExternallyManagedAppRegistrationTask& operator=(
         const TestExternallyManagedAppRegistrationTask&) = delete;
     ~TestExternallyManagedAppRegistrationTask() override = default;
+
+    void Start() override {}
 
    private:
     void OnProgress(const GURL& install_url) {
@@ -607,9 +611,10 @@ class ExternallyManagedAppManagerImplTest
   WebAppCommandScheduler& command_scheduler() { return provider().scheduler(); }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
-  raw_ptr<FakeInstallFinalizer> install_finalizer_;
-  raw_ptr<TestExternallyManagedAppManager> externally_managed_app_manager_impl_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeInstallFinalizer, DanglingUntriaged> install_finalizer_;
+  raw_ptr<TestExternallyManagedAppManager, DanglingUntriaged>
+      externally_managed_app_manager_impl_;
 
   TestExternallyManagedAppInstallTaskManager test_install_task_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

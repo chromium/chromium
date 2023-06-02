@@ -54,6 +54,7 @@ static_library("core") {
   ]
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//components/dom_distiller/core/mojom",
     "//components/leveldb_proto",
     "//components/pref_registry",

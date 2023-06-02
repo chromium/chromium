@@ -76,8 +76,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   // Toggle side search entry to show on second_tab.
-  auto* coordinator = BrowserView::GetBrowserViewForBrowser(browser())
-                          ->side_panel_coordinator();
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   coordinator->Show(SidePanelEntry::Id::kSideSearch);
   EXPECT_EQ(coordinator->GetComboboxDisplayedEntryIdForTesting(),
             SidePanelEntry::Id::kSideSearch);

@@ -57,7 +57,7 @@ class USBDeviceManagerImplTest : public testing::Test {
   ~USBDeviceManagerImplTest() override = default;
 
  protected:
-  raw_ptr<MockUsbService> mock_usb_service_;
+  raw_ptr<MockUsbService, DanglingUntriaged> mock_usb_service_;
   std::unique_ptr<DeviceManagerImpl> device_manager_instance_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

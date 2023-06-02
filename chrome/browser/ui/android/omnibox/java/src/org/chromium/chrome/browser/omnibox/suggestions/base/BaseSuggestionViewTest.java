@@ -515,13 +515,11 @@ public class BaseSuggestionViewTest {
         contentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
         BaseSuggestionViewForTest suggestionViewForTest =
                 new BaseSuggestionViewForTest(contentView);
-        int marginPx = mActivity.getResources().getDimensionPixelSize(
-                org.chromium.chrome.browser.omnibox.R.dimen.omnibox_suggestion_vertical_margin);
 
         Assert.assertEquals(mDecorationIconWidthPx, suggestionViewForTest.mDecorationIconWidthPx);
-        Assert.assertEquals(mSemicompactSuggestionViewHeight - marginPx,
-                suggestionViewForTest.mContentHeightPx);
-        Assert.assertEquals(mCompactSuggestionViewHeight - marginPx,
-                suggestionViewForTest.mCompactContentHeightPx);
+        Assert.assertEquals(
+                mSemicompactSuggestionViewHeight, suggestionViewForTest.mContentHeightPx);
+        Assert.assertEquals(
+                mCompactSuggestionViewHeight, suggestionViewForTest.mCompactContentHeightPx);
     }
 }

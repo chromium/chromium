@@ -49,10 +49,6 @@ constexpr char kRemoteCopyAllowedOrigin[] = "https://googleusercontent.com";
 
 constexpr size_t kMaxImageDownloadSize = 5 * 1024 * 1024;
 
-// The initial delay for the timer that detects clipboard writes. An exponential
-// backoff will double this value whenever the OneShotTimer reschedules.
-constexpr base::TimeDelta kInitialDetectionTimerDelay = base::Milliseconds(1);
-
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("remote_copy_message_handler",
                                         R"(
@@ -138,21 +134,10 @@ void RemoteCopyMessageHandler::HandleText(const std::string& text) {
 
   LogRemoteCopyReceivedTextSize(text.size());
 
-  ui::ClipboardSequenceNumberToken old_sequence_number =
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste);
-  base::ElapsedTimer write_timer;
   {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
         .WriteText(base::UTF8ToUTF16(text));
   }
-  LogRemoteCopyWriteTime(write_timer.Elapsed(), /*is_image=*/false);
-  // Unretained(this) is safe here because |this| owns |write_detection_timer_|.
-  write_detection_timer_.Start(
-      FROM_HERE, kInitialDetectionTimerDelay,
-      base::BindOnce(&RemoteCopyMessageHandler::DetectWrite,
-                     base::Unretained(this), old_sequence_number,
-                     base::TimeTicks::Now(), /*is_image=*/false));
   ShowNotification(GetTextNotificationTitle(device_name_), SkBitmap());
   Finish(RemoteCopyHandleMessageResult::kSuccessHandledText);
 }
@@ -252,21 +237,10 @@ void RemoteCopyMessageHandler::WriteImageAndShowNotification(
                "RemoteCopyMessageHandler::WriteImageAndShowNotification",
                "bytes", image.computeByteSize());
 
-  ui::ClipboardSequenceNumberToken old_sequence_number =
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste);
-  base::ElapsedTimer write_timer;
   {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
         .WriteImage(image);
   }
-  LogRemoteCopyWriteTime(write_timer.Elapsed(), /*is_image=*/true);
-  // Unretained(this) is safe here because |this| owns |write_detection_timer_|.
-  write_detection_timer_.Start(
-      FROM_HERE, kInitialDetectionTimerDelay,
-      base::BindOnce(&RemoteCopyMessageHandler::DetectWrite,
-                     base::Unretained(this), old_sequence_number,
-                     base::TimeTicks::Now(), /*is_image=*/true));
 
   ShowNotification(GetImageNotificationTitle(device_name_), image);
   Finish(RemoteCopyHandleMessageResult::kSuccessHandledImage);
@@ -277,7 +251,7 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::ShowNotification");
 
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &kLaptopAndSmartphoneIcon;
+  rich_notification_data.vector_small_image = &kDevicesIcon;
   rich_notification_data.renotify = true;
 
   ui::Accelerator paste_accelerator(ui::VKEY_V, ui::EF_PLATFORM_ACCELERATOR);
@@ -298,33 +272,6 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
       NotificationHandler::Type::SHARING, notification, /*metadata=*/nullptr);
 }
 
-void RemoteCopyMessageHandler::DetectWrite(
-    const ui::ClipboardSequenceNumberToken& old_sequence_number,
-    base::TimeTicks start_ticks,
-    bool is_image) {
-  TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::DetectWrite");
-
-  ui::ClipboardSequenceNumberToken current_sequence_number =
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste);
-  base::TimeDelta elapsed = base::TimeTicks::Now() - start_ticks;
-  if (current_sequence_number != old_sequence_number) {
-    LogRemoteCopyWriteDetectionTime(elapsed, is_image);
-    return;
-  }
-
-  if (elapsed > base::Seconds(10))
-    return;
-
-  // Unretained(this) is safe here because |this| owns |write_detection_timer_|.
-  base::TimeDelta backoff_delay = write_detection_timer_.GetCurrentDelay() * 2;
-  write_detection_timer_.Start(
-      FROM_HERE, backoff_delay,
-      base::BindOnce(&RemoteCopyMessageHandler::DetectWrite,
-                     base::Unretained(this), old_sequence_number, start_ticks,
-                     is_image));
-}
-
 void RemoteCopyMessageHandler::Finish(RemoteCopyHandleMessageResult result) {
   TRACE_EVENT1("sharing", "RemoteCopyMessageHandler::Finish", "result", result);
   LogRemoteCopyHandleMessageResult(result);
@@ -334,5 +281,4 @@ void RemoteCopyMessageHandler::Finish(RemoteCopyHandleMessageResult result) {
 void RemoteCopyMessageHandler::CancelAsyncTasks() {
   url_loader_.reset();
   ImageDecoder::Cancel(this);
-  write_detection_timer_.AbandonAndStop();
 }

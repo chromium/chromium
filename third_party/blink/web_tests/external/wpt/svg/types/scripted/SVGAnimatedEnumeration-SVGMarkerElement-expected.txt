@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
-FAIL Use of SVGAnimatedEnumeration within SVGMarkerElement Failed to set the 'baseVal' property on 'SVGAnimatedEnumeration': The enumeration value provided is 0, which is not settable.
+PASS Test SVGAnimatedEnumeration
+PASS Test SVGOrient
+PASS Test grad units
+PASS Test turn units
+FAIL Test auto-start-reverse Failed to set the 'baseVal' property on 'SVGAnimatedEnumeration': The enumeration value provided is 0, which is not settable.
 Harness: the test ran to completion.
 

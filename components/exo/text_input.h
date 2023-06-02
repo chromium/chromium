@@ -123,6 +123,12 @@ class TextInput : public ui::TextInputClient,
     // |surrounding_text|. All offsets are in UTF16, and must be valid.
     virtual void SetAutocorrectRange(base::StringPiece16 surrounding_text,
                                      const gfx::Range& range) = 0;
+
+    // Commits the current composition text.
+    // If `keep_selection` is true, keep the selection range unchanged.
+    // Otherwise, set the selection range to be after the committed text.
+    // Returns whether the operation is supported by the client.
+    virtual bool ConfirmComposition(bool keep_selection) = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);

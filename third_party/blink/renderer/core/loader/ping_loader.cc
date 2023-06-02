@@ -108,9 +108,10 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
 
   ResourceRequest request(ping_url);
   request.SetHttpMethod(http_names::kPOST);
-  request.SetHTTPContentType("text/ping");
+  request.SetHTTPContentType(AtomicString("text/ping"));
   request.SetHttpBody(EncodedFormData::Create("PING"));
-  request.SetHttpHeaderField(http_names::kCacheControl, "max-age=0");
+  request.SetHttpHeaderField(http_names::kCacheControl,
+                             AtomicString("max-age=0"));
   request.SetHttpHeaderField(http_names::kPingTo,
                              AtomicString(destination_url.GetString()));
   scoped_refptr<const SecurityOrigin> ping_origin =
@@ -141,7 +142,7 @@ void PingLoader::SendViolationReport(ExecutionContext* execution_context,
                                      scoped_refptr<EncodedFormData> report) {
   ResourceRequest request(report_url);
   request.SetHttpMethod(http_names::kPOST);
-  request.SetHTTPContentType("application/csp-report");
+  request.SetHTTPContentType(AtomicString("application/csp-report"));
   request.SetKeepalive(true);
   request.SetHttpBody(std::move(report));
   request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);

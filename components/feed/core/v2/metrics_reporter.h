@@ -218,7 +218,7 @@ class MetricsReporter {
   StreamStats& ForStream(const StreamType& stream_type);
 
   raw_ptr<PrefService> profile_prefs_;
-  raw_ptr<Delegate> delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   StreamStats for_you_stats_;
   StreamStats web_feed_stats_;

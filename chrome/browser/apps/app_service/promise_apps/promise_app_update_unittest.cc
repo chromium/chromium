@@ -97,4 +97,64 @@ TEST_F(PromiseAppUpdateTest, StateAndDeltaAreNonNull) {
   EXPECT_EQ(u.ShouldShowChanged(), true);
 }
 
+TEST_F(PromiseAppUpdateTest, Equal) {
+  auto state_1 = std::make_unique<PromiseApp>(package_id);
+  state_1->status = PromiseStatus::kPending;
+  state_1->should_show = false;
+
+  auto state_2 = std::make_unique<PromiseApp>(package_id);
+  state_2->name = "Name";
+  state_2->progress = 0.9;
+  state_2->status = PromiseStatus::kInstalling;
+  state_2->should_show = true;
+
+  auto delta_1 = std::make_unique<PromiseApp>(package_id);
+  state_1->status = PromiseStatus::kInstalling;
+  state_1->should_show = true;
+
+  auto delta_2 = std::make_unique<PromiseApp>(package_id);
+  delta_2->progress = 0.9;
+  state_2->status = PromiseStatus::kInstalling;
+
+  // Test nullptr handling.
+  EXPECT_EQ(PromiseAppUpdate(nullptr, delta_1.get()),
+            PromiseAppUpdate(nullptr, delta_1.get()));
+  EXPECT_EQ(PromiseAppUpdate(state_1.get(), nullptr),
+            PromiseAppUpdate(state_1.get(), nullptr));
+  EXPECT_NE(PromiseAppUpdate(nullptr, delta_1.get()),
+            PromiseAppUpdate(state_1.get(), nullptr));
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), nullptr),
+            PromiseAppUpdate(nullptr, delta_1.get()));
+  EXPECT_NE(PromiseAppUpdate(nullptr, delta_1.get()),
+            PromiseAppUpdate(state_1.get(), delta_1.get()));
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), nullptr),
+            PromiseAppUpdate(state_1.get(), delta_1.get()));
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(nullptr, delta_1.get()));
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(state_1.get(), nullptr));
+
+  // Test equal.
+  EXPECT_EQ(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(state_1.get(), delta_1.get()));
+  EXPECT_EQ(PromiseAppUpdate(state_1.get(), delta_2.get()),
+            PromiseAppUpdate(state_1.get(), delta_2.get()));
+  EXPECT_EQ(PromiseAppUpdate(state_2.get(), delta_1.get()),
+            PromiseAppUpdate(state_2.get(), delta_1.get()));
+  EXPECT_EQ(PromiseAppUpdate(state_2.get(), delta_2.get()),
+            PromiseAppUpdate(state_2.get(), delta_2.get()));
+
+  // Test deep equal.
+  EXPECT_EQ(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(state_1->Clone().get(), delta_1->Clone().get()));
+
+  // Test not equal.
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(state_2.get(), delta_1.get()));
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(state_2.get(), delta_2.get()));
+  EXPECT_NE(PromiseAppUpdate(state_1.get(), delta_1.get()),
+            PromiseAppUpdate(state_1.get(), delta_2.get()));
+}
+
 }  // namespace apps

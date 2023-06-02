@@ -70,12 +70,9 @@ html {
 
 body {
   color: var(--primary-color);
-  display: flex;
-  flex-direction: column;
-  font-family: Roboto;
   font-size: 0.8125em;
   /* Force the vertical scrollbar to always be displayed, to avoid UI jumps. */
-  height: 100vh;
+  height: 100%;
   margin: 0;
 }
 
@@ -108,8 +105,7 @@ button {
 }
 
 #flagsTemplate {
-  flex: 1;
-  padding: calc(60px + 1rem) var(--side-padding) 8px;
+  padding: 1rem var(--side-padding) 8px;
 }
 
 :focus-visible {
@@ -150,9 +146,8 @@ button {
   background: var(--toolbar-color);
   box-shadow: 0 2px 2px 0 var(--shadow-color);
   box-sizing: border-box;
-  flex: none;
   left: 0;
-  position: fixed;
+  position: sticky;
   top: 0;
   width: 100%;
   z-index: 9;
@@ -291,9 +286,6 @@ button:not(.primary):hover {
 .experiment {
   color: var(--secondary-color);
   line-height: 1.45;
-  /* Adjustment for fixed header */
-  margin: .3em 0 -70px;
-  padding-top: 70px;
   width: 100%;
 }
 
@@ -323,16 +315,15 @@ button:not(.primary):hover {
 
 .experiment-switched .experiment-name::before {
   --end-margin: 4px;
-  --width: 12px;
-  color: var(--interactive-color);
-  content: '•';
+  --diameter: 10px;
+  background-color: var(--interactive-color);
+  border-radius: 50%;
+  content: '';
   display: inline-block;
-  font-size: 40px;
-  line-height: 0;
+  height: var(--diameter);
   margin-inline-end: var(--end-margin);
-  margin-inline-start: calc(-1 * var(--end-margin) - var(--width));
-  vertical-align: middle;
-  width: var(--width);
+  margin-inline-start: calc(-1 * var(--end-margin) - var(--diameter));
+  width: var(--diameter);
 }
 
 
@@ -472,9 +463,8 @@ html:not(.focus-outline-visible) .tab:focus {
 .tab-content {
   display: none;
   line-height: 25px;
-  margin-top: -50px;
   /* Bottom padding should be greater than evaluated height of needs-restart */
-  padding-bottom: 200px;
+  padding-bottom: 100px;
   position: relative;
 }
 

@@ -50,6 +50,8 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   net_config.ech_enabled = mojo_config->ech_enabled;
   net_config.insecure_hash_override =
       OptionalBoolFromMojo(mojo_config->insecure_hash_override);
+  net_config.rsa_key_usage_for_local_anchors_override = OptionalBoolFromMojo(
+      mojo_config->rsa_key_usage_for_local_anchors_override);
   return net_config;
 }
 

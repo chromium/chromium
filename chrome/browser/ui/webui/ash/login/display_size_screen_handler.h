@@ -22,7 +22,7 @@ class DisplaySizeScreenView
   virtual ~DisplaySizeScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(base::Value::Dict data) = 0;
 };
 
 class DisplaySizeScreenHandler : public BaseScreenHandler,
@@ -42,7 +42,7 @@ class DisplaySizeScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // DisplaySizeScreenView:
-  void Show() override;
+  void Show(base::Value::Dict data) override;
 };
 
 }  // namespace ash

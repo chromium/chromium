@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_OOBE_COMPLETION_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_OOBE_COMPLETION_TRACKER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -28,7 +28,7 @@ class OobeCompletionTrackerFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<OobeCompletionTrackerFactory>;
+  friend base::NoDestructor<OobeCompletionTrackerFactory>;
 
   OobeCompletionTrackerFactory();
   ~OobeCompletionTrackerFactory() override;

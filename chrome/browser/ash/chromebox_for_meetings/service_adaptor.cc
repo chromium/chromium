@@ -29,14 +29,11 @@ chromeos::cfm::mojom::CfmServiceContext* ServiceAdaptor::GetContext() {
   return context_.get();
 }
 
-void ServiceAdaptor::GetService(
-    std::string interface_name,
-    mojo::ScopedMessagePipeHandle receiver_pipe,
-    GetServiceCallback callback,
-    const absl::optional<std::string>& receiver_identifier) {
+void ServiceAdaptor::GetService(std::string interface_name,
+                                mojo::ScopedMessagePipeHandle receiver_pipe,
+                                GetServiceCallback callback) {
   GetContext()->RequestBindService(
-      std::move(interface_name), std::move(receiver_pipe),
-      std::move(receiver_identifier), std::move(callback));
+      std::move(interface_name), std::move(receiver_pipe), std::move(callback));
 }
 
 void ServiceAdaptor::BindServiceAdaptor() {
@@ -54,10 +51,8 @@ void ServiceAdaptor::BindServiceAdaptor() {
 }
 
 void ServiceAdaptor::OnBindService(
-    mojo::ScopedMessagePipeHandle receiver_pipe,
-    const absl::optional<std::string>& receiver_identifier) {
-  delegate_->OnBindService(std::move(receiver_pipe),
-                           std::move(receiver_identifier));
+    mojo::ScopedMessagePipeHandle receiver_pipe) {
+  delegate_->OnBindService(std::move(receiver_pipe));
 }
 
 void ServiceAdaptor::OnAdaptorConnect(bool success) {

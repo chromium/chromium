@@ -76,6 +76,9 @@ class CORE_EXPORT NGLineBreakCandidateContext {
   explicit NGLineBreakCandidateContext(NGLineBreakCandidates& candidates)
       : candidates_(candidates) {}
 
+  float HyphenPenalty() const { return hyphen_penalty_; }
+  void SetHyphenPenalty(float penalty) { hyphen_penalty_ = penalty; }
+
   enum State : uint8_t { kBreak, kMidWord };
   State GetState() const { return state_; }
 
@@ -122,6 +125,7 @@ class CORE_EXPORT NGLineBreakCandidateContext {
   State state_ = State::kBreak;
   const NGInlineItem* last_item_ = nullptr;
   wtf_size_t last_end_offset_ = 0;
+  float hyphen_penalty_ = .0f;
   NGLineBreakCandidates& candidates_;
 
 #if EXPENSIVE_DCHECKS_ARE_ON()

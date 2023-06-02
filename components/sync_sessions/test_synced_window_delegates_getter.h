@@ -201,7 +201,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
     void NotifySessionRestoreComplete();
 
    private:
-    raw_ptr<LocalSessionEventHandler> handler_ = nullptr;
+    raw_ptr<LocalSessionEventHandler, DanglingUntriaged> handler_ = nullptr;
   };
 
   SyncedWindowDelegateMap delegates_;

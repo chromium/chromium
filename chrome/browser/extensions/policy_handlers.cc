@@ -50,6 +50,15 @@ bool IsValidIdList(const std::string& extension_ids) {
   }
   return true;
 }
+
+// Returns true if URL is valid and uses one of the supported schemes.
+bool IsValidUpdateUrl(const std::string& update_url) {
+  GURL update_gurl(update_url);
+  if (!update_gurl.is_valid()) {
+    return false;
+  }
+  return update_gurl.SchemeIsHTTPOrHTTPS() || update_gurl.SchemeIsFile();
+}
 }  // namespace
 // ExtensionListPolicyHandler implementation -----------------------------------
 
@@ -143,11 +152,19 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
       update_url = entry_string.substr(pos + 1);
     }
 
-    if (!crx_file::id_util::IdIsValid(extension_id) ||
-        !GURL(update_url).is_valid()) {
+    if (!crx_file::id_util::IdIsValid(extension_id)) {
       if (errors) {
-        errors->AddError(policy_name(), IDS_POLICY_INVALID_EXTENSION_ERROR,
+        errors->AddError(policy_name(), IDS_POLICY_INVALID_EXTENSION_ID_ERROR,
                          policy::PolicyErrorPath{index});
+      }
+      continue;
+    }
+
+    // Check that url is valid and uses one of the supported schemes.
+    if (!IsValidUpdateUrl(update_url)) {
+      if (errors) {
+        errors->AddError(policy_name(), IDS_POLICY_INVALID_UPDATE_URL_ERROR,
+                         extension_id, policy::PolicyErrorPath{index});
       }
       continue;
     }
@@ -290,8 +307,9 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
           invalid_keys.insert(extension_ids);
           continue;
         }
-        if (!GURL(*update_url).is_valid()) {
-          // Warns about an invalid update URL.
+
+        // Check that url is valid and uses one of the supported schemes.
+        if (!IsValidUpdateUrl(*update_url)) {
           if (errors) {
             errors->AddError(policy_name(), IDS_POLICY_INVALID_UPDATE_URL_ERROR,
                              extension_ids);

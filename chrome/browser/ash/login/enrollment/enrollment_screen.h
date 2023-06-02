@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -47,7 +47,7 @@ class EnrollmentHelperMixin;
 // OOBE wizard.
 class EnrollmentScreen
     : public BaseScreen,
-      public EnterpriseEnrollmentHelper::EnrollmentStatusConsumer,
+      public EnrollmentLauncher::EnrollmentStatusConsumer,
       public EnrollmentScreenView::Controller,
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
@@ -94,10 +94,10 @@ class EnrollmentScreen
   // Shows skip enrollment dialogue confiromation for license packaged devices.
   void ShowSkipEnrollmentDialogue();
 
-  // EnterpriseEnrollmentHelper::EnrollmentStatusConsumer implementation:
+  // EnrollmentLauncher::EnrollmentStatusConsumer implementation:
   void OnAuthError(const GoogleServiceAuthError& error) override;
   void OnEnrollmentError(policy::EnrollmentStatus status) override;
-  void OnOtherError(EnterpriseEnrollmentHelper::OtherError error) override;
+  void OnOtherError(EnrollmentLauncher::OtherError error) override;
   void OnDeviceEnrolled() override;
   void OnDeviceAttributeUploadCompleted(bool success) override;
   void OnDeviceAttributeUpdatePermission(bool granted) override;
@@ -168,15 +168,15 @@ class EnrollmentScreen
       bool result,
       policy::AccountStatusCheckFetcher::AccountStatus status);
 
-  // Creates an enrollment helper if needed.
-  void CreateEnrollmentHelper();
+  // Creates an enrollment launcher if needed.
+  void CreateEnrollmentLauncher();
 
-  // Clears auth in `enrollment_helper_`. Deletes `enrollment_helper_` and runs
-  // `callback` on completion. See the comment for
-  // EnterpriseEnrollmentHelper::ClearAuth for details.
+  // Clears auth in `enrollment_launcher_`. Deletes
+  // `enrollment_launcher_` and runs `callback` on completion. See the
+  // comment for EnrollmentLauncher::ClearAuth for details.
   void ClearAuth(base::OnceClosure callback);
 
-  // Used as a callback for EnterpriseEnrollmentHelper::ClearAuth.
+  // Used as a callback for EnrollmentLauncher::ClearAuth.
   virtual void OnAuthCleared(base::OnceClosure callback);
 
   // Shows successful enrollment status after all enrollment related file
@@ -278,7 +278,7 @@ class EnrollmentScreen
   std::unique_ptr<net::BackoffEntry> retry_backoff_;
   base::CancelableOnceClosure retry_task_;
   int num_retries_ = 0;
-  std::unique_ptr<EnterpriseEnrollmentHelper> enrollment_helper_;
+  std::unique_ptr<EnrollmentLauncher> enrollment_launcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> status_checker_;
 
   base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};

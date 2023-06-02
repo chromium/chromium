@@ -61,8 +61,8 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxActionType;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -146,20 +146,19 @@ public class OmniboxPedalsTest {
     }
 
     /**
-     * Find the Omnibox Pedal suggestion which suggests the |pedalType|, and return the
+     * Find the Omnibox Pedal suggestion which suggests the |pedalId|, and return the
      * suggestion. This method needs to run on the UI thread.
      *
-     * @param pedalType The Omnibox pedal type to be found.
-     * @return The suggesstion which suggests the matching OmniboxPedalType.
+     * @return The suggestion which suggests the matching OmniboxPedalId.
      */
-    private AutocompleteMatch findOmniboxPedalSuggestion(@OmniboxPedalType int pedalType) {
+    private AutocompleteMatch findOmniboxPedalSuggestion() {
         ThreadUtils.assertOnUiThread();
         AutocompleteCoordinator coordinator = mLocationBarLayout.getAutocompleteCoordinator();
         // Find the first matching suggestion.
         for (int i = 0; i < coordinator.getSuggestionCount(); ++i) {
             AutocompleteMatch suggestion = coordinator.getSuggestionAt(i);
             if (suggestion != null && !suggestion.getActions().isEmpty()
-                    && suggestion.getActions().get(0).actionId == OmniboxActionType.PEDAL) {
+                    && suggestion.getActions().get(0).actionId == OmniboxActionId.PEDAL) {
                 return suggestion;
             }
         }
@@ -176,14 +175,14 @@ public class OmniboxPedalsTest {
     }
 
     /**
-     * Check whether the |pedalType| pedal suggestion was shown.
+     * Check whether the |pedalId| pedal suggestion was shown.
      *
-     * @param pedalType The Omnibox pedal type to be found.
+     * @param pedalId The Omnibox pedal type to be found.
      * @param expectShown expect pedal is shown or not.
      */
-    private void checkPedalWasShown(@OmniboxPedalType int pedalType, boolean expectShown) {
+    private void checkPedalWasShown(@OmniboxPedalId int pedalId, boolean expectShown) {
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(pedalType);
+            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion();
             Criteria.checkThat(
                     matchSuggestion, expectShown ? Matchers.notNullValue() : Matchers.nullValue());
         });
@@ -193,11 +192,9 @@ public class OmniboxPedalsTest {
      * click on the pedal to open the SettingsActivity, and return the SettingsActivity.
      *
      * @param activityType The class type of the activity.
-     * @param pedalType The Omnibox pedal type to be found.
      * @return The opened SettingsActivity.
      */
-    private <T> T clickOnPedalToSettings(
-            final Class<T> activityType, @OmniboxPedalType int pedalType) {
+    private <T> T clickOnPedalToSettings(final Class<T> activityType) {
         mTargetActivity = (Activity) ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), activityType, () -> clickOnPedal());
 
@@ -207,12 +204,12 @@ public class OmniboxPedalsTest {
     /**
      * Create a HistogramWatcher expecting both the shown and used histograms are recorded.
      *
-     * @param pedalType The Omnibox pedal type.
+     * @param pedalId The Omnibox pedal type.
      */
-    private HistogramWatcher newHistogramExpectations(@OmniboxPedalType int pedalType) {
+    private HistogramWatcher newHistogramExpectations(@OmniboxPedalId int pedalId) {
         return HistogramWatcher.newBuilder()
-                .expectIntRecord("Omnibox.PedalShown", pedalType)
-                .expectIntRecord("Omnibox.SuggestionUsed.Pedal", pedalType)
+                .expectIntRecord("Omnibox.PedalShown", pedalId)
+                .expectIntRecord("Omnibox.SuggestionUsed.Pedal", pedalId)
                 .build();
     }
 
@@ -257,10 +254,10 @@ public class OmniboxPedalsTest {
      *
      * @return a dummy pedal suggestion.
      */
-    private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
+    private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalId int id) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(List.of(new OmniboxPedal("hint", id)))
+                .setActions(List.of(new OmniboxPedal(0, "hint", "accessibility", id)))
                 .build();
     }
 
@@ -268,20 +265,19 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testClearBrowsingDataOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.CLEAR_BROWSING_DATA);
+                newHistogramExpectations(OmniboxPedalId.CLEAR_BROWSING_DATA);
 
         // Generate the clear browsing data pedal.
         typeInOmnibox("Clear data");
 
-        checkPedalWasShown(OmniboxPedalType.CLEAR_BROWSING_DATA, /*expectShown=*/!mIncognito);
+        checkPedalWasShown(OmniboxPedalId.CLEAR_BROWSING_DATA, /*expectShown=*/!mIncognito);
 
         if (mIncognito) {
             // In incognito mode, no pedal shows, so the test can stop here.
             return;
         }
 
-        SettingsActivity settingsActivity = clickOnPedalToSettings(
-                SettingsActivity.class, OmniboxPedalType.CLEAR_BROWSING_DATA);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(
@@ -294,15 +290,14 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testManagePasswordsOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.MANAGE_PASSWORDS);
+                newHistogramExpectations(OmniboxPedalId.MANAGE_PASSWORDS);
 
         // Generate the manage passwords pedal.
         typeInOmnibox("Manage passwords");
 
-        checkPedalWasShown(OmniboxPedalType.MANAGE_PASSWORDS, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.MANAGE_PASSWORDS, /*expectShown=*/true);
 
-        SettingsActivity settingsActivity =
-                clickOnPedalToSettings(SettingsActivity.class, OmniboxPedalType.MANAGE_PASSWORDS);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, PasswordSettings.class);
@@ -314,15 +309,14 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testManagePaymentMethodsOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.UPDATE_CREDIT_CARD);
+                newHistogramExpectations(OmniboxPedalId.UPDATE_CREDIT_CARD);
 
         // Generate the manage payment methods pedal.
         typeInOmnibox("Manage payment methods");
 
-        checkPedalWasShown(OmniboxPedalType.UPDATE_CREDIT_CARD, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.UPDATE_CREDIT_CARD, /*expectShown=*/true);
 
-        SettingsActivity settingsActivity =
-                clickOnPedalToSettings(SettingsActivity.class, OmniboxPedalType.UPDATE_CREDIT_CARD);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(
@@ -336,12 +330,12 @@ public class OmniboxPedalsTest {
     @DisabledTest(message = "https://crbug.com/1434836 - IncognitoTab version is flaky")
     public void testOpenIncognitoTabOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.LAUNCH_INCOGNITO);
+                newHistogramExpectations(OmniboxPedalId.LAUNCH_INCOGNITO);
 
         // Generate the open incognito pedal.
         typeInOmnibox("Open Incognito");
 
-        checkPedalWasShown(OmniboxPedalType.LAUNCH_INCOGNITO, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.LAUNCH_INCOGNITO, /*expectShown=*/true);
 
         clickOnPedal();
 
@@ -358,7 +352,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testRunChromeSafetyCheckOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+                newHistogramExpectations(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK);
         HistogramWatcher safetyCheckHistogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Settings.SafetyCheck.UpdatesResult")
@@ -367,10 +361,9 @@ public class OmniboxPedalsTest {
         // Generate the run chrome safety check pedal.
         typeInOmnibox("Run safety check");
 
-        checkPedalWasShown(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK, /*expectShown=*/true);
 
-        SettingsActivity settingsActivity = clickOnPedalToSettings(
-                SettingsActivity.class, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SafetyCheckSettingsFragment.class);
@@ -385,15 +378,14 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testManageSiteSettingsOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.MANAGE_SITE_SETTINGS);
+                newHistogramExpectations(OmniboxPedalId.MANAGE_SITE_SETTINGS);
 
         // Generate the manage site setting pedal.
         typeInOmnibox("Change site permissions");
 
-        checkPedalWasShown(OmniboxPedalType.MANAGE_SITE_SETTINGS, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.MANAGE_SITE_SETTINGS, /*expectShown=*/true);
 
-        SettingsActivity settingsActivity = clickOnPedalToSettings(
-                SettingsActivity.class, OmniboxPedalType.MANAGE_SITE_SETTINGS);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SiteSettings.class);
@@ -405,15 +397,14 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testManageChromeSettingsOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+                newHistogramExpectations(OmniboxPedalId.MANAGE_CHROME_SETTINGS);
 
         // Generate the manage chrome settings pedal.
         typeInOmnibox("manage settings");
 
-        checkPedalWasShown(OmniboxPedalType.MANAGE_CHROME_SETTINGS, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.MANAGE_CHROME_SETTINGS, /*expectShown=*/true);
 
-        SettingsActivity settingsActivity = clickOnPedalToSettings(
-                SettingsActivity.class, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, MainSettings.class);
@@ -425,12 +416,12 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testViewYourChromeHistoryOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.VIEW_CHROME_HISTORY);
+                newHistogramExpectations(OmniboxPedalId.VIEW_CHROME_HISTORY);
 
         // Generate the view chrome history pedal.
         typeInOmnibox("view chrome history");
 
-        checkPedalWasShown(OmniboxPedalType.VIEW_CHROME_HISTORY, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.VIEW_CHROME_HISTORY, /*expectShown=*/true);
 
         clickOnPedal();
         CriteriaHelper.pollUiThread(() -> {
@@ -448,16 +439,15 @@ public class OmniboxPedalsTest {
     public void testManageAccessibilitySettingsOmniboxPedalSuggestion()
             throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+                newHistogramExpectations(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY);
 
         // Generate the manage accessibility setting pedal.
         typeInOmnibox("Chrome accessibility");
 
-        checkPedalWasShown(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY,
+        checkPedalWasShown(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
                 /*expectShown=*/true);
 
-        SettingsActivity settingsActivity = clickOnPedalToSettings(
-                SettingsActivity.class, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class);
         Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
 
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, AccessibilitySettings.class);
@@ -469,7 +459,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testPedalsStartedOnCtrlEnterKeyStroke() throws Exception {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+                newHistogramExpectations(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY);
 
         typeInOmnibox("Chrome accessibility");
         SuggestionInfo<BaseSuggestionView> pedal = mOmniboxUtils.findSuggestionWithActionChips();
@@ -494,12 +484,12 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testPlayChromeDinoGameOmniboxPedalSuggestion() throws InterruptedException {
         HistogramWatcher histogramWatcher =
-                newHistogramExpectations(OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+                newHistogramExpectations(OmniboxPedalId.PLAY_CHROME_DINO_GAME);
 
         // Generate the play chrome dino game pedal.
         typeInOmnibox("Dino game");
 
-        checkPedalWasShown(OmniboxPedalType.PLAY_CHROME_DINO_GAME, /*expectShown=*/true);
+        checkPedalWasShown(OmniboxPedalId.PLAY_CHROME_DINO_GAME, /*expectShown=*/true);
 
         // Click the pedal.
         clickOnPedal();
@@ -520,7 +510,7 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.requestFocus();
         List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(3, "Suggestion");
         suggestionsList.add(
-                createDummyPedalSuggestion("pedal", OmniboxPedalType.CLEAR_BROWSING_DATA));
+                createDummyPedalSuggestion("pedal", OmniboxPedalId.CLEAR_BROWSING_DATA));
 
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
@@ -537,7 +527,7 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.requestFocus();
         List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
         suggestionsList.add(
-                createDummyPedalSuggestion("pedal", OmniboxPedalType.CLEAR_BROWSING_DATA));
+                createDummyPedalSuggestion("pedal", OmniboxPedalId.CLEAR_BROWSING_DATA));
 
         mOmniboxUtils.setSuggestions(
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");

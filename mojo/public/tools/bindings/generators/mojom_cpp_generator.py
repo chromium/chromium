@@ -545,9 +545,10 @@ class Generator(generator.Generator):
 
   def _DefaultValue(self, field):
     if not field.default:
-      if not self._IsDefaultConstructible(field.kind):
-        return "mojo::internal::DefaultConstructTag()"
-      return ""
+      if mojom.IsNullableKind(field.kind) or self._IsDefaultConstructible(
+          field.kind):
+        return ""
+      return "mojo::internal::DefaultConstructTag()"
 
     if mojom.IsStructKind(field.kind):
       assert field.default == "default"
@@ -652,13 +653,8 @@ class Generator(generator.Generator):
       return "constexpr %s %s = %s" % (self._GetNameForKind(
           constant.kind), constant.name, self._ConstantValue(constant))
 
-  def _GetCppWrapperType(self,
-                         kind,
-                         add_same_module_namespaces=False,
-                         ignore_nullable=False):
+  def _GetCppWrapperType(self, kind, add_same_module_namespaces=False):
     def _AddOptional(type_name):
-      if ignore_nullable:
-        return type_name
       return "absl::optional<%s>" % type_name
 
     if self._IsTypemappedKind(kind):

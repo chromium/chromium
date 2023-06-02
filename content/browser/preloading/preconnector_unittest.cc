@@ -49,7 +49,7 @@ class MockContentBrowserClient : public TestContentBrowserClient {
 
  private:
   raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockAnchorElementPreconnector> delegate_;
+  raw_ptr<MockAnchorElementPreconnector, DanglingUntriaged> delegate_;
 };
 
 class PreconnectorTest : public RenderViewHostTestHarness {

@@ -7,6 +7,7 @@ source_set("side_swipe") {
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
+    "side_swipe_controller+private.h",
     "side_swipe_controller.h",
     "side_swipe_controller.mm",
     "side_swipe_gesture_recognizer.h",

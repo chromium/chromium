@@ -13,7 +13,6 @@ class AuthenticationService;
 @class BookmarksFolderEditorViewController;
 class Browser;
 @protocol SnackbarCommands;
-class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -81,7 +80,6 @@ class SyncService;
                       folderNode:(const bookmarks::BookmarkNode*)folder
                 parentFolderNode:(const bookmarks::BookmarkNode*)parentFolder
            authenticationService:(AuthenticationService*)authService
-                syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
                          browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

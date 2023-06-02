@@ -6,8 +6,6 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -307,10 +305,8 @@ public class CronetHttpURLConnectionTest {
             fail();
         } catch (IOException e) {
             assertTrue(e instanceof java.net.ConnectException || e instanceof CronetException);
-            assertTrue(e.getMessage().contains("ECONNREFUSED")
-                    || e.getMessage().contains("Connection refused")
-                    || e.getMessage().contains("net::ERR_CONNECTION_REFUSED")
-                    || e.getMessage().contains("Failed to connect"));
+            assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
+                    "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         }
         checkExceptionsAreThrown(secondConnection);
         // Starts the server to avoid crashing on shutdown in tearDown().
@@ -332,10 +328,8 @@ public class CronetHttpURLConnectionTest {
             fail();
         } catch (IOException e) {
             assertTrue(e instanceof java.net.ConnectException || e instanceof CronetException);
-            assertTrue(e.getMessage().contains("ECONNREFUSED")
-                    || e.getMessage().contains("Connection refused")
-                    || e.getMessage().contains("net::ERR_CONNECTION_REFUSED")
-                    || e.getMessage().contains("Failed to connect"));
+            assertThat(e).hasMessageThat().containsMatch(Pattern.compile(
+                    "ECONNREFUSED|Connection refused|net::ERR_CONNECTION_REFUSED|Failed to connect"));
         }
         checkExceptionsAreThrown(mUrlConnection);
     }
@@ -806,7 +800,7 @@ public class CronetHttpURLConnectionTest {
 
         InputStream in = mUrlConnection.getInputStream();
         // Read one byte and disconnect.
-        assertTrue(in.read() != 1);
+        assertThat(in.read()).isNotEqualTo(1);
         mUrlConnection.disconnect();
         // Continue reading, and make sure the message loop will not block.
         try {
@@ -847,7 +841,7 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) url.openConnection();
         InputStream in = mUrlConnection.getInputStream();
         // Read one byte and shut down the server.
-        assertTrue(in.read() != -1);
+        assertThat(in.read()).isNotEqualTo(-1);
         NativeTestServer.shutdownNativeTestServer();
         // Continue reading, and make sure the message loop will not block.
         try {
@@ -969,7 +963,7 @@ public class CronetHttpURLConnectionTest {
         } catch (IOException e) {
             // Expected.
         }
-        assertNull(mUrlConnection.getErrorStream());
+        assertThat(mUrlConnection.getErrorStream()).isNull();
     }
 
     @Test
@@ -1220,18 +1214,18 @@ public class CronetHttpURLConnectionTest {
         // returns an empty map on L.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Map<String, List<String>> headers = urlConnection.getHeaderFields();
-            assertNotNull(headers);
-            assertTrue(headers.isEmpty());
+            assertThat(headers).isNotNull();
+            assertThat(headers).isEmpty();
         }
         // Skip getHeaderFields(), since it can return null or an empty map.
-        assertNull(urlConnection.getHeaderField("foo"));
-        assertNull(urlConnection.getHeaderFieldKey(0));
-        assertNull(urlConnection.getHeaderField(0));
+        assertThat(urlConnection.getHeaderField("foo")).isNull();
+        assertThat(urlConnection.getHeaderFieldKey(0)).isNull();
+        assertThat(urlConnection.getHeaderField(0)).isNull();
 
         // getErrorStream() does not have a throw clause, it returns null if
         // there's an exception.
         InputStream errorStream = urlConnection.getErrorStream();
-        assertNull(errorStream);
+        assertThat(errorStream).isNull();
     }
 
     /**
@@ -1385,7 +1379,7 @@ public class CronetHttpURLConnectionTest {
         // InterruptedIOException.
         t.interrupt();
         // Make sure an IOException is thrown.
-        assertNotNull(task.get());
+        assertThat(task.get()).isNotNull();
         s.close();
     }
 

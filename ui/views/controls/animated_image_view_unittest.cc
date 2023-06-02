@@ -88,7 +88,7 @@ class AnimatedImageViewTest : public ViewsTestBase {
   }
 
   Widget widget_;
-  raw_ptr<AnimatedImageView> view_;
+  raw_ptr<AnimatedImageView, DanglingUntriaged> view_;
 };
 
 TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {

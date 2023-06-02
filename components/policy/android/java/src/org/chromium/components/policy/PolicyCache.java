@@ -232,7 +232,12 @@ public class PolicyCache {
                 }
             }
         }
-        sharedPreferencesEditor.apply();
+
+        // Update sharedPreferences. The first round of updating during launch
+        // will use the main thread.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            sharedPreferencesEditor.apply();
+        }
 
         // Policy Service is up and there is no need to get policy from here anymore.
         enableWriteOnlyMode();

@@ -4,6 +4,7 @@
 
 #include "ash/system/camera/camera_effects_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,6 +18,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -272,7 +274,7 @@ void CameraEffectsController::OnEffectControlActivated(
   SetCameraEffects(std::move(new_effects));
 }
 
-void CameraEffectsController::RecordMetricsForSetValueEffect(
+void CameraEffectsController::RecordMetricsForSetValueEffectOnClick(
     VcEffectId effect_id,
     int state_value) const {
   // `CameraEffectsController` currently only has background blur as a set-value
@@ -280,7 +282,19 @@ void CameraEffectsController::RecordMetricsForSetValueEffect(
   DCHECK_EQ(VcEffectId::kBackgroundBlur, effect_id);
 
   base::UmaHistogramEnumeration(
-      video_conference_utils::GetEffectHistogramName(effect_id),
+      video_conference_utils::GetEffectHistogramNameForClick(effect_id),
+      MapBackgroundBlurPrefValueToState(state_value));
+}
+
+void CameraEffectsController::RecordMetricsForSetValueEffectOnStartup(
+    VcEffectId effect_id,
+    int state_value) const {
+  // `CameraEffectsController` currently only has background blur as a set-value
+  // effect, so it shouldn't be any other effects here.
+  DCHECK_EQ(VcEffectId::kBackgroundBlur, effect_id);
+
+  base::UmaHistogramEnumeration(
+      video_conference_utils::GetEffectHistogramNameForInitialState(effect_id),
       MapBackgroundBlurPrefValueToState(state_value));
 }
 
@@ -367,6 +381,8 @@ void CameraEffectsController::SetCameraEffects(
 
   // Update effects config with settings from feature flags.
   config->segmentation_model = GetSegmentationModelType();
+  config->light_intensity = GetFieldTrialParamByFeatureAsDouble(
+      ash::features::kVcLightIntensity, "light_intensity", 1.0);
 
   // Directly calls the callback for testing case.
   if (in_testing_mode_) {

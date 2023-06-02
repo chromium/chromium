@@ -69,10 +69,12 @@ void SyntheticGestureTargetAndroid::TouchSetScrollDeltas(float x,
 
 void SyntheticGestureTargetAndroid::TouchInject(MotionEventAction action,
                                                 int pointer_count,
+                                                int pointer_index,
                                                 base::TimeTicks time) {
   TRACE_EVENT0("input", "SyntheticGestureTargetAndroid::TouchInject");
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SyntheticGestureTarget_inject(env, java_ref_, action, pointer_count,
+                                     pointer_index,
                                      time.since_origin().InMilliseconds());
 }
 
@@ -97,13 +99,24 @@ void SyntheticGestureTargetAndroid::DispatchWebTouchEventToPlatform(
       NOTREACHED();
   }
   const unsigned num_touches = web_touch.touches_length;
+  int touch_index = -1;
+  DCHECK_LE(num_touches, 2u);
   for (unsigned i = 0; i < num_touches; ++i) {
     const blink::WebTouchPoint* point = &web_touch.touches[i];
+    if (point->state != blink::WebTouchPoint::State::kStateStationary) {
+      if (action == MOTION_EVENT_ACTION_START ||
+          action == MOTION_EVENT_ACTION_END) {
+        // We should have only one non-stationary touch for start/end.
+        DCHECK_EQ(touch_index, -1);
+      }
+      touch_index = i;
+    }
     TouchSetPointer(i, point->PositionInWidget().x(),
                     point->PositionInWidget().y(), point->id);
   }
+  DCHECK_GE(touch_index, 0);
 
-  TouchInject(action, num_touches, web_touch.TimeStamp());
+  TouchInject(action, num_touches, touch_index, web_touch.TimeStamp());
 }
 
 void SyntheticGestureTargetAndroid::DispatchWebMouseWheelEventToPlatform(
@@ -112,7 +125,11 @@ void SyntheticGestureTargetAndroid::DispatchWebMouseWheelEventToPlatform(
   TouchSetScrollDeltas(web_wheel.PositionInWidget().x(),
                        web_wheel.PositionInWidget().y(), web_wheel.delta_x,
                        web_wheel.delta_y);
-  TouchInject(MOTION_EVENT_ACTION_SCROLL, 1, web_wheel.TimeStamp());
+  // We only have a single pointer.
+  const unsigned pointer_index = 0;
+  const unsigned num_pointers = 1;
+  TouchInject(MOTION_EVENT_ACTION_SCROLL, num_pointers, pointer_index,
+              web_wheel.TimeStamp());
 }
 
 void SyntheticGestureTargetAndroid::DispatchWebGestureEventToPlatform(

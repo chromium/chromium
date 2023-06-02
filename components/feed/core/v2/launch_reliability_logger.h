@@ -41,7 +41,6 @@ class LaunchReliabilityLogger {
                           int combined_network_status_code);
 
   void LogLoadMoreStarted();
-  void LogLoadMoreIndicatorShown();
   void LogLoadMoreActionUploadRequestStarted();
   void LogLoadMoreRequestSent();
   void LogLoadMoreResponseReceived(int64_t server_receive_timestamp_ns,

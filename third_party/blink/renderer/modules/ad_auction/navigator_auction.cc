@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_targeting.h"
@@ -606,12 +607,13 @@ bool CopyWasmHelperUrlFromIdlToMojo(const ExecutionContext& context,
                                     ExceptionState& exception_state,
                                     const AuctionAdInterestGroup& input,
                                     mojom::blink::InterestGroup& output) {
-  if (!input.hasBiddingWasmHelperUrl())
+  if (!input.hasBiddingWasmHelperURL()) {
     return true;
-  KURL wasm_url = context.CompleteURL(input.biddingWasmHelperUrl());
+  }
+  KURL wasm_url = context.CompleteURL(input.biddingWasmHelperURL());
   if (!wasm_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-        input, "biddingWasmHelperUrl", input.biddingWasmHelperUrl(),
+        input, "biddingWasmHelperURL", input.biddingWasmHelperURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -624,18 +626,18 @@ bool CopyUpdateUrlFromIdlToMojo(const ExecutionContext& context,
                                 ExceptionState& exception_state,
                                 const AuctionAdInterestGroup& input,
                                 mojom::blink::InterestGroup& output) {
-  if (input.hasUpdateUrl()) {
+  if (input.hasUpdateURL()) {
     if (input.hasDailyUpdateUrl() &&
-        input.updateUrl() != input.dailyUpdateUrl()) {
+        input.updateURL() != input.dailyUpdateUrl()) {
       exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-          input, "updateUrl", input.updateUrl(),
+          input, "updateURL", input.updateURL(),
           "must match dailyUpdateUrl, when both are present."));
       return false;
     }
-    KURL update_url = context.CompleteURL(input.updateUrl());
+    KURL update_url = context.CompleteURL(input.updateURL());
     if (!update_url.IsValid()) {
       exception_state.ThrowTypeError(
-          ErrorInvalidInterestGroup(input, "updateUrl", input.updateUrl(),
+          ErrorInvalidInterestGroup(input, "updateURL", input.updateURL(),
                                     "cannot be resolved to a valid URL."));
       return false;
     }
@@ -660,13 +662,14 @@ bool CopyTrustedBiddingSignalsUrlFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdInterestGroup& input,
     mojom::blink::InterestGroup& output) {
-  if (!input.hasTrustedBiddingSignalsUrl())
+  if (!input.hasTrustedBiddingSignalsURL()) {
     return true;
+  }
   KURL trusted_bidding_signals_url =
-      context.CompleteURL(input.trustedBiddingSignalsUrl());
+      context.CompleteURL(input.trustedBiddingSignalsURL());
   if (!trusted_bidding_signals_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-        input, "trustedBiddingSignalsUrl", input.trustedBiddingSignalsUrl(),
+        input, "trustedBiddingSignalsURL", input.trustedBiddingSignalsURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -2082,7 +2085,7 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
             return false;
           }
         } else {
-          ad->setRenderURL(ad->renderUrlDeprecated());
+          ad->setRenderURL(std::move(ad->renderUrlDeprecated()));
         }
       }
       if (!ad->hasRenderURL()) {
@@ -2105,7 +2108,7 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
             return false;
           }
         } else {
-          ad->setRenderURL(ad->renderUrlDeprecated());
+          ad->setRenderURL(std::move(ad->renderUrlDeprecated()));
         }
       }
       if (!ad->hasRenderURL()) {
@@ -2127,7 +2130,56 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
         return false;
       }
     } else {
-      group->setBiddingLogicURL(group->biddingLogicUrlDeprecated());
+      group->setBiddingLogicURL(std::move(group->biddingLogicUrlDeprecated()));
+    }
+  }
+
+  if (group->hasBiddingWasmHelperUrlDeprecated()) {
+    if (group->hasBiddingWasmHelperURL()) {
+      if (group->biddingWasmHelperUrlDeprecated() !=
+          group->biddingWasmHelperURL()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group biddingWasmHelperUrl",
+            /*old_field_value=*/group->biddingWasmHelperUrlDeprecated(),
+            /*new_field_name=*/"interest group biddingWasmHelperURL",
+            /*new_field_value=*/group->biddingWasmHelperURL()));
+        return false;
+      }
+    } else {
+      group->setBiddingWasmHelperURL(
+          std::move(group->biddingWasmHelperUrlDeprecated()));
+    }
+  }
+
+  if (group->hasUpdateUrlDeprecated()) {
+    if (group->hasUpdateURL()) {
+      if (group->updateUrlDeprecated() != group->updateURL()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group updateUrl",
+            /*old_field_value=*/group->updateUrlDeprecated(),
+            /*new_field_name=*/"interest group updateURL",
+            /*new_field_value=*/group->updateURL()));
+        return false;
+      }
+    } else {
+      group->setUpdateURL(std::move(group->updateUrlDeprecated()));
+    }
+  }
+
+  if (group->hasTrustedBiddingSignalsUrlDeprecated()) {
+    if (group->hasTrustedBiddingSignalsURL()) {
+      if (group->trustedBiddingSignalsUrlDeprecated() !=
+          group->trustedBiddingSignalsURL()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group trustedBiddingSignalsUrl",
+            /*old_field_value=*/group->trustedBiddingSignalsUrlDeprecated(),
+            /*new_field_name=*/"interest group trustedBiddingSignalsURL",
+            /*new_field_value=*/group->trustedBiddingSignalsURL()));
+        return false;
+      }
+    } else {
+      group->setTrustedBiddingSignalsURL(
+          std::move(group->trustedBiddingSignalsUrlDeprecated()));
     }
   }
 
@@ -3357,6 +3409,82 @@ bool NavigatorAuction::canLoadAdAuctionFencedFrame(ScriptState* script_state,
   }
   return From(ExecutionContext::From(script_state), navigator)
       .canLoadAdAuctionFencedFrame(script_state);
+}
+
+ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
+    ScriptState* script_state,
+    const AdAuctionDataConfig* config,
+    ExceptionState& exception_state) {
+  CHECK(config);
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise();
+  }
+
+  scoped_refptr<const SecurityOrigin> seller = ParseOrigin(config->seller());
+  if (!seller) {
+    exception_state.ThrowTypeError(String::Format(
+        "seller '%s' for AdAuctionDataConfig must be a valid https origin.",
+        config->seller().Utf8().c_str()));
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+
+  ScriptPromise promise = resolver->Promise();
+
+  ad_auction_service_->GetInterestGroupAdAuctionData(
+      seller, resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                  &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
+                  WrapPersistent(this))));
+  return promise;
+}
+
+void NavigatorAuction::GetInterestGroupAdAuctionDataComplete(
+    ScriptPromiseResolver* resolver,
+    mojo_base::BigBuffer data) {
+  ScriptState* script_state = resolver->GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::ArrayBuffer> array_buffer =
+      v8::ArrayBuffer::New(isolate, data.size());
+  if (data.size() > 0) {
+    CHECK(array_buffer->Data());
+    memcpy(array_buffer->Data(), data.data(), data.size());
+  }
+  v8::Local<v8::Uint8Array> uint8_array =
+      v8::Uint8Array::New(array_buffer, 0, data.size());
+  resolver->Resolve(uint8_array);
+}
+
+/* static */
+ScriptPromise NavigatorAuction::getInterestGroupAdAuctionData(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const AdAuctionDataConfig* config,
+    ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
+  RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Feature run-ad-auction is not enabled by Permissions Policy");
+    return ScriptPromise();
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(script_state, "run-ad-auction",
+                               "getInterestGroupAdAuctionData");
+  }
+
+  return From(ExecutionContext::From(script_state), navigator)
+      .getInterestGroupAdAuctionData(script_state, config, exception_state);
 }
 
 }  // namespace blink

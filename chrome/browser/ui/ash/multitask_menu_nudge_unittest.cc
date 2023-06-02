@@ -43,7 +43,7 @@ TEST_F(MultitaskMenuNudgeTest, NoNudgeForNewUser) {
   chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-  fake_user_manager->set_is_current_user_new(true);
+  fake_user_manager->SetIsCurrentUserNew(true);
   user_manager::ScopedUserManager scoped_user_manager(
       std::move(fake_user_manager));
 

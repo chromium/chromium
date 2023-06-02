@@ -50,6 +50,7 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -935,6 +936,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kConsumerAutoUpdateToggle] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::ash::prefs::kChargingSoundsEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Native Printing settings.
   (*s_allowlist)[::prefs::kUserPrintersAllowed] =
@@ -1176,19 +1179,38 @@ absl::optional<settings_api::PrefObject> PrefsUtil::GetPref(
     return pref_object;
   }
 #endif
-
-  if (pref && pref->IsManaged()) {
-    if (profile_->IsChild()) {
-      pref_object->controlled_by =
-          settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
-    } else {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedPrefsControlledBySupervisedStore)) {
+    if (pref && pref->IsManaged()) {
       pref_object->controlled_by =
           settings_api::ControlledBy::CONTROLLED_BY_USER_POLICY;
     }
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    return pref_object;
-  }
 
+    if (pref && pref->IsManagedByCustodian()) {
+      pref_object->controlled_by =
+          settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
+    }
+
+    if (pref_object->controlled_by !=
+        settings_api::ControlledBy::CONTROLLED_BY_NONE) {
+      pref_object->enforcement =
+          settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+      return pref_object;
+    }
+  } else {
+    if (pref && pref->IsManaged()) {
+      if (profile_->IsChild()) {
+        pref_object->controlled_by =
+            settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
+      } else {
+        pref_object->controlled_by =
+            settings_api::ControlledBy::CONTROLLED_BY_USER_POLICY;
+      }
+      pref_object->enforcement =
+          settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+      return pref_object;
+    }
+  }
   // A pref is recommended if it has a recommended value, regardless of whether
   // the current value is set by policy. The UI will test to see whether the
   // current value matches the recommended value and inform the user.

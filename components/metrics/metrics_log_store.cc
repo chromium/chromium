@@ -25,22 +25,23 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
                                  MetricsLogsEventManager* logs_event_manager)
     : unsent_logs_loaded_(false),
       logs_event_manager_(logs_event_manager),
-      initial_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
-                         local_state,
-                         prefs::kMetricsInitialLogs,
-                         prefs::kMetricsInitialLogsMetadata,
-                         storage_limits.min_initial_log_queue_count,
-                         storage_limits.min_initial_log_queue_size,
-                         0,  // Each individual initial log can be any size.
-                         signing_key,
-                         logs_event_manager),
+      initial_log_queue_(
+          std::make_unique<UnsentLogStoreMetricsImpl>(),
+          local_state,
+          prefs::kMetricsInitialLogs,
+          prefs::kMetricsInitialLogsMetadata,
+          UnsentLogStore::UnsentLogStoreLimits{
+              storage_limits.initial_log_queue_limits.min_log_count,
+              storage_limits.initial_log_queue_limits.min_queue_size_bytes,
+              // Each individual initial log can be any size.
+              /*max_log_size_bytes=*/0},
+          signing_key,
+          logs_event_manager),
       ongoing_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
                          local_state,
                          prefs::kMetricsOngoingLogs,
                          prefs::kMetricsOngoingLogsMetadata,
-                         storage_limits.min_ongoing_log_queue_count,
-                         storage_limits.min_ongoing_log_queue_size,
-                         storage_limits.max_ongoing_log_size,
+                         storage_limits.ongoing_log_queue_limits,
                          signing_key,
                          logs_event_manager) {}
 

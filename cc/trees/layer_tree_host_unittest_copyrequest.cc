@@ -611,7 +611,7 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
 
   viz::AggregatedRenderPassId parent_render_pass_id;
   viz::AggregatedRenderPassId copy_layer_render_pass_id;
-  raw_ptr<TestLayerTreeFrameSink> frame_sink_ = nullptr;
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> frame_sink_ = nullptr;
   bool did_swap_ = false;
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> root_;

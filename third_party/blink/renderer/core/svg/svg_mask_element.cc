@@ -70,14 +70,7 @@ SVGMaskElement::SVGMaskElement(Document& document)
                           SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
           this,
           svg_names::kMaskContentUnitsAttr,
-          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
-  AddToPropertyMap(x_);
-  AddToPropertyMap(y_);
-  AddToPropertyMap(width_);
-  AddToPropertyMap(height_);
-  AddToPropertyMap(mask_units_);
-  AddToPropertyMap(mask_content_units_);
-}
+          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {}
 
 void SVGMaskElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
@@ -162,6 +155,53 @@ bool SVGMaskElement::SelfHasRelativeLengths() const {
   return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
          width_->CurrentValue()->IsRelative() ||
          height_->CurrentValue()->IsRelative();
+}
+
+SVGAnimatedPropertyBase* SVGMaskElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kXAttr) {
+    return x_.Get();
+  } else if (attribute_name == svg_names::kYAttr) {
+    return y_.Get();
+  } else if (attribute_name == svg_names::kWidthAttr) {
+    return width_.Get();
+  } else if (attribute_name == svg_names::kHeightAttr) {
+    return height_.Get();
+  } else if (attribute_name == svg_names::kMaskUnitsAttr) {
+    return mask_units_.Get();
+  } else if (attribute_name == svg_names::kMaskContentUnitsAttr) {
+    return mask_content_units_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret;
+    if (ret = SVGTests::PropertyFromAttribute(attribute_name); ret) {
+      return ret;
+    }
+    return SVGElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGMaskElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{
+        x_.Get(),      y_.Get(),          width_.Get(),
+        height_.Get(), mask_units_.Get(), mask_content_units_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGTests::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGMaskElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  for (auto* property : (SVGAnimatedPropertyBase*[]){
+           x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
+    if (property->HasPresentationAttributeMapping() &&
+        property->IsAnimating()) {
+      CollectStyleForPresentationAttribute(property->AttributeName(),
+                                           g_empty_atom, style);
+    }
+  }
+  SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

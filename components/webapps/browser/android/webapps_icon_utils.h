@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPPS_ICON_UTILS_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "components/webapk/webapk.pb.h"
 
 class SkBitmap;
 class GURL;
@@ -40,6 +41,10 @@ class WebappsIconUtils {
   // Returns the ideal size for a shortcut icon of a WebAPK.
   static int GetIdealShortcutIconSizeInPx();
 
+  // Returns the ideal size for a WebAPK icon of specific type
+  static int GetIdealIconSizeForIconType(webapk::Image::Usage usage,
+                                         webapk::Image::Purpose purpose);
+
   // Returns if the Android version supports Adaptive Icon (i.e. API level >=
   // 26)
   static bool DoesAndroidSupportMaskableIcons();
@@ -49,7 +54,6 @@ class WebappsIconUtils {
   // |is_generated| will be set to |true|.
   // Must be called on a background worker thread.
   static SkBitmap FinalizeLauncherIconInBackground(const SkBitmap& icon,
-                                                   bool is_icon_maskable,
                                                    const GURL& url,
                                                    bool* is_generated);
 
@@ -59,6 +63,7 @@ class WebappsIconUtils {
   static int GetIdealIconCornerRadiusPxForPromptUI();
 
   static void SetIdealShortcutSizeForTesting(int size);
+  static void SetIconSizesForTesting(std::vector<int> sizes);
 };
 
 }  // namespace webapps

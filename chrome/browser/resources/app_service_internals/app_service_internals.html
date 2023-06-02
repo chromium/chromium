@@ -18,6 +18,7 @@
     </template>
   </ul>
   <li><a href="#promise-apps">Promise Apps</a></li>
+  <li><a href="#app-capabilities">App Capabilities</a></li>
 </ul>
 
 <section>
@@ -47,5 +48,12 @@
       <h3>[[item.packageId]]</h3>
       <pre>[[item.debugInfo]]</pre>
     </div>
+  </template>
+
+  <h2 id="app-capabilities">App Capabilities</h2>
+
+  <template is="dom-repeat" items="[[appCapabilityList_]]">
+    <h3>[[item.name]]</h3>
+    <pre>[[item.debugInfo]]</pre>
   </template>
 </section>

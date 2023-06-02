@@ -207,10 +207,6 @@ BASE_DECLARE_FEATURE(kWaylandKeepSelectionFix);
 // Fixes b/267944900.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kWaylandCancelComposition);
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kWaylandScreenCoordinatesEnabled);
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-bool IsWaylandScreenCoordinatesEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kLacrosColorManagement);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -260,11 +256,6 @@ BASE_DECLARE_FEATURE(kMacClipboardWriteImageWithPng);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kCr2023MacFontSmoothing);
 #endif
-
-// Сreating a MotionEvent from Java MotionEvent use the event time in
-// nanoseconds instead of milliseconds.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kUseNanosecondsForMotionEvent);
 
 }  // namespace features
 

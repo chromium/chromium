@@ -8,8 +8,6 @@ This PRESUBMIT guards against rolling a broken version of WPT tooling. It does
 some smoke checks of WPT functionality.
 """
 
-USE_PYTHON3 = True
-
 import pathlib
 import textwrap
 

@@ -85,7 +85,9 @@ class ASH_EXPORT BluetoothDetailedView {
   // Notifies that the device list has changed and the layout is invalid.
   virtual void NotifyDeviceListChanged() = 0;
 
-  // Returns the device list.
+  // Returns the main content view which contains a list of child views that
+  // make up the list of connected and previously connected bluetooth devices,
+  // including their headers and any separators.
   virtual views::View* device_list() = 0;
 
  protected:

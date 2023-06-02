@@ -65,7 +65,7 @@ constexpr char kNearbyNotifier[] = "nearby";
 
 std::string CreateNotificationIdForShareTarget(
     const ShareTarget& share_target) {
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShareUI)) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     return std::string(kNearbyTransferResultNotificationIdPrefix) +
            share_target.id.ToString();
   } else {
@@ -828,8 +828,7 @@ void NearbyNotificationManager::OnTransferUpdate(
         ShowProgress(share_target, transfer_metadata);
       break;
     case TransferMetadata::Status::kAwaitingLocalConfirmation:
-      if (base::FeatureList::IsEnabled(
-              features::kNearbySharingSelfShareAutoAccept)) {
+      if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
         // Only incoming transfers are handled via notifications.
         // Don't show notification for self shares since we will auto-accept.
         if (share_target.is_incoming && !share_target.for_self_share)

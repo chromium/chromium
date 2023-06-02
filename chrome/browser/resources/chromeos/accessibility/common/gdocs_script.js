@@ -3,8 +3,19 @@
 // found in the LICENSE file.
 
 function triggerDocsCanvasAnnotationMode() {
+  let extensionId = '';
+  if (!chrome.runtime) {
+    // Manifest v3: Not running in extension's runtime.
+    // Parse this script's URL to determine extension ID.
+    // The URL will look like
+    // `chrome-extension://extensionId/common/gdocs_script.js.
+    extensionId = document.currentScript.src.split('/')[2];
+  } else {
+    // Manifest v2.
+    extensionId = chrome.runtime.id;
+  }
   const scriptContents = `
-    window['_docs_annotate_canvas_by_ext'] = "${chrome.runtime.id}";
+    window['_docs_annotate_canvas_by_ext'] = "${extensionId}";
   `;
   const script = document.createElement('script');
   script.innerHTML = scriptContents;

@@ -691,8 +691,15 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
 
 void PageLoadTracker::OnLoadedResource(
     const ExtraRequestCompleteInfo& extra_request_complete_info) {
-  receive_headers_start_ =
-      extra_request_complete_info.load_timing_info->receive_headers_start;
+  // The main_frame_receive_headers_start_ should be only set once during a
+  // page load. A new page load would have a new PageLoadTracker object.
+  if (extra_request_complete_info.request_destination ==
+          network::mojom::RequestDestination::kDocument &&
+      !main_frame_receive_headers_start_.has_value()) {
+    main_frame_receive_headers_start_ =
+        extra_request_complete_info.load_timing_info->receive_headers_start;
+  }
+
   for (const auto& observer : observers_) {
     observer->OnLoadedResource(extra_request_complete_info);
   }
@@ -938,10 +945,11 @@ void PageLoadTracker::OnTimingChanged() {
                .value());
 
   if (largest_contentful_image_changed) {
-    if (receive_headers_start_.has_value() && !GetNavigationStart().is_null()) {
+    if (main_frame_receive_headers_start_.has_value() &&
+        !GetNavigationStart().is_null()) {
       RecordLargestContentfulPaintImageLoadTiming(
           *paint_timing->largest_contentful_paint,
-          receive_headers_start_.value() - GetNavigationStart());
+          main_frame_receive_headers_start_.value() - GetNavigationStart());
     }
   }
 
@@ -1013,6 +1021,8 @@ void PageLoadTracker::OnMainFrameMetadataChanged() {
   for (const auto& observer : observers_) {
     observer->OnLoadingBehaviorObserved(nullptr,
                                         GetMainFrameMetadata().behavior_flags);
+    observer->OnJavaScriptFrameworksObserved(
+        nullptr, GetMainFrameMetadata().framework_detection_result);
   }
 }
 

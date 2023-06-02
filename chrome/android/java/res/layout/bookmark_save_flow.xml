@@ -30,8 +30,8 @@ found in the LICENSE file.
                 android:layout_height="72dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_gravity="center_vertical|start"
-                android:background="@drawable/bookmark_save_flow_background"
-                android:foreground="@drawable/bookmark_save_flow_ripple"
+                android:background="@drawable/rounded_rectangle_surface_1"
+                android:foreground="@drawable/bookmark_touch_ripple"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/edit_folder" />
 

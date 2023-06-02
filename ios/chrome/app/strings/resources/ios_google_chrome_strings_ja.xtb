@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="2736805085127235148">現在、デバイスの設定で Chrome の通知がオフになっています。</translation>
 <translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
+<translation id="2840432500933227975">iOS で Chrome の設定を開き、[デフォルトのブラウザアプリ] をタップして [Chrome] を選択します。</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2957447865124070833">[<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />] を選択する</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Chrome は毎回モバイルサイトをリクエストします。</translation>
 <translation id="3706101708757577809">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="3720541637541300822">Chrome を終了するときにシークレット タブをロックする</translation>
+<translation id="3827545470516145620">このデバイスは標準のセキュリティ機能で保護されます</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
 <translation id="3980220367029651214">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> へ切り替えます。既存の Chrome データは <ph name="DOMAIN" /> で管理されています。データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> で保持されます。</translation>
 <translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
@@ -150,7 +152,6 @@
   • Chrome がクラッシュした場合、クラッシュに関する情報として、一部の個人情報が送信される場合があります。
 
   • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">この Chrome プロフィールは標準のセキュリティで保護されます</translation>
 <translation id="9112744793181547300">Chrome を既定に設定しますか？</translation>
 <translation id="9122931302567044771">Chrome は毎回 PC 版サイトをリクエストします。</translation>
 </translationbundle>

@@ -100,7 +100,15 @@ export class BaseDialog {
     this.title.className = 'cr-dialog-title';
     this.frame.appendChild(this.title);
 
-    this.closeButton = doc.createElement('div');
+    // Use cr-button as close button for refresh23 style.
+    if (util.isJellyEnabled()) {
+      this.closeButton = doc.createElement('cr-button');
+      const icon = doc.createElement('div');
+      icon.className = 'icon';
+      this.closeButton.appendChild(icon);
+    } else {
+      this.closeButton = doc.createElement('div');
+    }
     this.closeButton.className = 'cr-dialog-close';
     this.closeButton.addEventListener('click', this.onCancelClick_.bind(this));
     this.frame.appendChild(this.closeButton);

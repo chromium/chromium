@@ -13,6 +13,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -272,12 +273,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 createDetachedModelSelectorButton(context, selectorClickHandler);
             }
 
-            // Model selector button icon color
-            int iconDefaultColor =
-                    context.getResources().getColor(R.color.model_selector_button_icon_color);
-            int iconIncognitoColor =
-                    context.getResources().getColor(R.color.default_icon_color_secondary_light);
-
             // Model selector button background color.
             // Default bg color is surface inverse.
             int backgroundDefaultColor =
@@ -294,9 +289,21 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                     ? context.getResources().getColor(defaultBgColorDarkElev1)
                     : context.getResources().getColor(defaultBgColorDarkElev2);
 
+            // Model selector button icon color
+            // @Todo(zheliooo crbugs.com/1447285) may need to update color using GM3 and update MSB
+            // icon per UX suggestion. Temporarily set MSB color match NTB color in normal mode
+            int iconDefaultColor = TabUiFeatureUtilities.isTabStripButtonStyleDisabled()
+                    ? AppCompatResources
+                              .getColorStateList(context, R.color.default_icon_color_tint_list)
+                              .getDefaultColor()
+                    : context.getResources().getColor(R.color.model_selector_button_icon_color);
+            int iconIncognitoColor =
+                    context.getResources().getColor(R.color.default_icon_color_secondary_light);
+
             ((TintedCompositorButton) mModelSelectorButton)
                     .setTint(iconDefaultColor, iconDefaultColor, iconIncognitoColor,
                             iconIncognitoColor);
+
             ((TintedCompositorButton) mModelSelectorButton)
                     .setBackgroundTint(backgroundDefaultColor, backgroundDefaultColor,
                             backgroundIncognitoColor, backgroundIncognitoColor);
@@ -616,14 +623,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 public void onTabStateInitialized() {
                     updateModelSwitcherButton();
                     new Handler().post(() -> mTabModelSelector.removeObserver(this));
+
+                    mNormalHelper.onTabStateInitialized();
+                    mIncognitoHelper.onTabStateInitialized();
                 }
             });
         }
 
+        boolean tabStateInitialized = mTabModelSelector.isTabStateInitialized();
         mNormalHelper.setTabModel(mTabModelSelector.getModel(false),
-                tabCreatorManager.getTabCreator(false));
+                tabCreatorManager.getTabCreator(false), tabStateInitialized);
         mIncognitoHelper.setTabModel(mTabModelSelector.getModel(true),
-                tabCreatorManager.getTabCreator(true));
+                tabCreatorManager.getTabCreator(true), tabStateInitialized);
         if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
             TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
             mNormalHelper.setTabGroupModelFilter(
@@ -697,12 +708,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             @Override
             public void didAddTab(
                     Tab tab, int type, int creationState, boolean markedForSelection) {
-                boolean selected = type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                        || (mTabModelSelector.isIncognitoSelected() && tab.isIncognito());
                 boolean onStartup = type == TabLaunchType.FROM_RESTORE;
                 getStripLayoutHelper(tab.isIncognito())
                         .tabCreated(time(), tab.getId(), mTabModelSelector.getCurrentTabId(),
-                                selected, false, onStartup);
+                                markedForSelection, false, onStartup);
             }
         };
 

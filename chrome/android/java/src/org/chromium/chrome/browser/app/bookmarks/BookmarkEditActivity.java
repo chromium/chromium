@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.bookmarks;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,20 +18,29 @@ import androidx.appcompat.widget.Toolbar;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkFeatures;
+import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRow;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRowCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
 /**
  * The activity that enables the user to modify the title, url and parent folder of a bookmark.
  */
+// TODO(crbug.com/1448929): Separate the activity from its view.
 public class BookmarkEditActivity extends SynchronousInitializationActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
@@ -39,14 +49,18 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
     private static final String TAG = "BookmarkEdit";
 
+    private ImprovedBookmarkFolderSelectRowCoordinator mFolderSelectCoordinator;
+
     private BookmarkModel mModel;
     private BookmarkId mBookmarkId;
+    private boolean mInFolderSelect;
+
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
     private TextView mFolderTextView;
-    private boolean mInFolderSelect;
-
     private MenuItem mDeleteButton;
+    private View mRegularFolderContainer;
+    private View mImprovedFolderContainer;
 
     private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
@@ -80,27 +94,55 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         mFolderTextView = (TextView) findViewById(R.id.folder_text);
         mUrlEditText = findViewById(R.id.url_text);
 
-        mFolderTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mInFolderSelect = true;
-                Intent intent = BookmarkFolderSelectActivity.createIntent(
-                        BookmarkEditActivity.this, /*createFolder=*/false, mBookmarkId);
-                startActivityForResult(intent, MOVE_REQUEST_CODE);
-            }
+        mFolderTextView.setOnClickListener((v) -> {
+            mInFolderSelect = true;
+            Intent intent = BookmarkFolderSelectActivity.createIntent(
+                    BookmarkEditActivity.this, /*createFolder=*/false, mBookmarkId);
+            startActivityForResult(intent, MOVE_REQUEST_CODE);
         });
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        updateViewContent(false);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
             shadow.setVisibility(scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
         });
+
+        mRegularFolderContainer = findViewById(R.id.folder_container);
+        mImprovedFolderContainer = findViewById(R.id.improved_folder_container);
+
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            mRegularFolderContainer.setVisibility(View.GONE);
+            mImprovedFolderContainer.setVisibility(View.VISIBLE);
+
+            boolean isFolder = item.isFolder();
+            TextView folderTitle = (TextView) findViewById(R.id.improved_folder_title);
+            folderTitle.setText(
+                    isFolder ? R.string.bookmark_parent_folder : R.string.bookmark_folder);
+            mUrlEditText.setVisibility(isFolder ? View.GONE : View.VISIBLE);
+            getSupportActionBar().setTitle(
+                    isFolder ? R.string.edit_folder : R.string.edit_bookmark);
+        } else {
+            mRegularFolderContainer.setVisibility(View.VISIBLE);
+            mImprovedFolderContainer.setVisibility(View.GONE);
+        }
+
+        Resources res = this.getResources();
+        Profile profile = Profile.getLastUsedRegularProfile();
+        mFolderSelectCoordinator = new ImprovedBookmarkFolderSelectRowCoordinator(this,
+                (ImprovedBookmarkFolderSelectRow) findViewById(R.id.improved_folder_row),
+                new BookmarkImageFetcher(this, mModel,
+                        ImageFetcherFactory.createImageFetcher(
+                                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
+                        new LargeIconBridge(profile),
+                        BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
+                        BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
+                        BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL)),
+                item.getParentId(), mModel);
+
+        updateViewContent(false);
     }
 
     @Override

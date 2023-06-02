@@ -257,6 +257,10 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
     // Partial translate not supported before iOS16.
     return;
   }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSEditMenuPartialTranslate,
+      {{kIOSEditMenuPartialTranslateNoIncognitoParam, "false"}});
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
         initWithWebStateList:&web_state_list_
       withBaseViewController:base_view_controller_
@@ -284,10 +288,6 @@ TEST_F(PartialTranslateMediatorTest, IncognitoNotSupported) {
     // Partial translate not supported before iOS16.
     return;
   }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kIOSEditMenuPartialTranslate,
-      {{kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}});
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
         initWithWebStateList:&web_state_list_
       withBaseViewController:base_view_controller_

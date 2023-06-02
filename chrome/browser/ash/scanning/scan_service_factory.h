@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -28,7 +28,7 @@ class ScanServiceFactory : public ProfileKeyedServiceFactory {
   static KeyedService* BuildInstanceFor(content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<ScanServiceFactory>;
+  friend base::NoDestructor<ScanServiceFactory>;
 
   ScanServiceFactory();
   ~ScanServiceFactory() override;

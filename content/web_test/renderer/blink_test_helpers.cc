@@ -136,7 +136,7 @@ WebURL RewriteWebTestsURL(base::StringPiece utf8_url, bool is_wpt_mode) {
         GetBuildDirectory().Append(FILE_PATH_LITERAL("gen/"));
     std::string new_url("file://");
     new_url.append(gen_directory_path.AsUTF8Unsafe());
-    new_url.append(utf8_url.substr(kGenPrefix.size()).data());
+    new_url.append(utf8_url.substr(kGenPrefix.size()));
     return WebURL(GURL(new_url));
   }
 
@@ -147,7 +147,7 @@ WebURL RewriteWebTestsURL(base::StringPiece utf8_url, bool is_wpt_mode) {
 
   std::string new_url("file://");
   new_url.append(GetWebTestsFilePath().AsUTF8Unsafe());
-  new_url.append(utf8_url.substr(kPrefix.size()).data());
+  new_url.append(utf8_url.substr(kPrefix.size()));
   return WebURL(GURL(new_url));
 }
 

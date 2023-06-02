@@ -75,7 +75,7 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
                              bool allow_retry) override {}
 
  private:
-  raw_ptr<CardUnmaskPromptController> controller_;
+  raw_ptr<CardUnmaskPromptController, DanglingUntriaged> controller_;
 };
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {

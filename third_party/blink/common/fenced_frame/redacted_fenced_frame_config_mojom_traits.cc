@@ -413,8 +413,8 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
       !data.ReadNestedConfigs(&out_config->nested_configs_) ||
       !data.ReadSharedStorageBudgetMetadata(
           &out_config->shared_storage_budget_metadata_) ||
-      !data.ReadRequiredPermissionsToLoad(
-          &out_config->required_permissions_to_load_)) {
+      !data.ReadEffectiveEnabledPermissions(
+          &out_config->effective_enabled_permissions_)) {
     return false;
   }
 
@@ -465,8 +465,8 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
       !data.ReadNestedUrnConfigPairs(&nested_urn_config_pairs) ||
       !data.ReadSharedStorageBudgetMetadata(
           &out_properties->shared_storage_budget_metadata_) ||
-      !data.ReadRequiredPermissionsToLoad(
-          &out_properties->required_permissions_to_load_)) {
+      !data.ReadEffectiveEnabledPermissions(
+          &out_properties->effective_enabled_permissions_)) {
     return false;
   }
 

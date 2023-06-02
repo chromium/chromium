@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -40,6 +41,16 @@ public class ActionChipsView extends RecyclerView {
         setMinimumHeight(getResources().getDimensionPixelSize(
                 R.dimen.omnibox_action_chips_container_height));
 
+        boolean showModernizedSuggestionsList =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
+        setPaddingRelative(getResources().getDimensionPixelSize(showModernizedSuggestionsList
+                                           ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                                           : R.dimen.omnibox_suggestion_icon_area_size),
+                0, 0,
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
+        // Permit Actions to scroll through the padding area (I know, right?).
+        setClipToPadding(false);
+
         final @Px int actionChipSpacing =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
         addItemDecoration(new ItemDecoration() {
@@ -50,9 +61,6 @@ public class ActionChipsView extends RecyclerView {
                 outRect.left = actionChipSpacing / 2;
             }
         });
-
-        setPaddingRelative(0, 0, 0,
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
     }
 
     @Override

@@ -46,8 +46,16 @@ class SSLPolicyTest : public PolicyTest {
     std::u16string title;
   };
 
-  bool StartTestServer(const net::SSLServerConfig ssl_config) {
+  bool StartTestServer(const net::SSLServerConfig& ssl_config) {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+    https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    return https_server_.Start();
+  }
+
+  bool StartTestServer(
+      const net::EmbeddedTestServer::ServerCertificateConfig& cert_config,
+      const net::SSLServerConfig& ssl_config) {
+    https_server_.SetSSLConfig(cert_config, ssl_config);
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
     return https_server_.Start();
   }
@@ -339,6 +347,106 @@ IN_PROC_BROWSER_TEST_F(SHA1EnabledPolicyTest, InsecureHashPolicy) {
   result = LoadPage("/title3.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of More Awesomeness", result.title);
+}
+
+class RSAKeyUsageDisabledPolicyTest : public SSLPolicyTest {
+ public:
+  RSAKeyUsageDisabledPolicyTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kRSAKeyUsageForLocalAnchors);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RSAKeyUsageDisabledPolicyTest, RSAKeyUsagePolicy) {
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.key_usages = {net::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
+  net::SSLServerConfig ssl_config;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  // 0xc02f is TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, which expects the
+  // digitalSignature key usage bit.
+  ssl_config.cipher_suite_for_testing = 0xc02f;
+  ASSERT_TRUE(StartTestServer(cert_config, ssl_config));
+
+  // By default, key usage is not checked by feature flag.
+  LoadResult result = LoadPage("/title2.html?1");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Enable the check by policy.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kRSAKeyUsageForLocalAnchorsEnabled,
+            base::Value(true));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // The page load should now fail.
+  EXPECT_TRUE(GetBooleanPref(prefs::kRSAKeyUsageForLocalAnchorsEnabled));
+  result = LoadPage("/title2.html?2");
+  EXPECT_FALSE(result.success);
+
+  // Disable the check by policy.
+  SetPolicy(&policies, key::kRSAKeyUsageForLocalAnchorsEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // The page load should succeed again.
+  result = LoadPage("/title2.html?3");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+}
+
+class RSAKeyUsageEnabledPolicyTest : public SSLPolicyTest {
+ public:
+  RSAKeyUsageEnabledPolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kRSAKeyUsageForLocalAnchors);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(RSAKeyUsageEnabledPolicyTest, RSAKeyUsagePolicy) {
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.key_usages = {net::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
+  net::SSLServerConfig ssl_config;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  // 0xc02f is TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, which expects the
+  // digitalSignature key usage bit.
+  ssl_config.cipher_suite_for_testing = 0xc02f;
+  ASSERT_TRUE(StartTestServer(cert_config, ssl_config));
+
+  // By default, key usage is checked by feature flag.
+  LoadResult result = LoadPage("/title2.html?1");
+  EXPECT_FALSE(result.success);
+
+  // Disable the check by policy.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kRSAKeyUsageForLocalAnchorsEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // The page load should now succeed.
+  EXPECT_FALSE(GetBooleanPref(prefs::kRSAKeyUsageForLocalAnchorsEnabled));
+  result = LoadPage("/title2.html?2");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Enable the check by policy.
+  SetPolicy(&policies, key::kRSAKeyUsageForLocalAnchorsEnabled,
+            base::Value(true));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // The page load should fail again.
+  EXPECT_TRUE(GetBooleanPref(prefs::kRSAKeyUsageForLocalAnchorsEnabled));
+  result = LoadPage("/title2.html?3");
+  EXPECT_FALSE(result.success);
 }
 
 }  // namespace policy

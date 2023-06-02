@@ -140,8 +140,16 @@ class BaselineCopier:
                 flag_specific = self._host.builders.flag_specific_option(
                     build.builder_name, step_name)
             port = self._optimizer.port(port_name, flag_specific)
-            yield self._optimizer.location(
+            location = self._optimizer.location(
                 self._fs.join(port.baseline_version_dir(), test))
+            maybe_test_file_path = self._fs.join(port.web_tests_dir(), test)
+            # Coerce this location to a non-virtual one for physical tests under
+            # a virtual directory. See crbug.com/1450725.
+            if self._fs.exists(maybe_test_file_path):
+                location = BaselineLocation(
+                    platform=location.platform,
+                    flag_specific=location.flag_specific)
+            yield location
 
     def _resolve_sources(
         self,

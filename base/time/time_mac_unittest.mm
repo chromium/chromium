@@ -7,7 +7,12 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
+
 class ScopedTimebase {
  public:
   ScopedTimebase(mach_timebase_info_data_t timebase) {

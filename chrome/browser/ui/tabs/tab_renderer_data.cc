@@ -49,10 +49,12 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
 
   // Tabbed web apps should use the app icon on the home tab.
   Browser* app_browser = chrome::FindBrowserWithWebContents(contents);
-  if (app_browser && app_browser->app_controller()) {
+
+  if (app_browser && app_browser->app_controller() &&
+      app_browser->app_controller()->ShouldShowAppIconOnTab(index)) {
     web_app::WebAppBrowserController* app_controller =
         app_browser->app_controller()->AsWebAppBrowserController();
-    if (app_controller && web_app::IsPinnedHomeTab(model, index)) {
+    if (app_controller) {
       gfx::ImageSkia home_tab_icon = app_controller->GetHomeTabIcon();
       if (!home_tab_icon.isNull()) {
         data.is_monochrome_favicon = true;

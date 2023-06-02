@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
@@ -37,7 +38,9 @@ class TestSyncService : public SyncService {
   void SetAccountInfo(const CoreAccountInfo& account_info);
   void SetHasSyncConsent(bool has_consent);
   void SetSetupInProgress(bool in_progress);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
@@ -77,7 +80,9 @@ class TestSyncService : public SyncService {
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool RequiresClientUpgrade() const override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncFeatureDisabledViaDashboard() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
@@ -137,7 +142,9 @@ class TestSyncService : public SyncService {
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
   bool setup_in_progress_ = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool sync_feature_disabled_via_dashboard_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ModelTypeSet failed_data_types_;
 

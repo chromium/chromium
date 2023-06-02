@@ -57,7 +57,7 @@ class CORE_EXPORT AbstractWorker
 
   void ContextDestroyed() override {}
 
-  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(error, kError)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
 
   explicit AbstractWorker(ExecutionContext*);
   ~AbstractWorker() override;

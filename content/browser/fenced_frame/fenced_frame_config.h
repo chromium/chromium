@@ -17,7 +17,10 @@
 // using the `FencedFrameEntity` enum:
 // * `kEmbedder`: the renderer process that embeds the fenced frame and calls
 //   the config-generating API
-// * `kContent`: the renderer process for the fenced frame content
+// * `kSameOriginContent`: the renderer process for the fenced frame content,
+//   if the fenced frame content is same-origin to the config's mapped url
+// * `kCrossOriginContent`: the renderer process for the fenced frame content,
+//   if the fenced frame content is cross-origin to the config's mapped url
 //
 // When a config-generating API constructs a config, for each field in the
 // config it must specify whether the field is opaque or transparent to
@@ -57,8 +60,8 @@
 //   the browser, e.g. the partition nonce for network requests.
 // * Upon navigation commit, the browser constructs a
 //   `RedactedFencedFrameProperties` from the `FencedFrameProperties` and the
-//   `kContent` entity. The constructor automatically performs the redaction
-//   process.
+//   `kSameOriginContent` or `kCrossOriginContent` entity. The constructor
+//   automatically performs the redaction process.
 //
 // Note: Because configs may contain nested configs (to be loaded into nested
 // fenced frames), the redaction process may recurse in order to redact these
@@ -124,12 +127,13 @@ enum class FencedFrameEntity {
   // The document that embeds a fenced frame.
   kEmbedder,
 
-  // The document inside a fenced frame. (Currently, this only applies to the
-  // very first document resulting from a urn navigation, not any subsequent
-  // navigations originating inside the fenced frame or affecting subframes.
-  // These other documents receive no visibility into the fenced frame
-  // config.)
-  kContent,
+  // The document inside a fenced frame whose origin matches the fenced frame's
+  // mapped URL.
+  kSameOriginContent,
+
+  // The document inside a fenced frame whose origin doesn't match the fenced
+  // frame's mapped URL.
+  kCrossOriginContent,
 };
 
 // Visibility levels specify whether information should be redacted when it is
@@ -187,7 +191,12 @@ class CONTENT_EXPORT FencedFrameProperty {
         }
         break;
       }
-      case FencedFrameEntity::kContent: {
+      case FencedFrameEntity::kCrossOriginContent: {
+        // For now, content that is cross-origin to the mapped URL does not get
+        // access to any of the redacted properties in the config.
+        return absl::nullopt;
+      }
+      case FencedFrameEntity::kSameOriginContent: {
         if (visibility_to_content_ == VisibilityToContent::kOpaque) {
           return absl::nullopt;
         }
@@ -312,11 +321,12 @@ struct CONTENT_EXPORT FencedFrameConfig {
   // frames, such as FLEDGE and Shared Storage, require certain features to be
   // enabled in the frame's permissions policy, but they cannot be set directly
   // by the embedder since that opens a communication channel. The API that
-  // constructs the config will set this directly.
+  // constructs the config will set this directly. These permissions will be the
+  // only ones enabled in the fenced frame once it navigates.
   // See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      required_permissions_to_load;
+      effective_enabled_permissions;
 };
 
 // Contains a set of fenced frame properties. These are generated at
@@ -441,11 +451,12 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // frames, such as FLEDGE and Shared Storage, require certain features to be
   // enabled in the frame's permissions policy, but they cannot be set directly
   // by the embedder since that opens a communication channel. The API that
-  // constructs the config will set this directly.
+  // constructs the config will set this directly. These permissions will be the
+  // only ones enabled in the fenced frame once it navigates.
   // See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      required_permissions_to_load;
+      effective_enabled_permissions;
 };
 
 }  // namespace content

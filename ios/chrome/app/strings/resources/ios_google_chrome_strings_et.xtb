@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
+<translation id="2840432500933227975">Avage iOS-is Chrome'i seaded, seejärel puudutage valikut „Brauseri vaike-APP” ja valige Chrome.</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
 <translation id="2957447865124070833">Valige <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
 <translation id="3706101708757577809">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="3720541637541300822">Chrome'i sulgemisel inkognito vahelehtede lukustamine</translation>
+<translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
 <translation id="3980220367029651214">Vahetate kontode sünkroonimise kontolt <ph name="USER_EMAIL1" /> kontole <ph name="USER_EMAIL2" />. Olemasolevaid Chrome'i andmeid haldab domeen <ph name="DOMAIN" />. See kustutab teie andmed sellest seadmest, kuid teie andmed jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Teie organisatsioon nõuab, et jääksite Chrome'ist väljalogituks.</translation>
@@ -150,7 +152,6 @@ Olulised aspektid
   • Kui Chrome jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada.
 
   • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Saate selle Chrome'i profiili jaoks standardse turvakaitse</translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="9122931302567044771">See tähendab, et Chrome taotleb iga kord töölauasaiti.</translation>
 </translationbundle>

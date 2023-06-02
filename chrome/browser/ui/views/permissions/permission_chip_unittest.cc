@@ -70,6 +70,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override { requests_.clear(); }
   void Dismiss() override { requests_.clear(); }
   void Ignore() override { requests_.clear(); }
+  void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override { requests_.clear(); }
   void SetManageClicked() override { requests_.clear(); }
   void SetLearnMoreClicked() override { requests_.clear(); }
@@ -140,7 +141,7 @@ class PermissionChipUnitTest : public TestWithBrowserView {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   base::TimeDelta kChipCollapseDuration = base::Seconds(12);
   base::TimeDelta kNormalChipDismissDuration = base::Seconds(6);

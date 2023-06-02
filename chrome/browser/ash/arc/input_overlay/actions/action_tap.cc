@@ -124,15 +124,6 @@ class ActionTap::ActionTapView : public ActionView {
                        std::move(input_element));
   }
 
-  void OnMenuEntryPressed() override {
-    display_overlay_controller_->AddActionEditMenu(this, ActionType::TAP);
-    DCHECK(menu_entry_);
-    if (!menu_entry_) {
-      return;
-    }
-    menu_entry_->RequestFocus();
-  }
-
   void AddTouchPoint() override {
     ActionView::AddTouchPoint(ActionType::TAP);
     SetSize(GetBoundingBoxOfChildren(this));

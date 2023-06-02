@@ -259,10 +259,7 @@ const GURL& FakeWebState::GetLastCommittedURL() const {
   return url_;
 }
 
-GURL FakeWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
-  if (trust_level) {
-    *trust_level = trust_level_;
-  }
+absl::optional<GURL> FakeWebState::GetLastCommittedURLIfTrusted() const {
   return url_;
 }
 
@@ -450,10 +447,6 @@ void FakeWebState::SetNavigationItemCount(int count) {
 
 void FakeWebState::SetVisibleURL(const GURL& url) {
   url_ = url;
-}
-
-void FakeWebState::SetTrustLevel(URLVerificationTrustLevel trust_level) {
-  trust_level_ = trust_level;
 }
 
 void FakeWebState::SetCanTakeSnapshot(bool can_take_snapshot) {

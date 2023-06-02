@@ -19,7 +19,8 @@ IdleService* IdleServiceFactory::GetForBrowserContext(
 
 // static
 IdleServiceFactory* IdleServiceFactory::GetInstance() {
-  return base::Singleton<IdleServiceFactory>::get();
+  static base::NoDestructor<IdleServiceFactory> instance;
+  return instance.get();
 }
 
 IdleServiceFactory::IdleServiceFactory()

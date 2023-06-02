@@ -39,6 +39,11 @@ bool IsPointerEventType(const AtomicString& event_type) {
          event_type == event_type_names::kPointerup;
 }
 
+bool IsDOMMutationEventType(const AtomicString& event_type) {
+  WebFeature web_feature;
+  Document::ListenerType listener_type;
+  return IsDOMMutationEventType(event_type, web_feature, listener_type);
+}
 bool IsDOMMutationEventType(const AtomicString& event_type,
                             WebFeature& web_feature,
                             Document::ListenerType& listener_type) {

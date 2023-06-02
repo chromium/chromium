@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -184,7 +184,7 @@ void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
     auto* surface = access->surface(plane_index);
     DCHECK(surface);
-    surface->flush();
+    skgpu::ganesh::Flush(surface);
   }
   access->ApplyBackendSurfaceEndState();
 }
@@ -732,8 +732,14 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
                            ToSkYUVAPlaneConfig(dest_format),
                            ToSkYUVASubsampling(dest_format), yuv_color_space);
-      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
-      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
+      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image,
+      // having it clear the destination image if necessary and then populate
+      // |dest_rect|.
+      skia::BlitRGBAToYUVA(
+          source_image.get(), yuva_sk_surfaces, yuva_info,
+          gfx::RectToSkRect(dest_rect),
+          /*clear_destination=*/!dest_shared_image->IsCleared());
+      dest_shared_image->SetCleared();
     }
 
     if (!dest_shared_image->IsCleared()) {
@@ -776,8 +782,10 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
                                    texture_info);
 
   auto dest_color_space = SkColorSpace::MakeSRGB();
+  GrDirectContext* direct_context = shared_context_state_->gr_context();
+  CHECK(direct_context);
   sk_sp<SkSurface> dest_surface = SkSurfaces::WrapBackendTexture(
-      shared_context_state_->gr_context(), backend_texture,
+      direct_context, backend_texture,
       flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
              : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
       /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
@@ -806,7 +814,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     canvas->clipRect(dest_rect);
     canvas->clear(SkColors::kBlack);
 
-    dest_surface->flush();
+    direct_context->flush(dest_surface);
     SubmitIfNecessary({}, shared_context_state_, is_drdc_enabled_);
 
     // Note, that we still generate error for the client to indicate there was
@@ -837,7 +845,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
   }
   if (!source_scoped_access) {
     // We still need to flush surface for begin semaphores above.
-    dest_surface->flush();
+    direct_context->flush(dest_surface);
     SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                       is_drdc_enabled_);
 
@@ -870,7 +878,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
         SkSamplingOptions(), &paint, SkCanvas::kStrict_SrcRectConstraint);
   }
 
-  dest_surface->flush();
+  direct_context->flush(dest_surface);
   source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);

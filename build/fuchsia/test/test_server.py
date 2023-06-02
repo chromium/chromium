@@ -110,8 +110,8 @@ def setup_test_server(target_id: Optional[str], test_concurrency: int)\
 
     logging.debug('Starting test server.')
 
-    host_port_pair = run_ffx_command(('target', 'get-ssh-address'),
-                                     target_id,
+    host_port_pair = run_ffx_command(cmd=('target', 'get-ssh-address'),
+                                     target_id=target_id,
                                      capture_output=True).stdout.strip()
 
     # The TestLauncher can launch more jobs than the limit specified with

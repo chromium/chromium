@@ -150,20 +150,20 @@ TEST_F(SystemNudgeTest, TimeToActionMetric) {
   nudge_controller->ResetNudgeRegistryForTesting();
 
   // Metric is not recorded if nudge has not been shown.
-  SystemNudgeController::RecordNudgeAction(kTestCatalogName);
+  SystemNudgeController::MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
                                      kTestCatalogName, 0);
 
   // Metric is recorded after nudge is shown.
   nudge_controller->ShowNudge();
   task_environment()->FastForwardBy(base::Seconds(1));
-  SystemNudgeController::RecordNudgeAction(kTestCatalogName);
+  SystemNudgeController::MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
                                      kTestCatalogName, 1);
 
   // Metric is not recorded if the nudge action is performed again without
   // another nudge being shown.
-  SystemNudgeController::RecordNudgeAction(kTestCatalogName);
+  SystemNudgeController::MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
                                      kTestCatalogName, 1);
 
@@ -171,13 +171,13 @@ TEST_F(SystemNudgeTest, TimeToActionMetric) {
   // and waiting the time to fall into the next time bucket.
   nudge_controller->ShowNudge();
   task_environment()->FastForwardBy(base::Minutes(2));
-  SystemNudgeController::RecordNudgeAction(kTestCatalogName);
+  SystemNudgeController::MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1h,
                                      kTestCatalogName, 1);
 
   nudge_controller->ShowNudge();
   task_environment()->FastForwardBy(base::Hours(2));
-  SystemNudgeController::RecordNudgeAction(kTestCatalogName);
+  SystemNudgeController::MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithinSession,
                                      kTestCatalogName, 1);
 }

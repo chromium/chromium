@@ -196,6 +196,16 @@
     --iron-icon-stroke-color: var(--cros-sys-error);
   }
 
+  :host-context([theme='legacy']):host([detailed-summary])
+      #indicator[icon='files36:warning'] {
+      --iron-icon-fill-color: var(--cros-icon-color-warning);
+  }
+
+  :host-context([theme='refresh23']):host([detailed-summary])
+      #indicator[icon='files36:warning'] {
+      --iron-icon-fill-color: var(--cros-sys-warning);
+  }
+
   :host-context([theme='legacy']):host([detailed-summary][data-category='collapsed']) #indicator {
       margin-inline-end: 20px;
       min-width: 28px;

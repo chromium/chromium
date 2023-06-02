@@ -18,6 +18,7 @@ enum class ContentSuggestionsModuleType {
   kSetUpListDefaultBrowser,
   kSetUpListAutofill,
   kCompactedSetUpList,
+  kSetUpListAllSet,
 };
 
 // Represents the content suggestions collection view.
@@ -36,6 +37,10 @@ extern NSString* const
 
 // Represents the Magic Stack ScrollView.
 extern NSString* const kMagicStackScrollViewAccessibilityIdentifier;
+
+// Represents the width of the Magic Stack ScrollView for the unique wide
+// layout.
+extern const CGFloat kMagicStackWideWidth;
 
 // The bottom margin below the Most Visited section.
 extern const CGFloat kMostVisitedBottomMargin;

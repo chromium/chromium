@@ -62,7 +62,7 @@ class SafeSitesNavigationThrottle : public content::NavigationThrottle {
   // Creates the result to be returned when navigation is canceled.
   ThrottleCheckResult CreateCancelResult() const;
 
-  raw_ptr<SafeSearchService> safe_seach_service_;
+  raw_ptr<SafeSearchService, DanglingUntriaged> safe_seach_service_;
 
   const DeferredResultCallback deferred_result_callback_;
 

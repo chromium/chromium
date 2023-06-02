@@ -143,8 +143,10 @@ Report GetPersistedReport(TestingPrefServiceSimple& prefs) {
   metrics::UnsentLogStore result_unsent_log_store(
       std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs,
       prefs::kUkmUnsentLogStore, /*metadata_pref_name=*/nullptr,
-      /*min_log_count=*/3, /*min_log_bytes=*/1000,
-      /*max_log_size=*/0,
+      // Set to 3 so logs are not dropped in the test.
+      metrics::UnsentLogStore::UnsentLogStoreLimits{
+          .min_log_count = 3,
+      },
       /*signing_key=*/std::string(),
       /*logs_event_manager=*/nullptr);
 

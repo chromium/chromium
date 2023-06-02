@@ -230,14 +230,18 @@ TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
   }
   int status = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
   PA_CHECK(status >= 0);
-  if ((status & PR_TAGGED_ADDR_ENABLE) && (status & PR_MTE_TCF_SYNC)) {
-    return TagViolationReportingMode::kSynchronous;
-  }
+  // Check for Asynchronous first because ASYNC on Android sets both
+  // PR_MTE_TCF_ASYNC and PR_MTE_TCF_SYNC bits.
   if ((status & PR_TAGGED_ADDR_ENABLE) && (status & PR_MTE_TCF_ASYNC)) {
     return TagViolationReportingMode::kAsynchronous;
   }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+  if ((status & PR_TAGGED_ADDR_ENABLE) && (status & PR_MTE_TCF_SYNC)) {
+    return TagViolationReportingMode::kSynchronous;
+  }
+  return TagViolationReportingMode::kDisabled;
+#else
   return TagViolationReportingMode::kUndefined;
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 }
 
 }  // namespace internal

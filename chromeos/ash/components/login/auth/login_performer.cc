@@ -234,6 +234,8 @@ void LoginPerformer::RecoverEncryptedData(const std::string& old_password) {
 void LoginPerformer::ResyncEncryptedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   authenticator_->ResyncEncryptedData(
+      user_manager::UserManager::Get()->IsEphemeralAccountId(
+          user_context_.GetAccountId()),
       std::make_unique<UserContext>(user_context_));
   user_context_.ClearSecrets();
 }
@@ -298,7 +300,10 @@ void LoginPerformer::StartLoginCompletion() {
   VLOG(1) << "Online login completion started.";
   LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   EnsureAuthenticator();
-  authenticator_->CompleteLogin(std::make_unique<UserContext>(user_context_));
+  authenticator_->CompleteLogin(
+      user_manager::UserManager::Get()->IsEphemeralAccountId(
+          user_context_.GetAccountId()),
+      std::make_unique<UserContext>(user_context_));
   user_context_.ClearSecrets();
 }
 
@@ -309,6 +314,8 @@ void LoginPerformer::StartAuthentication() {
   DCHECK(delegate_);
   EnsureAuthenticator();
   authenticator_->AuthenticateToLogin(
+      user_manager::UserManager::Get()->IsEphemeralAccountId(
+          user_context_.GetAccountId()),
       std::make_unique<UserContext>(user_context_));
   user_context_.ClearSecrets();
 }

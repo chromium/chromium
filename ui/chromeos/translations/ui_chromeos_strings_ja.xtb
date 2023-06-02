@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">英語（アメリカ）（Dvorak）キーボード</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ホスト</translation>
 <translation id="1521655867290435174">Google スプレッドシート</translation>
-<translation id="1538729222189715449">[Linux ファイル] を開いています...</translation>
 <translation id="1547964879613821194">カナダ英語</translation>
 <translation id="1556189134700913550">すべてに適用</translation>
 <translation id="1561842594491319104">Chrome デバイス</translation>
@@ -108,6 +107,7 @@
 <translation id="1838709767668011582">Google サイト</translation>
 <translation id="1853795129690976061">このフォルダは Linux と共有されています</translation>
 <translation id="1864756863218646478">ファイルが見つかりませんでした。</translation>
+<translation id="1877377730633446520">この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE" /> です。</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、接続</translation>
 <translation id="1920670151694390848">マラヤーラム語（文字変換）</translation>
 <translation id="1920798810075583923">スイカ</translation>
@@ -119,6 +119,7 @@
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
 <translation id="2001796770603320721">ドライブで管理</translation>
+<translation id="2004942826429452291">ファイルはクラウドとこの Chromebook に保存されます。</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
 <translation id="2037845485764049925">ロシア語</translation>
@@ -129,6 +130,7 @@
 <translation id="2084108471225856927">デバイス設定</translation>
 <translation id="2084809735218147718">ありがとうとサインする</translation>
 <translation id="2088690981887365033">VPN ネットワーク</translation>
+<translation id="2089751716171649322">オフラインでも Google ドライブのファイルに簡単にアクセス</translation>
 <translation id="2111134541987263231">[<ph name="BEGIN_BOLD" />シークレット モードでの実行を許可する<ph name="END_BOLD" />] をオンにする</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムが削除され、復元できなくなります。</translation>
 <translation id="2122305276694332719">非公開ネットワークに自動接続すると、お使いのデバイスと一部のネットワーク設定が他のユーザーに公開されます。そのためこの設定はおすすめしません。</translation>
@@ -147,7 +149,6 @@
 <translation id="2208919847696382164">Linux でのインストール</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを削除してもよろしいですか？</translation>
 <translation id="2230062665678605299">フォルダ「<ph name="FOLDER_NAME" />」を作成することができません。<ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Google ドライブのキャッシュを削除しました。</translation>
 <translation id="2239068707900391003">コーヒーを持っている人</translation>
 <translation id="2251368349685848079">ゴミ箱から復元</translation>
 <translation id="2278133026967558505">すべてのウェブサイトと URL によるファイル アクセス</translation>
@@ -298,6 +299,7 @@
 <translation id="3479552764303398839">後で</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
+<translation id="3501954296166022751">Google ドライブのファイルをオフラインで使用できます</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムの同期を準備しています...</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
@@ -330,7 +332,6 @@
 <translation id="3727148787322499904">この設定を変更すると、共有しているすべてのネットワークに影響します</translation>
 <translation id="3737576078404241332">サイドバーから削除</translation>
 <translation id="3749289110408117711">ファイル名</translation>
-<translation id="3780536599611287598">ファイルを「<ph name="FOLDER_NAME" />」に移動する権限がありません。</translation>
 <translation id="3786301125658655746">現在オフラインです</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3793469551756281394">残り約 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -419,6 +420,7 @@
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、管理者によって管理、接続</translation>
 <translation id="4470564870223067757">ハングル（2 ボル式）</translation>
+<translation id="4472575034687746823">始める</translation>
 <translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4477002475007461989">ルーマニア語</translation>
 <translation id="4477219268485577442">ブルガリア語（表音）</translation>
@@ -468,7 +470,6 @@
 <translation id="4804827417948292437">アボカド</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> 個のアイテムを復元しています</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}other{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}}</translation>
-<translation id="4823651846660089135">デバイスは読み取り専用です</translation>
 <translation id="4826849268470072925">タミル語（ITRANS）</translation>
 <translation id="482932175346970750">ブラウザに「<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />」と入力する</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -573,6 +574,7 @@
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5500122897333236901">アイスランド語</translation>
 <translation id="5508696409934741614">ドット</translation>
+<translation id="5519161320735100193">Google ドライブの設定</translation>
 <translation id="5522908512596376669">ファイルの一覧がリスト表示に切り替わりました。</translation>
 <translation id="5524517123096967210">ファイルを読むことができませんでした。</translation>
 <translation id="5533102081734025921">画像（<ph name="IMAGE_TYPE" />）</translation>
@@ -619,6 +621,7 @@
 <translation id="5838451609423551646">すべての項目を選択範囲から削除しました。</translation>
 <translation id="5838825566232597749">US Workman インターナショナル</translation>
 <translation id="5845721951356578987">看護師</translation>
+<translation id="5860491529813859533">オンにする</translation>
 <translation id="5861477046012235702">ゲーマー</translation>
 <translation id="5864471791310927901">DHCP を検索できませんでした</translation>
 <translation id="5896749729057314184">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
@@ -676,7 +679,6 @@
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
 <translation id="6337014272874260727">クイック ファイルへの固定を解除</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
-<translation id="6346310558342052870">アクセスが制限されています</translation>
 <translation id="6356685157277930264">ファイルのフィードバック ウィンドウ</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
 <translation id="636254897931573416">無効なドメイン サフィックス マッチの値</translation>
@@ -864,6 +866,7 @@
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7806708061868529807">ヘブライ語</translation>
 <translation id="78104721049218340">タイ語（Kedmanee）キーボード</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ネットワークの設定中にエラーが発生しました</translation>
 <translation id="7839804798877833423">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
@@ -876,15 +879,18 @@
 <translation id="7903984238293908205">カタカナ</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>
+<translation id="7933875256234974853">ドライブ ファイルの同期を準備しています...</translation>
 <translation id="7943385054491506837">US Colemak 配列</translation>
 <translation id="7953739707111622108">ファイルシステムが認識されなかったため、このデバイスを開くことはできません。</translation>
 <translation id="7969525169268594403">スロベニア語</translation>
 <translation id="7972920761225148017">フランス語（スイス）</translation>
 <translation id="7973962044839454485">ユーザー名またはパスワードが正しくないため、PPP 認証に失敗しました</translation>
 <translation id="7980421588063892270">英語（アメリカ）（Colemak）キーボード</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> 個のファイルを同期しています</translation>
 <translation id="8000066093800657092">ネットワーク接続なし</translation>
 <translation id="8008366997883261463">犬</translation>
 <translation id="8028993641010258682">サイズ</translation>
@@ -1006,6 +1012,7 @@
 <translation id="8919081441417203123">デンマーク語</translation>
 <translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
+<translation id="8971742885766657349">同期しています - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
 <translation id="8998871447376656508">Google ドライブに十分な空き容量がないため、アップロードを完了できません。</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9213073329713032541">インストールを開始しました。</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="9219908252191632183">月面</translation>
+<translation id="937795003075802289">1 個のファイルを同期しています</translation>
 <translation id="938470336146445890">ユーザー証明書をインストールしてください。</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="943972244133411984">更新者</translation>

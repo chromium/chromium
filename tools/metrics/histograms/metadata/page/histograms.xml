@@ -30,6 +30,18 @@ chromium-metrics-reviews@google.com.
   <variant name="5000ms"/>
 </variants>
 
+<variants name="PagePrerenderTriggerType">
+<!-- Should be kept in sync with variants PrerenderTriggerType in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <variant name=".Embedder_BookmarkBar"/>
+  <variant name=".Embedder_DefaultSearchEngine"/>
+  <variant name=".Embedder_DirectURLInput"/>
+  <variant name=".SpeculationRule"/>
+  <variant name=".SpeculationRuleFromIsolatedWorld"/>
+</variants>
+
 <variants name="PrivacySandboxAdsApi">
   <variant name="AttributionReporting"/>
   <variant name="FencedFrames"/>
@@ -40,6 +52,11 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="RequestDestination">
+<!-- Should be kept in sync with variants BlinkRequestDestination in
+  tools/metrics/histograms/metadata/blink/histograms.xml and NetworkRequestDestination
+  in tools/metrics/histograms/metadata/network/histograms.xml.
+-->
+
   <variant name="audio"/>
   <variant name="audioworklet"/>
   <variant name="document"/>
@@ -298,33 +315,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.HeavyAds.FrameRemovedPriorToPageEnd"
-    enum="BooleanRemoved" expires_after="2021-03-28">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a heavy ad frame was deleted prior to the page being
-    destroyed/navigated. Recorded per-frame, only if the frame is considered a
-    heavy ad, when the frame is destroyed. For example, this is true if the
-    iframe element is deleted by javascript. This is recorded whether or not the
-    ads are actually unloaded by the intervention.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.HeavyAds.IgnoredByReload"
-    enum="BooleanIgnored" expires_after="2021-08-09">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a possible intervention was ignored because the page was the
-    result of a reload. This is checked prior to checking whether a given site
-    is blocklisted. Therefore it is possible this histogram records |Ignored|
-    when the intervention wouldn't have actually triggered. This is recorded
-    when an ad frame becomes eligible for the heavy ad intervention to unload
-    it.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Clients.Ads.HeavyAds.NetworkBytesAtFrameUnload"
     units="bytes" expires_after="2024-04-17">
   <owner>johnidel@chromium.org</owner>
@@ -334,18 +324,6 @@ chromium-metrics-reviews@google.com.
     network usage by the heavy ad intervention. It is recorded at the time of
     unload and the value may be larger than the heavy ads threshold due to the
     delay in unloading an ad.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.HeavyAds.UserDidReload"
-    enum="BooleanReloaded" expires_after="2024-04-17">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a page with a heavy ad is reloaded or navigated/destroyed
-    for any other reason. Only recorded for pages that had at least one heavy ad
-    prior to being navigated/reloaded/destroyed. This is recorded whether or not
-    the ads are actually unloaded by the intervention.
   </summary>
 </histogram>
 
@@ -718,7 +696,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2023-09-17">
+    units="ms" expires_after="2023-11-19">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -744,7 +722,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstPaint"
-    units="ms" expires_after="2023-08-30">
+    units="ms" expires_after="2023-11-19">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -756,7 +734,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2023-09-17">
+    units="ms" expires_after="2023-11-19">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -894,6 +872,85 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.MultiTabLoading{OtherLoadingCount}.{Timing}{Background}"
+    units="ms" expires_after="2023-11-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>{Timing} {OtherLoadingCount} {Background}</summary>
+  <token key="OtherLoadingCount">
+    <variant name=""
+        summary="Only recorded when there were 1 or more other loading tabs
+                 (the same as '1OrMore')."/>
+    <variant name=".1OrMore"
+        summary="Only recorded when there were 1 or more other loading tabs."/>
+    <variant name=".2OrMore"
+        summary="Only recorded when there were 2 or more other loading tabs."/>
+    <variant name=".5OrMore"
+        summary="Only recorded when there were 5 or more other loading tabs."/>
+    <variant name=".With_0_OtherLoading"
+        summary="Only recorded when there was no other loading tab."/>
+    <variant name=".With_1_OtherLoading"
+        summary="Only recorded when there was 1 other loading tab."/>
+    <variant name=".With_2_OtherLoading"
+        summary="Only recorded when there were 2 other loading tabs."/>
+    <variant name=".With_3_OtherLoading"
+        summary="Only recorded when there were 3 other loading tabs."/>
+    <variant name=".With_4_OtherLoading"
+        summary="Only recorded when there were 4 other loading tabs."/>
+    <variant name=".With_5_OtherLoading"
+        summary="Only recorded when there were 5 other loading tabs."/>
+    <variant name=".WithTabCount_0"
+        summary="Only recorded when there was 0 tab."/>
+    <variant name=".WithTabCount_1"
+        summary="Only recorded when there was 1 tab."/>
+    <variant name=".WithTabCount_2_or_3"
+        summary="Only recorded when there were 2 or 3 tabs."/>
+    <variant name=".WithTabCount_4_to_7"
+        summary="Only recorded when there were 3 to 7 tabs."/>
+    <variant name=".WithTabCount_8_to_15"
+        summary="Only recorded when there were 8 to 15 tabs."/>
+    <variant name=".WithTabCount_16_to_31"
+        summary="Only recorded when there were 16 to 31 tabs."/>
+    <variant name=".WithTabCount_32_to_63"
+        summary="Only recorded when there were 32 to 63 tabs."/>
+    <variant name=".WithTabCount_64_or_more"
+        summary="Only recorded when there were 64 or more tabs."/>
+  </token>
+  <token key="Timing">
+    <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+        summary="Measures the time from navigation timing's navigation start
+                 to the time the DOMContentLoaded event is fired, for main
+                 frame documents."/>
+    <variant name="DocumentTiming.NavigationToLoadEventFired"
+        summary="Measures the time from navigation timing's navigation start
+                 to the time the load event is fired, for main frame
+                 documents."/>
+    <variant name="Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"
+        summary="Measures the time from navigation start to first meaningful
+                 paint."/>
+    <variant name="PaintTiming.ForegroundToFirstContentfulPaint"
+        summary="Measures the time from a background tab being switched to
+                 the foreground to the time the first contentful paint is
+                 performed, for main frame documents."/>
+    <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+        summary="Measures the time from navigation start to first contentful
+                 paint."/>
+    <variant name="PaintTiming.NavigationToLargestContentfulPaint"
+        summary="Measures the time from navigation timing's navigation start
+                 to the time the largest content (text or image) is first
+                 painted, across all frames. Excludes any content painted
+                 after user input. Includes content that has been removed
+                 from the page."/>
+  </token>
+  <token key="Background">
+    <variant name="" summary=""/>
+    <variant name=".Background"
+        summary="The page was backgrounded at least once from navigation
+                 start to this event."/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
     units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
@@ -903,11 +960,7 @@ chromium-metrics-reviews@google.com.
     prerendered and were later activated. Note that prerendered page loads are
     excluded from PageLoad.InteractiveTiming.FirstInputDelay4.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -921,11 +974,7 @@ chromium-metrics-reviews@google.com.
     page loads are excluded from
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -938,11 +987,7 @@ chromium-metrics-reviews@google.com.
     were prerendered and were later activated. Note that prerendered page loads
     are excluded from PageLoad.LayoutInstability.CumulativeShiftScore.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -956,11 +1001,7 @@ chromium-metrics-reviews@google.com.
     prerendered page loads are excluded from
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -974,11 +1015,7 @@ chromium-metrics-reviews@google.com.
     attribute of PerformanceNavigationTiming. Recorded when a prerendered page
     is activated.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -993,11 +1030,7 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1011,11 +1044,7 @@ chromium-metrics-reviews@google.com.
     activation navigation start. Note that prerendered page loads are excluded
     from PageLoad.PaintTiming.NavigationToFirstPaint.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1030,11 +1059,7 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1266,7 +1291,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2023-11-19">
   <owner>awillia@chromium.org</owner>
   <owner>djmitche@chromium.org</owner>
   <summary>
@@ -1283,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ThirdParty.Frames.Opaque.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2023-11-19">
   <owner>awillia@chromium.org</owner>
   <owner>djmitche@chromium.org</owner>
   <summary>
@@ -2406,7 +2431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.PageType" enum="PageLoadTrackerPageType"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -2417,7 +2442,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
-    enum="LargestContentType" expires_after="2023-07-03">
+    enum="LargestContentType" expires_after="2024-01-03">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2430,7 +2455,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame.ContentType"
-    enum="LargestContentType" expires_after="2023-07-03">
+    enum="LargestContentType" expires_after="2024-01-03">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2466,15 +2491,11 @@ chromium-metrics-reviews@google.com.
     This metric is used to monitor whether preload cache intercepting logic
     causes extra page loading errors.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.Event"
-    enum="PageLoadPrerenderEvent" expires_after="2023-09-17">
+    enum="PageLoadPrerenderEvent" expires_after="2023-11-19">
   <owner>kenoss@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -2596,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.LayoutInstability.CumulativeShiftScore"
-    units="scorex10" expires_after="2023-09-17">
+    units="scorex10" expires_after="2023-11-19">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <summary>
@@ -2813,7 +2834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PageTiming.NavigationToFirstForeground" units="ms"
-    expires_after="2023-09-17">
+    expires_after="2023-11-19">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

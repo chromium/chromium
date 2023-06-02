@@ -150,8 +150,8 @@ class NET_EXPORT URLRequestContextBuilder {
     check_cleartext_permitted_ = value;
   }
 
-  void set_require_network_isolation_key(bool value) {
-    require_network_isolation_key_ = value;
+  void set_require_network_anonymization_key(bool value) {
+    require_network_anonymization_key_ = value;
   }
 
   // Unlike most other setters, the builder does not take ownership of the
@@ -402,7 +402,7 @@ class NET_EXPORT URLRequestContextBuilder {
 
   bool enable_brotli_ = false;
   bool check_cleartext_permitted_ = false;
-  bool require_network_isolation_key_ = false;
+  bool require_network_anonymization_key_ = false;
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
   std::string accept_language_;
@@ -428,7 +428,8 @@ class NET_EXPORT URLRequestContextBuilder {
   raw_ptr<NetLog> net_log_ = nullptr;
   std::unique_ptr<HostResolver> host_resolver_;
   std::string host_mapping_rules_;
-  raw_ptr<HostResolverManager> host_resolver_manager_ = nullptr;
+  raw_ptr<HostResolverManager, DanglingUntriaged> host_resolver_manager_ =
+      nullptr;
   raw_ptr<HostResolver::Factory> host_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyConfigService> proxy_config_service_;
   bool pac_quick_check_enabled_ = true;

@@ -90,9 +90,9 @@ PushNotificationClientManager::GetClients() {
   return {PushNotificationClientId::kCommerce};
 }
 
-void PushNotificationClientManager::OnBrowserReady() {
+void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
   for (auto& client : clients_) {
-    client.second->OnBrowserReady();
+    client.second->OnSceneActiveForegroundBrowserReady();
   }
 }
 

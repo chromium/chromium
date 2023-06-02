@@ -26,7 +26,6 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEMorphologyElement
 
 [
-    DoNotCheckConstants,
     Exposed=Window
 ] interface SVGFEMorphologyElement : SVGElement {
     // Morphology Operators

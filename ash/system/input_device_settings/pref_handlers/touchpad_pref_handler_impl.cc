@@ -18,6 +18,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 
 namespace ash {
 namespace {
@@ -38,6 +39,30 @@ struct ForceTouchpadSettingPersistence {
   bool three_finger_click_enabled = false;
 };
 
+ui::mojom::SimulateRightClickModifier GetSimulateRightClickModifierFromPrefs(
+    PrefService* prefs) {
+  const auto* alt_right_click_preference =
+      prefs->GetUserPrefValue(prefs::kAltEventRemappedToRightClick);
+  const auto* search_right_click_preference =
+      prefs->GetUserPrefValue(prefs::kSearchEventRemappedToRightClick);
+  const auto alt_count =
+      alt_right_click_preference ? alt_right_click_preference->GetInt() : 0;
+  const auto search_count = search_right_click_preference
+                                ? search_right_click_preference->GetInt()
+                                : 0;
+  // Disable (Alt/Search+Click) remapping if the user never performs this
+  // action.
+  if (alt_count == 0 && search_count == 0) {
+    return ui::mojom::SimulateRightClickModifier::kNone;
+  }
+
+  // Return the modifier used more frequently, in case of a tie, Search will
+  // be preferred to avoid Alt-based issues.
+  return search_count >= alt_count
+             ? ui::mojom::SimulateRightClickModifier::kSearch
+             : ui::mojom::SimulateRightClickModifier::kAlt;
+}
+
 mojom::TouchpadSettingsPtr GetDefaultTouchpadSettings() {
   mojom::TouchpadSettingsPtr settings = mojom::TouchpadSettings::New();
   settings->sensitivity = kDefaultSensitivity;
@@ -50,6 +75,9 @@ mojom::TouchpadSettingsPtr GetDefaultTouchpadSettings() {
   settings->scroll_acceleration = kDefaultScrollAcceleration;
   settings->haptic_sensitivity = kDefaultHapticSensitivity;
   settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    settings->simulate_right_click = kDefaultSimulateRightClick;
+  }
   return settings;
 }
 
@@ -141,6 +169,10 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
                                  : kDefaultHapticFeedbackEnabled;
   force_persistence.haptic_enabled = haptic_enabled_preference != nullptr;
 
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    settings->simulate_right_click =
+        GetSimulateRightClickModifierFromPrefs(prefs);
+  }
   return settings;
 }
 
@@ -270,6 +302,12 @@ base::Value::Dict ConvertSettingsToDict(
     settings_dict.Set(prefs::kTouchpadSettingHapticEnabled,
                       touchpad.settings->haptic_enabled);
   }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    settings_dict.Set(
+        prefs::kTouchpadSettingSimulateRightClick,
+        static_cast<int>(touchpad.settings->simulate_right_click));
+  }
   return settings_dict;
 }
 
@@ -330,6 +368,13 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
   ForceTouchpadSettingPersistence force_persistence;
   if (settings_dict) {
     touchpad->settings = RetrieveTouchpadSettings(*touchpad, *settings_dict);
+    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+      touchpad->settings->simulate_right_click =
+          static_cast<ui::mojom::SimulateRightClickModifier>(
+              settings_dict->FindInt(prefs::kTouchpadSettingSimulateRightClick)
+                  .value_or(static_cast<int>(
+                      GetSimulateRightClickModifierFromPrefs(pref_service))));
+    }
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kTouchpad,
                  touchpad->device_key)) {
@@ -376,6 +421,10 @@ void TouchpadPrefHandlerImpl::InitializeLoginScreenTouchpadSettings(
   } else {
     touchpad->settings = GetTouchpadSettingsFromOldLocalStatePrefs(
         local_state, account_id, *touchpad);
+  }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    touchpad->settings->simulate_right_click = kDefaultSimulateRightClick;
   }
 }
 

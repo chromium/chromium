@@ -43,7 +43,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
@@ -476,12 +475,12 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(features::kTabGroupsSaveSyncIntegration)) {
+    if (base::FeatureList::IsEnabled(syncer::kTabGroupsSaveSyncIntegration)) {
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::SAVED_TAB_GROUP,
           std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-              GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP)
-                  .get())));
+              GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP).get()),
+          /*delegate_for_transport_mode=*/nullptr));
     }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
@@ -542,7 +541,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   controllers.push_back(std::make_unique<syncer::ModelTypeController>(
       syncer::PRINTERS,
       std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-          printers_delegate)));
+          printers_delegate),
+      /*delegate_for_transport_mode=*/nullptr));
 
   if (WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
     syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
@@ -550,14 +550,16 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::WIFI_CONFIGURATIONS,
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            wifi_configurations_delegate)));
+            wifi_configurations_delegate),
+        /*delegate_for_transport_mode=*/nullptr));
   }
   syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
       GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
   controllers.push_back(std::make_unique<syncer::ModelTypeController>(
       syncer::WORKSPACE_DESK,
       std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-          workspace_desk_delegate)));
+          workspace_desk_delegate),
+      /*delegate_for_transport_mode=*/nullptr));
 
   if (ash::features::IsOAuthIppEnabled()) {
     syncer::ModelTypeControllerDelegate*
@@ -568,7 +570,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::PRINTERS_AUTHORIZATION_SERVERS,
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            printers_authorization_servers_delegate)));
+            printers_authorization_servers_delegate),
+        /*delegate_for_transport_mode=*/nullptr));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -657,8 +660,8 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     case syncer::SAVED_TAB_GROUP: {
-      DCHECK(base::FeatureList::IsEnabled(
-          features::kTabGroupsSaveSyncIntegration));
+      DCHECK(
+          base::FeatureList::IsEnabled(syncer::kTabGroupsSaveSyncIntegration));
       return SavedTabGroupServiceFactory::GetForProfile(profile_)
           ->bridge()
           ->change_processor()

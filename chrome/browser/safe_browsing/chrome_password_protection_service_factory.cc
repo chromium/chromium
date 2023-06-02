@@ -31,7 +31,8 @@ ChromePasswordProtectionServiceFactory::GetForProfile(Profile* profile) {
 // static
 ChromePasswordProtectionServiceFactory*
 ChromePasswordProtectionServiceFactory::GetInstance() {
-  return base::Singleton<ChromePasswordProtectionServiceFactory>::get();
+  static base::NoDestructor<ChromePasswordProtectionServiceFactory> instance;
+  return instance.get();
 }
 
 ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
