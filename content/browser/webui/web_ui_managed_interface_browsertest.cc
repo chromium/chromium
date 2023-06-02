@@ -394,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(WebUIManagedInterfaceBrowserTest, WebUIInIframe) {
 
   // Iframe navigation will destroy interface impls.
   Reload(foo_frame);
+  foo_frame = ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(0, InstanceCounter<FooImpl>::count());
 
   // Interface impls can be created after reload.
