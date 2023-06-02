@@ -732,8 +732,14 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
                            ToSkYUVAPlaneConfig(dest_format),
                            ToSkYUVASubsampling(dest_format), yuv_color_space);
-      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
-      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
+      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image,
+      // having it clear the destination image if necessary and then populate
+      // |dest_rect|.
+      skia::BlitRGBAToYUVA(
+          source_image.get(), yuva_sk_surfaces, yuva_info,
+          gfx::RectToSkRect(dest_rect),
+          /*clear_destination=*/!dest_shared_image->IsCleared());
+      dest_shared_image->SetCleared();
     }
 
     if (!dest_shared_image->IsCleared()) {
