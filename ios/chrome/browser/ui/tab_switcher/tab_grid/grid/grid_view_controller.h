@@ -19,7 +19,7 @@
 @protocol TabCollectionDragDropHandler;
 @protocol GridEmptyView;
 @protocol GridShareableItemsProvider;
-@class GridTransitionLayout;
+@class LegacyGridTransitionLayout;
 @class GridViewController;
 @protocol IncognitoReauthCommands;
 @protocol PriceCardDataSource;
@@ -164,7 +164,7 @@
 @property(nonatomic, assign) CGFloat notSelectedTabCellOpacity;
 
 // Returns the layout of the grid for use in an animated transition.
-- (GridTransitionLayout*)transitionLayout;
+- (LegacyGridTransitionLayout*)transitionLayout;
 
 // Notifies the ViewController that its content might soon be displayed.
 - (void)prepareForAppearance;

@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 // A cell for the pinned tabs view. Contains an icon, title, snapshot.
 @interface PinnedCell : TabCell
@@ -45,7 +45,7 @@
 //
 // TODO(crbug.com/1412115): Refactor `Transition` cells into separate header
 // and implementation files.
-@interface PinnedTransitionCell : PinnedCell <GridToTabTransitionView>
+@interface PinnedTransitionCell : PinnedCell <LegacyGridToTabTransitionView>
 
 // Returns a cell with the same theme, icon, snapshot, title, and frame as
 // `cell` (but no delegate or identifier) for use in animated transitions.

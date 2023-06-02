@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
 
 #import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -64,7 +64,7 @@ const CGFloat kResizeRatioMultiplier = 0.37;
 // Based on the above, the correction formula should be:
 //   correction = ((1 - value) - 0.7) * 0.37
 //
-CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
+CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
   CGFloat resizeRatio = CGRectGetHeight(layout.activeItem.cell.frame) /
                         CGRectGetHeight(layout.expandedRect);
 
@@ -76,7 +76,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 // The property animator group backing the public `animator` property.
 @property(nonatomic, readonly) PropertyAnimatorGroup* animations;
 // The layout of the grid for this animation.
-@property(nonatomic, strong) GridTransitionLayout* layout;
+@property(nonatomic, strong) LegacyGridTransitionLayout* layout;
 // The duration of the animation.
 @property(nonatomic, readonly, assign) NSTimeInterval duration;
 // The direction this animation is in.
@@ -90,7 +90,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 
 @implementation LegacyGridTransitionAnimation
 
-- (instancetype)initWithLayout:(GridTransitionLayout*)layout
+- (instancetype)initWithLayout:(LegacyGridTransitionLayout*)layout
                       duration:(NSTimeInterval)duration
                      direction:(GridAnimationDirection)direction {
   if (self = [super initWithFrame:CGRectZero]) {
@@ -185,7 +185,8 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   //
   // (Changing the timing constants above will change the timing % values)
 
-  UIView<GridToTabTransitionView>* activeCell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* activeCell =
+      self.layout.activeItem.cell;
   // The final cell snapshot exactly matches the main tab view of the cell, so
   // it can have an alpha of 0 for the whole animation.
   activeCell.mainTabView.alpha = 0.0;
@@ -217,7 +218,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   [self.animations addAnimator:fadeInAuxillary];
 
   // C: Round the corners of the active cell.
-  UIView<GridToTabTransitionView>* cell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
   cell.cornerRadius = DeviceCornerRadius();
   auto roundCornersAnimation = ^{
     cell.cornerRadius = self.finalActiveCellCornerRadius;
@@ -240,7 +241,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   // Additional animations for multiple cells.
   // D: Scale up inactive cells.
   auto scaleUpCellsAnimation = ^{
-    for (GridTransitionItem* item in self.layout.inactiveItems) {
+    for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
       item.cell.transform = CGAffineTransformIdentity;
     }
   };
@@ -257,7 +258,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 
   // E: Fade in inactive cells.
   auto fadeInCellsAnimation = ^{
-    for (GridTransitionItem* item in self.layout.inactiveItems) {
+    for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
       item.cell.alpha = 1.0;
     }
   };
@@ -319,7 +320,8 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   // prevents an abrupt jump when the transition ends and the "real" tab content
   // is shown.
 
-  UIView<GridToTabTransitionView>* activeCell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* activeCell =
+      self.layout.activeItem.cell;
   // The top tab view starts at zero alpha but is crossfaded in.
   activeCell.topTabView.alpha = 0.0;
   // If the active item is appearing, the main tab view is shown. If not, it's
@@ -353,7 +355,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   [self.animations addAnimator:fadeOutAuxilliary];
 
   // C: Square the active cell's corners.
-  UIView<GridToTabTransitionView>* cell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
   auto squareCornersAnimation = ^{
     cell.cornerRadius = DeviceCornerRadius();
   };
@@ -397,7 +399,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   // Additional animations for multiple cells.
   // E: Scale down inactive cells.
   auto scaleDownCellsAnimation = ^{
-    for (GridTransitionItem* item in self.layout.inactiveItems) {
+    for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
       item.cell.transform = CGAffineTransformScale(
           item.cell.transform, kInactiveItemScale, kInactiveItemScale);
     }
@@ -410,7 +412,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 
   // F: Fade out inactive cells.
   auto fadeOutCellsAnimation = ^{
-    for (GridTransitionItem* item in self.layout.inactiveItems) {
+    for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
       item.cell.alpha = 0.0;
     }
   };
@@ -431,7 +433,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   // Add the selection item first, so it's under ther other views.
   [self addSubview:self.layout.selectionItem.cell];
 
-  for (GridTransitionItem* item in self.layout.inactiveItems) {
+  for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
     [self addSubview:item.cell];
   }
 
@@ -441,14 +443,14 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 
 // Prepares the the views for a transition.
 - (void)prepareForTransition {
-  UIView<GridToTabTransitionView>* cell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
   [cell prepareForTransitionWithAnimationDirection:self.direction];
 }
 
 // Positions the active item in the expanded grid position with a zero corner
 // radius and a 0% opacity auxilliary view.
 - (void)positionExpandedActiveItem {
-  UIView<GridToTabTransitionView>* cell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
   cell.frame = self.layout.expandedRect;
   [cell positionTabViews];
 }
@@ -456,7 +458,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 // Positions all of the inactive items in their grid positions.
 // Fades and scales each of those items.
 - (void)prepareInactiveItemsForAppearance {
-  for (GridTransitionItem* item in self.layout.inactiveItems) {
+  for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
     [self positionItemInGrid:item];
     item.cell.alpha = 0.2;
     item.cell.transform = CGAffineTransformScale(
@@ -468,7 +470,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 // Positions the active item in the regular grid position with its final
 // corner radius.
 - (void)positionAndScaleActiveItemInGrid {
-  UIView<GridToTabTransitionView>* cell = self.layout.activeItem.cell;
+  UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
   cell.transform = CGAffineTransformIdentity;
   CGRect frame = cell.frame;
   frame.size = self.layout.activeItem.size;
@@ -479,7 +481,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 
 // Prepares all of the items for an expansion animation.
 - (void)prepareAllItemsForExpansion {
-  for (GridTransitionItem* item in self.layout.inactiveItems) {
+  for (LegacyGridTransitionItem* item in self.layout.inactiveItems) {
     [self positionItemInGrid:item];
   }
   [self positionItemInGrid:self.layout.activeItem];
@@ -488,7 +490,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 }
 
 // Positions `item` in it grid position.
-- (void)positionItemInGrid:(GridTransitionItem*)item {
+- (void)positionItemInGrid:(LegacyGridTransitionItem*)item {
   UIView* cell = item.cell;
   CGPoint newCenter = [self.superview convertPoint:item.center fromView:nil];
   cell.center = newCenter;

@@ -47,7 +47,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -470,11 +470,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       containsObject:selectedIndexPath];
 }
 
-- (GridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)transitionLayout {
   [self.collectionView layoutIfNeeded];
-  NSMutableArray<GridTransitionItem*>* items = [[NSMutableArray alloc] init];
-  GridTransitionActiveItem* activeItem;
-  GridTransitionItem* selectionItem;
+  NSMutableArray<LegacyGridTransitionItem*>* items =
+      [[NSMutableArray alloc] init];
+  LegacyGridTransitionActiveItem* activeItem;
+  LegacyGridTransitionItem* selectionItem;
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
     if (path.section != kOpenTabsSectionIndex)
       continue;
@@ -489,27 +490,28 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if ([cell hasIdentifier:self.selectedItemID]) {
       GridTransitionCell* activeCell =
           [GridTransitionCell transitionCellFromCell:cell];
-      activeItem = [GridTransitionActiveItem itemWithCell:activeCell
-                                                   center:attributes.center
-                                                     size:attributes.size];
+      activeItem =
+          [LegacyGridTransitionActiveItem itemWithCell:activeCell
+                                                center:attributes.center
+                                                  size:attributes.size];
       // If the active item is the last inserted item, it needs to be animated
       // differently.
       if ([cell hasIdentifier:self.lastInsertedItemID])
         activeItem.isAppearing = YES;
-      selectionItem = [GridTransitionItem
+      selectionItem = [LegacyGridTransitionItem
           itemWithCell:[GridCell transitionSelectionCellFromCell:cell]
                 center:attributes.center];
     } else {
       UIView* cellSnapshot = [cell snapshotViewAfterScreenUpdates:YES];
-      GridTransitionItem* item =
-          [GridTransitionItem itemWithCell:cellSnapshot
-                                    center:attributes.center];
+      LegacyGridTransitionItem* item =
+          [LegacyGridTransitionItem itemWithCell:cellSnapshot
+                                          center:attributes.center];
       [items addObject:item];
     }
   }
-  return [GridTransitionLayout layoutWithInactiveItems:items
-                                            activeItem:activeItem
-                                         selectionItem:selectionItem];
+  return [LegacyGridTransitionLayout layoutWithInactiveItems:items
+                                                  activeItem:activeItem
+                                               selectionItem:selectionItem];
 }
 
 - (void)prepareForAppearance {

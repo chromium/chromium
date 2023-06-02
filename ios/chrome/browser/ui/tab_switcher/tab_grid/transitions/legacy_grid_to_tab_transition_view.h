@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TO_TAB_TRANSITION_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TO_TAB_TRANSITION_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TO_TAB_TRANSITION_VIEW_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TO_TAB_TRANSITION_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,7 +11,7 @@
 
 // An collection of properties and methods a view must support in order to be
 // used to animate the transition between a grid cell and a browser tab.
-@protocol GridToTabTransitionView
+@protocol LegacyGridToTabTransitionView
 
 // The subview at the top of the view in 'cell' state.
 @property(nonatomic, strong) UIView* topCellView;
@@ -46,4 +46,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TO_TAB_TRANSITION_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TO_TAB_TRANSITION_VIEW_H_

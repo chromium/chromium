@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -12,24 +12,27 @@
 
 #import "base/check.h"
 
-@interface GridTransitionLayout ()
-@property(nonatomic, readwrite) NSArray<GridTransitionItem*>* inactiveItems;
-@property(nonatomic, readwrite) GridTransitionActiveItem* activeItem;
-@property(nonatomic, readwrite) GridTransitionItem* selectionItem;
+@interface LegacyGridTransitionLayout ()
+@property(nonatomic, readwrite)
+    NSArray<LegacyGridTransitionItem*>* inactiveItems;
+@property(nonatomic, readwrite) LegacyGridTransitionActiveItem* activeItem;
+@property(nonatomic, readwrite) LegacyGridTransitionItem* selectionItem;
 @end
 
-@implementation GridTransitionLayout
+@implementation LegacyGridTransitionLayout
 @synthesize activeItem = _activeItem;
 @synthesize selectionItem = _selectionItem;
 @synthesize inactiveItems = _inactiveItems;
 @synthesize expandedRect = _expandedRect;
 @synthesize frameChanged = _frameChanged;
 
-+ (instancetype)layoutWithInactiveItems:(NSArray<GridTransitionItem*>*)items
-                             activeItem:(GridTransitionActiveItem*)activeItem
-                          selectionItem:(GridTransitionItem*)selectionItem {
++ (instancetype)
+    layoutWithInactiveItems:(NSArray<LegacyGridTransitionItem*>*)items
+                 activeItem:(LegacyGridTransitionActiveItem*)activeItem
+              selectionItem:(LegacyGridTransitionItem*)selectionItem {
   DCHECK(items);
-  GridTransitionLayout* layout = [[GridTransitionLayout alloc] init];
+  LegacyGridTransitionLayout* layout =
+      [[LegacyGridTransitionLayout alloc] init];
   layout.inactiveItems = items;
   layout.activeItem = activeItem;
   layout.selectionItem = selectionItem;
@@ -38,39 +41,39 @@
 
 @end
 
-@interface GridTransitionItem ()
+@interface LegacyGridTransitionItem ()
 @property(nonatomic, readwrite) UIView* cell;
 @property(nonatomic, readwrite) CGPoint center;
 @end
 
-@implementation GridTransitionItem
+@implementation LegacyGridTransitionItem
 @synthesize cell = _cell;
 @synthesize center = _center;
 
 + (instancetype)itemWithCell:(UIView*)cell center:(CGPoint)center {
   DCHECK(cell);
   DCHECK(!cell.superview);
-  GridTransitionItem* item = [[self alloc] init];
+  LegacyGridTransitionItem* item = [[self alloc] init];
   item.cell = cell;
   item.center = center;
   return item;
 }
 @end
 
-@interface GridTransitionActiveItem ()
-@property(nonatomic, readwrite) UIView<GridToTabTransitionView>* cell;
+@interface LegacyGridTransitionActiveItem ()
+@property(nonatomic, readwrite) UIView<LegacyGridToTabTransitionView>* cell;
 @property(nonatomic, readwrite) CGSize size;
 @end
 
-@implementation GridTransitionActiveItem
+@implementation LegacyGridTransitionActiveItem
 @dynamic cell;
 @synthesize size = _size;
 @synthesize isAppearing = _isAppearing;
 
-+ (instancetype)itemWithCell:(UIView<GridToTabTransitionView>*)cell
++ (instancetype)itemWithCell:(UIView<LegacyGridToTabTransitionView>*)cell
                       center:(CGPoint)center
                         size:(CGSize)size {
-  GridTransitionActiveItem* item = [self itemWithCell:cell center:center];
+  LegacyGridTransitionActiveItem* item = [self itemWithCell:cell center:center];
   item.size = size;
   return item;
 }

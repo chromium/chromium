@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class GridTransitionLayout;
+@class LegacyGridTransitionLayout;
 
 // The directions the animation can take.
 typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
 // the layout the animation should animate to. `delegate` is an object that will
 // be informed about events in this object's animation. `direction` is the
 // direction that the transition will animate.
-- (instancetype)initWithLayout:(GridTransitionLayout*)layout
+- (instancetype)initWithLayout:(LegacyGridTransitionLayout*)layout
                       duration:(NSTimeInterval)duration
                      direction:(GridAnimationDirection)direction
     NS_DESIGNATED_INITIALIZER;

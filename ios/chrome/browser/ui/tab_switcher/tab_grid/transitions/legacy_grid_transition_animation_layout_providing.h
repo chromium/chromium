@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
 
-@class GridTransitionLayout;
+@class LegacyGridTransitionLayout;
 
 // Objects conforming to this protocol can provide information for the
 // animation of the transitions from and to a grid.
@@ -27,7 +27,7 @@
 
 // Asks the provider for the layout of the grid for the `activePage`, used in
 // transition animations.
-- (GridTransitionLayout*)transitionLayout:(TabGridPage)activePage;
+- (LegacyGridTransitionLayout*)transitionLayout:(TabGridPage)activePage;
 
 // Asks the provider for the view to which the animation views should be added.
 - (UIView*)animationViewsContainer;
