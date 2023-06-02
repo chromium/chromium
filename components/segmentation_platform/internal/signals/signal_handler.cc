@@ -41,7 +41,9 @@ void SignalHandler::Initialize(
 }
 
 void SignalHandler::TearDown() {
-  history_service_observer_.reset();
+  if (histogram_signal_handler_) {
+    history_service_observer_.reset();
+  }
 }
 
 void SignalHandler::EnableMetrics(bool signal_collection_allowed) {
