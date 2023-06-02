@@ -53,7 +53,7 @@ class ClangPluginTest(object):
 
     # If the -fno-diagnostics-show-line-numbers flag exists, we need it to get
     # the traditional diagnostics format. (crbug.com/1450229).
-    clang_exe = self._clang_path + '.exe' if sys.platform == 'win32' else ''
+    clang_exe = self._clang_path + ('.exe' if sys.platform == 'win32' else '')
     with open(clang_exe, 'rb') as f:
       if 'diagnostics-show-line-numbers'.encode('ascii') in f.read():
         clang_cmd.extend([
