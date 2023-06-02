@@ -37,10 +37,10 @@ class PushVideoStreamSubscriptionImpl
 
   void SetOnClosedHandler(
       base::OnceCallback<void(base::OnceClosure done_cb)> handler);
-  void SetDevice(Device* device) { device_ = device; }
 
   void OnDeviceStartSucceededWithSettings(
-      const media::VideoCaptureParams& settings);
+      const media::VideoCaptureParams& settings,
+      Device* device);
   void OnDeviceStartFailed(media::VideoCaptureError error);
 
   // mojom::PushVideoStreamSubscription implementation.
