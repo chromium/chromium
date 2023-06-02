@@ -3843,7 +3843,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
   std::vector<ServerFieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
   FormData form;
-  form.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  form.host_frame = test::MakeLocalFrameToken();
   form.url = GURL("http://www.foo.com/");
   form.is_form_tag = true;
 
@@ -3865,7 +3865,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
                                              {CREDIT_CARD_NUMBER});
-  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  field.host_frame = test::MakeLocalFrameToken();
   field.unique_renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(456);
   form.fields.push_back(field);
@@ -3885,7 +3885,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
                                              {CREDIT_CARD_VERIFICATION_CODE});
-  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
+  field.host_frame = test::MakeLocalFrameToken();
   field.unique_renderer_id = test::MakeFieldRendererId();
   field.host_form_signature = FormSignature(456);
   form.fields.push_back(field);
@@ -6333,7 +6333,7 @@ TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
   EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
   EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
   EXPECT_EQ("blue-shipping", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("country_0_14", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("country_2_14", form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -6384,7 +6384,7 @@ TEST_F(FormStructureTestImpl,
   EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
   EXPECT_EQ("blue-billing", form_structure.field(1)->section.ToString());
   EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
-  EXPECT_EQ("country_0_14", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("country_2_14", form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field

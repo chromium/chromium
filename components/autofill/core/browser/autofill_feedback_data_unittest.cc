@@ -23,7 +23,7 @@ namespace {
 const char kExpectedFeedbackDataJSON[] = R"({
    "formStructures": [ {
       "formSignature": "4232380759432074174",
-      "hostFrame": "00000000000000000000000000000000",
+      "hostFrame": "00000000000181CD000000000000A8CA",
       "idAttribute": "",
       "mainFrameUrl": "https://myform_root.com",
       "nameAttribute": "",
@@ -97,6 +97,7 @@ const char kExpectedFeedbackDataJSON[] = R"({
 })";
 
 void CreateFeedbackTestFormData(FormData* form) {
+  form->host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
   form->unique_renderer_id = test::MakeFormRendererId();
   form->name = u"MyForm";
   form->url = GURL("https://myform.com/form.html");
@@ -107,11 +108,14 @@ void CreateFeedbackTestFormData(FormData* form) {
   FormFieldData field;
   test::CreateTestFormField("First Name on Card", "firstnameoncard", "", "text",
                             "cc-given-name", &field);
+  field.host_frame = form->host_frame;
   form->fields.push_back(field);
   test::CreateTestFormField("Last Name on Card", "lastnameoncard", "", "text",
                             "cc-family-name", &field);
+  field.host_frame = form->host_frame;
   form->fields.push_back(field);
   test::CreateTestFormField("Email", "email", "", "email", &field);
+  field.host_frame = form->host_frame;
   form->fields.push_back(field);
 }
 }  // namespace
