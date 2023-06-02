@@ -201,10 +201,12 @@ class PasswordManagerClient {
       ErrorMessageFlowType flow_type,
       password_manager::PasswordStoreBackendErrorType error_type);
 
-  // Instructs the client to show the Touch To Fill UI.
-  virtual void ShowTouchToFill(
+  // Instructs the client to show a keyboard replacing surface UI (e.g.
+  // TouchToFill).
+  virtual void ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness);
+      autofill::mojom::SubmissionReadinessState submission_readiness,
+      bool is_webauthn_form);
 #endif
 
   // Returns a pointer to a DeviceAuthenticator. Might be null if

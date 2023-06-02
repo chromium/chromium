@@ -28,6 +28,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
@@ -407,9 +408,13 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
   }
 }
 
-void ChromePasswordManagerClient::ShowTouchToFill(
-    PasswordManagerDriver* driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness) {
+void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
+    password_manager::PasswordManagerDriver* driver,
+    autofill::mojom::SubmissionReadinessState submission_readiness,
+    bool is_webauthn_form) {
+  if (GetOrCreateCredManController()->Show(driver, is_webauthn_form)) {
+    return;
+  }
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
   std::vector<password_manager::PasskeyCredential> passkeys;
   if (webauthn_delegate && webauthn_delegate->GetPasskeys().has_value()) {
@@ -1244,6 +1249,15 @@ ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
   }
   return touch_to_fill_controller_.get();
 }
+
+password_manager::CredManController*
+ChromePasswordManagerClient::GetOrCreateCredManController() {
+  if (!cred_man_controller_) {
+    cred_man_controller_ =
+        std::make_unique<password_manager::CredManController>(this);
+  }
+  return cred_man_controller_.get();
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 ChromePasswordManagerClient::ChromePasswordManagerClient(
@@ -1375,6 +1389,10 @@ void ChromePasswordManagerClient::HideFillingUI() {
   }
   if (touch_to_fill_controller_) {
     touch_to_fill_controller_->Reset();
+  }
+
+  if (cred_man_controller_) {
+    cred_man_controller_.reset();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
