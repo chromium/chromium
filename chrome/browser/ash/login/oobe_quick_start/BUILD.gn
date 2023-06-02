@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/chromeos:chromeos",
   ]
   sources = [
     "second_device_auth_broker_unittest.cc",

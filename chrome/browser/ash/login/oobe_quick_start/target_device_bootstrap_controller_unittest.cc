@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
 
@@ -442,6 +443,17 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
+}
+
+// Ensures that the discoverable name that is shown Chromebook (123) matches
+// the one returned by RandomSessionId
+TEST_F(TargetDeviceBootstrapControllerTest, DiscoverableName) {
+  std::string device_type = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
+  std::string code =
+      fake_target_device_connection_broker_->GetSessionIdDisplayCode();
+  auto expected_string = device_type + " (" + code + ")";
+
+  EXPECT_EQ(bootstrap_controller_->GetDiscoverableName(), expected_string);
 }
 
 }  // namespace ash::quick_start
