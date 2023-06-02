@@ -1857,7 +1857,6 @@ enum HeaderBehaviour {
   }
   DCHECK(self.webStateList->GetIndexOfWebState(webState) !=
          WebStateList::kInvalidIndex);
-  // TODO(crbug.com/904588): Move `RecordPageLoadStart` to TabUsageRecorder.
   if (webState->IsEvicted() && _tabUsageRecorderBrowserAgent) {
     _tabUsageRecorderBrowserAgent->RecordPageLoadStart(webState);
   }
