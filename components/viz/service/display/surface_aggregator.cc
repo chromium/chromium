@@ -1304,7 +1304,8 @@ void SurfaceAggregator::CopyQuadsToPass(
       aggregate_only_damaged_ && !has_copy_requests_ &&
       !has_pixel_moving_backdrop_filter_ &&
       !resolved_pass.aggregation().in_cached_render_pass &&
-      !resolved_pass.aggregation().in_pixel_moving_filter_pass;
+      !resolved_pass.aggregation().in_pixel_moving_filter_pass &&
+      !RenderPassNeedsFullDamage(resolved_pass);
   // TODO(kylechar): For copy render passes we only need to draw all quads if
   // those attributes are set on the current render pass' aggregation data. The
   // complication is if a SurfaceDrawQuad is dropped and that surface has a copy
