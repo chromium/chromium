@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/message/save_card_message_with_links.h"
 
 #import "url/gurl.h"
 

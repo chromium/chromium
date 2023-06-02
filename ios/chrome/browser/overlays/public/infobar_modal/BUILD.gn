@@ -28,11 +28,11 @@ source_set("infobar_modal") {
     "//components/password_manager/core/common:features",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/message",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/passwords:infobar_delegates",
-    "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ui/gfx",
   ]
