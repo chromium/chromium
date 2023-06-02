@@ -112,11 +112,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
       showDescriptionDialog_: Boolean,
 
-      showCollectionOptions_: {
-        type: Boolean,
-        computed: 'computeShowCollectionOptions_(path)',
-      },
-
       showDailyRefreshButton_: {
         type: Boolean,
         computed:
@@ -126,7 +121,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       showRefreshButton_: {
         type: Boolean,
         computed:
-            'computeShowRefreshButton_(collectionId,googlePhotosAlbumId,dailyRefreshState_)',
+            'computeShowRefreshButton_(path,collectionId,googlePhotosAlbumId,dailyRefreshState_)',
       },
 
       dailyRefreshIcon_: {
@@ -183,7 +178,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private showLayoutOptions_: boolean;
   private showDescriptionButton_: boolean;
   private showDescriptionDialog_: boolean;
-  private showCollectionOptions_: boolean;
   private showDailyRefreshButton_: boolean;
   private showRefreshButton_: boolean;
   private dailyRefreshIcon_: string;
@@ -278,7 +272,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
         image?.descriptionTitle;
   }
 
-  private computeShowCollectionOptions_(path: string): boolean {
+  private isCollectionPath_(path: string): boolean {
     return path === Paths.COLLECTION_IMAGES ||
         path === Paths.GOOGLE_PHOTOS_COLLECTION;
   }
@@ -286,6 +280,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private computeShowDailyRefreshButton_(
       path: string, collectionId: string, googlePhotosAlbumId: string|undefined,
       photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>) {
+    if (!this.isCollectionPath_(path)) {
+      return false;
+    }
     // Special collection where daily refresh is disabled.
     if (collectionId ===
         loadTimeData.getString('timeOfDayWallpaperCollectionId')) {
@@ -300,8 +297,12 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   private computeShowRefreshButton_(
-      collectionId: string|undefined, googlePhotosAlbumId: string|undefined,
+      path: string, collectionId: string|undefined,
+      googlePhotosAlbumId: string|undefined,
       dailyRefreshState: DailyRefreshState|null) {
+    if (!this.isCollectionPath_(path)) {
+      return false;
+    }
     return (!collectionId && !googlePhotosAlbumId) ?
         false :
         this.isDailyRefreshId_(

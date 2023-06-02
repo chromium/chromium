@@ -50,8 +50,8 @@
   }
 
   #wallpaperOptions .text,
-  #collectionOptions .text,
-  #descriptionOptions .text {
+  #descriptionOptions .text,
+  .collection-options .text {
     margin-inline-start: 8px;
   }
 
@@ -141,20 +141,22 @@
           </cr-button>
         </div>
       </template>
-      <template is="dom-if" if="[[showCollectionOptions_]]">
-        <div id="collectionOptions">
+      <template is="dom-if" if="[[showDailyRefreshButton_]]">
+        <div class="collection-options">
           <cr-button id="dailyRefresh" class="secondary"
               aria-label="$i18n{ariaLabelChangeDaily}"
               aria-pressed$="[[ariaPressed_]]"
-              on-click="onClickDailyRefreshToggle_"
-              hidden$="[[!showDailyRefreshButton_]]">
+              on-click="onClickDailyRefreshToggle_">
             <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
             <div class="text">$i18n{changeDaily}</div>
           </cr-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showRefreshButton_]]">
+        <div class="collection-options">
           <cr-button id="refreshWallpaper" class="secondary"
               aria-label="$i18n{ariaLabelRefresh}"
-              on-click="onClickUpdateDailyRefreshWallpaper_"
-              hidden$="[[!showRefreshButton_]]">
+              on-click="onClickUpdateDailyRefreshWallpaper_">
             <iron-icon icon="personalization:refresh"></iron-icon>
             <div class="text">$i18n{refresh}</div>
           </cr-button>

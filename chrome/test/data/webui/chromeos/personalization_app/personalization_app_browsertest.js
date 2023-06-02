@@ -493,7 +493,10 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
           DEFAULT_WALLPAPER_NAME, imageTitle.textContent.trim(),
           'default wallpaper is shown at first');
 
-      wallpaperSelected.shadowRoot.getElementById('dailyRefresh').click();
+      const dailyRefreshButton = await waitUntil(
+          () => wallpaperSelected.shadowRoot.getElementById('dailyRefresh'),
+          'failed to find daily refresh button');
+      dailyRefreshButton.click();
 
       const sharedAlbumDialog = await waitUntil(
           () => getSharedAlbumDialog(),
