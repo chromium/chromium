@@ -159,6 +159,9 @@ const CGFloat kInfoSymbolSize = 22;
     _standardConstraints = @[
       [_statusTextLabel.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_statusTextLabel.leadingAnchor
+          constraintGreaterThanOrEqualToAnchor:textLayoutGuide.trailingAnchor
+                                      constant:kTableViewHorizontalSpacing],
       [_statusTextLabel.trailingAnchor
           constraintEqualToAnchor:_trailingButton.leadingAnchor
                          constant:-kTableViewHorizontalSpacing],
