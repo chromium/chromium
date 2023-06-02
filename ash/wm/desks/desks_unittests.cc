@@ -51,6 +51,7 @@
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -88,6 +89,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -9139,10 +9141,10 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
   EXPECT_FALSE(window.is_valid());
 }
 
-using DeskButtonTest = DesksTest;
+using DeskBarBasicTest = DesksTest;
 
 // Tests that `DeskTextfield` can be used outside overview.
-TEST_P(DeskButtonTest, DeskTextfieldOutsideOverview) {
+TEST_P(DeskBarBasicTest, DeskTextfieldOutsideOverview) {
   auto widget =
       TestWidgetBuilder()
           .SetDelegate(nullptr)
@@ -9183,7 +9185,7 @@ struct DeskButtonDeskBarTestCase {
 
 // Tests that desk button desk bar can show outside of overview with expected
 // bounds for different shelf alignments.
-TEST_P(DeskButtonTest, DeskBarBasic) {
+TEST_P(DeskBarBasicTest, DeskBarBasic) {
   UpdateDisplay("800x600");
 
   const DeskButtonDeskBarTestCase tests[] = {
@@ -9206,14 +9208,14 @@ TEST_P(DeskButtonTest, DeskBarBasic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kLeft,
        .has_saved_desks = true,
-       .bar_widget_bounds_expected = {56, 248, 744, 98},
+       .bar_widget_bounds_expected = {56, 254, 744, 98},
        .bar_view_bounds_expected = {0, 0, 744, 98}},
       {.test_name = "single desk + right shelf + saved desks",
        .desks = {0},
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kRight,
        .has_saved_desks = true,
-       .bar_widget_bounds_expected = {0, 248, 744, 98},
+       .bar_widget_bounds_expected = {0, 254, 744, 98},
        .bar_view_bounds_expected = {0, 0, 744, 98}},
       {.test_name = "multiple desks + bottom shelf + saved desks",
        .desks = {0, 1, 2},
@@ -9284,7 +9286,7 @@ TEST_P(DeskButtonTest, DeskBarBasic) {
 
 // Tests that desk button desk bar shows the scroll arrow buttons when overflow
 // happens.
-TEST_P(DeskButtonTest, DeskBarScrollLayout) {
+TEST_P(DeskBarBasicTest, DeskBarScrollLayout) {
   UpdateDisplay("600x400");
 
   auto* desks_controller = DesksController::Get();
@@ -9314,7 +9316,7 @@ TEST_P(DeskButtonTest, DeskBarScrollLayout) {
   CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
 }
 
-TEST_P(DeskButtonTest, DeskBarHoverBasic) {
+TEST_P(DeskBarBasicTest, DeskBarHoverBasic) {
   auto window_1 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
   auto window_2 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
 
@@ -9343,7 +9345,7 @@ TEST_P(DeskButtonTest, DeskBarHoverBasic) {
 }
 
 // Tests that clicking on new desk button does the expected thing.
-TEST_P(DeskButtonTest, DeskBarNewDeskButton) {
+TEST_P(DeskBarBasicTest, DeskBarNewDeskButton) {
   OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
 
   auto* desks_controller = DesksController::Get();
@@ -9388,7 +9390,7 @@ TEST_P(DeskButtonTest, DeskBarNewDeskButton) {
 }
 
 // Tests that we can go to saved desk library directly via desk button desk bar.
-TEST_P(DeskButtonTest, DeskBarLibraryButton) {
+TEST_P(DeskBarBasicTest, DeskBarLibraryButton) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -9411,7 +9413,7 @@ TEST_P(DeskButtonTest, DeskBarLibraryButton) {
 }
 
 // Tests that the desk button desk bar support dragging to reorder desks.
-TEST_P(DeskButtonTest, DeskBarReorderDesk) {
+TEST_P(DeskBarBasicTest, DeskBarReorderDesk) {
   OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
 
   auto* desks_controller = DesksController::Get();
@@ -9481,7 +9483,7 @@ TEST_P(DeskButtonTest, DeskBarReorderDesk) {
   CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
 }
 
-TEST_P(DeskButtonTest, DeskBarActivateDesk) {
+TEST_P(DeskBarBasicTest, DeskBarActivateDesk) {
   auto* desks_controller = DesksController::Get();
 
   NewDesk();
@@ -9505,7 +9507,7 @@ TEST_P(DeskButtonTest, DeskBarActivateDesk) {
   EXPECT_FALSE(GetDeskBarView(DeskBarViewBase::Type::kDeskButton));
 }
 
-TEST_P(DeskButtonTest, DeskBarCombineOrCloseDesk) {
+TEST_P(DeskBarBasicTest, DeskBarCombineOrCloseDesk) {
   // Setup 3 desks, e.g. "Desk 1", "Desk 2", and "Desk 3". Only "Desk 3" has a
   // window.
   NewDesk();
@@ -9528,6 +9530,184 @@ TEST_P(DeskButtonTest, DeskBarCombineOrCloseDesk) {
 
   CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
 }
+
+namespace {
+
+struct DeskButtonTestParams {
+  ShelfAlignment alignment = ShelfAlignment::kBottom;
+};
+
+class DeskButtonTest
+    : public AshTestBase,
+      public ::testing::WithParamInterface<DeskButtonTestParams> {
+ public:
+  DeskButtonTest() = default;
+  DeskButtonTest(const DeskButtonTest&) = delete;
+  DeskButtonTest& operator=(const DeskButtonTest&) = delete;
+  ~DeskButtonTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDeskButton,
+                              chromeos::features::kJellyroll},
+        /*disabled_features=*/{});
+    AshTestBase::SetUp();
+    shelf_test_api_ = std::make_unique<ShelfViewTestAPI>(
+        GetPrimaryShelf()->GetShelfViewForTesting());
+    Shelf::ForWindow(Shell::GetPrimaryRootWindow())
+        ->SetAlignment(GetParam().alignment);
+  }
+
+  DeskButton* GetDeskButton() {
+    return shelf_test_api_->shelf_view()
+        ->shelf_widget()
+        ->desk_button_widget()
+        ->GetDeskButtonForTest();
+  }
+
+  views::ImageButton* GetPrevDeskButton() {
+    return GetDeskButton()->prev_desk_button();
+  }
+
+  views::ImageButton* GetNextDeskButton() {
+    return GetDeskButton()->next_desk_button();
+  }
+
+  // Clicks on one of the desk switch buttons. `next` determines which button is
+  // pressed; if true, then we press the next desk button, otherwise we press
+  // the previous desk button.
+  void ClickDeskSwitchButton(bool next) {
+    // The buttons will show if we hover the desk button, so we need to do that
+    // first.
+    auto* event_generator = GetEventGenerator();
+    auto* desk_button = GetDeskButton();
+    ASSERT_TRUE(desk_button);
+    event_generator->MoveMouseTo(
+        desk_button->GetBoundsInScreen().CenterPoint());
+    views::ImageButton* target_button =
+        next ? GetNextDeskButton() : GetPrevDeskButton();
+    ASSERT_TRUE(target_button);
+    EXPECT_TRUE(target_button->GetVisible());
+    event_generator->MoveMouseTo(
+        target_button->GetBoundsInScreen().CenterPoint());
+    DeskSwitchAnimationWaiter waiter;
+    event_generator->ClickLeftButton();
+    waiter.Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
+};
+
+}  // namespace
+
+// Tests functionalities for `DeskSwitchButton`s.
+TEST_P(DeskButtonTest, DeskSwitchButtons) {
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+  const auto& desks = controller->desks();
+
+  auto* desk_1 = desks[0].get();
+  auto* desk_2 = desks[1].get();
+
+  // Check that we are on desk 1.
+  ASSERT_TRUE(desk_1->is_active());
+
+  // Desk switch buttons should not be visible at first.
+  views::ImageButton* prev_desk_button = GetPrevDeskButton();
+  views::ImageButton* next_desk_button = GetNextDeskButton();
+  ASSERT_TRUE(prev_desk_button);
+  ASSERT_TRUE(next_desk_button);
+  EXPECT_FALSE(prev_desk_button->GetVisible());
+  EXPECT_FALSE(next_desk_button->GetVisible());
+
+  // Hovering over the desk button should allow for the buttons to show.
+  auto* event_generator = GetEventGenerator();
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+  event_generator->MoveMouseTo(desk_button->GetBoundsInScreen().CenterPoint());
+
+  // We are on the leftmost desk, so hovering over the desk button should only
+  // show the next desk button.
+  EXPECT_FALSE(prev_desk_button->GetVisible());
+  EXPECT_TRUE(next_desk_button->GetVisible());
+
+  // Move the mouse away from the button to make sure the switch buttons hide
+  // when the desk button is not hovered.
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  EXPECT_FALSE(prev_desk_button->GetVisible());
+  EXPECT_FALSE(next_desk_button->GetVisible());
+
+  ClickDeskSwitchButton(/*next=*/true);
+
+  // The previous desk button should now be visible since we are on the
+  // rightmost desk.
+  EXPECT_TRUE(desk_2->is_active());
+  EXPECT_TRUE(prev_desk_button->GetVisible());
+  EXPECT_FALSE(next_desk_button->GetVisible());
+
+  // Try going back to the first desk.
+  ClickDeskSwitchButton(/*next=*/false);
+  EXPECT_TRUE(desk_1->is_active());
+}
+
+// Tests that button text updates when desk is changed.
+TEST_P(DeskButtonTest, DeskButtonTextReflectsDeskChange) {
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+  const auto& desks = controller->desks();
+
+  auto* desk_1 = desks[0].get();
+  auto* desk_2 = desks[1].get();
+
+  // Check that renaming the active desk changes the text in the button.
+  ASSERT_TRUE(desk_1->is_active());
+
+  desk_1->SetName(u"Work", /*set_by_user=*/true);
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Work" : u"W",
+            desk_button->GetTextForTest());
+
+  desk_2->SetName(u"Fun", /*set_by_user=*/true);
+  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Work" : u"W",
+            desk_button->GetTextForTest());
+
+  ClickDeskSwitchButton(/*next=*/true);
+  EXPECT_EQ(u"Fun", desk_button->GetTextForTest());
+
+  // Add a third desk and don't name it to check how default desk names are
+  // handled.
+  NewDesk();
+  ClickDeskSwitchButton(/*next=*/true);
+  EXPECT_EQ(u"Desk 3", desk_button->GetTextForTest());
+
+  GetEventGenerator()->MoveMouseTo(
+      Shell::GetPrimaryRootWindow()->bounds().origin());
+  EXPECT_EQ(GetParam().alignment == ShelfAlignment::kBottom ? u"Desk 3" : u"D3",
+            desk_button->GetTextForTest());
+}
+
+// Tests that emojis show up correctly for desk names.
+TEST_P(DeskButtonTest, DeskButtonTextWorksWithEmojis) {
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+  const auto& desks = controller->desks();
+  desks[0]->SetName(u"😃emoji", /*set_by_user=*/true);
+
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+  EXPECT_EQ(
+      GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"😃",
+      desk_button->GetTextForTest());
+}
+
+// TODO(b/272383056): Add test that switches between different shelf alignments.
 
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
@@ -9570,6 +9750,11 @@ constexpr DesksTestParams kDeskCountOnly[] = {
     {.use_16_desks = true},
 };
 
+constexpr DeskButtonTestParams kDeskButtonTestParamCombinations[] = {
+    {.alignment = ShelfAlignment::kBottom},
+    {.alignment = ShelfAlignment::kLeft},
+    {.alignment = ShelfAlignment::kRight}};
+
 INSTANTIATE_TEST_SUITE_P(All, DesksTest, ValuesIn(kAllCombinations));
 
 INSTANTIATE_TEST_SUITE_P(All, DesksEditableNamesTest, ValuesIn(kDeskCountOnly));
@@ -9578,7 +9763,10 @@ INSTANTIATE_TEST_SUITE_P(All, DesksAcceleratorsTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksMockTimeTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksCloseAllTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All, DeskButtonTest, ValuesIn(kAllCombinations));
+INSTANTIATE_TEST_SUITE_P(All, DeskBarBasicTest, ValuesIn(kAllCombinations));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeskButtonTest,
+                         ValuesIn(kDeskButtonTestParamCombinations));
 
 }  // namespace
 

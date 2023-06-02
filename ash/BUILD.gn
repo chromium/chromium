@@ -2270,6 +2270,8 @@ component("ash") {
     "wm/desks/desk_bar_view.h",
     "wm/desks/desk_bar_view_base.cc",
     "wm/desks/desk_bar_view_base.h",
+    "wm/desks/desk_button/desk_button.cc",
+    "wm/desks/desk_button/desk_button.h",
     "wm/desks/desk_button_base.cc",
     "wm/desks/desk_button_base.h",
     "wm/desks/desk_drag_proxy.cc",
