@@ -114,6 +114,13 @@ void FlossAdapterClient::GetRemoteUuids(
       std::move(callback), adapter::kGetRemoteUuids, device);
 }
 
+void FlossAdapterClient::GetRemoteVendorProductInfo(
+    ResponseCallback<FlossAdapterClient::VendorProductInfo> callback,
+    FlossDeviceId device) {
+  CallAdapterMethod<FlossAdapterClient::VendorProductInfo>(
+      std::move(callback), adapter::kGetRemoteVendorProductInfo, device);
+}
+
 void FlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
                                       const FlossDeviceId& device) {
   CallAdapterMethod<uint32_t>(std::move(callback), adapter::kGetBondState,

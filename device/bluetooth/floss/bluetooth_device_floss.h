@@ -205,6 +205,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
   void OnGetRemoteClass(DBusResult<uint32_t> ret);
   void OnGetRemoteAppearance(DBusResult<uint16_t> ret);
+  void OnGetRemoteVendorProductInfo(
+      DBusResult<FlossAdapterClient::VendorProductInfo> ret);
   void OnGetRemoteUuids(DBusResult<UUIDList> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
@@ -274,6 +276,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Appearance of device.
   // TODO(b/204708206): Update with property framework when available
   uint16_t appearance_ = 0;
+
+  // Vendor and product info of device.
+  // TODO(b/204708206): Update with property framework when available
+  FlossAdapterClient::VendorProductInfo vpi_;
 
   // Whether the device is bonded/paired.
   FlossAdapterClient::BondState bond_state_ =
