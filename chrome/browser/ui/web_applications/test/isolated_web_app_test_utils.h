@@ -128,7 +128,8 @@ class TestSignedWebBundleBuilder {
   web_package::WebBundleBuilder builder_;
 };
 
-TestSignedWebBundle BuildDefaultTestSignedWebBundle();
+TestSignedWebBundle BuildDefaultTestSignedWebBundle(
+    const base::Version& version = base::Version("1.0.0"));
 
 // Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
 // filepath for |IsolatedWebAppLocation|.

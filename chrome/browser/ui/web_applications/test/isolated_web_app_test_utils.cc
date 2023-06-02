@@ -44,7 +44,7 @@ namespace web_app {
 namespace {
 constexpr base::StringPiece kTestManifest = R"({
       "name": "Simple Isolated App",
-      "version": "1.0.0",
+      "version": "$1",
       "id": "/",
       "scope": "/",
       "start_url": "/",
@@ -138,6 +138,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
       url_info, DevModeProxy{.proxy_url = proxy_origin},
+      /*expected_version=*/absl::nullopt,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
@@ -235,10 +236,12 @@ TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
           key_pair_.public_key));
 }
 
-TestSignedWebBundle BuildDefaultTestSignedWebBundle() {
+TestSignedWebBundle BuildDefaultTestSignedWebBundle(
+    const base::Version& version) {
   TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
       web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey));
-  builder.AddManifest(kTestManifest);
+  builder.AddManifest(base::ReplaceStringPlaceholders(
+      kTestManifest, {version.GetString()}, nullptr));
   builder.AddPngImage(kTestIconUrl, GetTestIconInString());
   return builder.Build();
 }

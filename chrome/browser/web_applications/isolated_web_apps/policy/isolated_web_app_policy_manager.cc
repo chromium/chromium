@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -50,13 +51,14 @@ IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::
 void IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::Install(
     const IsolatedWebAppLocation& location,
     const IsolatedWebAppUrlInfo& url_info,
+    const base::Version& expected_version,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
   // There is no need to keep the browser or profile alive when
   // policy-installing an IWA. If the browser or profile shut down, installation
   // will be re-attempted the next time they start, assuming that the policy is
   // still set.
   provider_->scheduler().InstallIsolatedWebApp(
-      url_info, location,
+      url_info, location, expected_version,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, std::move(callback));
 }
@@ -220,7 +222,8 @@ void IsolatedWebAppPolicyManager::OnUpdateManifestParsed(
   UpdateManifest::VersionEntry latest_version =
       GetLatestVersionEntry(*update_manifest);
 
-  current_app_->set_web_bundle_url(latest_version.src());
+  current_app_->set_web_bundle_url_and_expected_version(
+      latest_version.src(), latest_version.version());
   CreateIwaDirectory();
 }
 
@@ -320,7 +323,7 @@ void IsolatedWebAppPolicyManager::OnWebBundleDownloaded(
           current_app_->web_bundle_id());
 
   installer_->Install(
-      location, url_info,
+      location, url_info, current_app_->expected_version(),
       base::BindOnce(&IsolatedWebAppPolicyManager::OnIwaInstalled,
                      weak_factory_.GetWeakPtr()));
 }

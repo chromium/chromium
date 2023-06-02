@@ -253,6 +253,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     std::unique_ptr<WebAppUrlLoader> url_loader;
     std::unique_ptr<content::WebContents> web_contents;
     absl::optional<IsolatedWebAppLocation> location;
+    absl::optional<base::Version> expected_version;
     raw_ptr<WebAppInstallFinalizer> install_finalizer = nullptr;
     base::expected<void, UnusableSwbnFileError> bundle_status = base::ok();
   };
@@ -285,10 +286,10 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       url_loader = std::move(test_url_loader);
     }
 
-    auto command = CreateCommand(parameters.url_info, std::move(web_contents),
-                                 parameters.location, std::move(url_loader),
-                                 test_future.GetCallback(),
-                                 std::move(parameters.bundle_status));
+    auto command = CreateCommand(
+        parameters.url_info, std::move(web_contents), parameters.location,
+        parameters.expected_version, std::move(url_loader),
+        test_future.GetCallback(), std::move(parameters.bundle_status));
 
     command->SetDataRetrieverForTesting(
         data_retriever != nullptr ? std::move(data_retriever)
@@ -302,6 +303,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       const IsolatedWebAppUrlInfo& url_info,
       std::unique_ptr<content::WebContents> web_contents,
       absl::optional<IsolatedWebAppLocation> location,
+      absl::optional<base::Version> expected_version,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -312,7 +314,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     }
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
-        url_info, location.value(), std::move(web_contents),
+        url_info, location.value(), expected_version, std::move(web_contents),
         std::move(url_loader), /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, std::move(callback),
         std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
@@ -603,6 +605,20 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+TEST_F(InstallIsolatedWebAppCommandTest,
+       InstallationFailsWhenAppVersionDoesNotMatchExpectedVersion) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  std::unique_ptr<MockDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever(url_info.origin().GetURL());
+
+  EXPECT_THAT(
+      ExecuteCommand(Parameters{.url_info = url_info,
+                                .expected_version = base::Version("99.99.99")},
+                     std::move(fake_data_retriever)),
+      IsInstallationError(
+          HasSubstr("does not match the version provided in the manifest")));
+}
+
 TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
   base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                         InstallIsolatedWebAppCommandError>>
@@ -613,8 +629,9 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
       url_info,
       content::WebContents::Create(
           content::WebContents::CreateParams(profile())),
-      CreateDevProxyLocation(), std::make_unique<TestWebAppUrlLoader>(),
-      test_future.GetCallback());
+      CreateDevProxyLocation(),
+      /*expected_version=*/absl::nullopt,
+      std::make_unique<TestWebAppUrlLoader>(), test_future.GetCallback());
   EXPECT_THAT(
       command->lock_description(),
       AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),

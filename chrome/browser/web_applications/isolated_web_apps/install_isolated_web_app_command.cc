@@ -76,6 +76,7 @@ bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppLocation& location,
+    const absl::optional<base::Version>& expected_version,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -90,6 +91,7 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
           std::make_unique<AppLockDescription>(url_info.app_id())),
       url_info_(url_info),
       location_(location),
+      expected_version_(expected_version),
       response_reader_factory_(std::move(response_reader_factory)),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
@@ -300,6 +302,13 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
   base::Version version(
       std::vector(version_components->begin(), version_components->end()));
   info.isolated_web_app_version = version;
+
+  if (expected_version_.has_value() && *expected_version_ != version) {
+    return base::unexpected(
+        "Expected version (" + expected_version_->GetString() +
+        ") does not match the version provided in the manifest (" +
+        version.GetString() + ")");
+  }
 
   std::string encoded_id = manifest.id.path();
 

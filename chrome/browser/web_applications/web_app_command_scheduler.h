@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -178,10 +179,13 @@ class WebAppCommandScheduler {
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that installs the Isolated Web App described by the
-  // given IsolatedWebAppUrlInfo and IsolationData.
+  // given IsolatedWebAppUrlInfo and IsolationData. If `expected_version` is
+  // set, then this command will refuse to install the Isolated Web App if its
+  // version does not match.
   virtual void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
+      const absl::optional<base::Version>& expected_version,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       InstallIsolatedWebAppCallback callback,

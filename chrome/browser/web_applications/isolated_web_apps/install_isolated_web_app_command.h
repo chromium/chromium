@@ -16,6 +16,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
@@ -28,6 +29,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
@@ -71,14 +73,17 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
   CreateDefaultResponseReaderFactory(const PrefService& prefs);
 
-  // |url_info| holds the origin information of the app. It is randomly
+  // `url_info` holds the origin information of the app. It is randomly
   // generated for dev-proxy and the public key of signed bundle. It is
   // guarantee to be valid.
   //
-  // |location| holds information about the mode(dev-mod-proxy/signed-bundle)
+  // `location` holds information about the mode(dev-mod-proxy/signed-bundle)
   // and the source.
   //
-  // |callback| must be not null.
+  // `expected_version`, if set, specifies the expected version of the IWA to
+  // install. If the version in the manifest differs, install is aborted.
+  //
+  // `callback` must be not null.
   //
   // The `id` in the application's manifest must equal "/".
   //
@@ -88,6 +93,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   explicit InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
+      const absl::optional<base::Version>& expected_version,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -160,6 +166,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   IsolatedWebAppUrlInfo url_info_;
   IsolatedWebAppLocation location_;
+  absl::optional<base::Version> expected_version_;
 
   std::unique_ptr<IsolatedWebAppResponseReaderFactory> response_reader_factory_;
 

@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -168,9 +169,16 @@ class TestIwaInstallCommandWrapper
   void Install(
       const IsolatedWebAppLocation& location,
       const IsolatedWebAppUrlInfo& url_info,
+      const base::Version& expected_version,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) override {
     if (url_info.web_bundle_id().id() == kWebBundleId1 ||
         url_info.web_bundle_id().id() == kWebBundleId2) {
+      if (url_info.web_bundle_id().id() == kWebBundleId1) {
+        EXPECT_EQ(expected_version, base::Version("7.0.6"));
+      } else if (url_info.web_bundle_id().id() == kWebBundleId2) {
+        EXPECT_EQ(expected_version, base::Version("3.0.0"));
+      }
+
       std::move(callback).Run(InstallIsolatedWebAppCommandSuccess{});
       return;
     }

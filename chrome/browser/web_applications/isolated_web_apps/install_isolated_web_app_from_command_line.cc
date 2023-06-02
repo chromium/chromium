@@ -252,7 +252,8 @@ void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
   }
 
   command_scheduler_->InstallIsolatedWebApp(
-      url_info.value(), location, std::move(keep_alive),
+      url_info.value(), location,
+      /*expected_version=*/absl::nullopt, std::move(keep_alive),
       std::move(optional_profile_keep_alive),
       base::BindOnce(
           &IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp,
