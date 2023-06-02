@@ -26,8 +26,8 @@
 
 namespace {
 
-using ShowVirtualKeyboard =
-    password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
+using ToShowVirtualKeyboard =
+    password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using autofill::mojom::SubmissionReadinessState;
 using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
@@ -230,7 +230,7 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 
   password_manager::metrics_util::LogFilledCredentialIsFromAndroidApp(
       credential.is_affiliation_based_match().value());
-  driver_->KeyboardReplacingSurfaceClosed(ShowVirtualKeyboard(false));
+  driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
 
   driver_->FillSuggestion(credential.username(), credential.password());
 
@@ -256,6 +256,6 @@ void TouchToFillControllerAutofillDelegate::CleanUpDriverAndReportOutcome(
     bool show_virtual_keyboard) {
   std::exchange(driver_, nullptr)
       ->KeyboardReplacingSurfaceClosed(
-          ShowVirtualKeyboard(show_virtual_keyboard));
+          ToShowVirtualKeyboard(show_virtual_keyboard));
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
 }

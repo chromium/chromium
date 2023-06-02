@@ -36,8 +36,8 @@ class PasswordManagerDriver
     : public base::SupportsWeakPtr<PasswordManagerDriver> {
  public:
 #if BUILDFLAG(IS_ANDROID)
-  using ShowVirtualKeyboard =
-      base::StrongAlias<class ShowVirtualKeyboardTag, bool>;
+  using ToShowVirtualKeyboard =
+      base::StrongAlias<class ToShowVirtualKeyboardTag, bool>;
 #endif
 
   PasswordManagerDriver() = default;
@@ -96,7 +96,7 @@ class PasswordManagerDriver
   // Fill sheet) has been closed. Indicates whether the virtual keyboard should
   // be shown instead.
   virtual void KeyboardReplacingSurfaceClosed(
-      ShowVirtualKeyboard show_virtual_keyboard) {}
+      ToShowVirtualKeyboard show_virtual_keyboard) {}
 
   // Triggers form submission on the last interacted web input element.
   virtual void TriggerFormSubmission() {}
