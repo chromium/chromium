@@ -74,7 +74,7 @@ BrowserAppMenuButton::~BrowserAppMenuButton() {}
 void BrowserAppMenuButton::SetTypeAndSeverity(
     AppMenuIconController::TypeAndSeverity type_and_severity) {
   type_and_severity_ = type_and_severity;
-  UpdateColors();
+  UpdateThemeBasedState();
 }
 
 void BrowserAppMenuButton::ShowMenu(int run_types) {
@@ -120,11 +120,12 @@ AlertMenuItem BrowserAppMenuButton::CloseFeaturePromoAndContinue() {
 }
 
 void BrowserAppMenuButton::OnThemeChanged() {
-  UpdateColors();
+  UpdateThemeBasedState();
   AppMenuButton::OnThemeChanged();
 }
 
-void BrowserAppMenuButton::UpdateColors() {
+void BrowserAppMenuButton::UpdateThemeBasedState() {
+  UpdateLayoutInsets();
   UpdateTextAndHighlightColor();
   // Call `UpdateIcon()` after `UpdateTextAndHighlightColor()` as the icon color
   // depends on if the container is in an expanded state.
@@ -241,6 +242,18 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 
 bool BrowserAppMenuButton::ShouldPaintBorder() const {
   return !features::IsChromeRefresh2023();
+}
+
+void BrowserAppMenuButton::UpdateLayoutInsets() {
+  if (!features::IsChromeRefresh2023()) {
+    return;
+  }
+
+  if (IsLabelPresentAndVisible()) {
+    SetLayoutInsets(::GetLayoutInsets(BROWSER_APP_MENU_CHIP_PADDING));
+  } else {
+    SetLayoutInsets(::GetLayoutInsets(TOOLBAR_BUTTON));
+  }
 }
 
 absl::optional<SkColor> BrowserAppMenuButton::GetHighlightTextColor() const {

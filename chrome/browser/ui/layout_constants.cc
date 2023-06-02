@@ -160,6 +160,14 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
                           ? 7
                           : 6));
 
+    case BROWSER_APP_MENU_CHIP_PADDING:
+      if (touch_ui ||
+          !base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+        return GetLayoutInsets(TOOLBAR_BUTTON);
+      } else {
+        return gfx::Insets::TLBR(7, 4, 7, 6);
+      }
+
     case TOOLBAR_INTERIOR_MARGIN:
       if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
         return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 5);
