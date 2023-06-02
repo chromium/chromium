@@ -2980,6 +2980,10 @@ Connect your device to power.
         Noise cancellation
       </message>
 
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE" desc="label used to warn that NBS is in use">
+        Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use another input source for better audio quality.
+      </message>
+
       <!-- Status tray Live Caption strings. -->
       <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION" desc="The label used in the accessibility menu of the system tray to toggle on/off Live Caption feature.">
         Live Caption

@@ -165,6 +165,11 @@ BASE_FEATURE(kAssistantNativeIcons,
              "AssistantNativeIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables warning in the quick settings when NBS device is in use.
+BASE_FEATURE(kAudioHFPNbsWarning,
+             "AudioHFPNbsWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Peripheral volume change by hardware reported steps
 BASE_FEATURE(kAudioPeripheralVolumeGranularity,
              "AudioPeripheralVolumeGranularity",
@@ -2524,6 +2529,10 @@ bool AreSideAlignedToastsEnabled() {
 
 bool AreSystemSoundsEnabled() {
   return base::FeatureList::IsEnabled(kSystemSounds);
+}
+
+bool IsAudioHFPNbsWarningEnabled() {
+  return base::FeatureList::IsEnabled(kAudioHFPNbsWarning);
 }
 
 bool IsAutocompleteExtendedSuggestionsEnabled() {
