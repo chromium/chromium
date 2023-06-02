@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -106,6 +107,8 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   cross_origin_embedder_policy(const std::string& id) override;
   absl::optional<network::CrossOriginOpenerPolicy> cross_origin_opener_policy(
       const std::string& id) override;
+  absl::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
+  content_security_policy(const std::string& id) override;
 
   // This is used to enable compatibility shims, including disabling some
   // features that are incompatible with older clients.

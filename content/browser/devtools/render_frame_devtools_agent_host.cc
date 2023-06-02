@@ -973,6 +973,29 @@ RenderFrameDevToolsAgentHost::cross_origin_opener_policy(
   return rfhi->cross_origin_opener_policy();
 }
 
+absl::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
+RenderFrameDevToolsAgentHost::content_security_policy(const std::string& id) {
+  FrameTreeNode* frame_tree_node =
+      protocol::FrameTreeNodeFromDevToolsFrameToken(
+          frame_host_->frame_tree_node(), id);
+  if (!frame_tree_node) {
+    return absl::nullopt;
+  }
+  RenderFrameHostImpl* rfhi = frame_tree_node->current_frame_host();
+  const PolicyContainerPolicies& policies =
+      rfhi->policy_container_host()->policies();
+  if (policies.content_security_policies.empty()) {
+    return absl::nullopt;
+  } else {
+    std::vector<network::mojom::ContentSecurityPolicyHeader> csp_headers;
+    for (const auto& content_security_policy :
+         policies.content_security_policies) {
+      csp_headers.push_back(*content_security_policy->header);
+    }
+    return csp_headers;
+  }
+}
+
 bool RenderFrameDevToolsAgentHost::HasSessionsWithoutTabTargetSupport() const {
   const std::vector<DevToolsSession*>& sessions =
       DevToolsAgentHostImpl::sessions();

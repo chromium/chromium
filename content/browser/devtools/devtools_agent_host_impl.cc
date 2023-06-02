@@ -511,6 +511,11 @@ DevToolsAgentHostImpl::cross_origin_opener_policy(const std::string& id) {
   return absl::nullopt;
 }
 
+absl::optional<std::vector<network::mojom::ContentSecurityPolicyHeader>>
+DevToolsAgentHostImpl::content_security_policy(const std::string& id) {
+  return absl::nullopt;
+}
+
 protocol::TargetAutoAttacher* DevToolsAgentHostImpl::auto_attacher() {
   return nullptr;
 }

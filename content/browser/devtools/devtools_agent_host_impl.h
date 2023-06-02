@@ -20,6 +20,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
 
@@ -103,6 +104,9 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   cross_origin_embedder_policy(const std::string& id);
   virtual absl::optional<network::CrossOriginOpenerPolicy>
   cross_origin_opener_policy(const std::string& id);
+  virtual absl::optional<
+      std::vector<network::mojom::ContentSecurityPolicyHeader>>
+  content_security_policy(const std::string& id);
 
   virtual protocol::TargetAutoAttacher* auto_attacher();
   virtual std::string GetSubtype();

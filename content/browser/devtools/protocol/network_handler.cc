@@ -87,6 +87,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom-shared.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -2867,6 +2868,15 @@ makeCrossOriginEmbedderPolicyValue(
       return protocol::Network::CrossOriginEmbedderPolicyValueEnum::RequireCorp;
   }
 }
+protocol::Network::ContentSecurityPolicySource makeContentSecurityPolicySource(
+    network::mojom::ContentSecurityPolicySource source) {
+  switch (source) {
+    case network::mojom::ContentSecurityPolicySource::kHTTP:
+      return protocol::Network::ContentSecurityPolicySourceEnum::HTTP;
+    case network::mojom::ContentSecurityPolicySource::kMeta:
+      return protocol::Network::ContentSecurityPolicySourceEnum::Meta;
+  }
+}
 std::unique_ptr<protocol::Network::CrossOriginOpenerPolicyStatus>
 makeCrossOriginOpenerPolicyStatus(
     const network::CrossOriginOpenerPolicy& coop) {
@@ -2903,6 +2913,24 @@ makeCrossOriginEmbedderPolicyStatus(
   }
   return protocol_coep;
 }
+std::unique_ptr<protocol::Array<protocol::Network::ContentSecurityPolicyStatus>>
+makeContentSecurityPolicyStatus(
+    const std::vector<network::mojom::ContentSecurityPolicyHeader>&
+        csp_headers) {
+  auto csp_status = std::make_unique<
+      protocol::Array<protocol::Network::ContentSecurityPolicyStatus>>();
+  for (const auto& csp_header : csp_headers) {
+    auto csp_status_component =
+        protocol::Network::ContentSecurityPolicyStatus::Create()
+            .SetEffectiveDirectives(csp_header.header_value)
+            .SetIsEnforced(csp_header.type ==
+                           network::mojom::ContentSecurityPolicyType::kEnforce)
+            .SetSource(makeContentSecurityPolicySource(csp_header.source))
+            .Build();
+    csp_status->emplace_back(std::move(csp_status_component));
+  }
+  return csp_status;
+}
 }  // namespace
 
 DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
@@ -2913,12 +2941,16 @@ DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
   std::string id = frame_id.fromMaybe("");
   auto maybe_coep = host->cross_origin_embedder_policy(id);
   auto maybe_coop = host->cross_origin_opener_policy(id);
+  auto maybe_csp = host->content_security_policy(id);
   auto status = protocol::Network::SecurityIsolationStatus::Create().Build();
   if (maybe_coep) {
     status->SetCoep(makeCrossOriginEmbedderPolicyStatus(*maybe_coep));
   }
   if (maybe_coop) {
     status->SetCoop(makeCrossOriginOpenerPolicyStatus(*maybe_coop));
+  }
+  if (maybe_csp) {
+    status->SetCsp(makeContentSecurityPolicyStatus(*maybe_csp));
   }
   *out_info = std::move(status);
   return Response::Success();
