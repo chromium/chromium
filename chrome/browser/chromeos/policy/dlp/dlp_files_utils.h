@@ -30,6 +30,12 @@ enum class FileAction {
 ::dlp::DlpComponent MapPolicyComponentToProto(
     data_controls::Component component);
 
+// Returns whether there is at least one source in `sources` for which the
+// transfer to `component` is blocked. The vector `sources` may contain empty
+// strings for unmanaged files.
+bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
+                            data_controls::Component component);
+
 }  // namespace dlp
 }  // namespace policy
 

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+
 namespace policy {
 namespace dlp {
 
@@ -25,6 +28,34 @@ namespace dlp {
     case data_controls::Component::kOneDrive:
       return ::dlp::DlpComponent::MICROSOFT_ONEDRIVE;
   }
+}
+
+bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
+                            data_controls::Component component) {
+  // Primary profile restrictions are enforced across all profiles.
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager) {
+    return false;
+  }
+
+  for (const auto& src : sources) {
+    // Non managed files have an empty source URL.
+    if (src.empty()) {
+      continue;
+    }
+
+    std::string out_src_pattern;
+    policy::DlpRulesManager::RuleMetadata out_rule_metadata;
+    if (rules_manager->IsRestrictedComponent(
+            GURL(src), component,
+            policy::DlpRulesManagerBase::Restriction::kFiles, &out_src_pattern,
+            &out_rule_metadata) == policy::DlpRulesManager::Level::kBlock) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace dlp

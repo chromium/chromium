@@ -3423,6 +3423,7 @@ source_set("ash") {
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/chromeos",
+    "//chrome/browser/enterprise/data_controls:data_controls",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
