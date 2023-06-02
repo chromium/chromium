@@ -68,6 +68,8 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
   callback_ = std::move(callback);
 
+  request_start_time_ = base::TimeTicks::Now();
+
   // Renderer also checks that the origin is same origin with `idp_config_url_`.
   // The check is duplicated in case that the renderer is compromised.
   if (!origin_.IsSameOriginWith(idp_config_url_)) {
@@ -197,6 +199,15 @@ void FederatedAuthUserInfoRequest::MaybeReturnAccounts(
     has_returning_accounts = true;
   }
 
+  FedCmMetrics::NumAccounts num_accounts = FedCmMetrics::NumAccounts::kZero;
+  if (has_returning_accounts) {
+    num_accounts = accounts.size() == 1u ? FedCmMetrics::NumAccounts::kOne
+                                         : FedCmMetrics::NumAccounts::kMultiple;
+  }
+  base::UmaHistogramEnumeration("Blink.FedCm.UserInfo.NumAccounts",
+                                num_accounts);
+  base::UmaHistogramMediumTimes("Blink.FedCm.UserInfo.TimeToRequestCompleted",
+                                base::TimeTicks::Now() - request_start_time_);
   if (!has_returning_accounts) {
     CompleteWithError(RequestStatus::kNoReturningUserFromFetchedAccounts);
     return;

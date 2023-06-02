@@ -109,6 +109,8 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   url::Origin embedding_origin_;
   url::Origin parent_frame_origin_;
 
+  base::TimeTicks request_start_time_;
+
   blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback_;
 
   base::WeakPtrFactory<FederatedAuthUserInfoRequest> weak_ptr_factory_{this};

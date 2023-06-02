@@ -339,6 +339,10 @@ TEST_F(FederatedAuthUserInfoRequestTest, PreviouslySignedIn) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.UserInfo.Status",
       FederatedAuthUserInfoRequest::RequestStatus::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.UserInfo.NumAccounts",
+                                       FedCmMetrics::NumAccounts::kMultiple, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.UserInfo.TimeToRequestCompleted", 1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
@@ -357,6 +361,9 @@ TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
       "Blink.FedCm.UserInfo.Status",
       FederatedAuthUserInfoRequest::RequestStatus::kNoAccountSharingPermission,
       1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.UserInfo.NumAccounts", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
@@ -375,6 +382,10 @@ TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
       FederatedAuthUserInfoRequest::RequestStatus::
           kNoReturningUserFromFetchedAccounts,
       1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.UserInfo.NumAccounts",
+                                       FedCmMetrics::NumAccounts::kZero, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.UserInfo.TimeToRequestCompleted", 1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
@@ -400,6 +411,9 @@ TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
       "Blink.FedCm.UserInfo.Status",
       FederatedAuthUserInfoRequest::RequestStatus::kInvalidConfigOrWellKnown,
       1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.UserInfo.NumAccounts", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest,

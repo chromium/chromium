@@ -1364,6 +1364,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.UserInfo.NumAccounts" enum="FedCmNumAccounts"
+    expires_after="2023-11-30">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the number of accounts returned by a getUserInfo() call. Records
+    once per request with a successful accounts fetch. Records when the request
+    is completed.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.UserInfo.Status" enum="FedCmUserInfoStatus"
     expires_after="2023-11-30">
   <owner>npm@chromium.org</owner>
@@ -1371,6 +1382,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the status of a getUserInfo() call. Records once per request when
     the request is completed, right before running the callback.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.UserInfo.TimeToRequestCompleted" units="ms"
+    expires_after="2023-11-30">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when a getUserInfo() call is received on the browser
+    process to the time it is completed. Records once per request with a
+    successful accounts fetch. Records when the request is completed.
   </summary>
 </histogram>
 
