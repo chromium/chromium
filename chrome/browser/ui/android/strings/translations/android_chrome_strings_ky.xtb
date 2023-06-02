@@ -65,7 +65,7 @@
 <translation id="1298077576058087471">Бүгүнкү жаңылыктарды окуганда 60% чейин трафик үнөмдөңүз</translation>
 <translation id="1303339473099049190">Ал сырсөз табылган жок. Анын туура терилгенин текшерип, кайталап көрүңүз.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – <ph name="DEVICE_NAME" /> түзмөгүнөн жөнөтүлдү</translation>
-<translation id="1311657260431405215">Бул QR коду URL эмес: <ph name="QRCODEVALUE" /></translation>
+<translation id="1311657260431405215">Бул QR код URL эмес: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="131655401280401879">Эгер кийин профилдин кулпусун өчүрсөңүз, сакталган маалыматыңыз тазаланат.</translation>
 <translation id="1320912611264252795">Тематикасына жараша сакталган кыстармалар толук экранда ачылды</translation>
@@ -210,7 +210,7 @@
 <translation id="2158408438301413340">Chrome бардык сырсөздөрдү текшере алган жок.</translation>
 <translation id="2172688499998841696">Сүрөттөмөлөр өчүк</translation>
 <translation id="2172905120685242547">Терезе жабылсынбы?</translation>
-<translation id="2175927920773552910">QR коду</translation>
+<translation id="2175927920773552910">QR код</translation>
 <translation id="218608176142494674">Бөлүшүү</translation>
 <translation id="2189903024544168260">Кызыккан нерсеңиз тууралуу маалымат өчүрүлдү</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
@@ -551,7 +551,7 @@
 <translation id="4072805772816336153">Бир аздан кийин кайталап көрүңүз</translation>
 <translation id="4084682180776658562">Кыстарма</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> веб сайтынан – <ph name="BEGIN_DEEMPHASIZED" />Google аркылуу жеткирилген<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="409109920254068737">Бул планшет менен ушул QR коду көрүнүп турган түзмөккө кире аласыз.</translation>
+<translation id="409109920254068737">Бул планшет менен ушул QR код көрүнүп турган түзмөккө кире аласыз.</translation>
 <translation id="4095146165863963773">Колдонмонун дайындары жок кылынсынбы?</translation>
 <translation id="4096227151372679484">Тематикасына жараша сакталган кыстармалар жарым экранда ачылды</translation>
 <translation id="4101475238162928417">Башка түзмөктөрдөгү сырсөздөрдү, кыстармаларды жана башкаларды колдонуу үчүн шайкештирүүнү иштетиңиз</translation>
@@ -616,7 +616,7 @@
 <translation id="4428065317363009941">Жарнамаларды жекелештирүү</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> өтмөгүн жабуу</translation>
 <translation id="4452548195519783679">Кыстарма <ph name="FOLDER_NAME" /> куржунуна кошулду</translation>
-<translation id="4461614516424362539">Башка түзмөктү QR коду аркылуу туташтырганыңызда ал ушул телефонду коопсуздук ачкычы катары колдоно алат. Эгер аны өчүрсөңүз, кайра туташтыруу үчүн QR кодду скандашыңыз керек болот.</translation>
+<translation id="4461614516424362539">Башка түзмөктү QR код аркылуу туташтырганыңызда ал ушул телефонду коопсуздук ачкычы катары колдоно алат. Эгер аны өчүрсөңүз, кайра туташтыруу үчүн QR кодду скандашыңыз керек болот.</translation>
 <translation id="4479972344484327217">Chrome үчүн <ph name="MODULE" /> орнотулууда…</translation>
 <translation id="4484496141267039529">Туташуу жок. Кайталаңыз.</translation>
 <translation id="4487967297491345095">Chrome'дун колдонмо дайындарынын бардыгы биротоло өчүрүлөт. Ага бардык файлдар, жөндөөлөр, каттоо эсептери, маалыматтар базасы ж.б. кирет.</translation>
@@ -740,7 +740,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5010886807652684893">Визуалдык көрүнүш</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты туташканы жатат</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5032430150487044192">QR коду түзүлгөн жок</translation>
+<translation id="5032430150487044192">QR код түзүлгөн жок</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="504456571576643789">Эске ала турган нерселер</translation>
@@ -973,7 +973,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6342069812937806050">Жаңы эле</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Окулду деп белгилөө</translation>
-<translation id="6357653805084533597">Бул телефон менен ушул QR коду көрүнүп турган түзмөккө кире аласыз.</translation>
+<translation id="6357653805084533597">Бул телефон менен ушул QR код көрүнүп турган түзмөккө кире аласыз.</translation>
 <translation id="6363990818884053551">Шайкештирүүнү баштоо үчүн өзүңүз экениңизди ырастаңыз</translation>
 <translation id="6364438453358674297">Сунуш таржымалдан алынып салынсынбы?</translation>
 <translation id="6380100320871303656">Көбүнчө Chrome сизди баш багат деп болжолдогон барактарды алдын ала жүктөйт. Бул параметр менен көбүрөөк маалымат колдонулушу мүмкүн.</translation>
@@ -1058,7 +1058,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> таймериңиздин убакыты бүттү. Ал эртең кайра башталат.</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" /> файлы (<ph name="FILE_SIZE" />) баары бир жүктөлүп алынсынбы?</translation>
-<translation id="6719634564325948108">QR коду менен туташасызбы?</translation>
+<translation id="6719634564325948108">QR код менен туташасызбы?</translation>
 <translation id="6737612727720318154">Кандайдыр бир нерсеге байланыштуу жарнаманын пайдасы тийет деп ойлосоңуз, кызыккан нерсеңизге же сайтка уруксат бериңиз</translation>
 <translation id="6738516213925468394">Дайын-даректериңиз <ph name="BEGIN_LINK" />шайкештирүүчү өткөрүүчү сүйлөм<ph name="END_LINK" /> менен <ph name="TIME" /> шифрлеген. Шайкештирип баштоо үчүн, аны киргизиңиз.</translation>
 <translation id="6738867403308150051">Жүктөлүп алынууда…</translation>
@@ -1142,7 +1142,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7155317020660659215">QR кодду скандоо үчүн параметрлерди өзгөртүп, Chrome'го камераңызды колдонууга уруксат бериңиз</translation>
 <translation id="7173114856073700355">Параметрлерди ачуу</translation>
 <translation id="7177466738963138057">Муну кийинчерээк Параметрлерден өзгөртсөңүз болот</translation>
-<translation id="7177873915659574692">QR коду түзүлгөн жок. URL дареги <ph name="CHARACTER_LIMIT" /> символдон ашып кетти.</translation>
+<translation id="7177873915659574692">QR код түзүлгөн жок. URL дареги <ph name="CHARACTER_LIMIT" /> символдон ашып кетти.</translation>
 <translation id="7177959540995930968">Бул функциялар тууралуу кеңири маалымат алуу үчүн Chrome параметрлерине өтүңүз.</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7183693674623539380">Өтмөктөр тобу – <ph name="TITLE_OF_GROUP" /></translation>

@@ -569,7 +569,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Torna a escanejar</translation>
 <translation id="5583640892426849032">Retrocés</translation>
-<translation id="5584044598279886848">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN del tipus Attach que estiguin activats.</translation>
+<translation id="5584044598279886848">No es pot desactivar ni suprimir aquest punt d'accés. Assegura't de desactivar o suprimir els APN connectats que estiguin activats.</translation>
 <translation id="5600027863942488546">S'ha provat la tecla <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5649768706273821470">Escolta</translation>

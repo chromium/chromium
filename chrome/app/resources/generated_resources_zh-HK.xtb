@@ -664,7 +664,7 @@
 <translation id="1567993339577891801">JavaScript 控制器</translation>
 <translation id="1569466257325986920">您的 Google 帳戶密碼下一次變更時，系統會在您登入 Google 帳戶後自動復原您的本機資料</translation>
 <translation id="1570604804919108255">取消忽略通知</translation>
-<translation id="1570990174567554976">已建立「<ph name="BOOKMARK_TITLE" />」書籤資料夾。</translation>
+<translation id="1570990174567554976">建立咗「<ph name="BOOKMARK_TITLE" />」書籤資料夾。</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
 <translation id="1571738973904005196">查看分頁：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
@@ -712,7 +712,7 @@
 <translation id="1604774728851271529">您需要網絡連線才能升級 Linux。請連接互聯網，然後再試一次。</translation>
 <translation id="1605744057217831567">查看所有網站資料和權限</translation>
 <translation id="1606077700029460857">變更滑鼠設定</translation>
-<translation id="1606307079840340755">你的 Passpoint 只會從這部裝置中移除。如要變更訂閱項目，請與訂閱供應商聯絡。</translation>
+<translation id="1606307079840340755">您的 Passpoint 只會從此裝置中移除。如要變更訂閱項目，請聯絡訂閱供應商。</translation>
 <translation id="1606566847233779212">要移除您新增的特定網站嗎？</translation>
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
@@ -1592,7 +1592,7 @@
 <translation id="2317842250900878657">已完成 <ph name="PROGRESS_PERCENT" />%</translation>
 <translation id="2318143611928805047">紙張大小</translation>
 <translation id="2318817390901984578">如要使用 Android 應用程式，請先為 <ph name="DEVICE_TYPE" /> 充電及更新。</translation>
-<translation id="2319072477089403627">正在連線到 Android 手機...</translation>
+<translation id="2319072477089403627">正在連接 Android 手機…</translation>
 <translation id="2319459402137712349">選取文字欄位即弄開啟鍵盤。您亦可選取畫面底部的「鍵盤」圖示。</translation>
 <translation id="2319993584768066746">登入畫面相片</translation>
 <translation id="2322193970951063277">頁首及頁尾</translation>
@@ -2686,7 +2686,7 @@
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
 <translation id="328119399589609861">控制麥克風、相機等裝置存取權</translation>
 <translation id="3282210178675490297">正在與 <ph name="APP_NAME" /> 共用此標籤</translation>
-<translation id="3283148363895519428">按照手機上的操作說明繼續設定。請確認手機在附近且已開啟藍牙。</translation>
+<translation id="3283148363895519428">按照手機上的指示繼續設定。請確認手機在附近且已開啟藍牙。</translation>
 <translation id="3284050785966252943">自動填入元數據預覽</translation>
 <translation id="3285322247471302225">新分頁(&amp;T)</translation>
 <translation id="3285500645985761267">允許相關網站查看您在群組中的活動</translation>
@@ -2894,13 +2894,13 @@
 <translation id="346298925039590474">此裝置的所有使用者都可連接此流動網絡</translation>
 <translation id="3464145797867108663">新增工作設定檔</translation>
 <translation id="346546413339447252">取得 <ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> 等商店的折扣</translation>
-<translation id="3466476162566821406">按照手機上的操作說明輸入驗證碼。請確認手機的藍牙和 Wi-Fi 已開啟。
+<translation id="3466476162566821406">按照手機上的指示輸入驗證碼。請確保手機的藍牙和 Wi-Fi 已開啟。
     <ph name="BR" />
     <ph name="BR" />
-    你可以使用手機將 Wi-Fi 和 Google 帳戶資訊加入 <ph name="DEVICE_TYPE" />。
+    您可使用手機，將 Wi-Fi 和 Google 帳戶資料加到 <ph name="DEVICE_TYPE" />。
     <ph name="BR" />
     <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> 等鄰近裝置可看到手機</translation>
+    以「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」向附近的裝置顯示…</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3469583217479686109">選取工具</translation>
@@ -4381,7 +4381,7 @@
 <translation id="4768332406694066911">您具備下列組織的識別憑證</translation>
 <translation id="4770119228883592393">要求咗權限，㩒 ⌘ + Option + 向下箭咀就可以回覆</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
-<translation id="4774456473286455263">使用 Android 手機進行設定</translation>
+<translation id="4774456473286455263">使用 Android 手機設定</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
 <translation id="4776594120007763294">如要新增頁面以便稍後閱讀，請按一下按鈕</translation>
 <translation id="4777458362738635055">此裝置的其他使用者可使用此網絡</translation>
@@ -4705,7 +4705,7 @@
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>
 <translation id="5068919226082848014">薄餅</translation>
-<translation id="506934332411950286">從 Android 手機傳輸 Wi-Fi 資訊</translation>
+<translation id="506934332411950286">從 Android 手機傳輸 Wi-Fi 資料</translation>
 <translation id="5070710277167211639">將瀏覽升級為採用 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
 <translation id="5070773577685395116">沒有收到通知嗎？</translation>
 <translation id="5071295820492622726">返去最近嘅下載項目</translation>
@@ -4870,7 +4870,7 @@
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
-<translation id="5214639857958972833">已建立「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
+<translation id="5214639857958972833">建立咗「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載</translation>
 <translation id="5222676887888702881">登出</translation>
@@ -4892,7 +4892,7 @@
 <translation id="5236374273162681467">如想在所有裝置上輕鬆使用密碼，可以將這些密碼移至您的 Google 帳戶</translation>
 <translation id="523862956770478816">網站權限</translation>
 <translation id="5239752869099890912">如要將您已更新的擴充程式設定套到此網站，請重新載入此網頁</translation>
-<translation id="5240931875940563122">使用 Android 手機登入</translation>
+<translation id="5240931875940563122">透過 Android 手機登入</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="5243522832766285132">請稍後再試</translation>
 <translation id="5244474230056479698">正在同步至 <ph name="EMAIL" /></translation>
@@ -5596,13 +5596,13 @@
 <translation id="586567932979200359">您正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。如直接在電腦上安裝程式，以後無需透過磁碟映像即可直接執行，並且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用情況統計和當機報告傳送給 Google</translation>
 <translation id="5867841422488265304">搜尋或輸入網址</translation>
-<translation id="5867855474018538405">按照手機上的操作說明掃描 QR code。請確認手機的藍牙和 Wi-Fi 已開啟。
+<translation id="5867855474018538405">按照手機上的指示掃瞄 QR 碼。請確保手機的藍牙和 Wi-Fi 已開啟。
     <ph name="BR" />
     <ph name="BR" />
-    你可以使用手機將 Wi-Fi 和 Google 帳戶資訊加入 <ph name="DEVICE_TYPE" />。
+    您可使用手機，將 Wi-Fi 和 Google 帳戶資料加到 <ph name="DEVICE_TYPE" />。
     <ph name="BR" />
     <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> 等鄰近裝置可看到手機</translation>
+    以「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」向附近的裝置顯示…</translation>
 <translation id="5868434909835797817">你部裝置嘅咪閂咗</translation>
 <translation id="5869029295770560994">好，我知道了</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
@@ -5701,7 +5701,7 @@
 <translation id="5949544233750246342">無法剖析檔案</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> 要求使用本機字型</translation>
 <translation id="5951624318208955736">顯示器</translation>
-<translation id="595262438437661818">沒有擴充功能需要存取這個網站</translation>
+<translation id="595262438437661818">沒有擴充程式需要存取此網站</translation>
 <translation id="5953211687820750364">此清單會受 <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> 和 <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> 影響</translation>
 <translation id="5955282598396714173">您的密碼已過期。如要變更密碼，請先登出然後重新登入。</translation>
 <translation id="5955304353782037793">應用程式</translation>
@@ -5809,7 +5809,8 @@
 <translation id="6052488962264772833">輸入存取碼以開始投放</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
 <translation id="6053401458108962351">清除瀏覽數據(&amp;C)…</translation>
-<translation id="6053717018321787060">Google 帳戶是指你在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。只要使用你的帳戶，即可輕鬆存取所有書籤、檔案及其他內容。如果你還沒有帳戶，可前往下一個畫面建立帳戶。</translation>
+<translation id="6053717018321787060">Google 帳戶是指您在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。
+    帳戶讓您輕鬆存取所有書籤、檔案及其他內容。如果沒有帳戶，請在下一個畫面建立。</translation>
 <translation id="6054284857788651331">最近閂咗嘅分頁群組</translation>
 <translation id="6054961935262556546">變更分享設定</translation>
 <translation id="6055171183283175969">您輸入的密碼不正確。</translation>
@@ -6150,7 +6151,7 @@
 <translation id="634887995541211148">在裝置上執行 Bruschetta。</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
-<translation id="6355395056805388423">正在取得 Google 帳戶資訊...</translation>
+<translation id="6355395056805388423">正在取得 Google 帳戶資料…</translation>
 <translation id="635609604405270300">保持裝置開啟</translation>
 <translation id="63566973648609420">只有知道密碼短語的使用者才能讀取您的加密資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
 <translation id="6357305427698525450">部分支援連結將仍會在 <ph name="APP_NAME" /> 或 <ph name="APP_NAME_2" /> 中開啟。</translation>
@@ -7066,7 +7067,7 @@
 <translation id="7159953856712257647">預設已安裝</translation>
 <translation id="7160182524506337403">您現可查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟動碼…</translation>
-<translation id="7165263843655074092">這部裝置即將啟用標準安全防護機制</translation>
+<translation id="7165263843655074092">此裝置將受標準安全保護功能保護</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和音效檔案具有讀取權限。</translation>
 <translation id="7166815366658507447">啟用咗熱點</translation>
 <translation id="7167327771183668296">自動點擊</translation>
@@ -7746,7 +7747,7 @@
 <translation id="7744192722284567281">發生資料外洩事件</translation>
 <translation id="7744649840067671761">按下新的按鈕裝置或鍵盤按鍵，即可開始指派。
 按下已指派的按鈕裝置或按鍵，則可移除指派設定。</translation>
-<translation id="7746045113967198252">放大或縮小包括文字在內的畫面項目。你也可以稍後依序前往「設定」&gt;「裝置」&gt;「顯示」調整這項設定。</translation>
+<translation id="7746045113967198252">放大或縮小畫面上的項目，包括文字。您亦可稍後前往「設定」&gt; [裝置] &gt; [顯示] 調整此設定。</translation>
 <translation id="7746739418892731373">系統正在顯示來自「Google 相片庫」中的精選相片和影片。您可在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 控制系統在精選內容中顯示的項目。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7800,10 +7801,10 @@
 <translation id="7784796923038949829">無法讀取或變更網站資料</translation>
 <translation id="778480864305029524">如要使用即時網絡共享功能，請開啟「Google Play 服務」的通知功能。</translation>
 <translation id="7785471469930192436">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)</translation>
-<translation id="7786663536153819505">按照手機上的操作說明掃描 QR code。請確認手機的藍牙已開啟。
+<translation id="7786663536153819505">按照手機上的指示掃瞄 QR 碼。請確保手機的藍牙功能已開啟。
     <ph name="BR" />
     <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> 等鄰近裝置可看到手機</translation>
+    以「<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />」向附近的裝置顯示…</translation>
 <translation id="7786889348652477777">重新載入應用程式(&amp;R)</translation>
 <translation id="7787308148023287649">在另一個螢幕上顯示</translation>
 <translation id="7788298548579301890">電腦中的其他程式新增了一個應用程式，可能會變更 Chrome 的運作方式。
@@ -7823,7 +7824,7 @@
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="7801679634091975683">您在這裡作出的變更只會套用到 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定。</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
-<translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連上網路</translation>
+<translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連接網絡</translation>
 <translation id="7804072833593604762">閂咗分頁</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7805906048382884326">閂提示</translation>
@@ -8271,7 +8272,7 @@
 <translation id="8184288427634747179">切換至<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
-<translation id="8186047833733689201">重音符號選單已開啟。按向左鍵、向右鍵或數字鍵即可瀏覽，按下 Enter 鍵則可插入重音符號。</translation>
+<translation id="8186047833733689201">打開咗重音符號選單。㩒向左掣、向右掣或者數字掣就可瀏覽，而㩒 Enter 掣就可插入重音符號。</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8188742492803591566">輸入顯示在 Chromecast 或電視上的存取碼，即可開始投放畫面。</translation>
@@ -8581,7 +8582,7 @@
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8451512073679317615">助理</translation>
-<translation id="8452105022015742247">從 Android 手機傳輸 Google 帳戶資訊</translation>
+<translation id="8452105022015742247">從 Android 手機傳輸 Google 帳戶資料</translation>
 <translation id="845702320058262034">無法連線。請確保手機已開啟藍牙。</translation>
 <translation id="8457251154056341970">此頁面不會再顯示<ph name="MODULE_NAME" /></translation>
 <translation id="8457451314607652708">匯入書籤</translation>

@@ -211,7 +211,7 @@
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1446396933673057385">精確度檢查</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
-<translation id="1452803302401719440">家長選擇的設定現在會保護你的上網安全</translation>
+<translation id="1452803302401719440">家長選擇的設定現在會保護您的網上安全</translation>
 <translation id="1453974140256777690">您貼上或附加的文字將會傳送給 Google Cloud 或第三方進行分析。例如，文字可能會被掃描，以查看當中是否含有敏感資料。</translation>
 <translation id="1455413310270022028">擦膠</translation>
 <translation id="1459693405370120464">天氣</translation>
@@ -269,7 +269,7 @@
 <translation id="1569487616857761740">輸入到期日</translation>
 <translation id="1569694109004336106">Google Chrome 正在嘗試開啟 Windows Hello，以便在填入密碼時驗證。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋</translation>
-<translation id="1576277203042721907">Shopping Insights</translation>
+<translation id="1576277203042721907">購物分析資料</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
 <translation id="1584492003828271317">瀏覽時是否看到個人化廣告，取決於此設定、網站建議的廣告、Cookie 設定，以及網站是否顯示個人化廣告。</translation>
@@ -1270,7 +1270,7 @@
 <translation id="410148943680000050">電腦排版</translation>
 <translation id="4103249731201008433">裝置序號無效</translation>
 <translation id="4106133539597032659">建立網站掣，㩒一下 Enter 鍵就可以喺「Google 協作平台」度快速建立新版網站</translation>
-<translation id="4106887816571530227">不允許內嵌的內容</translation>
+<translation id="4106887816571530227">唔批准嵌入嘅內容</translation>
 <translation id="4110652170750985508">檢查您的付款</translation>
 <translation id="4111546256784973544">漆彈</translation>
 <translation id="4112140312785995938">向後回轉</translation>
@@ -1609,7 +1609,7 @@
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{無}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">搵「<ph name="TEXT" />」</translation>
-<translation id="4877521229462766300">要允許內嵌的內容嗎？</translation>
+<translation id="4877521229462766300">要允許嵌入的內容嗎？</translation>
 <translation id="4879491255372875719">自動 (預設)</translation>
 <translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881695831933465202">開啟</translation>
@@ -1807,7 +1807,7 @@
 <translation id="5314967030527622926">手冊製作工具</translation>
 <translation id="5316812925700871227">逆時針方向旋轉</translation>
 <translation id="5317780077021120954">儲存</translation>
-<translation id="5323043727018853753">允許內嵌的內容</translation>
+<translation id="5323043727018853753">批准嵌入嘅內容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，<ph name="NUM_MATCHES" /> 個入面嘅第 <ph name="MATCH_POSITION" /> 個</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>
 <translation id="5332219387342487447">運送方式</translation>
@@ -2186,7 +2186,7 @@
 <translation id="6306713302480826305">此地址將從此裝置和其他已登入的裝置中刪除</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
 <translation id="6316226860534107313">綿羊仔和電動單車</translation>
-<translation id="6316723751983724988">新功能：這裡套用了 Chrome 的 Family Link 選項</translation>
+<translation id="6316723751983724988">新功能：這裡套用 Chrome 的 Family Link 選項</translation>
 <translation id="63172326633386613">管理無障礙設定</translation>
 <translation id="6319249456820053699">相機和攝錄機</translation>
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
@@ -2738,7 +2738,7 @@
 <translation id="7598391785903975535">小於 <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這個請求。</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">你通常可以經由安全連線前往這個網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7601297359530599375">您通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改您的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
 <translation id="7613889955535752492">到期日：<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
@@ -2839,7 +2839,7 @@
 <translation id="7822320754433038727">打獵和射擊</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往其登入頁面。</translation>
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
-<translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784137052867620416">購物分析資料</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">您日後瀏覽的網站可向 Chrome 要求取得主題資料，以便向您顯示個人化廣告。Chrome 最多可分享 3 個主題，同時亦會保護您的瀏覽記錄和身分。</translation>
@@ -2985,7 +2985,7 @@
 <translation id="8217748145574471584">人力資源</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
-<translation id="8228477714872026922">「<ph name="ORIGIN" />」想要存取你網路上的裝置：</translation>
+<translation id="8228477714872026922">「<ph name="ORIGIN" />」想存取您網絡上的裝置：</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 毫米</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">體育遊戲</translation>
