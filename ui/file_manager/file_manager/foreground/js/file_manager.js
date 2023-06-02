@@ -756,28 +756,32 @@ export class FileManager extends EventTarget {
   }
 
   /**
-   * Retrieve the bulk pinning progress and populate the store. Then subscribe
-   * to any future updates to ensure the store is kept up to date.
+   * Subscribes to bulk-pinning events to ensure the store is kept up to date.
+   * Also tries to retrieve a first bulk pinning progress to populate the store.
+   * Does nothing if bulk-pinning is disabled.
    * @private
    */
   async initBulkPinning_() {
     if (!util.isDriveFsBulkPinningEnabled()) {
       return;
     }
-    let progress = null;
-    try {
-      progress = await getBulkPinProgress();
-    } catch (e) {
-      console.error('Failed to get bulk pin progress:', e);
-      return;
-    }
-    if (!progress) {
-      return;
-    }
-    this.store_.dispatch(updateBulkPinProgress(progress));
+
+    const promise = getBulkPinProgress();
+
     chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+      console.debug('Got bulk-pinning event:', progress);
       this.store_.dispatch(updateBulkPinProgress(progress));
     });
+
+    try {
+      const progress = await promise;
+      if (progress) {
+        console.debug('Got initial bulk-pinning state:', progress);
+        this.store_.dispatch(updateBulkPinProgress(progress));
+      }
+    } catch (e) {
+      console.error('Cannot get initial bulk-pinning state:', e);
+    }
   }
 
   /**
