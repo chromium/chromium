@@ -58,6 +58,7 @@ DEFAULT_DELETER(struct wp_presentation_feedback,
 DEFAULT_DELETER(zaura_output_manager, zaura_output_manager_destroy)
 DEFAULT_DELETER(zaura_shell, zaura_shell_destroy)
 DEFAULT_DELETER(zaura_surface, zaura_surface_destroy)
+DEFAULT_DELETER(zaura_toplevel, zaura_toplevel_destroy)
 DEFAULT_DELETER(zaura_output, zaura_output_destroy)
 DEFAULT_DELETER(zcr_color_manager_v1, zcr_color_manager_v1_destroy)
 DEFAULT_DELETER(zcr_color_management_output_v1,
