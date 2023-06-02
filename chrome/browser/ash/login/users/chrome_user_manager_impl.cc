@@ -608,17 +608,6 @@ bool ChromeUserManagerImpl::CanCurrentUserLock() const {
   return can_lock;
 }
 
-bool ChromeUserManagerImpl::IsUserNonCryptohomeDataEphemeral(
-    const AccountId& account_id) const {
-  // Data belonging to the obsolete device local accounts whose data has not
-  // been removed yet is not ephemeral.
-  const bool is_obsolete_device_local_account =
-      IsDeviceLocalAccountMarkedForRemoval(account_id);
-
-  return !is_obsolete_device_local_account &&
-         ChromeUserManager::IsUserNonCryptohomeDataEphemeral(account_id);
-}
-
 bool ChromeUserManagerImpl::IsEphemeralAccountId(
     const AccountId& account_id) const {
   // Data belonging to the device owner is never ephemeral.

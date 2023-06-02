@@ -83,8 +83,6 @@ class ChromeUserManagerImpl
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
   bool CanCurrentUserLock() const override;
-  bool IsUserNonCryptohomeDataEphemeral(
-      const AccountId& account_id) const override;
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
