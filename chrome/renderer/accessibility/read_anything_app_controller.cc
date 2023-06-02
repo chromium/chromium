@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -491,9 +492,16 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // the content if the selection is not in the distilled content.
   PostProcessSelection();
 
-  // TODO(crbug.com/1266555): If no content nodes were identified, the
-  // controller should handle drawing the empty state (like how it handles the
-  // loading state) instead of the JS.
+  if (model_.is_empty()) {
+    // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
+    // replace this function call with firing an event.
+    std::string script = "chrome.readingMode.showEmpty();";
+    render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+    if (isSelectable()) {
+      base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
+                                    ReadAnythingEmptyState::kEmptyStateShown);
+    }
+  }
 
   // Once drawing is complete, unserialize all of the pending updates on the
   // active tree which may require more distillations (as tracked by the model's

@@ -119,6 +119,9 @@ declare namespace chrome {
     // Display a loading screen to tell the user we are distilling the page.
     function showLoading(): void;
 
+    // Display the empty state page to tell the user we can't distill the page.
+    function showEmpty(): void;
+
     // Ping that an AXTree has been distilled for the active tab's render frame
     // and is available to consume.
     function updateContent(): void;

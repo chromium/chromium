@@ -89563,6 +89563,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Blue"/>
 </enum>
 
+<enum name="ReadAnythingEmptyState">
+  <int value="0" label="Empty state shown"/>
+  <int value="1" label="User selection after empty state shown"/>
+</enum>
+
 <enum name="ReadAnythingFontName">
   <int value="0" label="Poppins"/>
   <int value="1" label="Sans-serif"/>

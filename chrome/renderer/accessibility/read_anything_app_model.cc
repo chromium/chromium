@@ -57,6 +57,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(active_tree_id_));
 
+  bool was_empty = is_empty();
   requires_post_process_selection_ = false;
 
   // If the previous selection was inside the distilled content, that means we
@@ -71,6 +72,12 @@ bool ReadAnythingAppModel::PostProcessSelection() {
 
   // Save the current selection
   UpdateSelection();
+
+  if (has_selection_ && was_empty) {
+    base::UmaHistogramEnumeration(
+        string_constants::kEmptyStateHistogramName,
+        ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
+  }
 
   // If the main panel selection contains content outside of the distilled
   // content, we need to find the selected nodes to display instead of the

@@ -100,6 +100,12 @@ if (chrome.readingMode) {
     assert(readAnythingApp);
     readAnythingApp.showLoading();
   };
+
+  chrome.readingMode.showEmpty = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.showEmpty();
+  };
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -242,6 +248,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return parentElement;
   }
 
+  showEmpty() {
+    if (chrome.readingMode.isSelectable()) {
+      this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
+    } else {
+      this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
+    }
+    this.emptyStateImagePath_ = './images/empty_state.svg';
+    this.emptyStateDarkImagePath_ = './images/empty_state.svg';
+    this.emptyStateSubheading_ = loadTimeData.getString('emptyStateSubheader');
+    this.hasContent_ = false;
+  }
+
   showLoading() {
     this.emptyStateImagePath_ = '//resources/images/throbber_small.svg';
     this.emptyStateDarkImagePath_ =
@@ -275,21 +293,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    // If there is no content to show, the empty state container will be shown.
     const node = this.buildSubtree_(rootId);
-    // The empty state header tells the user to select text to distill. Some web
-    // pages don't work with selection, so we show a different message.
     if (!node.textContent) {
-      if (chrome.readingMode.isSelectable()) {
-        this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
-      } else {
-        this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
-      }
-      this.emptyStateImagePath_ = './images/empty_state.svg';
-      this.emptyStateDarkImagePath_ = './images/empty_state.svg';
-      this.emptyStateSubheading_ =
-          loadTimeData.getString('emptyStateSubheader');
-      this.hasContent_ = false;
       return;
     }
 

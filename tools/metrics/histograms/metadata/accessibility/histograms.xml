@@ -1778,6 +1778,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.EmptyState"
+    enum="ReadAnythingEmptyState" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when the Read Anything panel displays the empty state and whether a
+    user does a selection after it's shown.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.FontName"
     enum="ReadAnythingFontName" expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>

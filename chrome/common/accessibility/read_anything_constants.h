@@ -21,6 +21,7 @@ extern const char kFontNameHistogramName[];
 extern const char kFontScaleHistogramName[];
 extern const char kSettingsChangeHistogramName[];
 extern const char kScrollEventHistogramName[];
+extern const char kEmptyStateHistogramName[];
 
 extern const std::set<std::string> GetNonSelectableUrls();
 
@@ -74,6 +75,15 @@ enum class ReadAnythingScrollEvent {
   kScrolledSidePanel = 2,
   kScrolledMainPanel = 3,
   kMaxValue = kScrolledMainPanel,
+};
+
+// Enum for logging when we show the empty state.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadAnythingEmptyState {
+  kEmptyStateShown = 0,
+  kSelectionAfterEmptyStateShown = 1,
+  kMaxValue = kSelectionAfterEmptyStateShown,
 };
 
 }  // namespace

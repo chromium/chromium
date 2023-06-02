@@ -22,6 +22,7 @@ const char kSettingsChangeHistogramName[] =
     "Accessibility.ReadAnything.SettingsChange";
 const char kScrollEventHistogramName[] =
     "Accessibility.ReadAnything.ScrollEvent";
+const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
 
 const std::set<std::string> GetNonSelectableUrls() {
   return {

@@ -54,6 +54,9 @@ class ReadAnythingAppModel {
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
   bool active_tree_selectable() const { return active_tree_selectable_; }
+  bool is_empty() const {
+    return display_node_ids_.empty() && selection_node_ids_.empty();
+  }
 
   const ukm::SourceId& active_ukm_source_id() const {
     return active_ukm_source_id_;
