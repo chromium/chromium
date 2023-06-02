@@ -1154,7 +1154,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
   EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
 
-  histograms.ExpectTotalCount("Translate.TranslateFrameCount", 0);
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
   EXPECT_TRUE(
       histograms.GetTotalSum("Translate.LanguageDetection.ContentLength") > 0);
@@ -1900,11 +1899,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
   EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
   EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
 
-  // 3 frames are translated.
-  histograms.ExpectBucketCount("Translate.TranslateFrameCount", 3, 1);
-  histograms.ExpectBucketCount("Translate.TranslateSubframe.SuccessPercentage",
-                               100, 1);
-  histograms.ExpectTotalCount("Translate.TranslateSubframe.ErrorType", 0);
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
   // More than the 54 characters of main frame are used for language detection.
   histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 550,
@@ -1967,11 +1961,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
   EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
 
-  // 3 frames are translated.
-  histograms.ExpectBucketCount("Translate.TranslateFrameCount", 3, 1);
-  histograms.ExpectBucketCount("Translate.TranslateSubframe.SuccessPercentage",
-                               100, 1);
-  histograms.ExpectTotalCount("Translate.TranslateSubframe.ErrorType", 0);
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
   // But only the 54 characters of main frame are used for language detection.
   histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 54,

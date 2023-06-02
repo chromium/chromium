@@ -25,6 +25,7 @@
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
@@ -52,11 +53,6 @@ namespace {
 
 // Constants for UMA statistic collection.
 static const char kTranslateCaptureText[] = "Translate.CaptureText";
-static const char kTranslateFrameCount[] = "Translate.TranslateFrameCount";
-static const char kTranslateSubframeSuccessPercentage[] =
-    "Translate.TranslateSubframe.SuccessPercentage";
-static const char kTranslateSubframeErrorType[] =
-    "Translate.TranslateSubframe.ErrorType";
 
 // A helper function for CombineTextNodesAndMakeCallback() below.
 // This is a copy of logic from macos specific RenderWidgetHostViewMac
@@ -97,36 +93,6 @@ void CombineTextNodesAndMakeCallback(PageContentsCallback callback,
 }
 }  // namespace
 
-PerFrameContentTranslateDriver::PendingRequestStats::PendingRequestStats() =
-    default;
-PerFrameContentTranslateDriver::PendingRequestStats::~PendingRequestStats() =
-    default;
-
-void PerFrameContentTranslateDriver::PendingRequestStats::Clear() {
-  pending_request_count = 0;
-  outermost_main_frame_success = false;
-  outermost_main_frame_error = TranslateErrors::NONE;
-  frame_request_count = 0;
-  frame_success_count = 0;
-  frame_errors.clear();
-}
-
-void PerFrameContentTranslateDriver::PendingRequestStats::Report() {
-  UMA_HISTOGRAM_COUNTS_100(kTranslateFrameCount, frame_request_count);
-  if (outermost_main_frame_success) {
-    if (frame_request_count > 1) {
-      int success_percentage_as_int =
-          (frame_success_count * 100) / frame_request_count;
-      UMA_HISTOGRAM_PERCENTAGE(kTranslateSubframeSuccessPercentage,
-                               success_percentage_as_int);
-    }
-    for (TranslateErrors error_type : frame_errors) {
-      UMA_HISTOGRAM_ENUMERATION(kTranslateSubframeErrorType, error_type,
-                                TranslateErrors::TRANSLATE_ERROR_MAX);
-    }
-  }
-}
-
 PerFrameContentTranslateDriver::PerFrameContentTranslateDriver(
     content::WebContents& web_contents,
     language::UrlLanguageHistogram* url_language_histogram)
@@ -146,7 +112,7 @@ void PerFrameContentTranslateDriver::TranslatePage(
   if (!IsForCurrentPage(page_seq_no))
     return;
 
-  stats_.Clear();
+  pending_request_count_ = 0;
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
@@ -179,15 +145,14 @@ void PerFrameContentTranslateDriver::TranslateFrame(
       base::BindOnce(&PerFrameContentTranslateDriver::OnFrameTranslated,
                      weak_pointer_factory_.GetWeakPtr(), translate_seq_no,
                      is_outermost_main_frame, std::move(frame_agent)));
-  stats_.frame_request_count++;
-  stats_.pending_request_count++;
+  pending_request_count_++;
 }
 
 void PerFrameContentTranslateDriver::RevertTranslation(int page_seq_no) {
   if (!IsForCurrentPage(page_seq_no))
     return;
 
-  stats_.Clear();
+  pending_request_count_ = 0;
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
@@ -466,28 +431,18 @@ void PerFrameContentTranslateDriver::OnFrameTranslated(
   if (translate_seq_no != translate_seq_no_)
     return;
 
-  if (error_type == TranslateErrors::NONE) {
-    stats_.frame_success_count++;
-    if (is_outermost_main_frame) {
-      stats_.outermost_main_frame_success = true;
-    }
-  } else {
-    stats_.frame_errors.push_back(error_type);
-    if (is_outermost_main_frame) {
-      stats_.outermost_main_frame_error = error_type;
-    }
-  }
+  TranslateErrors outermost_main_frame_error =
+      is_outermost_main_frame ? error_type : TranslateErrors::NONE;
 
-  if (--stats_.pending_request_count == 0) {
+  if (--pending_request_count_ == 0) {
     // Post the callback on the thread's task runner in case the
     // info bar is in the process of going away.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ContentTranslateDriver::OnPageTranslated,
                                   weak_pointer_factory_.GetWeakPtr(), cancelled,
                                   source_lang, translated_lang,
-                                  stats_.outermost_main_frame_error));
-    stats_.Report();
-    stats_.Clear();
+                                  outermost_main_frame_error));
+    pending_request_count_ = 0;
   }
 }
 
