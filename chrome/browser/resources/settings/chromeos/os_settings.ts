@@ -48,7 +48,6 @@ import './os_files_page/google_drive_subpage.js';
 import './os_apps_page/android_apps_subpage.js';
 import './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 import './os_apps_page/app_management_page/app_management_page.js';
-import './os_apps_page/app_management_page/arc_detail_view.js';
 import './os_apps_page/app_management_page/dom_switch.js';
 import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 import './os_apps_page/app_management_page/app_management_cros_shared_style.css.js';

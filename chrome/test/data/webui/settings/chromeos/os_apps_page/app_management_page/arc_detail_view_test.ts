@@ -2,33 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://os-settings/lazy_load.js';
 
+import {AppManagementArcDetailViewElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
-import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
-import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {AppType, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {FakePageHandler} from './fake_page_handler.js';
+import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
+import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import {getPermissionCrToggleByType, getPermissionItemByType, isHidden, isHiddenByDomIf, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
+// TODO(b/270728282) - remove "as" cast once getPermissionCrToggleByType()
+// becomes a TS function.
 suite('<app-management-arc-detail-view>', () => {
-  let arcPermissionView;
-  let fakeHandler;
+  let arcPermissionView: AppManagementArcDetailViewElement;
+  let fakeHandler: FakePageHandler;
 
-  function getPermissionBoolByType(permissionType) {
-    return getPermissionValueBool(arcPermissionView.app_, permissionType);
+  function getPermissionBoolByType(permissionType: PermissionTypeIndex):
+      boolean {
+    return getPermissionValueBool(
+        arcPermissionView.get('app_'), permissionType);
   }
 
-  async function clickPermissionToggle(permissionType) {
-    getPermissionCrToggleByType(arcPermissionView, permissionType).click();
+  async function clickPermissionToggle(permissionType: PermissionTypeIndex):
+      Promise<void> {
+    (getPermissionCrToggleByType(arcPermissionView, permissionType) as
+     CrToggleElement)
+        .click();
     await fakeHandler.flushPipesForTesting();
   }
 
-  async function clickPermissionItem(permissionType) {
-    getPermissionItemByType(arcPermissionView, permissionType).click();
+  async function clickPermissionItem(permissionType: PermissionTypeIndex):
+      Promise<void> {
+    (getPermissionItemByType(arcPermissionView, permissionType) as HTMLElement)
+        .click();
     await fakeHandler.flushPipesForTesting();
   }
 
@@ -49,7 +62,7 @@ suite('<app-management-arc-detail-view>', () => {
     };
 
     // Add an arc app, and make it the currently selected app.
-    const app = await fakeHandler.addApp(null, arcOptions);
+    const app = await fakeHandler.addApp('', arcOptions);
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     arcPermissionView =
@@ -58,10 +71,14 @@ suite('<app-management-arc-detail-view>', () => {
     await flushTasks();
   });
 
+  teardown(() => {
+    arcPermissionView.remove();
+  });
+
   test('App is rendered correctly', () => {
     assertEquals(
         AppManagementStore.getInstance().data.selectedAppId,
-        arcPermissionView.app_.id);
+        arcPermissionView.get('app_').id);
   });
 
   test('Permissions are hidden correctly', () => {
@@ -79,7 +96,8 @@ suite('<app-management-arc-detail-view>', () => {
 
   test('No permissions requested label', async () => {
     assertTrue(isHiddenByDomIf(
-        arcPermissionView.shadowRoot.querySelector('#noPermissions')));
+        arcPermissionView.shadowRoot!.querySelector<HTMLElement>(
+            '#noPermissions')));
 
     // Create an ARC app without any permissions.
     const arcOptions = {
@@ -88,12 +106,13 @@ suite('<app-management-arc-detail-view>', () => {
     };
 
     // Add an arc app, and make it the currently selected app.
-    const app = await fakeHandler.addApp(null, arcOptions);
+    const app = await fakeHandler.addApp('', arcOptions);
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
     await flushTasks();
 
     assertFalse(isHiddenByDomIf(
-        arcPermissionView.shadowRoot.querySelector('#noPermissions')));
+        arcPermissionView.shadowRoot!.querySelector<HTMLElement>(
+            '#noPermissions')));
   });
 
   suite('Read-write permissions', () => {
@@ -108,26 +127,31 @@ suite('<app-management-arc-detail-view>', () => {
       await flushTasks();
     });
 
+    teardown(() => {
+      arcPermissionView.remove();
+    });
+
     test('Toggle works correctly', async () => {
-      const checkPermissionToggle = async (permissionType) => {
+      const checkPermissionToggle =
+          async (permissionType: PermissionTypeIndex) => {
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue(
-            getPermissionCrToggleByType(arcPermissionView, permissionType)
-                .checked);
+        assertTrue((getPermissionCrToggleByType(
+                        arcPermissionView, permissionType) as CrToggleElement)
+                       .checked);
 
         // Toggle Off.
         await clickPermissionToggle(permissionType);
         assertFalse(getPermissionBoolByType(permissionType));
-        assertFalse(
-            getPermissionCrToggleByType(arcPermissionView, permissionType)
-                .checked);
+        assertFalse((getPermissionCrToggleByType(
+                         arcPermissionView, permissionType) as CrToggleElement)
+                        .checked);
 
         // Toggle On.
         await clickPermissionToggle(permissionType);
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue(
-            getPermissionCrToggleByType(arcPermissionView, permissionType)
-                .checked);
+        assertTrue((getPermissionCrToggleByType(
+                        arcPermissionView, permissionType) as CrToggleElement)
+                       .checked);
       };
 
       await checkPermissionToggle('kLocation');
@@ -136,25 +160,26 @@ suite('<app-management-arc-detail-view>', () => {
     });
 
     test('OnClick handler for permission item works correctly', async () => {
-      const checkPermissionItemOnClick = async (permissionType) => {
+      const checkPermissionItemOnClick =
+          async (permissionType: PermissionTypeIndex) => {
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue(
-            getPermissionCrToggleByType(arcPermissionView, permissionType)
-                .checked);
+        assertTrue((getPermissionCrToggleByType(
+                        arcPermissionView, permissionType) as CrToggleElement)
+                       .checked);
 
         // Toggle Off.
         await clickPermissionItem(permissionType);
         assertFalse(getPermissionBoolByType(permissionType));
-        assertFalse(
-            getPermissionCrToggleByType(arcPermissionView, permissionType)
-                .checked);
+        assertFalse((getPermissionCrToggleByType(
+                         arcPermissionView, permissionType) as CrToggleElement)
+                        .checked);
 
         // Toggle On.
         await clickPermissionItem(permissionType);
         assertTrue(getPermissionBoolByType(permissionType));
-        assertTrue(
-            getPermissionCrToggleByType(arcPermissionView, permissionType)
-                .checked);
+        assertTrue((getPermissionCrToggleByType(
+                        arcPermissionView, permissionType) as CrToggleElement)
+                       .checked);
       };
 
       await checkPermissionItemOnClick('kLocation');
@@ -178,6 +203,7 @@ suite('<app-management-arc-detail-view>', () => {
     });
 
     teardown(() => {
+      arcPermissionView.remove();
       loadTimeData.overrideValues(
           {'appManagementArcReadOnlyPermissions': false});
     });
@@ -185,28 +211,27 @@ suite('<app-management-arc-detail-view>', () => {
     test('Boolean permission display', async () => {
       const locationItem =
           getPermissionItemByType(arcPermissionView, 'kLocation');
+      assertTrue(!!locationItem);
       assertEquals(
           'app-management-read-only-permission-item',
           locationItem.tagName.toLowerCase());
 
-      assertEquals(
-          'Allowed',
-          locationItem.shadowRoot.querySelector('#description')
-              .textContent.trim());
+      let description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertEquals('Allowed', description.textContent!.trim());
 
       // Simulate the permission being changed by the OS, and verify that the
       // description text updates.
       fakeHandler.setPermission(
-          arcPermissionView.app_.id,
+          arcPermissionView.get('app_').id,
           createBoolPermission(
               PermissionType.kLocation, /*value=*/ false,
               /*is_managed=*/ false));
       await flushTasks();
 
-      assertEquals(
-          'Denied',
-          locationItem.shadowRoot.querySelector('#description')
-              .textContent.trim());
+      description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertEquals('Denied', description.textContent!.trim());
     });
 
     test('Tri-state permission display', async () => {
@@ -214,40 +239,37 @@ suite('<app-management-arc-detail-view>', () => {
           getPermissionItemByType(arcPermissionView, 'kLocation');
 
       fakeHandler.setPermission(
-          arcPermissionView.app_.id,
+          arcPermissionView.get('app_').id,
           createTriStatePermission(
               PermissionType.kLocation, /*value=*/ TriState.kAllow,
               /*is_managed=*/ false));
       await flushTasks();
 
-      assertEquals(
-          'Allowed',
-          locationItem.shadowRoot.querySelector('#description')
-              .textContent.trim());
+      let description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertEquals('Allowed', description.textContent!.trim());
 
       fakeHandler.setPermission(
-          arcPermissionView.app_.id,
+          arcPermissionView.get('app_').id,
           createTriStatePermission(
               PermissionType.kLocation, /*value=*/ TriState.kAsk,
               /*is_managed=*/ false));
       await flushTasks();
 
-      assertEquals(
-          'Ask every time',
-          locationItem.shadowRoot.querySelector('#description')
-              .textContent.trim());
+      description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertEquals('Ask every time', description.textContent!.trim());
 
       fakeHandler.setPermission(
-          arcPermissionView.app_.id,
+          arcPermissionView.get('app_').id,
           createTriStatePermission(
               PermissionType.kLocation, /*value=*/ TriState.kBlock,
               /*is_managed=*/ false));
       await flushTasks();
 
-      assertEquals(
-          'Denied',
-          locationItem.shadowRoot.querySelector('#description')
-              .textContent.trim());
+      description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertEquals('Denied', description.textContent!.trim());
     });
 
 
@@ -257,22 +279,24 @@ suite('<app-management-arc-detail-view>', () => {
           /*is_managed=*/ false);
       permission.details = 'While in use';
 
-      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      fakeHandler.setPermission(arcPermissionView.get('app_').id, permission);
       await flushTasks();
 
       const locationItem =
           getPermissionItemByType(arcPermissionView, 'kLocation');
 
-      assertTrue(locationItem.shadowRoot.querySelector('#description')
-                     .textContent.includes('While in use'));
+      let description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertTrue(description.textContent!.includes('While in use'));
 
       permission.value.boolValue = false;
 
-      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      fakeHandler.setPermission(arcPermissionView.get('app_').id, permission);
       await flushTasks();
 
-      assertFalse(locationItem.shadowRoot.querySelector('#description')
-                      .textContent.includes('While in use'));
+      description = locationItem.shadowRoot!.querySelector('#description');
+      assertTrue(!!description);
+      assertFalse(description.textContent!.includes('While in use'));
     });
 
     test('Managed permission has policy indicator', async () => {
@@ -280,13 +304,13 @@ suite('<app-management-arc-detail-view>', () => {
           PermissionType.kLocation, /*value=*/ true,
           /*is_managed=*/ true);
 
-      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      fakeHandler.setPermission(arcPermissionView.get('app_').id, permission);
       await flushTasks();
 
       const locationItem =
           getPermissionItemByType(arcPermissionView, 'kLocation');
       assertTrue(
-          !!locationItem.shadowRoot.querySelector('cr-policy-indicator'));
+          !!locationItem.shadowRoot!.querySelector('cr-policy-indicator'));
     });
 
     test('Unmanaged permission has no policy indicator', async () => {
@@ -294,14 +318,13 @@ suite('<app-management-arc-detail-view>', () => {
           PermissionType.kLocation, /*value=*/ true,
           /*is_managed=*/ false);
 
-      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      fakeHandler.setPermission(arcPermissionView.get('app_').id, permission);
       await flushTasks();
 
       const locationItem =
           getPermissionItemByType(arcPermissionView, 'kLocation');
       assertFalse(
-          !!locationItem.shadowRoot.querySelector('cr-policy-indicator'));
+          !!locationItem.shadowRoot!.querySelector('cr-policy-indicator'));
     });
   });
-
 });

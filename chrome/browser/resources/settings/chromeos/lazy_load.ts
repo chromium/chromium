@@ -73,6 +73,7 @@ import './guest_os/guest_os_shared_paths.js';
 import './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import './os_apps_page/app_management_page/app_details_item.js';
 import './os_apps_page/app_management_page/app_item.js';
+import './os_apps_page/app_management_page/arc_detail_view.js';
 import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 import './os_apps_page/app_management_page/chrome_app_detail_view.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.js';
@@ -153,6 +154,7 @@ export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.j
 export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';
 export {AppManagementAppDetailsItem} from './os_apps_page/app_management_page/app_details_item.js';
 export {AppManagementAppItemElement} from './os_apps_page/app_management_page/app_item.js';
+export {AppManagementArcDetailViewElement} from './os_apps_page/app_management_page/arc_detail_view.js';
 export {AppManagementBorealisDetailViewElement} from './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 export {AppManagementChromeAppDetailViewElement} from './os_apps_page/app_management_page/chrome_app_detail_view.js';
 export {AppManagementMainViewElement} from './os_apps_page/app_management_page/main_view.js';

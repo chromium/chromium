@@ -37,7 +37,7 @@ interface PermissionDefinition {
   labelId: string;
 }
 
-class AppManagementArcDetailViewElement extends
+export class AppManagementArcDetailViewElement extends
     AppManagementArcDetailViewElementBase {
   static get is() {
     return 'app-management-arc-detail-view';
