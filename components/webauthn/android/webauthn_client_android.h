@@ -49,7 +49,7 @@ class WebAuthnClientAndroid {
   void OnCredManConditionalRequestPending(
       content::RenderFrameHost* render_frame_host,
       bool has_results,
-      base::RepeatingClosure full_assertion_request);
+      base::RepeatingCallback<void(bool)> full_assertion_request);
 
   // Called when a CredMan sheet is closed. This can happen if the user
   // dismissed the UI, selected a credential, or if there are errors. Android U+

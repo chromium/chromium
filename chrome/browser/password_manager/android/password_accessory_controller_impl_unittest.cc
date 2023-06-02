@@ -1021,7 +1021,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/true,
-      base::RepeatingClosure());
+      base::RepeatingCallback<void(bool)>());
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
@@ -1040,7 +1040,7 @@ TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/false,
-      base::RepeatingClosure());
+      base::RepeatingCallback<void(bool)>());
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
@@ -1059,7 +1059,7 @@ TEST_F(PasswordAccessoryControllerTest, HideCredManReentryOnNonSignInField) {
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/true,
-      base::RepeatingClosure());
+      base::RepeatingCallback<void(bool)>());
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
@@ -1089,7 +1089,7 @@ TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
   }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
-  base::MockRepeatingClosure cred_man_callback;
+  base::MockCallback<base::RepeatingCallback<void(bool)>> cred_man_callback;
   cred_man_delegate()->OnCredManConditionalRequestPending(
       /*render_frame_host=*/nullptr, /*has_results=*/true,
       cred_man_callback.Get());

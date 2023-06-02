@@ -65,6 +65,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Uses the Google Play Services Fido2 APIs.
@@ -77,6 +78,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             ComponentName.createRelative("com.google.android.gms",
                     ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
     private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
+    private static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -261,7 +263,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 prefetchCredentialsViaCredMan(
                         options, callerOrigin, callerOriginString, clientDataHash);
             } else {
-                getCredentialViaCredMan(options, callerOrigin);
+                getCredentialViaCredMan(options, callerOrigin, /*requestPasswords=*/false);
             }
             return;
         }
@@ -887,11 +889,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
         try {
             final Class createCredentialRequestBuilder = credManCreateRequestBuilderClass();
-            final Object builder =
-                    createCredentialRequestBuilder
-                            .getConstructor(String.class, Bundle.class, Bundle.class)
-                            .newInstance(CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL",
-                                    requestBundle, requestBundle);
+            final Object builder = createCredentialRequestBuilder
+                                           .getConstructor(String.class, Bundle.class, Bundle.class)
+                                           .newInstance(TYPE_PASSKEY, requestBundle, requestBundle);
             final Class builderClass = builder.getClass();
             builderClass.getMethod("setAlwaysSendAppInfoToProvider", boolean.class)
                     .invoke(builder, true);
@@ -936,7 +936,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private void getCredentialViaCredMan(PublicKeyCredentialRequestOptions options, Origin origin) {
+    private void getCredentialViaCredMan(
+            PublicKeyCredentialRequestOptions options, Origin origin, boolean requestPasswords) {
         final Context context = ContextUtils.getApplicationContext();
 
         // The Android 14 APIs have to be called via reflection until Chromium
@@ -980,11 +981,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     return;
                 }
                 Bundle data;
+                String type;
                 try {
                     Object credential = getCredentialResponse.getClass()
                                                 .getMethod("getCredential")
                                                 .invoke(getCredentialResponse);
                     data = (Bundle) credential.getClass().getMethod("getData").invoke(credential);
+                    type = (String) credential.getClass().getMethod("getType").invoke(credential);
 
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
@@ -993,6 +996,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                             : ConditionalUiState.NONE;
                     notifyBrowserOnCredManClosed(false);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+
+                if (!TYPE_PASSKEY.equals(type)) {
+                    // TODO(crbug/1434278): Implement password handling logic.
+                    notifyBrowserOnCredManClosed(true);
                     return;
                 }
 
@@ -1042,7 +1051,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mConditionalUiState = options.isConditional ? ConditionalUiState.REQUEST_SENT_TO_PLATFORM
                                                     : ConditionalUiState.NONE;
         try {
-            final Object getCredentialRequest = buildGetCredentialRequest(options, origin);
+            final Object getCredentialRequest =
+                    buildGetCredentialRequest(options, origin, requestPasswords);
             if (getCredentialRequest == null) {
                 mConditionalUiState = options.isConditional
                         ? ConditionalUiState.WAITING_FOR_SELECTION
@@ -1128,8 +1138,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                             prepareGetCredentialResponse.getClass().getMethod(
                                     "hasCredentialResults", String.class);
                     hasPublicKeyCredentials = (Boolean) hasCredentialResultsMethod.invoke(
-                            prepareGetCredentialResponse,
-                            "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+                            prepareGetCredentialResponse, TYPE_PASSKEY);
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
                     mConditionalUiState = ConditionalUiState.NONE;
@@ -1142,13 +1151,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 };
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
                 mBrowserBridge.onCredManConditionalRequestPending(mFrameHost,
-                        hasPublicKeyCredentials, () -> getCredentialViaCredMan(options, origin));
+                        hasPublicKeyCredentials,
+                        (requestPasswords)
+                                -> getCredentialViaCredMan(options, origin, requestPasswords));
             }
         };
 
         try {
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
-            final Object getCredentialRequest = buildGetCredentialRequest(options, origin);
+            final Object getCredentialRequest =
+                    buildGetCredentialRequest(options, origin, /*requestPasswords=*/false);
             if (getCredentialRequest == null) {
                 mConditionalUiState = ConditionalUiState.NONE;
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
@@ -1171,7 +1183,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     }
 
     private Object buildGetCredentialRequest(PublicKeyCredentialRequestOptions options,
-            Origin origin) throws ReflectiveOperationException {
+            Origin origin, boolean requestPasswords) throws ReflectiveOperationException {
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
 
@@ -1187,15 +1199,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         Bundle publicKeyCredentialOptionBundle =
                 buildPublicKeyCredentialOptionBundle(requestAsJson, clientDataHash);
 
-        // Build the CredentialOption:
+        // Build the CredentialOption for passkeys:
         Object credentialOption;
         try {
             final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
             final Object credentialOptionBuilder =
                     credentialOptionBuilderClass
                             .getConstructor(String.class, Bundle.class, Bundle.class)
-                            .newInstance(CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL",
-                                    publicKeyCredentialOptionBundle,
+                            .newInstance(TYPE_PASSKEY, publicKeyCredentialOptionBundle,
                                     publicKeyCredentialOptionBundle);
             credentialOption =
                     credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
@@ -1205,8 +1216,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             credentialOption =
                     Class.forName("android.credentials.CredentialOption")
                             .getConstructor(String.class, Bundle.class, Bundle.class, Boolean.TYPE)
-                            .newInstance(CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL",
-                                    publicKeyCredentialOptionBundle,
+                            .newInstance(TYPE_PASSKEY, publicKeyCredentialOptionBundle,
                                     publicKeyCredentialOptionBundle, false);
         }
 
@@ -1222,6 +1232,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         getCredentialRequestBuilderClass
                 .getMethod("addCredentialOption", credentialOption.getClass())
                 .invoke(getCredentialRequestBuilderObject, credentialOption);
+        if (requestPasswords) {
+            Object passwordCredentialOption = buildPasswordOption();
+            if (passwordCredentialOption != null) {
+                getCredentialRequestBuilderClass
+                        .getMethod("addCredentialOption", passwordCredentialOption.getClass())
+                        .invoke(getCredentialRequestBuilderObject, passwordCredentialOption);
+            }
+        }
         getCredentialRequestBuilderClass.getMethod("setOrigin", String.class)
                 .invoke(getCredentialRequestBuilderObject, convertOriginToString(origin));
         return getCredentialRequestBuilderClass.getMethod("build").invoke(
@@ -1292,6 +1310,35 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
         assert false : "Channel must be canary, dev, beta, stable or chrome must be built locally.";
         return null;
+    }
+
+    private Object buildPasswordOption() throws ReflectiveOperationException {
+        Object passwordCredentialOption;
+        Bundle passwordOptionBundle = new Bundle();
+        passwordOptionBundle.putString(CHANNEL_KEY, getChannel());
+
+        try {
+            final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
+            final Object credentialOptionBuilder =
+                    credentialOptionBuilderClass
+                            .getConstructor(String.class, Bundle.class, Bundle.class)
+                            .newInstance("android.credentials.TYPE_PASSWORD_CREDENTIAL",
+                                    passwordOptionBundle, passwordOptionBundle);
+            credentialOptionBuilderClass.getMethod("setAllowedProviders", Set.class)
+                    .invoke(credentialOptionBuilder, Set.of(GPM_COMPONENT_NAME));
+            passwordCredentialOption =
+                    credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
+
+        } catch (ClassNotFoundException e) {
+            // In order to be compatible with Android 14 Beta 1, the older
+            // form of the call is also tried.
+            passwordCredentialOption =
+                    Class.forName("android.credentials.CredentialOption")
+                            .getConstructor(String.class, Bundle.class, Bundle.class, Boolean.TYPE)
+                            .newInstance("android.credentials.TYPE_PASSWORD_CREDENTIAL",
+                                    passwordOptionBundle, passwordOptionBundle, false);
+        }
+        return passwordCredentialOption;
     }
 
     @VisibleForTesting

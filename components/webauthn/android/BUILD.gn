@@ -39,6 +39,7 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",
+    "//components/password_manager/core/common:features",
     "//components/payments/content/android:feature_list_java",
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",

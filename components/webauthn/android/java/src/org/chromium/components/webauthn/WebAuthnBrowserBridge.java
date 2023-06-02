@@ -63,7 +63,7 @@ public class WebAuthnBrowserBridge {
      *         completed conditional request.
      */
     public void onCredManConditionalRequestPending(
-            RenderFrameHost frameHost, boolean hasResults, Runnable fullAssertion) {
+            RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion) {
         if (mNativeWebAuthnBrowserBridge == 0) {
             mNativeWebAuthnBrowserBridge =
                     WebAuthnBrowserBridgeJni.get().createNativeWebAuthnBrowserBridge(
@@ -134,7 +134,7 @@ public class WebAuthnBrowserBridge {
                 RenderFrameHost frameHost, boolean isConditionalRequest,
                 Callback<byte[]> getAssertionCallback, Runnable hybridCallback);
         void onCredManConditionalRequestPending(long nativeWebAuthnBrowserBridge,
-                RenderFrameHost frameHost, boolean hasResults, Runnable fullAssertion);
+                RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion);
         void onCredManUiClosed(
                 long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost, boolean success);
         void cleanupRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);

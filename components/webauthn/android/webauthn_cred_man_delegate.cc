@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/features.h"
 
@@ -28,7 +29,7 @@ WebAuthnCredManDelegate::~WebAuthnCredManDelegate() = default;
 void WebAuthnCredManDelegate::OnCredManConditionalRequestPending(
     content::RenderFrameHost* render_frame_host,
     bool has_results,
-    base::RepeatingClosure full_assertion_request) {
+    base::RepeatingCallback<void(bool)> full_assertion_request) {
   has_results_ = has_results;
   full_assertion_request_ = std::move(full_assertion_request);
 }
@@ -44,7 +45,9 @@ void WebAuthnCredManDelegate::TriggerFullRequest() {
     OnCredManUiClosed(false);
     return;
   }
-  full_assertion_request_.Run();
+
+  full_assertion_request_.Run(base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordsInCredMan));
 }
 
 bool WebAuthnCredManDelegate::HasResults() {

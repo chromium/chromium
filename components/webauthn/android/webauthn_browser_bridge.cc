@@ -132,8 +132,10 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
 }
 
 void TriggerFullRequest(
-    const base::android::JavaRef<jobject>& jfull_request_runnable) {
-  base::android::RunRunnableAndroid(jfull_request_runnable);
+    const base::android::JavaRef<jobject>& jfull_request_runnable,
+    bool request_passwords) {
+  base::android::RunBooleanCallbackAndroid(jfull_request_runnable,
+                                           request_passwords);
 }
 
 void WebAuthnBrowserBridge::OnCredManConditionalRequestPending(
