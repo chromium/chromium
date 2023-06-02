@@ -250,6 +250,9 @@ void InjectNTP(Browser* browser) {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
+  // View controller presents the signed in accounts when they have changed
+  // while the application was in background.
+  __weak SignedInAccountsViewController* _accountsViewController;
 }
 
 // Navigation View controller for the settings.
@@ -1163,6 +1166,9 @@ void InjectNTP(Browser* browser) {
   if (!self.sceneState.UIEnabled) {
     return;  // Nothing to do.
   }
+
+  [_accountsViewController teardownUI];
+  _accountsViewController = nil;
 
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
@@ -2921,7 +2927,7 @@ void InjectNTP(Browser* browser) {
   id<ApplicationSettingsCommands> settingsHandler =
       HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
                          ApplicationSettingsCommands);
-  UIViewController* accountsViewController =
+  SignedInAccountsViewController* accountsViewController =
       [[SignedInAccountsViewController alloc]
           initWithBrowserState:browserState
                     dispatcher:settingsHandler];
@@ -2929,6 +2935,7 @@ void InjectNTP(Browser* browser) {
       presentViewController:accountsViewController
                    animated:YES
                  completion:nil];
+  _accountsViewController = accountsViewController;
 }
 
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.

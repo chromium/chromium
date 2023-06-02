@@ -122,6 +122,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   self.identityManager = nullptr;
 }
 
+- (void)teardownUI {
+  [_accountTableView teardownUI];
+  _browserState = nullptr;
+}
+
 #pragma mark UIViewController
 
 - (CGSize)preferredContentSize {

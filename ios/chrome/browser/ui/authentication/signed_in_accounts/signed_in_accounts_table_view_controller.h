@@ -24,6 +24,9 @@ class IdentityManager;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Called when the UI will be torn down.
+- (void)teardownUI;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNED_IN_ACCOUNTS_SIGNED_IN_ACCOUNTS_TABLE_VIEW_CONTROLLER_H_
