@@ -98,6 +98,9 @@ constexpr MouseEventFlags EF_UNADJUSTED_MOUSE = 1 << 24;
 // mouse to another display when the mouse hits the window boundaries).
 constexpr MouseEventFlags EF_NOT_SUITABLE_FOR_MOUSE_WARPING = 1 << 25;
 
+// These value match the Windows default.
+constexpr int kDoubleClickTimeMs = 500;
+
 // Result of dispatching an event.
 enum EventResult {
   ER_UNHANDLED = 0,      // The event hasn't been handled. The event can be

@@ -158,8 +158,25 @@ void WidgetEventHandler::HandleMouseLeave(LocalFrame& local_root,
   local_root.GetEventHandler().HandleMouseLeaveEvent(transformed_event);
 }
 
+namespace {
+
+bool IsDoubleAltClick(const blink::WebMouseEvent& mouse_event) {
+  bool is_alt_pressed =
+      mouse_event.GetModifiers() & blink::WebInputEvent::kAltKey;
+  if (!is_alt_pressed) {
+    return false;
+  }
+  return mouse_event.click_count == 2;
+}
+
+}  // namespace
+
 void WidgetEventHandler::HandleMouseDown(LocalFrame& local_root,
                                          const WebMouseEvent& event) {
+  if (IsDoubleAltClick(event)) {
+    local_root.GetEventHandler().GetDownloadModifierTaskHandle().Cancel();
+  }
+
   WebMouseEvent transformed_event =
       TransformWebMouseEvent(local_root.View(), event);
   local_root.GetEventHandler().HandleMousePressEvent(transformed_event);

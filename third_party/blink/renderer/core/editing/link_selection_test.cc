@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 using testing::_;
@@ -121,12 +122,15 @@ class TestFrameClient : public frame_test_helpers::TestWebFrameClient {
   void BeginNavigation(
       std::unique_ptr<blink::WebNavigationInfo> info) override {
     last_policy_ = info->navigation_policy;
+    ++num_navigations_;
   }
 
   WebNavigationPolicy GetLastNavigationPolicy() const { return last_policy_; }
+  size_t GetNumNavigations() const { return num_navigations_; }
 
  private:
   WebNavigationPolicy last_policy_ = kWebNavigationPolicyCurrentTab;
+  size_t num_navigations_ = 0;
 };
 
 class LinkSelectionTest : public LinkSelectionTestBase {
@@ -246,8 +250,37 @@ TEST_F(LinkSelectionTest, HandCursorOverLinkAfterContextMenu) {
 TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownload) {
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
                     WebInputEvent::kAltKey);
+  test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
   EXPECT_EQ(kWebNavigationPolicyDownload,
             test_frame_client_.GetLastNavigationPolicy());
+}
+
+TEST_F(LinkSelectionTest, DoubleAltClickNotDownloadAndSelectWord) {
+  for (int click_count = 1; click_count <= 2; ++click_count) {
+    EXPECT_TRUE(GetSelectionText().empty());
+    EXPECT_EQ(0u, test_frame_client_.GetNumNavigations());
+    EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
+                      WebInputEvent::kAltKey, click_count);
+  }
+  test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
+  EXPECT_EQ(0u, test_frame_client_.GetNumNavigations());
+  EXPECT_TRUE("to" == GetSelectionText() || "to " == GetSelectionText());
+}
+
+// Two successive but non-double-click alt-clicks are treated as two
+// separate download requests
+TEST_F(LinkSelectionTest, TwoSingleAltClicksDoubleDownloadAndNotSelectWord) {
+  for (size_t clicks = 0; clicks < 2; ++clicks) {
+    EXPECT_TRUE(GetSelectionText().empty());
+    EXPECT_EQ(clicks, test_frame_client_.GetNumNavigations());
+    EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
+                      WebInputEvent::kAltKey);
+    test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
+    EXPECT_EQ(kWebNavigationPolicyDownload,
+              test_frame_client_.GetLastNavigationPolicy());
+    EXPECT_EQ(clicks + 1, test_frame_client_.GetNumNavigations());
+    EXPECT_TRUE(GetSelectionText().empty());
+  }
 }
 
 TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
@@ -265,6 +298,7 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
                     WebInputEvent::kAltKey);
+  test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
   EXPECT_EQ(kWebNavigationPolicyDownload,
             test_frame_client_.GetLastNavigationPolicy());
 }

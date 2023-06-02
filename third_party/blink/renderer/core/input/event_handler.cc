@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/windows_keyboard_codes.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -1378,6 +1379,14 @@ Element* EventHandler::GetElementUnderMouse() {
 
 Element* EventHandler::CurrentTouchDownElement() {
   return pointer_event_manager_->CurrentTouchDownElement();
+}
+
+void EventHandler::SetDownloadModifierTaskHandle(TaskHandle task_handle) {
+  download_modifier_task_handle_ = std::move(task_handle);
+}
+
+TaskHandle& EventHandler::GetDownloadModifierTaskHandle() {
+  return download_modifier_task_handle_;
 }
 
 bool EventHandler::IsPointerIdActiveOnFrame(PointerId pointer_id,

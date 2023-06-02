@@ -281,6 +281,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   Element* CurrentTouchDownElement();
 
+  void SetDownloadModifierTaskHandle(TaskHandle task_handle);
+
+  TaskHandle& GetDownloadModifierTaskHandle();
+
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(
       const WebMouseEvent&,
@@ -322,6 +326,12 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   ScrollableArea* AssociatedScrollableArea(const PaintLayer*) const;
 
   Element* EffectiveMouseEventTargetElement(Element*);
+
+  // When a link is clicked with the alt-modifier it forces a download. However,
+  // a double-click with the alt-modifier should select the text of the link.
+  // The alt-click thus posts this task to perform the download,
+  // which can be canceled by a double-click being received.
+  TaskHandle download_modifier_task_handle_;
 
   // Dispatches ME after corresponding PE provided the PE has not been
   // canceled. The |mouse_event_type| arg must be one of {mousedown,

@@ -110,6 +110,7 @@ include_rules = [
     "+ui/base/ui_base_features.h",
     "+ui/display/screen_info.h",
     "+ui/display/screen_infos.h",
+    "+ui/events/event_constants.h",
     "+ui/events/types/scroll_types.h",
     "+ui/gfx/animation/keyframe/animation_curve.h",
     "+ui/gfx/animation/keyframe/keyframed_animation_curve.h",
