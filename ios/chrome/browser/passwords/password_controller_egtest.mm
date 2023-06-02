@@ -123,7 +123,8 @@ BOOL WaitForKeyboardToAppear() {
         password_manager::features::kIOSPasswordBottomSheet);
   }
   if ([self isRunningTest:@selector
-            (testShowAccountStorageNoticeBeforeFillingBottomSheet)]) {
+            (testShowAccountStorageNoticeBeforeFillingBottomSheet)] ||
+      [self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
