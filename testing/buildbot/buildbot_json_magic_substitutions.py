@@ -225,6 +225,31 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
   raise RuntimeError('All devices must be either rooted or unrooted')
 
 
+def GPUWebGLRuntimeFile(test_config, _, tester_config):
+  """Gets the correct WebGL runtime file for a tester.
+
+  Args:
+    test_config: A dict containing a configuration for a specific test on a
+        specific builder.
+    tester_config: A dict containing the configuration for the builder
+        that |test_config| is for.
+  """
+  os_type = tester_config.get('os_type')
+  assert os_type
+  suite = test_config.get('telemetry_test_name')
+  assert suite in ('webgl1_conformance', 'webgl2_conformance')
+
+  # Default to using Linux's file if we're on a platform that we don't actively
+  # maintain runtime files for.
+  chosen_os = os_type
+  if chosen_os not in ('android', 'linux', 'mac', 'win'):
+    chosen_os = 'linux'
+
+  runtime_filepath = (
+      f'../../content/test/data/gpu/{suite}_{chosen_os}_runtimes.json')
+  return [f'--read-abbreviated-json-results-from={runtime_filepath}']
+
+
 def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""
   return ['--magic-substitution-success']

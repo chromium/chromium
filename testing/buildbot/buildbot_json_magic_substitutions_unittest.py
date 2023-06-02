@@ -287,5 +287,42 @@ class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
     self.assertEqual(retval, [])
 
 
+class GPUWebGLRuntimeFile(unittest.TestCase):
+  def testNoOsType(self):
+    test_config = {'telemetry_test_name': 'webgl1_conformance'}
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUWebGLRuntimeFile(test_config, None, {})
+
+  def testNoSuite(self):
+    tester_config = {'os_type': 'linux'}
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUWebGLRuntimeFile({}, None, tester_config)
+
+  def testUnknownSuite(self):
+    test_config = {'telemetry_test_name': 'foo'}
+    tester_config = {'os_type': 'linux'}
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUWebGLRuntimeFile(test_config, None, tester_config)
+
+  def testKnownOsTypes(self):
+    for os_type in ('android', 'linux', 'mac', 'win'):
+      for suite in ('webgl1_conformance', 'webgl2_conformance'):
+        retval = magic_substitutions.GPUWebGLRuntimeFile(
+            {'telemetry_test_name': suite}, None, {'os_type': os_type})
+        self.assertEqual(retval, [
+            '--read-abbreviated-json-results-from=../../content/test/data/gpu/'
+            f'{suite}_{os_type}_runtimes.json'
+        ])
+
+  def testUnknownOsType(self):
+    for suite in ('webgl1_conformance', 'webgl2_conformance'):
+      retval = magic_substitutions.GPUWebGLRuntimeFile(
+          {'telemetry_test_name': suite}, None, {'os_type': 'foo'})
+      self.assertEqual(retval, [
+          '--read-abbreviated-json-results-from=../../content/test/data/gpu/'
+          f'{suite}_linux_runtimes.json'
+      ])
+
+
 if __name__ == '__main__':
   unittest.main()

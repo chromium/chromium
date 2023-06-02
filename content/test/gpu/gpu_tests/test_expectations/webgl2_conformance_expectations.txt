@@ -581,6 +581,8 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 
 crbug.com/1449922 [ mac amd angle-opengl ] conformance2/transform_feedback/transform_feedback.html [ RetryOnFailure ]
 
+crbug.com/1450355 [ mac amd ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+
 ## Mac Intel ##
 
 crbug.com/679692 [ angle-metal intel mac no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
