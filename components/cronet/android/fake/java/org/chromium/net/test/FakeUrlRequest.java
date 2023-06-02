@@ -520,6 +520,7 @@ final class FakeUrlRequest extends UrlRequestBase {
             mState = newState;
         } else {
             if (!(mState == State.CANCELLED || mState == State.ERROR)) {
+                // TODO(crbug/1450573): Use Enums for state instead for better error messages.
                 throw new IllegalStateException(
                         "Invalid state transition - expected " + expected + " but was " + mState);
             }

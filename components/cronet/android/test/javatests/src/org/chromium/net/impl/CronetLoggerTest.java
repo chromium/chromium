@@ -10,7 +10,6 @@ import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP;
@@ -420,12 +419,12 @@ public final class CronetLoggerTest {
 
         final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
         assertThat(trafficInfo.getRequestHeaderSizeInBytes()).isEqualTo(0);
-        assertNotEquals(0, trafficInfo.getRequestBodySizeInBytes());
-        assertNotEquals(0, trafficInfo.getResponseHeaderSizeInBytes());
-        assertNotEquals(0, trafficInfo.getResponseBodySizeInBytes());
+        assertThat(trafficInfo.getRequestBodySizeInBytes()).isNotEqualTo(0);
+        assertThat(trafficInfo.getResponseHeaderSizeInBytes()).isNotEqualTo(0);
+        assertThat(trafficInfo.getResponseBodySizeInBytes()).isNotEqualTo(0);
         assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(200);
-        assertNotEquals(Duration.ofSeconds(0), trafficInfo.getHeadersLatency());
-        assertNotEquals(Duration.ofSeconds(0), trafficInfo.getTotalLatency());
+        assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));
+        assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));
         assertThat(trafficInfo.getNegotiatedProtocol()).isNotNull();
         assertFalse(trafficInfo.wasConnectionMigrationAttempted());
         assertFalse(trafficInfo.didConnectionMigrationSucceed());

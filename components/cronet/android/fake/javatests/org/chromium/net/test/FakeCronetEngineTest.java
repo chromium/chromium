@@ -6,7 +6,6 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -86,9 +85,8 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.newUrlRequestBuilder("", mCallback, mExecutor).build();
             fail("newUrlRequestBuilder API not checked for shutdown engine.");
         } catch (IllegalStateException e) {
-            assertEquals(
-                    "This instance of CronetEngine has been shutdown and can no longer be used.",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo(
+                    "This instance of CronetEngine has been shutdown and can no longer be used.");
         }
     }
 
@@ -101,9 +99,8 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.newBidirectionalStreamBuilder("", null, null);
             fail("newBidirectionalStreamBuilder API not checked for shutdown engine.");
         } catch (IllegalStateException e) {
-            assertEquals(
-                    "This instance of CronetEngine has been shutdown and can no longer be used.",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo(
+                    "This instance of CronetEngine has been shutdown and can no longer be used.");
         }
     }
 
@@ -114,9 +111,9 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.newBidirectionalStreamBuilder("", null, null);
             fail("newBidirectionalStreamBuilder API should not be available.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("The bidirectional stream API is not supported by the Fake implementation "
-                            + "of CronetEngine.",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo(
+                    "The bidirectional stream API is not supported by the Fake implementation "
+                    + "of CronetEngine.");
         }
     }
 
@@ -127,9 +124,9 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.openConnection(null);
             fail("openConnection API should not be available.");
         } catch (Exception e) {
-            assertEquals("The openConnection API is not supported by the Fake implementation of "
-                            + "CronetEngine.",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo(
+                    "The openConnection API is not supported by the Fake implementation of "
+                    + "CronetEngine.");
         }
     }
 
@@ -140,9 +137,9 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.openConnection(null, Proxy.NO_PROXY);
             fail("openConnection API  should not be available.");
         } catch (Exception e) {
-            assertEquals("The openConnection API is not supported by the Fake implementation of "
-                            + "CronetEngine.",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo(
+                    "The openConnection API is not supported by the Fake implementation of "
+                    + "CronetEngine.");
         }
     }
 
@@ -153,18 +150,17 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.createURLStreamHandlerFactory();
             fail("createURLStreamHandlerFactory API  should not be available.");
         } catch (UnsupportedOperationException e) {
-            assertEquals(
+            assertThat(e).hasMessageThat().isEqualTo(
                     "The URLStreamHandlerFactory API is not supported by the Fake implementation of"
-                            + " CronetEngine.",
-                    e.getMessage());
+                    + " CronetEngine.");
         }
     }
 
     @Test
     @SmallTest
     public void testGetVersionString() {
-        assertEquals("FakeCronet/" + ImplVersion.getCronetVersionWithLastChange(),
-                mFakeCronetEngine.getVersionString());
+        assertThat(mFakeCronetEngine.getVersionString())
+                .isEqualTo("FakeCronet/" + ImplVersion.getCronetVersionWithLastChange());
     }
 
     @Test
@@ -194,28 +190,29 @@ public class FakeCronetEngineTest {
     @Test
     @SmallTest
     public void testGetEffectiveConnectionType() {
-        assertEquals(FakeCronetEngine.EFFECTIVE_CONNECTION_TYPE_UNKNOWN,
-                mFakeCronetEngine.getEffectiveConnectionType());
+        assertThat(mFakeCronetEngine.getEffectiveConnectionType())
+                .isEqualTo(FakeCronetEngine.EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
     }
 
     @Test
     @SmallTest
     public void testGetHttpRttMs() {
-        assertEquals(FakeCronetEngine.CONNECTION_METRIC_UNKNOWN, mFakeCronetEngine.getHttpRttMs());
+        assertThat(mFakeCronetEngine.getHttpRttMs())
+                .isEqualTo(FakeCronetEngine.CONNECTION_METRIC_UNKNOWN);
     }
 
     @Test
     @SmallTest
     public void testGetTransportRttMs() {
-        assertEquals(
-                FakeCronetEngine.CONNECTION_METRIC_UNKNOWN, mFakeCronetEngine.getTransportRttMs());
+        assertThat(mFakeCronetEngine.getTransportRttMs())
+                .isEqualTo(FakeCronetEngine.CONNECTION_METRIC_UNKNOWN);
     }
 
     @Test
     @SmallTest
     public void testGetDownstreamThroughputKbps() {
-        assertEquals(FakeCronetEngine.CONNECTION_METRIC_UNKNOWN,
-                mFakeCronetEngine.getDownstreamThroughputKbps());
+        assertThat(mFakeCronetEngine.getDownstreamThroughputKbps())
+                .isEqualTo(FakeCronetEngine.CONNECTION_METRIC_UNKNOWN);
     }
 
     @Test
@@ -257,7 +254,7 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.shutdown();
             fail("Shutdown not checked for running requests.");
         } catch (IllegalStateException e) {
-            assertEquals("Cannot shutdown with running requests.", e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
         }
 
         // Finish the request and verify the engine can be shutdown.
@@ -311,7 +308,7 @@ public class FakeCronetEngineTest {
             @Override
             public void onRequestFinished(RequestFinishedInfo requestInfo) {
                 super.onRequestFinished(requestInfo);
-                assertEquals(url, requestInfo.getUrl());
+                assertThat(requestInfo.getUrl()).isEqualTo(url);
                 assertThat(requestInfo.getAnnotations()).contains(annotation);
             }
         };
@@ -336,8 +333,9 @@ public class FakeCronetEngineTest {
             @Override
             public void onRequestFinished(RequestFinishedInfo requestInfo) {
                 super.onRequestFinished(requestInfo);
-                assertEquals("Exception received from UrlRequest.Callback",
-                        requestInfo.getException().getMessage());
+                assertThat(requestInfo.getException())
+                        .hasMessageThat()
+                        .isEqualTo("Exception received from UrlRequest.Callback");
             }
         };
         mFakeCronetEngine.addRequestFinishedListener(listener);
@@ -363,9 +361,9 @@ public class FakeCronetEngineTest {
             mFakeCronetEngine.onRequestDestroyed();
             fail("onRequestDestroyed not checked for shutdown engine");
         } catch (IllegalStateException e) {
-            assertEquals("This instance of CronetEngine was shutdown. All requests must have been "
-                            + "complete.",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo(
+                    "This instance of CronetEngine was shutdown. All requests must have been "
+                    + "complete.");
         }
     }
 }

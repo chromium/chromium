@@ -6,7 +6,6 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -28,7 +27,7 @@ public class UrlResponseMatcherTest {
                     new UrlResponseMatcher(null, new FakeUrlResponse.Builder().build());
             fail("URL not null-checked");
         } catch (NullPointerException e) {
-            assertEquals("URL is required.", e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("URL is required.");
         }
     }
 
@@ -39,7 +38,7 @@ public class UrlResponseMatcherTest {
             UrlResponseMatcher matcher = new UrlResponseMatcher("url", null);
             fail("Response not null-checked");
         } catch (NullPointerException e) {
-            assertEquals("Response is required.", e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("Response is required.");
         }
     }
 
@@ -53,8 +52,7 @@ public class UrlResponseMatcherTest {
 
         FakeUrlResponse found = matcher.getMatchingResponse(url, null, null, null);
 
-        assertThat(found).isNotNull();
-        assertEquals(found, response);
+        assertThat(found).isEqualTo(response);
     }
 
     @Test
