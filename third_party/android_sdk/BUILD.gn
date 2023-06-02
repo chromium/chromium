@@ -4,10 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-group("cpu_features") {
-  public_deps = [ "$android_ndk_root:cpu_features" ]
-}
-
 if (enable_java_templates) {
   android_system_java_prebuilt("public_framework_system_java") {
     jar_path = "//third_party/android_system_sdk/android_system.jar"
