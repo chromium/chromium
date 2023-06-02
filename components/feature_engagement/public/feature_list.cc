@@ -155,6 +155,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordsManagementBubbleAfterSaveFeature,
     &kIPHPasswordsManagementBubbleDuringSigninFeature,
     &kIPHPasswordsWebAppProfileSwitchFeature,
+    &kIPHPasswordManagerShortcutFeature,
     &kIPHPerformanceNewBadgeFeature,
     &kIPHPowerBookmarksSidePanelFeature,
     &kIPHPriceTrackingChipFeature,

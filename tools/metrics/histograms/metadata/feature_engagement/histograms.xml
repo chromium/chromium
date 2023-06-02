@@ -222,6 +222,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_PageInfoStoreInfo" summary="PageInfoStoreInfo feature"/>
   <variant name="IPH_PageZoom"
       summary="educating users about the zoom option in the main menu"/>
+  <variant name="IPH_PasswordManagerShortcut"
+      summary="Password Manager shortcut."/>
   <variant name="IPH_PasswordsAccountStorage"
       summary="passwords account storage"/>
   <variant name="IPH_PasswordsManagementBubbleAfterSave"
