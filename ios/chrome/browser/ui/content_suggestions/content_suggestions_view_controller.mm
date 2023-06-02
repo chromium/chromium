@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
@@ -78,6 +79,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
+    MagicStackModuleContainerDelegate,
     SetUpListItemViewTapDelegate,
     URLDropDelegate,
     UIScrollViewDelegate,
@@ -407,6 +409,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
+  CHECK([order count] > 0);
   _shouldShowMagicStack = YES;
   _magicStackModuleOrder = order;
 }
@@ -483,7 +486,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
               [[MagicStackModuleContainer alloc]
                   initWithContentView:multiRowContainer
                                  type:ContentSuggestionsModuleType::
-                                          kCompactedSetUpList];
+                                          kCompactedSetUpList
+                             delegate:self];
           [_magicStack
               insertArrangedSubview:setUpListCompactedModule
                             atIndex:[self indexForMagicStackModule:
@@ -492,7 +496,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         } else {
           MagicStackModuleContainer* setUpListModule =
               [[MagicStackModuleContainer alloc] initWithContentView:view
-                                                                type:type];
+                                                                type:type
+                                                            delegate:self];
           [_magicStack
               insertArrangedSubview:setUpListModule
                             atIndex:[self indexForMagicStackModule:type]];
@@ -583,7 +588,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         [[SetUpListItemView alloc] initWithData:allSetData];
     MagicStackModuleContainer* allSetModule = [[MagicStackModuleContainer alloc]
         initWithContentView:view
-                       type:ContentSuggestionsModuleType::kSetUpListAllSet];
+                       type:ContentSuggestionsModuleType::kSetUpListAllSet
+                   delegate:self];
     // Determine which module to swap out.
     [self replaceModuleAtIndex:
               [self indexForMagicStackModule:[self currentlyShownModule]]
@@ -699,8 +705,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass) {
-    if (self.traitCollection.horizontalSizeClass ==
-        UIUserInterfaceSizeClassRegular) {
+    if ([self shouldShowWiderMagicStackLayer]) {
       _magicStackScrollView.clipsToBounds = YES;
       _magicStackScrollViewWidthAnchor.constant = kMagicStackWideWidth;
     } else {
@@ -730,6 +735,20 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       titleStringForModule:[self currentlyShownModule]];
 }
 
+#pragma mark - MagicStackModuleContainer
+
+- (BOOL)doesMagicStackShowOnlyOneModule:(ContentSuggestionsModuleType)type {
+  // Return NO if Most Visited Module is asking while it is not in the Magic
+  // Stack.
+  if (type == ContentSuggestionsModuleType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    return NO;
+  }
+  ContentSuggestionsModuleType firstModuleType = (ContentSuggestionsModuleType)[
+      [_magicStackModuleOrder objectAtIndex:0] intValue];
+  return [_magicStackModuleOrder count] == 1 && firstModuleType == type;
+}
+
 #pragma mark - Private
 
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
@@ -756,7 +775,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   if (IsMagicStackEnabled()) {
     self.mostVisitedModuleContainer = [[MagicStackModuleContainer alloc]
         initWithContentView:self.mostVisitedStackView
-                       type:ContentSuggestionsModuleType::kMostVisited];
+                       type:ContentSuggestionsModuleType::kMostVisited
+                   delegate:self];
     if (ShouldPutMostVisitedSitesInMagicStack()) {
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
@@ -832,9 +852,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)createMagicStack {
   _magicStackScrollView = [[UIScrollView alloc] init];
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
-  _magicStackScrollView.clipsToBounds =
-      self.traitCollection.horizontalSizeClass ==
-      UIUserInterfaceSizeClassRegular;
+  _magicStackScrollView.clipsToBounds = [self shouldShowWiderMagicStackLayer];
   _magicStackScrollView.delegate = self;
   _magicStackScrollView.accessibilityIdentifier =
       kMagicStackScrollViewAccessibilityIdentifier;
@@ -858,7 +876,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       case ContentSuggestionsModuleType::kShortcuts: {
         self.shortcutsModuleContainer = [[MagicStackModuleContainer alloc]
             initWithContentView:self.shortcutsStackView
-                           type:type];
+                           type:type
+                       delegate:self];
         [_magicStack addArrangedSubview:self.shortcutsModuleContainer];
         break;
       }
@@ -872,7 +891,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         MagicStackModuleContainer* setUpListSyncModule =
             [[MagicStackModuleContainer alloc]
                 initWithContentView:_setUpListSyncItemView
-                               type:type];
+                               type:type
+                           delegate:self];
         [_magicStack addArrangedSubview:setUpListSyncModule];
         break;
       }
@@ -880,7 +900,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         MagicStackModuleContainer* setUpListDefaultBrowserModule =
             [[MagicStackModuleContainer alloc]
                 initWithContentView:_setUpListDefaultBrowserItemView
-                               type:type];
+                               type:type
+                           delegate:self];
         [_magicStack addArrangedSubview:setUpListDefaultBrowserModule];
         break;
       }
@@ -888,7 +909,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         MagicStackModuleContainer* setUpListAutofillModule =
             [[MagicStackModuleContainer alloc]
                 initWithContentView:_setUpListAutofillItemView
-                               type:type];
+                               type:type
+                           delegate:self];
         [_magicStack addArrangedSubview:setUpListAutofillModule];
         break;
       }
@@ -900,7 +922,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             [[MagicStackModuleContainer alloc]
                 initWithContentView:multiRowContainer
                                type:ContentSuggestionsModuleType::
-                                        kCompactedSetUpList];
+                                        kCompactedSetUpList
+                           delegate:self];
         [_magicStack addArrangedSubview:setUpListCompactedModule];
         break;
       }
@@ -916,8 +939,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       moduleWidthForHorizontalTraitCollection:self.traitCollection];
   // Magic Stack has a wider width for wider screens so that clipToBounds can be
   // YES with a peeking module still visible.
-  if (self.traitCollection.horizontalSizeClass ==
-      UIUserInterfaceSizeClassRegular) {
+  if ([self shouldShowWiderMagicStackLayer]) {
     width = kMagicStackWideWidth;
   }
   _magicStackScrollViewWidthAnchor =
@@ -928,6 +950,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
     _magicStackScrollViewWidthAnchor
   ]];
+}
+
+// YES if the Magic Stack should be using a wider layout.
+- (BOOL)shouldShowWiderMagicStackLayer {
+  return self.traitCollection.horizontalSizeClass ==
+         UIUserInterfaceSizeClassRegular;
 }
 
 // Returns the index position `moduleType` should be placed in the Magic Stack.
