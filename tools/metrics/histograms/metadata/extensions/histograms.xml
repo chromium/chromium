@@ -956,6 +956,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.DeprecatedDisableReasonsObserved"
+    enum="ExtensionDisableReason" expires_after="2024-06-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Emitted each time deprecated disable reason(s) are observed for an extension
+    when extension metrics are being collected (see GetDisableReasons in
+    //c/b/m/extension_metrics_provider.cc). The value recorded is a bitmask with
+    a bit set in the position of each deprecated disable reason. Most of the
+    time there will only be one bit set and should correspond to the enum value.
+    It is possible that there are multiple bits set, however, in which case
+    those corresponding values will show up as missing buckets in the UMA
+    dashboard.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.DevTools.UserIsInDeveloperMode"
     enum="InDeveloperMode" expires_after="2023-07-02">
   <owner>ghazale@chromium.org</owner>

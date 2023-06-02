@@ -33891,6 +33891,8 @@ Called by update_document_policy_enum.py.-->
   <int value="262144" label="DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE"/>
   <int value="524288" label="DISABLE_REINSTALL"/>
   <int value="1048576" label="DISABLE_NOT_ALLOWLISTED"/>
+  <int value="2097152" label="DISABLE_NOT_ASH_KEEPLISTED"/>
+  <int value="4194304" label="DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY"/>
 </enum>
 
 <enum name="ExtensionEvents">
