@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -416,6 +417,37 @@ TEST(PartitionAllocSupportTest,
   EXPECT_EQ(group, "Control");
 #endif
 }
+
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+TEST(PartitionAllocSupportTest,
+     ProposeSyntheticFinchTrials_MemoryTaggingDogfood) {
+  {
+    test::ScopedFeatureList scope;
+    scope.InitWithFeatures({}, {features::kPartitionAllocMemoryTagging});
+
+    auto trials = ProposeSyntheticFinchTrials();
+
+    auto group_iter = trials.find("MemoryTaggingDogfood");
+    EXPECT_EQ(group_iter, trials.end());
+  }
+
+  {
+    test::ScopedFeatureList scope;
+    scope.InitWithFeatures({features::kPartitionAllocMemoryTagging}, {});
+
+    auto trials = ProposeSyntheticFinchTrials();
+
+    std::string expectation =
+        partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
+                .has_mte()
+            ? "Enabled"
+            : "Disabled";
+    auto group_iter = trials.find("MemoryTaggingDogfood");
+    EXPECT_NE(group_iter, trials.end());
+    EXPECT_EQ(group_iter->second, expectation);
+  }
+}
+#endif
 
 }  // namespace allocator
 }  // namespace base

@@ -424,6 +424,17 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Control");
 #endif
 
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocMemoryTagging)) {
+    if (base::CPU::GetInstanceNoAllocation().has_mte()) {
+      trials.emplace("MemoryTaggingDogfood", "Enabled");
+    } else {
+      trials.emplace("MemoryTaggingDogfood", "Disabled");
+    }
+  }
+#endif
+
   return trials;
 }
 
@@ -893,6 +904,12 @@ void PartitionAllocSupport::ReconfigureForTests() {
 // static
 bool PartitionAllocSupport::ShouldEnableMemoryTagging(
     const std::string& process_type) {
+  // Check kPartitionAllocMemoryTagging first so the Feature is activated even
+  // when mte bootloader flag is disabled.
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocMemoryTagging)) {
+    return false;
+  }
   if (!base::CPU::GetInstanceNoAllocation().has_mte()) {
     return false;
   }
@@ -900,10 +917,6 @@ bool PartitionAllocSupport::ShouldEnableMemoryTagging(
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kKillPartitionAllocMemoryTagging)) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocMemoryTagging)) {
     return false;
   }
   switch (base::features::kMemoryTaggingEnabledProcessesParam.Get()) {
