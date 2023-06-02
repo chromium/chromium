@@ -12,9 +12,11 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/container_stuck.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "ui/base/pointer/pointer_device.h"
 
@@ -89,6 +91,24 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual int GetHorizontalViewportSegments() const = 0;
   virtual int GetVerticalViewportSegments() const = 0;
   virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
+  // For evaluating state(stuck: left), state(stuck: right)
+  virtual ContainerStuckPhysical StuckHorizontal() const {
+    return ContainerStuckPhysical::kNo;
+  }
+  // For evaluating state(stuck: top), state(stuck: bottom)
+  virtual ContainerStuckPhysical StuckVertical() const {
+    return ContainerStuckPhysical::kNo;
+  }
+  // For evaluating state(stuck: inset-inline-start),
+  // state(stuck: inset-inline-end)
+  virtual ContainerStuckLogical StuckInline() const {
+    return ContainerStuckLogical::kNo;
+  }
+  // For evaluating state(stuck: inset-block-start),
+  // state(stuck: inset-block-end)
+  virtual ContainerStuckLogical StuckBlock() const {
+    return ContainerStuckLogical::kNo;
+  }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }

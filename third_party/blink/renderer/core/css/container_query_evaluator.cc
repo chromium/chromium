@@ -101,7 +101,8 @@ Element* CachedContainer(Element* starting_element,
 
 ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      container.GetDocument(), container, absl::nullopt, absl::nullopt);
+      container.GetDocument(), container, absl::nullopt, absl::nullopt,
+      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -267,6 +268,23 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
   return change;
 }
 
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::StickyContainerChanged(
+    ContainerStuckPhysical stuck_horizontal,
+    ContainerStuckPhysical stuck_vertical) {
+  if (stuck_horizontal_ == stuck_horizontal &&
+      stuck_vertical_ == stuck_vertical) {
+    return Change::kNone;
+  }
+
+  UpdateContainerStuck(stuck_horizontal, stuck_vertical);
+  Change change = ComputeStickyChange();
+  if (change != Change::kNone) {
+    ClearResults(change, kStickyContainer);
+  }
+
+  return change;
+}
+
 ContainerQueryEvaluator::Change
 ContainerQueryEvaluator::StyleContainerChanged() {
   if (!depends_on_style_) {
@@ -295,8 +313,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   absl::optional<double> width;
   absl::optional<double> height;
 
-  Element* container =
-      media_query_evaluator_->GetMediaValues().ContainerElement();
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
 
   // An axis is "supported" only when it appears in the computed value of
   // 'container-type', and when containment is actually applied for that axis.
@@ -316,7 +334,24 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   }
 
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      container->GetDocument(), *container, width, height);
+      container->GetDocument(), *container, width, height,
+      existing_values.StuckHorizontal(), existing_values.StuckVertical());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
+void ContainerQueryEvaluator::UpdateContainerStuck(
+    ContainerStuckPhysical stuck_horizontal,
+    ContainerStuckPhysical stuck_vertical) {
+  stuck_horizontal_ = stuck_horizontal;
+  stuck_vertical_ = stuck_vertical;
+
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
+
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      container->GetDocument(), *container, existing_values.Width(),
+      existing_values.Height(), stuck_horizontal, stuck_vertical);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -340,6 +375,8 @@ void ContainerQueryEvaluator::ClearResults(Change change,
     if (pair.value.change <= change &&
         ((container_type == kSizeContainer &&
           pair.key->Selector().SelectsSizeContainers()) ||
+         (container_type == kStickyContainer &&
+          pair.key->Selector().SelectsStickyContainers()) ||
          (container_type == kStyleContainer &&
           pair.key->Selector().SelectsStyleContainers()))) {
       continue;
@@ -390,6 +427,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStyleChange()
   return change;
 }
 
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStickyChange()
+    const {
+  Change change = Change::kNone;
+
+  for (const auto& result : results_) {
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsStickyContainers()) {
+      continue;
+    }
+    if (Eval(query).value == result.value.value) {
+      continue;
+    }
+    change = std::max(result.value.change, change);
+  }
+
+  return change;
+}
+
 void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
     StyleRecalcChange change) {
   CHECK(media_query_evaluator_);
@@ -410,7 +465,8 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
   Element* container = existing_values.ContainerElement();
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
-      existing_values.Height());
+      existing_values.Height(), existing_values.StuckHorizontal(),
+      existing_values.StuckVertical());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }

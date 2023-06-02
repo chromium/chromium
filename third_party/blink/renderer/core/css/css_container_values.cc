@@ -13,12 +13,16 @@ namespace blink {
 CSSContainerValues::CSSContainerValues(Document& document,
                                        Element& container,
                                        absl::optional<double> width,
-                                       absl::optional<double> height)
+                                       absl::optional<double> height,
+                                       ContainerStuckPhysical stuck_horizontal,
+                                       ContainerStuckPhysical stuck_vertical)
     : MediaValuesDynamic(document.GetFrame()),
       element_(&container),
       width_(width),
       height_(height),
-      writing_mode_(container.ComputedStyleRef().GetWritingMode()),
+      writing_direction_(container.ComputedStyleRef().GetWritingDirection()),
+      stuck_horizontal_(stuck_horizontal),
+      stuck_vertical_(stuck_vertical),
       font_sizes_(CSSToLengthConversionData::FontSizes(
           container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),
@@ -79,6 +83,50 @@ double CSSContainerValues::ContainerWidth() const {
 
 double CSSContainerValues::ContainerHeight() const {
   return container_sizes_.Height().value_or(SmallViewportHeight());
+}
+
+namespace {
+
+// Converts from left/right/top/bottom to start/end as if the writing mode and
+// direction was horizontal-tb and ltr.
+ContainerStuckLogical PhysicalToLogicalLtrHorizontalTb(
+    ContainerStuckPhysical physical) {
+  switch (physical) {
+    case ContainerStuckPhysical::kNo:
+      return ContainerStuckLogical::kNo;
+    case ContainerStuckPhysical::kLeft:
+    case ContainerStuckPhysical::kTop:
+      return ContainerStuckLogical::kStart;
+    case ContainerStuckPhysical::kRight:
+    case ContainerStuckPhysical::kBottom:
+      return ContainerStuckLogical::kEnd;
+  }
+}
+
+}  // namespace
+
+ContainerStuckLogical CSSContainerValues::StuckInline() const {
+  // TODO(crbug.com/1445189): The WritingDirection should be taken from the
+  // container's containing block, not the container. Otherwise the inset
+  // properties on the sticky positioned will not match the same inset features
+  // in container queries when writing-mode or direction changes on the sticky
+  // positioned itself.
+  ContainerStuckPhysical physical =
+      writing_direction_.IsHorizontal() ? StuckHorizontal() : StuckVertical();
+  ContainerStuckLogical logical = PhysicalToLogicalLtrHorizontalTb(physical);
+  return writing_direction_.IsRtl() ? Flip(logical) : logical;
+}
+
+ContainerStuckLogical CSSContainerValues::StuckBlock() const {
+  // TODO(crbug.com/1445189): The WritingDirection should be taken from the
+  // container's containing block, not the container. Otherwise the inset
+  // properties on the sticky positioned will not match the same inset features
+  // in container queries when writing-mode or direction changes on the sticky
+  // positioned itself.
+  ContainerStuckPhysical physical =
+      writing_direction_.IsHorizontal() ? StuckVertical() : StuckHorizontal();
+  ContainerStuckLogical logical = PhysicalToLogicalLtrHorizontalTb(physical);
+  return writing_direction_.IsFlippedBlocks() ? Flip(logical) : logical;
 }
 
 }  // namespace blink

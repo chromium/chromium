@@ -119,6 +119,17 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     return evaluator->SizeContainerChanged(size, axes);
   }
 
+  Change StickyContainerChanged(ContainerQueryEvaluator* evaluator,
+                                ContainerStuckPhysical stuck_horizontal,
+                                ContainerStuckPhysical stuck_vertical,
+                                unsigned container_type) {
+    ComputedStyleBuilder builder(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
+    builder.SetContainerType(container_type);
+    ContainerElement().SetComputedStyle(builder.TakeStyle());
+    return evaluator->StickyContainerChanged(stuck_horizontal, stuck_vertical);
+  }
+
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,
                   const ContainerQuery& query,
                   Change change = Change::kNearestContainer) {
@@ -156,6 +167,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
   const unsigned type_normal = kContainerTypeNormal;
   const unsigned type_size = kContainerTypeSize;
   const unsigned type_inline_size = kContainerTypeInlineSize;
+  const unsigned type_sticky = kContainerTypeSticky;
 };
 
 TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
@@ -345,6 +357,46 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   container_element.SetComputedStyle(style);
   EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
   EXPECT_EQ(0u, GetResults(evaluator).size());
+}
+
+TEST_F(ContainerQueryEvaluatorTest, StickyContainerChanged) {
+  ContainerQuery* container_query_left = ParseContainer("state(stuck: left)");
+  ContainerQuery* container_query_bottom =
+      ParseContainer("state(stuck: bottom)");
+  ASSERT_TRUE(container_query_left);
+  ASSERT_TRUE(container_query_bottom);
+
+  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_sticky);
+  StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                         ContainerStuckPhysical::kNo, type_sticky);
+
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
+  EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_bottom));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // Calling StickyContainerChanged the values we already have should not
+  // produce a Change.
+  EXPECT_EQ(Change::kNone,
+            StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                                   ContainerStuckPhysical::kNo, type_sticky));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // EvalAndAdding the same queries again is allowed.
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
+  EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_bottom));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // Set vertically stuck to bottom.
+  EXPECT_EQ(
+      Change::kNearestContainer,
+      StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                             ContainerStuckPhysical::kBottom, type_sticky));
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
+  // Now both left and bottom queries should return true.
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_bottom));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 }
 
 TEST_F(ContainerQueryEvaluatorTest, ClearResults) {

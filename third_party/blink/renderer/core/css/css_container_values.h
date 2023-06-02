@@ -11,12 +11,14 @@
 
 namespace blink {
 
-class CSSContainerValues : public MediaValuesDynamic {
+class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
  public:
   explicit CSSContainerValues(Document& document,
                               Element& container,
                               absl::optional<double> width,
-                              absl::optional<double> height);
+                              absl::optional<double> height,
+                              ContainerStuckPhysical stuck_horizontal,
+                              ContainerStuckPhysical stuck_vertical);
 
   // Returns absl::nullopt if queries on the relevant axis is not
   // supported.
@@ -41,7 +43,17 @@ class CSSContainerValues : public MediaValuesDynamic {
   Element* ContainerElement() const override { return element_; }
   double ContainerWidth() const override;
   double ContainerHeight() const override;
-  WritingMode GetWritingMode() const override { return writing_mode_; }
+  WritingMode GetWritingMode() const override {
+    return writing_direction_.GetWritingMode();
+  }
+  ContainerStuckPhysical StuckHorizontal() const override {
+    return stuck_horizontal_;
+  }
+  ContainerStuckPhysical StuckVertical() const override {
+    return stuck_vertical_;
+  }
+  ContainerStuckLogical StuckInline() const override;
+  ContainerStuckLogical StuckBlock() const override;
 
  private:
   // The current computed style for the container.
@@ -51,7 +63,11 @@ class CSSContainerValues : public MediaValuesDynamic {
   // Container height in CSS pixels.
   absl::optional<double> height_;
   // The writing-mode of the container.
-  WritingMode writing_mode_;
+  WritingDirectionMode writing_direction_;
+  // Whether a sticky container is horizontally stuck and to which edge.
+  ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
+  // Whether a sticky container is vertically stuck and against which edge.
+  ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
   // LineHeightSize of the container element.

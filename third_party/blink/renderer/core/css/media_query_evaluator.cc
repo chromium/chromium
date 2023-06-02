@@ -1437,8 +1437,35 @@ static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
 static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaQueryOperator op,
                                   const MediaValues& media_values) {
-  // TODO(crbug.com/1445189): Implement matching.
-  return false;
+  if (!value.IsValid()) {
+    return media_values.StuckHorizontal() != ContainerStuckPhysical::kNo ||
+           media_values.StuckVertical() != ContainerStuckPhysical::kNo;
+  }
+
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return media_values.StuckHorizontal() == ContainerStuckPhysical::kNo &&
+             media_values.StuckVertical() == ContainerStuckPhysical::kNo;
+    case CSSValueID::kTop:
+      return media_values.StuckVertical() == ContainerStuckPhysical::kTop;
+    case CSSValueID::kLeft:
+      return media_values.StuckHorizontal() == ContainerStuckPhysical::kLeft;
+    case CSSValueID::kBottom:
+      return media_values.StuckVertical() == ContainerStuckPhysical::kBottom;
+    case CSSValueID::kRight:
+      return media_values.StuckHorizontal() == ContainerStuckPhysical::kRight;
+    case CSSValueID::kInsetBlockStart:
+      return media_values.StuckBlock() == ContainerStuckLogical::kStart;
+    case CSSValueID::kInsetBlockEnd:
+      return media_values.StuckBlock() == ContainerStuckLogical::kEnd;
+    case CSSValueID::kInsetInlineStart:
+      return media_values.StuckInline() == ContainerStuckLogical::kStart;
+    case CSSValueID::kInsetInlineEnd:
+      return media_values.StuckInline() == ContainerStuckLogical::kEnd;
+    default:
+      NOTREACHED();
+      return false;
+  }
 }
 
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
