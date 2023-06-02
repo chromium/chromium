@@ -247,7 +247,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleTabJpeg) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleTabPng) {
+// https://crbug.com/1450933 Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
+#else
+#define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_png"))
       << message_;
 }
