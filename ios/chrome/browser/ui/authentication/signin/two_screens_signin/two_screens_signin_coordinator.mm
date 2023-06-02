@@ -193,6 +193,8 @@
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
+  __weak __typeof(_navigationController) weakNavigationController =
+      _navigationController;
   ProceduralBlock finishCompletion = ^() {
     [weakSelf finishWithResult:SigninCoordinatorResultInterrupted identity:nil];
     if (completion) {
@@ -205,6 +207,9 @@
       [_childCoordinator
           interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
                    completion:^{
+                     [weakNavigationController.presentingViewController
+                         dismissViewControllerAnimated:NO
+                                            completion:nil];
                      finishCompletion();
                    }];
       return;
@@ -221,17 +226,17 @@
 
   // Interrupt the child coordinator UI first before dismissing the new
   // sign-in navigation controller.
-  __weak __typeof(_navigationController) weakNavigationController =
-      _navigationController;
   [_childCoordinator
       interruptWithAction:
           SigninCoordinatorInterruptActionDismissWithoutAnimation
                completion:^{
-                 if (weakNavigationController) {
-                   [weakNavigationController.presentingViewController
+                 UIViewController* presentingViewController =
+                     weakNavigationController.presentingViewController;
+                 if (presentingViewController) {
+                   [presentingViewController
                        dismissViewControllerAnimated:animated
                                           completion:finishCompletion];
-                 } else if (finishCompletion) {
+                 } else {
                    finishCompletion();
                  }
                }];
