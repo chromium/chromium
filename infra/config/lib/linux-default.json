@@ -1,6 +1,7 @@
 {
   "ci": {
     "Android WebView N (dbg)": "Ubuntu-22.04",
+    "Android WebView O (dbg)": "Ubuntu-22.04",
     "Cast Linux": "Ubuntu-22.04",
     "Cast Linux ARM64": "Ubuntu-22.04",
     "Cast Linux Debug": "Ubuntu-22.04",
