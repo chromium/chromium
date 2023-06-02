@@ -1994,6 +1994,11 @@ deps = {
     'condition': 'checkout_src_internal',
   },
 
+  'src/internal': {
+    'url': Var('chrome_git') + '/chrome/src-internal.git' + '@' + Var('src_internal_revision'),
+    'condition': 'checkout_src_internal',
+  },
+
   'src/ash/ambient/resources': {
     'packages': [
       {
