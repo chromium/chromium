@@ -173,6 +173,7 @@ export class XfCloudPanel extends XfBase {
     return html`<cr-action-menu>
       <div class="body">
         <div class="static progress" id="progress-preparing">
+          <files-spinner></files-spinner>
           ${str('DRIVE_PREPARING_TO_SYNC')}
         </div>
         <div id="progress-state">
@@ -319,8 +320,15 @@ function getCSS() {
     }
 
     #progress-preparing {
-      align-self: start;
+      flex-direction: row;
       padding-bottom: 20px;
+    }
+
+    #progress-preparing files-spinner {
+      height: 20px;
+      margin: 0;
+      margin-inline-end: 8px;
+      width: 20px;
     }
 
     progress::-webkit-progress-bar {
