@@ -288,11 +288,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
   int ScrollSize(ScrollbarOrientation) const override;
   gfx::PointF ScrollOffsetToPosition(
       const ScrollOffset& offset) const override {
-    return gfx::PointF(ScrollOrigin()) + offset;
+    return gfx::PointF(ScrollOriginInt()) + offset;
   }
   ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const override {
-    return ScrollOffset(position - gfx::PointF(ScrollOrigin()));
+    return ScrollOffset(position - gfx::PointF(ScrollOriginInt()));
   }
   gfx::Vector2d ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
@@ -335,7 +335,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void VisibleSizeChanged();
 
   // See renderer/core/layout/README.md for an explanation of scroll origin.
-  gfx::Point ScrollOrigin() const { return scroll_origin_; }
+  gfx::Point ScrollOriginInt() const { return scroll_origin_int_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
   void ScrollToAbsolutePosition(const gfx::PointF& position,
@@ -343,7 +343,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
                                     mojom::blink::ScrollBehavior::kInstant,
                                 mojom::blink::ScrollType scroll_type =
                                     mojom::blink::ScrollType::kProgrammatic) {
-    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
+    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOriginInt())),
                     scroll_type, scroll_behavior);
   }
 
@@ -758,14 +758,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // There are 6 possible combinations of writing mode and direction. Scroll
   // origin will be non-zero in the x or y axis if there is any reversed
   // direction or writing-mode. The combinations are:
-  // writing-mode / direction     scrollOrigin.x() set    scrollOrigin.y() set
+  // writing-mode / direction     ScrollOrigin.x() set    ScrollOrigin.y() set
   // horizontal-tb / ltr          NO                      NO
   // horizontal-tb / rtl          YES                     NO
   // vertical-lr / ltr            NO                      NO
   // vertical-lr / rtl            NO                      YES
   // vertical-rl / ltr            YES                     NO
   // vertical-rl / rtl            YES                     YES
-  gfx::Point scroll_origin_;
+  gfx::Point scroll_origin_int_;
 
   // The width/height of our scrolled area.
   // This is OverflowModel's layout overflow translated to physical
