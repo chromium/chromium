@@ -11,7 +11,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
-#include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 #include "ui/gl/direct_composition_support.h"
@@ -31,15 +30,7 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     VideoDecoderTraits& traits) {
   if (traits.gpu_workarounds->disable_d3d11_video_decoder) {
-    if (traits.gpu_workarounds->disable_dxva_video_decoder ||
-        !base::FeatureList::IsEnabled(kDXVAVideoDecoding)) {
-      return nullptr;
-    }
-    return VdaVideoDecoder::Create(
-        traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-        *traits.target_color_space, traits.gpu_preferences,
-        *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-        VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
+    return nullptr;
   }
   // Report that HDR is enabled if any display has HDR enabled.
   bool hdr_enabled = false;
@@ -74,8 +65,6 @@ GetPlatformSupportedVideoDecoderConfigs(
   if (!gpu_workarounds.disable_d3d11_video_decoder) {
     supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
         gpu_preferences, gpu_workarounds, GetD3D11DeviceCallback());
-  } else if (!gpu_workarounds.disable_dxva_video_decoder) {
-    supported_configs = std::move(get_vda_configs).Run();
   }
   return supported_configs;
 }
@@ -90,8 +79,7 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  return gpu_workarounds.disable_d3d11_video_decoder ? VideoDecoderType::kVda
-                                                     : VideoDecoderType::kD3D11;
+  return VideoDecoderType::kD3D11;
 }
 
 // There is no CdmFactory on windows, so just stub it out.

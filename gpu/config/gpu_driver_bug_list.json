@@ -3143,49 +3143,6 @@
       ]
     },
     {
-      "id": 336,
-      "cr_bugs": [625785],
-      "description": "DXVA video decoder crashes on some AMD GPUs.",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x15d8", "0x15dd"],
-      "exceptions": [
-        {
-          "vendor_id": "0x1002",
-          "driver_version": {
-            "op": "between",
-            "value": "26.20.11030.2",
-            "value2": "26.20.11999.99999"
-          }
-        },
-        {
-          "driver_version": {
-            "op": "between",
-            "value": "26.20.12020.15",
-            "value2": "26.20.12999.99999"
-          }
-        },
-        {
-          "driver_version": {
-            "op": "between",
-            "value": "26.20.13001.27002",
-            "value2": "26.20.13999.99999"
-          }
-        },
-        {
-          "driver_version": {
-            "op": ">=",
-            "value": "26.20.14001.7001"
-          }
-        }
-      ],
-      "features": [
-        "disable_dxva_video_decoder"
-      ]
-    },
-    {
       "id": 337,
       "description": "Disable hardware MFT H.264 encoder on older NVIDIA drivers",
       "cr_bugs": [1058583, 1263058],
@@ -3643,18 +3600,6 @@
       ]
     },
     {
-      "id": 374,
-      "cr_bugs": [1087422],
-      "description": "VP9 resilient mode causes corruptions with AMD VCN HW decoders, using DXVA",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "disallow_vp9_resilient_dxva_decoding"
-      ]
-    },
-    {
       "id": 376,
       "cr_bugs": [1219028],
       "description": "Don't use Media Foundation hardware security on Turing-architecture NVIDIA GPUs.",
@@ -3790,7 +3735,7 @@
     },
     {
       "id": 387,
-      "description": "DXVAVideoDecodeAccelerator doesn't support a set of legacy AMD Gpus",
+      "description": "Windows hardware decoding doesn't support a set of legacy AMD GPUs",
       "cr_bugs": [822644, 1187900],
       "os": {
         "type": "win"
@@ -3841,7 +3786,7 @@
     },
     {
       "id": 388,
-      "description": "DXVAVideoDecodeAccelerator doesn't support a set of legacy Intel Gpus",
+      "description": "Windows hardware decoding doesn't support a set of legacy Intel GPUs",
       "cr_bugs": [822644, 1187900],
       "os": {
         "type": "win"

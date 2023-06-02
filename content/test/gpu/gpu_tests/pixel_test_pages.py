@@ -159,10 +159,6 @@ class PixelTestPages():
   @staticmethod
   def DefaultPages(base_name: str) -> List[PixelTestPage]:
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
-    browser_args_DXVA = [
-        cba.DISABLE_D3D11_VIDEO_DECODER,
-        cba.ENABLE_DXVA_VIDEO_DECODER,
-    ]
     experimental_hdr_args = [cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES]
 
     return [
@@ -230,11 +226,6 @@ class PixelTestPages():
             # tends to produce images with all colors shifted by a
             # small amount.
             matching_algorithm=GENERAL_MP4_ALGO),
-        # Surprisingly stable, does not appear to require inexact matching.
-        PixelTestPage('pixel_video_mp4.html?width=240&height=135&use_timer=1',
-                      base_name + '_Video_MP4_DXVA',
-                      browser_args=browser_args_DXVA,
-                      test_rect=[0, 0, 240, 135]),
         PixelTestPage(
             'pixel_video_mp4_four_colors_aspect_4x3.html'
             '?width=240&height=135&use_timer=1',
@@ -280,15 +271,6 @@ class PixelTestPages():
                           max_different_pixels=114000,
                           pixel_delta_threshold=30,
                           edge_threshold=20,
-                          ignored_border_thickness=1)),
-        PixelTestPage('pixel_video_vp9.html?width=240&height=135&use_timer=1',
-                      base_name + '_Video_VP9_DXVA',
-                      browser_args=browser_args_DXVA,
-                      test_rect=[0, 0, 240, 135],
-                      matching_algorithm=algo.SobelMatchingAlgorithm(
-                          max_different_pixels=31100,
-                          pixel_delta_threshold=30,
-                          edge_threshold=250,
                           ignored_border_thickness=1)),
         PixelTestPage(
             'pixel_video_media_stream_incompatible_stride.html',
@@ -974,10 +956,6 @@ class PixelTestPages():
     browser_args_BGRA = browser_args + [
         '--direct-composition-video-swap-chain-format=bgra'
     ]
-    browser_args_DXVA = browser_args + [
-        cba.DISABLE_D3D11_VIDEO_DECODER,
-        cba.ENABLE_DXVA_VIDEO_DECODER,
-    ]
     browser_args_vp_scaling = [
         cba.ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS,
         cba.ENABLE_DIRECT_COMPOSITION_VP_SCALING,
@@ -1012,11 +990,6 @@ class PixelTestPages():
                       base_name + '_DirectComposition_Video_MP4',
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args,
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_mp4.html?width=240&height=135',
-                      base_name + '_DirectComposition_Video_MP4_DXVA',
-                      browser_args=browser_args_DXVA,
-                      test_rect=[0, 0, 240, 135],
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage('pixel_video_mp4.html?width=960&height=540',
                       base_name + '_DirectComposition_Video_MP4_Fullsize',
@@ -1082,11 +1055,6 @@ class PixelTestPages():
                       test_rect=[0, 0, 240, 135],
                       browser_args=browser_args,
                       matching_algorithm=very_permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_vp9.html?width=240&height=135',
-                      base_name + '_DirectComposition_Video_VP9_DXVA',
-                      browser_args=browser_args_DXVA,
-                      test_rect=[0, 0, 240, 135],
-                      matching_algorithm=very_permissive_dc_sobel_algorithm),
         PixelTestPage(
             'pixel_video_vp9.html?width=960&height=540',
             base_name + '_DirectComposition_Video_VP9_Fullsize',
@@ -1136,11 +1104,6 @@ class PixelTestPages():
                       base_name + '_DirectComposition_Underlay',
                       test_rect=[0, 0, 240, 136],
                       browser_args=browser_args,
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage('pixel_video_underlay.html?width=240&height=136&swaps=12',
-                      base_name + '_DirectComposition_Underlay_DXVA',
-                      test_rect=[0, 0, 240, 136],
-                      browser_args=browser_args_DXVA,
                       matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage('pixel_video_underlay.html?width=960&height=540&swaps=12',
                       base_name + '_DirectComposition_Underlay_Fullsize',

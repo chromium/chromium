@@ -86,7 +86,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/win/mf_initializer.h"
-#include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
 
@@ -155,9 +154,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif
 #endif  // BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_WIN)
-    if (media::PreSandboxMediaFoundationInitialization()) {
-      media::DXVAVideoDecodeAccelerator::PreSandboxInitialization();
-    }
+    media::PreSandboxMediaFoundationInitialization();
 #endif
 
 #if BUILDFLAG(IS_MAC)

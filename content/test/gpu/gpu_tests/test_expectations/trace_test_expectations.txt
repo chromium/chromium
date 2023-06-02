@@ -107,14 +107,12 @@ crbug.com/1009860 [ fuchsia ] SwapChainTraceTest_* [ Skip ]
 # Playing videos not supported in Fuchsia emulators.
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_BackdropFilter [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4 [ Skip ]
-crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_DXVA [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_FourColors_Rot_180 [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_FourColors_Rot_270 [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_FourColors_Rot_90 [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_MP4_Rounded_Corner [ Skip ]
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_VP9 [ Skip ]
-crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_VP9_DXVA [ Skip ]
 
 # Skip unaccelerated canvas test since we don't use swap chains without GPU compositing.
 crbug.com/1009860 [ win10 ] SwapChainTraceTest_CanvasUnacceleratedLowLatency2D [ Skip ]

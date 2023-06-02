@@ -162,16 +162,6 @@ crbug.com/575305 [ android android-webview-instrumentation ] Pixel_WebGLSadCanva
 # context loss which results in hardware decoder loss.
 crbug.com/580386 [ android ] Pixel_Video_Context_Loss_MP4 [ Skip ]
 
-# Skip on platforms where DXVA vs D3D11 decoder doesn't matter.
-crbug.com/927901 [ linux ] Pixel_Video_MP4_DXVA [ Skip ]
-crbug.com/927901 [ android ] Pixel_Video_MP4_DXVA [ Skip ]
-crbug.com/927901 [ mac ] Pixel_Video_MP4_DXVA [ Skip ]
-crbug.com/927901 [ chromeos ] Pixel_Video_MP4_DXVA [ Skip ]
-crbug.com/927901 [ linux ] Pixel_Video_VP9_DXVA [ Skip ]
-crbug.com/927901 [ android ] Pixel_Video_VP9_DXVA [ Skip ]
-crbug.com/927901 [ mac ] Pixel_Video_VP9_DXVA [ Skip ]
-crbug.com/927901 [ chromeos ] Pixel_Video_VP9_DXVA [ Skip ]
-
 # Skip dual gpu switching tests on Mac Nvidia because this
 # configuration has been forced to use only the low-power GPU due to
 # graphics driver bugs.

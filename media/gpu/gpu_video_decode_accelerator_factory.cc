@@ -16,10 +16,6 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
-#endif
 #if BUILDFLAG(IS_APPLE)
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #endif
@@ -52,11 +48,7 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
   // TODO(posciak,henryhsu): improve this so that we choose a superset of
   // resolutions and other supported profile parameters.
   VideoDecodeAccelerator::Capabilities capabilities;
-#if BUILDFLAG(IS_WIN)
-  capabilities.supported_profiles =
-      DXVAVideoDecodeAccelerator::GetSupportedProfiles(gpu_preferences,
-                                                       workarounds);
-#elif BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #if BUILDFLAG(USE_VAAPI)
   capabilities.supported_profiles =
       VaapiVideoDecodeAccelerator::GetSupportedProfiles();
@@ -137,10 +129,6 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
                                            const gpu::GpuPreferences&,
                                            MediaLog* media_log) const;
   const CreateVDAFp create_vda_fps[] = {
-#if BUILDFLAG(IS_WIN)
-    &GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA,
-#endif
-
   // Usually only one of USE_VAAPI or USE_V4L2_CODEC is defined on ChromeOS,
   // except for Chromeboxes with companion video acceleration chips, which have
   // both. In those cases prefer the VA creation function.
@@ -167,21 +155,6 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
 
   return nullptr;
 }
-
-#if BUILDFLAG(IS_WIN)
-std::unique_ptr<VideoDecodeAccelerator>
-GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA(
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    const gpu::GpuPreferences& gpu_preferences,
-    MediaLog* media_log) const {
-  std::unique_ptr<VideoDecodeAccelerator> decoder;
-  DVLOG(0) << "Initializing DXVA HW decoder for windows.";
-  decoder.reset(new DXVAVideoDecodeAccelerator(
-      gl_client_.get_context, gl_client_.make_context_current,
-      gl_client_.bind_image, workarounds, gpu_preferences, media_log));
-  return decoder;
-}
-#endif
 
 #if BUILDFLAG(USE_VAAPI)
 std::unique_ptr<VideoDecodeAccelerator>

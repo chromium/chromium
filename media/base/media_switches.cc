@@ -1202,11 +1202,6 @@ BASE_FEATURE(kD3D11Vp9kSVCHWDecoding,
              "D3D11Vp9kSVCHWDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the DXVA video decoder is enabled on Windows.
-BASE_FEATURE(kDXVAVideoDecoding,
-             "DXVAVideoDecoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The Media Foundation Rendering Strategy determines which presentation mode
 // Media Foundation Renderer should use for presenting clear content. This
 // strategy has no impact for protected content, which must always use Direct

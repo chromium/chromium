@@ -22,12 +22,6 @@ class GLES2DecoderImpl;
 class GLES2DecoderPassthroughImpl;
 }  // namespace gpu::gles2
 
-namespace media {
-class GLImageEGLStream;
-class GLImagePbuffer;
-class DXVAVideoDecodeAccelerator;
-}
-
 namespace gl {
 
 class GLImageD3D;
@@ -58,15 +52,12 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // Safe downcasts. All functions return nullptr if |image| does not exist or
   // does not have the specified type.
   static GLImageD3D* ToGLImageD3D(GLImage* image);
-  static media::GLImageEGLStream* ToGLImageEGLStream(GLImage* image);
-  static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
 
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
   friend class gpu::GLTexturePassthroughD3DImageRepresentation;
   friend class gpu::gles2::GLES2DecoderImpl;
   friend class gpu::gles2::GLES2DecoderPassthroughImpl;
-  friend class media::DXVAVideoDecodeAccelerator;
   FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTestSwapChain,
                            CreateAndPresentSwapChain);
 

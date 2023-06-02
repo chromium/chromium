@@ -379,7 +379,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationClearPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaFoundationFrameServerMode);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWasapiRawAudioCapture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D11Vp9kSVCHWDecoding);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kDXVAVideoDecoding);
 
 // Strategy affecting how Media Foundation Renderer determines its rendering
 // mode when used with clear video media. This strategy does not impact

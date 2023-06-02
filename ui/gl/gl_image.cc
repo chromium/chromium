@@ -22,22 +22,6 @@ GLImageD3D* GLImage::ToGLImageD3D(GLImage* image) {
   return reinterpret_cast<GLImageD3D*>(image);
 }
 
-// static
-// static
-media::GLImageEGLStream* GLImage::ToGLImageEGLStream(GLImage* image) {
-  if (!image || image->GetType() != Type::EGL_STREAM) {
-    return nullptr;
-  }
-  return reinterpret_cast<media::GLImageEGLStream*>(image);
-}
-
-// static
-media::GLImagePbuffer* GLImage::ToGLImagePbuffer(GLImage* image) {
-  if (!image || image->GetType() != Type::PBUFFER)
-    return nullptr;
-  return reinterpret_cast<media::GLImagePbuffer*>(image);
-}
-
 GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }
