@@ -483,7 +483,9 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
       callback_delay_);
 }
 
-void FakeCrosHealthd::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
+void FakeCrosHealthd::RunMemoryRoutine(
+    absl::optional<uint32_t> max_testing_mem_kib,
+    RunMemoryRoutineCallback callback) {
   actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kMemory;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

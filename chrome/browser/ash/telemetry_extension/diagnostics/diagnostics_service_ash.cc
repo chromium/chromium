@@ -306,13 +306,16 @@ void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
 
 void DiagnosticsServiceAsh::RunMemoryRoutine(
     RunMemoryRoutineCallback callback) {
-  GetService()->RunMemoryRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
+  GetService()->RunMemoryRoutine(
+      absl::nullopt,
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::RunMemoryRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
 }
 
 void DiagnosticsServiceAsh::RunNvmeSelfTestRoutine(

@@ -471,9 +471,11 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory: {
-      diagnostics_service->RunMemoryRoutine(base::BindOnce(
-          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
+      diagnostics_service->RunMemoryRoutine(
+          absl::nullopt,
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity: {
