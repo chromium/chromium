@@ -1748,7 +1748,8 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-      HasPendingCommitForCrossDocumentNavigation()) {
+      speculative_render_frame_host_
+          ->HasPendingCommitForCrossDocumentNavigation()) {
     // With navigation queueing, pending commit navigations in speculative
     // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
     // renderer process is gone/will be gone soon.

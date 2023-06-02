@@ -4854,7 +4854,8 @@ void RenderFrameHostImpl::ResetOwnedNavigationRequests(
     // yet.
     DCHECK(same_document_navigation_requests_.empty());
 
-    if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
+        HasPendingCommitForCrossDocumentNavigation()) {
       // With navigation queueing, pending commit navigations shouldn't get
       // canceled, unless the FrameTreeNode or renderer process
       // is gone/will be gone soon.
