@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/element_fragment_anchor.h"
 
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -98,6 +99,7 @@ ElementFragmentAnchor::ElementFragmentAnchor(Node& anchor_node,
 }
 
 bool ElementFragmentAnchor::Invoke() {
+  TRACE_EVENT("blink", "ElementFragmentAnchor::Invoke");
   if (!frame_ || !anchor_node_)
     return false;
 

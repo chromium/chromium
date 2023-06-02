@@ -321,12 +321,17 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     return;
   }
 
-  TRACE_EVENT2("blink", "ScrollableArea::SetScrollOffset", "cur_x",
-               GetScrollOffset().x(), "cur_y", GetScrollOffset().y());
-  TRACE_EVENT_INSTANT1("blink", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
+  TRACE_EVENT("blink", "ScrollableArea::SetScrollOffset", "offset",
+              offset.ToString());
+  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+                       "SetScrollOffset", TRACE_EVENT_SCOPE_THREAD,
+                       "current_offset", GetScrollOffset().ToString());
+  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+                       "SetScrollOffset", TRACE_EVENT_SCOPE_THREAD, "type",
                        scroll_type);
-  TRACE_EVENT_INSTANT1("blink", "Behavior", TRACE_EVENT_SCOPE_THREAD,
-                       "behavior", behavior);
+  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
+                       "SetScrollOffset", TRACE_EVENT_SCOPE_THREAD, "behavior",
+                       behavior);
 
   if (behavior == mojom::blink::ScrollBehavior::kAuto)
     behavior = ScrollBehaviorStyle();
