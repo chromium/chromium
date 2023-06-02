@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   // views::View:
   void AddedToWidget() override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* parent_window) override;
@@ -79,6 +80,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     return float_button_for_testing_.get();
   }
 
+  bool is_reversed_for_testing() const { return is_reversed_; }
+
  private:
   class MenuPreTargetHandler;
 
@@ -94,6 +97,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   raw_ptr<SplitButtonView> half_button_for_testing_ = nullptr;
   raw_ptr<MultitaskButton> full_button_for_testing_ = nullptr;
   raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;
+
+  // True if the menu buttons should be painted in reverse, when the `Alt` key
+  // is pressed. Toggled on every `Alt` press.
+  bool is_reversed_ = false;
 
   // The window which the buttons act on.
   raw_ptr<aura::Window, ExperimentalAsh> window_;

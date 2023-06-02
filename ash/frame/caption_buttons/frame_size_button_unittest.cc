@@ -741,6 +741,21 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
   GetEventGenerator()->ClickLeftButton();
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(gfx::Rect(400, 552), GetWidget()->GetWindowBoundsInScreen());
+
+  // Reverse the menu. Test that the left button still snaps to primary.
+  ShowMultitaskMenu();
+  PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
+  ASSERT_TRUE(GetMultitaskMenu()
+                  ->multitask_menu_view_for_testing()
+                  ->is_reversed_for_testing());
+  GetEventGenerator()->MoveMouseTo(GetMultitaskMenu()
+                                       ->multitask_menu_view_for_testing()
+                                       ->partial_button()
+                                       ->GetBoundsInScreen()
+                                       .left_center());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(gfx::Rect(266, 552), GetWidget()->GetWindowBoundsInScreen());
 }
 
 // Tests that if the display is in secondary layout, pressing the physically
@@ -997,6 +1012,45 @@ TEST_F(MultitaskMenuTest, MinimizeWhenMenuShown) {
   ASSERT_FALSE(window_state()->IsMinimized());
   EXPECT_TRUE(GetWidget()->GetNativeWindow()->IsVisible());
   EXPECT_FALSE(GetMultitaskMenu());
+}
+
+// Tests that the partial button is horizontally flipped when the `Alt` key is
+// pressed while the menu is shown.
+TEST_F(MultitaskMenuTest, ReversePartialButton) {
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  // Reverse the menu. Test that the left button snaps to 1/3.
+  ShowMultitaskMenu();
+  PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
+  ASSERT_TRUE(GetMultitaskMenu()
+                  ->multitask_menu_view_for_testing()
+                  ->is_reversed_for_testing());
+  GetEventGenerator()->MoveMouseTo(GetMultitaskMenu()
+                                       ->multitask_menu_view_for_testing()
+                                       ->partial_button()
+                                       ->GetBoundsInScreen()
+                                       .left_center());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(std::floor(work_area_bounds_in_screen.width() *
+                       chromeos::kOneThirdSnapRatio),
+            GetWidget()->GetWindowBoundsInScreen().width());
+
+  // Reverse the menu. Test that the right button snaps to 2/3.
+  ShowMultitaskMenu();
+  PressAndReleaseKey(ui::VKEY_MENU, ui::EF_ALT_DOWN);
+  ASSERT_TRUE(GetMultitaskMenu()
+                  ->multitask_menu_view_for_testing()
+                  ->is_reversed_for_testing());
+  LeftClickOn(GetMultitaskMenu()
+                  ->multitask_menu_view_for_testing()
+                  ->partial_button()
+                  ->GetRightBottomButton());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(std::ceil(work_area_bounds_in_screen.width() *
+                      chromeos::kTwoThirdSnapRatio),
+            GetWidget()->GetWindowBoundsInScreen().width());
 }
 
 }  // namespace ash

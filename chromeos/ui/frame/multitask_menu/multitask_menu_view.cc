@@ -250,6 +250,8 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
     float_button_for_testing_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button), message_id));
   }
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_MENU, ui::EF_ALT_DOWN));
 }
 
 MultitaskMenuView::~MultitaskMenuView() {
@@ -261,6 +263,21 @@ void MultitaskMenuView::AddedToWidget() {
   // the menu on any events outside.
   event_handler_ = std::make_unique<MenuPreTargetHandler>(
       GetWidget(), close_callback_, anchor_view_);
+}
+
+bool MultitaskMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  CHECK_EQ(ui::VKEY_MENU, accelerator.key_code());
+  is_reversed_ = !is_reversed_;
+  if (partial_button_) {
+    // Update the visual appearance of the split buttons. The callbacks will be
+    // updated in `PartialButtonPressed()`.
+    partial_button_->UpdateButtons(/*is_portrait_mode=*/
+                                   !chromeos::IsDisplayLayoutHorizontal(
+                                       display::Screen::GetScreen()
+                                           ->GetDisplayNearestWindow(window_)),
+                                   is_reversed_);
+  }
+  return true;
 }
 
 void MultitaskMenuView::OnWindowDestroying(aura::Window* window) {
@@ -303,8 +320,11 @@ void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
   SnapController::Get()->CommitSnap(
       window_, direction,
-      direction == SnapDirection::kPrimary ? kTwoThirdSnapRatio
-                                           : kOneThirdSnapRatio,
+      direction == SnapDirection::kPrimary
+          ? (is_reversed_ ? chromeos::kOneThirdSnapRatio
+                          : chromeos::kTwoThirdSnapRatio)
+          : (is_reversed_ ? chromeos::kTwoThirdSnapRatio
+                          : chromeos::kOneThirdSnapRatio),
       SnapController::SnapRequestSource::kWindowLayoutMenu);
   close_callback_.Run();
 

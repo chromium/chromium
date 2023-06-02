@@ -82,7 +82,6 @@ class SplitButtonView::SplitButton : public views::Button {
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
-              const std::u16string& a11y_name,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
         insets_(insets),
@@ -92,7 +91,6 @@ class SplitButtonView::SplitButton : public views::Button {
     // ring matches the parent border.
     views::InstallRoundRectHighlightPathGenerator(
         this, insets - kPreferredInsets, kMultitaskBaseButtonBorderRadius);
-    SetAccessibleName(a11y_name);
   }
 
   SplitButton(const SplitButton&) = delete;
@@ -143,7 +141,6 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
     : type_(type) {
   // Left button should stay on the left side for RTL languages.
   SetMirrored(false);
-
   SetOrientation(is_portrait_mode ? views::BoxLayout::Orientation::kVertical
                                   : views::BoxLayout::Orientation::kHorizontal);
   SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
@@ -157,7 +154,6 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
   const SnapDirection right_bottom_direction =
       GetSnapDirectionForWindow(window, /*left_top=*/false);
 
-  // Modify `split_button_callback` to pass a direction as well.
   auto on_left_top_press =
       base::BindRepeating(split_button_callback, left_top_direction);
   auto on_right_bottom_press =
@@ -165,19 +161,25 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
 
   left_top_button_ = AddChildView(std::make_unique<SplitButton>(
       on_left_top_press, on_hover_pressed,
-      GetA11yName(type, /*left_top=*/true, is_portrait_mode),
       is_portrait_mode ? kTopButtonInsets : kLeftButtonInsets));
   right_bottom_button_ = AddChildView(std::make_unique<SplitButton>(
       on_right_bottom_press, on_hover_pressed,
-      GetA11yName(type, /*left_top=*/false, is_portrait_mode),
       is_portrait_mode ? kBottomButtonInsets : kRightButtonInsets));
 
-  const int left_top_width = type_ == SplitButtonType::kHalfButtons
-                                 ? kMultitaskHalfButtonWidth
-                                 : kMultitaskTwoThirdButtonWidth;
-  const int right_bottom_width = type_ == SplitButtonType::kHalfButtons
-                                     ? kMultitaskHalfButtonWidth
-                                     : kMultitaskOneThirdButtonWidth;
+  UpdateButtons(is_portrait_mode, /*is_reversed=*/false);
+}
+
+void SplitButtonView::UpdateButtons(bool is_portrait_mode, bool is_reversed) {
+  const int left_top_width =
+      type_ == SplitButtonType::kHalfButtons
+          ? kMultitaskHalfButtonWidth
+          : (is_reversed ? kMultitaskOneThirdButtonWidth
+                         : kMultitaskTwoThirdButtonWidth);
+  const int right_bottom_width =
+      type_ == SplitButtonType::kHalfButtons
+          ? kMultitaskHalfButtonWidth
+          : (is_reversed ? kMultitaskTwoThirdButtonWidth
+                         : kMultitaskOneThirdButtonWidth);
 
   left_top_button_->SetPreferredSize(
       is_portrait_mode ? gfx::Size(kMultitaskHalfButtonHeight, left_top_width)
@@ -186,6 +188,11 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
       is_portrait_mode
           ? gfx::Size(kMultitaskHalfButtonHeight, right_bottom_width)
           : gfx::Size(right_bottom_width, kMultitaskHalfButtonHeight));
+
+  left_top_button_->SetAccessibleName(
+      GetA11yName(type_, /*left_top=*/!is_reversed, is_portrait_mode));
+  right_bottom_button_->SetAccessibleName(
+      GetA11yName(type_, /*left_top=*/is_reversed, is_portrait_mode));
 }
 
 views::Button* SplitButtonView::GetRightBottomButton() {
