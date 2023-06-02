@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.system;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -372,12 +371,6 @@ public class StatusBarColorControllerTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testStatusBarBlackInAutomotive() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
-        final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getStatusBarColorController();
-
-        assertNull(statusBarColorController);
         assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
                 activity.getWindow().getStatusBarColor());
     }

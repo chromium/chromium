@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
@@ -26,7 +25,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
@@ -294,7 +292,6 @@ public class RootUiCoordinator
     protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
     protected final FullscreenManager mFullscreenManager;
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    @Nullable
     protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final @ActivityType int mActivityType;
@@ -485,14 +482,10 @@ public class RootUiCoordinator
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity),
                 shouldAllowThemingInNightMode(), shouldAllowBrightThemeColors());
 
-        if (BuildInfo.getInstance().isAutomotive) {
-            StatusBarColorController.setStatusBarColor(mActivity.getWindow(), Color.BLACK);
-        } else {
-            mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
-                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
-                    mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
-                    mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
-        }
+        mStatusBarColorController = new StatusBarColorController(mActivity.getWindow(),
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ mActivity),
+                mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
+                mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mPageZoomCoordinator = new PageZoomCoordinator(new PageZoomCoordinatorDelegate() {
@@ -516,7 +509,6 @@ public class RootUiCoordinator
         return mToolbarManager;
     }
 
-    @Nullable
     public StatusBarColorController getStatusBarColorController() {
         return mStatusBarColorController;
     }
@@ -1278,9 +1270,7 @@ public class RootUiCoordinator
     }
 
     protected void setStatusBarScrimFraction(float scrimFraction) {
-        if (mStatusBarColorController != null) {
-            mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
-        }
+        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

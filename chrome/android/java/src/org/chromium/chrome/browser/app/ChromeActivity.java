@@ -775,9 +775,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onInitialLayoutInflationComplete() {
         mInflateInitialLayoutEndMs = SystemClock.elapsedRealtime();
 
-        if (mRootUiCoordinator.getStatusBarColorController() != null) {
-            mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
-        }
+        mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
         mCompositorViewHolderSupplier.set(
@@ -821,9 +819,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         mTabModelSelectorSupplier.set(tabModelSelector);
         mActivityTabProvider.setTabModelSelector(tabModelSelector);
-        if (mRootUiCoordinator.getStatusBarColorController() != null) {
-            mRootUiCoordinator.getStatusBarColorController().setTabModelSelector(tabModelSelector);
-        }
+        mRootUiCoordinator.getStatusBarColorController().setTabModelSelector(tabModelSelector);
 
         Pair<? extends TabCreator, ? extends TabCreator> tabCreators = createTabCreators();
         mTabCreatorManagerSupplier.set(
