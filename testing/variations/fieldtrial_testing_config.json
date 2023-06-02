@@ -9505,6 +9505,39 @@
             ]
         }
     ],
+    "OutOfProcessNetworkService": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableOOPNS_over_6656_Mb_20230410",
+                    "disable_features": [
+                        "NetworkServiceInProcess2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OutOfProcessNetworkServiceMemoryControls": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Over_6500_mb_20230410",
+                    "params": {
+                        "network_service_oop_threshold_mb": "6656"
+                    },
+                    "enable_features": [
+                        "NetworkServiceOutOfProcessMemoryThreshold"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfProcessPrintDriversPrintPreview": [
         {
             "platforms": [
