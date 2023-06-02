@@ -71,14 +71,16 @@ void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
       return;
     }
 
+    media_usage_update_callback_.Run();
+
+    // This will be an AnchoredNudge, which is only visible if the tray is
+    // visible; so we have to call this after media_usage_update_callback_.
     if (camera_system_disabled_ && !prev_is_capturing_video &&
         is_capturing_video) {
       device_used_while_disabled_callback_.Run(
           crosapi::mojom::VideoConferenceMediaDevice::kCamera,
           contents->GetTitle());
     }
-
-    media_usage_update_callback_.Run();
   }
 }
 
@@ -104,14 +106,16 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
       return;
     }
 
+    media_usage_update_callback_.Run();
+
+    // This will be an AnchoredNudge, which is only visible if the tray is
+    // visible; so we have to call this after media_usage_update_callback_.
     if (microphone_system_disabled_ && !prev_is_capturing_audio &&
         is_capturing_audio) {
       device_used_while_disabled_callback_.Run(
           crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
           contents->GetTitle());
     }
-
-    media_usage_update_callback_.Run();
   }
 }
 
