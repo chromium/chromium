@@ -921,6 +921,22 @@ chromium-metrics-reviews@google.com.
         summary="Only recorded when there were 4 other loading tabs."/>
     <variant name=".With_5_OtherLoading"
         summary="Only recorded when there were 5 other loading tabs."/>
+    <variant name=".WithTabCount_0"
+        summary="Only recorded when there was 0 tab."/>
+    <variant name=".WithTabCount_1"
+        summary="Only recorded when there was 1 tab."/>
+    <variant name=".WithTabCount_2_or_3"
+        summary="Only recorded when there were 2 or 3 tabs."/>
+    <variant name=".WithTabCount_4_to_7"
+        summary="Only recorded when there were 3 to 7 tabs."/>
+    <variant name=".WithTabCount_8_to_15"
+        summary="Only recorded when there were 8 to 15 tabs."/>
+    <variant name=".WithTabCount_16_to_31"
+        summary="Only recorded when there were 16 to 31 tabs."/>
+    <variant name=".WithTabCount_32_to_63"
+        summary="Only recorded when there were 32 to 63 tabs."/>
+    <variant name=".WithTabCount_64_or_more"
+        summary="Only recorded when there were 64 or more tabs."/>
   </token>
   <token key="Timing">
     <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
