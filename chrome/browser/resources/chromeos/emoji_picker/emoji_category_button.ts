@@ -9,6 +9,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './emoji_category_button.html.js';
 import {CATEGORY_BUTTON_CLICK, CategoryButtonClickEvent, createCustomEvent} from './events.js';
+import {CategoryEnum} from './types.js';
+
+const DEFAULT_ARIA_LABELS: Record<CategoryEnum, string> = {
+  [CategoryEnum.EMOJI]: 'Emoji category',
+  [CategoryEnum.SYMBOL]: 'Symbol category',
+  [CategoryEnum.EMOTICON]: 'Emoticon category',
+  [CategoryEnum.GIF]: 'GIF category',
+};
 
 export class EmojiCategoryButton extends PolymerElement {
   static get is() {
@@ -28,7 +36,7 @@ export class EmojiCategoryButton extends PolymerElement {
       gifSupport: {type: Boolean, value: false},
     };
   }
-  name: string;
+  name: CategoryEnum;
   icon: string;
   active: boolean;
   private gifSupport: boolean;
@@ -44,6 +52,16 @@ export class EmojiCategoryButton extends PolymerElement {
       return 'category-button-primary';
     }
     return active ? 'category-button-active' : '';
+  }
+
+  private getAriaLabel(name: CategoryEnum, gifSupport: boolean): string {
+    // TODO(b/281609806): Remove this condition once GIF support is fully
+    // launched.
+    if (!gifSupport) {
+      return name;
+    }
+
+    return DEFAULT_ARIA_LABELS[name] ?? name;
   }
 }
 
