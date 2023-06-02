@@ -91,8 +91,10 @@ class HintsFetcherTest : public testing::Test,
     return task_environment_.GetMockClock();
   }
 
-  void SetTimeClockForTesting(base::Clock* clock) {
-    hints_fetcher_->SetTimeClockForTesting(clock);
+  base::SimpleTestClock* CreateAlternativeTimeClockForTesting() {
+    alternative_clock_ = std::make_unique<base::SimpleTestClock>();
+    hints_fetcher_->SetTimeClockForTesting(alternative_clock_.get());
+    return alternative_clock_.get();
   }
 
   bool ShouldPersistHintsToDisk() const { return GetParam(); }
@@ -160,6 +162,7 @@ class HintsFetcherTest : public testing::Test,
   base::test::ScopedFeatureList scoped_list_;
   base::test::TaskEnvironment task_environment_;
 
+  std::unique_ptr<base::SimpleTestClock> alternative_clock_;
   std::unique_ptr<HintsFetcher> hints_fetcher_;
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -214,8 +217,7 @@ TEST_P(HintsFetcherTest, FetchOptimizationGuideServiceHints) {
 // Tests to ensure that multiple hint fetches by the same object cannot be in
 // progress simultaneously.
 TEST_P(HintsFetcherTest, FetchInProgress) {
-  base::SimpleTestClock test_clock;
-  SetTimeClockForTesting(&test_clock);
+  CreateAlternativeTimeClockForTesting();
 
   // Fetch back to back without waiting for Fetch to complete,
   // |fetch_in_progress_| should cause early exit.
@@ -245,8 +247,7 @@ TEST_P(HintsFetcherTest, FetchInProgress) {
 TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
   if (!ShouldPersistHintsToDisk())
     return;
-  base::SimpleTestClock test_clock;
-  SetTimeClockForTesting(&test_clock);
+  base::SimpleTestClock* test_clock = CreateAlternativeTimeClockForTesting();
 
   std::string response_content;
   // Fetch back to back without waiting for Fetch to complete,
@@ -268,16 +269,16 @@ TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
   std::vector<std::string> hosts{"foo.com", "bar.com"};
   // Advancing the clock so that it's still one hour before the hints need to be
   // refreshed.
-  test_clock.Advance(features::StoredFetchedHintsFreshnessDuration() -
-                     features::GetHostHintsFetchRefreshDuration() -
-                     base::Hours(1));
+  test_clock->Advance(features::StoredFetchedHintsFreshnessDuration() -
+                      features::GetHostHintsFetchRefreshDuration() -
+                      base::Hours(1));
 
   EXPECT_FALSE(FetchHints({"foo.com"}, /*urls=*/{}));
   EXPECT_FALSE(FetchHints({"bar.com"}, /*urls=*/{}));
 
   // Advancing the clock by a little bit more than 1 hour so that the hints are
   // now due for refresh.
-  test_clock.Advance(base::Minutes(61));
+  test_clock->Advance(base::Minutes(61));
 
   EXPECT_TRUE(FetchHints({"foo.com"}, /*urls=*/{}));
   EXPECT_FALSE(FetchHints({"bar.com"}, /*urls=*/{}));
@@ -301,7 +302,7 @@ TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
 
   // Advance clock for the default duration that the hint normally expires
   // under.
-  test_clock.Advance(features::StoredFetchedHintsFreshnessDuration());
+  test_clock->Advance(features::StoredFetchedHintsFreshnessDuration());
 
   // Max cache duration from response should be used for pref instead.
   EXPECT_FALSE(FetchHints({"baz.com"}, /*urls=*/{}));
@@ -313,8 +314,7 @@ TEST_P(HintsFetcherTest, FetchIgnoresCache) {
   if (!ShouldPersistHintsToDisk()) {
     return;
   }
-  base::SimpleTestClock test_clock;
-  SetTimeClockForTesting(&test_clock);
+  CreateAlternativeTimeClockForTesting();
 
   std::string response_content;
   EXPECT_TRUE(FetchHints({"foo.com"}, /*urls=*/{}));
