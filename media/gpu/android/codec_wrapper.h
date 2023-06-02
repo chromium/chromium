@@ -163,6 +163,8 @@ class MEDIA_GPU_EXPORT CodecWrapper {
       bool* end_of_stream,
       std::unique_ptr<CodecOutputBuffer>* codec_buffer);
 
+  size_t GetUnreleasedOutputBufferCount() const;
+
  private:
   scoped_refptr<CodecWrapperImpl> impl_;
 };

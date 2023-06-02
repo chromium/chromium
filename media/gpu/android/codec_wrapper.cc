@@ -56,6 +56,11 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // the buffer was released.
   bool ReleaseCodecOutputBuffer(int64_t id, bool render);
 
+  size_t GetUnreleasedOutputBufferCount() const {
+    base::AutoLock l(lock_);
+    return buffer_ids_.size();
+  }
+
  private:
   enum class State {
     kError,
@@ -541,6 +546,10 @@ bool CodecWrapper::SetSurface(
 
 scoped_refptr<CodecSurfaceBundle> CodecWrapper::SurfaceBundle() {
   return impl_->SurfaceBundle();
+}
+
+size_t CodecWrapper::GetUnreleasedOutputBufferCount() const {
+  return impl_->GetUnreleasedOutputBufferCount();
 }
 
 }  // namespace media

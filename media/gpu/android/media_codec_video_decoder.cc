@@ -1258,14 +1258,9 @@ bool MediaCodecVideoDecoder::NeedsBitstreamConversion() const {
 }
 
 bool MediaCodecVideoDecoder::CanReadWithoutStalling() const {
-  // MediaCodec gives us no indication that it will stop producing outputs
-  // until we provide more inputs or release output buffers back to it, so
-  // we have to always return false.
-  // TODO(watk): This puts all MCVD playbacks into low delay mode (i.e., the
-  // renderer won't try to preroll). Ideally we'd be smarter about
-  // this and attempt preroll but be able to give up if we can't produce
-  // enough frames.
-  return false;
+  // We should always be able to get at least two outputs, one in the front
+  // buffer slot and one in the back buffer slot.
+  return codec_ ? codec_->GetUnreleasedOutputBufferCount() < 2 : true;
 }
 
 int MediaCodecVideoDecoder::GetMaxDecodeRequests() const {
