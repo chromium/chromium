@@ -37,12 +37,22 @@ std::vector<float> GetZoomFactors() {
   return factors;
 }
 
-float GetCurrentZoomFactor() {
+float GetCurrentZoomFactor(PrefService* prefs) {
+  if (!prefs->FindPreference(prefs::kOobeDisplaySizeFactorDeferred)
+           ->IsDefaultValue()) {
+    return prefs->GetDouble(prefs::kOobeDisplaySizeFactorDeferred);
+  }
+
   const auto display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
   const auto& info =
       ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
   return info.zoom_factor();
+}
+
+std::string RetrieveChoobeSubtitle(PrefService* prefs) {
+  int percentage = std::round(GetCurrentZoomFactor(prefs) * 100);
+  return base::NumberToString(percentage) + "%";
 }
 
 bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
@@ -182,7 +192,9 @@ void DisplaySizeScreen::ShowImpl() {
 
   base::Value::Dict data;
   data.Set("availableSizes", std::move(factors_list));
-  data.Set("currentSize", GetCurrentZoomFactor());
+  data.Set(
+      "currentSize",
+      GetCurrentZoomFactor(ProfileManager::GetActiveUserProfile()->GetPrefs()));
   data.Set(
       "shouldShowReturn",
       ShouldShowChoobeReturnButton(
@@ -220,15 +232,6 @@ void DisplaySizeScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-std::string DisplaySizeScreen::RetrieveChoobeSubtitle() {
-  int percentage =
-      std::round(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetDouble(
-                     prefs::kOobeDisplaySizeFactorDeferred) *
-                 100);
-
-  return base::NumberToString(percentage) + "%";
-}
-
 ScreenSummary DisplaySizeScreen::GetScreenSummary() {
   ScreenSummary summary;
   summary.screen_id = DisplaySizeScreenView::kScreenId;
@@ -240,7 +243,8 @@ ScreenSummary DisplaySizeScreen::GetScreenSummary() {
   if (WizardController::default_controller()
           ->choobe_flow_controller()
           ->IsScreenCompleted(DisplaySizeScreenView::kScreenId)) {
-    summary.subtitle_resource = RetrieveChoobeSubtitle();
+    summary.subtitle_resource = RetrieveChoobeSubtitle(
+        ProfileManager::GetActiveUserProfile()->GetPrefs());
   }
 
   return summary;

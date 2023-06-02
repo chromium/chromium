@@ -66,11 +66,19 @@
     margin: 0;
   }
 
-  .sign {
+  .sign-button {
+    border-radius: 50%;
+    border-width: 0;
+    min-height: auto;
+    min-width: auto;
+    padding: 0;
+  }
+
+  .sign-icon {
     flex-grow: 0;
     flex-shrink: 0;
-    margin-inline-end: 13px;
-    margin-inline-start: 13px;
+    height: 16px;
+    padding: 13px;
     width: 16px;
   }
 
@@ -124,7 +132,7 @@
 
 <div id="displaySizeSelector">
   <!-- Preview Section -->
-  <div id="preview">
+  <div id="preview" aria-hidden="true">
     <p id="previewTitle">[[i18nDynamic(locale, 'displaySizePreview')]]</p>
     <div id="grid-container" clsas="layout horizontal center flex">
       <div id="grid">
@@ -146,11 +154,20 @@
     <slot name="slider-description"></slot>
   </div>
   <div id="sliderContainer">
-    <iron-icon id="negative" class="sign" icon="oobe-16:negative"></iron-icon>
+    <cr-button class="sign-button" on-click="onNegativeClicked_">
+      <iron-icon id="negative" class="sign-icon" icon="oobe-16:negative"
+          aria-label$="[[i18nDynamic(locale, 'displaySizeNegative')]]">
+      </iron-icon>
+    </cr-button>
     <cr-slider id="sizeSlider" value="[[tickedSizeIndex_]]"
         on-cr-slider-value-changed="onTickedSizeChanged_"
-        marker-count="[[markerCounts_]]" ticks="[[availableSizesTicks_]]">
+        marker-count="[[markerCounts_]]" ticks="[[availableSizesTicks_]]"
+        aria-labelledby="sliderTitleContainer" aria-live="polite">
     </cr-slider>
-    <iron-icon id="positive" class="sign" icon="oobe-16:positive"></iron-icon>
+    <cr-button class="sign-button" on-click="onPositiveClicked_">
+      <iron-icon id="positive" class="sign-icon" icon="oobe-16:positive"
+          aria-label$="[[i18nDynamic(locale, 'displaySizePositive')]]">
+      </iron-icon>
+    </cr-button>
   </div>
 </div>

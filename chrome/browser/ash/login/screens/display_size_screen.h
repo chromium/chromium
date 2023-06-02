@@ -47,7 +47,6 @@ class DisplaySizeScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
   ScreenSummary GetScreenSummary() override;
-  std::string RetrieveChoobeSubtitle();
 
   base::WeakPtr<DisplaySizeScreenView> view_;
   ScreenExitCallback exit_callback_;

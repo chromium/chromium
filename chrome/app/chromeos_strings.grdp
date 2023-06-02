@@ -6664,6 +6664,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_DISPLAY_SIZE_VALUE" desc="The currently selected display size percentage.">
     <ph name="DISPLAY_ZOOM">$1<ex>120</ex></ph>%
   </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_POSITIVE_BUTTON_ARIA" desc="The message to be announced by ChromeVox in the display size screen when the button to increase the size is focused" translateable="false">
+    Increase display and text size
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_NEGATIVE_BUTTON_ARIA" desc="The message to be announced by ChromeVox in the display size screen when the button to decrease the size is focused" translateable="false">
+    Decrease display and text size
+  </message>
 
   <!-- Drive Offline-->
   <!-- TODO(b/278024582): Remove translateable tags when strings are finalized. -->

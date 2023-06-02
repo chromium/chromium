@@ -38,6 +38,10 @@ void DisplaySizeScreenHandler::DeclareLocalizedValues(
   builder->Add("displaySizeSettingsApp",
                IDS_OOBE_DISPLAY_SIZE_SETTINGS_APP_NAME);
   builder->Add("displaySizeValue", IDS_OOBE_DISPLAY_SIZE_VALUE);
+  builder->Add("displaySizePositive",
+               IDS_OOBE_DISPLAY_SIZE_POSITIVE_BUTTON_ARIA);
+  builder->Add("displaySizeNegative",
+               IDS_OOBE_DISPLAY_SIZE_NEGATIVE_BUTTON_ARIA);
 
   // CHOOBE resources
   builder->Add("choobeDisplaySizeTitle",

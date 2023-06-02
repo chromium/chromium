@@ -6,7 +6,8 @@ found in the LICENSE file.
 <style include="oobe-dialog-host-styles cros-color-overrides">
 </style>
 
-<oobe-adaptive-dialog id="displaySizeDialog">
+<oobe-adaptive-dialog id="displaySizeDialog" role="presentation"
+    for-step="overview">
   <iron-icon slot="icon" icon="oobe-32:display"></iron-icon>
   <h1 slot="title" id="display-size-title">
     [[i18nDynamic(locale, 'displaySizeTitle')]]

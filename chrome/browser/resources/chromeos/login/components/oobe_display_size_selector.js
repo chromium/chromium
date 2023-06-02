@@ -133,6 +133,20 @@ export class OobeDisplaySizeSelector extends OobeDisplaySizeSelectorBase {
   onTickedSizeChanged_() {
     this.tickedSizeIndex_ = this.$.sizeSlider.value;
   }
+
+  onPositiveClicked_() {
+    if (this.$.sizeSlider.value + 1 < this.markerCounts_) {
+      this.$.sizeSlider.value += 1;
+      this.tickedSizeIndex_ += 1;
+    }
+  }
+
+  onNegativeClicked_() {
+    if (this.$.sizeSlider.value >= 1) {
+      this.$.sizeSlider.value -= 1;
+      this.tickedSizeIndex_ -= 1;
+    }
+  }
 }
 
 customElements.define(OobeDisplaySizeSelector.is, OobeDisplaySizeSelector);

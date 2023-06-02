@@ -19,7 +19,7 @@ import {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
@@ -28,10 +28,21 @@ import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
  */
 const DisplaySizeScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+
+/**
+ * Enum to represent steps on the display size screen.
+ * Currently there is only one step, but we still use
+ * MultiStepBehavior because it provides implementation of
+ * things like processing 'focus-on-show' class
+ * @enum {string}
+ */
+const DisplaySizeStep = {
+  OVERVIEW: 'overview',
+};
 
 /**
  * Available user actions.
@@ -65,6 +76,14 @@ class DisplaySizeScreen extends DisplaySizeScreenElementBase {
 
   get EXTERNAL_API() {
     return [];
+  }
+
+  get UI_STEPS() {
+    return DisplaySizeStep;
+  }
+
+  defaultUIStep() {
+    return DisplaySizeStep.OVERVIEW;
   }
 
   /** @override */
