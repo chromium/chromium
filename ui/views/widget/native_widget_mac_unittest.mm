@@ -298,7 +298,8 @@ class MouseTrackingWidget : public Widget {
 };
 
 // Test visibility states triggered externally.
-TEST_F(NativeWidgetMacTest, HideAndShowExternally) {
+// TODO(crbug.com/1450876): Flaky.
+TEST_F(NativeWidgetMacTest, DISABLED_HideAndShowExternally) {
   Widget* widget = CreateTopLevelPlatformWidget();
   NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
   WidgetChangeObserver observer(widget);
