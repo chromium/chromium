@@ -1330,9 +1330,6 @@ extern const char kOmniboxSimplifiedUiSquareSuggestIconDescription[];
 extern const char kOmniboxSiteSearchStarterPackName[];
 extern const char kOmniboxSiteSearchStarterPackDescription[];
 
-extern const char kOmniboxSpareRendererName[];
-extern const char kOmniboxSpareRendererDescription[];
-
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 
