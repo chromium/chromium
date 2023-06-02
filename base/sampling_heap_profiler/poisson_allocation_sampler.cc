@@ -33,10 +33,12 @@ const intptr_t kAccumulatedBytesOffset = 1 << 29;
 bool g_deterministic = false;
 
 // Pointer to the current |LockFreeAddressHashSet|.
-std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
+ABSL_CONST_INIT std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{
+    nullptr};
 
 // Sampling interval parameter, the mean value for intervals between samples.
-std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
+ABSL_CONST_INIT std::atomic_size_t g_sampling_interval{
+    kDefaultSamplingIntervalBytes};
 
 struct ThreadLocalData {
   // Accumulated bytes towards sample.
@@ -193,7 +195,7 @@ void PoissonAllocationSampler::Init() {
 void PoissonAllocationSampler::SetSamplingInterval(
     size_t sampling_interval_bytes) {
   // TODO(alph): Reset the sample being collected if running.
-  g_sampling_interval = sampling_interval_bytes;
+  g_sampling_interval.store(sampling_interval_bytes, std::memory_order_relaxed);
 }
 
 size_t PoissonAllocationSampler::SamplingInterval() const {
