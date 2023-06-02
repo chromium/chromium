@@ -241,6 +241,7 @@
 <translation id="1998100899771863792">ამჟამინდელი სამუშაო მაგიდა</translation>
 <translation id="2001444736072756133">მოიძიეთ თქვენი <ph name="CATEGORY" />, ფაილები, აპები და სხვა კონტენტი.</translation>
 <translation id="2016340657076538683">აკრიფეთ შეტყობინება</translation>
+<translation id="2017998995161831444">„დახმარების“ გახსნა გაცნობის აპში</translation>
 <translation id="2018630726571919839">მომიყევი ანეკდოტი</translation>
 <translation id="2021864487439853900">განსაბლოკად დააწკაპუნეთ</translation>
 <translation id="2023558322300866873">პაკეტების აღბეჭდვის შეწყვეტა ნებისმიერ დროს შეგიძლიათ</translation>
@@ -621,6 +622,7 @@
 <translation id="3765841986579723851">დღეს რედაქტირებული</translation>
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
 <translation id="3779139509281456663">მიმდინარეობს <ph name="NAME" />-ის დაკავშირება</translation>
+<translation id="3781910048497807059">წინა არის მოქცევა ფოკუსში</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
 <translation id="3796198851576711985">ბატარეის მდგომარეობა</translation>
@@ -758,6 +760,7 @@
 <translation id="4406883609789734330">ავტოსუბტიტრები</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
 <translation id="4424159417645388645">სამუშაო მაგიდა 5</translation>
+<translation id="4427695046139341014">თამაშების დაფა</translation>
 <translation id="4430019312045809116">ხმა</translation>
 <translation id="4435022394553622295">ნახეთ თქვენი ტელეფონის შეტყობინებები და აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="4441283832827406317">აპები დალაგებულია სახელის მიხედვით</translation>
@@ -790,6 +793,7 @@
 <translation id="4541706525461326392">მიმდინარეობს პროფილის ამოშლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="4544483149666270818">აირჩიეთ ჩასაწერი ფანჯარა</translation>
 <translation id="454541942614298893">ჩემი მოწყობილობა</translation>
+<translation id="4545950850562423083">მიმდინარე გვერდის შენახვა სანიშნეს სახით</translation>
 <translation id="4548482551627849548">აქტიური ფანჯრის გადატანა სამუშაო მაგიდაზე მარცხნივ</translation>
 <translation id="4560576029703263363">ჩართვა</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -846,6 +850,7 @@
 <translation id="4789348252524569426">მეტყველების ფაილების ინსტალაცია ვერ მოხერხდა. საჭიროა თქვენი მოწყობილობის განახლება. გადატვირთეთ მოწყობილობა და ცადეთ ხელახლა.</translation>
 <translation id="478959186716341421">ტრანსლირება</translation>
 <translation id="4798622944000246716">თქვენს მობილურ ქსელს არ აქვს უსადენო ქსელის მხარდაჭერა</translation>
+<translation id="4798888871844665150">კოპირებული ერთეული უკვე გაცვლის ბუფერშია. სანახავად გამოიყენეთ კლავიშთა კომბინაცია <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">ძიება</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="4814539958450445987">შესვლის ეკრანი</translation>
@@ -944,6 +949,7 @@
 <translation id="5229343007215035173">კონფიდენციალური ეკრანის ჩართვა/გამორთვა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
 <translation id="523505283826916779">მარტივი წვდომის პარამეტრები</translation>
+<translation id="5238719049014159442">გამშვების გახსნა/დახურვა</translation>
 <translation id="5245201184978705914">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="5253783950165989294">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" />, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">სამუშაო მაგიდები არ არის შენახული</translation>
@@ -1250,6 +1256,7 @@
 <translation id="6614169507485700968">კონფიდენციალურობის ეკრანი ჩართულია</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />-ის, <ph name="APP_2_TITLE" />-ის და სხვა შეტყობინებები დამალულია, რადგან ჩართულია ნახვის დაცვა</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
+<translation id="662830937908749204">მომდევნო არის მოქცევა ფოკუსში</translation>
 <translation id="6637729079642709226">დროის შეცვლა</translation>
 <translation id="6641720045729354415">ავტოსუბტიტრების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">სახელის მიხედვით დალაგების გაუქმება</translation>
@@ -1408,6 +1415,7 @@
 <translation id="7401222354741467707">ეკრანის სრული ანაბეჭდის გადაღება ან ეკრანის ჩაწერა</translation>
 <translation id="7405710164030118432">მოწყობილობის განსაბლოკად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
 <translation id="7406608787870898861">დაასრულეთ მობილური ქსელის დაყენება</translation>
+<translation id="7406854842098869085">ხანგრძლივად დააჭირეთ <ph name="MODIFIER_1" />-ს და შეეხეთ <ph name="KEY" />-ს, სანამ სასურველი ფანჯარა გაიხსნება, შემდეგ კი აუშვით</translation>
 <translation id="740790383907119240">აპის მალსახმობები</translation>
 <translation id="7413851974711031813">დასახურად დააჭირეთ „escape“-ს</translation>
 <translation id="7416471219712049036">მიმდინარე გვერდის შენახვა</translation>
@@ -1487,6 +1495,7 @@
 <translation id="7727952505535211425">მისამართთა ზოლში მითითებული ვებსაიტის გახსნა ახალ ჩანართში</translation>
 <translation id="77365090426890123">მეხსიერების მოხმარება</translation>
 <translation id="7742327441377685481">შეტყობინებები არ არის</translation>
+<translation id="7748275671948949022">გამშვების ღილაკის გამოყოფა თაროზე</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
 <translation id="776344839111254542">დააწკაპუნეთ განახლების დეტალების სანახავად</translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
@@ -1503,6 +1512,7 @@
 <translation id="7842569679327885685">გაფრთხილება: ფუნქცია ექსპერიმენტულია</translation>
 <translation id="7846634333498149051">კლავიატურა</translation>
 <translation id="7848989271541991537">გადატანილია გვერდზე <ph name="PAGE_NUMBER" />, მწკრივზე <ph name="ROW_NUMBER" />, სვეტზე <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851039877802112575">ამომხტარი და დიალოგური ფანჯრების მოქცევა ფოკუსში</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">მიმოხილვაზე გადასასვლელად გადაფურცლეთ ზემოთ სამი თითით</translation>
 <translation id="7862292329216937261">მოწყობილობის სტუმრის რეჟიმში გამოსაყენებლად უნდა გახვიდეთ სისტემიდან, შემდეგ კი ეკრანის ქვედა ნაწილში აირჩიოთ „დათვალიერება სტუმრის სტატუსით“.</translation>
@@ -1639,6 +1649,7 @@
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8433186206711564395">ქსელის პარამეტრები</translation>
 <translation id="8433977262951327081">თაროზე შეყვანის ვარიანტების მენიუს ბუშტის გამოჩენის მალსახმობი შეიცვალა. გთხოვთ, გამოიყენოთ <ph name="NEW_SHORTCUT" /> და არა — <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">გამოხმაურების ხელსაწყოს გახსნა</translation>
 <translation id="8443879455002739353">„კოპირება“</translation>
 <translation id="8444246603146515890">სამუშაო მაგიდა <ph name="DESK_TITILE" /> გააქტიურებულია</translation>
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
@@ -1689,6 +1700,7 @@
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>
 <translation id="8683506306463609433">ეფექტურობის ტრასირება გააქტიურებულია</translation>
 <translation id="8703634754197148428">ჩაწერის დაწყება. ჩაწერის დაწყების შემდეგ თაროზე გადასასვლელად და ჩაწერის შეწყვეტის ღილაკის საპოვნელად გამოიყენეთ კლავიშთა კომბინაცია Alt + Shift + L</translation>
+<translation id="8704155109538237473">რეჟიმის „ეკრანი ეკრანში“ ფანჯრის მოქცევა ფოკუსში</translation>
 <translation id="870917907284186124">კარნახის (ტექსტის ხმით აკრეფის) ჩართვა/გამორთვა</translation>
 <translation id="8717459106217102612">წინა სიტყვის ან ასოს არჩევა</translation>
 <translation id="8721053961083920564">ხმის გადართვა. <ph name="STATE_TEXT" /></translation>

@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> tugmasi bosilmadi</translation>
 <translation id="1435763214710588005">Har oy belgilangan kunda trafik sarfi avtomatik asliga qaytariladi</translation>
 <translation id="1442433966118452622">Rasm manbasi</translation>
+<translation id="1449035143498573192">Google Qidiruvida ochish</translation>
 <translation id="1451536289672181509">Qurilma — klaviatura.</translation>
 <translation id="1459693405370120464">Ob-havo</translation>
 <translation id="1468664791493211953">Takliflar</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Manbalar</translation>
 <translation id="7955587717700691983">Bluetooth klaviatura</translation>
 <translation id="7960831585769876809">Harorat</translation>
+<translation id="7971535376154084247">Umumiy boshqaruv tugmalari</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> nomli tarmoqqa ulanish uchun Sozlamalarni oching</translation>
 <translation id="7978412674231730200">Xususiy kalit</translation>
 <translation id="7994702968232966508">EAP usuli</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Mahalliy ta’minotchi nomi</translation>
 <translation id="8475690821716466388">WiFi tarmoq zaif WEP PSK protokoli bilan himoyalangan</translation>
 <translation id="8476242415522716722">klaviatura ostidagi nur</translation>
+<translation id="8476942730579767658">Oynalar va ish stollari</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
 <translation id="8483248364096924578">IP manzil</translation>
 <translation id="8491311378305535241">Android ilovalardan HTTPS saytlarga himoya devori orqali ulanish imkonsiz</translation>

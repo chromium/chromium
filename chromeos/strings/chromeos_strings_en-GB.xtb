@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> key not pressed</translation>
 <translation id="1435763214710588005">Automatically resets data usage every month on a selected day</translation>
 <translation id="1442433966118452622">Image source</translation>
+<translation id="1449035143498573192">Open in Google Search</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1459693405370120464">Weather</translation>
 <translation id="1468664791493211953">Offers</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Inputs</translation>
 <translation id="7955587717700691983">Bluetooth keyboard</translation>
 <translation id="7960831585769876809">Temperature</translation>
+<translation id="7971535376154084247">General controls</translation>
 <translation id="7977800524392185497">To join a <ph name="NETWORK_NAME" /> network, go to Settings</translation>
 <translation id="7978412674231730200">Private key</translation>
 <translation id="7994702968232966508">EAP method</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Home provider name</translation>
 <translation id="8475690821716466388">Wi-Fi network is secured with weak protocol WEP PSK</translation>
 <translation id="8476242415522716722">keyboard underglow</translation>
+<translation id="8476942730579767658">Windows and desks</translation>
 <translation id="8477551185774834963">DNS latency slightly above allowable threshold</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Can't connect through firewall to HTTP websites from Android apps</translation>

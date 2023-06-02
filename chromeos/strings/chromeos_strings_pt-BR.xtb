@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">A tecla <ph name="KEY_NAME" /> não foi pressionada</translation>
 <translation id="1435763214710588005">Redefine automaticamente o uso de dados a cada mês em um dia selecionado</translation>
 <translation id="1442433966118452622">Origem da imagem</translation>
+<translation id="1449035143498573192">Abrir na Pesquisa Google</translation>
 <translation id="1451536289672181509">Este dispositivo é um teclado.</translation>
 <translation id="1459693405370120464">Clima</translation>
 <translation id="1468664791493211953">Ofertas</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Controles gerais</translation>
 <translation id="7977800524392185497">Para se conectar a uma rede <ph name="NETWORK_NAME" />, acesse as Configurações</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Nome do provedor doméstico</translation>
 <translation id="8475690821716466388">A rede Wi-Fi é protegida pelo protocolo fraco WEP PSK</translation>
 <translation id="8476242415522716722">luz de fundo do teclado</translation>
+<translation id="8476942730579767658">Janelas e espaços de trabalho</translation>
 <translation id="8477551185774834963">Latência do DNS um pouco acima do limite permitido</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
 <translation id="8491311378305535241">O firewall impediu a conexão de apps Android a sites HTTP</translation>

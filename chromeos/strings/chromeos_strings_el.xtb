@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Το πλήκτρο <ph name="KEY_NAME" /> δεν πατήθηκε</translation>
 <translation id="1435763214710588005">Επαναφέρει αυτόματα τη χρήση δεδομένων κάθε μήνα κατά την επιλεγμένη ημέρα</translation>
 <translation id="1442433966118452622">Προέλευση εικόνας</translation>
+<translation id="1449035143498573192">Άνοιγμα στην Αναζήτηση Google</translation>
 <translation id="1451536289672181509">Η συσκευή είναι πληκτρολόγιο.</translation>
 <translation id="1459693405370120464">Καιρός</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Μέθοδοι εισαγωγής</translation>
 <translation id="7955587717700691983">Πληκτρολόγιο Bluetooth</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>
+<translation id="7971535376154084247">Γενικοί έλεγχοι</translation>
 <translation id="7977800524392185497">Για να συμμετάσχετε σε ένα δίκτυο <ph name="NETWORK_NAME" />, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Όνομα παρόχου αρχικής σελίδας</translation>
 <translation id="8475690821716466388">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε ένα αδύναμο πρωτόκολλο WEP PSK.</translation>
 <translation id="8476242415522716722">φωτισμός κάτω από το πληκτρολόγιο</translation>
+<translation id="8476942730579767658">Παράθυρα και γραφεία</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8491311378305535241">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP μέσω εφαρμογών Android</translation>

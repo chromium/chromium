@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Hindi napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Awtomatikong nire-reset ang paggamit ng data sa piniling araw kada buwan</translation>
 <translation id="1442433966118452622">Source ng larawan</translation>
+<translation id="1449035143498573192">Buksan sa Google Search</translation>
 <translation id="1451536289672181509">Keyboard ang device.</translation>
 <translation id="1459693405370120464">Lagay ng Panahon</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Mga Input</translation>
 <translation id="7955587717700691983">Bluetooth na keyboard</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Mga pangkalahatang kontrol</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Pangalan ng home provider</translation>
 <translation id="8475690821716466388">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP PSK</translation>
 <translation id="8476242415522716722">underglow ng keyboard</translation>
+<translation id="8476942730579767658">Mga window at desk</translation>
 <translation id="8477551185774834963">Medyo mas mataas sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website mula sa mga Android app</translation>

@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Tasto <ph name="KEY_NAME" /> non premuto</translation>
 <translation id="1435763214710588005">Reimposta automaticamente l'utilizzo dei dati ogni mese nel giorno selezionato</translation>
 <translation id="1442433966118452622">Origine immagine</translation>
+<translation id="1449035143498573192">Apri nella Ricerca Google</translation>
 <translation id="1451536289672181509">Il dispositivo è una tastiera.</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1468664791493211953">Offerte</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Metodi di immissione</translation>
 <translation id="7955587717700691983">Tastiera Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Controlli generali</translation>
 <translation id="7977800524392185497">Per collegarti alla rete <ph name="NETWORK_NAME" />, vai alle Impostazioni</translation>
 <translation id="7978412674231730200">Chiave privata</translation>
 <translation id="7994702968232966508">Metodo EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Nome del provider principale</translation>
 <translation id="8475690821716466388">la rete Wi-Fi è protetta con un protocollo WEP PSK inefficace</translation>
 <translation id="8476242415522716722">Illuminazione sotto la tastiera</translation>
+<translation id="8476942730579767658">Finestre e scrivanie</translation>
 <translation id="8477551185774834963">la latenza DNS è leggermente al di sopra della soglia consentita</translation>
 <translation id="8483248364096924578">Indirizzo IP</translation>
 <translation id="8491311378305535241">Impossibile collegarti tramite firewall ai siti web HTTP da app Android</translation>

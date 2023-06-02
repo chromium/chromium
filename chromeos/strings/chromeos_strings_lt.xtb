@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Nepaspaustas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Pasirinktą dieną automatiškai iš naujo nustatomas duomenų naudojimas kiekvieną mėnesį</translation>
 <translation id="1442433966118452622">Vaizdo šaltinis</translation>
+<translation id="1449035143498573192">Atidaryti „Google“ paieškoje</translation>
 <translation id="1451536289672181509">Įrenginys yra klaviatūra.</translation>
 <translation id="1459693405370120464">Oras</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Įvestys</translation>
 <translation id="7955587717700691983">„Bluetooth“ klaviatūra</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
+<translation id="7971535376154084247">Bendrieji valdikliai</translation>
 <translation id="7977800524392185497">Norėdami prisijungti prie „<ph name="NETWORK_NAME" />“ tinklo, eikite į Nustatymus</translation>
 <translation id="7978412674231730200">Asmeninis raktas</translation>
 <translation id="7994702968232966508">EAP metodas</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Namų paslaugos teikėjo pavadinimas</translation>
 <translation id="8475690821716466388">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP PSK</translation>
 <translation id="8476242415522716722">klaviatūros švytėjimas</translation>
+<translation id="8476942730579767658">Langai ir darbalaukiai</translation>
 <translation id="8477551185774834963">DNS delsa šiek tiek viršija leistiną slenksčio vertę</translation>
 <translation id="8483248364096924578">IP adresas</translation>
 <translation id="8491311378305535241">Nepavyko iš „Android“ programų prisijungti per užkardą prie HTTP svetainių</translation>

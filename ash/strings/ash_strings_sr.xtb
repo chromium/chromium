@@ -63,6 +63,7 @@
 <translation id="1235458158152011030">Познате мреже</translation>
 <translation id="1239161794459865856">Функција <ph name="FEATURE_NAME" /> је повезана.</translation>
 <translation id="1240638468526743569">Апликација</translation>
+<translation id="1242704516557658755">Померај уназад на листи најскорије коришћених прозора</translation>
 <translation id="124678866338384709">Затварање актуелне картице</translation>
 <translation id="1246890715821376239">Неподржане апликације</translation>
 <translation id="1247372569136754018">Микрофон (интерни)</translation>
@@ -74,6 +75,7 @@
 <translation id="1270290102613614947">Тастатура на екрану је онемогућена</translation>
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1275285675049378717">Напаја се <ph name="POWER_SOURCE" /></translation>
+<translation id="1276975447697633661">Изаберите фајл, па притисните <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Пронађи телефон</translation>
 <translation id="1287002645302686982">Сачувана радна површина под насловом <ph name="DESK_TEMPLATE_NAME" /> већ постоји</translation>
@@ -241,6 +243,7 @@
 <translation id="1998100899771863792">Актуелна радна површина</translation>
 <translation id="2001444736072756133">Претражујте категорију <ph name="CATEGORY" />, фајлове, апликације и друго.</translation>
 <translation id="2016340657076538683">Унесите поруку</translation>
+<translation id="2017998995161831444">Отворите Помоћ у апликацији Истражите</translation>
 <translation id="2018630726571919839">Испричај ми виц.</translation>
 <translation id="2021864487439853900">Кликните да бисте откључали</translation>
 <translation id="2023558322300866873">Снимање пакета можете да зауставите у сваком тренутку</translation>
@@ -345,6 +348,7 @@
 <translation id="2528111225373402384">Подешавања хотспота</translation>
 <translation id="2530896289327917474">Укључите или искључите навигацију курсором</translation>
 <translation id="2531025035050312891">спор уређај</translation>
+<translation id="2531107890083353124">Док превлачите картицу, притисните <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Копирај изабрани садржај у привремену меморију</translation>
 <translation id="2549711466868162843">Унапреди осветљеност</translation>
 <translation id="2549985041256363841">Започни снимање</translation>
@@ -390,6 +394,7 @@
 <translation id="2750932254614666392">„Избриши“</translation>
 <translation id="2750941250130734256">Активни прозор је одвојен.</translation>
 <translation id="2761723519669354964">Отворите истакнуту ставку са полице</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> од <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
 <translation id="2785499565474703580">1 уређај је повезан</translation>
@@ -423,6 +428,7 @@
 <translation id="2942350706960889382">Монтирана лупа екрана</translation>
 <translation id="2942516765047364088">Положај полице</translation>
 <translation id="2946119680249604491">Додај везу</translation>
+<translation id="2949420361496057765">Притисните <ph name="MODIFIER" /> и кликните на линк</translation>
 <translation id="295852781144570696">Звук уређаја</translation>
 <translation id="2960314608273155470">Режим снимања, подразумевана вредност је <ph name="SOURCE" /> <ph name="TYPE" />. Притисните Tab за кретање помоћу тастатуре.</translation>
 <translation id="2961963223658824723">Дошло је до грешке. Пробајте поново за пар секунди.</translation>
@@ -528,6 +534,7 @@
 <translation id="3410336247007142655">Прикажите подешавања тамне теме</translation>
 <translation id="3413817803639110246">Још увек нема шта да се види</translation>
 <translation id="3417835166382867856">Претражите картице</translation>
+<translation id="3426253816581969877">Притисните и задржите <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, додирујте <ph name="KEY" /> док не дођете до прозора који желите да отворите, па отпустите</translation>
 <translation id="3428447136709161042">Прекините везу са мрежом <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Превуците са десне стране да бисте се вратили</translation>
 <translation id="3431517721463707585">Радна површина 14</translation>
@@ -542,6 +549,7 @@
 <translation id="346243998268439747">Ресетујте ниво зумирања</translation>
 <translation id="3465223694362104965">Још једна тастатура је повезана са овим уређајем откад сте се последњи пут пријавили. Уверите се да је у питању поуздана тастатура пре него што је користите.</translation>
 <translation id="3465356146291925647">Управља администратор</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, па <ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Полица је аутоматски сакривена</translation>
@@ -606,6 +614,7 @@
 <translation id="3677931086890821290">Ово омогућава свим апликацијама и веб-сајтовима са дозволом за локацију и ChromeOS-ом да користе локацију WiFi-ја и мобилних мрежа.</translation>
 <translation id="3679827876008292680">Иди на последњу картицу у прозору</translation>
 <translation id="36813544980941320">WiFi мреже ће се делити између вашег телефона и уређаја <ph name="DEVICE_NAME" /></translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, па <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Веб-сајтови</translation>
 <translation id="3702809606464356667">Приказују се прозори са актуелне радне површине. Притисните тастер са стрелицом нагоре да би се приказивали прозори са свих радних површина.</translation>
 <translation id="3702846122927433391">Популација Нигерије</translation>
@@ -621,6 +630,7 @@
 <translation id="3765841986579723851">Измењено данас</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
 <translation id="3779139509281456663">Повезује се <ph name="NAME" /></translation>
+<translation id="3781910048497807059">Премести фокус на претходно окно</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="3796198851576711985">стање батерије</translation>
@@ -633,6 +643,7 @@
 <translation id="383058930331066723">Режим уштеде батерије је укључен</translation>
 <translation id="383629559565718788">Прегледајте подешавања тастатуре</translation>
 <translation id="384082539148746321">Желите да избришете шаблон?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, па <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Нису доступне информације о мрежи</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почетак</translation>
@@ -759,6 +770,7 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
+<translation id="4427695046139341014">Контролна табла игре</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
 <translation id="4435022394553622295">Прегледајте обавештења и апликације на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Апликације су сортиране према називу</translation>
@@ -791,6 +803,7 @@
 <translation id="4541706525461326392">Профил се уклања. То може да потраје неколико минута.</translation>
 <translation id="4544483149666270818">Изаберите прозор за снимање</translation>
 <translation id="454541942614298893">мој уређај</translation>
+<translation id="4545950850562423083">Сачувај актуелну страницу као обележивач</translation>
 <translation id="4548482551627849548">Премести активни прозор на радну површину на левој страни</translation>
 <translation id="4560576029703263363">Укључено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -847,8 +860,10 @@
 <translation id="4789348252524569426">Инсталирање фајлова за говор није успело. Уређај треба да се ажурира. Рестартујте уређај и пробајте поново.</translation>
 <translation id="478959186716341421">Пребацује се</translation>
 <translation id="4798622944000246716">Мобилна мрежа не подржава хотспот</translation>
+<translation id="4798888871844665150">Копирана ставка је већ у привременој меморији. Користите <ph name="SHORTCUT_KEY_NAME" /> + V да бисте је прегледали.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Прекини везу</translation>
+<translation id="4813311884204119883">Превуците линк у празну област на траци са картицама</translation>
 <translation id="4814539958450445987">Екран за пријављивање</translation>
 <translation id="481455355267255546">Следеће</translation>
 <translation id="4831034276697007977">Желите ли стварно да искључите аутоматске кликове?</translation>
@@ -856,6 +871,7 @@
 <translation id="485592688953820832">Ништа се не предузима (паузирање)</translation>
 <translation id="485634149294284819">Уђите у мени за тастатуру</translation>
 <translation id="485806788160414322">Пусти или паузирај медије</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" />, па <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869">Проверите мрежну везу да бисте преузели <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">Пријављивање...</translation>
 <translation id="4864648187878336334">Радна површина 15</translation>
@@ -945,6 +961,7 @@
 <translation id="5229343007215035173">Укључи/искључи екран за приватност</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="523505283826916779">Подешавања приступачности</translation>
+<translation id="5238719049014159442">Отвори или затвори Покретач</translation>
 <translation id="5245201184978705914">Генерисање транскрипта није успело</translation>
 <translation id="5253783950165989294">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% батерије</translation>
 <translation id="5258528442992323769">Нема сачуваних радних површина</translation>
@@ -998,6 +1015,7 @@
 <translation id="5463129623250377817">Исеци изабрани садржај у привремену меморију</translation>
 <translation id="5465662442746197494">Потребна вам је помоћ?</translation>
 <translation id="547979256943495781">Полица на десној страни</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> или <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Доступна су ажурирања фирмвера</translation>
 <translation id="5503884284981862082">Отвори или затвори Google помоћник</translation>
 <translation id="5506975627792768506">Укључите или искључите лупу</translation>
@@ -1189,6 +1207,7 @@
 <translation id="6330012934079202188">Приказују се прозори са свих радних површина. Притисните тастер са стрелицом нагоре да би се приказивали прозори са актуелне радне површине.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> је сесија којом управља <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> – повезанo</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, па <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ПРЕДЛОЗИ АПЛИКАЦИЈА</translation>
 <translation id="6352082849089527770">Непознате мреже</translation>
 <translation id="6359587239691116345">Добијајте најновије функције и безбедносна побољшања. Ако одбијете ово ажурирање, уређај можда више неће радити како треба, а ви можете да имате проблема са безбедношћу и перформансама.</translation>
@@ -1234,6 +1253,7 @@
 <translation id="6537924328260219877">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, батерија телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Скенира се фајл <ph name="FILENAME" /> који се преузима</translation>
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6555373427270923730">Унесите веб-адресу у траку за адресу, па притисните <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ново инсталирање</translation>
 <translation id="6559976592393364813">Питајте администратора</translation>
@@ -1251,6 +1271,7 @@
 <translation id="6614169507485700968">Екран за приватност је укључен</translation>
 <translation id="6625718907317144388">Обавештења апликација <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и друга обавештења су скривена јер је заштита од прегледа укључена</translation>
 <translation id="6627638273713273709">Тастер за претрагу+Shift+K</translation>
+<translation id="662830937908749204">Премести фокус на следеће окно</translation>
 <translation id="6637729079642709226">Промените време</translation>
 <translation id="6641720045729354415">Укључите или искључите титл уживо. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Опозовите редослед сортирања према називу</translation>
@@ -1409,6 +1430,7 @@
 <translation id="7401222354741467707">Направите снимак целог екрана или снимите видео целог екрана</translation>
 <translation id="7405710164030118432">Да бисте откључали уређај, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="7406608787870898861">Довршите подешавање мобилне мреже</translation>
+<translation id="7406854842098869085">Притисните и задржите <ph name="MODIFIER_1" />, додирујте <ph name="KEY" /> док не дођете до прозора који желите да отворите, па отпустите</translation>
 <translation id="740790383907119240">Пречице за апликације</translation>
 <translation id="7413851974711031813">Притисните Escape да бисте затворили</translation>
 <translation id="7416471219712049036">Сачувај актуелну страницу</translation>
@@ -1488,6 +1510,7 @@
 <translation id="7727952505535211425">Отвори веб-сајт из траке за адресу на новој картици</translation>
 <translation id="77365090426890123">коришћење меморије</translation>
 <translation id="7742327441377685481">Нема обавештења</translation>
+<translation id="7748275671948949022">Истакни дугме покретача на полици</translation>
 <translation id="7749443890790263709">Достигли сте максималан број радних површина.</translation>
 <translation id="776344839111254542">Кликните за приказ детаља ажурирања</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
@@ -1504,6 +1527,7 @@
 <translation id="7842569679327885685">Упозорење: Експериментална функција</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7848989271541991537">Премештено је на <ph name="PAGE_NUMBER" />. страницу, <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
+<translation id="7851039877802112575">Премести фокус на искачуће прозоре и дијалоге</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Превуците нагоре помоћу три прста да бисте ушли у Преглед</translation>
 <translation id="7862292329216937261">Да бисте користили уређај као гост, треба да се одјавите, па да изаберете Прегледај као гост у дну екрана.</translation>
@@ -1638,8 +1662,10 @@
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8426708595819210923">Добро вече, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Подешавања</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> од <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Мрежна подешавања</translation>
 <translation id="8433977262951327081">Промењена је пречица за приказивање облачића за мени Опције уноса на полици. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Отвори алатку за повратне информације</translation>
 <translation id="8443879455002739353">„Копирајте“</translation>
 <translation id="8444246603146515890">Радна површина <ph name="DESK_TITILE" /> је активирана</translation>
 <translation id="8446884382197647889">Сазнајте више</translation>
@@ -1668,6 +1694,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> препоручује да ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Подешавања обавештења</translation>
 <translation id="857201607579416096">Мени је премештен у доњи десни угао екрана.</translation>
+<translation id="8581946341807941670">Притисните <ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> и кликните на линк</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортирајте апликације према називу или боји</translation>
 <translation id="8609384513243082612">Отворите нову картицу</translation>
@@ -1690,6 +1717,7 @@
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
 <translation id="8683506306463609433">Праћење учинка је активно</translation>
 <translation id="8703634754197148428">Започните снимање. Када снимање почне, користите Alt + Shift + L да бисте се кретали до полице и пронашли дугме за заустављање снимања</translation>
+<translation id="8704155109538237473">Фокусирај прозор слике у слици</translation>
 <translation id="870917907284186124">Укључите или искључите диктирање (унос гласом)</translation>
 <translation id="8717459106217102612">Изаберите претходну реч или слово</translation>
 <translation id="8721053961083920564">Укључите/искључите звук. <ph name="STATE_TEXT" /></translation>

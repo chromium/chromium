@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Er is niet op de toets <ph name="KEY_NAME" /> gedrukt</translation>
 <translation id="1435763214710588005">Het datagebruik wordt elke maand automatisch gereset op de geselecteerde datum</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
+<translation id="1449035143498573192">Openen in Google Zoeken</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7971535376154084247">Algemene bedieningselementen</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Naam thuisprovider</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8476242415522716722">achtergrondverlichting toetsenbord</translation>
+<translation id="8476942730579767658">Vensters en bureaus</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan geen verbinding maken met HTTP-websites via een firewall op Android-apparaten</translation>

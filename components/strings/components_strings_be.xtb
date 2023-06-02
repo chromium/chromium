@@ -211,6 +211,7 @@
 <translation id="1442987760062738829">Дзірка</translation>
 <translation id="1446396933673057385">Праверка дакладнасці</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Налады, якія абралі твае бацькі, абараняюць цябе ў інтэрнэце</translation>
 <translation id="1453974140256777690">Тэкст, які вы ўстаўляеце або далучаеце, перасылаецца для аналізу ў Google Cloud або трэцім бакам: напрыклад, для праверкі на наяўнасць канфідэнцыяльных даных.</translation>
 <translation id="1455413310270022028">Сцірка</translation>
 <translation id="1459693405370120464">Надвор'е</translation>
@@ -268,6 +269,7 @@
 <translation id="1569487616857761740">Увядзіце тэрмін дзеяння</translation>
 <translation id="1569694109004336106">Google Chrome спрабуе ўключыць Windows Hello для ўводу пароляў.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> цал.</translation>
+<translation id="1576277203042721907">Статыстыка купляў</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Падчас паказу вэб-старонкі нешта пайшло не так.</translation>
 <translation id="1584492003828271317">Ці будзе ажыццяўляцца персаналізацыя рэкламы, якая вам паказваецца, залежыць ад гэтай налады, рэкламы, якая прапануецца сайтамі, налад файлаў cookie, а таксама ад таго, ці персаналізуе рэкламу сам сайт, які вы наведваеце</translation>
@@ -1268,6 +1270,7 @@
 <translation id="410148943680000050">Настольныя сістэмы для выдаўцоў</translation>
 <translation id="4103249731201008433">Серыйны нумар прылады – памылковы</translation>
 <translation id="4106133539597032659">Кнопка "Сварыць сайт". Каб хутка стварыць новы сайт з дапамогай Google Сайтаў, націсніце Enter</translation>
+<translation id="4106887816571530227">Убудаванае змесціва не дазволена</translation>
 <translation id="4110652170750985508">Праверце плацеж</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
@@ -1605,6 +1608,7 @@
 <translation id="4876305945144899064">Адсутнічае імя карыстальніка</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Няма}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пошук па запыце "<ph name="TEXT" />"</translation>
+<translation id="4877521229462766300">Дазволіць убудаванае змесціва?</translation>
 <translation id="4879491255372875719">Аўтаматычна (стандартна)</translation>
 <translation id="4880827082731008257">Гісторыя пошуку</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
@@ -1802,6 +1806,7 @@
 <translation id="5314967030527622926">Стварэнне брашур</translation>
 <translation id="5316812925700871227">Павярнуць супраць гадзіннікавай стрэлкі</translation>
 <translation id="5317780077021120954">Захаваць</translation>
+<translation id="5323043727018853753">Убудаванае змесціва дазволена</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Ваш браўзер не знаходзіцца пад кіраваннем</translation>
 <translation id="5332219387342487447">Спосаб дастаўкі</translation>
@@ -2179,6 +2184,7 @@
 <translation id="6306713302480826305">Гэты адрас будзе выдалены з бягучай і іншых прылад, на якіх выкананы ўваход ва ўліковы запіс</translation>
 <translation id="6312113039770857350">Вэб-старонка недаступная</translation>
 <translation id="6316226860534107313">Скутары і мапеды</translation>
+<translation id="6316723751983724988">Навінка: Тут прымяняюцца выбары Family Link для Chrome.</translation>
 <translation id="63172326633386613">Кіраваць наладамі спецыяльных магчымасцей</translation>
 <translation id="6319249456820053699">Фота- і відэакамеры</translation>
 <translation id="6321917430147971392">Праверце налады DNS</translation>
@@ -2733,6 +2739,7 @@
 <translation id="7598391785903975535">Менш за <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> пакуль што не можа апрацаваць гэты запыт.</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">Звычайна вы падключаецеся да гэтага сайта бяспечна, але гэтым разам Chrome не змог выкарыстаць бяспечнае злучэнне. Магчыма, зламыснік спрабуе праслухоўваць вашы даныя або ўнесці змены ў ваша падключэнне да сеткі. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Значэнне параметра знаходзіцца па-за межамі дыяпазону (<ph name="VALUE" />).</translation>
 <translation id="7613889955535752492">Да: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце Tab, затым Enter</translation>
@@ -2833,6 +2840,7 @@
 <translation id="7822320754433038727">Паляванне і стральба</translation>
 <translation id="782886543891417279">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць яе старонку ўваходу.</translation>
 <translation id="7840103971441592723">Здыманне экрана пачалося</translation>
+<translation id="784137052867620416">Статыстыка купляў</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Сайты, якія вы будзеце наведваць пазней, могуць запытваць у браўзера Chrome тэмы, каб персаналізаваць для вас рэкламу. Chrome абагульвае не больш за 3 тэмы. Пры гэтым гісторыя прагляду вамі сайтаў і звесткі, якія маглі б раскрыць вашу асобу, застаюцца пад надзейнай абаронай.</translation>
@@ -2977,6 +2985,7 @@
 <translation id="8217748145574471584">Кадры</translation>
 <translation id="8218327578424803826">Прызначанае месцазнаходжанне:</translation>
 <translation id="8228419419708659934">Двухстаронкавы выгляд</translation>
+<translation id="8228477714872026922">Карыстальнік <ph name="ORIGIN" /> хоча атрымаць доступ да прылады ў вашай сетцы:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спартыўныя гульні</translation>

@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Тастер <ph name="KEY_NAME" /> није притиснут</translation>
 <translation id="1435763214710588005">Аутоматски ресетује потрошњу података сваког месеца на изабрани дан</translation>
 <translation id="1442433966118452622">Извор слике</translation>
+<translation id="1449035143498573192">Отвори у Google претрази</translation>
 <translation id="1451536289672181509">Уређај је тастатура.</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1468664791493211953">Понуде</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Уноси</translation>
 <translation id="7955587717700691983">Bluetooth тастатура</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7971535376154084247">Опште контроле</translation>
 <translation id="7977800524392185497">Да бисте се придружили <ph name="NETWORK_NAME" /> мрежи, идите у Подешавања</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7994702968232966508">EAP метод</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Назив добављача за Home</translation>
 <translation id="8475690821716466388">WiFi мрежа је обезбеђена слабим протоколом WEP PSK</translation>
 <translation id="8476242415522716722">слабо осветљење тастатуре</translation>
+<translation id="8476942730579767658">Прозори и радне површине</translation>
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>
 <translation id="8483248364096924578">IP адреса</translation>
 <translation id="8491311378305535241">Не можете да се повежете са HTTP веб-сајтовима из Android апликација кроз заштитни зид</translation>

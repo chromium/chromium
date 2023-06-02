@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Nebol stlačený kláves <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Automaticky každý mesiac resetuje spotrebu dát vo vybraný deň</translation>
 <translation id="1442433966118452622">Zdroj obrázka</translation>
+<translation id="1449035143498573192">Otvoriť vo Vyhľadávaní Google</translation>
 <translation id="1451536289672181509">Zariadenie je klávesnica.</translation>
 <translation id="1459693405370120464">Počasie</translation>
 <translation id="1468664791493211953">Ponuky</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Vstupy</translation>
 <translation id="7955587717700691983">Klávesnica s rozhraním Bluetooth</translation>
 <translation id="7960831585769876809">Teplota</translation>
+<translation id="7971535376154084247">Všeobecné ovládanie</translation>
 <translation id="7977800524392185497">Ak sa chcete pripojiť k sieti <ph name="NETWORK_NAME" />, prejdite do Nastavení</translation>
 <translation id="7978412674231730200">Súkromný kľúč</translation>
 <translation id="7994702968232966508">Metóda EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Názov poskytovateľa domácej siete</translation>
 <translation id="8475690821716466388">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP PSK</translation>
 <translation id="8476242415522716722">podsvietenie klávesnice</translation>
+<translation id="8476942730579767658">Okná a plochy</translation>
 <translation id="8477551185774834963">Latencia servera DNS mierne prekračuje povolenú úroveň</translation>
 <translation id="8483248364096924578">Adresa IP</translation>
 <translation id="8491311378305535241">V aplikáciách pre Android sa prostredníctvom brány firewall nedá pripojiť k webom HTTPS</translation>

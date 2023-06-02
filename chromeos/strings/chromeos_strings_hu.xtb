@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Nem lett megnyomva a következő gomb: <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Minden hónapban automatikusan visszaállítja az adathasználatot a kiválasztott napon</translation>
 <translation id="1442433966118452622">Kép forrása</translation>
+<translation id="1449035143498573192">Megnyitás a Google Keresőben</translation>
 <translation id="1451536289672181509">Az eszköz egy billentyűzet.</translation>
 <translation id="1459693405370120464">Időjárás</translation>
 <translation id="1468664791493211953">Ajánlatok</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Beviteli módszerek</translation>
 <translation id="7955587717700691983">Bluetooth-billentyűzet</translation>
 <translation id="7960831585769876809">Hőmérséklet</translation>
+<translation id="7971535376154084247">Általános vezérlők</translation>
 <translation id="7977800524392185497">A(z) <ph name="NETWORK_NAME" />-hálózathoz való csatlakozáshoz nyissa meg a Beállításokat</translation>
 <translation id="7978412674231730200">Privát kulcs</translation>
 <translation id="7994702968232966508">EAP módszer</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Otthoni szolgáltató neve</translation>
 <translation id="8475690821716466388">A Wi-Fi-hálózat gyenge protokollal (WEP PSK) van biztosítva</translation>
 <translation id="8476242415522716722">billentyűzet világítása</translation>
+<translation id="8476942730579767658">Ablakok és asztalok</translation>
 <translation id="8477551185774834963">A DNS várakozási ideje kissé az engedélyezhető határérték felett van</translation>
 <translation id="8483248364096924578">IP-cím</translation>
 <translation id="8491311378305535241">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni androidos alkalmazásokról</translation>
