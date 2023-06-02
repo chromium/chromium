@@ -1624,15 +1624,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Checks if there are any remaining password issues that are not muted from the
 // last time password check was run.
 - (BOOL)hasPasswordIssuesRemaining {
-  CHECK(!_settingsAreDismissed);
-  CHECK(_passwordCheckManager);
+  if (!_passwordCheckManager) {
+    return NO;
+  }
   return !_passwordCheckManager->GetInsecureCredentials().empty();
 }
 
 // Displays a warning icon in the `_safetyCheckItem` if there is a reamining
 // issue for any of the safety checks.
 - (void)updateSafetyCheckItemTrailingIcon {
-  if (!_safetyCheckItem) {
+  if (!_safetyCheckItem || !_passwordCheckManager) {
     return;
   }
 
@@ -2136,19 +2137,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {
-  // Settings may have been dismissed in the meantime as the callback is
-  // asynchronous. There is no UI to update in that case.
-  if (!_settingsAreDismissed) {
-    [self updateSafetyCheckItemTrailingIcon];
-  }
+  [self updateSafetyCheckItemTrailingIcon];
 }
 
 - (void)insecureCredentialsDidChange {
-  // Settings may have been dismissed in the meantime as the callback is
-  // asynchronous. There is no UI to update in that case.
-  if (!_settingsAreDismissed) {
-    [self updateSafetyCheckItemTrailingIcon];
-  }
+  [self updateSafetyCheckItemTrailingIcon];
 }
 
 #pragma mark - PrefObserverDelegate
