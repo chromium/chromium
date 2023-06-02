@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -338,22 +339,6 @@ bool AreAllMatchingHashesPresent(
   return true;
 }
 
-bool CheckSource(ContentSecurityPolicy* policy,
-                 const network::mojom::blink::CSPSourceList* directive,
-                 const network::mojom::blink::CSPSource& self_origin,
-                 const KURL& url,
-                 ResourceRequest::RedirectStatus redirect_status) {
-  // If |url| is empty, fall back to the policy URL to ensure that <object>'s
-  // without a `src` can be blocked/allowed, as they can still load plugins
-  // even though they don't actually have a URL.
-  if (!directive)
-    return true;
-
-  return CSPSourceListAllows(
-      *directive, self_origin,
-      url.IsEmpty() ? policy->FallbackUrlForPlugin() : url, redirect_status);
-}
-
 bool CheckEvalAndReportViolation(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
@@ -482,31 +467,14 @@ bool CheckInlineAndReportViolation(
   return true;
 }
 
-bool CheckSourceAndReportViolation(
+void ReportViolationForCheckSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     CSPOperativeDirective directive,
     const KURL& url,
     CSPDirectiveName effective_type,
     const KURL& url_before_redirects,
-    ResourceRequest::RedirectStatus redirect_status) {
-  if (!directive.source_list)
-    return true;
-
-  String suffix = String();
-  if (CheckSource(policy, directive.source_list, *csp.self_origin, url,
-                  redirect_status)) {
-    // We ignore URL-based allowlists if we're allowing dynamic script
-    // injection.
-    if (!CheckDynamic(directive.source_list, effective_type)) {
-      return true;
-    } else {
-      suffix =
-          " Note that 'strict-dynamic' is present, so host-based allowlisting "
-          "is disabled.";
-    }
-  }
-
+    String suffix) {
   // We should never have a violation against `child-src`
   // directly; the effective directive should always be one of the explicit
   // fetch directives, or default-src in the case of resource hints.
@@ -586,9 +554,9 @@ bool CheckSourceAndReportViolation(
 
   // Wildcards match network schemes ('http', 'https', 'ws', 'wss'), and the
   // scheme of the protected resource:
-  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
-  // schemes, including custom schemes, must be explicitly listed in a source
-  // list.
+  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression.
+  // Other schemes, including custom schemes, must be explicitly listed in a
+  // source list.
   if (directive.source_list->allow_star) {
     suffix = suffix +
              " Note that '*' matches only URLs with network schemes ('http', "
@@ -605,6 +573,44 @@ bool CheckSourceAndReportViolation(
                       "Policy directive: \"" +
                       raw_directive + "\"." + suffix + "\n",
                   url_before_redirects);
+}
+
+bool CheckSource(const network::mojom::blink::ContentSecurityPolicy& csp,
+                 ContentSecurityPolicy* policy,
+                 CSPOperativeDirective directive,
+                 const KURL& url,
+                 CSPDirectiveName effective_type,
+                 const KURL& url_before_redirects,
+                 ResourceRequest::RedirectStatus redirect_status,
+                 ReportingDisposition reporting_disposition) {
+  if (!directive.source_list) {
+    return true;
+  }
+
+  // If |url| is empty, fall back to the policy URL to ensure that
+  // <object>'s without a `src` can be blocked/allowed, as they can
+  // still load plugins even though they don't actually have a URL.
+  const KURL& url_to_check =
+      url.IsEmpty() ? policy->FallbackUrlForPlugin() : url;
+  String suffix = String();
+  if (CSPSourceListAllows(*directive.source_list, *csp.self_origin,
+                          url_to_check, redirect_status)) {
+    // We ignore URL-based allowlists if we're allowing dynamic script
+    // injection.
+    if (!CheckDynamic(directive.source_list, effective_type)) {
+      return true;
+    } else {
+      suffix =
+          " Note that 'strict-dynamic' is present, so host-based allowlisting "
+          "is disabled.";
+    }
+  }
+
+  if (reporting_disposition == ReportingDisposition::kReport) {
+    ReportViolationForCheckSource(csp, policy, directive, url, effective_type,
+                                  url_before_redirects, suffix);
+  }
+
   return CSPDirectiveListIsReportOnly(csp);
 }
 
@@ -861,8 +867,9 @@ bool CSPDirectiveListAllowFromSource(
 
   if (type == CSPDirectiveName::ScriptSrcElem) {
     if (parser_disposition == kNotParserInserted &&
-        CSPDirectiveListAllowDynamic(csp, type))
+        CSPDirectiveListAllowDynamic(csp, type)) {
       return true;
+    }
     if (AreAllMatchingHashesPresent(OperativeDirective(csp, type).source_list,
                                     hashes))
       return true;
@@ -870,15 +877,13 @@ bool CSPDirectiveListAllowFromSource(
 
   CSPOperativeDirective directive = OperativeDirective(csp, type);
   bool result =
-      reporting_disposition == ReportingDisposition::kReport
-          ? CheckSourceAndReportViolation(csp, policy, directive, url, type,
-                                          url_before_redirects, redirect_status)
-          : CheckSource(policy, directive.source_list, *csp.self_origin, url,
-                        redirect_status);
+      CheckSource(csp, policy, directive, url, type, url_before_redirects,
+                  redirect_status, reporting_disposition);
 
   if (type == CSPDirectiveName::BaseURI) {
-    if (result && !CheckSource(policy, directive.source_list, *csp.self_origin,
-                               url, redirect_status)) {
+    if (result && !CheckSource(csp, policy, directive, url, type,
+                               url_before_redirects, redirect_status,
+                               ReportingDisposition::kSuppressReporting)) {
       policy->Count(WebFeature::kBaseWouldBeBlockedByDefaultSrc);
     }
   }

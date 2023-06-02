@@ -262,6 +262,7 @@ blink_core_tests_frame = [
   "csp/csp_directive_list_test.cc",
   "csp/csp_source_test.cc",
   "csp/source_list_directive_test.cc",
+  "csp/test_util.h",
   "csp/trusted_types_directive_test.cc",
   "deprecation/deprecation_report_body_test.cc",
   "document_loading_rendering_test.cc",
