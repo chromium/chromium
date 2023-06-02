@@ -236,6 +236,38 @@ std::u16string NotificationIconsController::GetAccessibleNameString() const {
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME, status, nullptr);
 }
 
+void NotificationIconsController::UpdateNotificationIcons() {
+  // Iterates `tray_items_` and notifications in reverse order so new pinned
+  // notifications get shown on the left side.
+  auto notifications =
+      message_center_utils::GetSortedNotificationsWithOwnView();
+
+  auto tray_it = tray_items_.rbegin();
+  for (auto notification_it = notifications.rbegin();
+       notification_it != notifications.rend(); ++notification_it) {
+    if (tray_it == tray_items_.rend()) {
+      break;
+    }
+
+    if (ShouldShowNotification(*notification_it)) {
+      (*tray_it)->SetNotification(*notification_it);
+      (*tray_it)->SetVisible(icons_view_visible_);
+      ++tray_it;
+    }
+  }
+
+  first_unused_item_index_ = std::distance(tray_items_.rbegin(), tray_it);
+
+  for (; tray_it != tray_items_.rend(); ++tray_it) {
+    (*tray_it)->Reset();
+    (*tray_it)->SetVisible(false);
+  }
+
+  if (separator_) {
+    separator_->SetVisible(icons_view_visible_ && TrayItemHasNotification());
+  }
+}
+
 void NotificationIconsController::UpdateNotificationIndicators() {
   notification_counter_view_->Update();
   quiet_mode_view_->Update();
@@ -283,10 +315,6 @@ void NotificationIconsController::OnDisplayMetricsChanged(
 }
 
 void NotificationIconsController::OnNotificationAdded(const std::string& id) {
-  if (features::IsQsRevampEnabled()) {
-    base::AutoReset<bool> reset(&is_notification_center_tray_updating_, true);
-    notification_center_tray_->UpdateVisibility();
-  }
   message_center::Notification* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(id);
   // `notification` is null if it is not visible.
@@ -301,10 +329,6 @@ void NotificationIconsController::OnNotificationAdded(const std::string& id) {
 
 void NotificationIconsController::OnNotificationRemoved(const std::string& id,
                                                         bool by_user) {
-  if (features::IsQsRevampEnabled()) {
-    notification_center_tray_->UpdateVisibility();
-  }
-
   // If the notification removed is displayed in an icon, call update to show
   // another notification if needed.
   if (GetNotificationIconShownInTray(id))
@@ -314,10 +338,6 @@ void NotificationIconsController::OnNotificationRemoved(const std::string& id,
 }
 
 void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
-  if (features::IsQsRevampEnabled()) {
-    notification_center_tray_->UpdateVisibility();
-  }
-
   // A notification update may impact certain notification icon(s) visibility
   // in the tray, so update all notification icons.
   UpdateNotificationIcons();
@@ -328,68 +348,23 @@ void NotificationIconsController::OnNotificationDisplayed(
     const std::string& notification_id,
     const message_center::DisplaySource source) {
   if (features::IsQsRevampEnabled()) {
-    notification_center_tray_->UpdateVisibility();
-    if (is_notification_center_tray_updating_) {
-      // No need to update the notification icons/indicators here because those
-      // updates will happen when the rest of `OnNotificationAdded()` executes.
-      // This also avoids calling `ShelfLayoutManager::LayoutShelf()` in the
-      // middle of its current execution, which is good because that function
-      // is not reentrant.
-      return;
-    }
     UpdateNotificationIcons();
     UpdateNotificationIndicators();
   }
 }
 
 void NotificationIconsController::OnQuietModeChanged(bool in_quiet_mode) {
-  if (features::IsQsRevampEnabled()) {
-    notification_center_tray_->UpdateVisibility();
-  }
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
 }
 
 void NotificationIconsController::OnSessionStateChanged(
     session_manager::SessionState state) {
-  if (features::IsQsRevampEnabled()) {
-    notification_center_tray_->UpdateVisibility();
-  }
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
 
   if (separator_)
     separator_->UpdateColor(state);
-}
-
-void NotificationIconsController::UpdateNotificationIcons() {
-  // Iterates `tray_items_` and notifications in reverse order so new pinned
-  // notifications get shown on the left side.
-  auto notifications =
-      message_center_utils::GetSortedNotificationsWithOwnView();
-
-  auto tray_it = tray_items_.rbegin();
-  for (auto notification_it = notifications.rbegin();
-       notification_it != notifications.rend(); ++notification_it) {
-    if (tray_it == tray_items_.rend())
-      break;
-
-    if (ShouldShowNotification(*notification_it)) {
-      (*tray_it)->SetNotification(*notification_it);
-      (*tray_it)->SetVisible(icons_view_visible_);
-      ++tray_it;
-    }
-  }
-
-  first_unused_item_index_ = std::distance(tray_items_.rbegin(), tray_it);
-
-  for (; tray_it != tray_items_.rend(); ++tray_it) {
-    (*tray_it)->Reset();
-    (*tray_it)->SetVisible(false);
-  }
-
-  if (separator_)
-    separator_->SetVisible(icons_view_visible_ && TrayItemHasNotification());
 }
 
 NotificationIconTrayItemView*
