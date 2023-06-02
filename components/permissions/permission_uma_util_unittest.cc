@@ -53,7 +53,7 @@ blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
     bool matches_all_origins = false) {
   std::vector<blink::OriginWithPossibleWildcards> allow_origins;
   for (const auto& origin : origins) {
-    allow_origins.emplace_back(blink::OriginWithPossibleWildcards::FromOrigin(
+    allow_origins.emplace_back(*blink::OriginWithPossibleWildcards::FromOrigin(
         url::Origin::Create(GURL(origin))));
   }
   return {{feature, allow_origins, /*self_if_matches=*/absl::nullopt,

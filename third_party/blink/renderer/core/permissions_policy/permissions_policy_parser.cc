@@ -245,8 +245,14 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     if (!src_origin_) {
       allowlist.self_if_matches = self_origin_->ToUrlOrigin();
     } else if (!src_origin_->IsOpaque()) {
-      allowlist.allowed_origins.emplace_back(
-          OriginWithPossibleWildcards::FromOrigin(src_origin_->ToUrlOrigin()));
+      absl::optional<OriginWithPossibleWildcards>
+          maybe_origin_with_possible_wildcards =
+              OriginWithPossibleWildcards::FromOrigin(
+                  src_origin_->ToUrlOrigin());
+      if (maybe_origin_with_possible_wildcards.has_value()) {
+        allowlist.allowed_origins.emplace_back(
+            *maybe_origin_with_possible_wildcards);
+      }
     } else {
       allowlist.matches_opaque_src = true;
     }
@@ -286,9 +292,16 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // when parsing an iframe allow attribute.
       else if (src_origin_ && EqualIgnoringASCIICase(origin_string, "'src'")) {
         if (!src_origin_->IsOpaque()) {
-          origin_with_possible_wildcards =
-              OriginWithPossibleWildcards::FromOrigin(
-                  src_origin_->ToUrlOrigin());
+          absl::optional<OriginWithPossibleWildcards>
+              maybe_origin_with_possible_wildcards =
+                  OriginWithPossibleWildcards::FromOrigin(
+                      src_origin_->ToUrlOrigin());
+          if (maybe_origin_with_possible_wildcards.has_value()) {
+            origin_with_possible_wildcards =
+                *maybe_origin_with_possible_wildcards;
+          } else {
+            continue;
+          }
         } else {
           target_is_opaque = true;
         }
@@ -304,7 +317,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
         absl::optional<OriginWithPossibleWildcards>
             maybe_origin_with_possible_wildcards =
                 OriginWithPossibleWildcards::Parse(origin_string.Utf8(), type);
-        if (maybe_origin_with_possible_wildcards) {
+        if (maybe_origin_with_possible_wildcards.has_value()) {
           origin_with_possible_wildcards =
               *maybe_origin_with_possible_wildcards;
         } else {

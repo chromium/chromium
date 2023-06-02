@@ -254,8 +254,12 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
   if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
     default_allowlist.AddAll();
   } else if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf) {
-    default_allowlist.Add(
-        blink::OriginWithPossibleWildcards::FromOrigin(origin_));
+    absl::optional<blink::OriginWithPossibleWildcards>
+        origin_with_possible_wildcards =
+            blink::OriginWithPossibleWildcards::FromOrigin(origin_);
+    if (origin_with_possible_wildcards.has_value()) {
+      default_allowlist.Add(*origin_with_possible_wildcards);
+    }
   }
 
   return default_allowlist;

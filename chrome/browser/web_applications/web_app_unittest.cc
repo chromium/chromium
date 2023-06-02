@@ -380,15 +380,12 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
-        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.net")),
-            /*has_subdomain_wildcard=*/true),
-        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            url::Origin::Create(GURL("https://*.example.net")),
-            /*has_subdomain_wildcard=*/false)},
+            /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
@@ -410,7 +407,7 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
           "matches_opaque_src": false
         }
         , {
-          "allowed_origins": [ "https://example.com", "https://*.example.net", "https://%2A.example.net" ],
+          "allowed_origins": [ "https://example.com", "https://*.example.net" ],
           "feature": "gamepad",
           "matches_all_origins": false,
           "matches_opaque_src": false

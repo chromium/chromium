@@ -347,6 +347,8 @@ TEST_P(OriginWithPossibleWildcardsTest, SerializeAndMojom) {
                       "Origin with just scheme"),
       std::make_tuple("https://192.168.0.1", true, "IPv4"),
       std::make_tuple("file://example.com", true, "File host"),
+      std::make_tuple("https://[2001:db8::1]", false, "IPv6"),
+      std::make_tuple("file:///test", false, "File path"),
   };
   for (const auto& value : values) {
     const auto& original = OriginWithPossibleWildcards::Parse(
@@ -365,32 +367,11 @@ TEST_P(OriginWithPossibleWildcardsTest, SerializeAndMojom) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, SpecialOriginTypes) {
-  // Tuple of {serialized value, description}.
-  const auto& values = {
-      std::make_tuple("https://[2001:db8::1]", "IPv6"),
-      std::make_tuple("file:///test", "File path"),
-  };
-  for (const auto& value : values) {
-    const auto& original = OriginWithPossibleWildcards::FromOrigin(
-        url::Origin::Create(GURL(std::get<0>(value))));
-    SCOPED_TRACE(std::get<1>(value));
-    OriginWithPossibleWildcards copy;
-    EXPECT_NE(original, copy);
-    EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(
-            original, copy));
-    EXPECT_EQ(original, copy);
-  }
-}
-
 TEST_P(OriginWithPossibleWildcardsTest, Opaque) {
-  EXPECT_DCHECK_DEATH(
-      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(url::Origin(),
-                                                                 true));
-  EXPECT_DCHECK_DEATH(
-      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(url::Origin(),
-                                                                 false));
+  EXPECT_FALSE(OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+      url::Origin(), true));
+  EXPECT_FALSE(OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+      url::Origin(), false));
   OriginWithPossibleWildcards original;
   OriginWithPossibleWildcards copy;
   EXPECT_FALSE(

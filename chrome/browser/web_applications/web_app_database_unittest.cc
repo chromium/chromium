@@ -734,10 +734,10 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
-        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.net")),
             /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/absl::nullopt,
@@ -764,15 +764,12 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
-        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.net")),
-            /*has_subdomain_wildcard=*/true),
-        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            url::Origin::Create(GURL("https://*.example.net")),
-            /*has_subdomain_wildcard=*/false)},
+            /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
@@ -791,13 +788,11 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
   EXPECT_EQ(proto->permissions_policy().at(1).matches_all_origins(), true);
   EXPECT_EQ(proto->permissions_policy().at(1).matches_opaque_src(), false);
   EXPECT_EQ(proto->permissions_policy().at(2).feature(), "gamepad");
-  ASSERT_EQ(proto->permissions_policy().at(2).allowed_origins_size(), 3);
+  ASSERT_EQ(proto->permissions_policy().at(2).allowed_origins_size(), 2);
   EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(0),
             "https://example.com");
   EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(1),
             "https://*.example.net");
-  EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(2),
-            "https://%2A.example.net");
   EXPECT_EQ(proto->permissions_policy().at(2).matches_all_origins(), false);
   EXPECT_EQ(proto->permissions_policy().at(2).matches_opaque_src(), false);
 }

@@ -64,7 +64,7 @@ class PermissionContextBasePermissionsPolicyTest
     if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector({blink::OriginWithPossibleWildcards::FromOrigin(
+          std::vector({*blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin)))}),
           /*self_if_matches=*/absl::nullopt,
           /*matches_all_origins=*/false,
@@ -91,7 +91,7 @@ class PermissionContextBasePermissionsPolicyTest
     std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
     for (const std::string& origin : origins) {
       parsed_origins.emplace_back(
-          blink::OriginWithPossibleWildcards::FromOrigin(
+          *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     }
     navigation->SetPermissionsPolicyHeader(

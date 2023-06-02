@@ -846,9 +846,14 @@ absl::optional<blink::ParsedPermissionsPolicy>
 ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
+  std::vector<blink::OriginWithPossibleWildcards> allowlist;
+  if (auto origin_with_possible_wildcards =
+          blink::OriginWithPossibleWildcards::FromOrigin(app_origin);
+      origin_with_possible_wildcards.has_value()) {
+    allowlist.emplace_back(*origin_with_possible_wildcards);
+  }
   blink::ParsedPermissionsPolicyDeclaration decl(
-      blink::mojom::PermissionsPolicyFeature::kDirectSockets,
-      {blink::OriginWithPossibleWildcards::FromOrigin(app_origin)},
+      blink::mojom::PermissionsPolicyFeature::kDirectSockets, allowlist,
       /*self_if_matches=*/absl::nullopt,
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
   return {{decl}};

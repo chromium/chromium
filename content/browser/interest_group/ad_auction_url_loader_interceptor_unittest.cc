@@ -120,11 +120,10 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     policy.emplace_back(
         blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
         /*allowed_origins=*/
-        std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards::FromOrigin(
-                url::Origin::Create(GURL("https://google.com"))),
-            blink::OriginWithPossibleWildcards::FromOrigin(
-                url::Origin::Create(GURL("https://foo1.com")))},
+        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+                        url::Origin::Create(GURL("https://google.com"))),
+                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                        url::Origin::Create(GURL("https://foo1.com")))},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);

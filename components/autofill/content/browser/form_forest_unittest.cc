@@ -400,7 +400,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
       url::Origin origin) {
     return {blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kSharedAutofill,
-        {blink::OriginWithPossibleWildcards::FromOrigin(origin)},
+        {*blink::OriginWithPossibleWildcards::FromOrigin(origin)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false)};

@@ -428,13 +428,13 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     policy->SetHeaderPolicy(
         {{{mojom::blink::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/
-           {blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
+           {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/absl::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
           {mojom::blink::PermissionsPolicyFeature::
                kSharedStorage, /*allowed_origins=*/
-           {blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
+           {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/absl::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false}}});

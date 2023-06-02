@@ -6668,8 +6668,7 @@ function reportResult() {
   policy.emplace_back(
       blink::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
-      std::vector<blink::OriginWithPossibleWildcards>{
-          blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
+      std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
       /*self_if_matches=*/absl::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
@@ -6882,8 +6881,7 @@ function scoreAd(
     policy.emplace_back(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
+        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6908,9 +6906,8 @@ function scoreAd(
     policy.emplace_back(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
-            blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
+        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+                    *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6969,8 +6966,7 @@ function scoreAd(
     policy.emplace_back(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
+        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6995,9 +6991,8 @@ function scoreAd(
     policy.emplace_back(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
-            blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
+        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+                    *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);

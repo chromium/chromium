@@ -109,7 +109,7 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
     if (allow_via_permissions_policy) {
       frame_policy.push_back(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-           std::vector{blink::OriginWithPossibleWildcards::FromOrigin(
+           std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
                url::Origin::Create(kEmbeddedUrl))},
            /*self_if_matches=*/absl::nullopt,
            /*matches_all_origins=*/false,

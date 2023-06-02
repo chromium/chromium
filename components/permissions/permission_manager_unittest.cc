@@ -253,7 +253,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.emplace_back(
-          blink::OriginWithPossibleWildcards::FromOrigin(
+          *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, /*self_if_matches=*/absl::nullopt,
@@ -271,8 +271,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     if (feature != PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector({blink::OriginWithPossibleWildcards::FromOrigin(
-              url::Origin::Create(origin))}),
+          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+              url::Origin::Create(origin))},
           /*self_if_matches=*/absl::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);

@@ -677,7 +677,7 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
         {blink::ParsedPermissionsPolicyDeclaration(
             blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
             /*allowed_origins=*/
-            {blink::OriginWithPossibleWildcards::FromOrigin(
+            {*blink::OriginWithPossibleWildcards::FromOrigin(
                 url::Origin::Create(GURL(kAllowedOriginUrl)))},
             /*self_if_matches=*/absl::nullopt,
             /*matches_all_origins=*/false, /*matches_opaque_src=*/false)});
