@@ -992,6 +992,13 @@ proto_library("offline_wire_formats_proto") {
   proto_out_dir = "third_party/nearby"
 }
 
+# src/presence/proto
+proto_library("presence_frame_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/presence/proto/presence_frame.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
 # src/proto/errorcode
 proto_library("error_code_enums_proto") {
   proto_in_dir = "src"
