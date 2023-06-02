@@ -3669,7 +3669,7 @@
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'all' ],
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'perfetto_gtests',
