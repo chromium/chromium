@@ -15,7 +15,6 @@
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
-#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,7 +35,6 @@ class WebUIDataSource;
 // Handles bidirectional communication between NTP realbox JS and the browser.
 class RealboxHandler : public omnibox::mojom::PageHandler,
                        public AutocompleteController::Observer,
-                       public OmniboxEditModelDelegate,
                        public LocationBarModel {
  public:
   enum class FocusState {
@@ -102,27 +100,6 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                        bool default_match_changed) override;
 
   void SelectMatchAtLine(size_t old_line, size_t new_line);
-
-  // OmniboxEditModelDelegate:
-  void OnAutocompleteAccept(
-      const GURL& destination_url,
-      TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
-      ui::PageTransition transition,
-      AutocompleteMatchType::Type match_type,
-      base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme,
-      bool destination_url_entered_with_http_scheme,
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname =
-          IDNA2008DeviationCharacter::kNone) override;
-  void OnInputInProgress(bool in_progress) override;
-  void OnChanged() override;
-  void OnPopupVisibilityChanged() override;
-  LocationBarModel* GetLocationBarModel() override;
-  const LocationBarModel* GetLocationBarModel() const override;
 
   // LocationBarModel:
   std::u16string GetFormattedFullURL() const override;

@@ -49,7 +49,6 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -167,17 +166,15 @@ bool IsClipboardDataMarkedAsConfidential() {
 
 // OmniboxViewViews -----------------------------------------------------------
 
-OmniboxViewViews::OmniboxViewViews(
-    OmniboxEditModelDelegate* edit_model_delegate,
-    std::unique_ptr<OmniboxClient> client,
-    bool popup_window_mode,
-    LocationBarView* location_bar,
-    const gfx::FontList& font_list)
-    : OmniboxView(edit_model_delegate, std::move(client)),
+OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
+                                   bool popup_window_mode,
+                                   LocationBarView* location_bar_view,
+                                   const gfx::FontList& font_list)
+    : OmniboxView(std::move(client)),
       popup_window_mode_(popup_window_mode),
       popup_is_webui_(
           base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)),
-      location_bar_view_(location_bar),
+      location_bar_view_(location_bar_view),
       latency_histogram_state_(NOT_ACTIVE),
       friendly_suggestion_text_prefix_length_(0) {
   SetID(VIEW_ID_OMNIBOX);
@@ -610,16 +607,15 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
   // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
   // origin, the URL is likely too syntax-y to be able to meaningfully draw
   // attention to any part of it.
-  auto* const location_bar_model = edit_model_delegate()->GetLocationBarModel();
+  auto* const location_bar_model = GetLocationBarModel();
   if (!location_bar_model->GetURL().SchemeIsHTTPOrHTTPS())
     return;
 
   if (net::IsCertStatusError(location_bar_model->GetCertStatus())) {
     if (location_bar_view_) {
-      ApplyColor(
-          location_bar_view_->GetSecurityChipColor(
-              edit_model_delegate()->GetLocationBarModel()->GetSecurityLevel()),
-          range);
+      ApplyColor(location_bar_view_->GetSecurityChipColor(
+                     GetLocationBarModel()->GetSecurityLevel()),
+                 range);
     }
     ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
   }
@@ -1144,8 +1140,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
       if (IsSelectAll()) {
         SelectWordAt(event.location());
         std::u16string shown_url = GetText();
-        std::u16string full_url =
-            edit_model_delegate()->GetLocationBarModel()->GetFormattedFullURL();
+        std::u16string full_url = GetLocationBarModel()->GetFormattedFullURL();
         size_t offset = full_url.find(shown_url);
         if (offset != std::u16string::npos) {
           next_double_click_selection_len_ = GetSelectedText().length();

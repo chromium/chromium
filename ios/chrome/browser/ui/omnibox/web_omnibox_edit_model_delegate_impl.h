@@ -16,6 +16,8 @@
 // TODO(crbug.com/818641): downgrade from WebOmniboxEditModelDelegate subclass
 // straight to OmniboxEditModelDelegate subclass once OmniboxViewIOS doesn't
 // need it.
+// TODO(crbug.com/1404748): Adjust the previous TODO as OmniboxEditModelDelegate
+//  no longer exists.
 class WebOmniboxEditModelDelegateImpl : public WebOmniboxEditModelDelegate {
  public:
   WebOmniboxEditModelDelegateImpl(id<OmniboxControllerDelegate> delegate,
@@ -30,26 +32,13 @@ class WebOmniboxEditModelDelegateImpl : public WebOmniboxEditModelDelegate {
   web::WebState* GetWebState() override;
   void OnKillFocus() override;
   void OnSetFocus() override;
-
-  // OmniboxEditModelDelegate methods.
-  void OnAutocompleteAccept(
-      const GURL& destination_url,
-      TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
-      ui::PageTransition transition,
-      AutocompleteMatchType::Type match_type,
-      base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme,
-      bool destination_url_entered_with_http_scheme,
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
-  void OnInputInProgress(bool in_progress) override {}
-  void OnChanged() override;
-  void OnPopupVisibilityChanged() override {}
+  void OnNavigate(const GURL& destination_url,
+                  TemplateURLRef::PostContent* post_content,
+                  WindowOpenDisposition disposition,
+                  ui::PageTransition transition,
+                  bool destination_url_entered_without_scheme,
+                  const AutocompleteMatch& match) override;
   LocationBarModel* GetLocationBarModel() override;
-  const LocationBarModel* GetLocationBarModel() const override;
 
  private:
   __weak id<OmniboxControllerDelegate> delegate_;

@@ -59,7 +59,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                ChromeBrowserState* browser_state,
                                id<OmniboxCommands> omnibox_focuser)
     : OmniboxView(
-          edit_model_delegate,
           edit_model_delegate
               ? std::make_unique<ChromeOmniboxClientIOS>(
                     edit_model_delegate,

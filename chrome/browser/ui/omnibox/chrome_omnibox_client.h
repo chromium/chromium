@@ -18,18 +18,18 @@
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
 
-class ChromeOmniboxEditModelDelegate;
+class Browser;
 class GURL;
+class LocationBar;
 class Profile;
 
 class ChromeOmniboxClient : public OmniboxClient {
  public:
-  ChromeOmniboxClient(ChromeOmniboxEditModelDelegate* edit_model_delegate,
+  ChromeOmniboxClient(LocationBar* location_bar,
+                      Browser* browser,
                       Profile* profile);
-
   ChromeOmniboxClient(const ChromeOmniboxClient&) = delete;
   ChromeOmniboxClient& operator=(const ChromeOmniboxClient&) = delete;
-
   ~ChromeOmniboxClient() override;
 
   // OmniboxClient.
@@ -90,6 +90,22 @@ class ChromeOmniboxClient : public OmniboxClient {
       size_t index,
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match,
+      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+  void OnInputInProgress(bool in_progress) override;
+  void OnPopupVisibilityChanged() override;
+  LocationBarModel* GetLocationBarModel() override;
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,
@@ -107,8 +123,10 @@ class ChromeOmniboxClient : public OmniboxClient {
                        int result_index,
                        const SkBitmap& bitmap);
 
-  raw_ptr<ChromeOmniboxEditModelDelegate> edit_model_delegate_;
-  raw_ptr<Profile> profile_;
+  // Implemented by `LocationBarView` which owns `OmniboxView` which owns this.
+  const raw_ptr<LocationBar> location_bar_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;
   FaviconCache favicon_cache_;

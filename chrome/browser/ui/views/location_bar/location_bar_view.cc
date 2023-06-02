@@ -169,8 +169,8 @@ LocationBarView::LocationBarView(Browser* browser,
                                  CommandUpdater* command_updater,
                                  Delegate* delegate,
                                  bool is_popup_mode)
-    : AnimationDelegateViews(this),
-      ChromeOmniboxEditModelDelegate(browser, profile, command_updater),
+    : LocationBar(command_updater),
+      AnimationDelegateViews(this),
       browser_(browser),
       profile_(profile),
       delegate_(delegate),
@@ -223,8 +223,10 @@ void LocationBarView::Init() {
 
   // Initialize the Omnibox view.
   auto omnibox_view = std::make_unique<OmniboxViewViews>(
-      this, std::make_unique<ChromeOmniboxClient>(this, profile_),
-      is_popup_mode_, this, font_list);
+      std::make_unique<ChromeOmniboxClient>(
+          /*location_bar=*/this, browser_, profile_),
+      is_popup_mode_,
+      /*location_bar_view=*/this, font_list);
   omnibox_view->Init();
   omnibox_view_ = AddChildView(std::move(omnibox_view));
   // LocationBarView directs mouse button events from
@@ -1149,30 +1151,6 @@ void LocationBarView::OnPageInfoBubbleClosed(
   }
 
   FocusLocation(false);
-}
-
-GURL LocationBarView::GetDestinationURL() const {
-  return destination_url();
-}
-
-bool LocationBarView::IsInputTypedUrlWithoutScheme() const {
-  return destination_url_entered_without_scheme();
-}
-
-bool LocationBarView::IsInputTypedUrlWithHttpScheme() const {
-  return destination_url_entered_with_http_scheme();
-}
-
-WindowOpenDisposition LocationBarView::GetWindowOpenDisposition() const {
-  return disposition();
-}
-
-ui::PageTransition LocationBarView::GetPageTransition() const {
-  return transition();
-}
-
-base::TimeTicks LocationBarView::GetMatchSelectionTimestamp() const {
-  return match_selection_timestamp();
 }
 
 void LocationBarView::FocusSearch() {

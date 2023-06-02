@@ -7,11 +7,14 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+class CommandUpdater;
+class LocationBarModel;
 class LocationBarTesting;
 class OmniboxView;
 
@@ -26,13 +29,24 @@ class WebContents;
 // location bar to be mocked for testing.
 class LocationBar {
  public:
-  // The details necessary to open the user's desired omnibox match.
-  virtual GURL GetDestinationURL() const = 0;
-  virtual WindowOpenDisposition GetWindowOpenDisposition() const = 0;
-  virtual ui::PageTransition GetPageTransition() const = 0;
-  virtual base::TimeTicks GetMatchSelectionTimestamp() const = 0;
-  virtual bool IsInputTypedUrlWithoutScheme() const = 0;
-  virtual bool IsInputTypedUrlWithHttpScheme() const = 0;
+  // Holds the details necessary to open the omnibox match via browser commands.
+  struct NavigationParams {
+    GURL destination_url;
+    WindowOpenDisposition disposition{WindowOpenDisposition::CURRENT_TAB};
+    ui::PageTransition transition{ui::PAGE_TRANSITION_TYPED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR};
+    base::TimeTicks match_selection_timestamp;
+    bool url_typed_without_scheme;
+    bool url_typed_with_http_scheme;
+  };
+
+  explicit LocationBar(CommandUpdater* command_updater)
+      : command_updater_(command_updater) {}
+
+  const NavigationParams& navigation_params() { return navigation_params_; }
+  void set_navigation_params(NavigationParams navigation_params) {
+    navigation_params_ = navigation_params;
+  }
 
   // Focuses the location bar. User-initiated focuses (like pressing Ctrl+L)
   // should have |is_user_initiated| set to true. In those cases, we want to
@@ -60,11 +74,34 @@ class LocationBar {
   virtual const OmniboxView* GetOmniboxView() const = 0;
   virtual OmniboxView* GetOmniboxView() = 0;
 
+  // Returns the WebContents of the currently active tab.
+  virtual content::WebContents* GetWebContents() = 0;
+
+  virtual LocationBarModel* GetLocationBarModel() = 0;
+
+  // Called when anything has changed that might affect the layout or contents
+  // of the views around the edit, including the text of the edit and the
+  // status of any keyword- or hint-related state.
+  virtual void OnChanged() = 0;
+
+  // Called when the omnibox popup is shown or hidden.
+  virtual void OnPopupVisibilityChanged() = 0;
+
+  // Called when the edit should update itself without restoring any tab state.
+  virtual void UpdateWithoutTabRestore() = 0;
+
+  CommandUpdater* command_updater() { return command_updater_; }
+  const CommandUpdater* command_updater() const { return command_updater_; }
+
   // Returns a pointer to the testing interface.
   virtual LocationBarTesting* GetLocationBarForTesting() = 0;
 
  protected:
   virtual ~LocationBar() = default;
+
+ private:
+  NavigationParams navigation_params_;
+  const raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
 };
 
 class LocationBarTesting {

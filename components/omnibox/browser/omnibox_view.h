@@ -29,10 +29,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
-class OmniboxEditModelDelegate;
-class OmniboxViewMacTest;
-class OmniboxEditModel;
+class LocationBarModel;
 class OmniboxController;
+class OmniboxEditModel;
+class OmniboxViewMacTest;
 
 class OmniboxView {
  public:
@@ -269,8 +269,9 @@ class OmniboxView {
     State(const State& state);
   };
 
-  OmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
-              std::unique_ptr<OmniboxClient> client);
+  explicit OmniboxView(std::unique_ptr<OmniboxClient> client);
+
+  const LocationBarModel* GetLocationBarModel() const;
 
   // Fills |state| with the current text state.
   void GetState(State* state);
@@ -288,13 +289,6 @@ class OmniboxView {
 
   // Try to parse the current text as a URL and colorize the components.
   virtual void EmphasizeURLComponents() = 0;
-
-  OmniboxEditModelDelegate* edit_model_delegate() {
-    return edit_model_delegate_;
-  }
-  const OmniboxEditModelDelegate* edit_model_delegate() const {
-    return edit_model_delegate_;
-  }
 
   // Marks part (or, if |range| is invalid, all) of the current text as
   // emphasized or de-emphasized, by changing its color.
@@ -319,7 +313,6 @@ class OmniboxView {
   friend class OmniboxViewMacTest;
   friend class TestOmniboxView;
 
-  raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
   std::unique_ptr<OmniboxController> controller_;
 };
 

@@ -61,6 +61,20 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match,
+      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+  LocationBarModel* GetLocationBarModel() override;
 
  private:
   WebOmniboxEditModelDelegate* edit_model_delegate_;

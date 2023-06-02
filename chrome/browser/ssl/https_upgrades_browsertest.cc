@@ -26,8 +26,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -2120,16 +2120,16 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
   GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  OmniboxEditModelDelegate* edit_model_delegate = browser()
-                                                      ->window()
-                                                      ->GetLocationBar()
-                                                      ->GetOmniboxView()
-                                                      ->model()
-                                                      ->delegate();
+  OmniboxClient* omnibox_client = browser()
+                                      ->window()
+                                      ->GetLocationBar()
+                                      ->GetOmniboxView()
+                                      ->model()
+                                      ->client();
 
   // Simulate the full URL was typed with an http scheme.
   content::TestNavigationObserver nav_observer(contents, 1);
-  edit_model_delegate->OnAutocompleteAccept(
+  omnibox_client->OnAutocompleteAccept(
       http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),
@@ -2158,16 +2158,16 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
   GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  OmniboxEditModelDelegate* edit_model_delegate = browser()
-                                                      ->window()
-                                                      ->GetLocationBar()
-                                                      ->GetOmniboxView()
-                                                      ->model()
-                                                      ->delegate();
+  OmniboxClient* omnibox_client = browser()
+                                      ->window()
+                                      ->GetLocationBar()
+                                      ->GetOmniboxView()
+                                      ->model()
+                                      ->client();
 
   // Simulate the full URL was autocompleted with an http scheme.
   content::TestNavigationObserver nav_observer(contents, 1);
-  edit_model_delegate->OnAutocompleteAccept(
+  omnibox_client->OnAutocompleteAccept(
       http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::NAVSUGGEST,
       base::TimeTicks(), false, false, std::u16string(), AutocompleteMatch(),
@@ -2187,12 +2187,12 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
   GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  OmniboxEditModelDelegate* edit_model_delegate = browser()
-                                                      ->window()
-                                                      ->GetLocationBar()
-                                                      ->GetOmniboxView()
-                                                      ->model()
-                                                      ->delegate();
+  OmniboxClient* omnibox_client = browser()
+                                      ->window()
+                                      ->GetLocationBar()
+                                      ->GetOmniboxView()
+                                      ->model()
+                                      ->client();
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
@@ -2203,7 +2203,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 
   // Simulate the full URL was typed with an http scheme.
   content::TestNavigationObserver nav_observer(contents, 1);
-  edit_model_delegate->OnAutocompleteAccept(
+  omnibox_client->OnAutocompleteAccept(
       http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),

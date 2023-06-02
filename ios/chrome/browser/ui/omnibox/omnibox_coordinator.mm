@@ -254,8 +254,8 @@
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate {
   DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
-      std::make_unique<OmniboxPopupViewIOS>(_editView->model(),
-                                            _editView.get());
+      std::make_unique<OmniboxPopupViewIOS>(
+          _editView->model(), self.editModelDelegate, _editView.get());
 
   _editView->SetPopupProvider(popupView.get());
 

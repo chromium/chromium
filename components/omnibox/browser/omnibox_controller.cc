@@ -16,15 +16,12 @@
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "ui/gfx/geometry/rect.h"
 
-OmniboxController::OmniboxController(
-    OmniboxView* view,
-    OmniboxEditModelDelegate* edit_model_delegate,
-    std::unique_ptr<OmniboxClient> client)
+OmniboxController::OmniboxController(OmniboxView* view,
+                                     std::unique_ptr<OmniboxClient> client)
     : client_(std::move(client)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this,
-          view,
-          edit_model_delegate)),
+          view)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
           AutocompleteClassifier::DefaultOmniboxProviders())) {

@@ -5,14 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_H_
 
-#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
+#include "components/search_engines/template_url.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
+
+class GURL;
+class LocationBarModel;
+struct AutocompleteMatch;
 
 namespace web {
 class WebState;
 }
 
-// iOS-specific extension of the OmniboxEditModelDelegate base class.
-class WebOmniboxEditModelDelegate : public OmniboxEditModelDelegate {
+// An interface providing information about the current page, the navigation
+// entry, and the omnibox edit. Similar to //c/b/ui/location_bar/location_bar.h.
+// TODO(crbug.com/1404748): OmniboxEditModelDelegate no longer exists. Rename to
+//  LocationBarIOS or another suitable name.
+class WebOmniboxEditModelDelegate {
  public:
   WebOmniboxEditModelDelegate(const WebOmniboxEditModelDelegate&) = delete;
   WebOmniboxEditModelDelegate& operator=(const WebOmniboxEditModelDelegate&) =
@@ -28,9 +37,18 @@ class WebOmniboxEditModelDelegate : public OmniboxEditModelDelegate {
   // was already open when the omnibox is refocused.
   virtual void OnSetFocus() = 0;
 
+  virtual void OnNavigate(const GURL& destination_url,
+                          TemplateURLRef::PostContent* post_content,
+                          WindowOpenDisposition disposition,
+                          ui::PageTransition transition,
+                          bool destination_url_entered_without_scheme,
+                          const AutocompleteMatch& match) = 0;
+
+  virtual LocationBarModel* GetLocationBarModel() = 0;
+
  protected:
   WebOmniboxEditModelDelegate();
-  ~WebOmniboxEditModelDelegate() override;
+  virtual ~WebOmniboxEditModelDelegate();
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_H_

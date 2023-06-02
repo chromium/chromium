@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_edit_model_delegate.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
@@ -42,7 +41,6 @@
 
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
-class GURL;
 class IntentChipButton;
 class LocationIconView;
 enum class OmniboxPart;
@@ -71,7 +69,6 @@ class LocationBarView : public LocationBar,
                         public views::View,
                         public views::DragController,
                         public views::AnimationDelegateViews,
-                        public ChromeOmniboxEditModelDelegate,
                         public DropdownBarHostDelegate,
                         public IconLabelBubbleView::Delegate,
                         public LocationIconView::Delegate,
@@ -185,6 +182,9 @@ class LocationBarView : public LocationBar,
   void FocusLocation(bool is_user_initiated) override;
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
+  void UpdateWithoutTabRestore() override;
+  LocationBarModel* GetLocationBarModel() override;
+  content::WebContents* GetWebContents() override;
 
   // views::View:
   bool HasFocus() const override;
@@ -194,11 +194,6 @@ class LocationBarView : public LocationBar,
   void Layout() override;
   void OnThemeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
-
-  // ChromeOmniboxEditModelDelegate:
-  void UpdateWithoutTabRestore() override;
-  LocationBarModel* GetLocationBarModel() override;
-  content::WebContents* GetWebContents() override;
 
   // IconLabelBubbleView::Delegate:
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
@@ -236,6 +231,7 @@ class LocationBarView : public LocationBar,
   Profile* profile() { return profile_; }
 
   // LocationIconView::Delegate:
+  const LocationBarModel* GetLocationBarModel() const override;
   bool IsEditingOrEmpty() const override;
   void OnLocationIconPressed(const ui::MouseEvent& event) override;
   void OnLocationIconDragged(const ui::MouseEvent& event) override;
@@ -317,17 +313,13 @@ class LocationBarView : public LocationBar,
   void SetOmniboxAdjacentText(views::Label* label, const std::u16string& text);
 
   // LocationBar:
-  GURL GetDestinationURL() const override;
-  bool IsInputTypedUrlWithoutScheme() const override;
-  bool IsInputTypedUrlWithHttpScheme() const override;
-  WindowOpenDisposition GetWindowOpenDisposition() const override;
-  ui::PageTransition GetPageTransition() const override;
-  base::TimeTicks GetMatchSelectionTimestamp() const override;
   void FocusSearch() override;
   void UpdateContentSettingsIcons() override;
   void SaveStateToContents(content::WebContents* contents) override;
   const OmniboxView* GetOmniboxView() const override;
   LocationBarTesting* GetLocationBarForTesting() override;
+  void OnChanged() override;
+  void OnPopupVisibilityChanged() override;
 
   // LocationBarTesting:
   bool TestContentSettingImagePressed(size_t index) override;
@@ -368,11 +360,6 @@ class LocationBarView : public LocationBar,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
-
-  // ChromeOmniboxEditModelDelegate:
-  void OnChanged() override;
-  void OnPopupVisibilityChanged() override;
-  const LocationBarModel* GetLocationBarModel() const override;
 
   // DropdownBarHostDelegate:
   void FocusAndSelectAll() override;

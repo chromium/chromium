@@ -26,13 +26,13 @@
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
-#include "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/url_formatter/url_fixer.h"
 #include "omnibox_triggered_feature_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
@@ -40,6 +40,9 @@
 
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;
+using testing::_;
+using testing::Return;
+using testing::SaveArg;
 
 namespace ui {
 struct AXNodeData;
@@ -91,25 +94,26 @@ class OmniboxEditModelTest : public testing::Test {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
 
-    edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    view_ = std::make_unique<TestOmniboxView>(
-        edit_model_delegate_.get(), std::make_unique<TestOmniboxClient>());
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    omnibox_client_ = omnibox_client.get();
+    EXPECT_CALL(*omnibox_client, GetLocationBarModel())
+        .WillRepeatedly(Return(&location_bar_model_));
 
+    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
     view_->controller()->set_edit_model(std::make_unique<TestOmniboxEditModel>(
-        view_->controller(), view_.get(), edit_model_delegate_.get(), nullptr));
+        view_->controller(), view_.get(), /*pref_service=*/nullptr));
   }
 
   TestOmniboxView* view() { return view_.get(); }
-  TestLocationBarModel* location_bar_model() {
-    return edit_model_delegate_->GetLocationBarModel();
-  }
+  TestLocationBarModel* location_bar_model() { return &location_bar_model_; }
   TestOmniboxEditModel* model() {
     return static_cast<TestOmniboxEditModel*>(view_->model());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxEditModelDelegate> edit_model_delegate_;
+  TestLocationBarModel location_bar_model_;
+  raw_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<TestOmniboxView> view_;
 };
 
@@ -378,18 +382,27 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
   match.destination_url = GURL("https://foo/");
   const GURL alternate_nav_url("http://abcd/");
 
+  AutocompleteMatch alternate_nav_match;
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<10>(&alternate_nav_match));
+
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
   model()->SetUserText(u"http://abcd");
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                alternate_nav_url, std::u16string(), 0);
-  EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
-      edit_model_delegate_->alternate_nav_match().fill_into_edit));
+  EXPECT_TRUE(
+      AutocompleteInput::HasHTTPScheme(alternate_nav_match.fill_into_edit));
+
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<10>(&alternate_nav_match));
 
   model()->SetUserText(u"abcd");
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                alternate_nav_url, std::u16string(), 0);
-  EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
-      edit_model_delegate_->alternate_nav_match().fill_into_edit));
+  EXPECT_TRUE(
+      AutocompleteInput::HasHTTPScheme(alternate_nav_match.fill_into_edit));
 }
 
 TEST_F(OmniboxEditModelTest, CurrentMatch) {
@@ -640,13 +653,13 @@ TEST_F(OmniboxEditModelTest,
 class OmniboxEditModelPopupTest : public ::testing::Test {
  public:
   OmniboxEditModelPopupTest() {
-    edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    view_ = std::make_unique<TestOmniboxView>(
-        edit_model_delegate_.get(), std::make_unique<TestOmniboxClient>());
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    EXPECT_CALL(*omnibox_client, GetLocationBarModel())
+        .WillRepeatedly(Return(&location_bar_model_));
 
+    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
     view_->controller()->set_edit_model(std::make_unique<TestOmniboxEditModel>(
-        view_->controller(), view_.get(), edit_model_delegate_.get(),
-        &pref_service_));
+        view_->controller(), view_.get(), pref_service()));
 
     omnibox::RegisterProfilePrefs(pref_service_.registry());
     model()->set_popup_view(&popup_view_);
@@ -666,12 +679,11 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxEditModelDelegate> edit_model_delegate_;
+  TestLocationBarModel location_bar_model_;
   TestingPrefServiceSimple pref_service_;
-  OmniboxTriggeredFeatureService triggered_feature_service_;
-
   std::unique_ptr<TestOmniboxView> view_;
   TestOmniboxPopupView popup_view_;
+  OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 
 // This verifies that the new treatment of the user's selected match in
@@ -1354,26 +1366,36 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
   match.destination_url = GURL("https://foo/");
   match.from_keyword = true;
 
+  WindowOpenDisposition disposition;
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<2>(&disposition));
+
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
   model()->SetUserText(u"http://abcd");
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                GURL(), std::u16string(), 0);
-  EXPECT_EQ(edit_model_delegate_->disposition(),
-            WindowOpenDisposition::SWITCH_TO_TAB);
+  EXPECT_EQ(disposition, WindowOpenDisposition::SWITCH_TO_TAB);
+
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<2>(&disposition));
 
   // Suggestions not from the Open Tab Provider or not from keyword mode should
   // not change the disposition.
   match.from_keyword = false;
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                GURL(), std::u16string(), 0);
-  EXPECT_EQ(edit_model_delegate_->disposition(),
-            WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(disposition, WindowOpenDisposition::CURRENT_TAB);
+
+  EXPECT_CALL(*omnibox_client_,
+              OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _, _))
+      .WillOnce(SaveArg<2>(&disposition));
 
   match.provider = model()->autocomplete_controller()->search_provider();
   match.from_keyword = true;
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                GURL(), std::u16string(), 0);
-  EXPECT_EQ(edit_model_delegate_->disposition(),
-            WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(disposition, WindowOpenDisposition::CURRENT_TAB);
 }
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))

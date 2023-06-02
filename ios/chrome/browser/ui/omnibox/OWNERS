@@ -1,5 +1,7 @@
 justincohen@chromium.org
+rkgibson@google.com
 rohitrao@chromium.org
 stkhapugin@chromium.org
-jdonnelly@chromium.org
-rkgibson@google.com
+
+# For refactorings and simple, mechanical changes:
+file://components/omnibox/OWNERS

@@ -26,7 +26,6 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
@@ -192,10 +191,9 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
 #else
 
   if (model()->ShouldShowCurrentPageIcon()) {
-    LocationBarModel* location_bar_model =
-        edit_model_delegate_->GetLocationBarModel();
-    return ui::ImageModel::FromVectorIcon(location_bar_model->GetVectorIcon(),
-                                          color_current_page_icon, dip_size);
+    return ui::ImageModel::FromVectorIcon(
+        GetLocationBarModel()->GetVectorIcon(), color_current_page_icon,
+        dip_size);
   }
 
   gfx::Image favicon;
@@ -348,13 +346,14 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   return state_changes;
 }
 
-OmniboxView::OmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
-                         std::unique_ptr<OmniboxClient> client)
-    : edit_model_delegate_(edit_model_delegate),
-      controller_(std::make_unique<OmniboxController>(
+OmniboxView::OmniboxView(std::unique_ptr<OmniboxClient> client)
+    : controller_(std::make_unique<OmniboxController>(
           /*view=*/this,
-          edit_model_delegate,
           std::move(client))) {}
+
+const LocationBarModel* OmniboxView::GetLocationBarModel() const {
+  return model() ? model()->client()->GetLocationBarModel() : nullptr;
+}
 
 OmniboxEditModel* OmniboxView::model() {
   return const_cast<OmniboxEditModel*>(

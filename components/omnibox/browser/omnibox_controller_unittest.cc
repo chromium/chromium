@@ -45,8 +45,7 @@ OmniboxControllerTest::~OmniboxControllerTest() {}
 
 void OmniboxControllerTest::CreateController() {
   omnibox_controller_ = std::make_unique<OmniboxController>(
-      /*view=*/nullptr, /*edit_model_delegate=*/nullptr,
-      std::make_unique<TestOmniboxClient>());
+      /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
 }
 
 // Checks that the list of autocomplete providers used by the OmniboxController

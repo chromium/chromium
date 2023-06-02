@@ -16,6 +16,7 @@
 class OmniboxEditModel;
 @class OmniboxPopupMediator;
 class OmniboxPopupViewSuggestionsDelegate;
+class WebOmniboxEditModelDelegate;
 struct AutocompleteMatch;
 
 // iOS implementation of OmniboxPopupView.
@@ -24,6 +25,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
                             public OmniboxPopupProvider {
  public:
   OmniboxPopupViewIOS(OmniboxEditModel* edit_model,
+                      WebOmniboxEditModelDelegate* edit_model_delegate,
                       OmniboxPopupViewSuggestionsDelegate* delegate);
   ~OmniboxPopupViewIOS() override;
 
@@ -62,6 +64,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
 
  private:
   OmniboxEditModel* edit_model_;
+  WebOmniboxEditModelDelegate* edit_model_delegate_;
   OmniboxPopupViewSuggestionsDelegate* delegate_;  // weak
   OmniboxPopupMediator* mediator_;
 };

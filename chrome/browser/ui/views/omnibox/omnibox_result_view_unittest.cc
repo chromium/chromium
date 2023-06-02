@@ -74,8 +74,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget();
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, /*edit_model_delegate=*/nullptr,
-        std::make_unique<TestOmniboxClient>());
+        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
     popup_view_ = std::make_unique<TestOmniboxPopupViewViews>(edit_model());
     result_view_ = new OmniboxResultView(popup_view_.get(), edit_model(),
                                          kTestResultViewIndex);

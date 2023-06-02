@@ -1313,8 +1313,6 @@ static_library("ui") {
       "omnibox/alternate_nav_infobar_delegate.h",
       "omnibox/chrome_omnibox_client.cc",
       "omnibox/chrome_omnibox_client.h",
-      "omnibox/chrome_omnibox_edit_model_delegate.cc",
-      "omnibox/chrome_omnibox_edit_model_delegate.h",
       "omnibox/chrome_omnibox_navigation_observer.cc",
       "omnibox/chrome_omnibox_navigation_observer.h",
       "omnibox/clipboard_utils.cc",

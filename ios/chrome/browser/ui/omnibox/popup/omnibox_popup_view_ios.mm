@@ -40,8 +40,11 @@ using base::UserMetricsAction;
 
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     OmniboxEditModel* edit_model,
+    WebOmniboxEditModelDelegate* edit_model_delegate,
     OmniboxPopupViewSuggestionsDelegate* delegate)
-    : edit_model_(edit_model), delegate_(delegate) {
+    : edit_model_(edit_model),
+      edit_model_delegate_(edit_model_delegate),
+      delegate_(delegate) {
   DCHECK(delegate);
   DCHECK(edit_model);
   edit_model->set_popup_view(this);
@@ -96,9 +99,8 @@ void OmniboxPopupViewIOS::OnMatchSelected(
     size_t row,
     WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
-  NewTabPageTabHelper* NTPTabHelper = NewTabPageTabHelper::FromWebState(
-      static_cast<WebOmniboxEditModelDelegate*>(edit_model_->delegate())
-          ->GetWebState());
+  NewTabPageTabHelper* NTPTabHelper =
+      NewTabPageTabHelper::FromWebState(edit_model_delegate_->GetWebState());
   if (NTPTabHelper->IsActive()) {
     RecordHomeAction(IOSHomeActionType::kOmnibox,
                      NTPTabHelper->ShouldShowStartSurface());

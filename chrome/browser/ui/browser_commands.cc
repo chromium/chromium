@@ -757,7 +757,7 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
     return nullptr;
   }
 
-  GURL url(location_bar->GetDestinationURL());
+  GURL url(location_bar->navigation_params().destination_url);
   TRACE_EVENT1("navigation", "chrome::OpenCurrentURL", "url", url);
 
   if (ShouldInterceptChromeURLNavigationInIncognito(browser, url)) {
@@ -765,19 +765,21 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
     return nullptr;
   }
 
-  NavigateParams params(browser, url, location_bar->GetPageTransition());
-  params.disposition = location_bar->GetWindowOpenDisposition();
+  NavigateParams params(browser, url,
+                        location_bar->navigation_params().transition);
+  params.disposition = location_bar->navigation_params().disposition;
   // Use ADD_INHERIT_OPENER so that all pages opened by the omnibox at least
   // inherit the opener. In some cases the tabstrip will determine the group
   // should be inherited, in which case the group is inherited instead of the
   // opener.
   params.tabstrip_add_types =
       AddTabTypes::ADD_FORCE_INDEX | AddTabTypes::ADD_INHERIT_OPENER;
-  params.input_start = location_bar->GetMatchSelectionTimestamp();
+  params.input_start =
+      location_bar->navigation_params().match_selection_timestamp;
   params.is_using_https_as_default_scheme =
-      location_bar->IsInputTypedUrlWithoutScheme();
+      location_bar->navigation_params().url_typed_without_scheme;
   params.url_typed_with_http_scheme =
-      location_bar->IsInputTypedUrlWithHttpScheme();
+      location_bar->navigation_params().url_typed_with_http_scheme;
   auto result = Navigate(&params);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

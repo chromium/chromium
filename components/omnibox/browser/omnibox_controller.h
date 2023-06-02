@@ -15,7 +15,6 @@
 class AutocompleteResult;
 class OmniboxClient;
 class OmniboxEditModel;
-class OmniboxEditModelDelegate;
 class OmniboxView;
 struct AutocompleteMatch;
 
@@ -23,9 +22,7 @@ struct AutocompleteMatch;
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
  public:
-  OmniboxController(OmniboxView* view,
-                    OmniboxEditModelDelegate* edit_model_delegate,
-                    std::unique_ptr<OmniboxClient> client);
+  OmniboxController(OmniboxView* view, std::unique_ptr<OmniboxClient> client);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;
