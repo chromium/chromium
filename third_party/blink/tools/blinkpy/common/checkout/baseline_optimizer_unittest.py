@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
 import optparse
 import unittest
 
@@ -154,9 +155,25 @@ class BaselineOptimizerTest(BaselineTest):
         baseline_name = 'mock-test-expected.' + suffix
         self.fs.write_text_file(
             self.finder.path_from_web_tests('VirtualTestSuites'),
-            '[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
-            '"bases": ["fast/canvas", "slow/canvas/mock-test.html"], '
-            '"args": ["--foo"], "expires": "never"}]')
+            json.dumps([{
+                'prefix':
+                'gpu',
+                'platforms': ['Linux', 'Mac', 'Win'],
+                'bases': [
+                    'fast/canvas',
+                    'slow/canvas/mock-test.html',
+                    'virtual/virtual_empty_bases/',
+                ],
+                'args': ['--foo'],
+                'expires':
+                'never',
+            }, {
+                'prefix': 'virtual_empty_bases',
+                'platforms': ['Linux', 'Mac', 'Win'],
+                'bases': [],
+                'args': ['--foo'],
+                'expires': 'never',
+            }]))
         self.fs.write_text_file(
             self.finder.path_from_web_tests('FlagSpecificConfig'),
             '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'
@@ -642,6 +659,17 @@ class BaselineOptimizerTest(BaselineTest):
                 'platform/linux/slow/canvas': '1',
             },
             baseline_dirname='virtual/gpu/slow/canvas')
+
+    def test_physical_under_dir_falls_back_to_virtual(self):
+        self._assert_optimization(
+            {
+                'virtual/gpu/virtual/virtual_empty_bases/': '1',
+                'virtual/virtual_empty_bases/': '1',
+            }, {
+                'virtual/gpu/virtual/virtual_empty_bases/': None,
+                'virtual/virtual_empty_bases/': '1',
+            },
+            baseline_dirname='virtual/virtual_empty_bases/')
 
     def test_empty_at_root(self):
         self._assert_optimization({'': ''}, {'': None})
