@@ -97,6 +97,8 @@ struct NigoriState {
 
   // Current Public-key.
   absl::optional<PublicKey> public_key;
+  // Current Public-key version.
+  absl::optional<uint32_t> key_pair_version;
 };
 
 }  // namespace syncer
