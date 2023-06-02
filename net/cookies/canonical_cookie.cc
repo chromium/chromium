@@ -1633,6 +1633,10 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
     cookie_line += "; secure";
   if (cookie.IsHttpOnly())
     cookie_line += "; httponly";
+  if (cookie.IsPartitioned() &&
+      !CookiePartitionKey::HasNonce(cookie.PartitionKey())) {
+    cookie_line += "; partitioned";
+  }
   switch (cookie.SameSite()) {
     case CookieSameSite::NO_RESTRICTION:
       cookie_line += "; samesite=none";
