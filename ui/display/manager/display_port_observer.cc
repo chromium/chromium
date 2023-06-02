@@ -23,14 +23,17 @@ namespace {
 const LazyRE2 kTypecConnUeventPattern = {R"(TYPEC_PORT=port(\d+))"};
 
 std::vector<uint32_t> ParseDrmSysfsAndFindPort(
-    const DisplayConfigurator::DisplayStateList& display_states) {
+    const std::vector<std::pair<uint64_t, base::FilePath>>&
+        base_connector_id_and_syspath) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::vector<uint32_t> port_nums;
-  for (auto* state : display_states) {
-    // Each DisplaySnapshot holds the `sys_path` of a DRM device (i.e.
-    // /sys/class/drm/cardX).
-    base::FileEnumerator enumerator(state->sys_path(), false,
+  // Each pair is from each DisplaySnapshot.
+  for (const auto& pair : base_connector_id_and_syspath) {
+    auto base_connector_id = pair.first;
+    const auto& sys_path = pair.second;
+    // `sys_path` of a DRM device, i.e. /sys/class/drm/cardX.
+    base::FileEnumerator enumerator(sys_path, false,
                                     base::FileEnumerator::DIRECTORIES);
     // Each directory in `sys_path` represents a connector, so we fetch each
     // connector's ID by reading the `/sys/class/drm/*/connector_id` file
@@ -52,7 +55,7 @@ std::vector<uint32_t> ParseDrmSysfsAndFindPort(
                      << path.value();
         continue;
       }
-      if (connector_id_int != state->base_connector_id()) {
+      if (connector_id_int != base_connector_id) {
         continue;
       }
       // A connector with a matching id is found at this point, so break the
@@ -111,11 +114,19 @@ void DisplayPortObserver::OnDisplayModeChanged(
   }
   prev_base_connector_ids_ = base_connector_ids_;
 
+  // For each DisplaySnapshot, extract base_connector_id and sys_path.
+  std::vector<std::pair<uint64_t, base::FilePath>>
+      base_connector_id_and_syspath;
+  for (auto* state : display_states) {
+    base_connector_id_and_syspath.push_back(
+        std::make_pair(state->base_connector_id(), state->sys_path()));
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ParseDrmSysfsAndFindPort, display_states),
+      base::BindOnce(&ParseDrmSysfsAndFindPort, base_connector_id_and_syspath),
       base::BindOnce(&DisplayPortObserver::SetTypeCPortsUsingDisplays,
                      weak_ptr_factory_.GetWeakPtr()));
 }
