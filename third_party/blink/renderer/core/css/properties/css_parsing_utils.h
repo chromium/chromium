@@ -538,6 +538,9 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenRange&,
                              UnitlessQuirk);
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ParseSpacing(CSSParserTokenRange&, const CSSParserContext&);
+CSSFunctionValue* CreateWordBoundaryDetectionValue();
+CSSValue* ParseWordBoundaryDetection(CSSParserTokenRange&,
+                                     const CSSParserContext&);
 
 CSSValue* ConsumeSingleContainerName(CSSParserTokenRange&,
                                      const CSSParserContext&);

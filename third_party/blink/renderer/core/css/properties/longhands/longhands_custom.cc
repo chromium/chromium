@@ -10351,6 +10351,45 @@ void WillChange::ApplyValue(StyleResolverState& state,
       will_change_contents || state.ParentStyle()->SubtreeWillChangeContents());
 }
 
+const CSSValue* WordBoundaryDetection::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ParseWordBoundaryDetection(range, context);
+}
+
+const CSSValue* WordBoundaryDetection::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  switch (style.GetWordBoundaryDetection()) {
+    case blink::WordBoundaryDetection::kNormal:
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    case blink::WordBoundaryDetection::kAuto:
+      return css_parsing_utils::CreateWordBoundaryDetectionValue();
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
+void WordBoundaryDetection::ApplyValue(StyleResolverState& state,
+                                       const CSSValue& value,
+                                       ValueMode) const {
+  if (value.IsIdentifierValue()) {
+    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNormal);
+    state.StyleBuilder().SetWordBoundaryDetection(
+        ComputedStyleInitialValues::InitialWordBoundaryDetection());
+    return;
+  }
+  if (value.IsFunctionValue()) {
+    DCHECK_EQ(To<CSSFunctionValue>(value).FunctionType(), CSSValueID::kAuto);
+    state.StyleBuilder().SetWordBoundaryDetection(
+        blink::WordBoundaryDetection::kAuto);
+    return;
+  }
+  NOTREACHED();
+}
+
 const CSSValue* WordBreak::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

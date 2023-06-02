@@ -389,9 +389,6 @@ crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-018.html
 crbug.com/1024331 external/wpt/css/css-text/line-breaking/line-breaking-019.html [ Skip ]
 
 # CSS Text features that are not planned to implement.
-external/wpt/css/css-text/parsing/word-boundary-detection-computed.html [ Skip ]
-external/wpt/css/css-text/parsing/word-boundary-detection-invalid.html [ Skip ]
-external/wpt/css/css-text/parsing/word-boundary-detection-valid.html [ Skip ]
 external/wpt/css/css-text/parsing/word-boundary-expansion-computed.html [ Skip ]
 external/wpt/css/css-text/parsing/word-boundary-expansion-invalid.html [ Skip ]
 external/wpt/css/css-text/parsing/word-boundary-expansion-valid.html [ Skip ]

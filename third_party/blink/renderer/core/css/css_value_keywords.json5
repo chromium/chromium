@@ -790,6 +790,11 @@
     // right
 
     //
+    // word-boundary-detection
+    //
+    "ja",
+
+    //
     // word-break
     //
     "break-all",
