@@ -52,7 +52,9 @@ class OpenerHeuristicTabHelper
     // the necessary information.
     void EmitPastInteractionIfReady();
     // Emit the OpenerHeuristic.TopLevel UKM event.
-    void EmitTopLevel(const GURL& popup_url);
+    void EmitTopLevel(OptionalBool has_iframe);
+    // See if the opener page has an iframe from the same site.
+    OptionalBool GetOpenerHasSameSiteIframe(const GURL& popup_url);
 
     // WebContentsObserver overrides:
     void DidFinishNavigation(
@@ -60,6 +62,7 @@ class OpenerHeuristicTabHelper
     void FrameReceivedUserActivation(
         content::RenderFrameHost* render_frame_host) override;
 
+    const int32_t popup_id_;
     // The URL originally passed to window.open().
     const GURL initial_url_;
     // The top-level WebContents that opened this pop-up.
@@ -75,6 +78,7 @@ class OpenerHeuristicTabHelper
     absl::optional<base::Time> commit_time_;
     size_t url_index_ = 0;
     bool interaction_reported_ = false;
+    bool toplevel_reported_ = false;
   };
 
   ~OpenerHeuristicTabHelper() override;

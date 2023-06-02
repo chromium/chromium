@@ -15388,6 +15388,20 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when the user first interacts in a pop-up with opener access.
   </summary>
+  <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">
+    <summary>
+      &quot;True&quot; iff the opener page contains an iframe whose URL belongs
+      to the same registrable domain as this pop-up. &quot;Unknown&quot; if the
+      opener page is closed or the user navigates its frame to another page
+      before interacting with this pop-up.
+    </summary>
+  </metric>
+  <metric name="PopupId">
+    <summary>
+      A random integer to identify this pop-up and associate this event with
+      other OpenerHeuristic.* events relating to the same pop-up.
+    </summary>
+  </metric>
   <metric name="SecondsSinceCommitted">
     <summary>
       The number of seconds since the initial pop-up navigation committed, until
@@ -15418,6 +15432,20 @@ be describing additional metrics about the same event.
       the nearest exponential bucket (out of 50 buckets).
     </summary>
   </metric>
+  <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">
+    <summary>
+      &quot;True&quot; iff the opener page contains an iframe whose URL belongs
+      to the same registrable domain as this pop-up. &quot;Unknown&quot; if the
+      opener page is closed or the user navigates its frame to another page
+      before interacting with this pop-up.
+    </summary>
+  </metric>
+  <metric name="PopupId">
+    <summary>
+      A random integer to identify this pop-up and associate this event with
+      other OpenerHeuristic.* events relating to the same pop-up.
+    </summary>
+  </metric>
 </event>
 
 <event name="OpenerHeuristic.TopLevel">
@@ -15430,9 +15458,22 @@ be describing additional metrics about the same event.
   <metric name="HasSameSiteIframe" enum="HasSameSiteIframe">
     <summary>
       &quot;True&quot; iff the top-level page contains an iframe whose URL
-      belongs to the same site (eTLD+1) as the pop-up. &quot;Unknown&quot; if
-      the top-level page is closed or the user navigates the main frame to
+      belongs to the same registrable domain as the pop-up. &quot;Unknown&quot;
+      if the top-level page is closed or the user navigates the main frame to
       another page before interacting with the pop-up.
+    </summary>
+  </metric>
+  <metric name="PopupId">
+    <summary>
+      A random integer to identify the pop-up and associate this event with
+      other OpenerHeuristic.* events relating to the same pop-up.
+    </summary>
+  </metric>
+  <metric name="PopupProvider" enum="PopupProvider">
+    <summary>
+      An enum identifying the JavaScript framework used to open the pop-up, when
+      it can be recognized. Typically an SSO library such as Google Sign-In.
+      &quot;Unknown&quot; when no framework is recognized.
     </summary>
   </metric>
 </event>

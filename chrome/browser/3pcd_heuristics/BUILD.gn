@@ -4,7 +4,10 @@
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "opener_heuristic_metrics_unittest.cc" ]
+  sources = [
+    "opener_heuristic_metrics_unittest.cc",
+    "opener_heuristic_utils_unittest.cc",
+  ]
 
   deps = [
     "//base",

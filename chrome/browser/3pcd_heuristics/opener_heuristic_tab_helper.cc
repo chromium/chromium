@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_metrics.h"
+#include "chrome/browser/3pcd_heuristics/opener_heuristic_utils.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -153,6 +155,7 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
     const GURL& initial_url,
     base::WeakPtr<OpenerHeuristicTabHelper> opener)
     : content::WebContentsObserver(web_contents),
+      popup_id_(static_cast<int32_t>(base::RandUint64())),
       initial_url_(initial_url),
       opener_(opener),
       opener_page_id_(opener->page_id()),
@@ -182,13 +185,16 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
     return;
   }
 
+  auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
   ukm::builders::OpenerHeuristic_PopupPastInteraction(
       initial_source_id_.value())
       .SetHoursSinceLastInteraction(
           BucketizeHoursSinceLastInteraction(time_since_interaction_.value()))
+      .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
+      .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
 
-  EmitTopLevel(initial_url_);
+  EmitTopLevel(has_iframe);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
@@ -238,26 +244,43 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
   }
 
   auto time_since_committed = GetClock()->Now() - *commit_time_;
+  auto has_iframe =
+      GetOpenerHasSameSiteIframe(render_frame_host->GetLastCommittedURL());
   ukm::builders::OpenerHeuristic_PopupInteraction(
       render_frame_host->GetPageUkmSourceId())
       .SetSecondsSinceCommitted(
           BucketizeSecondsSinceCommitted(time_since_committed))
       .SetUrlIndex(url_index_)
+      .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
+      .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
 
   interaction_reported_ = true;
 
-  EmitTopLevel(render_frame_host->GetLastCommittedURL());
+  EmitTopLevel(has_iframe);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
-    const GURL& popup_url) {
-  OptionalBool has_iframe = OptionalBool::kUnknown;
-  if (opener_ && opener_->page_id() == opener_page_id_) {
-    has_iframe = ToOptionalBool(opener_->HasSameSiteIframe(popup_url));
+    OptionalBool has_iframe) {
+  if (toplevel_reported_) {
+    return;
   }
 
   ukm::builders::OpenerHeuristic_TopLevel(opener_source_id_)
-      .SetHasSameSiteIframe(static_cast<int32_t>(has_iframe))
+      .SetHasSameSiteIframe(static_cast<int64_t>(has_iframe))
+      .SetPopupProvider(static_cast<int64_t>(GetPopupProvider(initial_url_)))
+      .SetPopupId(popup_id_)
       .Record(ukm::UkmRecorder::Get());
+
+  toplevel_reported_ = true;
+}
+
+OptionalBool
+OpenerHeuristicTabHelper::PopupObserver::GetOpenerHasSameSiteIframe(
+    const GURL& popup_url) {
+  if (opener_ && opener_->page_id() == opener_page_id_) {
+    return ToOptionalBool(opener_->HasSameSiteIframe(popup_url));
+  }
+
+  return OptionalBool::kUnknown;
 }

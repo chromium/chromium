@@ -83740,6 +83740,15 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Popup clicked through (abusive)"/>
 </enum>
 
+<enum name="PopupProvider">
+<!--
+      Privacy Team wants to monitor additions to this enum.
+-->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Google"/>
+</enum>
+
 <enum name="PopupSafeBrowsingStatus">
   <int value="0" label="Popup has no safe-browsing status"/>
   <int value="1"

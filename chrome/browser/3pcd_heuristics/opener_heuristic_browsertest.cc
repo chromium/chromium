@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/3pcd_heuristics/opener_heuristic_utils.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
@@ -105,6 +106,7 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("b.test", "127.0.0.1");
     host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
+    host_resolver()->AddRule("google.com", "127.0.0.1");
     DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
   }
@@ -163,6 +165,20 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
     content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
     web_contents->Close();
     destruction_watcher.Wait();
+  }
+
+  base::expected<OptionalBool, std::string> GetOpenerHasSameSiteIframe(
+      ukm::TestUkmRecorder& ukm_recorder,
+      const std::string& entry_name) {
+    auto entries =
+        ukm_recorder.GetEntries(entry_name, {"OpenerHasSameSiteIframe"});
+    if (entries.size() != 1) {
+      return base::unexpected(
+          base::StringPrintf("Expected 1 %s entry, found %zu",
+                             entry_name.c_str(), entries.size()));
+    }
+    return static_cast<OptionalBool>(
+        entries[0].metrics["OpenerHasSameSiteIframe"]);
   }
 
   base::SimpleTestClock clock_;
@@ -442,6 +458,11 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
             toplevel_url);
   EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
             static_cast<int32_t>(OptionalBool::kFalse));
+
+  auto opener_has_iframe = GetOpenerHasSameSiteIframe(
+      ukm_recorder, "OpenerHeuristic.PopupPastInteraction");
+  ASSERT_TRUE(opener_has_iframe.has_value()) << opener_has_iframe.error();
+  EXPECT_EQ(opener_has_iframe.value(), OptionalBool::kFalse);
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -470,6 +491,11 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
             toplevel_url);
   EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
             static_cast<int32_t>(OptionalBool::kFalse));
+
+  auto opener_has_iframe = GetOpenerHasSameSiteIframe(
+      ukm_recorder, "OpenerHeuristic.PopupInteraction");
+  ASSERT_TRUE(opener_has_iframe.has_value()) << opener_has_iframe.error();
+  EXPECT_EQ(opener_has_iframe.value(), OptionalBool::kFalse);
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -499,6 +525,11 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
             toplevel_url);
   EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
             static_cast<int32_t>(OptionalBool::kTrue));
+
+  auto opener_has_iframe = GetOpenerHasSameSiteIframe(
+      ukm_recorder, "OpenerHeuristic.PopupPastInteraction");
+  ASSERT_TRUE(opener_has_iframe.has_value()) << opener_has_iframe.error();
+  EXPECT_EQ(opener_has_iframe.value(), OptionalBool::kTrue);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -530,6 +561,11 @@ IN_PROC_BROWSER_TEST_F(
             toplevel_url);
   EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
             static_cast<int32_t>(OptionalBool::kUnknown));
+
+  auto opener_has_iframe = GetOpenerHasSameSiteIframe(
+      ukm_recorder, "OpenerHeuristic.PopupInteraction");
+  ASSERT_TRUE(opener_has_iframe.has_value()) << opener_has_iframe.error();
+  EXPECT_EQ(opener_has_iframe.value(), OptionalBool::kUnknown);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -563,4 +599,75 @@ IN_PROC_BROWSER_TEST_F(
             toplevel_url);
   EXPECT_EQ(entries[0].metrics["HasSameSiteIframe"],
             static_cast<int32_t>(OptionalBool::kUnknown));
+
+  auto opener_has_iframe = GetOpenerHasSameSiteIframe(
+      ukm_recorder, "OpenerHeuristic.PopupInteraction");
+  ASSERT_TRUE(opener_has_iframe.has_value()) << opener_has_iframe.error();
+  EXPECT_EQ(opener_has_iframe.value(), OptionalBool::kUnknown);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupProvider) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("google.com", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  RecordInteraction(GURL("https://google.com"), clock_.Now() - base::Hours(3));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+  ASSERT_TRUE(OpenPopup(popup_url).has_value());
+
+  auto entries =
+      ukm_recorder.GetEntries("OpenerHeuristic.TopLevel", {"PopupProvider"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            toplevel_url);
+  EXPECT_EQ(entries[0].metrics["PopupProvider"],
+            static_cast<int64_t>(PopupProvider::kGoogle));
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("google.com", "/title1.html");
+  WebContents* web_contents = GetActiveWebContents();
+
+  RecordInteraction(GURL("https://google.com"), clock_.Now() - base::Hours(3));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  SimulateMouseClick(*maybe_popup);
+
+  // Verify all three events share the same popup id.
+  auto tl_entries =
+      ukm_recorder.GetEntries("OpenerHeuristic.TopLevel", {"PopupId"});
+  ASSERT_EQ(tl_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(tl_entries[0].source_id)->url(),
+            toplevel_url);
+  const int64_t popup_id = tl_entries[0].metrics["PopupId"];
+  EXPECT_NE(popup_id, 0);
+
+  auto pi_entries =
+      ukm_recorder.GetEntries("OpenerHeuristic.PopupInteraction", {"PopupId"});
+  ASSERT_EQ(pi_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(pi_entries[0].source_id)->url(),
+            popup_url);
+  EXPECT_EQ(pi_entries[0].metrics["PopupId"], popup_id);
+
+  auto ppi_entries = ukm_recorder.GetEntries(
+      "OpenerHeuristic.PopupPastInteraction", {"PopupId"});
+  ASSERT_EQ(ppi_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(ppi_entries[0].source_id)->url(),
+            popup_url);
+  EXPECT_EQ(ppi_entries[0].metrics["PopupId"], popup_id);
+
+  // Open second popup, verify different popup id.
+  ASSERT_TRUE(OpenPopup(popup_url).has_value());
+  tl_entries = ukm_recorder.GetEntries("OpenerHeuristic.TopLevel", {"PopupId"});
+  ASSERT_EQ(tl_entries.size(), 2u);
+  const int64_t popup_id2 = tl_entries[1].metrics["PopupId"];
+  EXPECT_NE(popup_id2, 0);
+  EXPECT_NE(popup_id, popup_id2);
 }
