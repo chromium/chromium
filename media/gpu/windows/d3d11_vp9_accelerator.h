@@ -16,8 +16,8 @@
 #include "media/gpu/vp9_decoder.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_status.h"
+#include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
-#include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d11_vp9_picture.h"
 #include "media/gpu/windows/d3d_accelerator.h"
 
@@ -28,7 +28,8 @@ class D3D11VP9Accelerator : public D3DAccelerator,
  public:
   D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
                       MediaLog* media_log,
-                      ComD3D11VideoDevice video_device);
+                      ComD3D11VideoDevice video_device,
+                      std::unique_ptr<VideoContextWrapper> video_context);
 
   D3D11VP9Accelerator(const D3D11VP9Accelerator&) = delete;
   D3D11VP9Accelerator& operator=(const D3D11VP9Accelerator&) = delete;

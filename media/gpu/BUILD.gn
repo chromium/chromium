@@ -225,6 +225,8 @@ component("gpu") {
       "windows/d3d11_texture_selector.h",
       "windows/d3d11_texture_wrapper.cc",
       "windows/d3d11_texture_wrapper.h",
+      "windows/d3d11_video_context_wrapper.cc",
+      "windows/d3d11_video_context_wrapper.h",
       "windows/d3d11_video_decoder.cc",
       "windows/d3d11_video_decoder.h",
       "windows/d3d11_video_decoder_client.h",

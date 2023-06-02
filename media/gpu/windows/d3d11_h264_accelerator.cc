@@ -50,10 +50,18 @@ D3D11H264Picture::~D3D11H264Picture() {
   picture->set_in_picture_use(false);
 }
 
-D3D11H264Accelerator::D3D11H264Accelerator(D3D11VideoDecoderClient* client,
-                                           MediaLog* media_log,
-                                           ComD3D11VideoDevice video_device)
-    : D3DAccelerator(client, media_log, std::move(video_device)) {}
+D3D11H264Accelerator::D3D11H264Accelerator(
+    D3D11VideoDecoderClient* client,
+    MediaLog* media_log,
+    ComD3D11VideoDevice video_device,
+    std::unique_ptr<VideoContextWrapper> video_context)
+    : D3DAccelerator(client,
+                     media_log,
+                     std::move(video_device),
+                     std::move(video_context)) {
+  client->SetDecoderWrapperCB(base::BindRepeating(
+      &D3D11H264Accelerator::SetVideoDecoderWrapper, base::Unretained(this)));
+}
 
 D3D11H264Accelerator::~D3D11H264Accelerator() {}
 
