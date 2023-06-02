@@ -73,7 +73,9 @@ if (REPLAY_LOCAL_DRIVER_DIR) {
 
 // Embed the driver in the source.
 console.log(
-  `Embedding ${REPLAY_LOCAL_DRIVER_DIR ? "LOCAL" : "DOWNLOADED"} driver from ${driverFile}...`
+  `Embedding ${
+    REPLAY_LOCAL_DRIVER_DIR ? "LOCAL" : "DOWNLOADED"
+  } driver from ${driverFile}...`
 );
 const driverContents = fs.readFileSync(driverFile);
 const { revision: driverRevision, date: driverDate } = JSON.parse(
@@ -92,7 +94,7 @@ for (let i = 0; i < driverContents.length; i++) {
 }
 driverString = driverString.join("");
 
-const buildSuffix = process.env["BUILDKITE"] ? "-buildkite" : (process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "");
+const buildSuffix = process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
 const buildId = `${computeBuildId(driverDate, driverRevision)}${buildSuffix}`;
 
 fs.writeFileSync(
@@ -192,11 +194,7 @@ function computeBuildId(driverDate, driverRevision) {
     // Note: this build ID doesn't include revision etc. information for v8 or other inner git
     // repositories. It would be good to either fix this or enforce that the chromium revision
     // gets bumped whenever an inner repository changes.
-    chromiumRevision = spawnChecked("git", [
-      "rev-parse",
-      "--short=12",
-      "HEAD",
-    ])
+    chromiumRevision = spawnChecked("git", ["rev-parse", "--short=12", "HEAD"])
       .stdout.toString()
       .trim();
   }

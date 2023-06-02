@@ -114,9 +114,13 @@ function prepareLinuxBinaries(buildId) {
   copyBuildFiles("out/Release", "replay-chromium");
 
   // Parallel build (requires xz), unlimited cores, w/ reasonable compression.
-  spawnChecked("tar", ["-c", "-I", "xz -2 -T0", "-f", buildArchive, "replay-chromium"], {
-    stdio: "inherit",
-  });
+  spawnChecked(
+    "tar",
+    ["-c", "-I", "xz -2 -T0", "-f", buildArchive, "replay-chromium"],
+    {
+      stdio: "inherit",
+    }
+  );
 
   spawnChecked("sudo", ["rm", "-rf", "replay-chromium"], { stdio: "inherit" });
   return [buildArchive];
@@ -235,7 +239,8 @@ async function main(options) {
 
 function buildkiteStuff(downloadUris, platform, buildId) {
   const markdownDownloadList = downloadUris
-    .map((uri) => uri.replace("s3://recordreplay-website", "https://static.replay.io")
+    .map((uri) =>
+      uri.replace("s3://recordreplay-website", "https://static.replay.io")
     )
     .map((uri) => `* [${path.basename(uri)}](${uri})`)
     .join("\n");
@@ -383,14 +388,22 @@ function getLinkerRevisionDate(revision = "HEAD", spawnOptions) {
   return new Date(dateString).toISOString().substring(0, 10).replace(/-/g, "");
 }
 
-function computeBuildId(runtimeName, runtimeRevision, driverRevision, buildIdExtension) {
+function computeBuildId(
+  runtimeName,
+  runtimeRevision,
+  driverRevision,
+  buildIdExtension
+) {
   // Download the archive for this driver revision, using the latest version
   // if no revision was specified.
   let driverJSONStr = "";
   const driverJSONFile = `${currentPlatform()}-recordreplay.json`;
 
   if (process.env["REPLAY_LOCAL_DRIVER_DIR"]) {
-    const driverJSONFileFull = path.resolve(process.env["REPLAY_LOCAL_DRIVER_DIR"], driverJSONFile);
+    const driverJSONFileFull = path.resolve(
+      process.env["REPLAY_LOCAL_DRIVER_DIR"],
+      driverJSONFile
+    );
     driverJSONStr = fs.readFileSync(driverJSONFileFull, "utf8");
   } else {
     const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
@@ -409,15 +422,16 @@ function computeBuildId(runtimeName, runtimeRevision, driverRevision, buildIdExt
       ],
       { stdio: "inherit" }
     );
-  
+
     spawnChecked("tar", ["xf", driverArchive]);
-  
-    driverJSONStr = fs.readFileSync(driverJSONFile, "utf8")
+
+    driverJSONStr = fs.readFileSync(driverJSONFile, "utf8");
     fs.unlinkSync(driverArchive);
     fs.unlinkSync(driverFile);
-    fs.unlinkSync(driverJSONFile);  
+    fs.unlinkSync(driverJSONFile);
   }
-  const { revision: archiveDriverRevision, date: driverDate } = JSON.parse(driverJSONStr);
+  const { revision: archiveDriverRevision, date: driverDate } =
+    JSON.parse(driverJSONStr);
 
   if (driverRevision) {
     assert(driverRevision == archiveDriverRevision);
@@ -468,5 +482,5 @@ async function buildSymbolsArchive(
   fs.unlinkSync(jsonFile);
 }
 
-const buildIdExtension = process.env["BUILDKITE"] ? "-buildkite" : (process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "");
-main({buildIdExtension, driverRevision: process.env.DRIVER_REVISION});
+const buildIdExtension = process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
+main({ buildIdExtension, driverRevision: process.env.DRIVER_REVISION });
