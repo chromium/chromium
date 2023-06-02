@@ -4,6 +4,19 @@
 
 # This file contains common system config stuff for the Android build.
 
+# Some arguments that are needed across all builds that import this file, for
+# example by is_robolectric.
+declare_args() {
+  # Build incremental targets whenever possible.
+  # See //build/android/incremental_install/README.md for more details.
+  incremental_install = false
+}
+declare_args() {
+  # Java debug on Android. Having this on enables multidexing, and turning it
+  # off will enable proguard.
+  is_java_debug = is_debug || incremental_install
+}
+
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
@@ -62,10 +75,6 @@ if (is_android || is_chromeos) {
     } else {
       android_static_analysis = "on"
     }
-
-    # Build incremental targets whenever possible.
-    # See //build/android/incremental_install/README.md for more details.
-    incremental_install = false
   }
 
   # Avoid typos when setting android_static_analysis in args.gn.
@@ -205,10 +214,6 @@ if (is_android || is_chromeos) {
 
     # The password for the keystore to use for signing builds.
     android_keystore_password = default_android_keystore_password
-
-    # Java debug on Android. Having this on enables multidexing, and turning it
-    # off will enable proguard.
-    is_java_debug = is_debug || incremental_install
 
     # Mark APKs as android:debuggable="true".
     debuggable_apks = !is_official_build
