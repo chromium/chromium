@@ -88,7 +88,6 @@ class DeviceAuthenticator;
 
 namespace password_manager {
 class WebAuthnCredentialsDelegate;
-class CredManController;
 }
 
 // ChromePasswordManagerClient implements the PasswordManagerClient interface.
@@ -140,10 +139,9 @@ class ChromePasswordManagerClient
       password_manager::ErrorMessageFlowType flow_type,
       password_manager::PasswordStoreBackendErrorType error_type) override;
 
-  void ShowKeyboardReplacingSurface(
+  void ShowTouchToFill(
       password_manager::PasswordManagerDriver* driver,
-      autofill::mojom::SubmissionReadinessState submission_readiness,
-      bool is_webauthn_form) override;
+      autofill::mojom::SubmissionReadinessState submission_readiness) override;
 #endif
 
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
@@ -368,8 +366,6 @@ class ChromePasswordManagerClient
 
 #if BUILDFLAG(IS_ANDROID)
   void ResetErrorMessageDelegate();
-
-  password_manager::CredManController* GetOrCreateCredManController();
 #endif
 
   const raw_ptr<Profile> profile_;
@@ -385,9 +381,6 @@ class ChromePasswordManagerClient
   // Controller for the Touch To Fill sheet. Created on demand during the first
   // call to GetOrCreateTouchToFillController().
   std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
-
-  // Controller for Android Credential Manager API. Created on demand.
-  std::unique_ptr<password_manager::CredManController> cred_man_controller_;
 
   std::unique_ptr<PasswordManagerErrorMessageDelegate>
       password_manager_error_message_delegate_;

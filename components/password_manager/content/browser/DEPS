@@ -7,6 +7,7 @@ include_rules = [
   "+components/safe_browsing/buildflags.h",
   "+components/ukm",
   "+components/user_prefs",
+  "+components/webauthn/android",
   "+content/public/browser",
   "+content/test",
   "+net",

@@ -3058,8 +3058,6 @@ static_library("browser") {
       "password_manager/android/auto_signin_first_run_dialog_android.h",
       "password_manager/android/auto_signin_prompt_controller.cc",
       "password_manager/android/auto_signin_prompt_controller.h",
-      "password_manager/android/cred_man_controller.cc",
-      "password_manager/android/cred_man_controller.h",
       "password_manager/android/credential_android.cc",
       "password_manager/android/credential_android.h",
       "password_manager/android/credential_leak_controller_android.cc",

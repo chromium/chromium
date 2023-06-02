@@ -423,7 +423,6 @@ source_set("unit_tests") {
     "all_passwords_bottom_sheet_controller_unittest.cc",
     "all_passwords_bottom_sheet_helper_unittest.cc",
     "auto_signin_first_run_dialog_android_unittest.cc",
-    "cred_man_controller_unittest.cc",
     "credential_leak_controller_android_unittest.cc",
     "fake_password_manager_lifecycle_helper.cc",
     "fake_password_manager_lifecycle_helper.h",

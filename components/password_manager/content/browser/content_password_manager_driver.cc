@@ -35,6 +35,10 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using autofill::mojom::FocusedFieldType;
 
 namespace password_manager {
@@ -443,9 +447,8 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     // TODO (crbug.com/1448579): Make ShowTouchToFill to return bool (whether it
     // was shown or not) and do not call the OnShowPasswordSuggestions on the
     // password autofill manager if TTF was shown.
-    client_->ShowKeyboardReplacingSurface(
-        this, autofill::mojom::SubmissionReadinessState::kNoInformation,
-        options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS);
+    client_->ShowTouchToFill(
+        this, autofill::mojom::SubmissionReadinessState::kNoInformation);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -462,8 +465,26 @@ void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
           render_frame_host_)) {
     return;
   }
-  client_->ShowKeyboardReplacingSurface(this, submission_readiness,
-                                        is_webauthn_form);
+  if (is_webauthn_form && WebAuthnCredManDelegate::IsCredManEnabled()) {
+    WebAuthnCredManDelegate* cred_man_delegate =
+        WebAuthnCredManDelegate::GetRequestDelegate(
+            content::WebContents::FromRenderFrameHost(render_frame_host_));
+    // webauthn forms without passkeys should show TouchToFill bottom sheet.
+    if (cred_man_delegate->HasResults()) {
+      auto cred_man_request_completion_cb =
+          base::BindRepeating(
+              [](bool success) { return ShowVirtualKeyboard(!success); })
+              .Then(base::BindRepeating(
+                  &ContentPasswordManagerDriver::KeyboardReplacingSurfaceClosed,
+                  weak_factory_.GetWeakPtr()));
+
+      cred_man_delegate->SetRequestCompletionCallback(
+          std::move(cred_man_request_completion_cb));
+      cred_man_delegate->TriggerFullRequest();
+      return;
+    }
+  }
+  client_->ShowTouchToFill(this, submission_readiness);
 }
 #endif
 
