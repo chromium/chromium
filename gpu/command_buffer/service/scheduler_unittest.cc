@@ -6,12 +6,14 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +38,14 @@ class SchedulerTest : public testing::Test {
   }
 
  protected:
+  void SetUp() override {
+    // Skip SchedulerTest when this feature is enabled since we have a separate
+    // suit of tests with updated expectations under SchedulerDfsTest.
+    if (base::FeatureList::IsEnabled(features::kUseGpuSchedulerDfs)) {
+      GTEST_SKIP()
+          << "skipping SchedulerTest when UseGpuSchedulerDfs is enabled";
+    }
+  }
 
   SyncPointManager* sync_point_manager() const {
     return sync_point_manager_.get();
