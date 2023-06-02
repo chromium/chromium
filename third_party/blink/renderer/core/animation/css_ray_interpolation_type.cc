@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -21,43 +22,23 @@ namespace {
 
 class RayMode {
  public:
-  RayMode(StyleRay::RaySize size,
-          bool contain,
-          const BasicShapeCenterCoordinate& center_x,
-          const BasicShapeCenterCoordinate& center_y,
-          bool has_explicit_center)
-      : size_(size),
-        contain_(contain),
-        center_x_(center_x),
-        center_y_(center_y),
-        has_explicit_center_(has_explicit_center) {}
+  RayMode(StyleRay::RaySize size, bool contain)
+      : size_(size), contain_(contain) {}
 
   explicit RayMode(const StyleRay& style_ray)
-      : size_(style_ray.Size()),
-        contain_(style_ray.Contain()),
-        center_x_(style_ray.CenterX()),
-        center_y_(style_ray.CenterY()),
-        has_explicit_center_(style_ray.HasExplicitCenter()) {}
+      : size_(style_ray.Size()), contain_(style_ray.Contain()) {}
 
   StyleRay::RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
-  const BasicShapeCenterCoordinate& CenterX() const { return center_x_; }
-  const BasicShapeCenterCoordinate& CenterY() const { return center_y_; }
-  bool HasExplicitCenter() const { return has_explicit_center_; }
 
   bool operator==(const RayMode& other) const {
-    return size_ == other.size_ && contain_ == other.contain_ &&
-           center_x_ == other.center_x_ && center_y_ == other.center_y_ &&
-           has_explicit_center_ == other.has_explicit_center_;
+    return size_ == other.size_ && contain_ == other.contain_;
   }
   bool operator!=(const RayMode& other) const { return !(*this == other); }
 
  private:
   StyleRay::RaySize size_;
   bool contain_;
-  BasicShapeCenterCoordinate center_x_;
-  BasicShapeCenterCoordinate center_y_;
-  bool has_explicit_center_ = true;
 };
 
 }  // namespace
@@ -73,7 +54,7 @@ class CSSRayNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSRayNonInterpolableValue(const RayMode& mode) : mode_(mode) {}
+  explicit CSSRayNonInterpolableValue(const RayMode& mode) : mode_(mode) {}
 
   const RayMode mode_;
 };
@@ -121,7 +102,7 @@ class UnderlyingRayModeChecker
 
 class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedRayChecker(scoped_refptr<const StyleRay> style_ray)
+  explicit InheritedRayChecker(scoped_refptr<const StyleRay> style_ray)
       : style_ray_(std::move(style_ray)) {
     DCHECK(style_ray_);
   }
@@ -135,8 +116,53 @@ class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
   scoped_refptr<const StyleRay> style_ray_;
 };
 
-InterpolationValue CreateValue(float angle, const RayMode& mode) {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(angle),
+std::unique_ptr<InterpolableValue> ConvertCoordinate(
+    const BasicShapeCenterCoordinate& coordinate,
+    double zoom) {
+  return InterpolableLength::MaybeConvertLength(coordinate.ComputedLength(),
+                                                zoom);
+}
+
+std::unique_ptr<InterpolableValue> CreateNeutralInterpolableCoordinate() {
+  return InterpolableLength::CreateNeutral();
+}
+
+BasicShapeCenterCoordinate CreateCoordinate(
+    const InterpolableValue& interpolable_value,
+    const CSSToLengthConversionData& conversion_data) {
+  return BasicShapeCenterCoordinate(
+      BasicShapeCenterCoordinate::kTopLeft,
+      To<InterpolableLength>(interpolable_value)
+          .CreateLength(conversion_data, Length::ValueRange::kAll));
+}
+
+enum RayComponentIndex : unsigned {
+  kRayAngleIndex,
+  kRayCenterXIndex,
+  kRayCenterYIndex,
+  kRayHasExplicitCenterIndex,
+  kRayComponentIndexCount,
+};
+
+InterpolationValue CreateValue(const StyleRay& ray, double zoom) {
+  auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
+  list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(ray.Angle()));
+  list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), zoom));
+  list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), zoom));
+  list->Set(kRayHasExplicitCenterIndex,
+            std::make_unique<InterpolableNumber>(ray.HasExplicitCenter()));
+  return InterpolationValue(std::move(list),
+                            CSSRayNonInterpolableValue::Create(RayMode(ray)));
+}
+
+InterpolationValue CreateNeutralValue(const RayMode& mode) {
+  auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
+  list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(0));
+  list->Set(kRayCenterXIndex, CreateNeutralInterpolableCoordinate());
+  list->Set(kRayCenterYIndex, CreateNeutralInterpolableCoordinate());
+  list->Set(kRayHasExplicitCenterIndex,
+            std::make_unique<InterpolableNumber>(0));
+  return InterpolationValue(std::move(list),
                             CSSRayNonInterpolableValue::Create(mode));
 }
 
@@ -148,14 +174,16 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   const auto& ray_non_interpolable_value =
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
-  // TODO(sakhapov): make position interpolable.
-  scoped_refptr<StyleRay> style_ray =
-      StyleRay::Create(To<InterpolableNumber>(interpolable_value).Value(),
-                       ray_non_interpolable_value.Mode().Size(),
-                       ray_non_interpolable_value.Mode().Contain(),
-                       ray_non_interpolable_value.Mode().CenterX(),
-                       ray_non_interpolable_value.Mode().CenterY(),
-                       ray_non_interpolable_value.Mode().HasExplicitCenter());
+  const auto& list = To<InterpolableList>(interpolable_value);
+  scoped_refptr<StyleRay> style_ray = StyleRay::Create(
+      To<InterpolableNumber>(list.Get(kRayAngleIndex))->Value(),
+      ray_non_interpolable_value.Mode().Size(),
+      ray_non_interpolable_value.Mode().Contain(),
+      CreateCoordinate(*list.Get(kRayCenterXIndex),
+                       state.CssToLengthConversionData()),
+      CreateCoordinate(*list.Get(kRayCenterYIndex),
+                       state.CssToLengthConversionData()),
+      To<InterpolableNumber>(list.Get(kRayHasExplicitCenterIndex))->Value());
   // TODO(sakhapov): handle coord box.
   state.StyleBuilder().SetOffsetPath(
       ShapeOffsetPathOperation::Create(style_ray, CoordBox::kBorderBox));
@@ -187,7 +215,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertNeutral(
       To<CSSRayNonInterpolableValue>(*underlying.non_interpolable_value).Mode();
   conversion_checkers.push_back(
       std::make_unique<UnderlyingRayModeChecker>(underlying_mode));
-  return CreateValue(0, underlying_mode);
+  return CreateNeutralValue(underlying_mode);
 }
 
 InterpolationValue CSSRayInterpolationType::MaybeConvertInitial(
@@ -209,7 +237,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertInherit(
 
   conversion_checkers.push_back(
       std::make_unique<InheritedRayChecker>(inherited_ray));
-  return CreateValue(inherited_ray->Angle(), RayMode(*inherited_ray));
+  return CreateValue(*inherited_ray, state.ParentStyle()->EffectiveZoom());
 }
 
 PairwiseInterpolationValue CSSRayInterpolationType::MaybeMergeSingles(
@@ -233,7 +261,7 @@ CSSRayInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   if (!underlying_ray)
     return nullptr;
 
-  return CreateValue(underlying_ray->Angle(), RayMode(*underlying_ray));
+  return CreateValue(*underlying_ray, style.EffectiveZoom());
 }
 
 InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
@@ -252,8 +280,8 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
   if (!shape) {
     return nullptr;
   }
-  return CreateValue(To<StyleRay>(*shape).Angle(),
-                     RayMode(To<StyleRay>(*shape)));
+  return CreateValue(To<StyleRay>(*shape),
+                     state->ParentStyle()->EffectiveZoom());
 }
 
 }  // namespace blink
