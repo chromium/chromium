@@ -24,7 +24,7 @@ class CheckedContiguousIterator {
   using pointer = T*;
   using reference = T&;
   using iterator_category = std::random_access_iterator_tag;
-#if __cplusplus >= 202002L
+#if defined(__cpp_lib_ranges)
   using iterator_concept = std::contiguous_iterator_tag;
 #endif
 
@@ -146,6 +146,12 @@ class CheckedContiguousIterator {
     CheckedContiguousIterator it = *this;
     it += rhs;
     return it;
+  }
+
+  constexpr friend CheckedContiguousIterator operator+(
+      difference_type lhs,
+      const CheckedContiguousIterator& rhs) {
+    return rhs + lhs;
   }
 
   constexpr CheckedContiguousIterator& operator-=(difference_type rhs) {
