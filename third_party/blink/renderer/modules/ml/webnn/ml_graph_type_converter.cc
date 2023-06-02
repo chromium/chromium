@@ -157,6 +157,7 @@ OperatorPtr ConvertToMojoOperator(const OperandToIdMap& operand_to_id_map,
     case MLOperator::OperatorKind::kFloor:
     case MLOperator::OperatorKind::kNeg:
     case MLOperator::OperatorKind::kSlice:
+    case MLOperator::OperatorKind::kSplit:
       NOTIMPLEMENTED();
       return nullptr;
   }

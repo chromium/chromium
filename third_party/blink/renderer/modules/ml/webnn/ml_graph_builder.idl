@@ -98,8 +98,12 @@ dictionary MLResample2dOptions {
   sequence<[EnforceRange] unsigned long> axes;
 };
 
-dictionary MLTransposeOptions{
+dictionary MLTransposeOptions {
   sequence<[EnforceRange] unsigned long> permutation;
+};
+
+dictionary MLSplitOptions {
+  [EnforceRange] unsigned long axis = 0;
 };
 
 [
@@ -169,6 +173,8 @@ dictionary MLTransposeOptions{
   [RaisesException] MLOperand transpose(MLOperand input, optional MLTransposeOptions options = {});
 
   [RaisesException] MLOperand softmax(MLOperand input);
+
+  [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] sequence<unsigned long> splits, optional MLSplitOptions options = {});
 
   [
     CallWith=ScriptState,

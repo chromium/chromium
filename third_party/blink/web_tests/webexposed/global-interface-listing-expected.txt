@@ -5552,6 +5552,7 @@ interface MLGraphBuilder
     method sigmoid
     method slice
     method softmax
+    method split
     method sub
     method transpose
 interface MLModelLoader

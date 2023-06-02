@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
@@ -1891,6 +1892,124 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   }
   softmax->Connect({input}, {output.value()});
   return output.value();
+}
+
+HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
+    const MLOperand* input,
+    const uint32_t splits,
+    const MLSplitOptions* options,
+    ExceptionState& exception_state) {
+  const auto& input_shape = input->Dimensions();
+  const auto input_rank = input_shape.size();
+  const auto axis = options->axis();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#dom-mlsplitoptions-axis, the axis must be in
+  // the range [0, N-1] where N is the rank of input tensor.
+  //
+  // TODO(crbug.com/1273291): Consider adding helpers for ValidateAxis and
+  // ValidateAxes functions to optimize the code.
+  if (axis > input_rank - 1) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The axis must be in the range [0, N-1] "
+                                      "where N is the rank of input tensor.");
+    return {};
+  }
+  if (splits == 0) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The splits must be greater than 0.");
+    return {};
+  }
+  if (input_shape[axis] % splits != 0) {
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-split-input-splits-options-splits,
+    // the splits specifies the number of output tensors along the axis. The
+    // number must evenly divide the dimension size of input along options.axis.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The splits must evenly divide the dimension size of input along "
+        "options.axis.");
+    return {};
+  }
+
+  auto output_shape = input_shape;
+  output_shape[axis] = input_shape[axis] / splits;
+  auto* split = MakeGarbageCollected<MLSplitOperator>(this, splits, options);
+  HeapVector<Member<const MLOperand>> outputs;
+  for (uint32_t i = 0; i < splits; ++i) {
+    auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
+                                                     output_shape, split);
+    if (!output.has_value()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        output.error());
+      return {};
+    }
+    outputs.push_back(output.value());
+  }
+  split->Connect({input}, outputs);
+  return outputs;
+}
+
+// There are some backends don't support "split into sizes" variant, e.g.
+// XNNPACK, and there is an ongoing discussion in WG:
+// https://github.com/webmachinelearning/webnn/issues/392
+HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
+    const MLOperand* input,
+    const Vector<uint32_t>& splits,
+    const MLSplitOptions* options,
+    ExceptionState& exception_state) {
+  const auto& input_shape = input->Dimensions();
+  const auto input_rank = input_shape.size();
+  const auto axis = options->axis();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#dom-mlsplitoptions-axis, the axis must be in
+  // the range [0, N-1] where N is the rank of input tensor.
+  //
+  // TODO(crbug.com/1273291): Consider adding helpers for ValidateAxis and
+  // ValidateAxes functions to optimize the code.
+  if (axis > input_rank - 1) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The axis must be in the range [0, N-1] "
+                                      "where N is the rank of input tensor.");
+    return {};
+  }
+  auto checked_splits_sum = base::MakeCheckedNum<uint32_t>(0);
+  for (auto split_size : splits) {
+    checked_splits_sum += split_size;
+  }
+  if (!checked_splits_sum.IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The values of splits are too large.");
+    return {};
+  }
+  if (checked_splits_sum.ValueOrDie() != input_shape[axis]) {
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-split-input-splits-options-splits,
+    // the splits parameter specifies the sizes of each output tensor along the
+    // options.axis. The sum of sizes must equal to the dimension size of input
+    // along options.axis.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The sum of split sizes must equal to the dimension size of input "
+        "along options.axis.");
+    return {};
+  }
+
+  auto* split = MakeGarbageCollected<MLSplitOperator>(this, splits, options);
+  HeapVector<Member<const MLOperand>> outputs;
+  for (auto split_size : splits) {
+    auto output_shape = input_shape;
+    output_shape[axis] = split_size;
+    auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
+                                                     output_shape, split);
+    if (!output.has_value()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        output.error());
+      return {};
+    }
+    outputs.push_back(output.value());
+  }
+  split->Connect({input}, outputs);
+  return outputs;
 }
 
 MLOperand* MLGraphBuilder::transpose(const MLOperand* input,

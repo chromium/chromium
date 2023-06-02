@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 414 tests; 281 PASS, 133 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 414 tests; 284 PASS, 130 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -257,7 +257,7 @@ FAIL MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplus
 FAIL MLGraphBuilder interface: operation softplus(optional MLSoftplusOptions) assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
 FAIL MLGraphBuilder interface: operation softsign(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "softsign" missing
 FAIL MLGraphBuilder interface: operation softsign() assert_own_property: interface prototype object missing non-static operation expected property "softsign" missing
-FAIL MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) assert_own_property: interface prototype object missing non-static operation expected property "split" missing
+PASS MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions)
 FAIL MLGraphBuilder interface: operation squeeze(MLOperand, optional MLSqueezeOptions) assert_own_property: interface prototype object missing non-static operation expected property "squeeze" missing
 FAIL MLGraphBuilder interface: operation tanh(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
 FAIL MLGraphBuilder interface: operation tanh() assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
@@ -403,8 +403,8 @@ FAIL MLGraphBuilder interface: calling softplus(optional MLSoftplusOptions) on b
 FAIL MLGraphBuilder interface: builder must inherit property "softsign(MLOperand)" with the proper type assert_inherits: property "softsign" not found in prototype chain
 FAIL MLGraphBuilder interface: calling softsign(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "softsign" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "softsign()" with the proper type assert_inherits: property "softsign" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions)" with the proper type assert_inherits: property "split" not found in prototype chain
-FAIL MLGraphBuilder interface: calling split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) on builder with too few arguments must throw TypeError assert_inherits: property "split" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions)" with the proper type
+PASS MLGraphBuilder interface: calling split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "squeeze(MLOperand, optional MLSqueezeOptions)" with the proper type assert_inherits: property "squeeze" not found in prototype chain
 FAIL MLGraphBuilder interface: calling squeeze(MLOperand, optional MLSqueezeOptions) on builder with too few arguments must throw TypeError assert_inherits: property "squeeze" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "tanh(MLOperand)" with the proper type assert_inherits: property "tanh" not found in prototype chain

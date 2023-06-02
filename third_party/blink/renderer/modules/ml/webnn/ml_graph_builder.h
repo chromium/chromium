@@ -33,6 +33,7 @@ class MLLeakyReluOptions;
 class MLPadOptions;
 class MLPool2dOptions;
 class MLResample2dOptions;
+class MLSplitOptions;
 class MLTransposeOptions;
 class MLOperand;
 class MLOperandDescriptor;
@@ -221,6 +222,15 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
+
+  HeapVector<Member<const MLOperand>> split(const MLOperand* input,
+                                            const uint32_t splits,
+                                            const MLSplitOptions* options,
+                                            ExceptionState& exception_state);
+  HeapVector<Member<const MLOperand>> split(const MLOperand* input,
+                                            const Vector<uint32_t>& splits,
+                                            const MLSplitOptions* options,
+                                            ExceptionState& exception_state);
 
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,
