@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
 namespace ios {
 namespace provider {
@@ -17,6 +18,9 @@ namespace provider {
 ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
     UIViewController* view_controller,
     Browser* browser);
+
+// Creates a new ChoiceDisplayHandler instance.
+id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
 
 // Whether the feature is enabled
 bool IsChoiceEnabled();

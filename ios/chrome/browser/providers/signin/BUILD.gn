@@ -8,6 +8,7 @@ source_set("chromium_choice") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
   frameworks = [ "UIKit.framework" ]

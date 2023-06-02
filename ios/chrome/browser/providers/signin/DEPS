@@ -3,5 +3,8 @@ specific_include_rules = {
   "^chromium_signin_resources.mm": [
     "+ios/chrome/browser/ui/util/uikit_ui_util.h",
   ],
+  "^chromium_choice.mm": [
+    "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
+  ],
 }
 

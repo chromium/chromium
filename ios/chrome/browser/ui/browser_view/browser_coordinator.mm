@@ -1880,6 +1880,10 @@ enum class ToolbarKind {
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
 }
 
+- (void)showChoicePromo {
+  [self showChoice];
+}
+
 - (void)maybeDisplayDefaultBrowserPromo {
   if (!IsDefaultBrowserInPromoManagerEnabled()) {
     return;
