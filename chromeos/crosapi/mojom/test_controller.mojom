@@ -238,11 +238,21 @@ interface InputMethodTestInterface {
                                          uint32 length_after_selection) => ();
 };
 
+// Types of accessibility features in Ash that Lacros needs to be able
+// to set for testing.
+[Stable, Extensible]
+enum AssistiveTechnologyType {
+  [Default] kUnknown = 0,
+  kChromeVox = 1,
+  kSelectToSpeak = 2,
+  kSwitchAccess = 3,
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 25
-// Next method id: 37
+// Next version: 26
+// Next method id: 38
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -446,5 +456,10 @@ interface TestController {
   // Checks whether local cache for saved desks is still loading.
   [MinVersion=25]
   IsSavedDeskStorageReady@37() =>(bool is_saved_desk_storage_ready);
+
+  // Sets enabled state for the given Accessibility feature.
+  [MinVersion=26]
+  SetAssistiveTechnologyEnabled@38(AssistiveTechnologyType at_type,
+      bool enabled);
 
 };

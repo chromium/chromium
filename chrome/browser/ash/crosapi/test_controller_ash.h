@@ -118,6 +118,9 @@ class TestControllerAsh : public mojom::TestController,
   void IsSavedDeskStorageReady(
       IsSavedDeskStorageReadyCallback callback) override;
 
+  void SetAssistiveTechnologyEnabled(mojom::AssistiveTechnologyType at_type,
+                                     bool enabled) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());

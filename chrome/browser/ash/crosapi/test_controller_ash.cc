@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -30,6 +32,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -707,6 +710,30 @@ void TestControllerAsh::TtsSpeak(
 void TestControllerAsh::IsSavedDeskStorageReady(
     IsSavedDeskStorageReadyCallback callback) {
   std::move(callback).Run(DesksClient::Get()->GetDeskModel()->IsReady());
+}
+
+void TestControllerAsh::SetAssistiveTechnologyEnabled(
+    crosapi::mojom::AssistiveTechnologyType at_type,
+    bool enabled) {
+  switch (at_type) {
+    case crosapi::mojom::AssistiveTechnologyType::kChromeVox:
+      ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
+      break;
+    case mojom::AssistiveTechnologyType::kSelectToSpeak:
+      ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(enabled);
+      break;
+    case mojom::AssistiveTechnologyType::kSwitchAccess:
+      // Don't show "are you sure you want to turn off switch access?" dialog
+      // during these tests, as it causes a side-effect for future tests run
+      // in series.
+      ash::AccessibilityController::Get()
+          ->DisableSwitchAccessDisableConfirmationDialogTesting();
+      ash::AccessibilityManager::Get()->SetSwitchAccessEnabled(enabled);
+      break;
+    case mojom::AssistiveTechnologyType::kUnknown:
+      LOG(ERROR) << "Cannot enable unknown AssistiveTechnologyType";
+      break;
+  }
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

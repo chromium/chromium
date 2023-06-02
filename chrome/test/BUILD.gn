@@ -5123,6 +5123,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/component_policy_lacros_browsertest.cc",
       "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
       "../browser/lacros/download_status_updater_lacros_browsertest.cc",
+      "../browser/lacros/embedded_a11y_manager_lacros_browsertest.cc",
       "../browser/lacros/geolocation/system_geolocation_source_lacros_browsertest.cc",
       "../browser/lacros/holding_space_service_lacros_browsertest.cc",
       "../browser/lacros/input_method_lacros_browsertest.cc",
