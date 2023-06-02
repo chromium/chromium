@@ -385,7 +385,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
 }
 
 // Test that the extension's side panel entry shows the extension's icon.
-IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, EntryShowsExtensionIcon) {
+// TODO(crbug.com/1450850): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EntryShowsExtensionIcon DISABLED_EntryShowsExtensionIcon
+#else
+#define MAYBE_EntryShowsExtensionIcon EntryShowsExtensionIcon
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       MAYBE_EntryShowsExtensionIcon) {
   // Load an extension and verify that its SidePanelEntry is registered.
   scoped_refptr<const extensions::Extension> extension = LoadExtension(
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
