@@ -75,7 +75,7 @@ class ContentPasswordManagerDriver
                             const std::u16string& credential) override;
 #if BUILDFLAG(IS_ANDROID)
   void KeyboardReplacingSurfaceClosed(
-      ToShowVirtualKeyboard show_virtual_keyboard) override;
+      ShowVirtualKeyboard show_virtual_keyboard) override;
   void TriggerFormSubmission() override;
 #endif
   void PreviewSuggestion(const std::u16string& username,

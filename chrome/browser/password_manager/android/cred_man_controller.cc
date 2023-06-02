@@ -29,7 +29,7 @@ bool CredManController::Show(PasswordManagerDriver* driver,
         [](base::WeakPtr<password_manager::PasswordManagerDriver> driver,
            bool success) {
           driver->KeyboardReplacingSurfaceClosed(
-              PasswordManagerDriver::ToShowVirtualKeyboard(!success));
+              PasswordManagerDriver::ShowVirtualKeyboard(!success));
         },
         driver->AsWeakPtr()));
     cred_man_delegate->TriggerFullRequest();

@@ -193,7 +193,7 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
 
 #if BUILDFLAG(IS_ANDROID)
 void ContentPasswordManagerDriver::KeyboardReplacingSurfaceClosed(
-    ToShowVirtualKeyboard show_virtual_keyboard) {
+    ShowVirtualKeyboard show_virtual_keyboard) {
   GetPasswordAutofillAgent()->KeyboardReplacingSurfaceClosed(
       show_virtual_keyboard.value());
 }
