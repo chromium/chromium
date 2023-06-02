@@ -1101,46 +1101,6 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
-          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_mac_runtimes.json",
-          "--jobs=4",
-          "--enable-metal-debug-layers"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgl_conformance_metal_passthrough_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgl1_conformance",
-          "--show-stdout",
-          "--browser=release",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--test-filter=conformance/rendering/gl-drawelements.html",
           "--jobs=4"
