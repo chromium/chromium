@@ -2,20 +2,20 @@ Tests that debugger StepOut will stop inside next timeout handler.
 
 Set timer for test function.
 Call stack:
-    0) callback1 (debugger-step-out-across-timeouts.js:19)
+    0) callback1 (debugger-step-out-across-timeouts.js:22)
     [setTimeout]
-    0) testFunction (debugger-step-out-across-timeouts.js:13)
+    0) testFunction (debugger-step-out-across-timeouts.js:16)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepOut...
 Call stack:
-    0) callback2 (debugger-step-out-across-timeouts.js:25)
+    0) callback2 (debugger-step-out-across-timeouts.js:28)
     [setTimeout]
-    0) callback1 (debugger-step-out-across-timeouts.js:18)
+    0) callback1 (debugger-step-out-across-timeouts.js:21)
     [setTimeout]
-    0) testFunction (debugger-step-out-across-timeouts.js:13)
+    0) testFunction (debugger-step-out-across-timeouts.js:16)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
