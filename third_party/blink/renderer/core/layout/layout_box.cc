@@ -1777,13 +1777,11 @@ bool LayoutBox::HasHorizontallyScrollableAncestor(LayoutObject* layout_object) {
   return false;
 }
 
-gfx::Vector2d LayoutBox::OriginAdjustmentForScrollbars() const {
+PhysicalOffset LayoutBox::OriginAdjustmentForScrollbars() const {
   NOT_DESTROYED();
-  if (CanSkipComputeScrollbars())
-    return gfx::Vector2d();
-
-  NGPhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(kClampToContentBox);
-  return gfx::Vector2d(scrollbars.left.ToInt(), scrollbars.top.ToInt());
+  return CanSkipComputeScrollbars()
+             ? PhysicalOffset()
+             : ComputeScrollbarsInternal(kClampToContentBox).Offset();
 }
 
 gfx::Point LayoutBox::ScrollOrigin() const {

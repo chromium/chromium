@@ -904,8 +904,9 @@ void PaintLayerScrollableArea::UpdateScrollOrigin() {
   PhysicalRect scrollable_overflow = overflow_rect_;
   scrollable_overflow.Move(-PhysicalOffset(GetLayoutBox()->BorderLeft(),
                                            GetLayoutBox()->BorderTop()));
-  gfx::Point new_origin = ToFlooredPoint(-scrollable_overflow.offset) +
-                          GetLayoutBox()->OriginAdjustmentForScrollbars();
+  gfx::Point new_origin =
+      ToFlooredPoint(-scrollable_overflow.offset) +
+      ToFlooredVector2d(GetLayoutBox()->OriginAdjustmentForScrollbars());
   if (new_origin != scroll_origin_) {
     scroll_origin_changed_ = true;
     // ScrollOrigin affects paint offsets of the scrolling contents.
@@ -2253,7 +2254,7 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
                                                 -GetLayoutBox()->BorderTop());
   // There might be scroll bar between border_origin and scroll_origin.
   gfx::Vector2d scroll_bar_adjustment =
-      GetLayoutBox()->OriginAdjustmentForScrollbars();
+      ToFlooredVector2d(GetLayoutBox()->OriginAdjustmentForScrollbars());
   border_origin_to_scroll_origin.left -= scroll_bar_adjustment.x();
   border_origin_to_scroll_origin.top -= scroll_bar_adjustment.y();
   border_origin_to_scroll_origin +=

@@ -1449,7 +1449,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // See README.md for an explanation of scroll origin.
-  gfx::Vector2d OriginAdjustmentForScrollbars() const;
+  PhysicalOffset OriginAdjustmentForScrollbars() const;
   gfx::Point ScrollOrigin() const;
   PhysicalOffset ScrolledContentOffset() const;
 
