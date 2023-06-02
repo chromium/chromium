@@ -236,7 +236,7 @@ enum class VideoCaptureFrameDropReason {
   kVideoTrackAdapterHasNoResolutionAdapters = 19,
   kResolutionAdapterFrameIsNotValid = 20,
   kResolutionAdapterWrappingFrameForCroppingFailed = 21,
-  kResolutionAdapterTimestampTooCloseToPrevious = 22,
+  // kResolutionAdapterTimestampTooCloseToPrevious = 22, // combined into 23.
   kResolutionAdapterFrameRateIsHigherThanRequested = 23,
   kResolutionAdapterHasNoCallbacks = 24,
   kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame = 25,

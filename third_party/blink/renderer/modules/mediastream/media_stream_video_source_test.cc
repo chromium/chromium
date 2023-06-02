@@ -550,18 +550,17 @@ TEST_F(MediaStreamVideoSourceTest, ForwardsAtMaxFrameRateAndDropsWhenTooClose) {
   base::OnceClosure quit_closure = run_loop.QuitClosure();
 
   EXPECT_CALL(sink, OnVideoFrame).Times(3).WillRepeatedly(Return());
-  EXPECT_CALL(*mock_source(),
-              OnFrameDropped(media::VideoCaptureFrameDropReason::
-                                 kResolutionAdapterTimestampTooCloseToPrevious))
+  EXPECT_CALL(
+      *mock_source(),
+      OnFrameDropped(media::VideoCaptureFrameDropReason::
+                         kResolutionAdapterFrameRateIsHigherThanRequested))
       .Times(1)
       .WillOnce([&] { std::move(quit_closure).Run(); });
 
   DeliverVideoFrame(100, 100, base::Milliseconds(100));
   DeliverVideoFrame(100, 100, base::Milliseconds(200));
   DeliverVideoFrame(100, 100, base::Milliseconds(300));
-  DeliverVideoFrame(
-      100, 100,
-      base::Milliseconds(300 + VideoTrackAdapter::kMinTimeBetweenFramesMs - 1));
+  DeliverVideoFrame(100, 100, base::Milliseconds(304));
   run_loop.Run();
   EXPECT_EQ(3, sink.number_of_frames());
 
