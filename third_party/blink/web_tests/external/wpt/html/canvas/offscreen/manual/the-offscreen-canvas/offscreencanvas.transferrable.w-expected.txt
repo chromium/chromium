@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Test that OffscreenCanvas's size is correct after being transferred from a worker.
+FAIL Test that transfer an OffscreenCanvas that has a 2d context throws exception in a worker. assert_true: expected true got false
+FAIL Test that transfer an OffscreenCanvas that has a webgl context throws exception in a worker. assert_true: expected true got false
+PASS Test that transfer an OffscreenCanvas twice throws exception in a worker.
+PASS Test that calling getContext('2d') on a detached OffscreenCanvas throws exception in a worker.
+PASS Test that calling getContext('webgl') on a detached OffscreenCanvas throws exception in a worker.
+Harness: the test ran to completion.
+

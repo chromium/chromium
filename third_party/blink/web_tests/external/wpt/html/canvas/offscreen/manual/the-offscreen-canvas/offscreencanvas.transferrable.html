@@ -56,7 +56,7 @@ test(function() {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     worker.postMessage({offscreenCanvas}, [offscreenCanvas]);
-    assert_throws_dom("DataCloneError", function() {
+    assert_throws_dom("InvalidStateError", function() {
         worker.postMessage({offscreenCanvas}, [offscreenCanvas]);
     });
 }, "Test that transfer an OffscreenCanvas twice throws exception.");
