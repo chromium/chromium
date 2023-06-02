@@ -4,7 +4,7 @@
 
 #include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/unused_site_permissions_service.h"
@@ -12,7 +12,8 @@
 // static
 UnusedSitePermissionsServiceFactory*
 UnusedSitePermissionsServiceFactory::GetInstance() {
-  return base::Singleton<UnusedSitePermissionsServiceFactory>::get();
+  static base::NoDestructor<UnusedSitePermissionsServiceFactory> instance;
+  return instance.get();
 }
 
 // static

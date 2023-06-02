@@ -4,14 +4,16 @@
 
 #include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 // static
 NotificationPermissionsReviewServiceFactory*
 NotificationPermissionsReviewServiceFactory::GetInstance() {
-  return base::Singleton<NotificationPermissionsReviewServiceFactory>::get();
+  static base::NoDestructor<NotificationPermissionsReviewServiceFactory>
+      instance;
+  return instance.get();
 }
 
 // static

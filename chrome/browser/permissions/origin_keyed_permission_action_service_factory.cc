@@ -18,7 +18,8 @@ OriginKeyedPermissionActionServiceFactory::GetForProfile(Profile* profile) {
 // static
 OriginKeyedPermissionActionServiceFactory*
 OriginKeyedPermissionActionServiceFactory::GetInstance() {
-  return base::Singleton<OriginKeyedPermissionActionServiceFactory>::get();
+  static base::NoDestructor<OriginKeyedPermissionActionServiceFactory> instance;
+  return instance.get();
 }
 
 OriginKeyedPermissionActionServiceFactory::

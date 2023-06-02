@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/after_startup_task_utils.h"
@@ -29,7 +29,8 @@ PermissionAuditingServiceFactory::~PermissionAuditingServiceFactory() = default;
 // static
 PermissionAuditingServiceFactory*
 PermissionAuditingServiceFactory::GetInstance() {
-  return base::Singleton<PermissionAuditingServiceFactory>::get();
+  static base::NoDestructor<PermissionAuditingServiceFactory> instance;
+  return instance.get();
 }
 
 // static

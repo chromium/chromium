@@ -151,7 +151,8 @@ permissions::PermissionManager* PermissionManagerFactory::GetForProfile(
 
 // static
 PermissionManagerFactory* PermissionManagerFactory::GetInstance() {
-  return base::Singleton<PermissionManagerFactory>::get();
+  static base::NoDestructor<PermissionManagerFactory> instance;
+  return instance.get();
 }
 
 PermissionManagerFactory::PermissionManagerFactory()
@@ -166,7 +167,7 @@ PermissionManagerFactory::PermissionManagerFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
-PermissionManagerFactory::~PermissionManagerFactory() {}
+PermissionManagerFactory::~PermissionManagerFactory() = default;
 
 KeyedService* PermissionManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

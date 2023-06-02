@@ -11,7 +11,7 @@ class Profile;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace content {
@@ -36,8 +36,7 @@ class UnusedSitePermissionsServiceFactory : public ProfileKeyedServiceFactory {
       const UnusedSitePermissionsServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      UnusedSitePermissionsServiceFactory>;
+  friend base::NoDestructor<UnusedSitePermissionsServiceFactory>;
 
   UnusedSitePermissionsServiceFactory();
   ~UnusedSitePermissionsServiceFactory() override;
