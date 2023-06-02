@@ -6498,6 +6498,122 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 }
 
+// Tests when a back navigation is pending commit, then another back navigation
+// starts.
+IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
+                       MultipleBackNavigation) {
+  // This test expects the document is freshly loaded on the back navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  // Navigate to a.com, then b.com.
+  const GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Prior to implementing the UndoCommitNavigation() workaround, the race
+  // condition being tested would result in a crash in the b.com renderer. Open
+  // another b.com window in the same browsing instance to verify that the b.com
+  // renderer does not unexpectedly crash even if the b.com speculative
+  // RenderFrameHost is discarded.
+  ASSERT_TRUE(ExecJs(shell(), JsReplace("window.open($1)", url_b)));
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(Shell::windows()[1]->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(new_web_contents));
+  RenderProcessHost* const b_com_render_process_host =
+      new_web_contents->GetPrimaryMainFrame()->GetProcess();
+
+  // Navigate to c.com.
+  const GURL url_c = embedded_test_server()->GetURL("c.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
+
+  NavigationLogger logger(shell()->web_contents());
+
+  // Start a back navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  TestNavigationManager first_back_nav(web_contents, url_b);
+  ASSERT_TRUE(ExecJs(shell(), "history.back()"));
+  ASSERT_TRUE(first_back_nav.WaitForResponse());
+  EXPECT_EQ(url_b, root->navigation_request()->GetURL());
+
+  // Ensure the speculative RFH is in the expected process (i.e. the b.com
+  // process that was created for the navigation in the new window earlier).
+  RenderFrameHostImpl* speculative_render_frame_host =
+      root->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  first_back_nav.ResumeNavigation();
+  commit_pauser.WaitForCommitAndPause();
+
+  // Now begin a new back navigation while the previous back navigation above is
+  // paused in the pending commit state.
+  absl::optional<ResumeCommitClosureSetWaiter>
+      second_back_nav_resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the second back navigation, since the resume commit closure may be
+    // synchronously set while handling the `BeginNavigation()` IPC in the
+    // browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      second_back_nav_resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  TestNavigationManager second_back_nav(web_contents, url_a);
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  controller.GoBack();
+  ASSERT_TRUE(second_back_nav.WaitForRequestStart());
+  EXPECT_EQ(url_a, root->navigation_request()->GetURL());
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // The second back navigation should be queued.
+    second_back_nav.ResumeNavigation();
+    second_back_nav_resume_commit_closure_set_waiter->Wait();
+    // Continue the first navigation's commit.
+    commit_pauser.ResumePausedCommit();
+  }
+
+  // After all the navigations finished, we will end up in a.com.
+  EXPECT_TRUE(second_back_nav.WaitForNavigationFinished());
+  EXPECT_EQ(url_a, web_contents->GetLastCommittedURL());
+
+  // Check the order of navigations finishing.
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // When navigation queueing is enabled, the pending commit back navigation
+    // to b.com won't get canceled when the second back navigation starts. After
+    // continuing the second back navigation, it finishes and commits
+    // successfully to a.com.
+    EXPECT_EQ(url_b, results[0].url);
+    EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
+  } else {
+    // When navigation queueing is disabled, the pending commit back navigation
+    // to b.com gets canceled when the second back navigation starts. Then the
+    // second back navigation will successfully commit to a.com.
+    EXPECT_EQ(url_b, results[0].url);
+    EXPECT_FALSE(results[0].committed);
+  }
+
+  EXPECT_EQ(url_a, results[1].url);
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"), results[1].origin);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          CommitNavigationRaceBrowserTest,
                          ::testing::Bool(),
