@@ -371,7 +371,7 @@ class AttributionInteropParser {
                                 std::move(*reporting_origin),
                                 std::move(*trigger_registration),
                                 std::move(*destination_origin),
-                                /*verification=*/absl::nullopt,
+                                /*verifications=*/{},
                                 /*is_within_fenced_frame=*/false),
                             trigger_time, debug_permission);
                       });

@@ -4,6 +4,7 @@
 
 #include "services/network/attribution/attribution_request_helper.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <functional>
@@ -77,55 +78,82 @@ bool IsNeededForRequest(AttributionReportingEligibility eligibility) {
   }
 }
 
+AttributionVerificationMediator CreateDefaultMediator(
+    const TrustTokenKeyCommitmentGetter* key_commitment_getter) {
+  // The TrustTokenKeyCommitmentGetter instance  (`key_commitment_getter`) is a
+  // singleton owned by NetworkService, it will always outlive this.
+  std::vector<std::unique_ptr<AttributionVerificationMediator::Cryptographer>>
+      cryptographers;
+  cryptographers.reserve(
+      AttributionRequestHelper::kVerificationTokensPerTrigger);
+  for (size_t i = 0;
+       i < AttributionRequestHelper::kVerificationTokensPerTrigger; ++i) {
+    cryptographers.push_back(
+        std::make_unique<BoringsslVerificationCryptographer>());
+  }
+
+  return AttributionVerificationMediator(
+      key_commitment_getter, std::move(cryptographers),
+      std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
+}
+
 }  // namespace
 
 struct AttributionRequestHelper::VerificationOperation {
   explicit VerificationOperation(
       const base::RepeatingCallback<AttributionVerificationMediator()>&
           create_mediator)
-      : aggregatable_report_id(base::Uuid::GenerateRandomV4()),
-        mediator(create_mediator.Run()) {}
+      : mediator(create_mediator.Run()) {
+    aggregatable_report_ids.reserve(kVerificationTokensPerTrigger);
+    for (size_t i = 0; i < kVerificationTokensPerTrigger; ++i) {
+      aggregatable_report_ids.push_back(base::Uuid::GenerateRandomV4());
+    }
+  }
 
-  // Returns the message associated to this atttestation operation. It is
-  // represented by concatenating a trigger`s `destination_origin` and the
-  // `aggregatable_report_id`.
-  std::string Message(const url::Origin& destination_origin);
+  // Returns `kVerificationTokensPerTrigger` messages associated to this
+  // verification operation. Each message is represented by concatenating the
+  // trigger`s `destination_origin` and a generated aggregatable report ID.
+  std::vector<const std::string> Messages(
+      const url::Origin& destination_origin);
 
-  // TODO(https://crbug.com/1406645): use explicitly spec compliant structure
-  base::Uuid aggregatable_report_id;
+  // A verification operation requests multiple tokens. Each token is signed
+  // over a message that includes a different id as we need one id per report
+  // that we want to create & verify. With N (id,token) pairs, we can create N
+  // verified reports.
+  // TODO(https://crbug.com/1406645): use explicitly spec compliant structure.
+  std::vector<base::Uuid> aggregatable_report_ids;
 
   AttributionVerificationMediator mediator;
 };
 
-std::string AttributionRequestHelper::VerificationOperation::Message(
+std::vector<const std::string>
+AttributionRequestHelper::VerificationOperation::Messages(
     const url::Origin& destination_origin) {
-  net::SchemefulSite destination_site(destination_origin);
+  std::string destination_site =
+      net::SchemefulSite(destination_origin).Serialize();
+  std::vector<const std::string> messages;
+  messages.reserve(aggregatable_report_ids.size());
 
-  return base::StrCat({aggregatable_report_id.AsLowercaseString(),
-                       destination_site.Serialize()});
+  for (const base::Uuid& id : aggregatable_report_ids) {
+    messages.push_back(
+        base::StrCat({id.AsLowercaseString(), destination_site}));
+  }
+  return messages;
 }
 
 std::unique_ptr<AttributionRequestHelper>
 AttributionRequestHelper::CreateIfNeeded(
     AttributionReportingEligibility eligibility,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter) {
-  DCHECK(key_commitment_getter);
-
   if (!base::FeatureList::IsEnabled(
           network::features::kAttributionReportingReportVerification) ||
       !IsNeededForRequest(eligibility)) {
     return nullptr;
   }
 
-  auto create_mediator = base::BindRepeating(
-      [](const TrustTokenKeyCommitmentGetter* t) {
-        // The key_commitment_getter instance  (`t`) is a singleton owned by
-        // NetworkService, it will always outlive this.
-        return AttributionVerificationMediator(
-            t, std::make_unique<BoringsslVerificationCryptographer>(),
-            std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
-      },
-      key_commitment_getter);
+  CHECK(key_commitment_getter);
+  auto create_mediator =
+      base::BindRepeating(&CreateDefaultMediator, key_commitment_getter);
   return base::WrapUnique(
       new AttributionRequestHelper(std::move(create_mediator)));
 }
@@ -151,7 +179,7 @@ AttributionRequestHelper::~AttributionRequestHelper() = default;
 
 void AttributionRequestHelper::Begin(net::URLRequest& request,
                                      base::OnceClosure done) {
-  DCHECK(!verification_operation_);
+  CHECK(!verification_operation_);
 
   // TODO(https://crbug.com/1406643): investigate the situations in which
   // `url_request->isolation_info().top_frame_origin()` would not be defined and
@@ -178,7 +206,7 @@ void AttributionRequestHelper::Begin(net::URLRequest& request,
 
   verification_operation_->mediator.GetHeadersForVerification(
       request.url(),
-      verification_operation_->Message(
+      verification_operation_->Messages(
           /*destination_origin=*/request.isolation_info()
               .top_frame_origin()
               .value()),
@@ -244,7 +272,7 @@ void AttributionRequestHelper::OnDoneFinalizingResponseFromRedirect(
 
   verification_operation_->mediator.GetHeadersForVerification(
       new_url,
-      verification_operation_->Message(
+      verification_operation_->Messages(
           /*destination_origin=*/request.isolation_info()
               .top_frame_origin()
               .value()),
@@ -260,7 +288,7 @@ void AttributionRequestHelper::Finalize(mojom::URLResponseHead& response,
     return;
   }
 
-  verification_operation_->mediator.ProcessVerificationToGetToken(
+  verification_operation_->mediator.ProcessVerificationToGetTokens(
       *response.headers,
       base::BindOnce(
           &AttributionRequestHelper::OnDoneProcessingVerificationResponse,
@@ -270,19 +298,33 @@ void AttributionRequestHelper::Finalize(mojom::URLResponseHead& response,
 void AttributionRequestHelper::OnDoneProcessingVerificationResponse(
     mojom::URLResponseHead& response,
     base::OnceClosure done,
-    absl::optional<std::string> maybe_verification_header) {
-  DCHECK(verification_operation_);
+    std::vector<const std::string> redemption_tokens) {
+  CHECK(verification_operation_);
   std::unique_ptr<VerificationOperation> verification_operation(
       std::move(verification_operation_));
 
-  if (!maybe_verification_header.has_value()) {
+  if (redemption_tokens.empty()) {
     std::move(done).Run();
     return;
   }
 
-  response.trigger_verification = TriggerVerification::Create(
-      /*token=*/*std::move(maybe_verification_header),
-      verification_operation->aggregatable_report_id.AsLowercaseString());
+  CHECK_GE(kVerificationTokensPerTrigger, redemption_tokens.size());
+  CHECK_GE(verification_operation->aggregatable_report_ids.size(),
+           redemption_tokens.size());
+
+  std::vector<TriggerVerification> verifications;
+  verifications.reserve(redemption_tokens.size());
+  for (size_t i = 0; i < redemption_tokens.size(); ++i) {
+    auto verification = TriggerVerification::Create(
+        /*token=*/std::move(redemption_tokens.at(i)),
+        /*aggregatable_report_id=*/verification_operation
+            ->aggregatable_report_ids.at(i)
+            .AsLowercaseString());
+    CHECK(verification.has_value());
+    verifications.push_back(std::move(verification.value()));
+  }
+  response.trigger_verifications = std::move(verifications);
+
   std::move(done).Run();
 }
 

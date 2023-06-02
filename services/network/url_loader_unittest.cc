@@ -6402,10 +6402,12 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  ASSERT_TRUE(client()->response_head()->trigger_verification);
-  EXPECT_TRUE(FakeCryptographer::IsToken(
-      client()->response_head()->trigger_verification->token(),
-      kTestBlindToken));
+  ASSERT_GE(client()->response_head()->trigger_verifications.size(), 1u);
+  for (const auto& verification :
+       client()->response_head()->trigger_verifications) {
+    EXPECT_TRUE(
+        FakeCryptographer::IsToken(verification.token(), kTestBlindToken));
+  }
 }
 
 // When a request's associated Trust Tokens operation's Begin step fails, the
@@ -6623,11 +6625,12 @@ TEST_F(URLLoaderTest, HandlesTriggerVerificationRequest) {
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  absl::optional<::network::TriggerVerification> response_verification =
-      client()->response_head()->trigger_verification;
-  ASSERT_TRUE(response_verification.has_value());
-  EXPECT_TRUE(FakeCryptographer::IsToken(response_verification->token(),
-                                         kTestBlindToken));
+  ASSERT_GE(client()->response_head()->trigger_verifications.size(), 1u);
+  for (const auto& verification :
+       client()->response_head()->trigger_verifications) {
+    EXPECT_TRUE(
+        FakeCryptographer::IsToken(verification.token(), kTestBlindToken));
+  }
 }
 
 TEST_F(URLLoaderTest, HandlesTriggerVerificationRequestWithRedirect) {
@@ -6662,11 +6665,13 @@ TEST_F(URLLoaderTest, HandlesTriggerVerificationRequestWithRedirect) {
   client()->RunUntilRedirectReceived();
   ASSERT_TRUE(client()->has_received_redirect());
 
-  absl::optional<TriggerVerification> redirect_verification =
-      client()->response_head()->trigger_verification;
-  ASSERT_TRUE(redirect_verification.has_value());
-  EXPECT_TRUE(FakeCryptographer::IsToken(redirect_verification->token(),
-                                         kTestBlindToken));
+  std::vector<TriggerVerification> redirect_verifications =
+      client()->response_head()->trigger_verifications;
+  ASSERT_GE(redirect_verifications.size(), 1u);
+  for (const auto& verification : redirect_verifications) {
+    EXPECT_TRUE(
+        FakeCryptographer::IsToken(verification.token(), kTestBlindToken));
+  }
   // Follow redirect is called by the client. Even if the attribution request
   // helper adds/remove headers follow redirect would/can still be called by the
   // client without headers changes.
@@ -6676,14 +6681,16 @@ TEST_F(URLLoaderTest, HandlesTriggerVerificationRequestWithRedirect) {
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
-  absl::optional<TriggerVerification> response_verification =
-      client()->response_head()->trigger_verification;
-  ASSERT_TRUE(response_verification.has_value());
-  EXPECT_TRUE(FakeCryptographer::IsToken(response_verification->token(),
-                                         kTestBlindToken));
 
-  EXPECT_NE(redirect_verification->aggregatable_report_id(),
-            response_verification->aggregatable_report_id());
+  std::vector<TriggerVerification> response_verifications =
+      client()->response_head()->trigger_verifications;
+  ASSERT_GE(response_verifications.size(), 1u);
+  for (const auto& verification : response_verifications) {
+    EXPECT_TRUE(
+        FakeCryptographer::IsToken(verification.token(), kTestBlindToken));
+  }
+  EXPECT_NE(redirect_verifications.at(0).aggregatable_report_id(),
+            response_verifications.at(0).aggregatable_report_id());
 }
 
 TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {

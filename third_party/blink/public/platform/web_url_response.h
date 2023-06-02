@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_RESPONSE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -112,8 +113,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
 
   void SetConnectionReused(bool);
 
-  void SetTriggerVerification(
-      const absl::optional<network::TriggerVerification>&);
+  void SetTriggerVerifications(
+      const std::vector<network::TriggerVerification>&);
 
   void SetLoadTiming(const network::mojom::LoadTimingInfo&);
 

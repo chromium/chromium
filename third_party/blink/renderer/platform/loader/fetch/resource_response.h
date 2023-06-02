@@ -294,13 +294,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     remote_ip_endpoint_ = value;
   }
 
-  const absl::optional<network::TriggerVerification>& GetTriggerVerification()
+  const WTF::Vector<network::TriggerVerification>& GetTriggerVerifications()
       const {
-    return trigger_verification_;
+    return trigger_verifications_;
   }
-  void SetTriggerVerification(
-      const absl::optional<network::TriggerVerification>& value) {
-    trigger_verification_ = value;
+  void SetTriggerVerifications(
+      WTF::Vector<network::TriggerVerification> value) {
+    trigger_verifications_ = std::move(value);
   }
 
   network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
@@ -657,7 +657,7 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   bool emitted_extra_info_ = false;
 
-  absl::optional<network::TriggerVerification> trigger_verification_;
+  WTF::Vector<network::TriggerVerification> trigger_verifications_;
 };
 
 }  // namespace blink

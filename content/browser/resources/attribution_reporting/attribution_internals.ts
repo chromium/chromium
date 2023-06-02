@@ -390,13 +390,13 @@ class RegistrationTableModel<T extends Registration> extends TableModel<T> {
 class Trigger extends Registration {
   readonly eventLevelStatus: string;
   readonly aggregatableStatus: string;
-  readonly verification?: TriggerVerification;
+  readonly verifications: TriggerVerification[];
 
   constructor(mojo: WebUITrigger) {
     super(mojo.registration);
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
-    this.verification = mojo.verification;
+    this.verifications = mojo.verifications;
   }
 }
 
@@ -412,9 +412,9 @@ class ReportVerificationColumn implements Column<Trigger> {
   }
 
   render(td: HTMLElement, row: Trigger) {
-    if (row.verification) {
-      renderDL(td, row.verification, VERIFICATION_COLS);
-    }
+      row.verifications.forEach(verification => {
+        renderDL(td, verification, VERIFICATION_COLS);
+      });
   }
 }
 

@@ -104,9 +104,9 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return trigger_data_;
   }
 
-  const Vector<absl::optional<network::TriggerVerification>>&
-  trigger_verification() const {
-    return trigger_verification_;
+  const Vector<Vector<network::TriggerVerification>>& trigger_verifications()
+      const {
+    return trigger_verifications_;
   }
 
   const std::vector<std::vector<GURL>>& os_sources() const {
@@ -133,9 +133,9 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration data,
-      absl::optional<network::TriggerVerification> verification) override {
+      Vector<network::TriggerVerification> verifications) override {
     trigger_data_.push_back(std::move(data));
-    trigger_verification_.push_back(std::move(verification));
+    trigger_verifications_.push_back(std::move(verifications));
   }
 
   void OsSourceDataAvailable(std::vector<GURL> registration_urls) override {
@@ -150,7 +150,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   Vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
-  Vector<absl::optional<network::TriggerVerification>> trigger_verification_;
+  Vector<Vector<network::TriggerVerification>> trigger_verifications_;
 
   std::vector<std::vector<GURL>> os_sources_;
   std::vector<std::vector<GURL>> os_triggers_;
@@ -171,8 +171,9 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
   ~MockAttributionHost() override = default;
 
   void WaitUntilBoundAndFlush() {
-    if (receiver_.is_bound())
+    if (receiver_.is_bound()) {
       return;
+    }
     base::RunLoop wait_loop;
     quit_ = wait_loop.QuitClosure();
     wait_loop.Run();
@@ -186,8 +187,9 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
     receiver_.Bind(
         mojo::PendingAssociatedReceiver<mojom::blink::AttributionHost>(
             std::move(handle)));
-    if (quit_)
+    if (quit_) {
       std::move(quit_).Run();
+    }
   }
 
   void RegisterDataHost(
@@ -274,8 +276,9 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithoutEligibleHeader) {
 
   mock_data_host->Flush();
   EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
-  ASSERT_EQ(mock_data_host->trigger_verification().size(), 1u);
-  ASSERT_FALSE(mock_data_host->trigger_verification().at(0).has_value());
+  ASSERT_EQ(mock_data_host->trigger_verifications().size(), 1u);
+  ASSERT_THAT(mock_data_host->trigger_verifications().at(0),
+              testing::IsEmpty());
 }
 
 // TODO(https://crbug.com/1412566): Improve tests to properly cover the
@@ -366,7 +369,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
   EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
 }
 
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerification) {
+TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerifications) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
@@ -377,10 +380,11 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerification) {
       http_names::kAttributionReportingRegisterTrigger,
       R"({"event_trigger_data":[{"trigger_data": "7"}]})");
 
-  absl::optional<network::TriggerVerification> trigger_verification =
-      network::TriggerVerification::Create(
-          "token", "08fa6760-8e5c-4ccb-821d-b5d82bef2b37");
-  response.SetTriggerVerification(trigger_verification);
+  response.SetTriggerVerifications(
+      {*network::TriggerVerification::Create(
+           "token-1", "11fa6760-8e5c-4ccb-821d-b5d82bef2b37"),
+       *network::TriggerVerification::Create(
+           "token-2", "22fa6760-8e5c-4ccb-821d-b5d82bef2b37")});
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -393,16 +397,16 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerification) {
   ASSERT_TRUE(mock_data_host);
   mock_data_host->Flush();
 
-  ASSERT_EQ(mock_data_host->trigger_verification().size(), 1u);
-  ASSERT_TRUE(mock_data_host->trigger_verification().at(0).has_value());
-  EXPECT_EQ(mock_data_host->trigger_verification().at(0).value().token(),
-            "token");
-  EXPECT_EQ(mock_data_host->trigger_verification()
-                .at(0)
-                .value()
-                .aggregatable_report_id()
-                .AsLowercaseString(),
-            "08fa6760-8e5c-4ccb-821d-b5d82bef2b37");
+  ASSERT_EQ(mock_data_host->trigger_verifications().size(), 1u);
+  const Vector<network::TriggerVerification>& verifications =
+      mock_data_host->trigger_verifications().at(0);
+  ASSERT_EQ(verifications.size(), 2u);
+  EXPECT_EQ(verifications.at(0).token(), "token-1");
+  EXPECT_EQ(verifications.at(0).aggregatable_report_id().AsLowercaseString(),
+            "11fa6760-8e5c-4ccb-821d-b5d82bef2b37");
+  EXPECT_EQ(verifications.at(1).token(), "token-2");
+  EXPECT_EQ(verifications.at(1).aggregatable_report_id().AsLowercaseString(),
+            "22fa6760-8e5c-4ccb-821d-b5d82bef2b37");
 }
 
 TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {

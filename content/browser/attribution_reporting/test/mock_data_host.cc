@@ -63,7 +63,7 @@ void MockDataHost::SourceDataAvailable(
 void MockDataHost::TriggerDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::TriggerRegistration data,
-    absl::optional<network::TriggerVerification> verification) {
+    std::vector<network::TriggerVerification> verifications) {
   trigger_data_.push_back(std::move(data));
   if (trigger_data_.size() < min_trigger_data_count_ ||
       source_data_.size() < min_source_data_count_) {

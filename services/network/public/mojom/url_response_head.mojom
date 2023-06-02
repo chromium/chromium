@@ -258,23 +258,28 @@ struct URLResponseHead {
   // Supports aggregatable reports in the Attribution Reporting API:
   // https://github.com/WICG/attribution-reporting-api.
   //
-  // The property will be added only on responses to trigger registration
-  // requests sent to reporting origin registered as private state token issuer
-  // which returned a blind token verifying the validity of the trigger.
+  // The array will be non-empty for responses to trigger registration requests
+  // sent to reporting origin registered as private state token issuer which
+  // returned blind tokens verifying the validity of the trigger.
   //
-  // The structure contains a token that can be sent to a reporting origin
+  // The structure contains tokens that can be sent to a reporting origin
   // alongside an aggregatable report for it to verify the validity of a
-  // trigger. The token is signed over the included aggregatable_report_id which
+  // trigger. A token is signed over the included aggregatable_report_id which
   // must be used to create the aggregatable report.
   //
-  // It is added as a property on the response to transfer the token from the
-  // network service (where it's generated) to blink where it is transferred to
-  // the browser alongside of the attribution data that it verifies. See:
+  // It is added as a property on the response to transfer the tokens from the
+  // network service (where they are generated) to blink where it is transferred
+  // to the browser alongside of the attribution data that it verifies. See:
   // https://github.com/WICG/attribution-reporting-api/blob/main/report_verification.md
   //
-  // TODO(https://crbug.com/1374121): Remove the property when attribution response
-  // parsing moves from blink to the network service.
-  TriggerVerification? trigger_verification;
+  // It is an array as it is possible that multiple reports are created from a
+  // single trigger. The tokens are randomly assigned to the generated reports.
+  // see:
+  // https://wicg.github.io/attribution-reporting-api/#generating-randomized-null-reports
+  //
+  // TODO(https://crbug.com/1374121): Remove the property when attribution
+  // response parsing moves from blink to the network service.
+  array<TriggerVerification> trigger_verifications;
 
   // The result of any PNA preflight sent for this request, if any.
   //

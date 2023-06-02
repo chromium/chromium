@@ -20,7 +20,7 @@ interface AttributionDataHost {
   // attributionsrc request.
   TriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
                        attribution_reporting.mojom.TriggerRegistration data,
-                       network.mojom.TriggerVerification? verification);
+                       array<network.mojom.TriggerVerification> verifications);
 
   // Called when OS source data from the renderer is available for a given
   // attributionsrc request. The OS will make subsequent requests to

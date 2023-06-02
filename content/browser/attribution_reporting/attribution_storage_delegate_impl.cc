@@ -34,6 +34,7 @@
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -297,6 +298,19 @@ void AttributionStorageDelegateImpl::ShuffleReports(
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
       base::RandomShuffle(reports.begin(), reports.end());
+      break;
+    case AttributionNoiseMode::kNone:
+      break;
+  }
+}
+
+void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
+    std::vector<network::TriggerVerification>& verifications) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (noise_mode_) {
+    case AttributionNoiseMode::kDefault:
+      base::RandomShuffle(verifications.begin(), verifications.end());
       break;
     case AttributionNoiseMode::kNone:
       break;

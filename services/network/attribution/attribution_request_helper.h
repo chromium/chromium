@@ -5,14 +5,16 @@
 #ifndef SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_REQUEST_HELPER_H_
 #define SERVICES_NETWORK_ATTRIBUTION_ATTRIBUTION_REQUEST_HELPER_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -49,6 +51,12 @@ class AttributionRequestHelper {
     kNonSuitable = 2,
     kMaxValue = kNonSuitable,
   };
+
+  // TODO(crbug.com/1440744): Review the number of verification tokens per
+  // trigger. The higher the number, the more work and bandwidth is needed to
+  // generate report verification tokens. The lower the number, the more likely
+  // it is that some reports will be sent without a verification token.
+  static constexpr size_t kVerificationTokensPerTrigger = 3;
 
   // Creates an AttributionRequestHelper instance if needed.
   //
@@ -119,15 +127,15 @@ class AttributionRequestHelper {
                                             base::OnceClosure done);
 
   // Continuation of `Finalize` after asynchronous
-  // mediator_::ProcessVerificationToGetToken concludes.
+  // mediator_::ProcessVerificationToGetTokens concludes.
   //
   // `response` and `done` are `Finalize`'s parameters, passed on to the
-  // continuation. `maybe_redemption_token` is the result from the
+  // continuation. `redemption_tokens` is the result from the
   // attribution verification mediator.
   void OnDoneProcessingVerificationResponse(
       mojom::URLResponseHead& response,
       base::OnceClosure done,
-      absl::optional<std::string> maybe_redemption_token);
+      std::vector<const std::string> redemption_tokens);
 
   // A mediator can perform a single verification operation. Each redirect does
   // a verification. We use this callback to generate a new mediator instance

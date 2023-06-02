@@ -20023,6 +20023,10 @@ Called by update_net_error_codes.py.-->
   <int value="1"
       label="No verification header containing a signature received"/>
   <int value="2" label="Unable to unblind the the signature"/>
+  <int value="3" label="Too many verification signatures received"/>
+  <int value="4"
+      label="The verification header received is invalid / incorrectly
+             formatted"/>
 </enum>
 
 <enum name="CookieAccessType">

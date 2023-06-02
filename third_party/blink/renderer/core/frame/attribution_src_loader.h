@@ -136,7 +136,7 @@ class CORE_EXPORT AttributionSrcLoader
       attribution_reporting::mojom::blink::RegistrationType,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const absl::optional<network::TriggerVerification>&);
+      const Vector<network::TriggerVerification>&);
 
   const Member<LocalFrame> local_frame_;
 };

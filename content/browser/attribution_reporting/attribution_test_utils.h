@@ -215,8 +215,8 @@ class TriggerBuilder {
   TriggerBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
 
-  TriggerBuilder& SetVerification(
-      absl::optional<network::TriggerVerification> verification);
+  TriggerBuilder& SetVerifications(
+      std::vector<network::TriggerVerification> verifications);
 
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
@@ -237,7 +237,7 @@ class TriggerBuilder {
   ::aggregation_service::mojom::AggregationCoordinator
       aggregation_coordinator_ =
           ::aggregation_service::mojom::AggregationCoordinator::kDefault;
-  absl::optional<network::TriggerVerification> verification_;
+  std::vector<network::TriggerVerification> verifications_;
   attribution_reporting::mojom::SourceRegistrationTimeConfig
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
@@ -698,8 +698,8 @@ struct AttributionTriggerMatcherConfig {
       registration = ::testing::_;
   ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
       destination_origin = ::testing::_;
-  ::testing::Matcher<const absl::optional<network::TriggerVerification>&>
-      verification = ::testing::_;
+  ::testing::Matcher<const std::vector<network::TriggerVerification>&>
+      verifications = ::testing::_;
 
   ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;
 

@@ -18,6 +18,10 @@ class Time;
 class TimeDelta;
 }  // namespace base
 
+namespace network {
+class TriggerVerification;
+}  // namespace network
+
 namespace content {
 
 struct AttributionConfig;
@@ -76,6 +80,8 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
+  void ShuffleTriggerVerifications(
+      std::vector<network::TriggerVerification>& verifications) override;
   double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       base::TimeDelta expiry_deadline) const override;

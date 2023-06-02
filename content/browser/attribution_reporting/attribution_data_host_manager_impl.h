@@ -132,7 +132,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
-      absl::optional<network::TriggerVerification> verification) override;
+      std::vector<network::TriggerVerification>) override;
   void OsSourceDataAvailable(std::vector<GURL> registration_urls) override;
   void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override;
 

@@ -3995,6 +3995,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportVerification.ReportHasVerification"
     enum="Boolean" expires_after="M117">
+  <obsolete>
+    Metric no longer relevant/needed considering null reports generation.
+  </obsolete>
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

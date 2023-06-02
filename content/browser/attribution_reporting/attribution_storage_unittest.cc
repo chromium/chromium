@@ -2219,7 +2219,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
-      /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+      /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
   EXPECT_EQ(AttributionTrigger::AggregatableResult::kSuccess,
@@ -2291,7 +2291,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
             ::aggregation_service::mojom::AggregationCoordinator::kDefault,
             attribution_reporting::mojom::SourceRegistrationTimeConfig::
                 kInclude),
-        /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+        /*destination_origin=*/origin, /*verifications=*/{},
         /*is_within_fenced_frame=*/false);
 
     EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(trigger2),
@@ -3038,7 +3038,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               attribution_reporting::mojom::SourceRegistrationTimeConfig::
                   kInclude),
           /*destination_origin=*/origin,
-          /*attestation=*/absl::nullopt,
+          /*verifications=*/{},
           /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
@@ -3121,7 +3121,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
               attribution_reporting::mojom::SourceRegistrationTimeConfig::
                   kInclude),
           /*destination_origin=*/origin,
-          /*attestation=*/absl::nullopt,
+          /*verifications=*/{},
           /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
@@ -3172,7 +3172,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
-      /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+      /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
   AttributionTrigger trigger2(
@@ -3188,7 +3188,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
-      /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+      /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
   AttributionTrigger trigger3(
@@ -3204,7 +3204,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           ::aggregation_service::mojom::AggregationCoordinator::kDefault,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude),
       /*destination_origin=*/origin,
-      /*attestation=*/absl::nullopt,
+      /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger1),

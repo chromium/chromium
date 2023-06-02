@@ -1102,54 +1102,59 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  const auto create_trigger = [](absl::optional<network::TriggerVerification>
-                                     verification) {
-    return AttributionTrigger(
-        /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-        attribution_reporting::TriggerRegistration(
-            FilterPair(/*positive=*/{{{"a", {"b"}}}},
-                       /*negative=*/{{{"g", {"h"}}}}),
-            /*debug_key=*/1,
-            {attribution_reporting::AggregatableDedupKey(
-                /*dedup_key=*/18, FilterPair())},
-            {
-                attribution_reporting::EventTriggerData(
-                    /*data=*/2,
-                    /*priority=*/3,
-                    /*dedup_key=*/absl::nullopt,
-                    FilterPair(
-                        /*positive=*/{{{"c", {"d"}}}},
-                        /*negative=*/{})),
-                attribution_reporting::EventTriggerData(
-                    /*data=*/4,
-                    /*priority=*/5,
-                    /*dedup_key=*/6,
-                    FilterPair(/*positive=*/{}, /*negative=*/{{{"e", {"f"}}}})),
-            },
-            {*attribution_reporting::AggregatableTriggerData::Create(
-                 /*key_piece=*/345,
-                 /*source_keys=*/{"a"},
-                 FilterPair(/*positive=*/{},
-                            /*negative=*/{{{"c", {"d"}}}})),
-             *attribution_reporting::AggregatableTriggerData::Create(
-                 /*key_piece=*/678,
-                 /*source_keys=*/{"b"},
-                 FilterPair(/*positive=*/{}, /*negative=*/{{{"e", {"f"}}}}))},
-            /*aggregatable_values=*/
-            *attribution_reporting::AggregatableValues::Create(
-                {{"a", 123}, {"b", 456}}),
-            /*debug_reporting=*/false,
-            ::aggregation_service::mojom::AggregationCoordinator::kDefault,
-            attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                kInclude),
-        *SuitableOrigin::Deserialize("https://d.test"), std::move(verification),
-        /*is_within_fenced_frame=*/false);
-  };
+  const auto create_trigger =
+      [](std::vector<network::TriggerVerification> verifications) {
+        return AttributionTrigger(
+            /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+            attribution_reporting::TriggerRegistration(
+                FilterPair(/*positive=*/{{{"a", {"b"}}}},
+                           /*negative=*/{{{"g", {"h"}}}}),
+                /*debug_key=*/1,
+                {attribution_reporting::AggregatableDedupKey(
+                    /*dedup_key=*/18, FilterPair())},
+                {
+                    attribution_reporting::EventTriggerData(
+                        /*data=*/2,
+                        /*priority=*/3,
+                        /*dedup_key=*/absl::nullopt,
+                        FilterPair(
+                            /*positive=*/{{{"c", {"d"}}}},
+                            /*negative=*/{})),
+                    attribution_reporting::EventTriggerData(
+                        /*data=*/4,
+                        /*priority=*/5,
+                        /*dedup_key=*/6,
+                        FilterPair(/*positive=*/{},
+                                   /*negative=*/{{{"e", {"f"}}}})),
+                },
+                {*attribution_reporting::AggregatableTriggerData::Create(
+                     /*key_piece=*/345,
+                     /*source_keys=*/{"a"},
+                     FilterPair(/*positive=*/{},
+                                /*negative=*/{{{"c", {"d"}}}})),
+                 *attribution_reporting::AggregatableTriggerData::Create(
+                     /*key_piece=*/678,
+                     /*source_keys=*/{"b"},
+                     FilterPair(/*positive=*/{},
+                                /*negative=*/{{{"e", {"f"}}}}))},
+                /*aggregatable_values=*/
+                *attribution_reporting::AggregatableValues::Create(
+                    {{"a", 123}, {"b", 456}}),
+                /*debug_reporting=*/false,
+                ::aggregation_service::mojom::AggregationCoordinator::kDefault,
+                attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                    kInclude),
+            *SuitableOrigin::Deserialize("https://d.test"),
+            std::move(verifications),
+            /*is_within_fenced_frame=*/false);
+      };
 
   static constexpr char kScript[] = R"(
     const expectedVerification =
       '<dl><dt>Token</dt><dd>abc</dd>' +
-      '<dt>Report ID</dt><dd>a2ab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>';
+      '<dt>Report ID</dt><dd>aaab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>' +
+      '<dl><dt>Token</dt><dd>def</dd>' +
+      '<dt>Report ID</dt><dd>bbab30b9-d664-4dfc-a9db-85f9729b9a30</dd></dl>';
 
     const table = document.querySelector('#triggerTable')
         .shadowRoot.querySelector('tbody');
@@ -1191,12 +1196,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             cleared_debug_key);
       };
 
-  notify_trigger_handled(create_trigger(/*verification=*/absl::nullopt),
+  notify_trigger_handled(create_trigger(/*verifications=*/{}),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess);
 
-  notify_trigger_handled(create_trigger(network::TriggerVerification::Create(
-                             "abc", "a2ab30b9-d664-4dfc-a9db-85f9729b9a30")),
+  std::vector<network::TriggerVerification> verifications;
+  verifications.push_back(*network::TriggerVerification::Create(
+      "abc", "aaab30b9-d664-4dfc-a9db-85f9729b9a30"));
+  verifications.push_back(*network::TriggerVerification::Create(
+      "def", "bbab30b9-d664-4dfc-a9db-85f9729b9a30"));
+  notify_trigger_handled(create_trigger(std::move(verifications)),
                          AttributionTrigger::EventLevelResult::kSuccess,
                          AttributionTrigger::AggregatableResult::kSuccess,
                          /*cleared_debug_key=*/123);

@@ -479,17 +479,15 @@ TEST_P(AttributionStorageSqlTest,
   auto trigger_verification = network::TriggerVerification::Create(
       /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
-  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder()
-                                   .SetVerification(trigger_verification)
-                                   .Build();
+  AttributionTrigger trigger =
+      DefaultAggregatableTriggerBuilder()
+          .SetVerifications({trigger_verification.value()})
+          .Build();
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
-  histograms.ExpectUniqueSample(
-      "Conversions.ReportVerification.ReportHasVerification", true,
-      /*expected_bucket_count=*/1);
 
   AttributionReport aggregatable_report =
       storage()->GetAttributionReports(base::Time::Max()).at(1);
@@ -526,45 +524,6 @@ TEST_P(AttributionStorageSqlTest,
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
-  histograms.ExpectUniqueSample(
-      "Conversions.ReportVerification.ReportHasVerification", false,
-      /*expected_bucket_count=*/1);
-
-  AttributionReport aggregatable_report =
-      storage()->GetAttributionReports(base::Time::Max()).at(1);
-
-  const auto* data =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &aggregatable_report.data());
-  EXPECT_FALSE(data->common_data.verification_token.has_value());
-
-  CloseDatabase();
-}
-
-TEST_P(
-    AttributionStorageSqlTest,
-    StoreAndRetrieveReportWithoutVerification_FeatureDisabled_HasVerificationNotRecorded) {
-  OpenDatabase();
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      network::features::kAttributionReportingReportVerification);
-  base::HistogramTester histograms;
-
-  StorableSource source = TestAggregatableSourceProvider()
-                              .GetBuilder()
-                              .SetExpiry(base::Days(30))
-                              .Build();
-  storage()->StoreSource(source);
-  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build();
-  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kSuccess),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess)));
-  histograms.ExpectUniqueSample(
-      "Conversions.ReportVerification.ReportHasVerification", false,
-      /*expected_bucket_count=*/0);
 
   AttributionReport aggregatable_report =
       storage()->GetAttributionReports(base::Time::Max()).at(1);
@@ -596,15 +555,11 @@ TEST_P(AttributionStorageSqlTest, NullReportWithVerification_FeatureEnabled) {
   auto trigger_verification = network::TriggerVerification::Create(
       /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
-  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder()
-                                   .SetVerification(trigger_verification)
-                                   .Build();
-  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  auto result = storage()->MaybeCreateAndStoreReport(
+      DefaultAggregatableTriggerBuilder()
+          .SetVerifications({trigger_verification.value()})
+          .Build());
   EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
-
-  histograms.ExpectUniqueSample(
-      "Conversions.ReportVerification.ReportHasVerification", true,
-      /*expected_bucket_count=*/1);
 
   auto reports = storage()->GetAttributionReports(base::Time::Max());
   ASSERT_THAT(reports, SizeIs(2));
@@ -645,11 +600,10 @@ TEST_P(AttributionStorageSqlTest,
   auto trigger_verification = network::TriggerVerification::Create(
       /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
-  AttributionTrigger trigger =
+  auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
-          .SetVerification(trigger_verification)
-          .Build(/*generate_event_trigger_data=*/false);
-  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+          .SetVerifications({trigger_verification.value()})
+          .Build(/*generate_event_trigger_data=*/false));
 
   EXPECT_EQ(result.aggregatable_status(),
             AttributionTrigger::AggregatableResult::kSuccess);
@@ -696,11 +650,10 @@ TEST_P(AttributionStorageSqlTest,
   auto trigger_verification = network::TriggerVerification::Create(
       /*token=*/"verification-token", /*aggregatable_report_id=*/
       "55865da3-fb0e-4b71-965e-64fc4bf0a323");
-  AttributionTrigger trigger =
+  auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
-          .SetVerification(trigger_verification)
-          .Build(/*generate_event_trigger_data=*/false);
-  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+          .SetVerifications({trigger_verification.value()})
+          .Build(/*generate_event_trigger_data=*/false));
 
   EXPECT_EQ(result.aggregatable_status(),
             AttributionTrigger::AggregatableResult::kSuccess);
@@ -728,6 +681,73 @@ TEST_P(AttributionStorageSqlTest,
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &second_report.data());
   EXPECT_FALSE(aggregatable_data->common_data.verification_token.has_value());
+  CloseDatabase();
+}
+
+TEST_P(AttributionStorageSqlTest,
+       BothRealAndNullReports_MultipleReportsWithVerification) {
+  OpenDatabase();
+
+  StorableSource source = TestAggregatableSourceProvider().GetBuilder().Build();
+  storage()->StoreSource(source);
+
+  delegate()->set_null_aggregatable_reports({
+      AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      },
+  });
+  delegate()->set_reverse_verifications_on_shuffle(true);
+
+  std::vector<network::TriggerVerification> verifications = {
+      *network::TriggerVerification::Create(
+          /*token=*/"verification-token-1", /*aggregatable_report_id=*/
+          "11865da3-fb0e-4b71-965e-64fc4bf0a323"),
+      *network::TriggerVerification::Create(
+          /*token=*/"verification-token-2", /*aggregatable_report_id=*/
+          "22865da3-fb0e-4b71-965e-64fc4bf0a323"),
+      *network::TriggerVerification::Create(
+          /*token=*/"verification-token-3", /*aggregatable_report_id=*/
+          "33865da3-fb0e-4b71-965e-64fc4bf0a323")};
+
+  auto result = storage()->MaybeCreateAndStoreReport(
+      DefaultAggregatableTriggerBuilder()
+          .SetVerifications(verifications)
+          .Build(/*generate_event_trigger_data=*/false));
+
+  EXPECT_EQ(result.aggregatable_status(),
+            AttributionTrigger::AggregatableResult::kSuccess);
+  EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
+
+  auto reports = storage()->GetAttributionReports(base::Time::Max());
+  ASSERT_THAT(reports, SizeIs(2));
+  base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
+
+  auto check_report_verification = [](const AttributionReport& report,
+                                      const network::TriggerVerification&
+                                          expected_verification) {
+    EXPECT_EQ(report.external_report_id(),
+              expected_verification.aggregatable_report_id());
+    absl::visit(
+        base::Overloaded{
+            [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+            [&expected_verification](
+                const AttributionReport::AggregatableAttributionData& data) {
+              EXPECT_EQ(data.common_data.verification_token,
+                        expected_verification.token());
+            },
+            [&expected_verification](
+                const AttributionReport::NullAggregatableData& data) {
+              EXPECT_EQ(data.common_data.verification_token,
+                        expected_verification.token());
+            }},
+        report.data());
+  };
+
+  // The reports should have used the last two verification tokens. The last two
+  // because the test shuffling reverse available verifications.
+  check_report_verification(reports.at(0), verifications.at(2));
+  check_report_verification(reports.at(1), verifications.at(1));
+
   CloseDatabase();
 }
 

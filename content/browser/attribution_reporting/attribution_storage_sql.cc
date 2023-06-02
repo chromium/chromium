@@ -63,6 +63,7 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
@@ -3016,44 +3017,40 @@ void AttributionStorageSql::AssignTriggerVerificationData(
     const AttributionTrigger& trigger) {
   DCHECK(!reports.empty());
 
-  // TODO(crbug.com/1435014): Multiple verification tokens should be
-  // randomly assigned to the reports.
+  // TODO(https://crbug.com/1442578): Add metric to understand the number of
+  // reports sent with a verification token.
 
-  // TODO(crbug.com/1435014): Consider how this metric changes when multiple
-  // verification tokens are supported and whether it can be recorded in
-  // `AttributionManagerImpl`.
-  if (base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingReportVerification)) {
-    base::UmaHistogramBoolean(
-        "Conversions.ReportVerification.ReportHasVerification",
-        trigger.verification().has_value());
-  }
-
-  if (!trigger.verification().has_value()) {
+  if (trigger.verifications().empty()) {
     return;
   }
 
+  // Assign verification tokens according to:
+  // https://wicg.github.io/attribution-reporting-api/#assign-private-state-tokens
   delegate_->ShuffleReports(reports);
 
-  AttributionReport& random_report = reports.front();
+  std::vector<network::TriggerVerification> verifications =
+      trigger.verifications();
+  delegate_->ShuffleTriggerVerifications(verifications);
 
-  const auto assign_trigger_verification =
-      [&](AttributionReport::CommonAggregatableData& data) {
-        data.verification_token = trigger.verification()->token();
-        random_report.set_external_report_id(
-            trigger.verification()->aggregatable_report_id());
-      };
+  for (size_t i = 0; i < verifications.size() && i < reports.size(); ++i) {
+    network::TriggerVerification& verification = verifications.at(i);
+    AttributionReport& report = reports.at(i);
 
-  absl::visit(
-      base::Overloaded{
-          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
-          [&](AttributionReport::AggregatableAttributionData& data) {
-            assign_trigger_verification(data.common_data);
-          },
-          [&](AttributionReport::NullAggregatableData& data) {
-            assign_trigger_verification(data.common_data);
-          }},
-      random_report.data());
+    report.set_external_report_id(
+        std::move(verification.aggregatable_report_id()));
+    absl::visit(
+        base::Overloaded{
+            [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
+            [&](AttributionReport::AggregatableAttributionData& data) {
+              data.common_data.verification_token =
+                  std::move(verification.token());
+            },
+            [&](AttributionReport::NullAggregatableData& data) {
+              data.common_data.verification_token =
+                  std::move(verification.token());
+            }},
+        report.data());
+  }
 }
 
 std::set<AttributionDataModel::DataKey>

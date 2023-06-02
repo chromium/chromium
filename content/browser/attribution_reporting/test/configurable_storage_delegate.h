@@ -16,6 +16,10 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace network {
+class TriggerVerification;
+}  // namespace network
+
 namespace content {
 
 class ConfigurableStorageDelegate : public AttributionStorageDelegate {
@@ -33,6 +37,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
+  void ShuffleTriggerVerifications(
+      std::vector<network::TriggerVerification>&) override;
   double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       base::TimeDelta expiry_deadline) const override;
@@ -74,6 +80,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_reverse_reports_on_shuffle(bool reverse);
 
+  void set_reverse_verifications_on_shuffle(bool reverse);
+
   // Note that this is *not* used to produce a randomized response; that
   // is controlled deterministically by `set_randomized_response()`.
   void set_randomized_response_rate(double rate);
@@ -102,6 +110,10 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   // If true, `ShuffleReports()` reverses the reports to allow testing the
   // proper call from `AttributionStorage::GetAttributionReports()`.
   bool reverse_reports_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
+  // If true, `ShuffleTriggerVerifications()` reverses the verifications.
+  bool reverse_verifications_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
   double randomized_response_rate_ = 0.0;

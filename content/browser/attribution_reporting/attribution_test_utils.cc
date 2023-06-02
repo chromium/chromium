@@ -364,9 +364,9 @@ TriggerBuilder& TriggerBuilder::SetSourceRegistrationTimeConfig(
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetVerification(
-    absl::optional<network::TriggerVerification> verification) {
-  verification_ = std::move(verification);
+TriggerBuilder& TriggerBuilder::SetVerifications(
+    std::vector<network::TriggerVerification> verifications) {
+  verifications_ = std::move(verifications);
   return *this;
 }
 
@@ -398,7 +398,7 @@ AttributionTrigger TriggerBuilder::Build(
           std::move(event_triggers), aggregatable_trigger_data_,
           aggregatable_values_, debug_reporting_, aggregation_coordinator_,
           source_registration_time_config_),
-      destination_origin_, verification_, is_within_fenced_frame_);
+      destination_origin_, verifications_, is_within_fenced_frame_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(
@@ -769,13 +769,14 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion) {
   out << "{registration=" << conversion.registration()
       << ",destination_origin=" << conversion.destination_origin()
-      << ",is_within_fenced_frame=" << conversion.is_within_fenced_frame();
-
-  if (conversion.verification().has_value()) {
-    out << ",verification=" << conversion.verification().value();
-  } else {
-    out << ",verification=(null)";
+      << ",is_within_fenced_frame=" << conversion.is_within_fenced_frame()
+      << ",verifications=[";
+  const char* separator = "";
+  for (const auto& verification : conversion.verifications()) {
+    out << separator << verification;
+    separator = ", ";
   }
+  out << "]";
 
   return out << "}";
 }
@@ -1101,8 +1102,8 @@ AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
       Property("is_within_fenced_frame",
                &AttributionTrigger::is_within_fenced_frame,
                cfg.is_within_fenced_frame),
-      Property("trigger_verification", &AttributionTrigger::verification,
-               cfg.verification));
+      Property("verifications", &AttributionTrigger::verifications,
+               cfg.verifications));
 }
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(

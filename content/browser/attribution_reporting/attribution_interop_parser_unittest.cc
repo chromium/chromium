@@ -240,7 +240,7 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(trigger->destination_origin(),
             *SuitableOrigin::Deserialize("https://b.d.test"));
-  EXPECT_EQ(trigger->verification(), absl::nullopt);
+  EXPECT_THAT(trigger->verifications(), IsEmpty());
   EXPECT_FALSE(trigger->is_within_fenced_frame());
   EXPECT_TRUE(result->front().debug_permission);
 }

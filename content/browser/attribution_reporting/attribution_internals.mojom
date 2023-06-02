@@ -128,7 +128,7 @@ struct WebUIRegistration {
 
 struct WebUITrigger {
   WebUIRegistration registration;
-  network.mojom.TriggerVerification? verification;
+  array<network.mojom.TriggerVerification> verifications;
 
   enum Status {
     // Shared statuses:
