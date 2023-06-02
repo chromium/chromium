@@ -166,13 +166,6 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
           dst_video_frame->mailbox_holder(0);
       ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
 
-      // `unpack_flip_y` should be set if the surface origin of the source
-      // doesn't match that of the destination, which is created with
-      // kTopLeft_GrSurfaceOrigin.
-      // TODO(blundell): If this codepath is used with destinations that are
-      // created with other surface origins, will need to generalize this.
-      bool unpack_flip_y = (src_surface_origin != kTopLeft_GrSurfaceOrigin);
-
       // Note: the destination video frame can have a coded size that is larger
       // than that of the source video to account for alignment needs. In this
       // case, CopySharedImage() will clear out the destination SharedImage and
@@ -184,7 +177,8 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
       // out.
       ri->CopySharedImage(src_mailbox_holder.mailbox,
                           dst_mailbox_holder.mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
-                          src_size.width(), src_size.height(), unpack_flip_y,
+                          src_size.width(), src_size.height(),
+                          /*unpack_flip_y=*/false,
                           /*unpack_premultiply_alpha=*/false);
     }
   } else {
