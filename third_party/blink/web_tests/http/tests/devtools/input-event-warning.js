@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that console warnings are issued for a blocked event listener and that there is no crash when an offending listener is removed by the handler.\n`);

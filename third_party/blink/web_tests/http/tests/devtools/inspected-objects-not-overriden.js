@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+
 /* TODO(chromium:1050549)
  * once that bug is complete we can lose this test
  * as DevTools will no longer touch built-in prototypes.

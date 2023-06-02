@@ -1,5 +1,5 @@
 Tests that FileReader's Blob request isn't shown in network panel.
 
 requests in the network panel: 0
-file-reader-with-network-panel.js:14 done
+file-reader-with-network-panel.js:17 done
 

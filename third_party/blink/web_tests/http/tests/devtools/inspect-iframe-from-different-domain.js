@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that style properties of elements in iframes loaded from domain different from the main document domain can be inspected. See bug 31587.\n`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements');
   await TestRunner.navigatePromise("http://example.test:8000/devtools/resources/empty.html");
   // NOTE: evaluateInPageAsync() waits on the promise at the end of block before
   // resolving the promise it returned. Other forms of the evaluate including

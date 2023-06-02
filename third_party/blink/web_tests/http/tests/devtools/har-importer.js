@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
+
 (async function() {
   TestRunner.addResult(
       'Verifies that imported HAR files create matching NetworkRequests');
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
-  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console');
   const harRoot = new HARImporter.HARRoot(harJson);
   const requests = HARImporter.Importer.requestsFromHARLog(harRoot.log);
   const formattedRequests = await Promise.all(requests.map(async request => {

@@ -5,83 +5,83 @@ VM:37 XHR finished loading: GET "http://127.0.0.1:8000/devtools/resources/xhr-ex
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
-(anonymous) @ console-xhr-logging.js:20
-console-xhr-logging.js:13 sending a GET request to resources/xhr-exists.html
+requestHelper @ console-xhr-logging.js:17
+(anonymous) @ console-xhr-logging.js:23
+console-xhr-logging.js:16 sending a GET request to resources/xhr-exists.html
 
 Message count: 3
 VM:37 GET http://127.0.0.1:8000/devtools/resources/xhr-does-not-exist.html 404 (Not Found)
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
-(anonymous) @ console-xhr-logging.js:26
+requestHelper @ console-xhr-logging.js:17
+(anonymous) @ console-xhr-logging.js:29
 VM:37 XHR failed loading: GET "http://127.0.0.1:8000/devtools/resources/xhr-does-not-exist.html".
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
-(anonymous) @ console-xhr-logging.js:26
-console-xhr-logging.js:13 sending a GET request to resources/xhr-does-not-exist.html
+requestHelper @ console-xhr-logging.js:17
+(anonymous) @ console-xhr-logging.js:29
+console-xhr-logging.js:16 sending a GET request to resources/xhr-does-not-exist.html
 
 Message count: 2
 VM:37 XHR finished loading: POST "http://127.0.0.1:8000/devtools/resources/post-target.cgi".
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
-console-xhr-logging.js:13 sending a POST request to resources/post-target.cgi
+console-xhr-logging.js:16 sending a POST request to resources/post-target.cgi
 
 Message count: 4
 VM:37 Access to XMLHttpRequest at 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
 VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED 200 (OK)
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
 VM:37 XHR failed loading: GET "http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html".
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
-console-xhr-logging.js:13 sending a GET request to http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html
+console-xhr-logging.js:16 sending a GET request to http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html
 
 Message count: 1
-console-xhr-logging.js:13 sending a GET request to resources/xhr-exists.html
+console-xhr-logging.js:16 sending a GET request to resources/xhr-exists.html
 
 Message count: 2
 VM:37 GET http://127.0.0.1:8000/devtools/resources/xhr-does-not-exist.html 404 (Not Found)
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
-console-xhr-logging.js:13 sending a GET request to resources/xhr-does-not-exist.html
+console-xhr-logging.js:16 sending a GET request to resources/xhr-does-not-exist.html
 
 Message count: 1
-console-xhr-logging.js:13 sending a POST request to resources/post-target.cgi
+console-xhr-logging.js:16 sending a POST request to resources/post-target.cgi
 
 Message count: 3
 VM:37 Access to XMLHttpRequest at 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
 VM:37 GET http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html net::ERR_FAILED 200 (OK)
 makeXHR @ VM:37
 makeSimpleXHRWithPayload @ VM:13
 makeSimpleXHR @ VM:9
-requestHelper @ console-xhr-logging.js:14
+requestHelper @ console-xhr-logging.js:17
 (anonymous) @ VM:1
-console-xhr-logging.js:13 sending a GET request to http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html
+console-xhr-logging.js:16 sending a GET request to http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html
 
 
