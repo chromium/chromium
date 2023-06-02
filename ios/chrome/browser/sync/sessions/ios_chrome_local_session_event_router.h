@@ -28,6 +28,7 @@ class IOSChromeLocalSessionEventRouter
     : public sync_sessions::LocalSessionEventRouter {
  public:
   IOSChromeLocalSessionEventRouter(
+      // TODO(crbug.com/1450909): Pass a BrowserList directly instead.
       ChromeBrowserState* browser_state,
       sync_sessions::SyncSessionsClient* sessions_client_,
       const syncer::SyncableService::StartSyncFlare& flare);
@@ -94,7 +95,7 @@ class IOSChromeLocalSessionEventRouter
   // Called on observation of a change in `web_state`.
   void OnWebStateChange(web::WebState* web_state);
 
-  // Observation registrars for the associated browser state; owns an instance
+  // Observation registrar for the associated browser list; owns an instance
   // of IOSChromeLocalSessionEventRouter::Observer.
   std::unique_ptr<AllWebStateListObservationRegistrar> const registrar_;
 

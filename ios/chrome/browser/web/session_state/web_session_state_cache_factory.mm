@@ -11,6 +11,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/web/features.h"
@@ -27,6 +28,7 @@ namespace {
 class WebSessionStateCacheWrapper : public KeyedService {
  public:
   explicit WebSessionStateCacheWrapper(
+      // TODO(crbug.com/1450912): Pass a BrowserList directly instead.
       ChromeBrowserState* browser_state,
       WebSessionStateCache* web_session_state_cache);
 
@@ -54,8 +56,9 @@ WebSessionStateCacheWrapper::WebSessionStateCacheWrapper(
     : web_session_state_cache_(web_session_state_cache) {
   DCHECK(web_session_state_cache);
   registrar_ = std::make_unique<AllWebStateListObservationRegistrar>(
-      browser_state, std::make_unique<WebSessionStateCacheWebStateListObserver>(
-                         web_session_state_cache));
+      BrowserListFactory::GetForBrowserState(browser_state),
+      std::make_unique<WebSessionStateCacheWebStateListObserver>(
+          web_session_state_cache));
 }
 
 WebSessionStateCacheWrapper::~WebSessionStateCacheWrapper() {

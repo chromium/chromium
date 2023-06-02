@@ -66,7 +66,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterAllLists) {
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
   browser_list_->AddIncognitoBrowser(&incognito_browser_0);
 
-  AllWebStateListObservationRegistrar registrar(chrome_browser_state_.get(),
+  AllWebStateListObservationRegistrar registrar(browser_list_,
                                                 std::move(owned_observer_));
   // Should observe both insertions.
   AppendNewWebState(&regular_browser_0);
@@ -110,7 +110,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterRegularLists) {
   browser_list_->AddIncognitoBrowser(&incognito_browser_0);
 
   AllWebStateListObservationRegistrar registrar(
-      chrome_browser_state_.get(), std::move(owned_observer_),
+      browser_list_, std::move(owned_observer_),
       AllWebStateListObservationRegistrar::Mode::REGULAR);
   // Should observe only the reugular insertions.
   AppendNewWebState(&regular_browser_0);
@@ -142,7 +142,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterIncognitoLists) {
   browser_list_->AddIncognitoBrowser(&incognito_browser_0);
 
   AllWebStateListObservationRegistrar registrar(
-      chrome_browser_state_.get(), std::move(owned_observer_),
+      browser_list_, std::move(owned_observer_),
       AllWebStateListObservationRegistrar::Mode::INCOGNITO);
   // Should observe only the incognito insertions.
   AppendNewWebState(&regular_browser_0);
@@ -172,7 +172,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, DeleteWithObservers) {
   browser_list_->AddBrowser(&regular_browser_0);
 
   {
-    AllWebStateListObservationRegistrar registrar(chrome_browser_state_.get(),
+    AllWebStateListObservationRegistrar registrar(browser_list_,
                                                   std::move(owned_observer_));
   }
 }
@@ -186,7 +186,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, DeleteBrowserState) {
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
   browser_list_->AddIncognitoBrowser(&incognito_browser_0);
 
-  AllWebStateListObservationRegistrar registrar(chrome_browser_state_.get(),
+  AllWebStateListObservationRegistrar registrar(browser_list_,
                                                 std::move(owned_observer_));
   AppendNewWebState(&regular_browser_0);
   AppendNewWebState(&incognito_browser_0);
