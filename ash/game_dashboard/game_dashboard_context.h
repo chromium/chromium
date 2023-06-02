@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -51,6 +52,9 @@ class GameDashboardContext {
 
   // Main menu button widget for the Game Dashboard.
   std::unique_ptr<views::Widget> main_menu_button_widget_;
+
+  // Expanded main menu for the Game Dashboard.
+  views::UniqueWidgetPtr main_menu_widget_;
 
   base::WeakPtrFactory<GameDashboardContext> weak_ptr_factory_{this};
 };

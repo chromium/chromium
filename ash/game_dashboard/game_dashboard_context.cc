@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -39,7 +41,16 @@ void GameDashboardContext::OnWindowBoundsChanged() {
 }
 
 void GameDashboardContext::ToggleMainMenu() {
-  VLOG(2) << "ToggleMainMenu";
+  if (!main_menu_widget_) {
+    auto menu_delegate = std::make_unique<GameDashboardMainMenuView>(
+        main_menu_button_widget_.get());
+    main_menu_widget_ =
+        base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+            std::move(menu_delegate)));
+    main_menu_widget_->Show();
+  } else {
+    main_menu_widget_.reset();
+  }
 }
 
 void GameDashboardContext::CreateAndAddMainMenuButtonWidget() {
@@ -93,7 +104,9 @@ void GameDashboardContext::UpdateMainMenuButtonWidgetBounds() {
 }
 
 void GameDashboardContext::OnMainMenuButtonPressed() {
-  VLOG(2) << "OnMainMenuButtonPressed";
+  // TODO(b/273640775): Add metrics to know when the main menu button was
+  // physically pressed.
+  ToggleMainMenu();
 }
 
 }  // namespace ash

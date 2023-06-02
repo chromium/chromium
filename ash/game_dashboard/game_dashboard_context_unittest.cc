@@ -13,6 +13,7 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,6 +42,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   views::Widget* GetMainMenuButtonWidget() {
     return game_context_->main_menu_button_widget_.get();
+  }
+
+  views::Widget* GetMainMenuDialogWidget() {
+    return game_context_->main_menu_widget_.get();
   }
 
  protected:
@@ -75,6 +80,32 @@ TEST_F(GameDashboardContextTest,
 
   EXPECT_EQ(expected_widget_location,
             GetMainMenuButtonWidget()->GetWindowBoundsInScreen());
+}
+
+// Verifies clicking the main menu button will open the main menu widget.
+TEST_F(GameDashboardContextTest, OpenMainMenuButtonWidget) {
+  // Verifies the initial state.
+  EXPECT_FALSE(GetMainMenuDialogWidget());
+
+  // Opens main menu dialog.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+
+  // Verifies that the menu is visible.
+  EXPECT_TRUE(GetMainMenuDialogWidget());
+}
+
+// Verifies clicking the main menu button will close the main menu widget if
+// it's already open.
+TEST_F(GameDashboardContextTest, CloseMainMenuButtonWidget) {
+  // Opens the main menu widget and Verifies the initial state.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  EXPECT_TRUE(GetMainMenuDialogWidget());
+
+  // Closes the main menu dialog.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+
+  // Verifies that the menu is no longer visible.
+  EXPECT_FALSE(GetMainMenuDialogWidget());
 }
 
 }  // namespace ash
