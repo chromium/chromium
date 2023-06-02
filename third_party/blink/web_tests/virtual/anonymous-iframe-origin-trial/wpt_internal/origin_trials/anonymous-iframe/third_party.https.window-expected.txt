@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Credentialless iframe is enabled from a third party (first party POV)
-PASS Credentialless iframe is enabled from a third party (third party POV)
-Harness: the test ran to completion.
-

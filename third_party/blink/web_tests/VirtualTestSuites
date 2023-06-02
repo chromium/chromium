@@ -19,17 +19,6 @@
   "     to expire. Tests will not be run starting from the expiration date.   ",
 
   {
-    "prefix": "anonymous-iframe-origin-trial",
-    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
-    "bases": ["wpt_internal/origin_trials/anonymous-iframe"],
-    "args": [
-      "--disable-blink-features=AnonymousIframe",
-      "--disable-features=PartitionedCookies,ThirdPartyStoragePartitioning",
-      "--enable-features=AnonymousIframeOriginTrial"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "lna-permission",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/local-network-access"],
@@ -582,7 +571,7 @@
               "inspector-protocol/worker"
             ],
     "args": ["--enable-features=PlzDedicatedWorker"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "service-worker-storage-control-on-thread-pool",
@@ -722,7 +711,7 @@
     "args": ["--disable-auto-wpt-origin-isolation",
              "--reset-browsing-instance-between-tests",
              "--disable-features=OriginAgentClusterDefaultEnable"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "focusless-spat-nav",
@@ -958,7 +947,7 @@
     "bases": ["external/wpt/fetch/http-cache"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=SplitCacheByIncludeCredentials"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "split-http-cache",
@@ -1650,7 +1639,7 @@
       "--disable-features=OriginAgentClusterDefaultEnable",
       "--disable-auto-wpt-origin-isolation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   {
@@ -1718,14 +1707,14 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/infrastructure/urls/terminology-0/" ],
     "args": [ "--enable-features=IsolateSandboxedIframes" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "coop-restrict-properties",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
     "args": [ "--enable-features=CoopRestrictProperties" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   "These tests require the experimental speculative prefetch feature, and",
@@ -1820,7 +1809,7 @@
       "external/wpt/fetch/nosniff"
     ],
     "args": ["--enable-features=OpaqueResponseBlockingV01"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "orb-v02",
@@ -1829,7 +1818,7 @@
     "bases": [
       "external/wpt/fetch/corb"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "js-shared-memory",
