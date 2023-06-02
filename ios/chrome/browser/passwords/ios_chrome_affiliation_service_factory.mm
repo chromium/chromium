@@ -51,7 +51,8 @@ IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   auto affiliation_service =
       std::make_unique<password_manager::AffiliationServiceImpl>(
           context->GetSharedURLLoaderFactory(), backend_task_runner,
