@@ -21,4 +21,15 @@ BrowsingContextGroupInfo::BrowsingContextGroupInfo(
 BrowsingContextGroupInfo::BrowsingContextGroupInfo(
     mojo::DefaultConstruct::Tag) {}
 
+bool operator==(const BrowsingContextGroupInfo& lhs,
+                const BrowsingContextGroupInfo& rhs) {
+  return lhs.browsing_context_group_token == rhs.browsing_context_group_token &&
+         lhs.coop_related_group_token == rhs.coop_related_group_token;
+}
+
+bool operator!=(const BrowsingContextGroupInfo& lhs,
+                const BrowsingContextGroupInfo& rhs) {
+  return !(lhs == rhs);
+}
+
 }  // namespace blink

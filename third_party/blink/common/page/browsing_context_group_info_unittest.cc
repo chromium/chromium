@@ -36,4 +36,29 @@ TEST(BrowsingContextGroupInfoTest, CreateUnique) {
             bcg_info.browsing_context_group_token);
 }
 
+TEST(BrowsingContextGroupInfoTest, ComparisonOperator) {
+  // Check that two different BrowsingContextGroupInfo are not equal.
+  BrowsingContextGroupInfo bcg_info = BrowsingContextGroupInfo::CreateUnique();
+  BrowsingContextGroupInfo other_bcg_info =
+      BrowsingContextGroupInfo::CreateUnique();
+  EXPECT_NE(bcg_info, other_bcg_info);
+
+  // Check that two BrowsingContextGroupInfo copied from one another are equal.
+  BrowsingContextGroupInfo bcg_info_clone(bcg_info);
+  EXPECT_EQ(bcg_info, bcg_info_clone);
+
+  // Verify that having different browsing_context_group_token is enough to have
+  // the comparison fail.
+  bcg_info_clone.browsing_context_group_token =
+      base::UnguessableToken::Create();
+  EXPECT_NE(bcg_info, bcg_info_clone);
+
+  // Verify that having different coop_related_group_tokens is enough to have
+  // the comparison fail.
+  bcg_info_clone.browsing_context_group_token =
+      bcg_info.browsing_context_group_token;
+  bcg_info_clone.coop_related_group_token = base::UnguessableToken::Create();
+  EXPECT_NE(bcg_info, bcg_info_clone);
+}
+
 }  // namespace blink
