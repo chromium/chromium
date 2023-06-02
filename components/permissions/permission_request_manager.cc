@@ -495,7 +495,7 @@ void PermissionRequestManager::OnVisibilityChanged(
   tab_is_hidden_ = visibility == content::Visibility::HIDDEN;
   if (tab_was_hidden == tab_is_hidden_)
     return;
-
+  NotifyTabVisibilityChanged(visibility);
   if (tab_is_hidden_) {
     if (view_) {
       switch (view_->GetTabSwitchingBehavior()) {
@@ -1285,14 +1285,22 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
   return false;
 }
 
+void PermissionRequestManager::NotifyTabVisibilityChanged(
+    content::Visibility visibility) {
+  for (Observer& observer : observer_list_) {
+    observer.OnTabVisibilityChanged(visibility);
+  }
+}
+
 void PermissionRequestManager::NotifyPromptAdded() {
   for (Observer& observer : observer_list_)
     observer.OnPromptAdded();
 }
 
 void PermissionRequestManager::NotifyPromptRemoved() {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPromptRemoved();
+  }
 }
 
 void PermissionRequestManager::NotifyPromptRecreateFailed() {

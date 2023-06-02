@@ -48,10 +48,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
-
-  void OnPromptRemoved() override;
-
-  void OnWebContentsChanged();
+  void OnTabVisibilityChanged(content::Visibility visibility) override;
 
   // OnBubbleRemoved only triggers when a request chip (bubble) is removed, when
   // the user navigates while a confirmation chip is showing, the request is
@@ -88,10 +85,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // Chip View.
   OmniboxChipButton* chip() { return chip_; }
-
-  // Hide and clean up the entire chip and associated observers, callback timers
-  // and callbacks.
-  void ResetChip();
 
   // Hide and clean up permission parts of the chip.
   void ResetPermissionPromptChip();
@@ -175,10 +168,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // Actions executed when the user closes the page info dialog.
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
-
-  // Resets all chip callbacks such as click callback, but also
-  // animation-related callbacks.
-  void ResetChipCallbacks();
 
   // Clean up utility.
   void RemoveBubbleObserverAndResetTimersAndChipCallbacks();
