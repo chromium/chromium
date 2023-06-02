@@ -21,6 +21,7 @@
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/transaction_impl.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -526,15 +527,17 @@ void DatabaseImpl::DeleteRange(int64_t transaction_id,
                                const IndexedDBKeyRange& key_range,
                                DeleteRangeCallback success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(success_callback), /*success=*/false);
+
   if (!connection_->IsConnected()) {
-    std::move(success_callback).Run(/*success=*/false);
     return;
   }
 
   IndexedDBTransaction* transaction =
       connection_->GetTransaction(transaction_id);
   if (!transaction) {
-    std::move(success_callback).Run(/*success=*/false);
     return;
   }
 
@@ -544,7 +547,6 @@ void DatabaseImpl::DeleteRange(int64_t transaction_id,
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
     // transaction having been committed. So for now simply ignore the request.
-    std::move(success_callback).Run(/*success=*/false);
     return;
   }
 
@@ -552,7 +554,7 @@ void DatabaseImpl::DeleteRange(int64_t transaction_id,
       BindWeakOperation(&IndexedDBDatabase::DeleteRangeOperation,
                         connection_->database()->AsWeakPtr(), object_store_id,
                         std::make_unique<IndexedDBKeyRange>(key_range),
-                        std::move(success_callback)));
+                        std::move(wrapped_callback)));
 }
 
 void DatabaseImpl::GetKeyGeneratorCurrentNumber(
@@ -591,8 +593,11 @@ void DatabaseImpl::Clear(int64_t transaction_id,
                          int64_t object_store_id,
                          ClearCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), /*success=*/false);
+
   if (!connection_->IsConnected()) {
-    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -604,13 +609,12 @@ void DatabaseImpl::Clear(int64_t transaction_id,
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
     // transaction having been committed. So for now simply ignore the request.
-    std::move(callback).Run(/*success=*/false);
     return;
   }
 
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::ClearOperation, connection_->database()->AsWeakPtr(),
-      object_store_id, std::move(callback)));
+      object_store_id, std::move(wrapped_callback)));
 }
 
 void DatabaseImpl::CreateIndex(int64_t transaction_id,
