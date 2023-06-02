@@ -21,4 +21,32 @@ void FakeNearbyPresence::BindInterface(
   receiver_set_.Add(this, std::move(pending_receiver));
 }
 
+void FakeNearbyPresence::SetScanObserver(
+    mojo::PendingRemote<mojom::ScanObserver> scan_observer) {
+  scan_observer_remote_.Bind(std::move(scan_observer), nullptr);
+}
+
+void FakeNearbyPresence::StartScan(
+    mojom::ScanRequestPtr scan_request,
+    FakeNearbyPresence::StartScanCallback callback) {
+  start_scan_callback_ = std::move(callback);
+  mojo::PendingRemote<mojom::ScanSession> scan_session_remote =
+      scan_session_.BindNewPipeAndPassRemote();
+  scan_session_remote_ = std::move(scan_session_remote);
+  scan_session_.set_disconnect_handler(base::BindOnce(
+      &FakeNearbyPresence::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FakeNearbyPresence::RunStartScanCallback() {
+  // Run the callback to pass the |scan_session_remote| back to the client to
+  // hold on to.
+  std::move(start_scan_callback_)
+      .Run(std::move(scan_session_remote_),
+           /*status=*/ash::nearby::presence::mojom::StatusCode::kOk);
+}
+
+void FakeNearbyPresence::OnDisconnect() {
+  on_disconnect_called_ = true;
+}
+
 }  // namespace ash::nearby::presence

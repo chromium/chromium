@@ -42,13 +42,22 @@ class NearbyInternalsPresenceHandler
   void OnPresenceDeviceLost(
       const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
           presence_device) override;
+  void OnScanSessionInvalidated() override;
 
   void Initialize(const base::Value::List& args);
   void HandleStartPresenceScan(const base::Value::List& args);
   void HandleSyncPresenceCredentials(const base::Value::List& args);
   void HandleFirstTimePresenceFlow(const base::Value::List& args);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  void OnScanStarted(
+      std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
+          scan_session,
+      ash::nearby::presence::mojom::StatusCode status);
+
+ private:
+  const raw_ptr<content::BrowserContext> context_;
+  std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
+      scan_session_;
 
   base::WeakPtrFactory<NearbyInternalsPresenceHandler> weak_ptr_factory_{this};
 };

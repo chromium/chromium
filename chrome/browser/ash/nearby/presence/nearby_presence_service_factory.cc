@@ -79,7 +79,8 @@ KeyedService* NearbyPresenceServiceFactory::BuildServiceInstanceFor(
 
   VLOG(1) << __func__ << ": creating NearbyPresenceService.";
   return new NearbyPresenceServiceImpl(
-      Profile::FromBrowserContext(context)->GetPrefs());
+      Profile::FromBrowserContext(context)->GetPrefs(),
+      ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile));
 }
 
 void NearbyPresenceServiceFactory::RegisterProfilePrefs(

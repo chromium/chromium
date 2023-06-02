@@ -4,10 +4,96 @@
 
 module ash.nearby.presence.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Request details to be passed to the Presence Library to inform the type of
+// scan to be run.
+struct ScanRequest {
+  string account_name;
+  array<IdentityType> identity_types;
+  array<PresenceScanFilter> scan_filters;
+};
+
+// TODO(b/276642472): Build out StatusCode to match
+// //third_party/abseil-cpp/absl/status/status.h and move it to
+// //mojo/public/mojom/base/ directory.
+enum StatusCode {
+  kOk = 0,
+  kFailure = 1,
+};
+
+// Presence Identity Types used for scanning, values come from
+// //third_party/nearby/src/internal/proto/credential.proto
+enum IdentityType {
+  kIdentityTypeUnspecified = 0,
+  kIdentityTypePrivate = 1,
+  kIdentityTypeTrusted = 2,
+  kIdentityTypePublic = 3,
+  kIdentityTypeProvisioned = 4,
+};
+
+// Presence filter used in the ScanRequest to specify the types of devices of
+// interest.
+struct PresenceScanFilter {
+  PresenceDeviceType device_type;
+};
+
+// Possible Presence Scan device types.
+enum PresenceDeviceType {
+  kUnspecified = 0,
+  kPhone = 1,
+  kTablet = 2,
+  kDisplay = 3,
+  kLaptop = 4,
+  kTv = 5,
+  kWatch = 6,
+  kChromeos = 7,
+  kFoldable = 8,
+};
+
+// Presence Device information to specify the device information when a device
+// is found/lost/changed during a scan.
+struct PresenceDevice {
+  string endpoint_id;
+  string device_name;
+  PresenceDeviceType device_type;
+  string? stable_device_id;
+};
+
+// Intentionally left empty. The ScanSession remote is used by the client
+// application to alert when to stop a scan session. The client application
+// simply releases the ScanSession pointer to notify the utility process.
+interface ScanSession {};
+
+// Interface for the Presence Library to notify the client applications of
+// device updates.
+interface ScanObserver {
+  // Method for notifying that a device was found.
+  OnDeviceFound(PresenceDevice device);
+
+  // Method for notifying that a previously found device has new information
+  // available.
+  OnDeviceChanged(PresenceDevice device);
+
+  // Method for notify that a previously found device has been lost.
+  OnDeviceLost(PresenceDevice device);
+};
+
 // Main interface to control the NearbyPresence library. Implemented in a
 // sandboxed process. This interface is used by the NearbyPresenceService
 // running in the browser process to discover devices.
 interface NearbyPresence {
-// TODO(b/276642472): Add StartScan method and other related data structures as
-// detailed in go/cros-nearby-presence-service.
+  // Starts a scan for Nearby Presence devices. Multiple scans can be ongoing
+  // at the same time.
+  // scan_request    - Specifics of the scan used to determine what types of
+  //                   devices are being scanned for.
+  // scan_observer - Pending remote for the utility process to call with
+  //                   scan results.
+  StartScan(ScanRequest scan_request)
+      => (pending_remote<ScanSession>? scan_session, StatusCode status);
+
+  // Sets the scan observer for the utility process to use to pass devices
+  // back to the browser process.
+  SetScanObserver(pending_remote<ScanObserver> scan_observer);
 };

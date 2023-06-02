@@ -24,12 +24,16 @@ static_library("presence") {
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/nearby/presence/credentials",
     "//chromeos/ash/components/nearby/presence/proto",
+    "//chromeos/ash/services/nearby/public/cpp:cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//content/public/browser",
   ]
+
+  public_deps = [ "//third_party/nearby:connections_metadata_proto" ]
 }
 
 static_library("test_support") {
@@ -43,11 +47,14 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/nearby/presence:presence",
     "//chromeos/ash/components/nearby/presence/credentials:unit_tests",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
     "//content/public/browser",
+    "//content/test:test_support",
     "//mojo/public/cpp/bindings:bindings",
     "//testing/gtest",
   ]

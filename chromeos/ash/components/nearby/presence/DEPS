@@ -1,3 +1,6 @@
 include_rules = [
   "+components/keyed_service/core/keyed_service.h",
+  "+third_party/nearby",
+  # For testing.
+  "+content/public/test",
 ]

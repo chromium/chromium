@@ -21,18 +21,28 @@ NearbyPresenceService::ScanDelegate::ScanDelegate() = default;
 NearbyPresenceService::ScanDelegate::~ScanDelegate() = default;
 
 NearbyPresenceService::PresenceDevice::PresenceDevice(
-    PresenceDevice::DeviceType device_type,
-    std::string stable_device_id,
+    ::nearby::internal::DeviceType device_type,
+    absl::optional<std::string> stable_device_id,
+    std::string endpoint_id,
     std::string device_name,
     std::vector<ActionType> actions,
-    int rssi) {
-  device_type_ = device_type;
-  stable_device_id_ = stable_device_id;
-  device_name_ = device_name;
-  actions_ = actions;
-  rssi_ = rssi;
-}
+    int rssi)
+    : device_type_(device_type),
+      stable_device_id_(stable_device_id),
+      endpoint_id_(endpoint_id),
+      device_name_(device_name),
+      actions_(actions),
+      rssi_(rssi) {}
 
 NearbyPresenceService::PresenceDevice::~PresenceDevice() = default;
+
+NearbyPresenceService::ScanSession::ScanSession(
+    mojo::PendingRemote<ash::nearby::presence::mojom::ScanSession>
+        pending_remote,
+    base::OnceClosure on_disconnect_callback)
+    : remote_(std::move(pending_remote)),
+      on_disconnect_callback_(std::move(on_disconnect_callback)) {}
+
+NearbyPresenceService::ScanSession::~ScanSession() {}
 
 }  // namespace ash::nearby::presence

@@ -28,6 +28,7 @@ source_set("nearby") {
     "//chromeos/ash/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:connections",
+    "//third_party/nearby:presence",
   ]
 
   deps = [
@@ -55,5 +56,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/nearby:connections_test_util",
+    "//third_party/nearby:presence_test",
   ]
 }

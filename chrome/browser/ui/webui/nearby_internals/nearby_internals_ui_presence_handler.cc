@@ -52,7 +52,12 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
     NS_LOG(VERBOSE) << __func__
                     << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter;
-    service->StartScan(filter, this);
+    filter.identity_type_ =
+        ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate;
+    service->StartScan(
+        filter, /*scan_delegate=*/this,
+        base::BindOnce(&NearbyInternalsPresenceHandler::OnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -80,10 +85,25 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
   }
 }
 
+void NearbyInternalsPresenceHandler::OnScanStarted(
+    std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
+        scan_session,
+    ash::nearby::presence::mojom::StatusCode status) {
+  if (status == ash::nearby::presence::mojom::StatusCode::kOk) {
+    scan_session_ = std::move(scan_session);
+    NS_LOG(VERBOSE) << __func__
+                    << ": ScanSession remote successfully returned and bound.";
+  } else {
+    // TODO(b/276307539): Pass error status back to WebUI.
+    return;
+  }
+}
+
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
     const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
         presence_device) {
-  NS_LOG(VERBOSE) << __func__;
+  // TODO(b/276307539): Pass device back to WebUI.
+  NS_LOG(VERBOSE) << __func__ << " Device Name: " << presence_device.GetName();
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(
@@ -93,3 +113,8 @@ void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(
 void NearbyInternalsPresenceHandler::OnPresenceDeviceLost(
     const ash::nearby::presence::NearbyPresenceService::PresenceDevice&
         presence_device) {}
+
+void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
+  scan_session_.reset();
+  HandleStartPresenceScan(/*args=*/{});
+}
