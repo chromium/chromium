@@ -208,7 +208,7 @@ def main():
         '--no-git',  # Just run locally, don't upload anything.
         '--clang-git-hash=' + args.revision
     ]
-    subprocess.call(cmd)
+    subprocess.run(cmd, check=True)
 
   # This needs to happen after upload_revision.py modifies update.py.
   from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE
