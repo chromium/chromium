@@ -236,7 +236,7 @@ export class AbstractTts {
   preprocess(text, properties) {
     if (text.length === 1 && text.toLowerCase() !== text) {
       // Describe capital letters according to user's setting.
-      if (SettingsManager.get('capitalStrategy') === 'increasePitch') {
+      if (SettingsManager.getString('capitalStrategy') === 'increasePitch') {
         // Closure doesn't allow the use of for..in or [] with structs, so
         // convert to a pure JSON object.
         const CAPITAL = ttsTypes.Personality.CAPITAL.toJSON();
@@ -246,7 +246,7 @@ export class AbstractTts {
           }
         }
       } else if (
-          SettingsManager.get('capitalStrategy') === 'announceCapitals') {
+          SettingsManager.getString('capitalStrategy') === 'announceCapitals') {
         text = Msgs.getMsg('announce_capital_letter', [text]);
       }
     }
