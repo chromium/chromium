@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 
 namespace views {
 class Label;
@@ -24,21 +25,24 @@ struct PasswordForm;
 // id of the whole text displayed in the footer which should have two place
 // holders. One for `link_message_id` that's when clicked, `open_link_closure`
 // will invoked. The other placeholder will carry the `email`.
+// `context` helps determine how the label text will be rendered.
 std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     const std::u16string& email,
-    base::RepeatingClosure open_link_closure);
+    base::RepeatingClosure open_link_closure,
+    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL);
 
 // Returns a label that can be displayed as a footer for Password Manager
 // bubbles on Desktop or in other UI surfaces. `text_message_id` is the message
 // id of the whole text displayed in the footer which should have one place
 // holder for `link_message_id` that's when clicked, `open_link_closure` will
-// invoked.
+// invoked. `context` helps determine how the label text will be rendered.
 std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
-    base::RepeatingClosure open_link_closure);
+    base::RepeatingClosure open_link_closure,
+    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL);
 
 // Returns label diaplying the username and password. It handles edge cases like
 // empty username and federated credentials.

@@ -133,7 +133,9 @@ ui::ColorId TypographyProvider::GetColorId(int context, int style) const {
     case style::STYLE_DISABLED:
       return GetDisabledColorId(context);
     case style::STYLE_LINK:
-      return ui::kColorLinkForeground;
+      return (context == style::CONTEXT_BUBBLE_FOOTER)
+                 ? ui::kColorLinkForegroundOnBubbleFooter
+                 : ui::kColorLinkForeground;
     case style::STYLE_HINT:
       return GetHintColorId(context);
   }
@@ -141,6 +143,7 @@ ui::ColorId TypographyProvider::GetColorId(int context, int style) const {
   switch (context) {
     case style::CONTEXT_BUTTON_MD:
       return ui::kColorButtonForeground;
+    case style::CONTEXT_BUBBLE_FOOTER:
     case style::CONTEXT_LABEL:
       if (style == style::STYLE_SECONDARY) {
         return ui::kColorLabelForegroundSecondary;

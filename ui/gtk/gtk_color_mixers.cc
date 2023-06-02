@@ -108,10 +108,10 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorHelpIconActive] = {GetFgColor("button.image-button:hover")};
   mixer[ui::kColorIcon] = {GetFgColor("button.flat.scale image")};
   mixer[ui::kColorHelpIconInactive] = {GetFgColor("button.image-button")};
-  mixer[ui::kColorLinkForeground] = {GetFgColor("label.link:link")};
+  mixer[ui::kColorLinkForegroundDefault] = {GetFgColor("label.link:link")};
   mixer[ui::kColorLinkForegroundDisabled] = {
       GetFgColor("label.link:link:disabled")};
-  mixer[ui::kColorLinkForegroundPressed] = {
+  mixer[ui::kColorLinkForegroundPressedDefault] = {
       GetFgColor("label.link:link:hover:active")};
   mixer[ui::kColorMenuBackground] = {GetBgColor(GtkCssMenu())};
   mixer[ui::kColorMenuBorder] = {GetBorderColor(GtkCssMenu())};

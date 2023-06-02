@@ -222,8 +222,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorTooltipForeground] = {kColorNativeWindowText};
 
   // Hyperlinks
-  mixer[kColorLinkForeground] = {kColorNativeHotlight};
-  mixer[kColorLinkForegroundPressed] = {kColorNativeHotlight};
+  mixer[kColorLinkForegroundDefault] = {kColorNativeHotlight};
+  mixer[kColorLinkForegroundPressedDefault] = {kColorNativeHotlight};
   mixer[kColorMenuItemForegroundHighlighted] = {kColorNativeHotlight};
 
   // Gray/Disabled Text

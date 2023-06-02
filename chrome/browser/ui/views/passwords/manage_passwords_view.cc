@@ -199,7 +199,7 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_BUBBLES_FOOTER_SAVING_ON_DEVICE,
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE,
-          open_password_manager_closure);
+          open_password_manager_closure, views::style::CONTEXT_BUBBLE_FOOTER);
     case password_manager::SyncState::kSyncingNormalEncryption:
     case password_manager::SyncState::kSyncingWithCustomPassphrase:
       return CreateGooglePasswordManagerLabel(
@@ -207,7 +207,8 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_BUBBLES_FOOTER_SYNCED_TO_ACCOUNT,
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          controller_.GetPrimaryAccountEmail(), open_password_manager_closure);
+          controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
+          views::style::CONTEXT_BUBBLE_FOOTER);
     case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
       // Account store users have a special footer in the management bubble
       // since they might have a mix of synced and non-synced passwords.
@@ -216,7 +217,7 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_MANAGEMENT_BUBBLE_FOOTER_ACCOUNT_STORE_USERS,
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          open_password_manager_closure);
+          open_password_manager_closure, views::style::CONTEXT_BUBBLE_FOOTER);
     case password_manager::SyncState::
         kAccountPasswordsActiveWithCustomPassphrase:
       // Unreachable on desktop platforms.

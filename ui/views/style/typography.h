@@ -27,6 +27,9 @@ enum TextContext {
   // Text that appears on a views::Badge. Always 9pt.
   CONTEXT_BADGE = VIEWS_TEXT_CONTEXT_START,
 
+  // Text that appears over the slightly shaded background of a bubble footer.
+  CONTEXT_BUBBLE_FOOTER,
+
   // Text that appears on a button control. Usually 12pt. This includes controls
   // with button-like behavior, such as Checkbox.
   CONTEXT_BUTTON,

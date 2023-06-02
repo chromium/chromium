@@ -59,6 +59,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorFrameActive] = {kColorSysHeader};
   mixer[kColorFrameActiveUnthemed] = {kColorSysHeader};
   mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
+  mixer[kColorLinkForegroundDefault] = {kColorSysPrimary};
   mixer[kColorListItemFolderIconBackground] = {kColorSysTonalContainer};
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};
   mixer[kColorListItemUrlFaviconBackground] = {kColorSysNeutralContainer};

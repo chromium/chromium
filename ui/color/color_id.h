@@ -295,8 +295,12 @@
   E_CPONLY(kColorLabelSelectionBackground) \
   E_CPONLY(kColorLabelSelectionForeground) \
   E_CPONLY(kColorLinkForeground) \
+  E_CPONLY(kColorLinkForegroundDefault) \
   E_CPONLY(kColorLinkForegroundDisabled) \
+  E_CPONLY(kColorLinkForegroundOnBubbleFooter) \
   E_CPONLY(kColorLinkForegroundPressed) \
+  E_CPONLY(kColorLinkForegroundPressedDefault) \
+  E_CPONLY(kColorLinkForegroundPressedOnBubbleFooter) \
   E_CPONLY(kColorListItemFolderIconBackground) \
   E_CPONLY(kColorListItemFolderIconForeground) \
   E_CPONLY(kColorListItemUrlFaviconBackground) \
