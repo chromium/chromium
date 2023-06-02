@@ -36,8 +36,12 @@
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GpuTypes.h"
+#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace blink {
 
@@ -845,8 +849,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
             .resource_format(),
         capabilities.angle_rgbx_internal_format);
 
-    auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
-                                            GrMipMapped::kNo, texture_info);
+    auto backend_texture = GrBackendTexture(
+        Size().width(), Size().height(), skgpu::Mipmapped::kNo, texture_info);
 
     const auto props = GetSkSurfaceProps();
     return SkSurfaces::WrapBackendTexture(

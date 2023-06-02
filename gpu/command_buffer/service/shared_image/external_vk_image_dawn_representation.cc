@@ -11,6 +11,9 @@
 
 #include "base/posix/eintr_wrapper.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
+#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 
 namespace gpu {
 
