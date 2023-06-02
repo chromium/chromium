@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -63,7 +64,9 @@ void DriveFsAuth::GetAccessToken(
   timer_->Start(
       FROM_HERE, base::Seconds(30),
       base::BindOnce(&DriveFsAuth::AuthTimeout, base::Unretained(this)));
-  std::set<std::string> scopes({"https://www.googleapis.com/auth/drive"});
+  std::set<std::string> scopes(
+      {GaiaConstants::kDriveOAuth2Scope,
+       GaiaConstants::kExperimentsAndConfigsOAuth2Scope});
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           kIdentityConsumerId, identity_manager, scopes,
