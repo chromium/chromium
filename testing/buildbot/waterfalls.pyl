@@ -3184,7 +3184,7 @@
       'VR Linux': {
         'mixins': [
           'has_native_resultdb_integration',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'vr_common_perftests',
