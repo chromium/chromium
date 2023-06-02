@@ -393,7 +393,7 @@ class CachedFlagsSafeMode {
 
         if (mSafeModeExperimentEnabled == null) {
             mSafeModeExperimentEnabled = SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED, false);
+                    ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED, true);
         }
 
         return mSafeModeExperimentEnabled;
