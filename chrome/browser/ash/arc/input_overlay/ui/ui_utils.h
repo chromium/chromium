@@ -16,8 +16,6 @@ class View;
 
 namespace arc::input_overlay {
 
-class Action;
-
 // Create name tag with title and sub-title as:
 // -----------
 // |Title    |
@@ -25,20 +23,6 @@ class Action;
 // -----------
 std::unique_ptr<views::View> CreateNameTag(const std::u16string& title,
                                            const std::u16string& sub_title);
-
-// Create key layout view ActionTap.
-// -----
-// | a |
-// -----
-std::unique_ptr<views::View> CreateActionTapEditForKeyboard(Action* action);
-
-// Create key layout view for ActionMove.
-// -------------
-// |   | w |   |
-// |-----------|
-// | a | s | d |
-// -------------
-std::unique_ptr<views::View> CreateActionMoveEditForKeyboard(Action* action);
 
 // Get text of |code| displayed on input mappings.
 std::u16string GetDisplayText(const ui::DomCode code);

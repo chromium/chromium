@@ -11,6 +11,7 @@
 namespace arc::input_overlay {
 
 class Action;
+class EditLabels;
 class DisplayOverlayController;
 
 // ActionViewListItem shows in EditingList and is associated with each of
@@ -29,12 +30,10 @@ class ActionViewListItem : public views::View {
  private:
   void Init();
 
-  // Set list item of different types.
-  void SetActionTapListItem(views::View* container);
-  void SetActionMoveListItem(views::View* container);
-
   raw_ptr<DisplayOverlayController> controller_;
   raw_ptr<Action> action_;
+
+  raw_ptr<EditLabels> labels_view_ = nullptr;
 };
 
 }  // namespace arc::input_overlay

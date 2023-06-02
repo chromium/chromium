@@ -8,7 +8,10 @@
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -19,8 +22,13 @@
 
 namespace arc::input_overlay {
 
-EditLabel::EditLabel(Action* action, size_t index)
-    : views::LabelButton(), action_(action), index_(index) {
+EditLabel::EditLabel(DisplayOverlayController* controller,
+                     Action* action,
+                     size_t index)
+    : views::LabelButton(),
+      controller_(controller),
+      action_(action),
+      index_(index) {
   Init();
 }
 

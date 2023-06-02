@@ -14,12 +14,15 @@
 namespace arc::input_overlay {
 
 class Action;
+class DisplayOverlayController;
 
 // EditLabel shows input mappings and can be edited to change mappings.
 class EditLabel : public views::LabelButton {
  public:
   METADATA_HEADER(EditLabel);
-  explicit EditLabel(Action* action, size_t index = 0);
+  EditLabel(DisplayOverlayController* controller,
+            Action* action,
+            size_t index = 0);
 
   EditLabel(const EditLabel&) = delete;
   EditLabel& operator=(const EditLabel&) = delete;
@@ -38,7 +41,8 @@ class EditLabel : public views::LabelButton {
   void OnFocus() override;
   void OnBlur() override;
 
-  raw_ptr<Action> action_;
+  raw_ptr<DisplayOverlayController> controller_ = nullptr;
+  raw_ptr<Action> action_ = nullptr;
   size_t index_ = 0;
 };
 

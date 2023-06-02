@@ -17,6 +17,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -261,16 +262,8 @@ void ButtonOptionsMenu::AddActionEdit() {
 
   // TODO(b/274690042): Replace placeholder text with localized strings.
   container->AddChildView(CreateNameTag(u"Selected key", u"Key"));
-  switch (action_->GetType()) {
-    case ActionType::TAP:
-      container->AddChildView(CreateActionTapEditForKeyboard(action_));
-      break;
-    case ActionType::MOVE:
-      container->AddChildView(CreateActionMoveEditForKeyboard(action_));
-      break;
-    default:
-      NOTREACHED();
-  }
+  labels_view_ = container->AddChildView(
+      EditLabels::CreateEditLabels(controller_, action_));
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {

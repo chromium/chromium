@@ -18,6 +18,7 @@ namespace arc::input_overlay {
 
 class Action;
 class DisplayOverlayController;
+class EditLabels;
 
 // ButtonOptionsMenu displays action's type, input binding(s) and name and it
 // can modify these information. It shows up upon clicking an action's touch
@@ -83,6 +84,8 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;
   const raw_ptr<Action> action_ = nullptr;
+
+  raw_ptr<EditLabels> labels_view_ = nullptr;
 };
 
 }  // namespace arc::input_overlay
