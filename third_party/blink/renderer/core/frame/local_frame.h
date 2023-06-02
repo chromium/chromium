@@ -666,7 +666,7 @@ class CORE_EXPORT LocalFrame final
   bool IsHidden() const { return hidden_; }
 
   // Whether the frame clips its content to the frame's size.
-  bool ClipsContent(ScrollbarDisableReason* out_reason = nullptr) const;
+  bool ClipsContent() const;
 
   // For a navigation initiated from this LocalFrame with user gesture, record
   // the UseCounter AdClickNavigation if this frame is an adframe.

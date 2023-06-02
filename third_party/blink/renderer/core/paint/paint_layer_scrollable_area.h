@@ -47,7 +47,6 @@
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -656,25 +655,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
     kDependsOnOverflow,
     kOverflowIndependent
   };
-  enum ComputeScrollbarExistenceReason {
-    kLayout,
-    kStyleChange,
-    kOverflowRecalc,
-    kRootScrollerChange,
-  };
   void ComputeScrollbarExistence(
-      ComputeScrollbarExistenceReason,
       bool& needs_horizontal_scrollbar,
       bool& needs_vertical_scrollbar,
       ComputeScrollbarExistenceOption = kDependsOnOverflow) const;
-
-  void TraceComputeScrollbarExistence(ComputeScrollbarExistenceReason reason,
-                                      bool needs_horizontal_scrollbar,
-                                      bool needs_vertical_scrollbar,
-                                      ComputeScrollbarExistenceOption option,
-                                      bool early_exit,
-                                      mojom::blink::ScrollbarMode h_mode,
-                                      mojom::blink::ScrollbarMode v_mode) const;
 
   // If the content fits entirely in the area without auto scrollbars, returns
   // true to try to remove them. This is a heuristic and can be incorrect if the
