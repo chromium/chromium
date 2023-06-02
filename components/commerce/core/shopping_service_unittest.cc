@@ -312,10 +312,9 @@ TEST_F(ShoppingServiceTest,
       {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
       {});
 
-  MockWebWrapper web(GURL(kProductUrl), false);
   std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
   base::Value js_result(json);
-  web.SetMockJavaScriptResult(&js_result);
+  MockWebWrapper web(GURL(kProductUrl), false, &js_result);
 
   // Assume the page hasn't finished loading.
   web.SetIsFirstLoadForNavigationFinished(false);
@@ -386,10 +385,9 @@ TEST_F(ShoppingServiceTest,
   test_features_.InitWithFeatures(
       {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
 
-  MockWebWrapper web(GURL(kProductUrl), false);
   std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
   base::Value js_result(json);
-  web.SetMockJavaScriptResult(&js_result);
+  MockWebWrapper web(GURL(kProductUrl), false, &js_result);
 
   // Assume the page has already loaded for the navigation. This is usually the
   // case for single-page webapps.

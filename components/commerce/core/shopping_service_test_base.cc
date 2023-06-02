@@ -204,8 +204,14 @@ OptimizationMetadata MockOptGuideDecider::BuildMerchantTrustResponse(
 
 MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
                                bool is_off_the_record)
+    : MockWebWrapper(last_committed_url, is_off_the_record, nullptr) {}
+
+MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
+                               bool is_off_the_record,
+                               base::Value* result)
     : last_committed_url_(last_committed_url),
-      is_off_the_record_(is_off_the_record) {}
+      is_off_the_record_(is_off_the_record),
+      mock_js_result_(result) {}
 
 MockWebWrapper::~MockWebWrapper() = default;
 
@@ -236,10 +242,6 @@ void MockWebWrapper::RunJavascript(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
-}
-
-void MockWebWrapper::SetMockJavaScriptResult(base::Value* result) {
-  mock_js_result_ = result;
 }
 
 ShoppingServiceTestBase::ShoppingServiceTestBase()
