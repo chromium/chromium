@@ -36,6 +36,10 @@ class TestWebUI : public WebUI {
     web_contents_ = web_contents;
   }
 
+  void set_render_frame_host(RenderFrameHost* render_frame_host) {
+    render_frame_host_ = render_frame_host;
+  }
+
   // WebUI overrides.
   WebContents* GetWebContents() override;
   WebUIController* GetController() override;
@@ -112,6 +116,7 @@ class TestWebUI : public WebUI {
   int bindings_ = 0;
   std::u16string temp_string_;
   raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   std::unique_ptr<WebUIController> controller_;
 
   // Observers to be notified on all javascript calls.

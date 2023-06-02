@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/supports_user_data.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/browser/webui/test_webui_js_bridge_ui.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/per_web_ui_browser_interface_broker.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/test/web_ui/webui_js_bridge_unittest.test-mojom-webui-js-bridge-impl.h"
 #include "content/test/web_ui/webui_js_bridge_unittest2.test-mojom-webui-js-bridge-impl.h"
@@ -20,20 +26,45 @@ namespace content {
 
 namespace {
 
-class FooPageHandler : public mojom::FooPageHandler {
+// WebUI interface implementation that gets created when receiving an interface
+// request. It's owned by the WebUI's document.
+class FooPageHandler : public mojom::FooPageHandler,
+                       public DocumentUserData<FooPageHandler> {
  public:
-  FooPageHandler(mojo::PendingReceiver<mojom::FooPageHandler> receiver,
+  static void Create(content::WebUIController* controller,
+                     mojo::PendingReceiver<mojom::FooPageHandler> receiver,
+                     mojo::PendingRemote<mojom::FooPage> remote) {
+    FooPageHandler::CreateForCurrentDocument(
+        controller->web_ui()->GetRenderFrameHost(), std::move(receiver),
+        std::move(remote));
+  }
+
+  static FooPageHandler& Get(content::WebUIController* controller) {
+    return *FooPageHandler::GetForCurrentDocument(
+        controller->web_ui()->GetRenderFrameHost());
+  }
+
+  FooPageHandler(RenderFrameHost* rfh,
+                 mojo::PendingReceiver<mojom::FooPageHandler> receiver,
                  mojo::PendingRemote<mojom::FooPage> remote)
-      : receiver_(this, std::move(receiver)), remote_(std::move(remote)) {}
+      : DocumentUserData(rfh),
+        receiver_(this, std::move(receiver)),
+        remote_(std::move(remote)) {}
+
   ~FooPageHandler() override = default;
 
   const mojo::Receiver<mojom::FooPageHandler>& receiver() { return receiver_; }
   const mojo::Remote<mojom::FooPage>& remote() { return remote_; }
 
  private:
+  friend DocumentUserData;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
   mojo::Receiver<mojom::FooPageHandler> receiver_;
   mojo::Remote<mojom::FooPage> remote_;
 };
+
+DOCUMENT_USER_DATA_KEY_IMPL(FooPageHandler);
 
 class FooPage : public mojom::FooPage {
  public:
@@ -46,23 +77,46 @@ class FooPage : public mojom::FooPage {
   mojo::Receiver<mojom::FooPage> receiver_{this};
 };
 
-class Bar : public mojom::Bar {
+// WebUI interface implementation that is created and owned outside of the
+// WebUI. In this case, it's owned by BrowserContext.
+class Bar : public mojom::Bar, public base::SupportsUserData::Data {
  public:
   Bar() = default;
   ~Bar() override = default;
 
-  void BindBar(mojo::PendingReceiver<mojom::Bar> receiver) {
-    receivers_.Add(this, std::move(receiver));
+  static void Create(BrowserContext* browser_context) {
+    browser_context->SetUserData("BarImpl", std::make_unique<Bar>());
   }
 
-  void BindObserver(mojo::PendingRemote<mojom::BarObserver> remote) {
-    observers_.Add(std::move(remote));
+  static Bar& Get(BrowserContext* browser_context) {
+    Bar* bar = static_cast<Bar*>(browser_context->GetUserData("BarImpl"));
+    return *bar;
+  }
+
+  static void BindBar(WebUIController* controller,
+                      mojo::PendingReceiver<mojom::Bar> receiver) {
+    Bar::Get(controller->web_ui()->GetWebContents()->GetBrowserContext())
+        .BindBarImpl(std::move(receiver));
+  }
+
+  static void BindObserver(WebUIController* controller,
+                           mojo::PendingRemote<mojom::BarObserver> remote) {
+    Bar::Get(controller->web_ui()->GetWebContents()->GetBrowserContext())
+        .BindObserverImpl(std::move(remote));
   }
 
   const mojo::ReceiverSet<mojom::Bar>& receivers() { return receivers_; }
   const mojo::RemoteSet<mojom::BarObserver>& observers() { return observers_; }
 
  private:
+  void BindBarImpl(mojo::PendingReceiver<mojom::Bar> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void BindObserverImpl(mojo::PendingRemote<mojom::BarObserver> remote) {
+    observers_.Add(std::move(remote));
+  }
+
   mojo::ReceiverSet<mojom::Bar> receivers_;
   mojo::RemoteSet<mojom::BarObserver> observers_;
 };
@@ -80,47 +134,52 @@ class BarObserver : public mojom::BarObserver {
 
 }  // namespace
 
-class WebUIJsBridgeTest : public testing::Test {
+class WebUIJsBridgeTest : public RenderViewHostTestHarness {
  public:
   WebUIJsBridgeTest() = default;
   ~WebUIJsBridgeTest() override = default;
 
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    Bar::Create(browser_context());
+    test_web_ui.set_web_contents(web_contents());
+    test_web_ui.set_render_frame_host(main_rfh());
+  }
+
+  void TearDown() override {
+    test_web_ui.set_web_contents(nullptr);
+    RenderViewHostTestHarness::TearDown();
+  }
+
   TestWebUI* web_ui() { return &test_web_ui; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   TestWebUI test_web_ui;
 };
 
 // Tests binder methods are overridden and can be called. Calling them does
 // nothing for now.
 TEST_F(WebUIJsBridgeTest, Bind) {
-  std::unique_ptr<FooPageHandler> page_handler;
-  auto page_handler_binder = base::BindLambdaForTesting(
-      [&page_handler](mojo::PendingReceiver<mojom::FooPageHandler> receiver,
-                      mojo::PendingRemote<mojom::FooPage> remote) {
-        page_handler = std::make_unique<FooPageHandler>(std::move(receiver),
-                                                        std::move(remote));
-      });
-  Bar bar;
-
   TestWebUIJsBridgeUI controller(web_ui());
   mojom::FooWebUIJsBridgeImpl bridge(
-      &controller, page_handler_binder,
-      base::BindRepeating(&Bar::BindBar, base::Unretained(&bar)),
-      base::BindRepeating(&Bar::BindObserver, base::Unretained(&bar)));
+      &controller, base::BindRepeating(&FooPageHandler::Create),
+      base::BindRepeating(&Bar::BindBar),
+      base::BindRepeating(&Bar::BindObserver));
 
   mojo::Remote<mojom::FooPageHandler> page_handler_remote;
   FooPage page;
   bridge.BindFooPageHandler(page_handler_remote.BindNewPipeAndPassReceiver(),
                             page.receiver().BindNewPipeAndPassRemote());
+  auto& page_handler = FooPageHandler::Get(&controller);
   EXPECT_TRUE(page_handler_remote.is_bound());
   EXPECT_TRUE(page.receiver().is_bound());
-  EXPECT_TRUE(page_handler->receiver().is_bound());
-  EXPECT_TRUE(page_handler->remote().is_bound());
+  EXPECT_TRUE(page_handler.receiver().is_bound());
+  EXPECT_TRUE(page_handler.remote().is_bound());
 
   mojo::Remote<mojom::Bar> bar_remote;
   bridge.BindBar(bar_remote.BindNewPipeAndPassReceiver());
+
+  auto& bar = Bar::Get(browser_context());
   EXPECT_TRUE(bar_remote.is_bound());
   EXPECT_EQ(1u, bar.receivers().size());
 
@@ -130,10 +189,10 @@ TEST_F(WebUIJsBridgeTest, Bind) {
   EXPECT_EQ(1u, bar.observers().size());
 }
 
-// Tests we correctly generate a WebUIJsBridgeImpl for a interface that
+// Tests we correctly generate a WebUIJsBridgeImpl for an interface that
 // binds interfaces in a separate mojom.
 TEST_F(WebUIJsBridgeTest, CrossModule) {
-  TestWebUIJsBridgeUI controller(web_ui());
+  TestWebUIJsBridgeUI2 controller(web_ui());
   mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing());
   bridge.BindSecondaryInterface(mojo::NullReceiver());
 }
@@ -141,7 +200,8 @@ TEST_F(WebUIJsBridgeTest, CrossModule) {
 // Tests that we crash if the wrong WebUIController is passed to the
 // WebUIJsBridge.
 TEST_F(WebUIJsBridgeTest, IncorrectWebUIControllerCrash) {
-  TestWebUIJsBridgeIncorrectUI controller(web_ui());
+  // TestWebUIJsBridge2Impl below expects TestWebUIJsBridge2.
+  TestWebUIJsBridgeUI controller(web_ui());
   EXPECT_DEATH_IF_SUPPORTED(
       mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing()), "");
 }

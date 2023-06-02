@@ -14,12 +14,12 @@ namespace {{module.namespace}} {
 {{class_name}}::{{class_name}}(
     content::WebUIController* controller,
   {{- macros.constructor_params(webui_js_bridge) | indent(4) -}})
-    :
+    : controller_(raw_ref<content::WebUIController>::from_ptr(controller)),
 {%- for method in webui_js_bridge.methods %}
       {{method|binder_variable_name}}_({{method|binder_variable_name}})
       {{-"," if not loop.last else ""}}
 {%- endfor %} {
-  CHECK(controller->GetAs<{{class_name}}::WebUIControllerSubclass>());
+  CHECK(controller_->GetAs<{{class_name}}::WebUIControllerSubclass>());
 }
 
 {{class_name}}::~{{class_name}}() = default;
@@ -30,6 +30,7 @@ void {{class_name}}::{{method.name}}(
     {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
 {%-   endfor -%}) {
   {{method|binder_variable_name}}_.Run(
+     &*controller_,
 {%-  for param in method.parameters %}
     std::move({{param.name}}){{"," if not loop.last else ""}}
 {%-   endfor -%}

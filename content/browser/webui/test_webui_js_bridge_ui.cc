@@ -8,6 +8,6 @@ namespace content {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIJsBridgeUI)
 
-WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIJsBridgeIncorrectUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIJsBridgeUI2)
 
 }  // namespace content

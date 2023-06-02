@@ -49,7 +49,7 @@ WebUIController* TestWebUI::GetController() {
 }
 
 RenderFrameHost* TestWebUI::GetRenderFrameHost() {
-  return nullptr;
+  return render_frame_host_.get();
 }
 
 void TestWebUI::SetController(std::unique_ptr<WebUIController> controller) {
