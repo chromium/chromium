@@ -70,6 +70,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewDetailTextItem alloc] initWithType:FollowingItemType];
   followingItem.text =
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT);
+  followingItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_DETAIL);
   followingItem.accessorySymbol = TableViewDetailTextCellAccessorySymbolChevron;
   [model addItem:followingItem
       toSectionWithIdentifier:FollowingSectionIdentifier];
