@@ -216,7 +216,8 @@ TEST_P(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
       // Crossing out inside a word without crossing over the middle should not
       // affect the word.
       TestCase(0, 24, "ABCDEFG", "ABCDEFG"),
-  };
+      // Deleting a word with spaces either side removes one space.
+      TestCase(32, 45, "AB CDE FGH", "AB FGH")};
   for (auto test_case : test_cases) {
     input->SetValue(test_case.initial);
     const int width = input->BoundsInWidget().width();

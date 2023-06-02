@@ -162,11 +162,17 @@ PlainTextRange ExpandWithWordGranularity(
       *root_editable_element, expanded_selection.ComputeRange());
   String input_text = input_method_controller.TextInputInfo().value;
   if (expanded_range.length() > 2 &&
-      IsHTMLSpace(input_text[expanded_range.Start()]) &&
-      IsHTMLSpace(input_text[expanded_range.End() - 1])) {
+      IsHTMLSpaceNotLineBreak(input_text[expanded_range.Start()]) &&
+      IsHTMLSpaceNotLineBreak(input_text[expanded_range.End() - 1])) {
     // Special case, we don't want to delete spaces both sides of the
     // selection as that will join words together.
     return PlainTextRange(expanded_range.Start() + 1, expanded_range.End());
+  }
+  if (input_text.length() > expanded_range.End() + 1 &&
+      expanded_range.Start() - 1 >= 0 &&
+      IsHTMLSpaceNotLineBreak(input_text[expanded_range.Start() - 1]) &&
+      IsHTMLSpaceNotLineBreak(input_text[expanded_range.End()])) {
+    return PlainTextRange(expanded_range.Start() - 1, expanded_range.End());
   }
   return expanded_range;
 }

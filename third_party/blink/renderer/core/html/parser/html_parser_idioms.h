@@ -128,6 +128,11 @@ inline bool IsNotHTMLSpace(CharType character) {
   return !IsHTMLSpace<CharType>(character);
 }
 
+template <typename CharType>
+inline bool IsHTMLSpaceNotLineBreak(CharType character) {
+  return IsHTMLSpace<CharType>(character) && !IsHTMLLineBreak(character);
+}
+
 bool ThreadSafeMatch(const QualifiedName&, const QualifiedName&);
 bool ThreadSafeMatch(const String&, const QualifiedName&);
 
