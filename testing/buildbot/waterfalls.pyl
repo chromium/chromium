@@ -3652,7 +3652,7 @@
           'chrome',
         ],
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'linux_lacros_version_skew_tests',
