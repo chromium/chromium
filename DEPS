@@ -4323,25 +4323,25 @@ deps = {
 
   'src/third_party/widevine/cdm/chromeos': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/chromeos.git' + '@' +
-        'edc81c9e25b47b11d0606a717d7f8cd37378302f',
+        'b3c0f132204e9732422075787138ce2cb60faa4a',
       'condition': '(checkout_chromeos or checkout_linux) and checkout_src_internal',
   },
 
   'src/third_party/widevine/cdm/linux': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/linux.git' + '@' +
-        'a4fb4719bd4e220c3d2a20dda35d9874373fda4b',
+        '3e7a8973ddd0d6af8ea600a57462bbf82027ffbf',
       'condition': 'checkout_linux and checkout_src_internal',
   },
 
   'src/third_party/widevine/cdm/mac': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/mac.git' + '@' +
-        '957b3265d2e49662b00b4f90b40cbb0cad7d6058',
+        '4ffb279e672790f1cc19407e9238ec835dd0a0cc',
       'condition': 'checkout_mac and checkout_src_internal',
     },
 
   'src/third_party/widevine/cdm/win': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/win.git' + '@' +
-        '13c9314a405e38298dbb1834780c3fad233bc71e',
+        '69fe719d1ea0817169e792a828e9594b1ae82ac6',
       'condition': 'checkout_win and checkout_src_internal',
   },
 
