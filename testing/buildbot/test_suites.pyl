@@ -6761,6 +6761,14 @@
       },
     },
 
+    'chromeos_kevin_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM',
+        ]
+      },
+    },
+
     'chromeos_octopus_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [

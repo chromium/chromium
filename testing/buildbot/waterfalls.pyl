@@ -6693,6 +6693,17 @@
         },
         'os_type': 'chromeos',
       },
+      'chromeos-kevin-chrome-skylab-fyi': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_kevin_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
       'chromeos-octopus-chrome-skylab-fyi': {
         'additional_compile_targets': [
           "chrome",

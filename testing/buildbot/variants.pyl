@@ -639,6 +639,17 @@
     'enabled': True,
     'identifier': 'KEVIN_PUBLIC_LKGM',
   },
+  'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM': {
+    'skylab': {
+      'cros_board': 'kevin',
+      'cros_chrome_version': '114.0.5689.0',
+      'cros_img': 'kevin-release/R114-15408.0.0',
+      'autotest_name': 'tast.chrome-from-tls',
+      'shards': 10,
+    },
+    'enabled': True,
+    'identifier': 'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM',
+  },
   'CROS_OCTOPUS_PUBLIC_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
