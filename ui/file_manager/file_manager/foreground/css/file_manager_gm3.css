@@ -1731,7 +1731,6 @@ li[renaming=''] .filename-label {
   -webkit-mask-size: 16px 16px;
   background-color: currentColor;
   height: 24px;
-  margin-inline-end: 14px;
   margin-inline-start: auto;
   padding-inline-start: 8px;
   width: 24px;
@@ -2031,11 +2030,14 @@ list:focus li[selected] .table-row-cell .dlp-managed-icon,
 
 .table-row-cell > .dateholder {
   display: flex;
+  margin-inline-end: 14px;
 }
 
 .table-row-cell > .dateholder > .date {
   flex: 1 1;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
 }
 
 .table-row-cell > .dateholder > .dlp-managed-icon {
