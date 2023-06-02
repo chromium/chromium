@@ -6858,19 +6858,6 @@ crbug.com/1449995 [ Mac13-arm64 ] virtual/text-antialias/firstline/001.html [ Fa
 
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
 
-crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-idb-clear-for-storage-key.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/database-data.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/database-names.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/database-refresh-view.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/database-structure.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/database-version-number.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass Timeout ]
-crbug.com/1448011 http/tests/devtools/indexeddb/upgrade-events.js [ Failure Pass Timeout ]
-
 # Sheriff 2023-05-30
 crbug.com/1450020 [ Mac ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
 

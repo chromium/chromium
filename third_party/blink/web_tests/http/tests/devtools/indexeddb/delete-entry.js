@@ -37,7 +37,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
   await ApplicationTestRunner.createDatabaseAsync('database1');
   UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
   await databaseAddedPromise;
-  UI.panels.resources.sidebar.indexedDBListTreeElement.expand();
 
   var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   await ApplicationTestRunner.createObjectStoreAsync('database1', 'objectStore1', 'index1');
