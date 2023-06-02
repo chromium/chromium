@@ -258,7 +258,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool use_configurable_pool;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
-#endif
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+    size_t ref_count_size;
+#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
 #endif
@@ -1218,8 +1221,12 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
       // slot_span is untagged at this point, so we have to recover its tag
       // again to increment and provide use-after-free mitigations.
       uintptr_t slot_start_to_object_delta = object_addr - slot_start;
+      size_t tag_size = slot_size;
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+      tag_size -= root->flags.ref_count_size;
+#endif
       void* retagged_slot_start = internal::TagMemoryRangeIncrement(
-          internal::TagAddr(slot_start), slot_size);
+          internal::TagAddr(slot_start), tag_size);
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
       object = reinterpret_cast<void*>(
