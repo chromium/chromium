@@ -121,6 +121,8 @@ void VideoConferenceTrayController::Initialize(
   media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
       this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
+  Shell::Get()->AddShellObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
   initialized_ = true;
 }
 
@@ -415,6 +417,28 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
 
     last_speak_on_mute_notification_time_.emplace(current_time);
   }
+}
+
+void VideoConferenceTrayController::OnUserSessionAdded(
+    const AccountId& account_id) {
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+
+  // If enabled, reset the prefs relevant to showing the speak-on-mute opt-in
+  // nudge, so it can be shown again for debugging purposes.
+  if (features::IsSpeakOnMuteOptInNudgePrefsResetEnabled()) {
+    pref_service->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
+    pref_service->SetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled, false);
+    pref_service->SetInteger(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
+  }
+}
+
+void VideoConferenceTrayController::OnShellDestroying() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+  Shell::Get()->RemoveShellObserver(this);
 }
 
 base::OneShotTimer&

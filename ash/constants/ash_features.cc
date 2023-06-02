@@ -2175,6 +2175,12 @@ BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<bool> kAutomaticallyLockGroup{
     &kSnapGroup, "AutomaticLockGroup", true};
 
+// Resets the speak-on-mute opt-in nudge relevant prefs to their default
+// settings, so the nudge can be shown again for debugging purposes.
+BASE_FEATURE(kSpeakOnMuteOptInNudgePrefsReset,
+             "SpeakOnMuteOptInNudgePrefsReset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables battery indicator for styluses in the palette tray
 BASE_FEATURE(kStylusBatteryStatus,
              "StylusBatteryStatus",
@@ -3530,6 +3536,10 @@ bool IsSmartReaderEnabled() {
 
 bool IsSnapGroupEnabled() {
   return base::FeatureList::IsEnabled(kSnapGroup);
+}
+
+bool IsSpeakOnMuteOptInNudgePrefsResetEnabled() {
+  return base::FeatureList::IsEnabled(kSpeakOnMuteOptInNudgePrefsReset);
 }
 
 bool IsSystemTrayShadowEnabled() {
