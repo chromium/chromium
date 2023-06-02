@@ -29,19 +29,28 @@ UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(
 
 UpgradeCenterBrowserAgent::~UpgradeCenterBrowserAgent() {}
 
+#pragma mark - WebStateListObserver
+
+void UpgradeCenterBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebStateDetached(replace_change.replaced_web_state());
+      WebStateAttached(replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                                    web::WebState* web_state,
                                                    int index,
                                                    bool activating) {
   WebStateAttached(web_state);
-}
-
-void UpgradeCenterBrowserAgent::WebStateReplacedAt(WebStateList* web_state_list,
-                                                   web::WebState* old_web_state,
-                                                   web::WebState* new_web_state,
-                                                   int index) {
-  WebStateDetached(old_web_state);
-  WebStateAttached(new_web_state);
 }
 
 void UpgradeCenterBrowserAgent::WillDetachWebStateAt(

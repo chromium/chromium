@@ -31,21 +31,29 @@ WebStateDependencyInstallationObserver::
   }
 }
 
+#pragma mark - WebStateListObserver
+
+void WebStateDependencyInstallationObserver::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      OnWebStateRemoved(replace_change.replaced_web_state());
+      OnWebStateAdded(replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void WebStateDependencyInstallationObserver::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool activating) {
   OnWebStateAdded(web_state);
-}
-
-void WebStateDependencyInstallationObserver::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  OnWebStateRemoved(old_web_state);
-  OnWebStateAdded(new_web_state);
 }
 
 void WebStateDependencyInstallationObserver::WebStateDetachedAt(

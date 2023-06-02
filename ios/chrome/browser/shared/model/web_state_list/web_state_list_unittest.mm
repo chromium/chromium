@@ -78,6 +78,16 @@ class WebStateListTestObserver : public WebStateListObserver {
   }
 
   // WebStateListObserver implementation.
+  void WebStateListChanged(WebStateList* web_state_list,
+                           const WebStateListChange& change,
+                           const WebStateSelection& selection) override {
+    switch (change.type()) {
+      case WebStateListChange::Type::kReplace:
+        web_state_replaced_called_ = true;
+        break;
+    }
+  }
+
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index,
@@ -92,13 +102,6 @@ class WebStateListTestObserver : public WebStateListObserver {
                      int to_index) override {
     EXPECT_TRUE(web_state_list->IsMutating());
     web_state_moved_called_ = true;
-  }
-
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override {
-    web_state_replaced_called_ = true;
   }
 
   void WebStateDetachedAt(WebStateList* web_state_list,

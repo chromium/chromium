@@ -44,14 +44,13 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver methods
+  void WebStateListChanged(WebStateList* web_state_list,
+                           const WebStateListChange& change,
+                           const WebStateSelection& selection) override;
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index,
                           bool activating) override;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override;
   void WebStateDetachedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index) override;

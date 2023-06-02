@@ -26,21 +26,31 @@ AllWebStateObservationForwarder::AllWebStateObservationForwarder(
 
 AllWebStateObservationForwarder::~AllWebStateObservationForwarder() {}
 
+#pragma mark - WebStateListObserver
+
+void AllWebStateObservationForwarder::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web_state_observations_.RemoveObservation(
+          replace_change.replaced_web_state());
+      web_state_observations_.AddObservation(
+          replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void AllWebStateObservationForwarder::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool activating) {
   web_state_observations_.AddObservation(web_state);
-}
-
-void AllWebStateObservationForwarder::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  web_state_observations_.RemoveObservation(old_web_state);
-  web_state_observations_.AddObservation(new_web_state);
 }
 
 void AllWebStateObservationForwarder::WebStateDetachedAt(

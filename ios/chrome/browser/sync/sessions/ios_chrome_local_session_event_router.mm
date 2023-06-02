@@ -61,23 +61,31 @@ IOSChromeLocalSessionEventRouter::Observer::Observer(
 
 IOSChromeLocalSessionEventRouter::Observer::~Observer() {}
 
+#pragma mark - WebStateListObserver
+
+void IOSChromeLocalSessionEventRouter::Observer::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* replaced_web_state = replace_change.replaced_web_state();
+      router_->OnWebStateChange(replaced_web_state);
+      replaced_web_state->RemoveObserver(this);
+      replace_change.inserted_web_state()->AddObserver(this);
+      break;
+    }
+  }
+}
+
 void IOSChromeLocalSessionEventRouter::Observer::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool activating) {
   web_state->AddObserver(this);
-}
-
-void IOSChromeLocalSessionEventRouter::Observer::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  router_->OnWebStateChange(old_web_state);
-  old_web_state->RemoveObserver(this);
-  DCHECK(new_web_state);
-  new_web_state->AddObserver(this);
 }
 
 void IOSChromeLocalSessionEventRouter::Observer::WebStateDetachedAt(

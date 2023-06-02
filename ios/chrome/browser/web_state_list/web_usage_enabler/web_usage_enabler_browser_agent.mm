@@ -61,10 +61,34 @@ void WebUsageEnablerBrowserAgent::UpdateWebUsageForAddedWebState(
   }
 }
 
+#pragma mark - BrowserObserver
+
 void WebUsageEnablerBrowserAgent::BrowserDestroyed(Browser* browser) {
   web_state_observations_.RemoveAllObservations();
   web_state_list_observation_.Reset();
   browser_observation_.Reset();
+}
+
+#pragma mark - WebStateListObserver
+
+void WebUsageEnablerBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* replaced_web_state = replace_change.replaced_web_state();
+      if (web_state_observations_.IsObservingSource(replaced_web_state)) {
+        web_state_observations_.RemoveObservation(replaced_web_state);
+      }
+
+      UpdateWebUsageForAddedWebState(replace_change.inserted_web_state(),
+                                     /*triggers_initial_load=*/true);
+      break;
+    }
+  }
 }
 
 void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
@@ -74,18 +98,6 @@ void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
     bool activating) {
   UpdateWebUsageForAddedWebState(web_state,
                                  /*triggers_initial_load=*/activating);
-}
-
-void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  if (web_state_observations_.IsObservingSource(old_web_state)) {
-    web_state_observations_.RemoveObservation(old_web_state);
-  }
-
-  UpdateWebUsageForAddedWebState(new_web_state, /*triggers_initial_load=*/true);
 }
 
 void WebUsageEnablerBrowserAgent::WebStateDetachedAt(

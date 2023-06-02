@@ -85,18 +85,24 @@ class TabHelperDelegateInstaller {
 
    private:
     // WebStateListObserver:
+    void WebStateListChanged(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override {
+      switch (change.type()) {
+        case WebStateListChange::Type::kReplace: {
+          const WebStateListChangeReplace& replace_change =
+              change.As<WebStateListChangeReplace>();
+          SetTabHelperDelegate(replace_change.replaced_web_state(), nullptr);
+          SetTabHelperDelegate(replace_change.inserted_web_state(), delegate_);
+          break;
+        }
+      }
+    }
     void WebStateInsertedAt(WebStateList* web_state_list,
                             web::WebState* web_state,
                             int index,
                             bool activating) override {
       SetTabHelperDelegate(web_state, delegate_);
-    }
-    void WebStateReplacedAt(WebStateList* web_state_list,
-                            web::WebState* old_web_state,
-                            web::WebState* new_web_state,
-                            int index) override {
-      SetTabHelperDelegate(old_web_state, nullptr);
-      SetTabHelperDelegate(new_web_state, delegate_);
     }
     void WillDetachWebStateAt(WebStateList* web_state_list,
                               web::WebState* web_state,

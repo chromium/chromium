@@ -240,6 +240,26 @@ void CrashReporterURLObserver::StopObservingWebStateList(
 
 #pragma mark - WebStateListObserver
 
+void CrashReporterURLObserver::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web_state_to_group_.erase(replace_change.replaced_web_state());
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
+      web_state_to_group_[inserted_web_state] =
+          GroupForWebStateList(web_state_list);
+      if (web_state_list->GetActiveWebState() == inserted_web_state) {
+        RecordURLForWebState(inserted_web_state);
+      }
+      break;
+    }
+  }
+}
+
 void CrashReporterURLObserver::WebStateDetachedAt(WebStateList* web_state_list,
                                                   web::WebState* web_state,
                                                   int index) {
@@ -256,21 +276,6 @@ void CrashReporterURLObserver::WebStateInsertedAt(WebStateList* web_state_list,
   web_state_to_group_[web_state] = GroupForWebStateList(web_state_list);
   if (activating) {
     RecordURLForWebState(web_state);
-  }
-}
-
-void CrashReporterURLObserver::WebStateReplacedAt(WebStateList* web_state_list,
-                                                  web::WebState* old_web_state,
-                                                  web::WebState* new_web_state,
-                                                  int index) {
-  if (old_web_state) {
-    web_state_to_group_.erase(old_web_state);
-  }
-  if (new_web_state) {
-    web_state_to_group_[new_web_state] = GroupForWebStateList(web_state_list);
-  }
-  if (web_state_list->GetActiveWebState() == new_web_state) {
-    RecordURLForWebState(new_web_state);
   }
 }
 

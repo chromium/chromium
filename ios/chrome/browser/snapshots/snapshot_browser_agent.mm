@@ -29,7 +29,8 @@ SnapshotBrowserAgent::SnapshotBrowserAgent(Browser* browser)
 
 SnapshotBrowserAgent::~SnapshotBrowserAgent() = default;
 
-// Browser Observer methods:
+#pragma mark - BrowserObserver
+
 void SnapshotBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser, browser_);
   browser->GetWebStateList()->RemoveObserver(this);
@@ -38,20 +39,30 @@ void SnapshotBrowserAgent::BrowserDestroyed(Browser* browser) {
   [snapshot_cache_ shutdown];
 }
 
+#pragma mark - WebStateListObserver
+
+void SnapshotBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      SnapshotTabHelper::FromWebState(replace_change.replaced_web_state())
+          ->SetSnapshotCache(nil);
+      SnapshotTabHelper::FromWebState(replace_change.inserted_web_state())
+          ->SetSnapshotCache(snapshot_cache_);
+      break;
+    }
+  }
+}
+
 void SnapshotBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                               web::WebState* web_state,
                                               int index,
                                               bool activating) {
   SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(snapshot_cache_);
-}
-
-void SnapshotBrowserAgent::WebStateReplacedAt(WebStateList* web_state_list,
-                                              web::WebState* old_web_state,
-                                              web::WebState* new_web_state,
-                                              int index) {
-  SnapshotTabHelper::FromWebState(old_web_state)->SetSnapshotCache(nil);
-  SnapshotTabHelper::FromWebState(new_web_state)
-      ->SetSnapshotCache(snapshot_cache_);
 }
 
 void SnapshotBrowserAgent::WebStateDetachedAt(WebStateList* web_state_list,

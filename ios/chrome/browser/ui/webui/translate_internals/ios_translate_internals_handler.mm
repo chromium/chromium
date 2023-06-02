@@ -110,21 +110,31 @@ IOSTranslateInternalsHandler::Observer::Observer(
     : handler_(handler) {}
 IOSTranslateInternalsHandler::Observer::~Observer() {}
 
+#pragma mark - WebStateListObserver
+
+void IOSTranslateInternalsHandler::Observer::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      handler_->RemoveLanguageDetectionObserverForWebState(
+          replace_change.replaced_web_state());
+      handler_->AddLanguageDetectionObserverForWebState(
+          replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void IOSTranslateInternalsHandler::Observer::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool activating) {
   handler_->AddLanguageDetectionObserverForWebState(web_state);
-}
-
-void IOSTranslateInternalsHandler::Observer::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  handler_->RemoveLanguageDetectionObserverForWebState(old_web_state);
-  handler_->AddLanguageDetectionObserverForWebState(new_web_state);
 }
 
 void IOSTranslateInternalsHandler::Observer::WebStateDetachedAt(

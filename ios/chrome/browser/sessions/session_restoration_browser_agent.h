@@ -108,6 +108,9 @@ class SessionRestorationBrowserAgent
                            web::WebState* new_web_state,
                            int active_index,
                            ActiveWebStateChangeReason reason) override;
+  void WebStateListChanged(WebStateList* web_state_list,
+                           const WebStateListChange& change,
+                           const WebStateSelection& selection) override;
   void WillDetachWebStateAt(WebStateList* web_state_list,
                             web::WebState* web_state,
                             int index) override;
@@ -118,10 +121,6 @@ class SessionRestorationBrowserAgent
                           web::WebState* web_state,
                           int index,
                           bool activating) override;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override;
   void WebStateMoved(WebStateList* web_state_list,
                      web::WebState* web_state,
                      int from_index,

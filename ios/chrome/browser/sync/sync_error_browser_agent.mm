@@ -49,7 +49,8 @@ void SyncErrorBrowserAgent::ClearUIProviders() {
   sync_presenter_provider_ = nil;
 }
 
-// Browser Observer methods:
+#pragma mark - BrowserObserver
+
 void SyncErrorBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser, browser_);
   browser->GetWebStateList()->RemoveObserver(this);
@@ -57,22 +58,31 @@ void SyncErrorBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser_ = nullptr;
 }
 
-// WesStateList Observer methods:
+#pragma mark - WebStateListObserver
+
+void SyncErrorBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* replaced_web_state = replace_change.replaced_web_state();
+      if (!replaced_web_state->IsRealized()) {
+        web_state_observations_.RemoveObservation(replaced_web_state);
+      }
+      CreateReSignInInfoBarDelegate(replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void SyncErrorBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                                web::WebState* web_state,
                                                int index,
                                                bool activating) {
   CreateReSignInInfoBarDelegate(web_state);
-}
-
-void SyncErrorBrowserAgent::WebStateReplacedAt(WebStateList* web_state_list,
-                                               web::WebState* old_web_state,
-                                               web::WebState* new_web_state,
-                                               int index) {
-  if (!old_web_state->IsRealized()) {
-    web_state_observations_.RemoveObservation(old_web_state);
-  }
-  CreateReSignInInfoBarDelegate(new_web_state);
 }
 
 void SyncErrorBrowserAgent::WebStateDetachedAt(WebStateList* web_state_list,

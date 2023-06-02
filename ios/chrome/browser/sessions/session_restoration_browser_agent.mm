@@ -311,7 +311,8 @@ bool SessionRestorationBrowserAgent::CanSaveSession() {
   return true;
 }
 
-// Browser Observer methods:
+#pragma mark - BrowserObserver
+
 void SessionRestorationBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
   // Stop observing web states.
@@ -321,7 +322,8 @@ void SessionRestorationBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser->RemoveObserver(this);
 }
 
-// WebStateList Observer methods:
+#pragma mark - WebStateListObserver
+
 void SessionRestorationBrowserAgent::WebStateActivatedAt(
     WebStateList* web_state_list,
     web::WebState* old_web_state,
@@ -334,6 +336,25 @@ void SessionRestorationBrowserAgent::WebStateActivatedAt(
   // Persist the session state if the new web state is not loading (or if
   // the last tab was closed).
   SaveSession(/*immediately=*/false);
+}
+
+void SessionRestorationBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      if (replace_change.inserted_web_state()->IsLoading()) {
+        return;
+      }
+
+      // Persist the session state if the new web state is not loading.
+      SaveSession(/*immediately=*/false);
+      break;
+    }
+  }
 }
 
 void SessionRestorationBrowserAgent::WillDetachWebStateAt(
@@ -366,18 +387,6 @@ void SessionRestorationBrowserAgent::WebStateInsertedAt(
     int index,
     bool activating) {
   if (activating || web_state->IsLoading())
-    return;
-
-  // Persist the session state if the new web state is not loading.
-  SaveSession(/*immediately=*/false);
-}
-
-void SessionRestorationBrowserAgent::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  if (new_web_state->IsLoading())
     return;
 
   // Persist the session state if the new web state is not loading.

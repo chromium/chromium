@@ -103,6 +103,9 @@ class WebStateListObserverBridge final : public WebStateListObserver {
 
  private:
   // WebStateListObserver implementation.
+  void WebStateListChanged(WebStateList* web_state_list,
+                           const WebStateListChange& change,
+                           const WebStateSelection& selection) override;
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index,
@@ -111,10 +114,6 @@ class WebStateListObserverBridge final : public WebStateListObserver {
                      web::WebState* web_state,
                      int from_index,
                      int to_index) final;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) final;
   void WillDetachWebStateAt(WebStateList* web_state_list,
                             web::WebState* web_state,
                             int index) final;

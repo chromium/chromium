@@ -417,21 +417,23 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   ClearOpenersReferencing(index);
 
   web::WebState* web_state_ptr = web_state.get();
-  std::unique_ptr<web::WebState> old_web_state =
+  std::unique_ptr<web::WebState> replaced_web_state =
       web_state_wrappers_[index]->ReplaceWebState(std::move(web_state));
 
+  const WebStateListChangeReplace replace_change(replaced_web_state.get(),
+                                                 web_state_ptr);
+  const WebStateSelection selection = {.index = index};
   for (auto& observer : observers_) {
-    observer.WebStateReplacedAt(this, old_web_state.get(), web_state_ptr,
-                                index);
+    observer.WebStateListChanged(this, replace_change, selection);
   }
 
   // When the active WebState is replaced, notify the observers as nearly
   // all of them needs to treat a replacement as the selection changed.
-  NotifyIfActiveWebStateChanged(old_web_state.get(),
+  NotifyIfActiveWebStateChanged(replaced_web_state.get(),
                                 ActiveWebStateChangeReason::Replaced);
 
-  delegate_->WebStateDetached(old_web_state.get());
-  return old_web_state;
+  delegate_->WebStateDetached(replaced_web_state.get());
+  return replaced_web_state;
 }
 
 std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {

@@ -58,6 +58,28 @@ void FullscreenWebStateListObserver::Disconnect() {
   SetWebStateList(nullptr);
 }
 
+#pragma mark - WebStateListObserver
+
+void FullscreenWebStateListObserver::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebStateWasRemoved(replace_change.replaced_web_state());
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
+      if (inserted_web_state == web_state_list->GetActiveWebState()) {
+        // Reset the model if the active WebState is replaced.
+        model_->ResetForNavigation();
+        WebStateWasActivated(inserted_web_state);
+      }
+      break;
+    }
+  }
+}
+
 void FullscreenWebStateListObserver::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
@@ -66,19 +88,6 @@ void FullscreenWebStateListObserver::WebStateInsertedAt(
   DCHECK_EQ(web_state_list_, web_state_list);
   if (activating)
     controller_->ExitFullscreen();
-}
-
-void FullscreenWebStateListObserver::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  WebStateWasRemoved(old_web_state);
-  if (new_web_state == web_state_list->GetActiveWebState()) {
-    // Reset the model if the active WebState is replaced.
-    model_->ResetForNavigation();
-    WebStateWasActivated(new_web_state);
-  }
 }
 
 void FullscreenWebStateListObserver::WebStateActivatedAt(

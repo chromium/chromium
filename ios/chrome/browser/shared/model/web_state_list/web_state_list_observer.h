@@ -13,6 +13,70 @@ namespace web {
 class WebState;
 }
 
+// Represent a generic change to the WebStateList. Use `type()` to determine its
+// type, then access the correct sub-class using `As()<...>` method.
+class WebStateListChange {
+ public:
+  enum class Type {
+    // Used when a WebState at the specified index is replaced with a new
+    // WebState.
+    kReplace,
+  };
+
+  // Non-copyable, non-moveable.
+  WebStateListChange(const WebStateListChange&) = delete;
+  WebStateListChange& operator=(const WebStateListChange&) = delete;
+
+  virtual ~WebStateListChange() = default;
+
+  virtual Type type() const = 0;
+
+  template <typename T>
+  const T& As() const {
+    CHECK(type() == T::kType);
+    return static_cast<const T&>(*this);
+  }
+
+ protected:
+  WebStateListChange() = default;
+};
+
+// Represent a change that corresponds to replacing one WebState by another
+// WebState in-place. There is no change in the number of WebStates.
+class WebStateListChangeReplace final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kReplace;
+
+  WebStateListChangeReplace(raw_ptr<web::WebState> replaced_web_state,
+                            raw_ptr<web::WebState> inserted_web_state);
+  ~WebStateListChangeReplace() final = default;
+
+  Type type() const final;
+
+  // The WebState that is removed from the WebStateList. It
+  // is replaced in-place by `inserted_web_state_`.
+  raw_ptr<web::WebState> replaced_web_state() const {
+    CHECK(replaced_web_state_);
+    return replaced_web_state_;
+  }
+
+  // The WebState that is inserted into the WebStateList. It
+  // takes the position of `replaced_web_state_`.
+  raw_ptr<web::WebState> inserted_web_state() const {
+    CHECK(inserted_web_state_);
+    return inserted_web_state_;
+  }
+
+ private:
+  raw_ptr<web::WebState> replaced_web_state_;
+  raw_ptr<web::WebState> inserted_web_state_;
+};
+
+struct WebStateSelection {
+  // The index to be changed.
+  const int index;
+};
+
 // Constants used when notifying about changes to active WebState.
 enum class ActiveWebStateChangeReason {
   // Used to indicate the active WebState changed because active WebState was
@@ -41,6 +105,11 @@ class WebStateListObserver : public base::CheckedObserver {
 
   ~WebStateListObserver() override;
 
+  /// Invoked when WebStateList is updated.
+  virtual void WebStateListChanged(WebStateList* web_state_list,
+                                   const WebStateListChange& change,
+                                   const WebStateSelection& selection);
+
   // Invoked after a new WebState has been added to the WebStateList at the
   // specified index. `activating` will be true if the WebState will become
   // the new active WebState after the insertion.
@@ -55,13 +124,6 @@ class WebStateListObserver : public base::CheckedObserver {
                              web::WebState* web_state,
                              int from_index,
                              int to_index);
-
-  // Invoked after the WebState at the specified index is replaced by another
-  // WebState.
-  virtual void WebStateReplacedAt(WebStateList* web_state_list,
-                                  web::WebState* old_web_state,
-                                  web::WebState* new_web_state,
-                                  int index);
 
   // Invoked before the specified WebState is detached from the WebStateList.
   // The WebState is still valid and still in the WebStateList.

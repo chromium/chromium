@@ -62,6 +62,23 @@ void TextToSpeechPlaybackController::Shutdown() {
 
 #pragma mark WebStateListObserver
 
+void TextToSpeechPlaybackController::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
+      if (inserted_web_state == web_state_list->GetActiveWebState()) {
+        SetWebState(inserted_web_state);
+      }
+      break;
+    }
+  }
+}
+
 void TextToSpeechPlaybackController::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
@@ -69,15 +86,6 @@ void TextToSpeechPlaybackController::WebStateInsertedAt(
     bool activating) {
   if (activating)
     SetWebState(web_state);
-}
-
-void TextToSpeechPlaybackController::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  if (new_web_state == web_state_list->GetActiveWebState())
-    SetWebState(new_web_state);
 }
 
 void TextToSpeechPlaybackController::WebStateActivatedAt(

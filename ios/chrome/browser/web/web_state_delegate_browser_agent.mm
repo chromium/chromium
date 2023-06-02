@@ -83,22 +83,29 @@ void WebStateDelegateBrowserAgent::ClearUIProviders() {
   container_view_provider_ = nil;
 }
 
-// WebStateListObserver::
+#pragma mark - WebStateListObserver
+
+void WebStateDelegateBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      ClearWebStateDelegate(replace_change.replaced_web_state());
+      SetWebStateDelegate(replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void WebStateDelegateBrowserAgent::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool activating) {
   SetWebStateDelegate(web_state);
-}
-
-void WebStateDelegateBrowserAgent::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  ClearWebStateDelegate(old_web_state);
-  SetWebStateDelegate(new_web_state);
 }
 
 void WebStateDelegateBrowserAgent::WebStateDetachedAt(

@@ -520,19 +520,26 @@ void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
 
 #pragma mark - WebStateListObserver
 
+void OverlayPresenterImpl::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebStateRemovedFromBrowser(replace_change.replaced_web_state());
+      WebStateAddedToBrowser(replace_change.inserted_web_state());
+      break;
+    }
+  }
+}
+
 void OverlayPresenterImpl::WebStateInsertedAt(WebStateList* web_state_list,
                                               web::WebState* web_state,
                                               int index,
                                               bool activating) {
   WebStateAddedToBrowser(web_state);
-}
-
-void OverlayPresenterImpl::WebStateReplacedAt(WebStateList* web_state_list,
-                                              web::WebState* old_web_state,
-                                              web::WebState* new_web_state,
-                                              int index) {
-  WebStateRemovedFromBrowser(old_web_state);
-  WebStateAddedToBrowser(new_web_state);
 }
 
 void OverlayPresenterImpl::WillDetachWebStateAt(WebStateList* web_state_list,

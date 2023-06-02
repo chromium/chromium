@@ -480,6 +480,8 @@ bool TabUsageRecorderBrowserAgent::ShouldRecordPageLoadStartForNavigation(
   return false;
 }
 
+#pragma mark - WebStateObserver
+
 void TabUsageRecorderBrowserAgent::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -521,6 +523,23 @@ void TabUsageRecorderBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
   NOTREACHED();
 }
 
+#pragma mark - WebStateListObserver
+
+void TabUsageRecorderBrowserAgent::WebStateListChanged(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      OnWebStateDestroyed(replace_change.replaced_web_state());
+      replace_change.inserted_web_state()->AddObserver(this);
+      break;
+    }
+  }
+}
+
 void TabUsageRecorderBrowserAgent::WebStateInsertedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
@@ -530,17 +549,6 @@ void TabUsageRecorderBrowserAgent::WebStateInsertedAt(
     web_state_created_selected_ = web_state;
 
   web_state->AddObserver(this);
-}
-
-void TabUsageRecorderBrowserAgent::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  OnWebStateDestroyed(old_web_state);
-
-  if (new_web_state)
-    new_web_state->AddObserver(this);
 }
 
 void TabUsageRecorderBrowserAgent::WebStateDetachedAt(
