@@ -23,9 +23,8 @@ std::string GenerateLottieCustomizableIdForTesting(int unique_id) {
 std::string GenerateLottieDynamicAssetIdForTesting(base::StringPiece position,
                                                    int idx) {
   CHECK(!position.empty());
-  return base::StringPrintf("%s_Photo_Position%s_%d",
-                            kLottieCustomizableIdPrefix.data(), position.data(),
-                            idx);
+  return base::StrCat({kLottieCustomizableIdPrefix, "_Photo_Position", position,
+                       "_", base::NumberToString(idx)});
 }
 
 AmbientPhotoConfig GenerateAnimationConfigWithNAssets(int num_assets) {

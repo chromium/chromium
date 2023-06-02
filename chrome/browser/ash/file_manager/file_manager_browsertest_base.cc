@@ -573,7 +573,7 @@ struct AddEntriesMessage {
 
     // Maps |value| to base::Time. Returns true on success.
     static bool MapStringToTime(base::StringPiece value, base::Time* time) {
-      return base::Time::FromString(value.data(), time);
+      return base::Time::FromString(std::string(value).c_str(), time);
     }
   };
 };

@@ -69,10 +69,10 @@ std::string GetHistogramName(const char* prefix, bool tablet_mode) {
   return histogram;
 }
 
-void RecordEngagementTime(base::StringPiece histogram_name,
+void RecordEngagementTime(const std::string& histogram_name,
                           base::TimeDelta engagement_time) {
   base::UmaHistogramCustomTimes(
-      histogram_name.data(),
+      histogram_name,
       /*sample=*/engagement_time,
       // There is no value in bucketing engagement times that are on the order
       // of milliseconds. A 1 second minimum is imposed here but not in the

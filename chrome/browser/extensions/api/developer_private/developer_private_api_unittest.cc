@@ -192,8 +192,8 @@ void RunAddHostPermission(Profile* profile,
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateAddHostPermissionFunction>();
 
-  std::string args = base::StringPrintf(R"(["%s", "%s"])",
-                                        extension.id().c_str(), host.data());
+  std::string args = base::StringPrintf(
+      R"(["%s", "%s"])", extension.id().c_str(), std::string(host).c_str());
   if (should_succeed) {
     EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile))
         << function->GetError();

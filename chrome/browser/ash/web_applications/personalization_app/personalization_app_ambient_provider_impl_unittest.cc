@@ -316,10 +316,11 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     ambient_provider_->SetTopicSource(topic_source);
   }
 
-  void SetAlbumSelected(const std::string& id,
+  void SetAlbumSelected(base::StringPiece id,
                         ash::AmbientModeTopicSource topic_source,
                         bool selected) {
-    ambient_provider_->SetAlbumSelected(id, topic_source, selected);
+    ambient_provider_->SetAlbumSelected(std::string(id), topic_source,
+                                        selected);
   }
 
   void FetchPreviewImages() { ambient_provider_->FetchPreviewImages(); }
@@ -927,19 +928,17 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
                          /*new_mexico_selected=*/true);
 
   // Switch to clouds.
-  SetAlbumSelected(kCloudsAlbumId.data(), AmbientModeTopicSource::kVideo, true);
+  SetAlbumSelected(kCloudsAlbumId, AmbientModeTopicSource::kVideo, true);
   expect_videos_selected(/*clouds_selected=*/true,
                          /*new_mexico_selected=*/false);
 
   // Switch back to new mexico.
-  SetAlbumSelected(kNewMexicoAlbumId.data(), AmbientModeTopicSource::kVideo,
-                   true);
+  SetAlbumSelected(kNewMexicoAlbumId, AmbientModeTopicSource::kVideo, true);
   expect_videos_selected(/*clouds_selected=*/false,
                          /*new_mexico_selected=*/true);
 
   // Should never be in a state where there are no videos selected.
-  SetAlbumSelected(kNewMexicoAlbumId.data(), AmbientModeTopicSource::kVideo,
-                   false);
+  SetAlbumSelected(kNewMexicoAlbumId, AmbientModeTopicSource::kVideo, false);
   expect_videos_selected(/*clouds_selected=*/false,
                          /*new_mexico_selected=*/true);
 

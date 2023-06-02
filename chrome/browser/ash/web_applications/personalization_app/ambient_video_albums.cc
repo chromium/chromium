@@ -39,7 +39,7 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
                               std::vector<mojom::AmbientModeAlbumPtr>& output) {
   for (const VideoAlbumInfo& video_album_info : kAllVideoAlbumInfo) {
     mojom::AmbientModeAlbumPtr album = mojom::AmbientModeAlbum::New();
-    album->id = video_album_info.id.data();
+    album->id = std::string(video_album_info.id);
     album->checked = currently_selected_video == video_album_info.video;
     album->title = l10n_util::GetStringUTF8(video_album_info.title_resource_id);
     // Product name does not need to be translated.

@@ -41,43 +41,43 @@ TEST_F(AcceleratorTrackerTest, TrackKeyEvent) {
   base::UserActionTester user_action_tester;
 
   // The metric is not recorded before the event is fired.
-  EXPECT_EQ(0, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(intended_user_action));
 
   // The metric is recorded after the event is fired.
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, intended_key_code,
                          intended_modifier);
   accelerator_tracker.OnKeyEvent(&key_event);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action));
 
   // Fire a similar key event won't trigger this metric.
   // An event with same key code and modifier, but different key states.
   ui::KeyEvent key_event1(ui::ET_KEY_RELEASED, intended_key_code,
                           intended_modifier);
   accelerator_tracker.OnKeyEvent(&key_event1);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action));
 
   // An event with same key code and key state, but superset of modifiers.
   ui::KeyEvent key_event2(ui::ET_KEY_PRESSED, intended_key_code,
                           intended_modifier | ui::EF_ALT_DOWN);
   accelerator_tracker.OnKeyEvent(&key_event2);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action));
 
   // An event with same key code and key state, but subset of modifiers.
   ui::KeyEvent key_event3(ui::ET_KEY_PRESSED, intended_key_code,
                           ui::EF_CONTROL_DOWN);
   accelerator_tracker.OnKeyEvent(&key_event3);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action));
 
   // An event with same key code and key state, but different modifiers.
   ui::KeyEvent key_event4(ui::ET_KEY_PRESSED, intended_key_code,
                           ui::EF_ALT_DOWN);
   accelerator_tracker.OnKeyEvent(&key_event4);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action));
 
   // An event with same key state and modifiers, but different key codes.
   ui::KeyEvent key_event5(ui::ET_KEY_PRESSED, ui::VKEY_B, intended_modifier);
   accelerator_tracker.OnKeyEvent(&key_event5);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action.data()));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(intended_user_action));
 }
 
 }  // namespace ash

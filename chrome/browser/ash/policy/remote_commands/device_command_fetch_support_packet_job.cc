@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -395,9 +396,8 @@ void DeviceCommandFetchSupportPacketJob::OnEventEnqueued(
     return;
   }
 
-  std::string error_message =
-      base::StringPrintf("Couldn't enqueue event to reporting queue:  %s",
-                         status.error_message().data());
+  std::string error_message = base::StrCat(
+      {"Couldn't enqueue event to reporting queue:  ", status.error_message()});
 
   SYSLOG(ERROR) << error_message;
   std::move(result_callback_).Run(ResultType::kFailure, error_message);

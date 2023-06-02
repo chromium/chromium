@@ -1199,7 +1199,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
 
       ASSERT_TRUE(
           content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                          password_field_change_to_text_script.data()));
+                          password_field_change_to_text_script));
 
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());

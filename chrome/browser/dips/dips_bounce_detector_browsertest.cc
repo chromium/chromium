@@ -99,7 +99,7 @@ void AppendRedirect(std::vector<std::string>* redirects,
   redirects->push_back(base::StringPrintf(
       "[%zu/%zu] %s -> %s (%s) -> %s", redirect_index + 1, chain.length,
       FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
-      SiteDataAccessTypeToString(redirect.access_type).data(),
+      std::string(SiteDataAccessTypeToString(redirect.access_type)).c_str(),
       FormatURL(chain.final_url).c_str()));
 }
 

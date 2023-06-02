@@ -222,7 +222,7 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   base::TimeDelta launch_timeout = cast_source.launch_timeout();
   std::vector<std::string> type_str;
   for (ReceiverAppType type : cast_source.supported_app_types()) {
-    type_str.push_back(cast_util::EnumToString(type).value().data());
+    type_str.emplace_back(cast_util::EnumToString(type).value());
   }
   logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
                    "Sent a Launch Session request.", sink.id(),
