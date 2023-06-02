@@ -657,9 +657,6 @@ class Node:
                                self._COMPRESS_BY_DEFAULT_EXTENSIONS))
 
     if compress == 'gzip' or compress_by_default:
-      # We only use rsyncable compression for platforms built on Linux.
-      if sys.platform == 'linux':
-        return grit.format.gzip_string.GzipStringRsyncable(data)
       return grit.format.gzip_string.GzipString(data)
 
     if compress == 'brotli':
