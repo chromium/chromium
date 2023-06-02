@@ -200,6 +200,10 @@ void DriveFsHttpClient::ExecuteHttpRequest(
   for (const auto& header : request->headers) {
     resource_request.headers.SetHeader(header->key, header->value);
   }
+  // TODO(b/284789869): The Chrome network service currently automatically
+  // appends a `If-None-Match` header to requests, this causes a 503 error on
+  // the Drive API. For now, don't cache anything until that 503 has been fixed.
+  resource_request.headers.SetHeader("Cache-Control", "no-cache");
   if (request->request_body_bytes > 0) {
     resource_request.request_body = new network::ResourceRequestBody();
     resource_request.request_body->AppendDataPipe(std::move(data_pipe_getter));
