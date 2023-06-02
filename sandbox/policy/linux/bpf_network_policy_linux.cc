@@ -32,6 +32,10 @@
 #include "sandbox/policy/linux/bpf_base_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "net/base/features.h"  // nogncheck
+#endif
+
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::BoolExpr;
@@ -65,10 +69,8 @@ ResultExpr RestrictIoctlForNetworkService() {
       // so the network process does not need to allow all the ioctls necessary
       // for f2fs atomic batch writes, so just EPERM.
       .Case(F2FS_IOC_GET_FEATURES, Error(EPERM))
-      // SIOCETHTOOL, SIOCGIWNAME, SIOCGIFNAME are needed by
-      // address_tracker_linux.h.
-      // TODO(crbug.com/1312226): remove these allowances when
-      // AddressTrackerLinux no longer runs in the network service.
+      // SIOCETHTOOL, SIOCGIWNAME, and SIOCGIFNAME are needed by
+      // GetNetworkList() on Linux.
       .Cases({SIOCETHTOOL, SIOCGIWNAME, SIOCGIFNAME}, Allow())
       .Case(SIOCGIFINDEX, Allow())  // For glibc's __inet6_scopeid_pton().
       .Default(RestrictIoctl());
@@ -158,17 +160,35 @@ ResultExpr RestrictSocketForNetworkService() {
           .Case(SOCK_DGRAM, Error(EPERM))  // For glibc's __inet6_scopeid_pton.
           .Default(CrashSIGSYSSocket());
 
-  // Network service needs netlink sockets for address_tracker_linux.h for
-  // tracking system network changes, e.g. for reestablishing connections when
-  // an IP address changes.
+  // AddressTrackerLinux needs netlink sockets for tracking system network
+  // changes (which is important for e.g. reestablishing connections when an IP
+  // address changes). AddressTrackerLinux may run in the network service on
+  // some systems.
+  bool use_netlink_in_network_service;
+#if BUILDFLAG(IS_LINUX)
+  // AddressTrackerLinux is brokered on Linux (depending on the feature flag),
+  // but not ChromeOS.
+  // TODO(crbug.com/1312226): once the kill-switch is removed, this check should
+  // be removed along with the DEPS and BUILD.gn modifications to allow
+  // depending on net/base/features.h.
+  use_netlink_in_network_service = !base::FeatureList::IsEnabled(
+      net::features::kAddressTrackerLinuxIsProxied);
+#else   // !BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/1312226): remove the netlink allowance when
-  // AddressTrackerLinux no longer runs in the network service.
-  ResultExpr netlink_protocol_switch = Switch(protocol)
-                                           .Case(NETLINK_ROUTE, Allow())
-                                           .Default(CrashSIGSYSSocket());
-  ResultExpr netlink_type_switch = Switch(type & ~kAllowedTypeFlags)
-                                       .Case(SOCK_RAW, netlink_protocol_switch)
-                                       .Default(CrashSIGSYSSocket());
+  // AddressTrackerLinux no longer runs in the network service on ChromeOS.
+  use_netlink_in_network_service = true;
+#endif  // !BUILDFLAG(IS_LINUX)
+  ResultExpr netlink_type_switch;
+  if (use_netlink_in_network_service) {
+    ResultExpr netlink_protocol_switch = Switch(protocol)
+                                             .Case(NETLINK_ROUTE, Allow())
+                                             .Default(CrashSIGSYSSocket());
+    netlink_type_switch = Switch(type & ~kAllowedTypeFlags)
+                              .Case(SOCK_RAW, netlink_protocol_switch)
+                              .Default(CrashSIGSYSSocket());
+  } else {
+    netlink_type_switch = CrashSIGSYSSocket();
+  }
 
   // Allow UDP and TCP sockets over ipv4 and ipv6.
   ResultExpr inet_type_switch =
