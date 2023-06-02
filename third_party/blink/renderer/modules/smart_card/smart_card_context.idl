@@ -1,0 +1,56 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-smart-card/blob/main/README.md#smartcardcontext
+
+dictionary SmartCardReaderStateIn {
+  required DOMString readerName;
+  required SmartCardReaderStateFlags currentState;
+};
+
+dictionary SmartCardReaderStateOut {
+  required DOMString readerName;
+  required SmartCardReaderStateFlags eventState;
+  required ArrayBuffer answerToReset;
+};
+
+dictionary SmartCardReaderStateFlags {
+  boolean unaware = false;
+  boolean ignore = false;
+  boolean changed = false;
+  boolean unknown = false;
+  boolean unavailable = false;
+  boolean empty = false;
+  boolean present = false;
+  boolean exclusive = false;
+  boolean inuse = false;
+  boolean mute = false;
+  boolean unpowered = false;
+};
+
+dictionary SmartCardConnectResult {
+  required SmartCardConnection connection;
+  required SmartCardProtocol activeProtocol;
+};
+
+[
+  Exposed=Window,
+  RuntimeEnabled=SmartCard,
+  SecureContext,
+  IsolatedContext
+] interface SmartCardContext {
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<DOMString>> listReaders();
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<SmartCardReaderStateOut>> getStatusChange(
+      sequence<SmartCardReaderStateIn> readerStates,
+      AbortSignal signal);
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<SmartCardConnectResult> connect(
+      DOMString readerName,
+      SmartCardAccessMode accessMode,
+      optional sequence<SmartCardProtocol> preferredProtocols);
+};

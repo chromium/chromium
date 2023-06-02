@@ -49,6 +49,10 @@ class DocumentHelper
                       std::move(callback));
   }
 
+  void CreateContext(CreateContextCallback callback) override {
+    service_->CreateContext(std::move(callback));
+  }
+
  private:
   const std::unique_ptr<SmartCardService> service_;
 };
@@ -137,7 +141,7 @@ void SmartCardService::Connect(
   if (!context_) {
     context_ = mojo::Remote<device::mojom::SmartCardContext>();
     context_factory_->CreateContext(
-        base::BindOnce(&SmartCardService::OnCreateContextDone,
+        base::BindOnce(&SmartCardService::OnCreateInternalContextDone,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -153,6 +157,10 @@ void SmartCardService::Connect(
       reader, share_mode, std::move(preferred_protocols),
       base::BindOnce(&SmartCardService::OnConnectDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SmartCardService::CreateContext(CreateContextCallback callback) {
+  context_factory_->CreateContext(std::move(callback));
 }
 
 void SmartCardService::OnReaderAdded(
@@ -182,7 +190,7 @@ void SmartCardService::OnError(device::mojom::SmartCardError error) {
   }
 }
 
-void SmartCardService::OnCreateContextDone(
+void SmartCardService::OnCreateInternalContextDone(
     device::mojom::SmartCardCreateContextResultPtr result) {
   CHECK(context_ && !context_->is_bound());
 

@@ -3022,10 +3022,18 @@ if (target_os != "android") {
 # we need to compile in the same way as would happen when current_os="android".
 if (target_os != "android") {
   generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connect_result.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_flags.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_in.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_in.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_out.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state_out.h",
   ]
   generated_enumeration_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.cc",
@@ -3044,6 +3052,8 @@ if (target_os != "android") {
   generated_interface_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_context.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_context.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.cc",

@@ -5,12 +5,15 @@
 #include "third_party/blink/renderer/modules/smart_card/smart_card_reader.h"
 
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_connection.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_error.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.h"
+#include "third_party/blink/renderer/modules/smart_card/smart_card_util.h"
 
 namespace blink {
 namespace {
@@ -34,38 +37,6 @@ V8SmartCardReaderState::Enum V8StateFromMojoState(
   }
 }
 
-device::mojom::blink::SmartCardProtocolsPtr ToMojoProtocols(
-    const Vector<V8SmartCardProtocol>& preferred_protocols) {
-  auto result = device::mojom::blink::SmartCardProtocols::New();
-
-  for (const auto& protocol : preferred_protocols) {
-    switch (protocol.AsEnum()) {
-      case blink::V8SmartCardProtocol::Enum::kRaw:
-        result->raw = true;
-        break;
-      case blink::V8SmartCardProtocol::Enum::kT0:
-        result->t0 = true;
-        break;
-      case blink::V8SmartCardProtocol::Enum::kT1:
-        result->t1 = true;
-        break;
-    }
-  }
-
-  return result;
-}
-
-device::mojom::blink::SmartCardShareMode ToMojoShareMode(
-    V8SmartCardAccessMode access_mode) {
-  switch (access_mode.AsEnum()) {
-    case blink::V8SmartCardAccessMode::Enum::kShared:
-      return device::mojom::blink::SmartCardShareMode::kShared;
-    case blink::V8SmartCardAccessMode::Enum::kExclusive:
-      return device::mojom::blink::SmartCardShareMode::kExclusive;
-    case blink::V8SmartCardAccessMode::Enum::kDirect:
-      return device::mojom::blink::SmartCardShareMode::kDirect;
-  }
-}
 }  // anonymous namespace
 
 SmartCardReader::SmartCardReader(SmartCardResourceManager* resource_manager,
@@ -97,7 +68,8 @@ ScriptPromise SmartCardReader::connect(
   connect_promises_.insert(resolver);
 
   resource_manager_->Connect(
-      name_, ToMojoShareMode(access_mode), ToMojoProtocols(preferred_protocols),
+      name_, ToMojoSmartCardShareMode(access_mode),
+      ToMojoSmartCardProtocols(preferred_protocols),
       WTF::BindOnce(&SmartCardReader::OnConnectDone, WrapPersistent(this),
                     WrapPersistent(resolver)));
   return resolver->Promise();

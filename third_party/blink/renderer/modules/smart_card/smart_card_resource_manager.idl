@@ -16,4 +16,7 @@ interface SmartCardResourceManager {
 
   [CallWith=ScriptState, RaisesException]
   Promise<SmartCardReaderPresenceObserver> watchForReaders();
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<SmartCardContext> establishContext();
 };

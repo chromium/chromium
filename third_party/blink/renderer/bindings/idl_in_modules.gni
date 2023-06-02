@@ -1258,6 +1258,7 @@ if (target_os != "android") {
             "//third_party/blink/renderer/modules/smart_card/navigator_smart_card.idl",
             "//third_party/blink/renderer/modules/smart_card/smart_card_connection.idl",
             "//third_party/blink/renderer/modules/smart_card/smart_card_connection_status.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_context.idl",
             "//third_party/blink/renderer/modules/smart_card/smart_card_error.idl",
             "//third_party/blink/renderer/modules/smart_card/smart_card_reader.idl",
             "//third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_event.idl",
