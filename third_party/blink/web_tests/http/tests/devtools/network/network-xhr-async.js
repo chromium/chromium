@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 (async function() {

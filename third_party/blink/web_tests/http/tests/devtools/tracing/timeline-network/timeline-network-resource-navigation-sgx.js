@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
+import {PerformanceTestRunner} from 'performance_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests presence and order of tracing events for a browser navigation.\n`);
-  await TestRunner.loadTestModule(`performance_test_runner`);
   await TestRunner.showPanel(`timeline`);
   await TestRunner.NetworkAgent.setCacheDisabled(true);
   await TestRunner.navigatePromise('/loading/sxg/resources/sxg-location.sxg');
