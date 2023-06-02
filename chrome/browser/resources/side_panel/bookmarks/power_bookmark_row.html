@@ -71,7 +71,7 @@
     <cr-input slot="content" id="input" value="[[bookmark.title]]"
         class="sp-labelless-input"
         on-change="onInputChange_" on-blur="onInputChange_"
-        on-keypress="onInputKeyPress_"
+        on-keydown="onInputKeyDown_"
         aria-label="[[rowAriaLabel]]"
         aria-description="[[rowAriaDescription]]">
     </cr-input>

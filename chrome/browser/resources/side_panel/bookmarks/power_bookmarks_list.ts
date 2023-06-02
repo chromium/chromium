@@ -42,7 +42,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util_ts.js';
 import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
@@ -692,9 +692,9 @@ export class PowerBookmarksListElement extends PolymerElement {
         this.push('activeFolderPath_', event.detail.bookmark);
         // Cancel search when changing active folder.
         this.$.searchField.setValue('');
-        if (this.shownBookmarks_.length > 0) {
+        afterNextRender(this, () => {
           this.$.shownBookmarksIronList.focusItem(0);
-        }
+        });
       } else {
         this.bookmarksApi_.openBookmark(
             event.detail.bookmark.id, this.activeFolderPath_.length, {
