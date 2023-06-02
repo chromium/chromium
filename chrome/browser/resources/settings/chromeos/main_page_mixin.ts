@@ -183,7 +183,7 @@ export const MainPageMixin = dedupingMixin(
 
         /**
          * Simple helper method to display a page/section depending on if the
-         * Revamp Wayfinding feature flag is enabled.
+         * `OsSettingsRevampWayfinding` is enabled.
          */
         private activatePage(route: Route): void {
           if (isRevampWayfindingEnabled()) {
@@ -204,8 +204,8 @@ export const MainPageMixin = dedupingMixin(
          * Queries the shadow DOM for the respective os-settings-section element
          * for the given |route| and marks it as active.
          *
-         * NOTE: This method should only be used when the Revamp Wayfinding
-         * feature flag is enabled.
+         * NOTE: This method should only be used when the
+         * `OsSettingsRevampWayfinding` feature flag is enabled.
          */
         private async showPage(route: Route): Promise<void> {
           const page = await this.ensureSectionForRoute_(route);

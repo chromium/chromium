@@ -97,6 +97,10 @@
   eol-offer-section {
     margin-top: 20px;
   }
+
+  :host-context(.revamp-wayfinding-enabled) os-settings-section:not([active]) {
+    display: none;
+  }
 </style>
 <template is="dom-if" if="[[showBasicPage_(
     currentRoute_, hasExpandedSection_)]]">

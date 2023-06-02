@@ -8,7 +8,7 @@ import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, setCo
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
@@ -170,7 +170,10 @@ suite('<main-page-container>', function() {
   suite('Revamp: Wayfinding', () => {
     suite('when enabled', () => {
       suiteSetup(async () => {
+        // Simulate feature flag enabled
         loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
+        document.body.classList.add('revamp-wayfinding-enabled');
+
         Router.getInstance().navigateTo(routes.BASIC);
         mainPageContainer = init();
       });
@@ -192,9 +195,29 @@ suite('<main-page-container>', function() {
       });
 
       suite('Route navigations', () => {
-        function queryActivePages() {
-          return mainPageContainer.shadowRoot.querySelectorAll(
-              'os-settings-section[active]');
+        /**
+         * Asserts the following:
+         * - Only one page is marked active
+         * - Active page does not have style "display: none"
+         * - Inactive pages have style "display: none"
+         */
+        function assertOnlyActivePageIsVisible(pageName) {
+          const pages = mainPageContainer.shadowRoot.querySelectorAll(
+              'os-settings-section');
+          let numActive = 0;
+
+          for (const page of pages) {
+            const displayStyle = getComputedStyle(page).display;
+            if (page.hasAttribute('active')) {
+              numActive++;
+              assertNotEquals('none', displayStyle);
+              assertEquals(pageName, page.section);
+            } else {
+              assertEquals('none', displayStyle);
+            }
+          }
+
+          assertEquals(1, numActive);
         }
 
         suite('From Root', () => {
@@ -205,9 +228,7 @@ suite('<main-page-container>', function() {
             Router.getInstance().navigateTo(routes.INTERNET);
             await navigationCompletePromise;
 
-            const activePages = queryActivePages();
-            assertEquals(1, activePages.length);
-            assertEquals('internet', activePages[0].section);
+            assertOnlyActivePageIsVisible('internet');
           });
 
           test('to Subpage should result in only one active page', async () => {
@@ -217,9 +238,7 @@ suite('<main-page-container>', function() {
             Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
             await navigationCompletePromise;
 
-            const activePages = queryActivePages();
-            assertEquals(1, activePages.length);
-            assertEquals('bluetooth', activePages[0].section);
+            assertOnlyActivePageIsVisible('bluetooth');
           });
         });
 
@@ -234,9 +253,7 @@ suite('<main-page-container>', function() {
                 Router.getInstance().navigateTo(routes.BLUETOOTH);
                 await navigationCompletePromise;
 
-                const activePages = queryActivePages();
-                assertEquals(1, activePages.length);
-                assertEquals('bluetooth', activePages[0].section);
+                assertOnlyActivePageIsVisible('bluetooth');
               });
 
           test('to Subpage should result in only one active page', async () => {
@@ -248,9 +265,7 @@ suite('<main-page-container>', function() {
                 routes.A11Y_DISPLAY_AND_MAGNIFICATION);
             await navigationCompletePromise;
 
-            const activePages = queryActivePages();
-            assertEquals(1, activePages.length);
-            assertEquals('osAccessibility', activePages[0].section);
+            assertOnlyActivePageIsVisible('osAccessibility');
           });
 
           test('to Root should result in only one active page', async () => {
@@ -261,9 +276,7 @@ suite('<main-page-container>', function() {
             Router.getInstance().navigateTo(routes.BASIC);
             await navigationCompletePromise;
 
-            const activePages = queryActivePages();
-            assertEquals(1, activePages.length);
-            assertEquals('internet', activePages[0].section);
+            assertOnlyActivePageIsVisible('internet');
           });
         });
       });
