@@ -249,7 +249,7 @@ pub fn collect_dependencies(
         dep.package_name = package.name.clone();
         dep.description = package.description.clone();
         dep.authors = package.authors.clone();
-        dep.edition = package.edition.clone();
+        dep.edition = package.edition.to_string();
 
         // TODO(crbug.com/1291994): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:

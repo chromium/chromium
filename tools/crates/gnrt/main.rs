@@ -29,6 +29,14 @@ fn main() -> Result<()> {
                 .arg(arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit \
                 immediately"))
                 .arg(
+                    Arg::new("cargo-path")
+                        .long("cargo-path")
+                        .value_name("CARGO_PATH")
+                        .value_parser(clap::value_parser!(String))
+                        .num_args(1)
+                        .help("Path to the cargo executable"),
+                )
+                .arg(
                     Arg::new("for-std")
                         .long("for-std")
                         .value_parser(clap::value_parser!(String))

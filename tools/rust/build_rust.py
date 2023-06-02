@@ -248,10 +248,14 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
 
 
 def InstallBetaPackage(package_dir, install_dir):
-    RunCommand([
-        os.path.join(package_dir, 'install.sh'), f'--destdir={install_dir}',
-        f'--prefix='
-    ])
+    args = [
+        f'--destdir={install_dir}',
+        f'--prefix=',
+    ]
+    if sys.platform.startswith('linux'):
+        # Avoid warnings due to not running as root.
+        args += ['--disable-ldconfig']
+    RunCommand([os.path.join(package_dir, 'install.sh')] + args)
 
 
 def CargoVendor(cargo_bin):
@@ -726,12 +730,13 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
 
-    VerifyStage0JsonHash()
-    if args.verify_stage0_hash:
-        # The above function exits and prints the actual hash if verification
-        # failed so we just quit here; if we reach this point, the hash is
-        # valid.
-        return 0
+    if not args.update_deps:
+        VerifyStage0JsonHash()
+        if args.verify_stage0_hash:
+            # The above function exits and prints the actual hash if
+            # verification failed so we just quit here; if we reach this point,
+            # the hash is valid.
+            return 0
 
     (x86_64_llvm_config, aarch64_llvm_config,
      target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,

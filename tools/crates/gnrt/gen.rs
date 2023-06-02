@@ -103,6 +103,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // Run `cargo metadata` and process the output to get a list of crates we
     // depend on.
     let mut command = cargo_metadata::MetadataCommand::new();
+    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
+        command.cargo_path(cargo_path);
+    }
+
     command.current_dir(&paths.third_party);
     let dependencies = deps::collect_dependencies(&command.exec().unwrap(), None, None);
 
@@ -254,7 +258,17 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     // Run `cargo metadata` from the std package in the Rust source tree (which
     // is a workspace).
     let mut command = cargo_metadata::MetadataCommand::new();
+    if let Some(cargo_path) = args.get_one::<String>("cargo-path") {
+        command.cargo_path(cargo_path);
+    }
+
     command.current_dir(paths.std_fake_root);
+
+    // The Cargo.toml files in the Rust toolchain may use nightly Cargo
+    // features, but the cargo binary is beta. This env var enables the
+    // beta cargo binary to allow nightly features anyway.
+    // https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
+    command.env("RUSTC_BOOTSTRAP", "1");
 
     // Delete the Cargo.lock if it exists.
     let mut std_fake_root_cargo_lock = paths.std_fake_root.to_path_buf();
