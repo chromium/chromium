@@ -241,16 +241,16 @@ class ExtensionBackForwardCacheExtensionsDisabledBrowserTest
 // cache.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
                        ScriptDisallowed) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
-                                .AppendASCII("extension")));
-
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
-  content::RenderFrameHostWrapper rfh_a(
-      ui_test_utils::NavigateToURL(browser(), url_a));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(current_main_frame_host());
+
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
+                                .AppendASCII("extension")));
 
   // 2) Navigate to B.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
@@ -1053,12 +1053,6 @@ class ExtensionBackForwardCacheBlockedExtensionBrowserTest
 // cache.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
                        ScriptDisallowed) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
-                        .AppendASCII("extension.crx"));
-  ASSERT_TRUE(extension);
-  ASSERT_EQ(extension->id(), "mockepjebcnmhmhcahfddgfcdgkdifnc");
-
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -1066,6 +1060,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
   // 1) Navigate to A.
   content::RenderFrameHostWrapper rfh_a(
       ui_test_utils::NavigateToURL(browser(), url_a));
+
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("trivial_extension")
+                        .AppendASCII("extension.crx"));
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(extension->id(), "mockepjebcnmhmhcahfddgfcdgkdifnc");
 
   // 2) Navigate to B.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));

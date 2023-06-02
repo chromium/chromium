@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiFrameIdMapBrowserTest, ContextIdsAreUnique) {
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(page2_new_host);
   base::Uuid page2_new_context_id =
-      ExtensionApiFrameIdMap::GetContextId(page2_host);
+      ExtensionApiFrameIdMap::GetContextId(page2_new_host);
 
   EXPECT_NE(page2_new_context_id, page1_a_context_id);
   EXPECT_NE(page2_new_context_id, page1_b_context_id);
