@@ -21,6 +21,7 @@
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,11 +44,6 @@
 #include "net/http/http_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
-#else
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
-#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #endif
@@ -417,12 +413,7 @@ AccessCodeCastIntegrationBrowserTest::CreateAccessCodeCastSinkService(
   return base::WrapUnique(new AccessCodeCastSinkService(
       profile, media_router_, mock_cast_media_sink_service_impl(),
       DiscoveryNetworkMonitor::GetInstance(), profile->GetPrefs(),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      std::make_unique<AccessCodeCastPrefUpdaterLacros>()
-#else
-      std::make_unique<AccessCodeCastPrefUpdaterImpl>(profile->GetPrefs())
-#endif
-          ));
+      std::make_unique<AccessCodeCastPrefUpdaterImpl>(profile->GetPrefs())));
 }
 
 MockCastMediaSinkServiceImpl*

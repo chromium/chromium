@@ -32,12 +32,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
-#else
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
-#endif
-
 namespace media_router {
 
 namespace {
@@ -150,13 +144,8 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
               ->GetCastMediaSinkServiceImpl(),
           DiscoveryNetworkMonitor::GetInstance(),
           profile->GetPrefs(),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          std::make_unique<AccessCodeCastPrefUpdaterLacros>()
-#else
-          std::make_unique<AccessCodeCastPrefUpdaterImpl>(profile->GetPrefs())
-#endif
-      ) {
-}
+          std::make_unique<AccessCodeCastPrefUpdaterImpl>(
+              profile->GetPrefs())) {}
 
 AccessCodeCastSinkService::~AccessCodeCastSinkService() = default;
 

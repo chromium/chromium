@@ -5152,7 +5152,6 @@ if (is_chromeos_lacros) {
       "../browser/lacros/wallpaper_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
       "../browser/lacros/window_lacros_browsertest.cc",
-      "../browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros_browsertest.cc",
       "../browser/media/webrtc/capture_handle_browsertest.cc",
       "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
@@ -5186,9 +5185,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
-      "//chrome/browser/media/router:test_support",
-      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
-      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -5220,7 +5216,6 @@ if (is_chromeos_lacros) {
       "//components/services/app_service/public/cpp:test_support",
       "//components/soda:constants",
       "//components/user_manager:user_manager",
-      "//services/preferences/public/cpp:cpp",
       "//ui/display:test_support",
       "//ui/gfx/codec",
       "//ui/ozone",
@@ -9860,6 +9855,7 @@ if (!is_android) {
       "../browser/extensions/extension_keybinding_apitest.cc",
       "../browser/extensions/omnibox_focus_interactive_test.cc",
       "../browser/focus_ring_browsertest.cc",
+      "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
       "../browser/media/webrtc/media_stream_permission_interactive_uitest.cc",
       "../browser/media/webrtc/webrtc_interactive_uitest.cc",
       "../browser/media/webrtc/webrtc_mediadevices_interactive_uitest.cc",
@@ -10550,10 +10546,7 @@ if (!is_android) {
     }
 
     if (!is_chromeos_lacros) {
-      sources += [
-        "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
-        "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
-      ]
+      sources += [ "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc" ]
     }
 
     if (is_chromeos_lacros && !is_chromeos_device) {

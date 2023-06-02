@@ -283,7 +283,6 @@ source_set("crosapi") {
     "//chrome/browser/ash/telemetry_extension/telemetry",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/image_decoder:image_decoder",
-    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
