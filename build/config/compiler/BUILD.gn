@@ -1580,6 +1580,8 @@ config("compiler_builtins") {
       _suffix = "-x86_64"
     } else if (current_cpu == "x86") {
       _suffix = "-i386"
+    } else if (current_cpu == "arm64") {
+      _suffix = "-arm64"
     } else {
       assert(false)  # Unhandled cpu type
     }
