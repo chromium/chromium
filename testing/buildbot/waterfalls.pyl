@@ -3678,7 +3678,7 @@
       'linux-rel-no-external-ip': {
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'swarming': {
           'dimension_sets': [
