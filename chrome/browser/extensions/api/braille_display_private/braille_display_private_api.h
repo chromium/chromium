@@ -82,14 +82,14 @@ class BrailleDisplayPrivateAPI : public BrowserContextKeyedAPI,
 
 namespace api {
 
-class BrailleDisplayPrivateGetDisplayStateFunction : public AsyncApiFunction {
+class BrailleDisplayPrivateGetDisplayStateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("brailleDisplayPrivate.getDisplayState",
                              BRAILLEDISPLAYPRIVATE_GETDISPLAYSTATE)
  protected:
   ~BrailleDisplayPrivateGetDisplayStateFunction() override {}
-  bool Prepare() override;
-  void Work() override;
-  bool Respond() override;
+  ResponseAction Run() override;
+
+  void ReplyWithState(base::Value::Dict state);
 };
 
 class BrailleDisplayPrivateWriteDotsFunction : public AsyncApiFunction {

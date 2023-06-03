@@ -140,17 +140,23 @@ bool BrailleDisplayPrivateAPI::DefaultEventDelegate::HasListener() {
 }
 
 namespace api {
-bool BrailleDisplayPrivateGetDisplayStateFunction::Prepare() {
-  return true;
+
+ExtensionFunction::ResponseAction
+BrailleDisplayPrivateGetDisplayStateFunction::Run() {
+  auto get_display_state_on_io = []() {
+    return BrailleController::GetInstance()->GetDisplayState()->ToValue();
+  };
+  bool rv = content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(get_display_state_on_io),
+      base::BindOnce(
+          &BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState, this));
+  DCHECK(rv);
+  return RespondLater();
 }
 
-void BrailleDisplayPrivateGetDisplayStateFunction::Work() {
-  SetResult(base::Value(
-      BrailleController::GetInstance()->GetDisplayState()->ToValue()));
-}
-
-bool BrailleDisplayPrivateGetDisplayStateFunction::Respond() {
-  return true;
+void BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState(
+    base::Value::Dict state) {
+  Respond(WithArguments(std::move(state)));
 }
 
 BrailleDisplayPrivateWriteDotsFunction::
