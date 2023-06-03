@@ -7,10 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
+
+namespace ash::multidevice_setup {
+class MultiDeviceSetupClient;
+}  // namespace ash::multidevice_setup
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -20,8 +23,7 @@ namespace proximity_auth {
 
 // Interface for setting and getting persistent user preferences for a logged in
 // session with a user profile.
-class ProximityAuthProfilePrefManager
-    : public ash::multidevice_setup::MultiDeviceSetupClient::Observer {
+class ProximityAuthProfilePrefManager {
  public:
   // Creates a pref manager backed by preferences registered in
   // |pref_service| (persistent across browser restarts). |pref_service| should
@@ -36,7 +38,7 @@ class ProximityAuthProfilePrefManager
   ProximityAuthProfilePrefManager& operator=(
       const ProximityAuthProfilePrefManager&) = delete;
 
-  ~ProximityAuthProfilePrefManager() override;
+  ~ProximityAuthProfilePrefManager();
 
   // Registers the prefs used by this class to the given |pref_service|.
   static void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -68,11 +70,6 @@ class ProximityAuthProfilePrefManager
   // user.
   void SetPromotionShownCount(int count);
   int GetPromotionShownCount() const;
-
-  // ash::multidevice_setup::MultiDeviceSetupClient::Observer:
-  void OnFeatureStatesChanged(
-      const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-          feature_states_map) override;
 
  private:
   // Contains perferences that outlive the lifetime of this object and across

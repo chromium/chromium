@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -22,16 +23,9 @@ ProximityAuthProfilePrefManager::ProximityAuthProfilePrefManager(
     PrefService* pref_service,
     ash::multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
     : pref_service_(pref_service),
-      multidevice_setup_client_(multidevice_setup_client) {
-  OnFeatureStatesChanged(multidevice_setup_client_->GetFeatureStates());
+      multidevice_setup_client_(multidevice_setup_client) {}
 
-  multidevice_setup_client_->AddObserver(this);
-}
-
-ProximityAuthProfilePrefManager::~ProximityAuthProfilePrefManager() {
-  multidevice_setup_client_->RemoveObserver(this);
-}
-
+ProximityAuthProfilePrefManager::~ProximityAuthProfilePrefManager() = default;
 // static
 void ProximityAuthProfilePrefManager::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -89,13 +83,6 @@ void ProximityAuthProfilePrefManager::SetPromotionShownCount(int count) {
 
 int ProximityAuthProfilePrefManager::GetPromotionShownCount() const {
   return pref_service_->GetInteger(prefs::kProximityAuthPromotionShownCount);
-}
-
-void ProximityAuthProfilePrefManager::OnFeatureStatesChanged(
-    const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-        feature_states_map) {
-  // TODO(b/227674947): Delete this method. With no more need for local state
-  // prefs, there's nothing to do here.
 }
 
 }  // namespace proximity_auth

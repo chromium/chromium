@@ -91,7 +91,6 @@ class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
   MockProximityAuthPrefManager& operator=(const MockProximityAuthPrefManager&) =
       delete;
 
-  ~MockProximityAuthPrefManager() override {}
   MOCK_CONST_METHOD0(GetLastPasswordEntryTimestampMs, int64_t());
 };
 
