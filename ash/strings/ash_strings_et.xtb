@@ -241,6 +241,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1998100899771863792">Praegune töölaud</translation>
 <translation id="2001444736072756133">Otsige <ph name="CATEGORY" />, faile, rakendusi ja muud.</translation>
 <translation id="2016340657076538683">Sisestage sõnum</translation>
+<translation id="2017998995161831444">Jaotise „Abi“ avamine rakenduses Avastamine</translation>
 <translation id="2018630726571919839">Räägi mõni nali</translation>
 <translation id="2021864487439853900">Klõpsake avamiseks</translation>
 <translation id="2023558322300866873">Võite pakettide jäädvustamise igal ajal peatada</translation>
@@ -622,6 +623,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
 Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3779139509281456663">Seadme <ph name="NAME" /> ühendamine</translation>
+<translation id="3781910048497807059">Eelmise paani esile tõstmine</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lukusta</translation>
 <translation id="3796198851576711985">aku seisukord</translation>
@@ -759,6 +761,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4424159417645388645">Töölaud 5</translation>
+<translation id="4427695046139341014">Mängu juhtpaneel</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
 <translation id="4435022394553622295">Vaadake seadmes <ph name="DEVICE_TYPE" /> oma telefoni märguandeid ja rakendusi</translation>
 <translation id="4441283832827406317">Rakendused on sorditud nime järgi</translation>
@@ -791,6 +794,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4541706525461326392">Profiil eemaldatakse. See võib võtta mõne minuti.</translation>
 <translation id="4544483149666270818">Valige salvestatav aken</translation>
 <translation id="454541942614298893">minu seade</translation>
+<translation id="4545950850562423083">Praeguse lehe salvestamine järjehoidjana</translation>
 <translation id="4548482551627849548">Teisaldage aktiivne aken vasakul asuvale töölauale</translation>
 <translation id="4560576029703263363">Sees</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -847,6 +851,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4789348252524569426">Kõnefaile ei saa installida. Teie seadet on vaja värskendada. Taaskäivitage seade ja proovige uuesti.</translation>
 <translation id="478959186716341421">Ülekandmine</translation>
 <translation id="4798622944000246716">Teie mobiilsidevõrk ei toeta kuumkohta</translation>
+<translation id="4798888871844665150">Kopeeritud üksus on juba lõikelaual. Kuvamiseks kasutage kombinatsiooni <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">otsing</translation>
 <translation id="4804818685124855865">Katkesta ühendus</translation>
 <translation id="4814539958450445987">Sisselogimiskuva</translation>
@@ -945,6 +950,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5229343007215035173">Lülita privaatne kuva sisse/välja</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
+<translation id="5238719049014159442">Käivitaja avamine/sulgemine</translation>
 <translation id="5245201184978705914">Ei saa transkriptsiooni luua</translation>
 <translation id="5253783950165989294">Ühendatud seadmega <ph name="DEVICE_NAME" /> (akutase <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5258528442992323769">Salvestatud töölaudu ei ole</translation>
@@ -1251,6 +1257,7 @@ Uus installimine</translation>
 <translation id="6614169507485700968">Privaatsuskuva on sees</translation>
 <translation id="6625718907317144388">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> ning muud märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="6627638273713273709">Otsing + Tõstuklahv + K</translation>
+<translation id="662830937908749204">Järgmise paani esile tõstmine</translation>
 <translation id="6637729079642709226">Kellaaja muutmine</translation>
 <translation id="6641720045729354415">Reaalajas subtiitrite lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Võta nime järgi sortimine tagasi</translation>
@@ -1409,6 +1416,7 @@ Uus installimine</translation>
 <translation id="7401222354741467707">Jäädvusta täissuuruses ekraanipilt või ekraanisalvestis</translation>
 <translation id="7405710164030118432">Seadme lukustuse avamiseks sisestage oma Family Linki vanema pääsukood</translation>
 <translation id="7406608787870898861">Mobiilsidevõrgu seadistamise lõpuleviimine</translation>
+<translation id="7406854842098869085">Vajutage pikalt klahvi <ph name="MODIFIER_1" />, puudutage klahvi <ph name="KEY" />, kuni näete akent, mille soovite avada, seejärel vabastage klahv</translation>
 <translation id="740790383907119240">Rakenduste otseteed</translation>
 <translation id="7413851974711031813">Sulgemiseks vajutage paoklahvi</translation>
 <translation id="7416471219712049036">Praeguse lehe salvestamine</translation>
@@ -1488,6 +1496,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7727952505535211425">Veebisaidi avamine uue vahelehe aadressiribal</translation>
 <translation id="77365090426890123">mälukasutus</translation>
 <translation id="7742327441377685481">Märguandeid pole</translation>
+<translation id="7748275671948949022">Riiulil Käivitaja nupu esile tõstmine</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="776344839111254542">Klõpsake värskenduse üksikasjade vaatamiseks</translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
@@ -1504,6 +1513,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7842569679327885685">Hoiatus: katseline funktsioon</translation>
 <translation id="7846634333498149051">Klaviatuur</translation>
 <translation id="7848989271541991537">Teisaldatud lehele <ph name="PAGE_NUMBER" />, reale <ph name="ROW_NUMBER" />, veergu <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851039877802112575">Hüpik- ja dialoogiakende esile tõstmine</translation>
 <translation id="7851768487828137624">Kanaarilind</translation>
 <translation id="7860671499921112077">Ülevaate avamiseks pühkige kolme sõrmega üles</translation>
 <translation id="7862292329216937261">Seadme külalisena kasutamiseks peate välja logima ja seejärel ekraani allservas tegema valiku Sirvi külalisena.</translation>
@@ -1640,6 +1650,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8433186206711564395">Võrguseaded</translation>
 <translation id="8433977262951327081">Otsetee sisestusvalikute menüü mulli kuvamiseks riiulil on muutunud. Kasutage otsetee <ph name="OLD_SHORTCUT" /> asemel otseteed <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Tagasiside tööriista avamine</translation>
 <translation id="8443879455002739353">„Kopeeri“</translation>
 <translation id="8444246603146515890">Töölaud <ph name="DESK_TITILE" /> aktiveeriti</translation>
 <translation id="8446884382197647889">Lisateave</translation>
@@ -1690,6 +1701,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8683506306463609433">Toimivuse jälgimine on aktiivne</translation>
 <translation id="8703634754197148428">Alusta salvestust. Kui salvestamine on alanud, vajutage klahvikombinatsiooni Alt + tõstuklahv + L, et liikuda riiulile ja leida salvestamise peatamise nupp.</translation>
+<translation id="8704155109538237473">Pilt pildis akna esile tõstmine</translation>
 <translation id="870917907284186124">Lülita dikteerimine (häälega teksti sisestamine) sisse/välja</translation>
 <translation id="8717459106217102612">Eelmise sõna või tähe valimine</translation>
 <translation id="8721053961083920564">Lülitage helitugevus sisse. <ph name="STATE_TEXT" /></translation>

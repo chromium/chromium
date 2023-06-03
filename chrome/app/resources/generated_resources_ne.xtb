@@ -2442,6 +2442,7 @@
 <translation id="3038272154009688107">सबै साइट हेर्नुहोस्</translation>
 <translation id="3038612606416062604">म्यानुअल तरिकाले प्रिन्टर थप्नुहोस्</translation>
 <translation id="3039491566278747710">यन्त्रमा अफलाइन नीति स्थापना गर्न सकिएन।</translation>
+<translation id="3040982432432547149">हामीलाई Chromebook मा चल्ने Steam को गुणस्तर सुधार्न सघाउनुहोस्</translation>
 <translation id="3043016484125065343">आफ्ना बुकमार्कहरू हेर्न साइन इन गर्नुहोस्</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" />, <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> बाट</translation>
@@ -4019,6 +4020,7 @@
 <translation id="4445446646109808714">प्रयोगकर्ताको लाइसेन्ससम्बन्धी सम्झौता: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">प्रतिविम्ब गरियो</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" /> मा <ph name="USERNAME" /> को पासवर्ड लुकाइयोस्</translation>
+<translation id="4449247303975391730">अनुमतिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4449948729197510913">तपाईंको युजरनेम तपाईंको सङ्गठनको संस्थागत खातासँग सम्बद्ध छ। यो खातामा यन्त्रहरू दर्ता गर्न सर्वप्रथम एड्मिन कन्सोलमा गई डोमेनको स्वामित्व आफूसँग रहेको कुरा पुष्टि गर्नुहोस्। डोमेनको स्वामित्व पुष्टि गर्न तपाईंसँग उक्त खाताको प्रशासकीय विशेषाधिकार हुनु पर्छ।</translation>
 <translation id="4449996769074858870">यो ट्याबले अडियो प्ले गरिरहेको छ।</translation>
 <translation id="4450974146388585462">पत्ता लगाउनुहोस्</translation>
@@ -5122,6 +5124,7 @@
 <translation id="5445400788035474247">१० गुणा</translation>
 <translation id="5446983216438178612">संगठनका प्रमाणपत्रहरू देखाउनुहोस्</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> वटा वस्तु</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{कुनै पनि पासवर्ड पहिले नै प्रयोग गरिएको छैन}=1{एउटा पासवर्ड पहिले नै प्रयोग गरिएको छ}other{{NUM_REUSED} वटा पासवर्ड पहिले नै प्रयोग गरिएका छन्}}</translation>
 <translation id="5448293924669608770">ओहो, साइन इनमा केही गलत भयो</translation>
 <translation id="5449551289610225147">अमान्य पासवर्ड</translation>
 <translation id="5449588825071916739">सबै ट्याबहरूलाई बुकमार्क गर्नुहोस्</translation>

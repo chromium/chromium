@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Du har ikke trykket på tasten <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Nulstiller automatisk dataforbruget hver måned på en angivet dag</translation>
 <translation id="1442433966118452622">Billedkilde</translation>
+<translation id="1449035143498573192">Åbn i Google Søgning</translation>
 <translation id="1451536289672181509">Enheden er et tastatur.</translation>
 <translation id="1459693405370120464">Vejr</translation>
 <translation id="1468664791493211953">Tilbud</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Indtastningsmetoder</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
+<translation id="7971535376154084247">Generelle styringselementer</translation>
 <translation id="7977800524392185497">Gå til Indstillinger for at oprette forbindelse til et <ph name="NETWORK_NAME" />-netværk</translation>
 <translation id="7978412674231730200">Privat nøgle</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Navn på udbyder til hjem</translation>
 <translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
 <translation id="8476242415522716722">lys under tastaturet</translation>
+<translation id="8476942730579767658">Vinduer og skriveborde</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er en smule højere end den tilladte grænse</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8491311378305535241">Der kan ikke oprettes forbindelse gennem firewallen til HTTPS-websites fra Android-apps</translation>

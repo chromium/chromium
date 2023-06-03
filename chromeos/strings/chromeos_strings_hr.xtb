@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Nije pritisnuta tipka <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Potrošnja podatkovnog prometa svaki se mjesec automatski poništava na odabrani dan</translation>
 <translation id="1442433966118452622">Izvor slike</translation>
+<translation id="1449035143498573192">Otvori u Google pretraživanju</translation>
 <translation id="1451536289672181509">Uređaj je tipkovnica.</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
 <translation id="1468664791493211953">Ponude</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Unosi</translation>
 <translation id="7955587717700691983">Bluetooth tipkovnica</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Opće kontrole</translation>
 <translation id="7977800524392185497">Da biste se pridružili <ph name="NETWORK_NAME" /> mreži, otvorite postavke</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Naziv davatelja usluge kućne mreže</translation>
 <translation id="8475690821716466388">Wi-Fi mreža zaštićena je slabim protokolom WEP PSK</translation>
 <translation id="8476242415522716722">pozadinsko osvjetljenje tipkovnice</translation>
+<translation id="8476942730579767658">Prozori i radne površine</translation>
 <translation id="8477551185774834963">Latencija DNS-a malo iznad dopuštenog praga</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8491311378305535241">Povezivanje s HTTP web-lokacijama putem vatrozida iz Android aplikacija nije uspjelo</translation>

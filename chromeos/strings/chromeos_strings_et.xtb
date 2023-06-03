@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Klahvi <ph name="KEY_NAME" /> pole vajutatud</translation>
 <translation id="1435763214710588005">Andmekasutus lähtestatakse iga kuu valitud päeval automaatselt</translation>
 <translation id="1442433966118452622">Pildi allikas</translation>
+<translation id="1449035143498573192">Google'i otsingus avamine</translation>
 <translation id="1451536289672181509">Seade on klaviatuur.</translation>
 <translation id="1459693405370120464">Ilm</translation>
 <translation id="1468664791493211953">Pakkumised</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Sisestusmeetodid</translation>
 <translation id="7955587717700691983">Bluetooth-klaviatuur</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7971535376154084247">Üldised juhtelemendid</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" />-võrguga ühendamiseks avage leht Seaded</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Koduteenuse pakkuja nimi</translation>
 <translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
 <translation id="8476242415522716722">klaviatuuri altvalgustus</translation>
+<translation id="8476942730579767658">Aknad ja töölauad</translation>
 <translation id="8477551185774834963">DNS-i latentsusaeg ületab veidi lubatud piiri</translation>
 <translation id="8483248364096924578">IP-aadress</translation>
 <translation id="8491311378305535241">Ei saa Androidi rakendustest HTTP-veebisaitidega läbi tulemüüri ühendust luua</translation>

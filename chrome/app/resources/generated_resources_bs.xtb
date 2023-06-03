@@ -4053,7 +4053,7 @@ Ako odaberete da ne dijelite signale, profil će se zatvoriti.</translation>
 <translation id="4445446646109808714">Ugovor o licenci za krajnjeg korisnika: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">Preslikan</translation>
 <translation id="4448914100439890108">Sakrivanje lozinke za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
-<translation id="4449247303975391730">Upravljajte dopuštenjima</translation>
+<translation id="4449247303975391730">Upravljajte odobrenjima</translation>
 <translation id="4449948729197510913">Vaše korisničko ime pripada računu preduzeća vaše organizacije. Da prijavite uređaje na račun, najprije potvrdite vlasništvo domene u konzoli administratora. Trebat će vam administrativne privilegije na računu da potvrdite.</translation>
 <translation id="4449996769074858870">Ova kartica reproducira zvuk.</translation>
 <translation id="4450974146388585462">Dijagnosticiraj</translation>
@@ -5160,7 +5160,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5445400788035474247">10 x</translation>
 <translation id="5446983216438178612">Prikaži potvrde za organizaciju</translation>
 <translation id="5447384712203291074">Broj stavki: <ph name="ITEM_COUNT_MULTIPLE" /></translation>
-<translation id="5448092089030025717">{NUM_REUSED,plural, =0{Nema višestruko korištenih zaporki}=1{Jedna višestruko korištena zaporka}one{{NUM_REUSED} višestruko korištena zaporka}few{{NUM_REUSED} višestruko korištene zaporke}other{{NUM_REUSED} višestruko korištenih zaporki}}</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{Nema nijedne već korištene lozinke}=1{1 već korištena lozinka}one{{NUM_REUSED} već korištena lozinka}few{{NUM_REUSED} već korištene lozinke}other{{NUM_REUSED} već korištenih lozinki}}</translation>
 <translation id="5448293924669608770">Ups, došlo je do greške prilikom prijave</translation>
 <translation id="5449551289610225147">Pogrešna lozinka</translation>
 <translation id="5449588825071916739">Označavanje svih kartica</translation>

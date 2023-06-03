@@ -58,6 +58,7 @@
 <translation id="1423591390236870726"><ph name="KEY_NAME" />-tasten er ikke trykket på</translation>
 <translation id="1435763214710588005">Tilbakestiller automatisk databruken hver måned på den valgte dagen</translation>
 <translation id="1442433966118452622">Bildekilde</translation>
+<translation id="1449035143498573192">Åpne i Google Søk</translation>
 <translation id="1451536289672181509">Enheten er et tastatur.</translation>
 <translation id="1459693405370120464">Vær</translation>
 <translation id="1468664791493211953">Tilbud</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
+<translation id="7971535376154084247">Generelle kontroller</translation>
 <translation id="7977800524392185497">For å koble til et <ph name="NETWORK_NAME" />-nettverk, gå til Innstillinger</translation>
 <translation id="7978412674231730200">Privatnøkkel</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Navn på leverandøren for hjemmeenheten</translation>
 <translation id="8475690821716466388">Wifi-nettverket er sikret med den svake protokollen WEP PSK</translation>
 <translation id="8476242415522716722">tastaturunderlys</translation>
+<translation id="8476942730579767658">Vinduer og skrivebord</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8491311378305535241">Kan ikke koble til HTTP-nettsteder fra Android-apper gjennom brannmuren</translation>

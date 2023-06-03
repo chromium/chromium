@@ -2452,6 +2452,7 @@
 <translation id="3038272154009688107">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3038612606416062604">ಹಸ್ತಚಾಲಿತವಾಗಿ ಪ್ರಿಂಟರ್ ಸೇರಿಸಿ</translation>
 <translation id="3039491566278747710">ಸಾಧನದಲ್ಲಿ ಆಫ್‌ಲೈನ್ ಕಾರ್ಯನೀತಿಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="3040982432432547149">Chromebook ನ Steam ಅನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="3043016484125065343">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನೋಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> ನಿಂದ</translation>
@@ -4031,6 +4032,7 @@
 <translation id="4445446646109808714">ಅಂತಿಮ ಬಳಕೆದಾರ ಪರವಾನಗಿ ಒಪ್ಪಂದ: <ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">ಪ್ರತಿಬಿಂಬಿತ</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" /> ನಲ್ಲಿ <ph name="USERNAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="4449247303975391730">ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4449948729197510913">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು, ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಎಂಟರ್‌ಪ್ರೈಸ್ ಖಾತೆಗೆ ಸೇರಿರುತ್ತದೆ. ಖಾತೆಯಲ್ಲಿ ಸಾಧನಗಳನ್ನು ನೋಂದಾಯಿಸಲು, ಮೊದಲಿಗೆ ನಿರ್ವಾಹಕರ ಕನ್ಸೋಲ್‌ನಲ್ಲಿ ಡೊಮೇನ್ ಮಾಲೀಕತ್ವವನ್ನು ದೃಢೀಕರಿಸಿ. ದೃಢೀಕರಿಸುವುದಕ್ಕಾಗಿ, ನಿಮಗೆ ಖಾತೆಯಲ್ಲಿ ನಿರ್ವಾಹಕರ ಸವಲತ್ತುಗಳ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="4449996769074858870">ಈ ಟ್ಯಾಬ್ ಆಡಿಯೋ ಪ್ಲೇ ಮಾಡುತ್ತಿದೆ.</translation>
 <translation id="4450974146388585462">ಪತ್ತೆಹಚ್ಚುವಿಕೆ</translation>
@@ -5135,6 +5137,7 @@
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">ಸಂಸ್ಥೆಯ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> ಐಟಂಗಳು</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{ಯಾವುದೇ ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ}=1{1 ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್}one{{NUM_REUSED} ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{NUM_REUSED} ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="5448293924669608770">ಓಹ್, ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ಏನೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
 <translation id="5449551289610225147">ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="5449588825071916739">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ</translation>
