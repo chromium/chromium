@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.PolicyRestriction"
-    enum="VariationsRestrictionPolicyValues" expires_after="2023-06-30">
+    enum="VariationsRestrictionPolicyValues" expires_after="2023-12-30">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
