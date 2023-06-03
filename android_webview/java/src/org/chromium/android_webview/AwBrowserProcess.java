@@ -19,6 +19,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
@@ -73,6 +74,7 @@ import java.util.concurrent.TimeUnit;
  * Wrapper for the steps needed to initialize the java and native sides of webview chromium.
  */
 @JNINamespace("android_webview")
+@Lifetime.Singleton
 public final class AwBrowserProcess {
     private static final String TAG = "AwBrowserProcess";
 

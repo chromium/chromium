@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.TypedValue;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -26,6 +27,7 @@ import java.util.zip.GZIPInputStream;
  * Implements the Java side of Android URL protocol jobs.
  * See android_protocol_handler.cc.
  */
+@Lifetime.Singleton
 @JNINamespace("android_webview")
 public class AndroidProtocolHandler {
     private static final String TAG = "AndroidProtocolHandler";

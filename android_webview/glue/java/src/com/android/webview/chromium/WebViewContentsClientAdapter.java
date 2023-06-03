@@ -45,6 +45,7 @@ import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.android_webview.JsPromptResultReceiver;
 import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.R;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.permission.Resource;
 import org.chromium.base.Callback;
@@ -80,6 +81,7 @@ import java.util.WeakHashMap;
  * allow the source WebView to be injected by ContentViewClientAdapter. We
  * choose the latter, because it makes for a cleaner design.
  */
+@Lifetime.WebView
 class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
     // The WebChromeClient instance that was passed to WebView.setContentViewClient().
     private WebChromeClient mWebChromeClient;

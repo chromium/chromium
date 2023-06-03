@@ -63,6 +63,7 @@ import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.R;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
@@ -93,9 +94,9 @@ import java.util.concurrent.Executor;
  * and a small set of no-op deprecated APIs.
  */
 @SuppressWarnings("deprecation")
+@Lifetime.WebView
 class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate,
                                  WebViewProvider.ViewDelegate, SmartClipProvider {
-
     private static final String TAG = WebViewChromium.class.getSimpleName();
 
     // The WebView that this WebViewChromium is the provider for.

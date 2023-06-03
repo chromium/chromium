@@ -45,6 +45,7 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.FlagOverrideHelper;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
@@ -104,6 +105,7 @@ import java.util.concurrent.FutureTask;
  * </ul>
  */
 @SuppressWarnings("deprecation")
+@Lifetime.Singleton
 public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final String TAG = "WVCFactoryProvider";
 

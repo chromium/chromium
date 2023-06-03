@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceRecordMode;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -24,6 +25,7 @@ import java.util.List;
 /**
  * Manages tracing functionality in WebView.
  */
+@Lifetime.Singleton
 @JNINamespace("android_webview")
 public class AwTracingController {
     private static final String TAG = "AwTracingController";

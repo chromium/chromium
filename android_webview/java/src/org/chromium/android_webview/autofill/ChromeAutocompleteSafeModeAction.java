@@ -6,6 +6,7 @@ package org.chromium.android_webview.autofill;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
 
 /**
@@ -14,6 +15,7 @@ import org.chromium.android_webview.common.SafeModeAction;
  * This action itself is a NOOP. The actual work is done in
  * AwContents.isChromeAutocompleteSafeModeEnabled()
  */
+@Lifetime.Singleton
 public class ChromeAutocompleteSafeModeAction implements SafeModeAction {
     // This ID should not be changed or reused.
     public static final String ID = "disable_chrome_autocomplete";

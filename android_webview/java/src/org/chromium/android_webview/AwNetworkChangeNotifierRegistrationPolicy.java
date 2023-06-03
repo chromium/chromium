@@ -4,16 +4,17 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
 /**
  * Registration policy to make sure we only listen to network changes when
  * there are live webview instances.
  */
+@Lifetime.Singleton
 public class AwNetworkChangeNotifierRegistrationPolicy
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy
         implements AwContentsLifecycleNotifier.Observer {
-
     @Override
     protected void init(NetworkChangeNotifierAutoDetect notifier) {
         super.init(notifier);

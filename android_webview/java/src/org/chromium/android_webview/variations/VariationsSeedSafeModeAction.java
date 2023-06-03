@@ -6,6 +6,7 @@ package org.chromium.android_webview.variations;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.Log;
@@ -15,6 +16,7 @@ import java.io.File;
 /**
  * A {@link SafeModeAction} to delete the variations seed.
  */
+@Lifetime.Singleton
 public class VariationsSeedSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 

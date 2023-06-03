@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -13,11 +14,11 @@ import org.chromium.base.annotations.JNINamespace;
  * This class is intended to notify observers of the existence native instances of
  * aw_contents. It receives a callback when native aw_contents are created or
  * destroyed. Observers are notified when the first instance is created or the
- * last instance is destroyed.
+ * last instance is destroyed. This tracks all WebViews across all profiles.
  */
 @JNINamespace("android_webview")
+@Lifetime.Singleton
 public class AwContentsLifecycleNotifier {
-
     /**
      * Observer interface to be implemented by deriving webview lifecycle observers.
      */
