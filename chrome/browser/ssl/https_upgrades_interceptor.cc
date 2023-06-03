@@ -587,8 +587,14 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // enabled, because otherwise these would cause the interstitial to be shown
   // which is confusing. HTTPS-Upgrades will silently fall back to HTTP for
   // these errors.
+  //
+  // However, if this is a request to a non-unique hostname, don't prefer
+  // net error as it is likely non-recoverable -- we want to fallback to HTTP
+  // and the HTTPS-First Mode interstitial in this case. (In particular, this
+  // avoids breaking corporate single-label hostnames.)
   if (IsInterstitialEnabled(*interstitial_state_) &&
-      IsHttpsFirstModeExemptedError(status.error_code)) {
+      IsHttpsFirstModeExemptedError(status.error_code) &&
+      !net::IsHostnameNonUnique(request.url.host())) {
     tab_helper->set_is_exempt_error(true);
     return false;
   }
