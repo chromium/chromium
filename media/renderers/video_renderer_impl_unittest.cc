@@ -762,6 +762,33 @@ TEST_F(VideoRendererImplTest, RenderingStopsAfterFirstFrame) {
 
   Destroy();
 }
+// Verifies that the first frame is eventually painted even if its not the best.
+TEST_F(VideoRendererImplTest, PaintFirstFrameOnStall) {
+  Initialize();
+  QueueFrames("0d10");
+  ON_CALL(*decoder_, CanReadWithoutStalling()).WillByDefault(Return(false));
+
+  EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
+  EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(1);
+  EXPECT_CALL(mock_cb_, OnVideoOpacityChange(_)).Times(1);
+  EXPECT_CALL(mock_cb_, OnEnded()).Times(0);
+
+  {
+    SCOPED_TRACE("Waiting for first frame to be painted.");
+    WaitableMessageLoopEvent event;
+
+    EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)))
+        .WillOnce(RunOnceClosure(event.GetClosure()));
+    StartPlayingFrom(10);
+
+    EXPECT_TRUE(IsDecodePending());
+
+    event.RunAndWait();
+  }
+
+  Destroy();
+}
 
 // Verifies that the sink is stopped after rendering the first frame if
 // playback has started.
@@ -1374,6 +1401,7 @@ TEST_P(UnderflowTest, UnderflowAndEosTest) {
   {
     SCOPED_TRACE("Waiting for BUFFERING_HAVE_ENOUGH");
     WaitableMessageLoopEvent event;
+    EXPECT_CALL(mock_cb_, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
     EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
     EXPECT_CALL(mock_cb_,
                 OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,

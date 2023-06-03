@@ -123,6 +123,7 @@ void VideoRendererImpl::Flush(base::OnceClosure callback) {
   if (gpu_memory_buffer_pool_)
     gpu_memory_buffer_pool_->Abort();
   cancel_on_flush_weak_factory_.InvalidateWeakPtrs();
+  paint_first_frame_cb_.Cancel();
   video_decoder_stream_->Reset(
       base::BindOnce(&VideoRendererImpl::OnVideoDecoderStreamResetDone,
                      weak_factory_.GetWeakPtr()));
@@ -607,6 +608,8 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
   const bool is_before_start_time = !is_eos && IsBeforeStartTime(*frame);
   const bool cant_read = !video_decoder_stream_->CanReadWithoutStalling();
   const bool has_best_first_frame = !is_eos && HasBestFirstFrame(*frame);
+  const auto format = frame->format();
+  const auto natural_size = frame->natural_size();
 
   if (is_eos) {
     DCHECK(!received_end_of_stream_);
@@ -654,20 +657,26 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
   // enough frames to know it's definitely the first frame or (2) there may be
   // no more frames coming (sometimes unless we paint one of them).
   //
-  // We have to check both effective_frames_queued() and |is_before_start_time|
+  // We have to check both effective_frames_queued() and |has_best_first_frame|
   // since prior to the clock starting effective_frames_queued() is a guess.
   //
   // NOTE: Do this before using algorithm_->average_frame_duration(). This
   // initial render will update the duration to be non-zero when provided by
   // frame metadata.
-  if (!sink_started_ && !painted_first_frame_ && algorithm_->frames_queued() &&
-      (received_end_of_stream_ || cant_read ||
-       (algorithm_->effective_frames_queued() && has_best_first_frame))) {
-    scoped_refptr<VideoFrame> first_frame =
-        algorithm_->Render(base::TimeTicks(), base::TimeTicks(), nullptr);
-    CheckForMetadataChanges(first_frame->format(), first_frame->natural_size());
-    sink_->PaintSingleFrame(first_frame);
-    painted_first_frame_ = true;
+  if (!sink_started_ && !painted_first_frame_ && algorithm_->frames_queued()) {
+    if (received_end_of_stream_ ||
+        (algorithm_->effective_frames_queued() && has_best_first_frame)) {
+      PaintFirstFrame();
+    } else if (cant_read) {
+      // `cant_read` isn't always reliable, so only paint after 250ms if we
+      // haven't gotten anything better. This resets for each frame received. We
+      // still kick off any metadata changes to avoid any layout shift though.
+      CheckForMetadataChanges(format, natural_size);
+      paint_first_frame_cb_.Reset(base::BindOnce(
+          &VideoRendererImpl::PaintFirstFrame, base::Unretained(this)));
+      task_runner_->PostDelayedTask(FROM_HERE, paint_first_frame_cb_.callback(),
+                                    base::Milliseconds(250));
+    }
   }
 
   // Update average frame duration.
@@ -1051,6 +1060,22 @@ void VideoRendererImpl::AttemptReadAndCheckForMetadataChanges(
   base::AutoLock auto_lock(lock_);
   CheckForMetadataChanges(pixel_format, natural_size);
   AttemptRead_Locked();
+}
+
+void VideoRendererImpl::PaintFirstFrame() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(algorithm_->frames_queued());
+  if (painted_first_frame_ || sink_started_) {
+    return;
+  }
+
+  auto first_frame =
+      algorithm_->Render(base::TimeTicks(), base::TimeTicks(), nullptr);
+  DCHECK(first_frame);
+  CheckForMetadataChanges(first_frame->format(), first_frame->natural_size());
+  sink_->PaintSingleFrame(first_frame);
+  painted_first_frame_ = true;
+  paint_first_frame_cb_.Cancel();
 }
 
 }  // namespace media

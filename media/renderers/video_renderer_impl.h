@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -213,6 +214,10 @@ class MEDIA_EXPORT VideoRendererImpl
   void AttemptReadAndCheckForMetadataChanges(VideoPixelFormat pixel_format,
                                              const gfx::Size& natural_size);
 
+  // Paints first frame and sets `painted_first_frame_` to true if
+  // `painted_first_frame_` is false.
+  void PaintFirstFrame();
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Sink which calls into VideoRendererImpl via Render() for video frames.  Do
@@ -331,6 +336,10 @@ class MEDIA_EXPORT VideoRendererImpl
 
   // Indicates if we've painted the first valid frame after StartPlayingFrom().
   bool painted_first_frame_;
+
+  // Used to paint the first frame if we don't receive the best one in time and
+  // aren't guaranteed to receive anymore.
+  base::CancelableOnceClosure paint_first_frame_cb_;
 
   // The initial value for |min_buffered_frames_| and |max_buffered_frames_|.
   Tuneable<size_t> initial_buffering_size_ = {
