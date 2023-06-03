@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
@@ -36,6 +37,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -46,6 +48,7 @@
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -747,25 +750,36 @@ RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
     content::WebContents* web_contents,
-    MetricsReporter* metrics_reporter)
+    MetricsReporter* metrics_reporter,
+    bool is_omnibox_popup_handler)
     : profile_(profile),
       web_contents_(web_contents),
       metrics_reporter_(metrics_reporter),
       page_handler_(this, std::move(pending_page_handler)) {
-  // Indirectly observe all the `AutocompleteController` instances registered
-  // with the `AutocompleteControllerEmitter`. In addition to observing the
-  // instance associated with this handler, `RealboxHandler` also observes
-  // omnibox's instance for when it is used in the context of the WebUI omnibox.
-  controller_emitter_observation_.Observe(
-      AutocompleteControllerEmitter::GetForBrowserContext(profile_));
+  // Keep a reference to the OmniboxController instance owned by the OmniboxView
+  // when the handler is being used in the context of the omnibox popup.
+  // Otherwise, create own instance of OmniboxController. Either way, observe
+  // the AutocompleteController instance owned by the OmniboxController.
+  if (is_omnibox_popup_handler) {
+    // TODO(crbug.com/1396174): This seems hacky. But currently there is no API
+    //  for getting the browser instance from the web contents in top chrome.
+    Browser* active_browser = chrome::FindLastActive();
+    controller_ = search::GetOmniboxView(active_browser)->controller();
+  } else {
+    owned_controller_ = std::make_unique<OmniboxController>(
+        /*view=*/nullptr,
+        std::make_unique<RealboxOmniboxClient>(/*location_bar_model=*/this,
+                                               profile_, web_contents_));
+    controller_ = owned_controller_.get();
+  }
 
-  controller_ = std::make_unique<OmniboxController>(
-      /*view=*/nullptr,
-      std::make_unique<RealboxOmniboxClient>(/*location_bar_model=*/this,
-                                             profile_, web_contents_));
+  autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 
-RealboxHandler::~RealboxHandler() = default;
+RealboxHandler::~RealboxHandler() {
+  // Avoids dangling pointer warning when `controller_` is not owned.
+  controller_ = nullptr;
+}
 
 void RealboxHandler::SetPage(
     mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
@@ -782,9 +796,6 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   if (!autocomplete_controller()->done() && is_on_focus) {
     return;
   }
-
-  if (time_user_first_modified_realbox_.is_null() && !is_on_focus)
-    time_user_first_modified_realbox_ = base::TimeTicks::Now();
 
   AutocompleteInput autocomplete_input(
       input, metrics::OmniboxEventProto::NTP_REALBOX,
@@ -805,9 +816,6 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
 
 void RealboxHandler::StopAutocomplete(bool clear_result) {
   autocomplete_controller()->Stop(clear_result);
-
-  if (clear_result)
-    time_user_first_modified_realbox_ = base::TimeTicks();
 }
 
 void RealboxHandler::OpenAutocompleteMatch(
@@ -907,29 +915,23 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
     metrics_reporter_->Mark("ResultChanged");
   }
 
-  // Update the omnibox if the controller does not belong to the realbox.
-  if (controller != autocomplete_controller()) {
-    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
-      page_->OmniboxAutocompleteResultChanged(CreateAutocompleteResult(
-          controller->input().text(), controller->result(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          profile_->GetPrefs()));
-    }
-    return;
-  }
-
-  // Update the realbox only if the controller belongs to the realbox.
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller()->input().text(),
       autocomplete_controller()->result(),
       BookmarkModelFactory::GetForBrowserContext(profile_),
       profile_->GetPrefs()));
 
-  if (autocomplete_controller()->done()) {
-    if (SearchPrefetchService* search_prefetch_service =
-            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnResultChanged(
-          web_contents_, autocomplete_controller()->result());
+  // The owned OmniboxController does not observe the AutocompleteController.
+  // Notify the prerender here to start preloading if the results are ready.
+  // TODO(crbug.com/1396174): Make the owned OmniboxController observe the
+  //  AutocompleteController and move this logic to the RealboxOmniboxClient.
+  if (owned_controller_) {
+    if (autocomplete_controller()->done()) {
+      if (SearchPrefetchService* search_prefetch_service =
+              SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+        search_prefetch_service->OnResultChanged(
+            web_contents_, autocomplete_controller()->result());
+      }
     }
   }
 }

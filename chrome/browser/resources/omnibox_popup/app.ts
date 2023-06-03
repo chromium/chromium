@@ -64,7 +64,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
   private result_: AutocompleteResult;
 
   private callbackRouter_: PageCallbackRouter;
-  private omniboxAutocompleteResultChangedListenerId_: number|null = null;
+  private autocompleteResultChangedListenerId_: number|null = null;
   private selectMatchAtLineListenerId_: number|null = null;
 
   constructor() {
@@ -75,9 +75,9 @@ export class OmniboxPopupAppElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.omniboxAutocompleteResultChangedListenerId_ =
-        this.callbackRouter_.omniboxAutocompleteResultChanged.addListener(
-            this.onOmniboxAutocompleteResultChanged_.bind(this));
+    this.autocompleteResultChangedListenerId_ =
+        this.callbackRouter_.autocompleteResultChanged.addListener(
+            this.onAutocompleteResultChanged_.bind(this));
     this.selectMatchAtLineListenerId_ =
         this.callbackRouter_.selectMatchAtLine.addListener(
             this.onSelectMatchAtLine_.bind(this));
@@ -87,9 +87,9 @@ export class OmniboxPopupAppElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    assert(this.omniboxAutocompleteResultChangedListenerId_);
+    assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
-        this.omniboxAutocompleteResultChangedListenerId_);
+        this.autocompleteResultChangedListenerId_);
     assert(this.selectMatchAtLineListenerId_);
     this.callbackRouter_.removeListener(this.selectMatchAtLineListenerId_);
     canShowSecondarySideMediaQueryList.removeEventListener(
@@ -100,7 +100,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
     this.canShowSecondarySide = e.matches;
   }
 
-  private onOmniboxAutocompleteResultChanged_(result: AutocompleteResult) {
+  private onAutocompleteResultChanged_(result: AutocompleteResult) {
     this.result_ = result;
 
     if (result.matches[0]?.allowedToBeDefaultMatch) {

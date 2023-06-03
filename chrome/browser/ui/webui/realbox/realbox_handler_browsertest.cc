@@ -174,8 +174,6 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
 class RealboxSearchBrowserTestPage : public omnibox::mojom::Page {
  public:
   // omnibox::mojom::Page
-  void OmniboxAutocompleteResultChanged(
-      omnibox::mojom::AutocompleteResultPtr result) override {}
   void AutocompleteResultChanged(
       omnibox::mojom::AutocompleteResultPtr result) override {}
   void SelectMatchAtLine(uint8_t line) override {}
@@ -193,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   RealboxSearchBrowserTestPage page;
   RealboxHandler realbox_handler = RealboxHandler(
       remote_page_handler.BindNewPipeAndPassReceiver(), browser()->profile(),
-      GetWebContents(), /*metrics_reporter=*/nullptr);
+      GetWebContents(), /*metrics_reporter=*/nullptr,
+      /*is_omnibox_popup_handler=*/false);
   realbox_handler.SetPage(page.GetRemotePage());
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());

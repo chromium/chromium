@@ -10,9 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
@@ -58,7 +56,8 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
       mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter);
+      MetricsReporter* metrics_reporter,
+      bool is_omnibox_popup_handler);
 
   RealboxHandler(const RealboxHandler&) = delete;
   RealboxHandler& operator=(const RealboxHandler&) = delete;
@@ -125,12 +124,12 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<OmniboxController> controller_;
-  base::ScopedObservation<AutocompleteControllerEmitter,
-                          AutocompleteController::Observer>
-      controller_emitter_observation_{this};
-  base::TimeTicks time_user_first_modified_realbox_;
   raw_ptr<MetricsReporter> metrics_reporter_;
+  raw_ptr<OmniboxController> controller_;
+  std::unique_ptr<OmniboxController> owned_controller_;
+  base::ScopedObservation<AutocompleteController,
+                          AutocompleteController::Observer>
+      autocomplete_controller_observation_{this};
 
   mojo::Remote<omnibox::mojom::Page> page_;
   mojo::Receiver<omnibox::mojom::PageHandler> page_handler_;

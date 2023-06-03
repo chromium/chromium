@@ -27,9 +27,8 @@ OmniboxController::OmniboxController(OmniboxView* view,
           AutocompleteClassifier::DefaultOmniboxProviders())) {
   // Directly observe omnibox's `AutocompleteController` instance - i.e., when
   // `view` is provided in the constructor. In the case of realbox - i.e., when
-  // `view` is not provided in the constructor - `RealboxHandler` indirectly
-  // observes all the `AutocompleteController` instances registered with the
-  // `AutocompleteControllerEmitter`.
+  // `view` is not provided in the constructor - `RealboxHandler` directly
+  // observes the `AutocompleteController` instance itself.
   if (view) {
     autocomplete_controller_->AddObserver(this);
   }

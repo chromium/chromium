@@ -151,10 +151,8 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Updates the NTP realbox with the autocomplete results.
+  // Updates the page with the autocomplete results.
   AutocompleteResultChanged(AutocompleteResult result);
-  // Updates the WebUI omnibox with the autocomplete results.
-  OmniboxAutocompleteResultChanged(AutocompleteResult result);
   // Selects the match located at |line|.
   SelectMatchAtLine(uint8 line);
 };

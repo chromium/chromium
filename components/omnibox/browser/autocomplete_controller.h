@@ -120,9 +120,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   AutocompleteController& operator=(const AutocompleteController&) = delete;
 
   // UI elements that need to be notified when the results get updated should
-  // be added as an |observer|. So far there is no need for a RemoveObserver
-  // method because all observers outlive the AutocompleteController.
+  // be added as an |observer|.
   void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Starts an autocomplete query, which continues until all providers are
   // done or the query is Stop()ed.  It is safe to Start() a new query without

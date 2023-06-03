@@ -426,6 +426,10 @@ void AutocompleteController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
+void AutocompleteController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void AutocompleteController::Start(const AutocompleteInput& input) {
   TRACE_EVENT1("omnibox", "AutocompleteController::Start", "text",
                base::UTF16ToUTF8(input.text()));
