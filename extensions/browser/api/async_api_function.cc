@@ -24,7 +24,7 @@ AsyncApiFunction::~AsyncApiFunction() = default;
 bool AsyncApiFunction::RunAsync() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!PrePrepare() || !Prepare()) {
+  if (!Prepare()) {
     return false;
   }
   bool rv = work_task_runner_->PostTask(
@@ -33,16 +33,7 @@ bool AsyncApiFunction::RunAsync() {
   return true;
 }
 
-bool AsyncApiFunction::PrePrepare() {
-  return true;
-}
-
 void AsyncApiFunction::Work() {}
-
-void AsyncApiFunction::AsyncWorkStart() {
-  Work();
-  AsyncWorkCompleted();
-}
 
 // static
 bool AsyncApiFunction::ValidationFailure(AsyncApiFunction* function) {
@@ -71,10 +62,6 @@ void AsyncApiFunction::SetResult(base::Value result) {
   results_->Append(std::move(result));
 }
 
-void AsyncApiFunction::SetResultList(base::Value::List results) {
-  results_ = std::move(results);
-}
-
 void AsyncApiFunction::SetError(const std::string& error) {
   error_ = error;
 }
@@ -85,7 +72,8 @@ const std::string& AsyncApiFunction::GetError() const {
 
 void AsyncApiFunction::WorkOnWorkThread() {
   DCHECK(work_task_runner_->RunsTasksInCurrentSequence());
-  AsyncWorkStart();
+  Work();
+  AsyncWorkCompleted();
 }
 
 void AsyncApiFunction::RespondOnUIThread() {

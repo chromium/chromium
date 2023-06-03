@@ -14,14 +14,11 @@ namespace extensions {
 
 // AsyncApiFunction provides convenient thread management for APIs that need to
 // do essentially all their work on a thread other than the UI thread.
+// TODO(crbug.com/1450946): Remove this class entirely.
 class AsyncApiFunction : public ExtensionFunction {
  protected:
   AsyncApiFunction();
   ~AsyncApiFunction() override;
-
-  // Like Prepare(). A useful place to put common work in an ApiFunction
-  // superclass that multiple API functions want to share.
-  virtual bool PrePrepare();
 
   // Set up for work (e.g., validate arguments). Guaranteed to happen on UI
   // thread.
@@ -31,10 +28,6 @@ class AsyncApiFunction : public ExtensionFunction {
   // |work_task_runner_| if non-null; or on the IO thread otherwise.
   virtual void Work();
 
-  // Start the asynchronous work. Guraranteed to happen on work thread.
-  virtual void AsyncWorkStart();
-
-  // Respond. Guaranteed to happen on UI thread.
   virtual bool Respond() = 0;
 
   // ExtensionFunction:
@@ -44,22 +37,11 @@ class AsyncApiFunction : public ExtensionFunction {
   // ValidationFailure override to match RunAsync().
   static bool ValidationFailure(AsyncApiFunction* function);
 
-  scoped_refptr<base::SequencedTaskRunner> work_task_runner() const {
-    return work_task_runner_;
-  }
-  void set_work_task_runner(
-      scoped_refptr<base::SequencedTaskRunner> work_task_runner) {
-    work_task_runner_ = work_task_runner;
-  }
-
   // Notify AsyncIOApiFunction that the work is completed
   void AsyncWorkCompleted();
 
   // Sets a single Value as the results of the function.
   void SetResult(base::Value result);
-
-  // Sets multiple Values as the results of the function.
-  void SetResultList(base::Value::List results);
 
   void SetError(const std::string& error);
   const std::string& GetError() const override;
