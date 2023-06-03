@@ -52,6 +52,9 @@ class SearchCompanionSidePanelCoordinator
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
 
   // For metrics only. Notifies the companion of the side panel open trigger.
   void NotifyCompanionOfSidePanelOpenTrigger(
@@ -68,8 +71,12 @@ class SearchCompanionSidePanelCoordinator
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
-  // Updates CSC availability in Side Panel.
+  // Updates CSC availability in side panel.
   void UpdateCompanionAvailabilityInSidePanel();
+
+  // Update whether the CSC pinned toolbar button is enabled if the button is
+  // pinned based on active tab's url.
+  void MaybeUpdatePinnedButtonEnabledState();
 
   // Called if there is a change in the state of policy pref.
   void OnPolicyPrefChanged();

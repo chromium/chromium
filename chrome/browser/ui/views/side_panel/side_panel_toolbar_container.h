@@ -30,6 +30,8 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
   // Gets the side panel button for the toolbar.
   SidePanelToolbarButton* GetSidePanelButton() const;
 
+  ToolbarButton& GetPinnedButtonForId(SidePanelEntry::Id id);
+
   void ObserveSidePanelView(views::View* side_panel);
 
   // Creates any pinned side panel entry toolbar buttons.

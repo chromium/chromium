@@ -7,6 +7,9 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/style/typography.h"
 
@@ -24,7 +27,8 @@ SidePanelComboboxModel::Item& SidePanelComboboxModel::Item::operator=(
     SidePanelComboboxModel::Item&& other) = default;
 SidePanelComboboxModel::Item::~Item() = default;
 
-SidePanelComboboxModel::SidePanelComboboxModel() = default;
+SidePanelComboboxModel::SidePanelComboboxModel(BrowserView* browser_view)
+    : browser_view_(browser_view) {}
 SidePanelComboboxModel::~SidePanelComboboxModel() = default;
 
 void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
@@ -130,5 +134,27 @@ std::u16string SidePanelComboboxModel::GetItemAt(size_t index) const {
 }
 
 ui::ImageModel SidePanelComboboxModel::GetIconAt(size_t index) const {
+  if (!IsItemEnabledAt(index)) {
+    // TODO(crbug.com/1447841): Remove all companion related special case code
+    // once a generalized path forward has been determined.
+    // For now, only companion should be able to be disabled.
+    CHECK(GetKeyAt(index) ==
+          SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
+    return ui::ImageModel::FromVectorIcon(
+        *entries_[index].icon.GetVectorIcon().vector_icon(),
+        ui::kColorIconDisabled,
+        /*icon_size=*/16);
+  }
   return entries_[index].icon;
+}
+
+bool SidePanelComboboxModel::IsItemEnabledAt(size_t index) const {
+  // TODO(crbug.com/1447841): Remove all companion related special case code
+  // once a generalized path forward has been determined.
+  if (GetKeyAt(index) ==
+      SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion)) {
+    return companion::IsCompanionAvailableForCurrentActiveTab(
+        browser_view_->browser());
+  }
+  return true;
 }

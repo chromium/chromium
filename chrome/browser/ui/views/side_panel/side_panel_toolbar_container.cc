@@ -166,6 +166,16 @@ SidePanelToolbarButton* SidePanelToolbarContainer::GetSidePanelButton() const {
   return side_panel_button_.get();
 }
 
+ToolbarButton& SidePanelToolbarContainer::GetPinnedButtonForId(
+    SidePanelEntry::Id id) {
+  const auto iter = base::ranges::find(
+      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+  // TODO(crbug.com/1447841): Remove all companion related special case code
+  // once a generalized path forward has been determined.
+  CHECK(iter != pinned_entry_buttons_.end());
+  return **iter;
+}
+
 void SidePanelToolbarContainer::ObserveSidePanelView(views::View* side_panel) {
   side_panel_visibility_change_subscription_ =
       side_panel->AddVisibleChangedCallback(base::BindRepeating(
