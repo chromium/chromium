@@ -203,24 +203,54 @@ class ScopedSignaledValue {
   SignaledValue sv;
 };
 
+// TODO(https://crbug.com/1448809): Move to base/memory/ref_counted_memory.h
+class RefCountedWritableSharedMemoryMapping
+    : public base::RefCountedThreadSafe<RefCountedWritableSharedMemoryMapping> {
+ public:
+  explicit RefCountedWritableSharedMemoryMapping(
+      base::WritableSharedMemoryMapping mapping)
+      : mapping_(std::move(mapping)) {}
+
+  RefCountedWritableSharedMemoryMapping(
+      const RefCountedWritableSharedMemoryMapping&) = delete;
+  RefCountedWritableSharedMemoryMapping& operator=(
+      const RefCountedWritableSharedMemoryMapping&) = delete;
+
+  const unsigned char* front() const {
+    return static_cast<unsigned char*>(mapping_.memory());
+  }
+  unsigned char* front() {
+    return static_cast<unsigned char*>(mapping_.memory());
+  }
+  size_t size() const { return mapping_.size(); }
+
+ private:
+  friend class base::RefCountedThreadSafe<
+      RefCountedWritableSharedMemoryMapping>;
+  ~RefCountedWritableSharedMemoryMapping() = default;
+
+  const base::WritableSharedMemoryMapping mapping_;
+};
+
 class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {
  public:
-  EncodedDataWrapper(uint8_t* data,
-                     size_t size,
-                     base::OnceClosure reuse_buffer_callback)
-      : data_(data),
+  EncodedDataWrapper(
+      const scoped_refptr<RefCountedWritableSharedMemoryMapping>&& mapping,
+      size_t size,
+      base::OnceClosure reuse_buffer_callback)
+      : mapping_(std::move(mapping)),
         size_(size),
         reuse_buffer_callback_(std::move(reuse_buffer_callback)) {}
   ~EncodedDataWrapper() override {
     DCHECK(reuse_buffer_callback_);
     std::move(reuse_buffer_callback_).Run();
   }
-  const uint8_t* data() const override { return data_; }
-  uint8_t* data() override { return data_; }
+  const uint8_t* data() const override { return mapping_->front(); }
+  uint8_t* data() override { return mapping_->front(); }
   size_t size() const override { return size_; }
 
  private:
-  uint8_t* const data_;
+  const scoped_refptr<RefCountedWritableSharedMemoryMapping> mapping_;
   const size_t size_;
   base::OnceClosure reuse_buffer_callback_;
 };
@@ -685,7 +715,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   Vector<std::unique_ptr<base::MappedReadOnlyRegion>> input_buffers_;
 
   Vector<std::pair<base::UnsafeSharedMemoryRegion,
-                   base::WritableSharedMemoryMapping>>
+                   scoped_refptr<RefCountedWritableSharedMemoryMapping>>>
       output_buffers_;
 
   // The number of frames that are sent to a hardware video encoder by Encode()
@@ -891,7 +921,6 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
     EncodeOneFrameWithNativeInput(std::move(frame_chunk));
     return;
   }
-
   pending_frames_.push_back(std::move(frame_chunk));
   // When |input_buffers_free_| is empty, EncodeOneFrame() for the frame in
   // |pending_frames_| will be invoked from InputBufferReleased().
@@ -1034,8 +1063,10 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
                          "failed to create output buffer"});
       return;
     }
-    output_buffers_.push_back(
-        std::make_pair(std::move(region), std::move(mapping)));
+    output_buffers_.push_back(std::make_pair(
+        std::move(region),
+        base::MakeRefCounted<RefCountedWritableSharedMemoryMapping>(
+            std::move(mapping))));
   }
 
   // Immediately provide all output buffers to the VEA.
@@ -1069,15 +1100,16 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                            base::NumberToString(bitstream_buffer_id)});
     return;
   }
-  void* output_mapping_memory =
-      output_buffers_[bitstream_buffer_id].second.memory();
+  scoped_refptr<RefCountedWritableSharedMemoryMapping> output_mapping =
+      output_buffers_[bitstream_buffer_id].second;
   if (metadata.payload_size_bytes >
-      output_buffers_[bitstream_buffer_id].second.size()) {
+      output_buffers_[bitstream_buffer_id].second->size()) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
                        "invalid payload_size: " +
                            base::NumberToString(metadata.payload_size_bytes)});
     return;
   }
+
   DCHECK_NE(output_buffers_in_encoder_count_, 0u);
   output_buffers_in_encoder_count_--;
 
@@ -1145,7 +1177,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 
   webrtc::EncodedImage image;
   image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
-      static_cast<uint8_t*>(output_mapping_memory), metadata.payload_size_bytes,
+      std::move(output_mapping), metadata.payload_size_bytes,
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&RTCVideoEncoder::Impl::BitstreamBufferAvailable,
                          weak_this_, bitstream_buffer_id))));
