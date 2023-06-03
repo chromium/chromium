@@ -31,10 +31,6 @@ class FileSystemContext;
 // A central interface for running FileSystem API operations.
 // All operation methods take callback and returns OperationID, which is
 // an integer value which can be used for cancelling an operation.
-// All operation methods return kErrorOperationID if running (posting) an
-// operation fails, in addition to dispatching the callback with an error
-// code (therefore in most cases the caller does not need to check the
-// returned operation ID).
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
  public:
   using GetMetadataCallback = FileSystemOperation::GetMetadataCallback;
