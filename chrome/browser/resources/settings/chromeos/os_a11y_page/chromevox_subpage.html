@@ -32,6 +32,10 @@ found in the LICENSE file.
     --md-select-width: 100%;
   }
 
+  settings-dropdown-menu + settings-dropdown-menu {
+    padding-inline-start: 16px;
+  }
+
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
@@ -185,6 +189,10 @@ found in the LICENSE file.
     <settings-dropdown-menu id="brailleTableTypeDropdown"
         pref="{{prefs.settings.a11y.chromevox.braille_table_type}}"
         menu-options="[[brailleTableTypeOptions_]]">
+    </settings-dropdown-menu>
+    <settings-dropdown-menu id="brailleTableDropdown"
+        pref="{{prefs.settings.a11y.chromevox.braille_table}}"
+        menu-options="[[brailleTableOptions_]]">
     </settings-dropdown-menu>
   </div>
   <settings-toggle-button

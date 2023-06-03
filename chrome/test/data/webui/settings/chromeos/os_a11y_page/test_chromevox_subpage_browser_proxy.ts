@@ -12,6 +12,8 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy
     super([
       'getAllTtsVoiceData',
       'refreshTtsVoices',
+      'getDisplayNameForLocale',
+      'getApplicationLocale',
       'addDeviceAddedListener',
       'removeDeviceAddedListener',
       'addDeviceChangedListener',
@@ -64,6 +66,16 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy
 
   refreshTtsVoices(): void {
     this.methodCalled('refreshTtsVoices');
+  }
+
+  getDisplayNameForLocale(locale: string): Promise<string> {
+    this.methodCalled('getDisplayNameForLocale');
+    return Promise.resolve(locale);
+  }
+
+  getApplicationLocale(): Promise<string> {
+    this.methodCalled('getApplicationLocale');
+    return Promise.resolve('');
   }
 
   addDeviceAddedListener(): void {

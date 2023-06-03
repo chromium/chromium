@@ -22,6 +22,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
@@ -38,6 +39,11 @@ const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 const ESPEAK_TTS_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
 const EVENT_STREAM_FILTERS_PREF_KEY =
     'settings.a11y.chromevox.event_stream_filters';
+const BRAILLE_TABLE_PREF_KEY = 'settings.a11y.chromevox.braille_table';
+const BRAILLE_TABLE_6_PREF_KEY = 'settings.a11y.chromevox.braille_table_6';
+const BRAILLE_TABLE_8_PREF_KEY = 'settings.a11y.chromevox.braille_table_8';
+const BRAILLE_TABLE_TYPE_PREF_KEY =
+    'settings.a11y.chromevox.braille_table_type';
 const VIRTUAL_BRAILLE_ROWS_PREF_KEY =
     'settings.a11y.chromevox.virtual_braille_rows';
 const VIRTUAL_BRAILLE_COLUMNS_PREF_KEY =
@@ -46,6 +52,11 @@ const MIN_BRAILLE_ROWS = 1;
 const MAX_BRAILLE_ROWS = 99;
 const MIN_BRAILLE_COLUMNS = 1;
 const MAX_BRAILLE_COLUMNS = 99;
+
+enum BrailleTableType {
+  BRAILLE_TABLE_6 = 'brailleTable6',
+  BRAILLE_TABLE_8 = 'brailleTable8',
+}
 
 type EventStreamFiltersPrefValue = Record<string, boolean>;
 
@@ -59,6 +70,20 @@ interface TtsHandlerVoice {
   name: string;
   remote: boolean;
   extensionId: string;
+}
+
+/**
+ * Represents a braille table from liblouis.
+ */
+interface BrailleTable {
+  locale: string;
+  dots: string;
+  id: string;
+  grade?: string;
+  variant?: string;
+  fileNames: string;
+  enDisplayName?: string;
+  alwaysUseEnDisplayName: boolean;
 }
 
 export interface SettingsChromeVoxSubpageElement {
@@ -191,6 +216,14 @@ export class SettingsChromeVoxSubpageElement extends
       },
 
       /**
+       * Dropdown menu choices for braille table options.
+       */
+      brailleTableOptions_: {
+        type: Array,
+        value: [],
+      },
+
+      /**
        * Dropdown menu choices for virtual braille display style options.
        */
       virtualBrailleDisplayStyleOptions_: {
@@ -295,7 +328,14 @@ export class SettingsChromeVoxSubpageElement extends
   }
 
   static get observers() {
-    return [];
+    return [
+      'populateBrailleTableList_(' +
+          `prefs.${BRAILLE_TABLE_TYPE_PREF_KEY}.value,` +
+          `prefs.${BRAILLE_TABLE_PREF_KEY}.value, brailleTables_)`,
+      'onBrailleTableTypeChanged_(' +
+          `prefs.${BRAILLE_TABLE_TYPE_PREF_KEY}.value)`,
+      `onBrailleTableChanged_(prefs.${BRAILLE_TABLE_PREF_KEY}.value)`,
+    ];
   }
 
   private route_: Route;
@@ -304,9 +344,11 @@ export class SettingsChromeVoxSubpageElement extends
   private punctuationEchoOptions_: DropdownMenuOptionList;
   private audioStrategyOptions_: DropdownMenuOptionList;
   private brailleTableTypeOptions_: DropdownMenuOptionList;
+  private brailleTableOptions_: DropdownMenuOptionList;
   private voiceOptions_: DropdownMenuOptionList;
   private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
+  private brailleTables_: BrailleTable[];
 
   // TODO(270619855): Add tests to verify these controls change their prefs.
   constructor() {
@@ -327,6 +369,7 @@ export class SettingsChromeVoxSubpageElement extends
         (voices: TtsHandlerVoice[]) => this.populateVoiceList_(voices));
     this.chromeVoxBrowserProxy_.getAllTtsVoiceData();
     this.chromeVoxBrowserProxy_.refreshTtsVoices();
+    this.fetchBrailleTables_();
   }
 
   /**
@@ -410,6 +453,109 @@ export class SettingsChromeVoxSubpageElement extends
       },
       ...voices.map(({name}) => ({value: name, name})),
     ];
+  }
+
+  /**
+   * Retrieves a list of all available braille tables.
+   * TODO(b/268196299): Add tests to verify braille tables correctly populated.
+   */
+  private fetchBrailleTables_(): void {
+    const needsDisambiguation = new Map<string, BrailleTable[]>();
+    function preprocess(tables: BrailleTable[]) {
+      tables.forEach(table => {
+        // Save all tables which have a mirroring duplicate for locale + grade.
+        const key = table.locale + table.grade!;
+        if (!needsDisambiguation.has(key)) {
+          needsDisambiguation.set(key, []);
+        }
+
+        const entry = needsDisambiguation.get(key);
+        entry!.push(table);
+      });
+
+      for (const entry of needsDisambiguation.values()) {
+        if (entry.length > 1) {
+          entry.forEach(table => table.alwaysUseEnDisplayName = true);
+        }
+      }
+
+      return tables;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'static/liblouis/tables.json', true);
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        const tables: BrailleTable[] = JSON.parse(xhr.responseText);
+        this.set('brailleTables_', preprocess(tables));
+      }
+    };
+    xhr.send();
+  }
+
+  private async getBrailleTableDisplayName_(table: BrailleTable):
+      Promise<string|undefined> {
+    const [applicationLocale, localeName] = await Promise.all([
+      this.chromeVoxBrowserProxy_.getApplicationLocale(),
+      this.chromeVoxBrowserProxy_.getDisplayNameForLocale(table.locale),
+    ]);
+
+    const enDisplayName = table.enDisplayName;
+    if (!localeName && !enDisplayName) {
+      return;
+    }
+
+    let baseName;
+    if (enDisplayName &&
+        (table.alwaysUseEnDisplayName ||
+         applicationLocale.toLowerCase().startsWith('en') || !localeName)) {
+      baseName = enDisplayName;
+    } else {
+      baseName = localeName;
+    }
+
+    if (!table.grade && !table.variant) {
+      return baseName;
+    }
+    if (table.grade && !table.variant) {
+      return this.i18n(
+          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade!);
+    }
+    if (!table.grade && table.variant) {
+      return this.i18n(
+          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant!);
+    }
+
+    return this.i18n(
+        'chromeVoxBrailleTableNameWithVariantAndGrade', baseName,
+        table.variant!, table.grade!);
+  }
+
+  /**
+   * Computes the list of braille tables for the UI to display.
+   */
+  private async populateBrailleTableList_(): Promise<void> {
+    if (!this.brailleTables_) {
+      return;
+    }
+
+    const dots = this.getPref<string>(BRAILLE_TABLE_TYPE_PREF_KEY).value.at(-1);
+
+    // Gather the display names and sort them according to locale.
+    const items: Array<{id: string, name: string}> = [];
+    for (const table of this.brailleTables_) {
+      if (table.dots !== dots) {
+        continue;
+      }
+      const displayName = await this.getBrailleTableDisplayName_(table);
+
+      // Ignore tables that don't have a display name.
+      if (displayName) {
+        items.push({id: table.id, name: displayName});
+      }
+    }
+    items.sort((a, b) => a.id.localeCompare(b.id));
+    this.brailleTableOptions_ = items.map(({id, name}) => ({value: id, name}));
   }
 
   private onTtsSettingsClick_(): void {
@@ -496,6 +642,45 @@ export class SettingsChromeVoxSubpageElement extends
       [filter.id]: filter.checked,
     };
     this.setPrefValue(EVENT_STREAM_FILTERS_PREF_KEY, eventStreamFilters);
+  }
+
+  /**
+   * Update braille table prefs when braille table type changed.
+   */
+  private onBrailleTableTypeChanged_(): void {
+    const brailleTableType: BrailleTableType =
+        this.getPref<BrailleTableType>(BRAILLE_TABLE_TYPE_PREF_KEY).value;
+    let brailleTable;
+    switch (brailleTableType) {
+      case BrailleTableType.BRAILLE_TABLE_6:
+        brailleTable = this.getPref(BRAILLE_TABLE_6_PREF_KEY).value;
+        break;
+      case BrailleTableType.BRAILLE_TABLE_8:
+        brailleTable = this.getPref(BRAILLE_TABLE_8_PREF_KEY).value;
+        break;
+      default:
+        assertExhaustive(brailleTableType);
+    }
+    this.setPrefValue(BRAILLE_TABLE_PREF_KEY, brailleTable);
+  }
+
+  /**
+   * Update braille table type prefs when braille table changed.
+   */
+  private onBrailleTableChanged_(): void {
+    const brailleTable = this.getPref<string>(BRAILLE_TABLE_PREF_KEY).value;
+    const brailleTableType: BrailleTableType =
+        this.getPref<BrailleTableType>(BRAILLE_TABLE_TYPE_PREF_KEY).value;
+    switch (brailleTableType) {
+      case BrailleTableType.BRAILLE_TABLE_6:
+        this.setPrefValue(BRAILLE_TABLE_6_PREF_KEY, brailleTable);
+        break;
+      case BrailleTableType.BRAILLE_TABLE_8:
+        this.setPrefValue(BRAILLE_TABLE_8_PREF_KEY, brailleTable);
+        break;
+      default:
+        assertExhaustive(brailleTableType);
+    }
   }
 }
 

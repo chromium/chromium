@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+
 export type DeviceEventListener = (device?: chrome.bluetooth.Device) => void;
 export type PairingEventListener =
     (pairingEvent: chrome.bluetoothPrivate.PairingEvent) => void;
@@ -18,6 +20,16 @@ export interface ChromeVoxSubpageBrowserProxy {
    * through VoicesChanged.
    */
   refreshTtsVoices(): void;
+
+  /**
+   * Gets the display name for `locale` in the system lagnuage.
+   */
+  getDisplayNameForLocale(locale: string): Promise<string>;
+
+  /**
+   * Gets the current application locale.
+   */
+  getApplicationLocale(): Promise<string>;
 
   /**
    * Bluetooth API handlers for Bluetooth Braille Display Settings.
@@ -57,6 +69,14 @@ export class ChromeVoxSubpageBrowserProxyImpl implements
 
   refreshTtsVoices(): void {
     chrome.send('refreshTtsVoices');
+  }
+
+  getDisplayNameForLocale(locale: string): Promise<string> {
+    return sendWithPromise('getDisplayNameForLocale', locale);
+  }
+
+  getApplicationLocale(): Promise<string> {
+    return sendWithPromise('getApplicationLocale');
   }
 
   addDeviceAddedListener(listener: DeviceEventListener): void {

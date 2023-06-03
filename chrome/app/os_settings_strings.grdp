@@ -1283,6 +1283,15 @@
   <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_8_DOT" desc="In the ChromeVox settings subpage, the label for the braille table type list item for 8-dot braille. A braille table describes how text gets converted from a unicode encoding into a pattern of dots. This varies based on locale and contraction. See http://en.wikipedia.org/wiki/Braille for more.">
     8-dot
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_NAME_WITH_GRADE" desc="In the ChromeVox settings subpage, how to present the name of a braille table to the user. For example, a locale could be 'English (United States)' and a grade could be '2'. Together they would be 'English (United States), Grade 2'. A braille table describes how text gets converted from Unicode text into a pattern of braille dots. This varies based on locale and contraction. See http://en.wikipedia.org/wiki/Braille for a more in-depth discussion.">
+    <ph name="locale">$1</ph>, Grade <ph name="grade">$2</ph>
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_NAME_WITH_VARIANT" desc="In the ChromeVox settings subpage, how to present the name of a braille table to the user. For example, a locale could be 'English' and a variant could be 'UEB' (for 'Unified English Braille'). Together they would be 'English (UEB)'. A braille table describes how text gets converted from Unicode text into a pattern of braille dots. See http://en.wikipedia.org/wiki/Braille for a more in-depth discussion.">
+    <ph name="locale">$1</ph> (<ph name="variant">$2</ph>)
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_TABLE_NAME_WITH_VARIANT_AND_GRADE" desc="In the ChromeVox settings subpage, how to present the name of a braille table to the user. For example, a locale could be 'English', variant could be 'UEB' (for 'Unified English Braille') and a grade could be '2'. Together they would be 'English (UEB), Grade 2'. A braille table describes how text gets converted from Unicode text into a pattern of braille dots. See http://en.wikipedia.org/wiki/Braille for a more in-depth discussion.">
+    <ph name="locale">$1</ph> (<ph name="variant">$2</ph>), Grade <ph name="grade">$3</ph>
+  </message>
   <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_WORD_WRAP" desc="In the ChromeVox settings subpage, the label for the toggle that enables wrapping of words if a whole line doesn't fit on a braille display. When this option is enabled, an effort is made to keep the characters of words together on the display. Otherwise, as many characters as possible are put on each braille display line, possible splitting words between lines.">
     Enable word wrap
   </message>
