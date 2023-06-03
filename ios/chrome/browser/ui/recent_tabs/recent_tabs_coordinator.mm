@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -106,12 +107,15 @@
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   SyncSetupService* service =
       SyncSetupServiceFactory::GetForBrowserState(browserState);
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
   self.mediator =
       [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
                                              identityManager:identityManager
                                               restoreService:restoreService
                                                faviconLoader:faviconLoader
-                                            syncSetupService:service];
+                                            syncSetupService:service
+                                                 browserList:browserList];
 
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].

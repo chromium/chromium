@@ -12,10 +12,10 @@
 #import "ios/chrome/browser/ui/recent_tabs/closed_tabs_observer_bridge.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
 
+class BrowserList;
 class FaviconLoader;
 @protocol RecentTabsConsumer;
 class SyncSetupService;
-class WebStateList;
 
 namespace signin {
 class IdentityManager;
@@ -29,22 +29,18 @@ namespace sessions {
 class TabRestoreService;
 }  // namespace sessions
 
-// RecentTabsMediator controls the RecentTabsConsumer,
-// based on the user's signed-in and chrome-sync states.
+// RecentTabsMediator controls the RecentTabsConsumer, based on the user's
+// signed-in and chrome-sync states.
 //
-// RecentTabsMediator listens for notifications about Chrome Sync
-// and ChromeToDevice and changes/updates the RecentTabsConsumer
-// accordingly.
-@interface RecentTabsMediator : NSObject<ClosedTabsObserving,
-                                         RecentTabsTableViewControllerDelegate,
-                                         TableViewFaviconDataSource>
+// RecentTabsMediator listens for notifications about Chrome Sync and
+// ChromeToDevice and changes/updates the RecentTabsConsumer accordingly.
+@interface RecentTabsMediator : NSObject <ClosedTabsObserving,
+                                          RecentTabsTableViewControllerDelegate,
+                                          TableViewFaviconDataSource>
 
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
-
-// The WebStateList that this mediator listens for.
-@property(nonatomic, assign) WebStateList* webStateList;
 
 - (instancetype)
     initWithSessionSyncService:
@@ -53,6 +49,7 @@ class TabRestoreService;
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader
               syncSetupService:(SyncSetupService*)syncSetupService
+                   browserList:(BrowserList*)browserList
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
