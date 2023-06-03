@@ -31,9 +31,9 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.GvrTransitionUtils;
 import org.chromium.chrome.browser.vr.util.PermissionUtils;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
-import org.chromium.chrome.browser.vr.util.VrTransitionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 
@@ -50,24 +50,24 @@ import java.util.concurrent.TimeUnit;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-public class WebXrVrTransitionTest {
+public class WebXrGvrTransitionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            VrTestRuleUtils.generateDefaultTestRuleParameters();
+            GvrTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
-    private WebXrVrTestFramework mWebXrVrTestFramework;
+    private WebXrGvrTestFramework mWebXrVrTestFramework;
 
-    public WebXrVrTransitionTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public WebXrGvrTransitionTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mTestRule = callable.call();
-        mRuleChain = VrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
+        mRuleChain = GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
     }
 
     @Before
     public void setUp() {
-        mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
+        mWebXrVrTestFramework = new WebXrGvrTestFramework(mTestRule);
     }
 
     /**
@@ -76,15 +76,14 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags
-            .Add({"disable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testWebXrDisabledWithoutFlagSet() {
+    @CommandLineFlags.Add({"disable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testWebXrDisabledWithoutFlagSet() {
         apiDisabledWithoutFlagSetImpl(
                 "test_webxr_disabled_without_flag_set", mWebXrVrTestFramework);
     }
 
-    private void apiDisabledWithoutFlagSetImpl(String url, WebXrVrTestFramework framework) {
+    private void apiDisabledWithoutFlagSetImpl(String url, WebXrGvrTestFramework framework) {
         framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.waitOnJavaScriptStep();
         framework.endTest();
@@ -105,7 +104,7 @@ public class WebXrVrTransitionTest {
     }
 
     private void presentationPromiseRejectedIfDonCanceledImpl(
-            String url, WebXrVrTestFramework framework) {
+            String url, WebXrGvrTestFramework framework) {
         framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         final UiDevice uiDevice =
                 UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -134,11 +133,11 @@ public class WebXrVrTransitionTest {
         controlsVisibleAfterExitingVrImpl("generic_webxr_page", mWebXrVrTestFramework);
     }
 
-    private void controlsVisibleAfterExitingVrImpl(String url, final WebXrVrTestFramework framework)
-            throws InterruptedException {
+    private void controlsVisibleAfterExitingVrImpl(
+            String url, final WebXrGvrTestFramework framework) throws InterruptedException {
         framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
-        VrTransitionUtils.forceExitVr();
+        GvrTransitionUtils.forceExitVr();
         // The hiding of the controls may only propagate after VR has exited, so give it a chance
         // to propagate. In the worst case this test will erroneously pass, but should never
         // erroneously fail, and should only be flaky if omnibox showing is broken.
@@ -169,8 +168,8 @@ public class WebXrVrTransitionTest {
                 mWebXrVrTestFramework);
     }
 
-    private void windowRafStopsFiringWhilePresentingImpl(String url, WebXrVrTestFramework framework)
-            throws InterruptedException {
+    private void windowRafStopsFiringWhilePresentingImpl(
+            String url, WebXrGvrTestFramework framework) throws InterruptedException {
         framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.executeStepAndWait("stepVerifyBeforePresent()");
         // Pausing of window.rAF is done asynchronously, so wait until that's done.
@@ -180,7 +179,7 @@ public class WebXrVrTransitionTest {
         framework.enterSessionWithUserGestureOrFail();
         vsyncPausedLatch.await(POLL_TIMEOUT_SHORT_MS, TimeUnit.MILLISECONDS);
         framework.executeStepAndWait("stepVerifyDuringPresent()");
-        VrTransitionUtils.forceExitVr();
+        GvrTransitionUtils.forceExitVr();
         framework.executeStepAndWait("stepVerifyAfterPresent()");
         framework.endTest();
     }
@@ -190,9 +189,9 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testWindowRafFiresDuringNonImmersiveSession() {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testWindowRafFiresDuringNonImmersiveSession() {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_window_raf_fires_during_non_immersive_session", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.waitOnJavaScriptStep();
@@ -214,7 +213,7 @@ public class WebXrVrTransitionTest {
         mWebXrVrTestFramework.executeStepAndWait("stepBeforeImmersive()");
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
         mWebXrVrTestFramework.executeStepAndWait("stepDuringImmersive()");
-        VrTransitionUtils.forceExitVr();
+        GvrTransitionUtils.forceExitVr();
         mWebXrVrTestFramework.executeStepAndWait("stepAfterImmersive()");
         mWebXrVrTestFramework.endTest();
     }

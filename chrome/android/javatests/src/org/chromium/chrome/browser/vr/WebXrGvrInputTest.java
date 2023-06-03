@@ -34,7 +34,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,27 +55,27 @@ import java.util.concurrent.TimeUnit;
 // failures has been fixed.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=LogJsConsoleMessages", "allow-pre-commit-input"})
-public class WebXrVrInputTest {
+public class WebXrGvrInputTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            VrTestRuleUtils.generateDefaultTestRuleParameters();
+            GvrTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
-    private WebXrVrTestFramework mWebXrVrTestFramework;
+    private WebXrGvrTestFramework mWebXrVrTestFramework;
 
-    public WebXrVrInputTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public WebXrGvrInputTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mTestRule = callable.call();
-        mRuleChain = VrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
+        mRuleChain = GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
     }
 
     @Before
     public void setUp() {
-        mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
+        mWebXrVrTestFramework = new WebXrGvrTestFramework(mTestRule);
     }
 
-    private void assertAppButtonEffect(boolean shouldHaveExited, WebXrVrTestFramework framework) {
+    private void assertAppButtonEffect(boolean shouldHaveExited, WebXrGvrTestFramework framework) {
         Assert.assertEquals("App button effect matched expectation", shouldHaveExited,
                 mWebXrVrTestFramework.pollJavaScriptBoolean(
                         "sessionInfos[sessionTypes.IMMERSIVE].currentSession == null",
@@ -96,7 +96,7 @@ public class WebXrVrInputTest {
         screenTapsNotRegisteredImpl("webxr_test_screen_taps_not_registered", mWebXrVrTestFramework);
     }
 
-    private void screenTapsNotRegisteredImpl(String url, final WebXrVrTestFramework framework)
+    private void screenTapsNotRegisteredImpl(String url, final WebXrGvrTestFramework framework)
             throws InterruptedException {
         framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.executeStepAndWait("stepVerifyNoInitialTaps()");
@@ -128,7 +128,7 @@ public class WebXrVrInputTest {
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testControllerClicksRegisteredOnDaydream_WebXr() {
-        EmulatedVrController controller = new EmulatedVrController(mTestRule.getActivity());
+        EmulatedGvrController controller = new EmulatedGvrController(mTestRule.getActivity());
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_input", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
@@ -164,7 +164,7 @@ public class WebXrVrInputTest {
             message = "https://crbug.com/1420205")
     public void
     testControllerExposedAsGamepadOnDaydream_WebXr() {
-        EmulatedVrController controller = new EmulatedVrController(mTestRule.getActivity());
+        EmulatedGvrController controller = new EmulatedGvrController(mTestRule.getActivity());
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_gamepad_support", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
@@ -230,7 +230,8 @@ public class WebXrVrInputTest {
         return (raw * 2.0f) - 1.0f;
     }
 
-    private void setAndValidateTouchpadPosition(EmulatedVrController controller, float x, float y) {
+    private void setAndValidateTouchpadPosition(
+            EmulatedGvrController controller, float x, float y) {
         controller.setTouchpadPosition(x, y);
         float xExpected = rawToWebXRTouchpadPosition(x);
         float yExpected = rawToWebXRTouchpadPosition(y);
@@ -346,7 +347,7 @@ public class WebXrVrInputTest {
         presentationLocksFocusImpl("webxr_test_presentation_locks_focus", mWebXrVrTestFramework);
     }
 
-    private void presentationLocksFocusImpl(String url, WebXrVrTestFramework framework) {
+    private void presentationLocksFocusImpl(String url, WebXrGvrTestFramework framework) {
         framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
         framework.executeStepAndWait("stepSetupFocusLoss()");
@@ -389,7 +390,7 @@ public class WebXrVrInputTest {
         // Spam input to make sure the Gamepad API registers the gamepad if it should.
         int numIterations = 10;
         if (daydream) {
-            EmulatedVrController controller = new EmulatedVrController(mTestRule.getActivity());
+            EmulatedGvrController controller = new EmulatedGvrController(mTestRule.getActivity());
             for (int i = 0; i < numIterations; i++) {
                 controller.performControllerClick();
             }

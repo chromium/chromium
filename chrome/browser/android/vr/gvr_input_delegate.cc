@@ -13,6 +13,7 @@
 #include "chrome/browser/vr/pose_util.h"
 #include "chrome/browser/vr/render_info.h"
 #include "device/vr/android/gvr/gvr_delegate.h"
+#include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
 
 namespace vr {
 
@@ -28,7 +29,9 @@ gfx::Transform GvrInputDelegate::GetHeadPose() {
 }
 
 void GvrInputDelegate::OnTriggerEvent(bool pressed) {
-  NOTREACHED();
+  if (gvr_api_->GetViewerType() != gvr::ViewerType::GVR_VIEWER_TYPE_DAYDREAM) {
+    NOTREACHED();
+  }
 }
 
 void GvrInputDelegate::UpdateController(const gfx::Transform& head_pose,

@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  *   - PairedControllerDriver: "DRIVER_AUTOMATED"
  *   - PairedControllerAddress: "FOO"
  */
-public class EmulatedVrController {
+public class EmulatedGvrController {
     @IntDef({ScrollDirection.UP, ScrollDirection.DOWN, ScrollDirection.LEFT, ScrollDirection.RIGHT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrollDirection {
@@ -40,7 +40,7 @@ public class EmulatedVrController {
     private final ControllerTestApi mApi;
     private boolean mHaveSentInputSinceEnteringVr;
 
-    public EmulatedVrController(Context context) {
+    public EmulatedGvrController(Context context) {
         mApi = new ControllerTestApi(context);
     }
 

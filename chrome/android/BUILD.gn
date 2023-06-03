@@ -1908,6 +1908,8 @@ if (current_toolchain == default_toolchain) {
         resources_package = "org.chromium.chrome.vr"
 
         sources = [
+          "javatests/src/org/chromium/chrome/browser/vr/WebXrVrPermissionTestFramework.java",
+          "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTestFramework.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/VrModuleNotInstalled.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/VrTestRule.java",
           "javatests/src/org/chromium/chrome/browser/vr/util/NativeUiUtils.java",
@@ -1936,27 +1938,26 @@ if (current_toolchain == default_toolchain) {
 
         if (enable_gvr_services) {
           sources += [
-            "javatests/src/org/chromium/chrome/browser/vr/EmulatedVrController.java",
+            "javatests/src/org/chromium/chrome/browser/vr/EmulatedGvrController.java",
+            "javatests/src/org/chromium/chrome/browser/vr/GvrDaydreamReadyModuleInstallTest.java",
+            "javatests/src/org/chromium/chrome/browser/vr/GvrInstallUpdateMessageTest.java",
             "javatests/src/org/chromium/chrome/browser/vr/TestVrShellDelegate.java",
-            "javatests/src/org/chromium/chrome/browser/vr/VrDaydreamReadyModuleInstallTest.java",
-            "javatests/src/org/chromium/chrome/browser/vr/VrInstallUpdateMessageTest.java",
 
             # TODO(https://crbug.com/1429384): Modify these tests to run on non-GVR runtimes.
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrDeviceTest.java",
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrInputTest.java",
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrPermissionTest.java",
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrPermissionTestFramework.java",
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTabTest.java",
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTestFramework.java",
-            "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTransitionTest.java",
-            "javatests/src/org/chromium/chrome/browser/vr/mock/MockVrCoreVersionChecker.java",
-            "javatests/src/org/chromium/chrome/browser/vr/mock/MockVrDaydreamApi.java",
-            "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityVrTestRule.java",
-            "javatests/src/org/chromium/chrome/browser/vr/rules/CustomTabActivityVrTestRule.java",
-            "javatests/src/org/chromium/chrome/browser/vr/rules/WebappActivityVrTestRule.java",
+            "javatests/src/org/chromium/chrome/browser/vr/WebXrGvrDeviceTest.java",
+            "javatests/src/org/chromium/chrome/browser/vr/WebXrGvrInputTest.java",
+            "javatests/src/org/chromium/chrome/browser/vr/WebXrGvrPermissionTest.java",
+            "javatests/src/org/chromium/chrome/browser/vr/WebXrGvrTabTest.java",
+            "javatests/src/org/chromium/chrome/browser/vr/WebXrGvrTestFramework.java",
+            "javatests/src/org/chromium/chrome/browser/vr/WebXrGvrTransitionTest.java",
+            "javatests/src/org/chromium/chrome/browser/vr/mock/MockGvrVrCoreVersionChecker.java",
+            "javatests/src/org/chromium/chrome/browser/vr/mock/MockGvrVrDaydreamApi.java",
+            "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityGvrTestRule.java",
+            "javatests/src/org/chromium/chrome/browser/vr/rules/CustomTabActivityGvrTestRule.java",
+            "javatests/src/org/chromium/chrome/browser/vr/rules/WebappActivityGvrTestRule.java",
+            "javatests/src/org/chromium/chrome/browser/vr/util/GvrTestRuleUtils.java",
+            "javatests/src/org/chromium/chrome/browser/vr/util/GvrTransitionUtils.java",
             "javatests/src/org/chromium/chrome/browser/vr/util/VrShellDelegateUtils.java",
-            "javatests/src/org/chromium/chrome/browser/vr/util/VrTestRuleUtils.java",
-            "javatests/src/org/chromium/chrome/browser/vr/util/VrTransitionUtils.java",
           ]
 
           deps += [

@@ -20,62 +20,53 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
+import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * End-to-end tests for WebXR's behavior when multiple tabs are involved.
+ * End-to-end tests for WebXR where the choice of test device has a greater
+ * impact than the usual Daydream-ready vs. non-Daydream-ready effect.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-public class WebXrVrTabTest {
+public class WebXrGvrDeviceTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            VrTestRuleUtils.generateDefaultTestRuleParameters();
+            GvrTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
-    private WebXrVrTestFramework mWebXrVrTestFramework;
+    private WebXrGvrTestFramework mWebXrVrTestFramework;
 
-    public WebXrVrTabTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public WebXrGvrDeviceTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mTestRule = callable.call();
-        mRuleChain = VrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
+        mRuleChain = GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
     }
 
     @Before
     public void setUp() {
-        mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
+        mWebXrVrTestFramework = new WebXrGvrTestFramework(mTestRule);
     }
 
     /**
-     * Tests that non-focused tabs don't get WebXR rAFs called. Disabled on standalones because
-     * they will always be in the VR Browser, and thus shouldn't be getting inline poses even
-     * if the tab is focused.
+     * Tests that reported WebXR capabilities match expectations.
      */
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
-    public void testPoseDataUnfocusedTab_WebXr() {
-        testPoseDataUnfocusedTabImpl("webxr_test_pose_data_unfocused_tab", mWebXrVrTestFramework);
-    }
-
-    private void testPoseDataUnfocusedTabImpl(String url, WebXrVrTestFramework framework) {
-        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
-        framework.executeStepAndWait("stepCheckFrameDataWhileFocusedTab()");
-        WebContents firstTabContents = framework.getCurrentWebContents();
-
-        mTestRule.loadUrlInNewTab("about:blank");
-
-        WebXrVrTestFramework.executeStepAndWait(
-                "stepCheckFrameDataWhileNonFocusedTab()", firstTabContents);
-        WebXrVrTestFramework.endTest(firstTabContents);
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testWebXrCapabilities() {
+        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
+                "test_webxr_capabilities", PAGE_LOAD_TIMEOUT_S);
+        mWebXrVrTestFramework.executeStepAndWait("stepCheckCapabilities('Daydream')");
+        mWebXrVrTestFramework.endTest();
     }
 }

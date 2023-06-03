@@ -24,7 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 
@@ -40,19 +40,19 @@ import java.util.concurrent.Callable;
 // failures has been fixed.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=WebXR,LogJsConsoleMessages", "allow-pre-commit-input"})
-public class WebXrVrPermissionTest {
+public class WebXrGvrPermissionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            VrTestRuleUtils.generateDefaultTestRuleParameters();
+            GvrTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrPermissionTestFramework mWebXrVrPermissionTestFramework;
 
-    public WebXrVrPermissionTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public WebXrGvrPermissionTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mTestRule = callable.call();
-        mRuleChain = VrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
+        mRuleChain = GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule);
     }
 
     @Before

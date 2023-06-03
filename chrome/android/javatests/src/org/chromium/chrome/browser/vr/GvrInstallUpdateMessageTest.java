@@ -21,10 +21,10 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.vr.mock.MockVrCoreVersionChecker;
+import org.chromium.chrome.browser.vr.mock.MockGvrVrCoreVersionChecker;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.browser.vr.util.VrMessageUtils;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.vr.R;
@@ -45,31 +45,31 @@ import java.util.concurrent.ExecutionException;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-public class VrInstallUpdateMessageTest {
+public class GvrInstallUpdateMessageTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            VrTestRuleUtils.generateDefaultTestRuleParameters();
+            GvrTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mVrTestRule;
 
-    public VrInstallUpdateMessageTest(Callable<ChromeActivityTestRule> callable) throws Exception {
+    public GvrInstallUpdateMessageTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mVrTestRule = callable.call();
-        mRuleChain = VrTestRuleUtils.wrapRuleInActivityRestrictionRule(mVrTestRule);
+        mRuleChain = GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(mVrTestRule);
     }
 
     /**
-     * Creates and sets a MockVrCoreVersionCheckerImpl as the VrShellDelegate's VrCoreVersionChecker
-     * instance.
+     * Creates and sets a MockGvrVrCoreVersionCheckerImpl as the VrShellDelegate's
+     * VrCoreVersionChecker instance.
      *
      * @param compatibility An int corresponding to a VrCoreCompatibility value that the mock
      *        version checker will return.
-     * @return The MockVrCoreVersionCheckerImpl that was set as VrShellDelegate's
+     * @return The MockGvrVrCoreVersionCheckerImpl that was set as VrShellDelegate's
      *        VrCoreVersionChecker instance.
      */
-    private static MockVrCoreVersionChecker setVrCoreCompatibility(int compatibility) {
-        final MockVrCoreVersionChecker mockChecker = new MockVrCoreVersionChecker();
+    private static MockGvrVrCoreVersionChecker setVrCoreCompatibility(int compatibility) {
+        final MockGvrVrCoreVersionChecker mockChecker = new MockGvrVrCoreVersionChecker();
         mockChecker.setMockReturnValue(compatibility);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { VrCoreInstallUtils.overrideVrCoreVersionChecker(mockChecker); });

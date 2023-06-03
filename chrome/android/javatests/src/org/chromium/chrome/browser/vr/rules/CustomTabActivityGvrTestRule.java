@@ -14,13 +14,13 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 
 /**
  * VR extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule then
  * opens up a CustomTabActivity to a blank page while performing some additional VR-only setup.
  */
-public class CustomTabActivityVrTestRule extends CustomTabActivityTestRule implements VrTestRule {
+public class CustomTabActivityGvrTestRule extends CustomTabActivityTestRule implements VrTestRule {
     private boolean mDonEnabled;
 
     @Override
@@ -28,8 +28,8 @@ public class CustomTabActivityVrTestRule extends CustomTabActivityTestRule imple
         return super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                VrTestRuleUtils.evaluateVrTestRuleImpl(
-                        base, desc, CustomTabActivityVrTestRule.this, () -> {
+                GvrTestRuleUtils.evaluateVrTestRuleImpl(
+                        base, desc, CustomTabActivityGvrTestRule.this, () -> {
                             startCustomTabActivityWithIntent(
                                     CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                                             ApplicationProvider.getApplicationContext(),

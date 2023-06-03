@@ -10,14 +10,16 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
-import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
- * VR extension of WebappActivityTestRule. Applies WebappActivityTestRule then opens
- * up a WebappActivity to a blank page while performing some additional VR-only setup.
+ * VR extension of ChromeTabbedActivityTestRule. Applies ChromeTabbedActivityTestRule
+ * then opens up a ChromeTabbedActivity to a blank page while performing some additional VR-only
+ * setup.
  */
-public class WebappActivityVrTestRule extends WebappActivityTestRule implements VrTestRule {
+public class ChromeTabbedActivityGvrTestRule
+        extends ChromeTabbedActivityTestRule implements VrTestRule {
     private boolean mDonEnabled;
 
     @Override
@@ -25,9 +27,9 @@ public class WebappActivityVrTestRule extends WebappActivityTestRule implements 
         return super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                VrTestRuleUtils.evaluateVrTestRuleImpl(
-                        base, desc, WebappActivityVrTestRule.this, () -> {
-                            startWebappActivity();
+                GvrTestRuleUtils.evaluateVrTestRuleImpl(
+                        base, desc, ChromeTabbedActivityGvrTestRule.this, () -> {
+                            startMainActivityOnBlankPage();
                             TestVrShellDelegate.createTestVrShellDelegate(getActivity());
                         });
             }
@@ -36,7 +38,7 @@ public class WebappActivityVrTestRule extends WebappActivityTestRule implements 
 
     @Override
     public @SupportedActivity int getRestriction() {
-        return SupportedActivity.WAA;
+        return SupportedActivity.CTA;
     }
 
     @Override

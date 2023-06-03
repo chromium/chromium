@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.vr.VrDaydreamApi;
  * "Mock" implementation of VR Shell's VrDaydreamApi that mostly does the same thing as the normal
  * VrDaydreamApiImpl, but allows checking whether methods were called and modifying return values.
  */
-public class MockVrDaydreamApi extends VrDaydreamApi {
+public class MockGvrVrDaydreamApi extends VrDaydreamApi {
     private boolean mLaunchInVrCalled;
     private boolean mExitFromVrCalled;
     private boolean mLaunchVrHomescreenCalled;

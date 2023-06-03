@@ -19,9 +19,9 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.test.BundleTestRule;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
-import org.chromium.chrome.browser.vr.rules.ChromeTabbedActivityVrTestRule;
+import org.chromium.chrome.browser.vr.rules.ChromeTabbedActivityGvrTestRule;
 import org.chromium.chrome.browser.vr.rules.VrTestRule;
-import org.chromium.chrome.browser.vr.rules.WebappActivityVrTestRule;
+import org.chromium.chrome.browser.vr.rules.WebappActivityGvrTestRule;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
  * Utility class for interacting with VR-specific Rules, i.e. ChromeActivityTestRules that implement
  * the VrTestRule interface.
  */
-public class VrTestRuleUtils extends XrTestRuleUtils {
+public class GvrTestRuleUtils extends XrTestRuleUtils {
     // VrCore waits this amount of time after exiting VR before actually unregistering a registered
     // Daydream intent, meaning that it still thinks VR is active until this amount of time has
     // passed.
@@ -52,7 +52,7 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
             final VrTestRule rule, final ChromeLaunchMethod launcher) throws Throwable {
         TestVrShellDelegate.setDescription(desc);
 
-        VrTestRuleUtils.ensureNoVrActivitiesDisplayed();
+        GvrTestRuleUtils.ensureNoVrActivitiesDisplayed();
         launcher.launch();
 
         base.evaluate();
@@ -68,29 +68,29 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
         ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
         parameters.add(new ParameterSet()
-                               .value(new Callable<ChromeTabbedActivityVrTestRule>() {
+                               .value(new Callable<ChromeTabbedActivityGvrTestRule>() {
                                    @Override
-                                   public ChromeTabbedActivityVrTestRule call() {
-                                       return new ChromeTabbedActivityVrTestRule();
+                                   public ChromeTabbedActivityGvrTestRule call() {
+                                       return new ChromeTabbedActivityGvrTestRule();
                                    }
                                })
                                .name("ChromeTabbedActivity"));
         // TODO(https://crbug.com/989117): Re-enable testing in CCT once we've migrated to using
         //    cardboard libraries instead of Daydream.
         // parameters.add(new ParameterSet()
-        //                        .value(new Callable<CustomTabActivityVrTestRule>() {
+        //                        .value(new Callable<CustomTabActivityGvrTestRule>() {
         //                            @Override
-        //                            public CustomTabActivityVrTestRule call() {
-        //                                return new CustomTabActivityVrTestRule();
+        //                            public CustomTabActivityGvrTestRule call() {
+        //                                return new CustomTabActivityGvrTestRule();
         //                            }
         //                        })
         //                        .name("CustomTabActivity"));
 
         parameters.add(new ParameterSet()
-                               .value(new Callable<WebappActivityVrTestRule>() {
+                               .value(new Callable<WebappActivityGvrTestRule>() {
                                    @Override
-                                   public WebappActivityVrTestRule call() {
-                                       return new WebappActivityVrTestRule();
+                                   public WebappActivityGvrTestRule call() {
+                                       return new WebappActivityGvrTestRule();
                                    }
                                })
                                .name("WebappActivity"));

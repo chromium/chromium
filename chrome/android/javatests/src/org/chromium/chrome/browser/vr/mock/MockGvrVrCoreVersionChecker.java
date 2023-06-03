@@ -10,7 +10,7 @@ import org.chromium.chrome.browser.vr.VrCoreVersionChecker;
  * Mock version of VrCoreVersionCheckerImpl that allows setting of the return
  * value.
  */
-public class MockVrCoreVersionChecker extends VrCoreVersionChecker {
+public class MockGvrVrCoreVersionChecker extends VrCoreVersionChecker {
     private boolean mUseActualImplementation;
     private @VrCoreCompatibility int mMockReturnValue = VrCoreCompatibility.VR_READY;
     private @VrCoreCompatibility int mLastReturnValue;

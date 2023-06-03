@@ -24,7 +24,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.VrModuleNotInstalled;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
-import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
+import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.module_installer.engine.InstallEngine;
@@ -43,20 +43,20 @@ import java.util.concurrent.Callable;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
-public class VrDaydreamReadyModuleInstallTest {
+public class GvrDaydreamReadyModuleInstallTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
-            VrTestRuleUtils.generateDefaultTestRuleParameters();
+            GvrTestRuleUtils.generateDefaultTestRuleParameters();
     @Rule
     public RuleChain mRuleChain;
 
     private final Set<String> mModulesRequestedDeferred = new HashSet<>();
 
-    public VrDaydreamReadyModuleInstallTest(Callable<ChromeActivityTestRule> callable)
+    public GvrDaydreamReadyModuleInstallTest(Callable<ChromeActivityTestRule> callable)
             throws Exception {
-        mRuleChain =
-                RuleChain.outerRule(new VrModuleInstallerRule())
-                        .around(VrTestRuleUtils.wrapRuleInActivityRestrictionRule(callable.call()));
+        mRuleChain = RuleChain.outerRule(new VrModuleInstallerRule())
+                             .around(GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(
+                                     callable.call()));
     }
 
     /** Tests that the install is requested deferred. */

@@ -21,7 +21,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * as opposed to NFC tag simulation which involves receiving an intent from
  * an outside application (VR Services).
  */
-public class VrTransitionUtils {
+public class GvrTransitionUtils {
     /**
      * Forces Chrome out of VR mode.
      */
