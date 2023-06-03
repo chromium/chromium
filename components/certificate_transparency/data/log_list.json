@@ -1,6 +1,6 @@
 {
-  "version": "21.17",
-  "log_list_timestamp": "2023-06-02T12:54:05Z",
+  "version": "22.1",
+  "log_list_timestamp": "2023-06-03T12:56:11Z",
   "operators": [
     {
       "name": "Google",
@@ -70,54 +70,6 @@
           "temporal_interval": {
             "start_inclusive": "2024-01-01T00:00:00Z",
             "end_exclusive": "2025-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Google 'Icarus' log",
-          "log_id": "KTxRllTIOWW6qlD8WAfUt2+/WHopctykwwz05UVH9Hg=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETtK8v7MICve56qTHHDhhBOuV4IlUaESxZryCfk9QbG9co/CqPvTsgPDbCpp6oFtyAHwlDhnvr7JijXRD9Cb2FA==",
-          "url": "https://ct.googleapis.com/icarus/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-09-15T00:00:00Z"
-            }
-          }
-        },
-        {
-          "description": "Google 'Pilot' log",
-          "log_id": "pLkJkLQYWBSHuxOizGdwCjw1mAT5G9+443fNDsgN3BA=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfahLEimAoz2t01p3uMziiLOl/fHTDM0YDOhBRuiBARsV4UvxG2LdNgoIGLrtCzWE0J5APC2em4JlvR8EEEFMoA==",
-          "url": "https://ct.googleapis.com/pilot/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-09-15T00:00:00Z"
-            }
-          }
-        },
-        {
-          "description": "Google 'Rocketeer' log",
-          "log_id": "7ku9t3XOYLrhQmkfq+GeZqMPfl+wctiDAMR7iXqo/cs=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIFsYyDzBi7MxCAC/oJBXK7dHjG+1aLCOkHjpoHPqTyghLpzA9BYbqvnV16mAw04vUjyYASVGJCUoI3ctBcJAeg==",
-          "url": "https://ct.googleapis.com/rocketeer/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-09-15T00:00:00Z"
-            }
-          }
-        },
-        {
-          "description": "Google 'Skydiver' log",
-          "log_id": "u9nfvB+KcbWTlCOXqpJ7RzhXlQqrUugakJZkNo4e0YU=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEmyGDvYXsRJsNyXSrYc9DjHsIa2xzb4UR7ZxVoV6mrc9iZB7xjI6+NrOiwH+P/xxkRmOFG6Jel20q37hTh58rA==",
-          "url": "https://ct.googleapis.com/skydiver/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-09-15T00:00:00Z"
-            }
           }
         }
       ]
