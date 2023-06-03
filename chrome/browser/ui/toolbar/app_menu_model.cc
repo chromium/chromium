@@ -541,10 +541,10 @@ void ToolsMenuModel::Build(Browser* browser) {
                                    profile->GetPrefs());
         if (show_chrome_labs_item.GetValue()) {
           AddSeparator(ui::NORMAL_SEPARATOR);
-          AddItemWithStringIdAndIcon(
-              IDC_SHOW_CHROME_LABS, IDS_CHROMELABS,
-              ui::ImageModel::FromVectorIcon(kChromeLabsChromeRefreshIcon,
-                                             kDefaultIconSize));
+          AddItemWithStringIdAndIcon(IDC_SHOW_CHROME_LABS, IDS_CHROMELABS,
+                                     ui::ImageModel::FromVectorIcon(
+                                         kChromeLabsChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
           SetElementIdentifierAt(
               GetIndexOfCommandId(IDC_SHOW_CHROME_LABS).value(),
               kChromeLabsMenuItem);
