@@ -89,7 +89,7 @@ HttpResponseInfo::ConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       return HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1;
     case quic::QUIC_VERSION_RESERVED_FOR_NEGOTIATION:
       return HttpResponseInfo::CONNECTION_INFO_QUIC_999;
-    case quic::QUIC_VERSION_IETF_2_DRAFT_08:
+    case quic::QUIC_VERSION_IETF_RFC_V2:
       DCHECK(quic_version.UsesTls());
       return HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8;
   }

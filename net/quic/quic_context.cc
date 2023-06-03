@@ -54,9 +54,6 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
       quic::QuicTime::Delta::FromMicroseconds(
           params.max_idle_time_before_crypto_handshake.InMicroseconds()));
   quic::QuicTagVector copt_to_send = params.connection_options;
-  if (!base::Contains(copt_to_send, quic::kRVCM)) {
-    copt_to_send.push_back(quic::kRVCM);
-  }
   config.SetConnectionOptionsToSend(copt_to_send);
   config.SetClientConnectionOptions(params.client_connection_options);
   config.set_max_undecryptable_packets(kMaxUndecryptablePackets);

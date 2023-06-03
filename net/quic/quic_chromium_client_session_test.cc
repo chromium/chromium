@@ -220,7 +220,6 @@ class QuicChromiumClientSessionTest
 
   void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
     FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
-    config_.SetConnectionOptionsToSend({quic::kRVCM});
   }
 
   void CompleteCryptoHandshake() {

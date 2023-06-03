@@ -13404,8 +13404,6 @@ TEST_P(QuicStreamFactoryTest, ConfigConnectionOptions) {
 
   Initialize();
 
-  // RVCM will be default enabled as a connection option.
-  quic_params_->connection_options.push_back(quic::kRVCM);
   const quic::QuicConfig* config =
       QuicStreamFactoryPeer::GetConfig(factory_.get());
   EXPECT_EQ(quic_params_->connection_options, config->SendConnectionOptions());
