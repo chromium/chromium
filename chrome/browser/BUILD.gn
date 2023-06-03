@@ -7832,10 +7832,6 @@ grit("resources") {
     "//url/mojom:url_mojom_origin_js",
   ]
 
-  if (enable_webui_certificate_viewer) {
-    deps += [ "//chrome/browser/resources/certificate_viewer:build_ts" ]
-  }
-
   if (is_win) {
     deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
   }

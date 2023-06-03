@@ -34,11 +34,6 @@
         <include name="IDR_ABOUT_NACL_JS" file="${root_gen_dir}\chrome\browser\resources\about_nacl\tsc\about_nacl.js" use_base_dir="false" type="BINDATA" />
       </if>
       <include name="IDR_AD_NETWORK_HASHES" file="resources\ad_networks.dat" type="BINDATA" />
-      <if expr="enable_webui_certificate_viewer">
-        <include name="IDR_CERTIFICATE_VIEWER_HTML" file="resources\certificate_viewer\certificate_viewer.html" type="BINDATA" />
-        <include name="IDR_CERTIFICATE_VIEWER_JS" file="${root_gen_dir}\chrome\browser\resources\certificate_viewer\tsc\certificate_viewer.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_CERTIFICATE_VIEWER_CSS" file="resources\certificate_viewer\certificate_viewer.css" type="BINDATA" />
-      </if>
       <if expr="chromeos_ash">
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />

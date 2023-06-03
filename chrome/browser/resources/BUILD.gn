@@ -141,6 +141,10 @@ group("resources") {
   if (is_cfm) {
     public_deps += [ "chromeos/chromebox_for_meetings:resources" ]
   }
+
+  if (enable_webui_certificate_viewer) {
+    public_deps += [ "certificate_viewer:resources" ]
+  }
 }
 
 if (is_chromeos_ash && enable_js_type_check) {

@@ -124,6 +124,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2360],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/certificate_viewer/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [2370],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/arc_account_picker/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2380],

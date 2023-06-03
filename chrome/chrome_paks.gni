@@ -521,6 +521,11 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak" ]
       deps += [ "//components/headless/command_handler" ]
     }
+
+    if (enable_webui_certificate_viewer) {
+      sources += [ "$root_gen_dir/chrome/certificate_viewer_resources.pak" ]
+      deps += [ "//chrome/browser/resources/certificate_viewer:resources" ]
+    }
   }
 }
 
