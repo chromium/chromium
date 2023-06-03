@@ -365,7 +365,7 @@ bool PrerenderHost::StartPrerendering() {
     // violations, PrerenderNavigationThrottle didn't run at this point. So,
     // set the ID here.
     initial_navigation_id_ = created_navigation_handle->GetNavigationId();
-    // |begin_params_| and |common_params_| is null here, but it doesn't matter
+    // `begin_params_` and `common_params_` is null here, but it doesn't matter
     // as this branch is reached only when the initial navigation fails,
     // so this PrerenderHost can't be activated.
   }
@@ -555,7 +555,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
         // updated by
         // WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(). So
         // updates the visibility state using the PageVisibilityState of
-        // |web_contents|.
+        // `web_contents`.
         rfh->render_view_host()->SetFrameTreeVisibility(
             web_contents_->GetPageVisibilityState());
       });
@@ -669,6 +669,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     const blink::mojom::BeginNavigationParams& potential_activation) {
+  CHECK(begin_params_);
   if (potential_activation.initiator_frame_token !=
       begin_params_->initiator_frame_token) {
     return ActivationNavigationParamsMatch::kInitiatorFrameToken;
@@ -761,13 +762,14 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     const blink::mojom::CommonNavigationParams& potential_activation) {
   // The CommonNavigationParams::url field is expected to be the same for both
   // initial and activation prerender navigations, as the PrerenderHost
-  // selection would have already checked for matching values. Adding a DCHECK
+  // selection would have already checked for matching values. Adding a CHECK
   // here to be safe.
+  CHECK(common_params_);
   if (attributes_.url_match_predicate) {
-    DCHECK(
+    CHECK(
         attributes_.url_match_predicate.value().Run(potential_activation.url));
   } else {
-    DCHECK_EQ(potential_activation.url, common_params_->url);
+    CHECK_EQ(potential_activation.url, common_params_->url);
   }
   if (potential_activation.initiator_origin !=
       common_params_->initiator_origin) {
